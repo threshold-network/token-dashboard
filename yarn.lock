@@ -1645,7 +1645,7 @@
   dependencies:
     "@chakra-ui/utils" "^1.7.0"
 
-"@chakra-ui/react@^1.6.7":
+"@chakra-ui/react@^1.6.6", "@chakra-ui/react@^1.6.7":
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-1.6.7.tgz#1d5fa2a02aa1a2c1516966e5bfc12d528452f723"
   integrity sha512-5klvvvoPN1j3t1842Sg7qYzQu/ENXHMeccL3r34Y4xJG3SrM5ebyjyGmqGN7WqRoXzPhG25UInA9LJDEvzjbLA==
@@ -2686,6 +2686,18 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@snek-at/storybook-addon-chakra-ui@^1.0.0-beta.1":
+  version "1.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@snek-at/storybook-addon-chakra-ui/-/storybook-addon-chakra-ui-1.0.0-beta.1.tgz#ace030aebb523ab7b355b54756fa353eb0209f5f"
+  integrity sha512-JMPsULgbmXOr3v3ePgS+QJlk/7dw+YtGm4xkG5HPr/warLwPWuGXIavrEmSCUPYVP0redSDlNksT5wqMoYHQow==
+  dependencies:
+    "@chakra-ui/react" "^1.6.6"
+    "@emotion/react" "^11"
+    "@emotion/styled" "^11"
+    "@storybook/addons" "^6.3.7"
+    framer-motion "^4"
+    react "^17.0.2"
+
 "@storybook/addon-actions@6.3.8", "@storybook/addon-actions@^6.3.8":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.3.8.tgz#85e342c30b3118a7885a5cf0ea83c3bb03a18558"
@@ -2864,7 +2876,7 @@
     prop-types "^15.7.2"
     regenerator-runtime "^0.13.7"
 
-"@storybook/addons@6.3.8", "@storybook/addons@^6.3.0":
+"@storybook/addons@6.3.8", "@storybook/addons@^6.3.0", "@storybook/addons@^6.3.7":
   version "6.3.8"
   resolved "https://registry.yarnpkg.com/@storybook/addons/-/addons-6.3.8.tgz#c4a839ae9b86fb4a1183466db6eb16201c1a0553"
   integrity sha512-TzYk1f/wvfoGDkLxXIx85ii5ED7IfGP/6eu00/i2Hyn4uGqdNi/ltSOJxnxa+DZv8KjYQRVAEo/Fbh95IEXI1Q==
@@ -12926,6 +12938,11 @@ react-helmet-async@^1.0.7:
     prop-types "^15.7.2"
     react-fast-compare "^3.2.0"
     shallowequal "^1.1.0"
+
+react-icons@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.2.0.tgz#6dda80c8a8f338ff96a1851424d63083282630d0"
+  integrity sha512-rmzEDFt+AVXRzD7zDE21gcxyBizD/3NqjbX6cmViAgdqfJ2UiLer8927/QhhrXQV7dEj/1EGuOTPp7JnLYVJKQ==
 
 react-inspector@^5.1.0:
   version "5.1.1"
