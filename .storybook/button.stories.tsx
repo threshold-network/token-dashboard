@@ -21,7 +21,10 @@ export const Button = Template.bind({})
 
 // @ts-ignore
 Button.args = {
-  colorScheme: "brand",
+  colorScheme: colorSchemes[0],
+  variant: buttonVariants[0],
+  size: sizes[1],
+  icon: "none",
 }
 
 export default {

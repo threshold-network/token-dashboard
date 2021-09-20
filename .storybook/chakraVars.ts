@@ -14,3 +14,4 @@ export const colorSchemes = [
 export const sizes = ["xs", "sm", "md", "lg"]
 
 export const buttonVariants = ["solid", "ghost", "outline", "link"]
+export const badgeVariants = ["subtle", "solid", "outline"]
