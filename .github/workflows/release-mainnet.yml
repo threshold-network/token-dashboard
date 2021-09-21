@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - releases/mainnet/**
+  release:
+    types:
+      - "published"
+  workflow_dispatch:
 
 jobs:
   build-mainnet:
@@ -70,8 +74,9 @@ jobs:
             })
 
   deploy-mainnet:
-    name: Deploy to mainnet
+    name: Deploy mainnet
     needs: build-mainnet
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     # mainnet environment is protected, it requires an approval before execution.
     environment:
       name: mainnet
