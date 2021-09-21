@@ -1,6 +1,9 @@
 name: Dashboard Build and Deploy for Mainnet
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - releases/mainnet/**
@@ -17,11 +20,16 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
-      # It is expected that package dependencies are set to correct mainnet
-      # contracts version on the release branch.
-
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      # FIXME: It's work in progress, the contracts are not yet published.
+      # - name: Resolve latest mainnet contracts
+      #   # For PR we expect the dependencies are already set to correct versions.
+      #   if: github.event_name != 'pull_request'
+      #   run: |
+      #     yarn add \
+      #       @threshold-network/contracts@mainnet
 
       - name: Build
         run: yarn build
@@ -50,6 +58,7 @@ jobs:
           build-folder: build
 
       - name: Post mainnet preview URL to PR
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v3
         with:
           script: |
