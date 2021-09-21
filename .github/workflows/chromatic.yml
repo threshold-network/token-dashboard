@@ -1,0 +1,35 @@
+# .github/workflows/chromatic.yml
+
+# Workflow name
+name: "Chromatic"
+
+# Event for the workflow
+on: push
+
+# List of jobs
+jobs:
+  chromatic-deployment:
+    # Operating System
+    runs-on: ubuntu-latest
+    # Job steps
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install dependencies
+        run: yarn
+      - name: Publish to Chromatic
+        if: github.ref != 'refs/heads/main'
+        uses: chromaui/action@v1
+          with:
+            token: ${{ secrets.CI_GITHUB_TOKEN }}
+            #    Should set this up from a secret: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+            projectToken: adb814d4adb6
+              # 👇 Checks if the branch is main and accepts all changes in Chromatic
+            - name: Publish to Chromatic and auto accept changes
+              if: github.ref == 'refs/heads/main'
+              uses: chromaui/action@v1
+              with:
+                token: ${{ secrets.CI_GITHUB_TOKEN }}
+                  #    Should set this up from a secret: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+                projectToken: adb814d4adb6
+                autoAcceptChanges: true
+
