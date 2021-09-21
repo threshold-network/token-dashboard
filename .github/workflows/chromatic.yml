@@ -23,9 +23,9 @@ jobs:
           projectToken: adb814d4adb6
       - name: Publish to Chromatic and auto accept changes
         if: github.ref == 'refs/heads/main'
-          uses: chromaui/action@v1
-          with:
-            token: ${{ secrets.CI_GITHUB_TOKEN }}
-            projectToken: adb814d4adb6
-            autoAcceptChanges: true
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.CI_GITHUB_TOKEN }}
+          projectToken: adb814d4adb6
+          autoAcceptChanges: true
 
