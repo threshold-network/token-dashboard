@@ -1,0 +1,81 @@
+name: Dashboard Build and Deploy for Mainnet
+
+on:
+  pull_request:
+    branches:
+      - releases/mainnet/**
+
+jobs:
+  build-mainnet:
+    name: Build for mainnet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+
+      # It is expected that package dependencies are set to correct mainnet
+      # contracts version on the release branch.
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: build
+
+  deploy-preview-mainnet:
+    name: Deploy mainnet preview
+    needs: build-mainnet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
+      - name: Deploy PR mainnet preview to GCP
+        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        with:
+          service-key: ${{ secrets.KEEP_PRD_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
+          project: ${{ secrets.KEEP_PRD_GOOGLE_PROJECT_ID }}
+          bucket-name: preview.dashboard.threshold.network
+          bucket-path: ${{ github.head_ref }}
+          build-folder: build
+
+      - name: Post mainnet preview URL to PR
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Preview uploaded to https://preview.dashboard.threshold.network/${{ github.head_ref }}/.'
+            })
+
+  deploy-mainnet:
+    name: Deploy to mainnet
+    needs: build-mainnet
+    # mainnet environment is protected, it requires an approval before execution.
+    environment:
+      name: mainnet
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@v2
+
+      - name: Deploy mainnet build to GCP
+        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        with:
+          service-key: ${{ secrets.MAINNET_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
+          project: ${{ secrets.MAINNET_GOOGLE_PROJECT_ID }}
+          bucket-name: dashboard.threshold.network
+          build-folder: build
