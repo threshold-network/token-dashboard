@@ -12,12 +12,7 @@ module.exports = {
     browser: true,
     es6: true,
   },
-  extends: [
-    "eslint-config-keep",
-    "plugin:react/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-  ],
+  extends: "eslint-config-keep",
   plugins: ["react"],
   rules: {
     "react/prop-types": 0,
