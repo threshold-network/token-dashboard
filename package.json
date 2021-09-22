@@ -51,8 +51,6 @@
     "babel-loader": "8.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@storybook/addon-actions": "^6.3.8",
     "@storybook/addon-essentials": "^6.3.8",
