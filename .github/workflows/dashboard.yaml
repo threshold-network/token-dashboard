@@ -64,7 +64,7 @@ jobs:
       # FIXME: It's work in progress, the contracts are not yet published.
       # - name: Resolve latest ropsten contracts
       #   run: |
-      #     yarn add \
+      #     yarn upgrade \
       #       @threshold-network/contracts@ropsten
 
       - name: Build

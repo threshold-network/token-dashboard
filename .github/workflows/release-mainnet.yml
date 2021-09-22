@@ -32,7 +32,7 @@ jobs:
       #   # For PR we expect the dependencies are already set to correct versions.
       #   if: github.event_name != 'pull_request'
       #   run: |
-      #     yarn add \
+      #     yarn upgrade \
       #       @threshold-network/contracts@mainnet
 
       - name: Build
