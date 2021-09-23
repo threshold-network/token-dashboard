@@ -1,9 +1,11 @@
+import { getColor } from "@chakra-ui/theme-tools"
+
 export const getColorFromProps = (
   props: any,
   weight: number,
-  defaultColorScheme = "brand"
+  fallbackColor?: string
 ) => {
-  return props?.colorScheme !== defaultColorScheme
-    ? props?.theme?.colors[props?.colorScheme][weight]
-    : null
+  const { colorScheme, theme } = props
+  const preferredColor = `${colorScheme}.${weight}`
+  return getColor(theme, preferredColor, fallbackColor)
 }
