@@ -1,39 +1,45 @@
+import { mode, transparentize } from "@chakra-ui/theme-tools"
 import { getColorFromProps } from "./utils"
 
 export const Badge = {
+  baseStyle: {
+    px: "12px",
+    borderRadius: "full",
+  },
   defaultProps: {
     variant: "solid",
-    size: "md",
+    fontSize: "md",
     colorScheme: "brand",
   },
-  sizes: {
-    sm: {
-      fontSize: "14px",
-      lineHeight: "16px",
-      px: "8px",
-      py: "4px",
-    },
-    md: {
-      fontSize: "16px",
-      lineHeight: "24px",
-      px: "12px",
-      py: "6px",
-    },
-  },
   variants: {
-    solid: (props: any) => ({
-      color: "white",
-      backgroundColor: getColorFromProps(props, 500) || "black",
-    }),
-    outline: (props: any) => {
+    solid: (props: any) => {
       return {
-        boxShadow: `inset 0 0 0px 1px ${
-          getColorFromProps(props, 500) || "black"
-        }`,
+        color: "white",
+        backgroundColor: getColorFromProps(props, 500, "black"),
       }
     },
-  },
-  baseStyle: {
-    borderRadius: "full",
+    outline: (props: any) => {
+      return {
+        boxShadow: `inset 0 0 0px 1px ${getColorFromProps(
+          props,
+          500,
+          "black"
+        )}`,
+      }
+    },
+    subtle: (props: any) => {
+      const lightModeColor = getColorFromProps(props, 800, "black")
+      const darkModeColor = getColorFromProps(props, 200, "white")
+      const lightModeBg = getColorFromProps(props, 100, "gray.100")
+      const darkModeBg = transparentize(
+        getColorFromProps(props, 50, "gray.50"),
+        0.16
+      )(props.theme)
+
+      return {
+        backgroundColor: mode(lightModeBg, darkModeBg)(props),
+        color: mode(lightModeColor, darkModeColor)(props),
+      }
+    },
   },
 }
