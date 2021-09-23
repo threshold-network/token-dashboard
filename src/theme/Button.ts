@@ -1,4 +1,5 @@
-import { getColorFromProps } from "./utils"
+import { mode } from "@chakra-ui/theme-tools"
+import { getColorFromProps as gcfp } from "./utils"
 
 export const Button = {
   defaultProps: {
@@ -14,34 +15,25 @@ export const Button = {
         backgroundColor: "transparent",
       },
     },
-    brand: (props: any) => {
-      return {
-        _disabled: {
-          backgroundColor: getColorFromProps(props, 500) || "gray.400",
-        },
-      }
-    },
     solid: (props: any) => {
       return {
         _disabled: {
-          backgroundColor: getColorFromProps(props, 500) || "gray.400",
+          backgroundColor: gcfp(props, 500, "gray.400"),
         },
       }
     },
     outline: (props: any) => {
-      const colorScheme600 = getColorFromProps(props, 600)
-
       return {
-        borderColor: colorScheme600 || "gray.200",
+        borderColor: gcfp(props, 600, "gray.200"),
         backgroundColor: "transparent",
-        color: colorScheme600 || "gray.700",
+        color: gcfp(props, 600, "gray.700"),
         _active: {
-          backgroundColor: colorScheme600 || "gray.300",
+          backgroundColor: gcfp(props, 600, "gray.300"),
         },
         _hover: {
-          borderColor: colorScheme600 || "gray.200",
-          backgroundColor: getColorFromProps(props, 50) || "transparent",
-          color: colorScheme600 || "gray.700",
+          borderColor: gcfp(props, 600, "gray.200"),
+          backgroundColor: gcfp(props, 50, "transparent"),
+          color: gcfp(props, 600, "gray.700"),
         },
         _disabled: {
           backgroundColor: "white",
@@ -49,17 +41,17 @@ export const Button = {
       }
     },
   },
-  baseStyle: {
-    backgroundColor: "gray.600",
+  baseStyle: (props: any) => ({
+    backgroundColor: mode("gray.600", "gray.200")(props),
     color: "white",
     _active: {
-      backgroundColor: "gray.900",
+      backgroundColor: mode("gray.600", "gray.400")(props),
     },
     _hover: {
-      backgroundColor: "gray.700",
+      backgroundColor: mode("gray.700", "gray.300")(props),
     },
     _disabled: {
       backgroundColor: "gray.400",
     },
-  },
+  }),
 }
