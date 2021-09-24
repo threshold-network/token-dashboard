@@ -1,4 +1,4 @@
-name: Dashboard Build and Deploy for Mainnet
+name: Token Dashboard / Mainnet
 
 on:
   push:
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-mainnet:
+  build:
     name: Build for mainnet
     runs-on: ubuntu-latest
     steps:
@@ -43,9 +43,9 @@ jobs:
           name: build
           path: build
 
-  deploy-preview-mainnet:
+  deploy-preview:
     name: Deploy mainnet preview
-    needs: build-mainnet
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -55,6 +55,7 @@ jobs:
       - name: Deploy PR mainnet preview to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0
         with:
+          # FIXME: Consider setting separate uploader keys for each bucket.
           service-key: ${{ secrets.KEEP_PRD_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
           project: ${{ secrets.KEEP_PRD_GOOGLE_PROJECT_ID }}
           bucket-name: preview.dashboard.threshold.network
@@ -73,9 +74,9 @@ jobs:
               body: 'Preview uploaded to https://preview.dashboard.threshold.network/${{ github.head_ref }}/.'
             })
 
-  deploy-mainnet:
+  deploy:
     name: Deploy mainnet
-    needs: build-mainnet
+    needs: build
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
     # mainnet environment is protected, it requires an approval before execution.
     environment:
