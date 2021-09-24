@@ -42,7 +42,7 @@ export const Button = {
     },
   },
   baseStyle: (props: any) => ({
-    backgroundColor: mode("gray.600", "gray.200")(props),
+    backgroundColor: "red",
     color: "white",
     _active: {
       backgroundColor: mode("gray.600", "gray.400")(props),
