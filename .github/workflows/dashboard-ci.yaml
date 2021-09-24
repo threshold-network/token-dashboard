@@ -1,4 +1,4 @@
-name: Dashboard
+name: Token Dashboard / CI
 
 on:
   push:
