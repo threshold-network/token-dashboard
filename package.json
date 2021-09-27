@@ -26,10 +26,10 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint '*/**/*.{js,ts,tsx}'",
-    "lint:fix": "eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "format": "npm run lint && prettier --check .",
-    "format:fix": "npm run lint:fix && prettier --write .",
+    "lint": "eslint --ext .js --ext .ts --ext .tsx .",
+    "lint:fix": "eslint --ext .js --ext .ts --ext .tsx . --quiet --fix",
+    "format": "yarn lint && prettier --check .",
+    "format:fix": "yarn lint:fix && prettier --write .",
     "pre-commit": "lint-staged",
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006 -s public",
@@ -52,8 +52,6 @@
     "babel-loader": "8.1.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^13.1.0",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@snek-at/storybook-addon-chakra-ui": "^1.0.0-beta.1",
     "@storybook/addon-actions": "^6.3.8",
