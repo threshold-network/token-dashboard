@@ -25,6 +25,7 @@ Button.args = {
   variant: buttonVariants[0],
   size: sizes[1],
   icon: "none",
+  disabled: false,
 }
 
 export default {
