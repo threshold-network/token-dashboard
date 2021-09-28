@@ -18,6 +18,7 @@ module.exports = {
     "react/prop-types": 0,
     "react/display-name": 0,
     "no-invalid-this": 0,
+    "no-unused-vars": 0,
   },
   settings: {
     react: {
