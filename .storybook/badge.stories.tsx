@@ -1,30 +1,22 @@
-import React from "react"
-import { Badge as ChakraBadge, Container } from "@chakra-ui/react"
-import {
-  badgeVariants,
-  buttonVariants,
-  colorSchemes,
-  sizes,
-} from "./chakraVars"
+import { Badge as ChakraBadge, BadgeProps, Container } from "@chakra-ui/react"
+import { Meta, Story } from "@storybook/react"
+import { badgeVariants, colorSchemes, sizes } from "./chakraVars"
 
-const Template = ({ icon, ...args }: any) => {
+const Template: Story<BadgeProps> = ({ ...args }) => {
   return (
     <Container>
-      <ChakraBadge {...args} fontSize={args.size}>
+      <ChakraBadge {...args} fontSize={args.fontSize}>
         Badge
       </ChakraBadge>
     </Container>
   )
 }
 
-export const Badge = Template.bind({})
-
-// @ts-ignore
-Badge.args = {
-  colorScheme: colorSchemes[0],
-  variant: badgeVariants[0],
-  size: sizes[0],
-}
+export const Badge = Template.bind({
+  colorScheme: "brand",
+  variant: "solid",
+  size: "sm",
+})
 
 export default {
   title: "Badge",
@@ -38,9 +30,9 @@ export default {
       options: badgeVariants,
       control: { type: "radio" },
     },
-    size: {
+    fontSize: {
       options: sizes,
       control: { type: "radio" },
     },
   },
-}
+} as Meta
