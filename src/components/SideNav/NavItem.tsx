@@ -1,5 +1,5 @@
 import { FC, ReactElement } from "react"
-import { Box, Button, useColorMode, useColorModeValue } from "@chakra-ui/react"
+import { Box, Button, useColorModeValue } from "@chakra-ui/react"
 
 interface NavItemProps {
   to: string

@@ -1,17 +1,8 @@
 import { FC } from "react"
-import {
-  Box,
-  Button,
-  Text,
-  useColorMode,
-  Square,
-  VStack,
-  useColorModeValue,
-} from "@chakra-ui/react"
-import { AiFillHome } from "react-icons/all"
+import { Box, useColorMode, Square, useColorModeValue } from "@chakra-ui/react"
 
 const Tbrand: FC = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { toggleColorMode } = useColorMode()
   return (
     <Box pl={8} pt={8} pb={8} w="100%">
       {/* Placeholder T Square? */}
