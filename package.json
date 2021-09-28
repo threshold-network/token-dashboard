@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
@@ -33,7 +34,8 @@
     "pre-commit": "lint-staged",
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "chromatic": "npx chromatic --exit-zero-on-changes"
   },
   "browserslist": {
     "production": [
@@ -62,6 +64,7 @@
     "@storybook/react": "^6.3.8",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "chromatic": "^6.0.0-canary.1",
     "eslint": "^7.32.0",
     "eslint-config-keep": "github:keep-network/eslint-config-keep#0c27ade",
     "eslint-config-prettier": "^8.3.0",

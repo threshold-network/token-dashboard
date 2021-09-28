@@ -10,7 +10,9 @@ import {
 const Template = ({ icon, ...args }: any) => {
   return (
     <Container>
-      <ChakraBadge {...args}>Badge</ChakraBadge>
+      <ChakraBadge {...args} fontSize={args.size}>
+        Badge
+      </ChakraBadge>
     </Container>
   )
 }
