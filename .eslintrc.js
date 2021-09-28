@@ -19,6 +19,8 @@ module.exports = {
     "react/display-name": 0,
     "no-invalid-this": 0,
     "no-unused-vars": 0,
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
   },
   settings: {
     react: {

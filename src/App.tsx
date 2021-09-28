@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import { FC } from "react"
 import { ChakraProvider, Heading, Box, ColorModeScript } from "@chakra-ui/react"
 import theme from "./theme"
 import SideNav from "./components/SideNav"
