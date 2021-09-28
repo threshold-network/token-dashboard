@@ -1,30 +1,39 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { Box, VStack, useColorModeValue } from "@chakra-ui/react"
+import { useLocation } from "react-router"
+import { AiFillHome, BiDollarCircle, IoIosSwap } from "react-icons/all"
 import NavItem from "./NavItem"
 import TBrand from "./TBrand"
-import { AiFillHome, BiDollarCircle, IoIosSwap } from "react-icons/all"
 
 const SideNav: FC = () => {
-  const navItems = [
-    {
-      to: "/",
-      text: "Overview",
-      icon: <AiFillHome />,
-      isActive: true,
-    },
-    {
-      to: "/",
-      text: "Upgrade",
-      icon: <IoIosSwap />,
-      isActive: false,
-    },
-    {
-      to: "/",
-      text: "Balances",
-      icon: <BiDollarCircle />,
-      isActive: false,
-    },
-  ]
+  const { pathname } = useLocation()
+
+  const navItems = useMemo(
+    () => [
+      {
+        to: "/overview",
+        text: "Overview",
+        icon: <AiFillHome />,
+        isActive: pathname === "/overview",
+        key: "overview",
+      },
+      {
+        to: "/upgrade",
+        text: "Upgrade",
+        icon: <IoIosSwap />,
+        isActive: pathname === "/upgrade",
+        key: "upgrade",
+      },
+      {
+        to: "/balances",
+        text: "Balances",
+        icon: <BiDollarCircle />,
+        isActive: pathname === "/balances",
+        key: "balances",
+      },
+    ],
+    [pathname]
+  )
 
   return (
     <Box
