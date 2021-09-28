@@ -9,7 +9,10 @@ import {
 const baseIconSize = 24
 const mdIconSize = 40
 
-export const Divider = ({ icon, ...props }: DividerProps & { icon?: any }) => (
+export const Divider = ({
+  icon,
+  ...props
+}: Omit<DividerProps, "orientation"> & { icon?: any }) => (
   <Box
     position="relative"
     my={{ base: icon ? 3 : undefined, md: icon ? 5 : undefined }}
