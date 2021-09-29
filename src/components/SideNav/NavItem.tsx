@@ -10,7 +10,6 @@ interface NavItemProps {
 }
 
 const NavItem: FC<NavItemProps> = ({ isActive, to, text, icon }) => {
-  console.log(text, isActive)
   return (
     <Link
       as={RouterLink}

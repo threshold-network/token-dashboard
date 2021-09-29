@@ -5,7 +5,7 @@ const Page = () => {
   return (
     <Box>
       <Hero>
-        <Heading>Upgrade</Heading>
+        <Heading fontSize="72px">Upgrade</Heading>
       </Hero>
       <Heading>UPGRADE PAGE</Heading>
     </Box>

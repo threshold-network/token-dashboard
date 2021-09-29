@@ -5,7 +5,7 @@ const Page = () => {
   return (
     <Box>
       <Hero>
-        <Heading>Balances</Heading>
+        <Heading fontSize="72px">Balances</Heading>
       </Hero>
       <Heading>BALANCES PAGE</Heading>
     </Box>

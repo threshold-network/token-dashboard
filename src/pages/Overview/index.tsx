@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react"
+import { Box, Heading, HStack, Text, useColorModeValue } from "@chakra-ui/react"
 import Hero from "../../components/Hero"
 
 const Page = () => {
@@ -6,7 +6,10 @@ const Page = () => {
     <Box>
       <Hero>
         <>
-          <Text>INTRODUCING</Text>
+          <HStack maxW="256px">
+            <Text fontSize="lg">INTRODUCING</Text>
+            <Box bg={useColorModeValue("gray.800", "white")} h="2px" w="100%" />
+          </HStack>
           <Heading fontSize="72px">Threshold</Heading>
           <Heading fontSize="72px">Network</Heading>
         </>
