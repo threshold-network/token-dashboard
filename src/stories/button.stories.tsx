@@ -1,34 +1,27 @@
-import {
-  Button as ChakraButton,
-  ButtonProps,
-  Container,
-} from "@chakra-ui/react"
-import { MdBuild } from "react-icons/md"
+import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react"
+import { MdBuild, MdAccessAlarm, MdAttachFile } from "react-icons/md"
 import { Story, Meta } from "@storybook/react"
-import {
-  buttonVariants,
-  colorSchemes,
-  sizes,
-} from "../../.storybook/chakraVars"
 
-interface ButtonStoryProps extends ButtonProps {
-  icon: string
+const iconMap = {
+  Wrench: <MdBuild />,
+  Alarm: <MdAccessAlarm />,
+  File: <MdAttachFile />,
 }
 
-const Template: Story<ButtonStoryProps> = ({
-  icon,
+const Template: Story<ButtonProps> = ({
+  leftIcon,
+  rightIcon,
   ...args
-}: ButtonStoryProps) => {
+}: ButtonProps) => {
+  // @ts-ignore
+  const LeftIcon = leftIcon ? iconMap[leftIcon] : undefined
+  // @ts-ignore
+  const RightIcon = rightIcon ? iconMap[rightIcon] : undefined
+
   return (
-    <Container>
-      <ChakraButton
-        {...args}
-        leftIcon={icon === "left" ? <MdBuild /> : undefined}
-        rightIcon={icon === "right" ? <MdBuild /> : undefined}
-      >
-        Button
-      </ChakraButton>
-    </Container>
+    <ChakraButton {...args} leftIcon={LeftIcon} rightIcon={RightIcon}>
+      Button
+    </ChakraButton>
   )
 }
 
@@ -36,7 +29,8 @@ export const Button = Template.bind({
   colorScheme: "brand",
   variant: "solid",
   size: "md",
-  icon: "none",
+  leftIcon: undefined,
+  rightIcon: undefined,
   disabled: false,
 })
 
@@ -45,20 +39,58 @@ export default {
   component: Button,
   argTypes: {
     colorScheme: {
-      options: colorSchemes,
+      description: "Adjusts the color scheme of the button",
+      options: ["brand", "red"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "brand" },
+      },
     },
     variant: {
-      options: buttonVariants,
+      description: "Adjusts the variant of the button",
+      options: ["solid", "outline", "ghost"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "solid" },
+      },
     },
     size: {
-      options: sizes,
+      description: "Adjusts the size of the button",
+      options: ["xs", "sm", "md", "lg"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "md" },
+      },
     },
-    icon: {
-      options: ["left", "right", "none"],
-      control: { type: "radio" },
+    leftIcon: {
+      description: "Adds and icon on the left of the button",
+      control: {
+        type: "select",
+        options: {
+          Undefined: "undefined",
+          Wrench: "Wrench",
+          Alarm: "Alarm",
+          File: "File",
+        },
+      },
+      table: {
+        defaultValue: { summary: "undefined" },
+      },
+    },
+    rightIcon: {
+      description: "Adds and icon on the right of the button",
+      control: {
+        type: "select",
+        options: {
+          Undefined: "undefined",
+          Wrench: "Wrench",
+          Alarm: "Alarm",
+          File: "File",
+        },
+      },
+      table: {
+        defaultValue: { summary: "undefined" },
+      },
     },
   },
 } as Meta
