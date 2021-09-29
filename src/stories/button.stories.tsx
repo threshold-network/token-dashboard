@@ -1,9 +1,24 @@
-import React from "react"
-import { Button as ChakraButton, Container } from "@chakra-ui/react"
+import {
+  Button as ChakraButton,
+  ButtonProps,
+  Container,
+} from "@chakra-ui/react"
 import { MdBuild } from "react-icons/md"
-import { buttonVariants, colorSchemes, sizes } from "./chakraVars"
+import { Story, Meta } from "@storybook/react"
+import {
+  buttonVariants,
+  colorSchemes,
+  sizes,
+} from "../../.storybook/chakraVars"
 
-const Template = ({ icon, ...args }: any) => {
+interface ButtonStoryProps extends ButtonProps {
+  icon: string
+}
+
+const Template: Story<ButtonStoryProps> = ({
+  icon,
+  ...args
+}: ButtonStoryProps) => {
   return (
     <Container>
       <ChakraButton
@@ -17,16 +32,13 @@ const Template = ({ icon, ...args }: any) => {
   )
 }
 
-export const Button = Template.bind({})
-
-// @ts-ignore
-Button.args = {
-  colorScheme: colorSchemes[0],
-  variant: buttonVariants[0],
-  size: sizes[1],
+export const Button = Template.bind({
+  colorScheme: "brand",
+  variant: "solid",
+  size: "md",
   icon: "none",
   disabled: false,
-}
+})
 
 export default {
   title: "Button",
@@ -49,4 +61,4 @@ export default {
       control: { type: "radio" },
     },
   },
-}
+} as Meta
