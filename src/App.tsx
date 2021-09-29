@@ -1,8 +1,7 @@
 import { FC } from "react"
-import { ChakraProvider, Box, ColorModeScript } from "@chakra-ui/react"
 import { Router } from "react-router-dom"
 import { createBrowserHistory } from "history"
-
+import { ChakraProvider, Box, ColorModeScript } from "@chakra-ui/react"
 import theme from "./theme"
 import SideNav from "./components/SideNav"
 import Routes from "./Routes"

@@ -1,6 +1,6 @@
 import React from "react"
 import { Container } from "@chakra-ui/react"
-import SideNavComponent from "../src/components/SideNav"
+import SideNavComponent from "../components/SideNav"
 
 const Template = () => {
   return (
