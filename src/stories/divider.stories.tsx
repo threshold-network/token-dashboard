@@ -1,9 +1,14 @@
 import React from "react"
-import { Container, Text } from "@chakra-ui/react"
-import { Divider as TDivider } from "../src/components/Divider"
+import { Story, Meta } from "@storybook/react"
+import { DividerProps, Container, Text } from "@chakra-ui/react"
+import { Divider as TDivider } from "../components/Divider"
 import { FaArrowCircleDown } from "react-icons/all"
 
-const Template = ({ icon }: any) => {
+interface DividerStoryProps extends Omit<DividerProps, "orientation"> {
+  icon: string
+}
+
+const Template: Story<DividerStoryProps> = ({ icon }) => {
   return (
     <Container>
       <Text>Above the divider</Text>
@@ -13,12 +18,9 @@ const Template = ({ icon }: any) => {
   )
 }
 
-export const Divider = Template.bind({})
-
-// @ts-ignore
-Divider.args = {
+export const Divider = Template.bind({
   icon: true,
-}
+})
 
 export default {
   title: "Divider",
@@ -29,4 +31,4 @@ export default {
       control: { type: "radio" },
     },
   },
-}
+} as Meta
