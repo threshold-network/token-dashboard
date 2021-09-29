@@ -1,6 +1,6 @@
 import { Badge as ChakraBadge, BadgeProps, Container } from "@chakra-ui/react"
 import { Meta, Story } from "@storybook/react"
-import { badgeVariants, colorSchemes, sizes } from "./chakraVars"
+import { badgeVariants, colorSchemes, sizes } from "../../.storybook/chakraVars"
 
 const Template: Story<BadgeProps> = ({ ...args }) => {
   return (

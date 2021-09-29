@@ -5,7 +5,11 @@ import {
 } from "@chakra-ui/react"
 import { MdBuild } from "react-icons/md"
 import { Story, Meta } from "@storybook/react"
-import { buttonVariants, colorSchemes, sizes } from "./chakraVars"
+import {
+  buttonVariants,
+  colorSchemes,
+  sizes,
+} from "../../.storybook/chakraVars"
 
 interface ButtonStoryProps extends ButtonProps {
   icon: string
