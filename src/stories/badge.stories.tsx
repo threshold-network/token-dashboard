@@ -1,14 +1,11 @@
-import { Badge as ChakraBadge, BadgeProps, Container } from "@chakra-ui/react"
+import { Badge as ChakraBadge, BadgeProps } from "@chakra-ui/react"
 import { Meta, Story } from "@storybook/react"
-import { badgeVariants, colorSchemes, sizes } from "../../.storybook/chakraVars"
 
 const Template: Story<BadgeProps> = ({ ...args }) => {
   return (
-    <Container>
-      <ChakraBadge {...args} fontSize={args.fontSize}>
-        Badge
-      </ChakraBadge>
-    </Container>
+    <ChakraBadge {...args} fontSize={args.fontSize}>
+      Badge
+    </ChakraBadge>
   )
 }
 
@@ -23,16 +20,28 @@ export default {
   component: Badge,
   argTypes: {
     colorScheme: {
-      options: colorSchemes,
+      description: "Adjusts the color scheme of the badge",
+      options: ["brand", "green", "yellow", "red"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "brand" },
+      },
     },
     variant: {
-      options: badgeVariants,
+      description: "Adjusts the variant of the badge",
+      options: ["subtle", "solid", "outline"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "solid" },
+      },
     },
     fontSize: {
-      options: sizes,
+      description: "Adjusts the size of the badge",
+      options: ["sm", "lg"],
       control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "sm" },
+      },
     },
   },
 } as Meta
