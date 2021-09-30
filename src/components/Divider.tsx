@@ -1,40 +1,32 @@
-import React from "react"
+import { FC } from "react"
 import {
   Icon,
   Box,
   Divider as ChakraDivider,
   DividerProps,
+  useMultiStyleConfig,
+  IconProps,
 } from "@chakra-ui/react"
+import { HTMLChakraProps } from "@chakra-ui/system"
 
-const baseIconSize = 24
-const mdIconSize = 40
+export const DividerIcon: FC<HTMLChakraProps<"span"> & IconProps> = ({
+  as,
+  ...propStyles
+}) => {
+  const { icon: themeStyles } = useMultiStyleConfig("Divider", {})
+  return <Icon as={as} __css={{ ...themeStyles, ...propStyles }} />
+}
 
 export const Divider = ({
-  icon,
+  children,
   ...props
-}: Omit<DividerProps, "orientation"> & { icon?: any }) => (
-  <Box
-    position="relative"
-    my={{ base: icon ? 3 : undefined, md: icon ? 5 : undefined }}
-  >
-    {icon && (
-      <Icon
-        bg="white"
-        as={icon}
-        color="gray.600"
-        position="absolute"
-        left={0}
-        right={0}
-        margin="auto"
-        top={{
-          base: `${(-1 * baseIconSize) / 2}px`,
-          md: `${(-1 * mdIconSize) / 2}px`,
-        }}
-        zIndex={1}
-        w={{ base: `${baseIconSize}px`, md: `${mdIconSize}px` }}
-        h={{ base: `${baseIconSize}px`, md: `${mdIconSize}px` }}
-      />
-    )}
-    <ChakraDivider {...props} />
-  </Box>
-)
+}: Omit<DividerProps, "orientation">) => {
+  const styles = useMultiStyleConfig("Divider", {})
+
+  return (
+    <Box __css={styles.dividerWrapper}>
+      {children}
+      <ChakraDivider {...props} />
+    </Box>
+  )
+}
