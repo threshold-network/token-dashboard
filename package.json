@@ -35,7 +35,8 @@
     "prepare": "husky install",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --exit-zero-on-changes"
+    "chromatic": "npx chromatic --exit-zero-on-changes",
+    "cypress:open": "cypress open"
   },
   "browserslist": {
     "production": [
@@ -65,6 +66,7 @@
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
     "chromatic": "^6.0.0-canary.1",
+    "cypress": "^8.5.0",
     "eslint": "^7.32.0",
     "eslint-config-keep": "github:keep-network/eslint-config-keep#0c27ade",
     "eslint-config-prettier": "^8.3.0",

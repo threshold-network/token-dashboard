@@ -12,7 +12,7 @@ import theme from "./theme"
 const App: FC = () => {
   return (
     <ChakraProvider theme={theme}>
-      <Container>
+      <Container data-cy="app-container">
         <Heading>Threshold Token Dashboard?</Heading>
         <VStack spacing={12} mt={6}>
           <VStack>
