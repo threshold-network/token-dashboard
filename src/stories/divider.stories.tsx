@@ -1,34 +1,54 @@
 import React from "react"
 import { Story, Meta } from "@storybook/react"
 import { DividerProps, Container, Text } from "@chakra-ui/react"
-import { Divider as TDivider } from "../components/Divider"
-import { FaArrowCircleDown } from "react-icons/all"
+import { Divider as TDivider, DividerIcon } from "../components/Divider"
+import {
+  FaArrowCircleDown,
+  FaArrowCircleUp,
+  FiAlertCircle,
+} from "react-icons/all"
 
-interface DividerStoryProps extends Omit<DividerProps, "orientation"> {
-  icon: string
+interface DividerStoryProps extends Omit<DividerProps, "orientation"> {}
+
+const iconMap = {
+  ArrowDown: <DividerIcon as={FaArrowCircleDown} />,
+  ArrowUp: <DividerIcon as={FaArrowCircleUp} />,
+  Alert: <DividerIcon as={FiAlertCircle} />,
 }
 
-const Template: Story<DividerStoryProps> = ({ icon }) => {
+const Template: Story<DividerStoryProps> = ({ children }) => {
+  // @ts-ignore
+  const icon = children ? iconMap[children] : undefined
   return (
     <Container>
       <Text>Above the divider</Text>
-      <TDivider icon={icon ? FaArrowCircleDown : undefined} />
+      <TDivider>{icon}</TDivider>
       <Text>Below the divider</Text>
     </Container>
   )
 }
 
-export const Divider = Template.bind({
-  icon: true,
-})
+export const Divider = Template.bind({})
 
 export default {
   title: "Divider",
   component: Divider,
   argTypes: {
-    icon: {
-      options: [true, false],
-      control: { type: "radio" },
+    children: {
+      description:
+        "You can an icon to the divider by passing `< DividerIcon as={YOUR_ICON} />`",
+      control: {
+        type: "select",
+        options: {
+          Undefined: undefined,
+          ArrowDown: "ArrowDown",
+          ArrowUp: "ArrowUp",
+          Alert: "Alert",
+        },
+      },
+      table: {
+        defaultValue: { summary: "undefined" },
+      },
     },
   },
 } as Meta
