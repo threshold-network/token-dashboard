@@ -6,6 +6,8 @@ import {
   DividerProps,
   useMultiStyleConfig,
   IconProps,
+  StylesProvider,
+  useStyles,
 } from "@chakra-ui/react"
 import { HTMLChakraProps } from "@chakra-ui/system"
 
@@ -13,8 +15,8 @@ export const DividerIcon: FC<HTMLChakraProps<"span"> & IconProps> = ({
   as,
   ...propStyles
 }) => {
-  const { icon: themeStyles } = useMultiStyleConfig("Divider", {})
-  return <Icon as={as} __css={{ ...themeStyles, ...propStyles }} />
+  const styles = useStyles()
+  return <Icon as={as} __css={{ ...styles.icon, ...propStyles }} />
 }
 
 export const Divider = ({
@@ -25,7 +27,7 @@ export const Divider = ({
 
   return (
     <Box __css={styles.dividerWrapper}>
-      {children}
+      <StylesProvider value={styles}>{children}</StylesProvider>
       <ChakraDivider {...props} />
     </Box>
   )
