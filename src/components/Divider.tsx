@@ -27,8 +27,10 @@ export const Divider = ({
 
   return (
     <Box __css={styles.dividerWrapper}>
-      <StylesProvider value={styles}>{children}</StylesProvider>
-      <ChakraDivider {...props} />
+      <StylesProvider value={styles}>
+        {children}
+        <ChakraDivider {...props} />
+      </StylesProvider>
     </Box>
   )
 }
