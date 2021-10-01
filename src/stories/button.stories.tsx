@@ -51,7 +51,7 @@ export default {
       options: ["primary", "secondary", "tertiary"],
       control: { type: "radio" },
       table: {
-        defaultValue: { summary: "solid" },
+        defaultValue: { summary: "primary" },
       },
     },
     size: {
