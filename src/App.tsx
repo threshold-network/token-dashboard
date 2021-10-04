@@ -17,7 +17,7 @@ import { ModalType, useModal } from "./store/modal"
 const ModalButton = () => {
   const { openModal } = useModal()
   return (
-    <Button onClick={() => openModal(ModalType.example, { name: "Vitalik" })}>
+    <Button onClick={() => openModal(ModalType.selectWallet)}>
       Open Modal
     </Button>
   )

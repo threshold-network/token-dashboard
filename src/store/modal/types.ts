@@ -1,5 +1,6 @@
 export enum ModalType {
   example = "EXAMPLE",
+  selectWallet = "SELECT_WALLET",
 }
 
 export interface OpenModal {
