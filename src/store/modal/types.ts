@@ -1,17 +1,5 @@
-export const OPEN_MODAL = "OPEN_MODAL"
-export const CLOSE_MODAL = "CLOSE_MODAL"
-
 export enum ModalType {
   example = "EXAMPLE",
-}
-
-export interface ModalState {
-  modalType: ModalType | null
-  props: any
-}
-
-export interface ModalReducer {
-  (state: ModalState, action: ModalActionTypes): ModalState
 }
 
 export interface OpenModal {
