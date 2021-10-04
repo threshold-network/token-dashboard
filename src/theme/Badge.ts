@@ -14,7 +14,7 @@ export const Badge = {
   variants: {
     solid: (props: any) => {
       return {
-        color: "white",
+        color: "purple",
         backgroundColor: getColorFromProps(props, 500, "black"),
       }
     },
