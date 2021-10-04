@@ -56,24 +56,28 @@ export const Button = {
         },
       }
     },
-    tertiary: (props: any) => ({
-      ...theme.components.Button.variants.ghost(props),
-      _hover: {
-        // @ts-ignore
-        ...theme.components.Button.variants.ghost(props)._hover,
-        bg: props.colorScheme === "brand" ? "gray.100" : gcfp(props, 50),
-      },
-      _active: {
-        // @ts-ignore
-        ...theme.components.Button.variants.ghost(props)._active,
-        bg: props.colorScheme === "brand" ? "gray.300" : gcfp(props, 100),
-      },
-      _disabled: {
-        // @ts-ignore
-        ...theme.components.Button.variants.ghost(props)._disabled,
-        bg: "transparent",
-      },
-    }),
+    tertiary: (props: any) => {
+      const ghostStyles = theme.components.Button.variants.ghost(props)
+
+      return {
+        ...ghostStyles,
+        _hover: {
+          // @ts-ignore
+          ...ghostStyles._hover,
+          bg: props.colorScheme === "brand" ? "gray.100" : gcfp(props, 50),
+        },
+        _active: {
+          // @ts-ignore
+          ...ghostStyles._active,
+          bg: props.colorScheme === "brand" ? "gray.300" : gcfp(props, 100),
+        },
+        _disabled: {
+          // @ts-ignore
+          ...ghostStyles._disabled,
+          bg: "transparent",
+        },
+      }
+    },
   },
   baseStyle: (props: any) => ({
     backgroundColor: mode("gray.600", "gray.200")(props),
