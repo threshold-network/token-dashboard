@@ -66,18 +66,12 @@ export const Button = {
       return {
         ...ghostStyles,
         _hover: {
-          // // @ts-ignore
-          // ...ghostStyles._hover,
           bg: props.colorScheme === "brand" ? "gray.100" : gcfp(props, 50),
         },
         _active: {
-          // // @ts-ignore
-          // ...ghostStyles._active,
           bg: props.colorScheme === "brand" ? "gray.300" : gcfp(props, 100),
         },
         _disabled: {
-          // // @ts-ignore
-          // ...ghostStyles._disabled,
           bg: "transparent",
         },
       }
