@@ -1,21 +1,25 @@
 import { getColorFromProps } from "./utils"
+import { mode, transparentize } from "@chakra-ui/theme-tools"
 
 const statusStyles = (props: any) => {
-  if (props.status === "info") {
+  if (props.status === "info" || !props.status) {
     return {
       container: {
-        backgroundColor: "white",
+        backgroundColor: mode("white", transparentize("white", 0.16))(props),
         borderColor: "gray.200",
       },
       icon: {
-        color: "gray.500",
+        color: mode("gray.500", "white")(props),
       },
     }
   }
   if (props.status === "warning") {
     return {
       container: {
-        backgroundColor: "yellow.100",
+        backgroundColor: mode(
+          "yellow.100",
+          transparentize("yellow.500", 0.16)
+        )(props),
         borderColor: "yellow.500",
       },
       icon: {
