@@ -7,17 +7,19 @@ import {
   FaArrowCircleUp,
   FiAlertCircle,
 } from "react-icons/all"
+import { IIconMap } from "../types"
 
-interface DividerStoryProps extends Omit<DividerProps, "orientation"> {}
+interface DividerStoryProps extends Omit<DividerProps, "orientation"> {
+  children: string | undefined
+}
 
-const iconMap = {
+const iconMap: IIconMap = {
   ArrowDown: <DividerIcon as={FaArrowCircleDown} />,
   ArrowUp: <DividerIcon as={FaArrowCircleUp} />,
   Alert: <DividerIcon as={FiAlertCircle} />,
 }
 
 const Template: Story<DividerStoryProps> = ({ children }) => {
-  // @ts-ignore
   const icon = children ? iconMap[children] : undefined
   return (
     <Container>
@@ -36,7 +38,7 @@ export default {
   argTypes: {
     children: {
       description:
-        "You can an icon to the divider by passing `< DividerIcon as={YOUR_ICON} />`",
+        "You can add an icon to the divider by passing `< DividerIcon as={YOUR_ICON} />`",
       control: {
         type: "select",
         options: {

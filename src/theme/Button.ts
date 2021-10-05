@@ -32,7 +32,10 @@ export const Button = {
             ? "gray.400"
             : gcfp(props, 600, "gray.200"),
         backgroundColor: "transparent",
-        color: gcfp(props, 600, "gray.700"),
+        color: mode(
+          gcfp(props, 600, "gray.700"),
+          gcfp(props, 100, "white")
+        )(props),
         _active: {
           backgroundColor: gcfp(props, 600, "gray.300"),
         },
@@ -48,6 +51,7 @@ export const Button = {
           color: gcfp(props, 600, "gray.700"),
         },
         _disabled: {
+          color: gcfp(props, 600, "gray.700"),
           backgroundColor: "white",
           borderColor:
             props.colorScheme === "brand"
@@ -62,18 +66,18 @@ export const Button = {
       return {
         ...ghostStyles,
         _hover: {
-          // @ts-ignore
-          ...ghostStyles._hover,
+          // // @ts-ignore
+          // ...ghostStyles._hover,
           bg: props.colorScheme === "brand" ? "gray.100" : gcfp(props, 50),
         },
         _active: {
-          // @ts-ignore
-          ...ghostStyles._active,
+          // // @ts-ignore
+          // ...ghostStyles._active,
           bg: props.colorScheme === "brand" ? "gray.300" : gcfp(props, 100),
         },
         _disabled: {
-          // @ts-ignore
-          ...ghostStyles._disabled,
+          // // @ts-ignore
+          // ...ghostStyles._disabled,
           bg: "transparent",
         },
       }
