@@ -1,7 +1,4 @@
-export enum ModalType {
-  example = "EXAMPLE",
-  selectWallet = "SELECT_WALLET",
-}
+import { ModalType } from "./enums"
 
 export interface OpenModal {
   payload: {

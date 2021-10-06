@@ -11,21 +11,17 @@ import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import theme from "./theme"
 import reduxStore from "./store"
 import ModalRoot from "./components/Modal"
-import { ModalType, useModal } from "./store/modal"
 import getLibrary from "./web3/library"
+import { ModalType } from "./enums"
+import { useModal } from "./hooks/useModal"
 
 const ModalButton = () => {
   const { openModal } = useModal()
-  const { active, account, error } = useWeb3React()
-
-  console.log("-----------")
-  console.log("active ", active)
-  console.log("account ", account)
-  console.log("error ", error)
+  const { active, account } = useWeb3React()
 
   return (
     <>
-      <Button onClick={() => openModal(ModalType.selectWallet)}>
+      <Button onClick={() => openModal(ModalType.SelectWallet)}>
         Open Modal
       </Button>
       <Alert mt={6}>
