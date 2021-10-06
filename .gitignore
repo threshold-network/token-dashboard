@@ -6,3 +6,5 @@ dist/
 .eslintcache
 storybook-static
 build-storybook.log
+cypress/fixtures
+cypress/plugins
