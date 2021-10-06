@@ -94,3 +94,6 @@ jobs:
           project: ${{ secrets.MAINNET_GOOGLE_PROJECT_ID }}
           bucket-name: dashboard.threshold.network
           build-folder: build
+          set-website: true
+          home-page-path: index.html
+          error-page-path: index.html
