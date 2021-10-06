@@ -1,17 +1,21 @@
-import { ModalType, useModal } from "../../store/modal"
+import { ElementType } from "react"
 import ExampleModal from "./ExampleModal"
+import { ModalType } from "../../enums"
+import { useModal } from "../../hooks/useModal"
+
+const MODAL_TYPES: Record<ModalType, ElementType> = {
+  [ModalType.Example]: ExampleModal,
+}
 
 const ModalRoot = () => {
-  const { modalType } = useModal()
+  const { modalType, modalProps, closeModal } = useModal()
 
-  switch (modalType) {
-    case ModalType.example: {
-      return <ExampleModal />
-    }
-    // additional modals would be registered here
-    default:
-      return null
+  if (!modalType) {
+    return <></>
   }
+
+  const SpecificModal = MODAL_TYPES[modalType]
+  return <SpecificModal closeModal={closeModal} {...modalProps} />
 }
 
 export default ModalRoot

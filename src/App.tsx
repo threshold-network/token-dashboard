@@ -12,12 +12,14 @@ import { Provider as ReduxProvider } from "react-redux"
 import theme from "./theme"
 import reduxStore from "./store"
 import ModalRoot from "./components/Modal"
-import { ModalType, useModal } from "./store/modal"
+import { ModalType } from "./enums"
+import { useModal } from "./hooks/useModal"
 
 const ModalButton = () => {
   const { openModal } = useModal()
+
   return (
-    <Button onClick={() => openModal(ModalType.example, { name: "Vitalik" })}>
+    <Button onClick={() => openModal(ModalType.Example, { name: "Vitalik" })}>
       Open Modal
     </Button>
   )
