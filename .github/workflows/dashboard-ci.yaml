@@ -90,7 +90,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/.'
+              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
             })
 
       # A push event is triggered on main branch merge; deploy to testnet bucket.
