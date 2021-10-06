@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-export const LedgerIcon = createIcon({
-  displayName: "LedgerIcon",
+export const Ledger = createIcon({
+  displayName: "Ledger",
   viewBox: "0 0 32 32",
   path: (
     <svg width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">

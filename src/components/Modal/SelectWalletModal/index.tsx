@@ -1,6 +1,6 @@
 import { ModalCloseButton, ModalHeader, Text } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { LedgerIcon } from "../../../static/icons/LedgerIcon"
+import { Ledger } from "../../../static/icons/Ledger"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import injected from "../../../web3/connectors/injected"
@@ -31,7 +31,7 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
     {
       id: WalletOption.ledger,
       title: "Ledger",
-      icon: LedgerIcon,
+      icon: Ledger,
       onClick: () => {
         activate(injected)
         setWalletToConnect(WalletOption.ledger)
