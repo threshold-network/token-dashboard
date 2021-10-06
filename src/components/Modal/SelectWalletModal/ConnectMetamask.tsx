@@ -18,7 +18,6 @@ import { BiLeftArrow } from "react-icons/all"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
-import { useModal } from "../../../store/modal"
 
 export enum MetaMaskConnectionError {
   notInstalled = "No Ethereum provider was found on window.ethereum",
@@ -76,9 +75,11 @@ const MetamaskStatusAlert: FC = () => {
   )
 }
 
-const ConnectMetamask: FC<{ goBack: () => void }> = ({ goBack }) => {
+const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
+  goBack,
+  closeModal,
+}) => {
   const { error, activate, active, account } = useWeb3React()
-  const { closeModal } = useModal()
 
   return (
     <>

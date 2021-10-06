@@ -1,33 +1,29 @@
 import {
   Button,
-  Modal,
   ModalBody,
   ModalCloseButton,
-  ModalContent,
   ModalFooter,
   ModalHeader,
-  ModalOverlay,
 } from "@chakra-ui/react"
-import { useModal } from "../../store/modal"
+import { FC } from "react"
+import withBaseModal from "./withBaseModal"
 
-const ExampleModal = () => {
-  const { closeModal, modalProps } = useModal()
-
+const ExampleModal: FC<{ name: string; closeModal: () => void }> = ({
+  name,
+  closeModal,
+}) => {
   return (
-    <Modal isOpen onClose={closeModal}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Modal Title</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>Hello {modalProps.name}!</ModalBody>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={closeModal}>
-            Close
-          </Button>
-          <Button variant="ghost">Secondary Action</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    <>
+      <ModalHeader>Modal Title</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>Hello {name}!</ModalBody>
+      <ModalFooter>
+        <Button colorScheme="blue" mr={3} onClick={closeModal}>
+          Close
+        </Button>
+        <Button variant="ghost">Secondary Action</Button>
+      </ModalFooter>
+    </>
   )
 }
-export default ExampleModal
+export default withBaseModal(ExampleModal)

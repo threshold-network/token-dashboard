@@ -1,20 +1,13 @@
-import {
-  Modal,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  Text,
-} from "@chakra-ui/react"
-import { useModal } from "../../../store/modal"
+import { ModalCloseButton, ModalHeader, Text } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import { LedgerIcon } from "../../../static/icons/LedgerIcon"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
-import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
 import InitialWalletSelection from "./InitialSelection"
-import { useState } from "react"
+import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
+import withBaseModal from "../withBaseModal"
 
 export enum WalletOption {
   metamask = "METAMASK",
@@ -22,8 +15,7 @@ export enum WalletOption {
   walletConnect = "WALLET_CONNECT",
 }
 
-const SelectWalletModal = () => {
-  const { closeModal } = useModal()
+const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
 
   const walletOptions = [
@@ -66,21 +58,18 @@ const SelectWalletModal = () => {
   }
 
   return (
-    <Modal isOpen onClose={closeModal} size="lg">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>
-          <Text fontSize="24px">Connect a Wallet</Text>
-        </ModalHeader>
-        <ModalCloseButton />
-        {walletToConnect === null && (
-          <InitialWalletSelection walletOptions={walletOptions} />
-        )}
-        {walletToConnect === WalletOption.metamask && (
-          <ConnectMetamask goBack={goBack} />
-        )}
-      </ModalContent>
-    </Modal>
+    <>
+      <ModalHeader>
+        <Text fontSize="24px">Connect a Wallet</Text>
+      </ModalHeader>
+      <ModalCloseButton />
+      {walletToConnect === null && (
+        <InitialWalletSelection walletOptions={walletOptions} />
+      )}
+      {walletToConnect === WalletOption.metamask && (
+        <ConnectMetamask goBack={goBack} closeModal={closeModal} />
+      )}
+    </>
   )
 }
-export default SelectWalletModal
+export default withBaseModal(SelectWalletModal)
