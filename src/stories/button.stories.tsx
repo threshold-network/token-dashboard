@@ -1,21 +1,25 @@
 import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react"
 import { MdBuild, MdAccessAlarm, MdAttachFile } from "react-icons/md"
 import { Story, Meta } from "@storybook/react"
+import { IIconMap } from "../types"
 
-const iconMap = {
+interface ButtonStoryProps extends Omit<ButtonProps, "leftIcon" | "rightIcon"> {
+  leftIcon: string | undefined
+  rightIcon: string | undefined
+}
+
+const iconMap: IIconMap = {
   Wrench: <MdBuild />,
   Alarm: <MdAccessAlarm />,
   File: <MdAttachFile />,
 }
 
-const Template: Story<ButtonProps> = ({
+const Template: Story<ButtonStoryProps> = ({
   leftIcon,
   rightIcon,
   ...args
-}: ButtonProps) => {
-  // @ts-ignore
+}) => {
   const LeftIcon = leftIcon ? iconMap[leftIcon] : undefined
-  // @ts-ignore
   const RightIcon = rightIcon ? iconMap[rightIcon] : undefined
 
   return (
@@ -27,7 +31,7 @@ const Template: Story<ButtonProps> = ({
 
 export const Button = Template.bind({
   colorScheme: "brand",
-  variant: "solid",
+  variant: "primary",
   size: "md",
   leftIcon: undefined,
   rightIcon: undefined,
@@ -48,10 +52,10 @@ export default {
     },
     variant: {
       description: "Adjusts the variant of the button",
-      options: ["solid", "outline", "ghost"],
+      options: ["primary", "secondary", "tertiary"],
       control: { type: "radio" },
       table: {
-        defaultValue: { summary: "solid" },
+        defaultValue: { summary: "primary" },
       },
     },
     size: {
@@ -60,6 +64,14 @@ export default {
       control: { type: "radio" },
       table: {
         defaultValue: { summary: "md" },
+      },
+    },
+    disabled: {
+      description: "Disables the button",
+      options: [true, false],
+      control: { type: "radio" },
+      table: {
+        defaultValue: { summary: false },
       },
     },
     leftIcon: {
