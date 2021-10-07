@@ -1,0 +1,107 @@
+name: Token Dashboard / CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  format:
+    name: Check code format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check formatting
+        run: yarn format
+
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+
+      # FIXME: Tests are missing, will this step be needed?
+      # - name: Test
+      #   run: yarn test
+
+  build-and-deploy-testnet:
+    name: Deploy to testnet
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # FIXME: It's work in progress, the contracts are not yet published.
+      # - name: Resolve latest ropsten contracts
+      #   run: |
+      #     yarn upgrade \
+      #       @threshold-network/contracts@ropsten
+
+      - name: Build
+        run: yarn build
+
+      # A pull_request event is a PR; deploy to preview testnet bucket.
+      - name: Deploy PR preview to GCP
+        if: github.event_name == 'pull_request'
+        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        with:
+          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
+          bucket-name: preview.dashboard.test.threshold.network
+          bucket-path: ${{ github.head_ref }}
+          build-folder: build
+
+      - name: Post preview URL to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
+            })
+
+      # A push event is triggered on main branch merge; deploy to testnet bucket.
+      - name: Deploy to GCP bucket
+        if: github.event_name == 'push'
+        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        with:
+          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
+          bucket-name: dashboard.test.threshold.network
+          build-folder: build
+          set-website: true
+          home-page-path: index.html
+          error-page-path: index.html
