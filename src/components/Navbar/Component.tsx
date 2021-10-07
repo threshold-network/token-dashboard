@@ -12,15 +12,13 @@ import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 import shortenAddress from "../../utils/shortenAddress"
 import { ModalType } from "../../enums"
 import { BiWalletAlt } from "react-icons/all"
-import { FC } from "react"
+import { FC, useState } from "react"
 
 interface NavbarComponentProps {
   active?: boolean
   account?: string | null
   chainId?: number
   openModal: (type: ModalType) => void
-  hideAlert: boolean
-  setHideAlert: (hide: boolean) => void
 }
 
 const NavbarComponent: FC<NavbarComponentProps> = ({
@@ -28,9 +26,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   account,
   chainId,
   openModal,
-  hideAlert,
-  setHideAlert,
 }) => {
+  const [hideAlert, setHideAlert] = useState(false)
+
   return (
     <Box p={4}>
       <Container
