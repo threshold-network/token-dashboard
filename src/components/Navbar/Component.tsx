@@ -6,13 +6,13 @@ import {
   Button,
   CloseButton,
   Container,
+  Stack,
 } from "@chakra-ui/react"
-import { Ethereum } from "../../static/icons/Ethereum"
-import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 import shortenAddress from "../../utils/shortenAddress"
 import { ModalType } from "../../enums"
 import { BiWalletAlt } from "react-icons/all"
 import { FC, useState } from "react"
+import NetworkButton from "./NetworkButton"
 
 interface NavbarComponentProps {
   active?: boolean
@@ -38,12 +38,10 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         position="relative"
       >
         {active && account ? (
-          <>
-            <Button mr={4} variant="secondary" leftIcon={<Ethereum />}>
-              {chainIdToNetworkName(chainId)}
-            </Button>
+          <Stack spacing={4} direction="row">
+            <NetworkButton chainId={chainId} />
             <Button>{shortenAddress(account)}</Button>
-          </>
+          </Stack>
         ) : (
           <Button
             onClick={() => openModal(ModalType.SelectWallet)}

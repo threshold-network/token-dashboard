@@ -1,6 +1,6 @@
 import { FC } from "react"
-import { useModal } from "../../hooks/useModal"
 import { useWeb3React } from "@web3-react/core"
+import { useModal } from "../../hooks/useModal"
 import NavbarComponent from "./Component"
 
 const Navbar: FC = () => {

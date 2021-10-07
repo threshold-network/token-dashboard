@@ -1,4 +1,3 @@
-import React from "react"
 import { Meta, Story } from "@storybook/react"
 import NavbarComponent from "../components/Navbar/Component"
 import { Provider } from "react-redux"
@@ -6,8 +5,6 @@ import store from "../store"
 
 const requiredArgs = {
   openModal: () => {},
-  hideAlert: false,
-  setHideAlert: () => {},
 }
 
 const Template: Story = (args) => {
@@ -26,13 +23,24 @@ NoWalletConnected.args = {
 export const WalletConnected = Template.bind({})
 WalletConnected.args = {
   active: true,
-  account: "7788",
+  account: "0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520",
+  chainId: 1,
   ...requiredArgs,
 }
 
 export default {
   title: "Navbar",
   component: NavbarComponent,
+  argTypes: {
+    chainId: {
+      description: "The connected ethereum network",
+      options: [1, 3, 42],
+      control: { type: "radio" },
+      table: {
+        defaultValue: { summary: 3 },
+      },
+    },
+  },
   decorators: [
     (Story) => {
       return (
