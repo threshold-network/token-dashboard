@@ -13,11 +13,13 @@ import {
   Spinner,
   Stack,
   Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
-import { BiLeftArrow } from "react-icons/all"
+import { BiLeftArrow, BiLeftArrowAlt } from "react-icons/all"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
+import { mode } from "@chakra-ui/theme-tools"
 
 export enum MetaMaskConnectionError {
   notInstalled = "No Ethereum provider was found on window.ethereum",
@@ -65,10 +67,11 @@ const MetamaskStatusAlert: FC = () => {
   return (
     <Alert>
       <Spinner
-        thickness="4px"
+        thickness="2px"
         speed="0.65s"
         emptyColor="gray.200"
         color="blue.500"
+        mr={4}
       />
       <AlertDescription>Initializing wallet connection...</AlertDescription>
     </Alert>
@@ -87,18 +90,20 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
         <Stack spacing={6}>
           <HStack justify="center">
             <Icon as={MetaMaskIcon} h="40px" w="40px" mr={4} />
-            <Text color="gray.800" fontSize="30px">
-              MetaMask
-            </Text>
+            <Text fontSize="30px">MetaMask</Text>
           </HStack>
-          <Text align="center" color="gray.500">
+          <Text align="center" color={useColorModeValue("gray.500", "white")}>
             The MetaMask extension will open in an external window.
           </Text>
           <MetamaskStatusAlert />
         </Stack>
       </ModalBody>
       <ModalFooter>
-        <Button variant="outline" leftIcon={<BiLeftArrow />} onClick={goBack}>
+        <Button
+          variant="outline"
+          leftIcon={<BiLeftArrowAlt />}
+          onClick={goBack}
+        >
           Change Wallet
         </Button>
 

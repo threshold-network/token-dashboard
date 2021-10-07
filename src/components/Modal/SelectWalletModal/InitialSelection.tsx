@@ -4,6 +4,7 @@ import {
   Stack,
   StackDivider,
   Text,
+  useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
 import { BiRightArrowAlt } from "react-icons/all"
@@ -25,7 +26,7 @@ const InitialWalletSelection: FC<{
           variant="unstyled"
           w="100%"
           h="100px"
-          _hover={{ bg: "gray.100" }}
+          _hover={{ bg: useColorModeValue("gray.100", "gray.500") }}
           _active={{ bg: "gray.300" }}
           borderRadius={0}
           onClick={opt.onClick}
@@ -33,9 +34,7 @@ const InitialWalletSelection: FC<{
           <Stack justify="space-between" direction="row" px="40px">
             <Stack direction="row">
               <Icon as={opt.icon} h="40px" w="40px" mr="32px" />
-              <Text color="gray.800" fontSize="30px">
-                {opt.title}
-              </Text>
+              <Text fontSize="30px">{opt.title}</Text>
             </Stack>
             <Icon as={BiRightArrowAlt} h="40px" w="40px" />
           </Stack>
