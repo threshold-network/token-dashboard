@@ -1,5 +1,5 @@
 import { ReactElement } from "react"
 
-export interface IIconMap {
+export interface IconMap {
   [key: string]: ReactElement
 }
