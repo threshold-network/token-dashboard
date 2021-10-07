@@ -1,13 +1,5 @@
-import { ElementType } from "react"
-import ExampleModal from "./ExampleModal"
-import SelectWalletModal from "./SelectWalletModal"
-import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
-
-const MODAL_TYPES: Record<ModalType, ElementType> = {
-  [ModalType.Example]: ExampleModal,
-  [ModalType.SelectWallet]: SelectWalletModal,
-}
+import { MODAL_TYPES } from "../../types"
 
 const ModalRoot = () => {
   const { modalType, modalProps, closeModal } = useModal()

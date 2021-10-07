@@ -1,14 +1,14 @@
 import { Button as ChakraButton, ButtonProps } from "@chakra-ui/react"
 import { MdBuild, MdAccessAlarm, MdAttachFile } from "react-icons/md"
 import { Story, Meta } from "@storybook/react"
-import { IIconMap } from "../types"
+import { IconMap } from "../types"
 
 interface ButtonStoryProps extends Omit<ButtonProps, "leftIcon" | "rightIcon"> {
   leftIcon: string | undefined
   rightIcon: string | undefined
 }
 
-const iconMap: IIconMap = {
+const iconMap: IconMap = {
   Wrench: <MdBuild />,
   Alarm: <MdAccessAlarm />,
   File: <MdAttachFile />,
