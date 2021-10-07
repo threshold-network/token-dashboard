@@ -3,5 +3,3 @@ function dataCy(identifier: string) {
 }
 
 Cypress.Commands.add("dataCy", dataCy)
-
-export {}
