@@ -2,6 +2,7 @@ import { extendTheme } from "@chakra-ui/react"
 import { Button } from "./Button"
 import { Badge } from "./Badge"
 import { Alert } from "./Alert"
+import { Divider } from "./Divider"
 
 const colors = {
   yellow: {
@@ -32,6 +33,7 @@ const index = extendTheme({
     Alert,
     Button,
     Badge,
+    Divider,
   },
 })
 
