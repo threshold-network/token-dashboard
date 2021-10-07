@@ -7,8 +7,9 @@ import {
 } from "@chakra-ui/react"
 import { FC } from "react"
 import withBaseModal from "./withBaseModal"
+import BaseModalProps from "../../types"
 
-const ExampleModal: FC<{ name: string; closeModal: () => void }> = ({
+const ExampleModal: FC<{ name: string } & BaseModalProps> = ({
   name,
   closeModal,
 }) => {
