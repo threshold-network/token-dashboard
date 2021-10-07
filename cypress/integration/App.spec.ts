@@ -6,5 +6,3 @@ describe("My First Test", () => {
     cy.dataCy("app-container")
   })
 })
-
-export {}
