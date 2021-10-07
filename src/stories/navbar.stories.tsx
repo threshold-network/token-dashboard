@@ -22,7 +22,6 @@ NoWalletConnected.args = {
 
 export const WalletConnected = Template.bind({})
 WalletConnected.args = {
-  active: true,
   account: "0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520",
   chainId: 1,
   ...requiredArgs,
@@ -37,7 +36,7 @@ export default {
       options: [1, 3, 42],
       control: { type: "radio" },
       table: {
-        defaultValue: { summary: 3 },
+        defaultValue: { summary: 1 },
       },
     },
   },
