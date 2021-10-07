@@ -1,9 +1,6 @@
 import { ComponentType } from "react"
 import { Modal, ModalContent, ModalOverlay } from "@chakra-ui/react"
-
-interface BaseModalProps {
-  closeModal: () => void
-}
+import { BaseModalProps } from "../../types"
 
 function withBaseModal<T extends BaseModalProps>(
   WrappedModalContent: ComponentType<T>
