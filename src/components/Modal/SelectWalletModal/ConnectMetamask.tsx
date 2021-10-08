@@ -20,6 +20,7 @@ import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
 import { mode } from "@chakra-ui/theme-tools"
+import shortenAddress from "../../../utils/shortenAddress"
 
 export enum MetaMaskConnectionError {
   notInstalled = "No Ethereum provider was found on window.ethereum",
@@ -58,7 +59,9 @@ const MetamaskStatusAlert: FC = () => {
         <AlertIcon />
         <Stack>
           <AlertTitle>Your MetaMask wallet is connected</AlertTitle>
-          <AlertDescription mt={2}>Address: {account}</AlertDescription>
+          <AlertDescription mt={2}>
+            Address: {shortenAddress(account)}
+          </AlertDescription>
         </Stack>
       </Alert>
     )

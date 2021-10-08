@@ -16,7 +16,7 @@ const App: FC = () => {
           <ModalRoot />
           <Navbar />
           <Container maxW="6xl">
-            <Heading>Threshold Token Dashboard?</Heading>
+            <Heading>Threshold Token Dashboard</Heading>
           </Container>
         </ChakraProvider>
       </ReduxProvider>
