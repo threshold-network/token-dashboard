@@ -43,8 +43,8 @@ const WalletConnectionAlert: FC<{
     <Alert
       status="warning"
       position="absolute"
-      w="400px"
-      top="55px"
+      w={{ base: "350px", md: "400px" }}
+      top="50px"
       right="16px"
       boxShadow="md"
     >

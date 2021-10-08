@@ -1,4 +1,9 @@
-import { ModalCloseButton, ModalHeader, Text } from "@chakra-ui/react"
+import {
+  ModalCloseButton,
+  ModalHeader,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { Ledger } from "../../../static/icons/Ledger"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
@@ -8,6 +13,7 @@ import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
 import withBaseModal from "../withBaseModal"
+import { LedgerWhite } from "../../../static/icons/LedgerWhite"
 
 export enum WalletOption {
   metamask = "METAMASK",
@@ -31,7 +37,7 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
     {
       id: WalletOption.ledger,
       title: "Ledger",
-      icon: Ledger,
+      icon: useColorModeValue(Ledger, LedgerWhite),
       onClick: () => {
         activate(injected)
         setWalletToConnect(WalletOption.ledger)

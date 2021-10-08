@@ -1,5 +1,5 @@
 import { Meta, Story } from "@storybook/react"
-import NavbarComponent from "../components/Navbar/Component"
+import NavbarComponent from "../components/Navbar/NavbarComponent"
 import { Provider } from "react-redux"
 import store from "../store"
 
@@ -12,7 +12,7 @@ const Template: Story = (args) => {
     ...requiredArgs,
     ...args,
   }
-  return <NavbarComponent {...props} />
+  return <NavbarComponent {...props} deactivate={() => {}} />
 }
 
 export const NoWalletConnected = Template.bind({})
