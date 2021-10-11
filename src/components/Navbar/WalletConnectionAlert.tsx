@@ -42,11 +42,11 @@ const WalletConnectionAlert: FC<{
   return (
     <Alert
       status="warning"
+      variant="solid"
       position="absolute"
       w={{ base: "350px", md: "400px" }}
       top="50px"
       right="16px"
-      boxShadow="md"
     >
       <AlertIcon />
       <AlertDescription>{alertDescription}</AlertDescription>
