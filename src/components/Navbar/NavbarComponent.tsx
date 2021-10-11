@@ -70,6 +70,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
             variant="ghost"
             aria-label="color mode"
             onClick={toggleColorMode}
+            _hover={{
+              bg: useColorModeValue("white", "gray.800"),
+            }}
             icon={
               colorMode === "light" ? (
                 <MoonIcon
