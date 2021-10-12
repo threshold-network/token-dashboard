@@ -12,11 +12,9 @@ import {
 } from "@chakra-ui/react"
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
-import { ConnectionError } from "../../../../types"
+import { ConnectionError, WalletConnectionModalProps } from "../../../../types"
 
-interface Props {
-  goBack: () => void
-  closeModal: () => void
+interface Props extends WalletConnectionModalProps {
   WalletIcon: any
   title: string
   subTitle?: string

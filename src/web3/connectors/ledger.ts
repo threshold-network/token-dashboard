@@ -160,6 +160,7 @@ export class LedgerConnector extends AbstractConnector {
   }
 }
 
+// TODO: These connectors need to be hooked up to the config and the radio buttons in the wallet modal
 export const ledgerLiveConnector = new LedgerConnector({
   chainId: 1,
   // url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",

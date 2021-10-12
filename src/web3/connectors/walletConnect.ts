@@ -1,6 +1,7 @@
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
+import { RPC_URL } from "../../config"
 
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 1: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd" },
+  rpc: { 1: RPC_URL[1] },
   qrcode: true,
 })

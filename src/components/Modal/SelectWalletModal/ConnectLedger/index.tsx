@@ -2,10 +2,13 @@ import { FC, useState } from "react"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import SelectDerivationPath from "./SelectDerivationPath"
 import SelectAddress from "./SelectAddress"
-import { LedgerConnectionStage } from "../../../../types"
+import {
+  LedgerConnectionStage,
+  WalletConnectionModalProps,
+} from "../../../../types"
 import ConfirmConnected from "./ConfirmConnected"
 
-const ConnectLedger: FC<{ goBack: () => void; closeModal: () => void }> = ({
+const ConnectLedger: FC<WalletConnectionModalProps> = ({
   goBack,
   closeModal,
 }) => {
