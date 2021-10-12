@@ -1,16 +1,14 @@
 import { FC, useState } from "react"
-import { useWeb3React } from "@web3-react/core"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import SelectDerivationPath from "./SelectDerivationPath"
 import SelectAddress from "./SelectAddress"
-import { LedgerConnectionStage } from "../../../../types/ledger"
+import { LedgerConnectionStage } from "../../../../types"
 import ConfirmConnected from "./ConfirmConnected"
 
 const ConnectLedger: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
   closeModal,
 }) => {
-  const { error, activate, active, account } = useWeb3React()
   const [derivationPath, setDerivationPath] = useState<string>(
     LEDGER_DERIVATION_PATHS.LEDGER_LIVE
   )
@@ -18,6 +16,8 @@ const ConnectLedger: FC<{ goBack: () => void; closeModal: () => void }> = ({
     LedgerConnectionStage.SELECT_DERIVATION
   )
   const [ledgerAddress, setLedgerAddress] = useState<string>("")
+
+  // TODO: pull these from user device
   const ledgerAddresses = [
     "0x123456789",
     "0xabcdefg",
@@ -51,13 +51,7 @@ const ConnectLedger: FC<{ goBack: () => void; closeModal: () => void }> = ({
   }
 
   if (connectionStage === LedgerConnectionStage.CONFIRM_CONNECTED) {
-    return (
-      <ConfirmConnected
-        goBack={goBack}
-        closeModal={closeModal}
-        ledgerAddress={ledgerAddress}
-      />
-    )
+    return <ConfirmConnected goBack={goBack} closeModal={closeModal} />
   }
 
   return null
