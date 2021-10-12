@@ -9,7 +9,8 @@ import CacheSubprovider from "web3-provider-engine/subproviders/cache.js"
 // @ts-ignore
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
 import { ChainID } from "../../types"
-import TransportU2F from "@ledgerhq/hw-transport-u2f"
+// import TransportU2F from "@ledgerhq/hw-transport-u2f"
+import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
 
 interface LedgerContructionInterface {
@@ -63,7 +64,7 @@ export class LedgerConnector extends AbstractConnector {
     console.log("activating@! ", this.provider)
     if (!this.provider) {
       const ledgerEthereumClientFactoryAsync = async () => {
-        const ledgerConnection = await TransportU2F.create()
+        const ledgerConnection = await Transport.create()
         // Ledger will automatically timeout the U2F "sign" request after `exchangeTimeout` ms.
         // The default is set at an annoyingly low threshold, of 10,000ms, wherein the connection breaks
         // and throws this cryptic error:
