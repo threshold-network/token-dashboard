@@ -8,30 +8,34 @@ import {
 } from "@chakra-ui/react"
 import { Meta, Story } from "@storybook/react"
 
-const Template: Story<AlertProps> = ({ ...args }) => {
+const Template: Story<AlertProps & { title: string; description: string }> = ({
+  ...args
+}) => {
   return (
     <Stack spacing={8}>
       <ChakraAlert {...args}>
         <AlertIcon />
-        This is an alert
+        {args.description}
       </ChakraAlert>
       <ChakraAlert {...args}>
         <AlertIcon />
         <Stack>
-          <AlertTitle>Alert Title Goes Here</AlertTitle>
-          <AlertDescription>
-            Here's a description about something the user should be aware of
-          </AlertDescription>
+          <AlertTitle>{args.title}</AlertTitle>
+          <AlertDescription>{args.description}</AlertDescription>
         </Stack>
       </ChakraAlert>
     </Stack>
   )
 }
 
-export const Alert = Template.bind({
+export const Alert = Template.bind({})
+Alert.args = {
   status: "info",
   variant: "subtle",
-})
+  description:
+    "Here's a description about something the user should be aware of",
+  title: "Alert Title",
+}
 
 export default {
   title: "Alert",
