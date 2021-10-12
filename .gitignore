@@ -10,6 +10,8 @@ dist/
 # Storybook
 storybook-static
 build-storybook.log
+cypress/fixtures
+cypress/plugins
 
 # Yarn
 node_modules/
