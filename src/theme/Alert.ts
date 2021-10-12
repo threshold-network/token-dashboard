@@ -1,96 +1,89 @@
+import { alertAnatomy } from "@chakra-ui/anatomy"
+import {
+  mode,
+  PartsStyleFunction,
+  transparentize,
+} from "@chakra-ui/theme-tools"
 import { getColorFromProps } from "./utils"
-import { mode, transparentize } from "@chakra-ui/theme-tools"
+
+const statusWarning = (props: any) => {
+  return {
+    container: {
+      backgroundColor: mode(
+        "yellow.100",
+        transparentize("yellow.500", 0.16)
+      )(props),
+      borderColor: "yellow.500",
+    },
+    icon: {
+      color: "yellow.500",
+    },
+  }
+}
+
+const statusInfo = (props: any) => {
+  return {
+    container: {
+      backgroundColor: mode("white", transparentize("white", 0.16))(props),
+      borderColor: "gray.200",
+    },
+    icon: {
+      color: mode("gray.500", "white")(props),
+    },
+  }
+}
 
 const statusStyles = (props: any) => {
-  if (props.status === "info" || !props.status) {
-    if (props.variant === "solid") {
-      return {
-        container: {
-          backgroundColor: "gray.600",
-          color: "white",
-          boxShadow: "md",
-        },
-        icon: {
-          color: "gray.300",
-        },
-      }
-    }
+  const { status } = props
 
-    return {
-      container: {
-        backgroundColor: mode("white", transparentize("white", 0.16))(props),
-        borderColor: "gray.200",
-      },
-      icon: {
-        color: mode("gray.500", "white")(props),
-      },
-    }
+  const styleMap: { [status: string]: any } = {
+    info: statusInfo(props),
+    warning: statusWarning(props),
   }
 
-  if (props.status === "warning") {
-    if (props.variant === "solid") {
-      return {
-        container: {
-          bg: "yellow.400",
-          color: "gray.900",
-          border: "none",
-          boxShadow: "md",
-        },
-        icon: {
-          color: "yellow.600",
-        },
-      }
-    }
+  return styleMap[status] || {}
+}
 
-    return {
-      container: {
-        backgroundColor: mode(
-          "yellow.100",
-          transparentize("yellow.500", 0.16)
-        )(props),
-        borderColor: "yellow.500",
-      },
-      icon: {
-        color: "yellow.500",
-      },
-    }
+const variantSolid: PartsStyleFunction<typeof alertAnatomy> = (props) => {
+  const { status } = props
+
+  const bgMap: { [status: string]: string } = {
+    warning: "yellow.400",
+    success: "green.600",
+    error: "red.500",
+    info: "gray.600",
+  }
+  const colorMap: { [status: string]: string } = {
+    warning: "gray.900",
+    success: "white",
+    error: "white",
+    info: "white",
+  }
+  const iconColorMap: { [status: string]: string } = {
+    warning: "yellow.600",
+    success: "green.100",
+    error: "red.100",
+    info: mode("gray.500", "white")(props),
   }
 
-  if (props.status === "success") {
-    if (props.variant === "solid") {
-      return {
-        container: {
-          backgroundColor: "green.600",
-          color: "white",
-          boxShadow: "md",
-        },
-        icon: {
-          color: "green.100",
-        },
-      }
-    }
+  return {
+    container: {
+      border: "none",
+      boxShadow: "md",
+      bg: bgMap[status],
+      color: colorMap[status],
+    },
+    icon: {
+      color: iconColorMap[status],
+    },
   }
-
-  if (props.status === "error") {
-    if (props.variant === "solid") {
-      return {
-        container: {
-          backgroundColor: "red.500",
-          color: "white",
-          boxShadow: "md",
-        },
-        icon: {
-          color: "red.100",
-        },
-      }
-    }
-  }
-
-  return {}
 }
 
 export const Alert = {
   baseStyle: (props: any) => ({
+    icon: {
+      alignSelf: "flex-start",
+    },
     container: {
       borderRadius: "md",
       border: "1px solid",
@@ -101,6 +94,6 @@ export const Alert = {
     subtle: statusStyles,
     "left-accent": statusStyles,
     "top-accent": statusStyles,
-    solid: statusStyles,
+    solid: variantSolid,
   },
 }

@@ -30,6 +30,7 @@ const Template: Story<AlertProps> = ({ ...args }) => {
 
 export const Alert = Template.bind({
   status: "info",
+  variant: "subtle",
 })
 
 export default {
@@ -42,6 +43,14 @@ export default {
       control: { type: "radio" },
       table: {
         defaultValue: { summary: "info" },
+      },
+    },
+    variant: {
+      description: "Adjusts the variant of the alert",
+      options: ["subtle", "solid"],
+      control: { type: "radio" },
+      table: {
+        defaultValue: { summary: "subtle" },
       },
     },
   },
