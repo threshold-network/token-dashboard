@@ -9,12 +9,13 @@ import {
 import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
 import { Ledger } from "../../../../static/icons/Ledger"
 import shortenAddress from "../../../../utils/shortenAddress"
-import { LedgerConnectionStage } from "../../../../types"
+import {
+  LedgerConnectionStage,
+  WalletConnectionModalProps,
+} from "../../../../types"
 import { WalletConnectionModalBase } from "../components"
 
-interface SelectAddressProps {
-  goBack: () => void
-  closeModal: () => void
+interface SelectAddressProps extends WalletConnectionModalProps {
   ledgerAddress: string
   setLedgerAddress: (address: string) => void
   setConnectionStage: (stage: LedgerConnectionStage) => void

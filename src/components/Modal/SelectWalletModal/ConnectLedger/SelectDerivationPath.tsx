@@ -10,11 +10,12 @@ import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
 import { Ledger } from "../../../../static/icons/Ledger"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalBase } from "../components"
-import { LedgerConnectionStage } from "../../../../types"
+import {
+  LedgerConnectionStage,
+  WalletConnectionModalProps,
+} from "../../../../types"
 
-interface SelectDerivationPathProps {
-  goBack: () => void
-  closeModal: () => void
+interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
   setDerivationPath: (path: string) => void
   setConnectionStage: (stage: LedgerConnectionStage) => void

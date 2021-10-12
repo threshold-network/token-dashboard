@@ -8,3 +8,8 @@ export enum ConnectionError {
   metamaskNotInstalled = "No Ethereum provider was found on window.ethereum",
   rejectedConnection = "The user rejected the request.",
 }
+
+export interface WalletConnectionModalProps {
+  goBack: () => void
+  closeModal: () => void
+}
