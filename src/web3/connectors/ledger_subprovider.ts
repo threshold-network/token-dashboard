@@ -25,17 +25,14 @@ class LedgerSubprovider extends LedgerSubprovider0x {
   }
 
   async getAccountsAsync(numberOfAccounts: number, accountsOffSet = 0) {
-    console.log("async getching accxounts")
     const addresses = []
     for (
       let index = accountsOffSet;
       index < numberOfAccounts + accountsOffSet;
       index++
     ) {
-      console.log("---- getting the address ----")
-      console.log(this)
       const address = await this.getAddress(index)
-      console.log(address)
+
       addresses.push(address)
     }
 
@@ -43,40 +40,20 @@ class LedgerSubprovider extends LedgerSubprovider0x {
   }
 
   async getAddress(index: number) {
-    console.log("--- getAddress ---")
     // @ts-ignore
     const path = this._baseDerivationPath.replace("x", index)
-
-    console.log("path to look for: ", path)
-
     let ledgerResponse
     try {
-      console.log("going into the config...")
       // @ts-ignore
       this._ledgerClientIfExists = await this._createLedgerClientAsync()
-
-      console.log(
-        "checking if client is available",
+      // @ts-ignore
+      ledgerResponse = await this._ledgerClientIfExists.getAddress(
+        path,
         // @ts-ignore
-        this._ledgerClientIfExists
+        this._shouldAlwaysAskForConfirmation,
+        true
       )
-
-      try {
-        // @ts-ignore
-        ledgerResponse = await this._ledgerClientIfExists.getAddress(
-          path,
-          // @ts-ignore
-          this._shouldAlwaysAskForConfirmation,
-          true
-        )
-        console.log("ledgerResponse: ", ledgerResponse)
-      } catch (error) {
-        console.log(error)
-      }
-    } catch (e) {
-      console.log("error in the fetch: ", e)
     } finally {
-      console.log("destroying ledger client")
       // @ts-ignore
       await this._destroyLedgerClientAsync()
     }

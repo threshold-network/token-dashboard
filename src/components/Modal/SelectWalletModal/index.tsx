@@ -16,6 +16,8 @@ import withBaseModal from "../withBaseModal"
 import { LedgerWhite } from "../../../static/icons/LedgerWhite"
 import { ledgerLiveConnector } from "../../../web3/connectors/ledger"
 import ConnectLedger from "./ConnectLedger"
+import { walletconnect } from "../../../web3/connectors/walletConnect"
+import ConnectWalletConnect from "./ConnectWalletConnect"
 
 export enum WalletOption {
   metamask = "METAMASK",
@@ -41,22 +43,9 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       title: "Ledger",
       icon: useColorModeValue(Ledger, LedgerWhite),
       onClick: async () => {
-        console.log("attempting 1")
-        try {
-          console.log("attempting 2")
-          // @ts-ignore
-          await ledgerLiveConnector.activate()
-          console.log("attempting 3")
-
-          console.log(ledgerLiveConnector)
-          // @ts-ignore
-          const accounts = await ledgerLiveConnector.getAccounts()
-          console.log("attempting 4")
-          console.log("accounts ", accounts)
-        } catch (error) {
-          console.log(error)
-        }
-        activate(ledgerLiveConnector)
+        // await ledgerLiveConnector.activate()
+        // const accounts = await ledgerLiveConnector.getAccounts()
+        // activate(ledgerLiveConnector)
         setWalletToConnect(WalletOption.ledger)
       },
     },
@@ -65,7 +54,9 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       title: "WalletConnect",
       icon: WalletConnectIcon,
       onClick: () => {
-        activate(injected)
+        // if the user has already tried to connect we need to manually reset the connector to allow the QR popup to work again
+        walletconnect.walletConnectProvider = undefined
+        activate(walletconnect)
         setWalletToConnect(WalletOption.walletConnect)
       },
     },
@@ -94,6 +85,9 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       )}
       {walletToConnect === WalletOption.ledger && (
         <ConnectLedger goBack={goBack} closeModal={closeModal} />
+      )}
+      {walletToConnect === WalletOption.walletConnect && (
+        <ConnectWalletConnect goBack={goBack} closeModal={closeModal} />
       )}
     </>
   )
