@@ -4,8 +4,8 @@ import { ChainID } from "../../types"
 import { LedgerSubproviderConfigs } from "@0x/subproviders"
 
 export const LEDGER_DERIVATION_PATHS = {
-  LEDGER_LIVE: `m/44'/60'/0'/0/0`,
-  LEDGER_LEGACY: `m/44'/60'/0'/0`,
+  LEDGER_LIVE: `m/44'/60'/x'/0/0`,
+  LEDGER_LEGACY: `m/44'/60'/0'/x`,
 }
 
 /**
