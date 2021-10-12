@@ -15,7 +15,7 @@ const App: FC = () => {
         <ChakraProvider theme={theme}>
           <ModalRoot />
           <Navbar />
-          <Container maxW="6xl">
+          <Container maxW="6xl" data-cy="app-container">
             <Heading>Threshold Token Dashboard</Heading>
           </Container>
         </ChakraProvider>
