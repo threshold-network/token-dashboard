@@ -58,7 +58,7 @@ const WalletConnectionModalBase: FC<Props> = ({
       </ModalBody>
       <ModalFooter>
         <Button
-          variant="outline"
+          variant="secondary"
           leftWalletIcon={<BiLeftArrowAlt />}
           onClick={goBack}
         >
