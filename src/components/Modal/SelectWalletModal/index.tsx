@@ -14,6 +14,8 @@ import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
 import withBaseModal from "../withBaseModal"
 import { LedgerWhite } from "../../../static/icons/LedgerWhite"
+import { ledgerLiveConnector } from "../../../web3/connectors/ledger"
+import ConnectLedger from "./ConnectLedger"
 
 export enum WalletOption {
   metamask = "METAMASK",
@@ -38,8 +40,23 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       id: WalletOption.ledger,
       title: "Ledger",
       icon: useColorModeValue(Ledger, LedgerWhite),
-      onClick: () => {
-        activate(injected)
+      onClick: async () => {
+        // console.log("attempting 1")
+        // try {
+        //   console.log("attempting 2")
+        //   // @ts-ignore
+        //   await ledgerLiveConnector.activate()
+        //   console.log("attempting 3")
+        //
+        //   console.log(ledgerLiveConnector)
+        //   // @ts-ignore
+        //   const accounts = await ledgerLiveConnector.getAccounts()
+        //   console.log("attempting 4")
+        //   console.log("accounts ", accounts)
+        // } catch (error) {
+        //   console.log(error)
+        // }
+        // activate(ledgerLiveConnector)
         setWalletToConnect(WalletOption.ledger)
       },
     },
@@ -74,6 +91,9 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       )}
       {walletToConnect === WalletOption.metamask && (
         <ConnectMetamask goBack={goBack} closeModal={closeModal} />
+      )}
+      {walletToConnect === WalletOption.ledger && (
+        <ConnectLedger goBack={goBack} closeModal={closeModal} />
       )}
     </>
   )
