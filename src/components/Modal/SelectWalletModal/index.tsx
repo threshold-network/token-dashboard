@@ -41,22 +41,22 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       title: "Ledger",
       icon: useColorModeValue(Ledger, LedgerWhite),
       onClick: async () => {
-        // console.log("attempting 1")
-        // try {
-        //   console.log("attempting 2")
-        //   // @ts-ignore
-        //   await ledgerLiveConnector.activate()
-        //   console.log("attempting 3")
-        //
-        //   console.log(ledgerLiveConnector)
-        //   // @ts-ignore
-        //   const accounts = await ledgerLiveConnector.getAccounts()
-        //   console.log("attempting 4")
-        //   console.log("accounts ", accounts)
-        // } catch (error) {
-        //   console.log(error)
-        // }
-        // activate(ledgerLiveConnector)
+        console.log("attempting 1")
+        try {
+          console.log("attempting 2")
+          // @ts-ignore
+          await ledgerLiveConnector.activate()
+          console.log("attempting 3")
+
+          console.log(ledgerLiveConnector)
+          // @ts-ignore
+          const accounts = await ledgerLiveConnector.getAccounts()
+          console.log("attempting 4")
+          console.log("accounts ", accounts)
+        } catch (error) {
+          console.log(error)
+        }
+        activate(ledgerLiveConnector)
         setWalletToConnect(WalletOption.ledger)
       },
     },
