@@ -17,51 +17,46 @@ import { LedgerWhite } from "../../../static/icons/LedgerWhite"
 import ConnectLedger from "./ConnectLedger"
 import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
-
-export enum WalletOption {
-  metamask = "METAMASK",
-  ledger = "LEDGER",
-  walletConnect = "WALLET_CONNECT",
-}
+import { WalletType } from "../../../enums"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
 
   const walletOptions = [
     {
-      id: WalletOption.metamask,
+      id: WalletType.Metamask,
       title: "MetaMask",
       icon: MetaMaskIcon,
       onClick: () => {
         activate(injected)
-        setWalletToConnect(WalletOption.metamask)
+        setWalletToConnect(WalletType.Metamask)
       },
     },
     {
-      id: WalletOption.ledger,
+      id: WalletType.Ledger,
       title: "Ledger",
       icon: useColorModeValue(Ledger, LedgerWhite),
       onClick: async () => {
         // await ledgerLiveConnector.activate()
         // const accounts = await ledgerLiveConnector.getAccounts()
         // activate(ledgerLiveConnector)
-        setWalletToConnect(WalletOption.ledger)
+        setWalletToConnect(WalletType.Ledger)
       },
     },
     {
-      id: WalletOption.walletConnect,
+      id: WalletType.WalletConnect,
       title: "WalletConnect",
       icon: WalletConnectIcon,
       onClick: () => {
         // if the user has already tried to connect we need to manually reset the connector to allow the QR popup to work again
         walletconnect.walletConnectProvider = undefined
         activate(walletconnect)
-        setWalletToConnect(WalletOption.walletConnect)
+        setWalletToConnect(WalletType.WalletConnect)
       },
     },
   ]
 
-  const [walletToConnect, setWalletToConnect] = useState<WalletOption | null>(
+  const [walletToConnect, setWalletToConnect] = useState<WalletType | null>(
     null
   )
 
@@ -73,19 +68,21 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   return (
     <>
       <ModalHeader>
-        <Text fontSize="24px">Connect a Wallet</Text>
+        <Text as="h5" fontSize="2xl">
+          Connect a Wallet
+        </Text>
       </ModalHeader>
       <ModalCloseButton />
       {walletToConnect === null && (
         <InitialWalletSelection walletOptions={walletOptions} />
       )}
-      {walletToConnect === WalletOption.metamask && (
+      {walletToConnect === WalletType.Metamask && (
         <ConnectMetamask goBack={goBack} closeModal={closeModal} />
       )}
-      {walletToConnect === WalletOption.ledger && (
+      {walletToConnect === WalletType.Ledger && (
         <ConnectLedger goBack={goBack} closeModal={closeModal} />
       )}
-      {walletToConnect === WalletOption.walletConnect && (
+      {walletToConnect === WalletType.WalletConnect && (
         <ConnectWalletConnect goBack={goBack} closeModal={closeModal} />
       )}
     </>

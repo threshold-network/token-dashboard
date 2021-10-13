@@ -9,11 +9,9 @@ import {
 import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
 import { Ledger } from "../../../../static/icons/Ledger"
 import shortenAddress from "../../../../utils/shortenAddress"
-import {
-  LedgerConnectionStage,
-  WalletConnectionModalProps,
-} from "../../../../types"
+import { WalletConnectionModalProps } from "../../../../types"
 import { WalletConnectionModalBase } from "../components"
+import { LedgerConnectionStage } from "../../../../enums"
 
 interface SelectAddressProps extends WalletConnectionModalProps {
   ledgerAddress: string
@@ -45,7 +43,7 @@ const SelectAddress: FC<SelectAddressProps> = ({
       title="Ledger"
       subTitle="Choose an address below."
       onContinue={() => {
-        setConnectionStage(LedgerConnectionStage.CONFIRM_CONNECTED)
+        setConnectionStage(LedgerConnectionStage.ConfirmSelected)
       }}
     >
       <RadioGroup

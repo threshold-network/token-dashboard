@@ -5,6 +5,7 @@ import store from "../store"
 
 const requiredArgs = {
   openModal: () => {},
+  deactivate: () => {},
 }
 
 const Template: Story = (args) => {
@@ -12,11 +13,12 @@ const Template: Story = (args) => {
     ...requiredArgs,
     ...args,
   }
-  return <NavbarComponent {...props} deactivate={() => {}} />
+  return <NavbarComponent {...props} />
 }
 
 export const NoWalletConnected = Template.bind({})
 NoWalletConnected.args = {
+  account: "",
   ...requiredArgs,
 }
 
@@ -31,6 +33,15 @@ export default {
   title: "Navbar",
   component: NavbarComponent,
   argTypes: {
+    deactivate: {
+      description: "A method that disconnects the user's wallet",
+    },
+    openModal: {
+      description: "A method that opens the modal",
+    },
+    account: {
+      description: "The connected ethereum account address",
+    },
     chainId: {
       description: "The connected ethereum network",
       options: [1, 3, 42],

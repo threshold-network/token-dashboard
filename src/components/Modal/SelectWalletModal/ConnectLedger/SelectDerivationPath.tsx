@@ -10,10 +10,8 @@ import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
 import { Ledger } from "../../../../static/icons/Ledger"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalBase } from "../components"
-import {
-  LedgerConnectionStage,
-  WalletConnectionModalProps,
-} from "../../../../types"
+import { WalletConnectionModalProps } from "../../../../types"
+import { LedgerConnectionStage } from "../../../../enums"
 
 interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
@@ -43,7 +41,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
       title="Ledger"
       subTitle="Plug in Ledger device and unlock. Choose one of the following:"
       onContinue={() => {
-        setConnectionStage(LedgerConnectionStage.SELECT_ADDRESS)
+        setConnectionStage(LedgerConnectionStage.SelectAddress)
       }}
     >
       <RadioGroup

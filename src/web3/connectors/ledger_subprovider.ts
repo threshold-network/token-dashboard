@@ -1,6 +1,6 @@
 import { LedgerSubprovider as LedgerSubprovider0x } from "@0x/subproviders/lib/src/subproviders/ledger" // https://github.com/0xProject/0x-monorepo/issues/1400
 import web3Utils from "web3-utils"
-import { ChainID } from "../../types"
+import { ChainID } from "../../enums"
 import { LedgerSubproviderConfigs } from "@0x/subproviders"
 
 export const LEDGER_DERIVATION_PATHS = {

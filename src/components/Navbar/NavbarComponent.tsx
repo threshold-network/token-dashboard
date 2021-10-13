@@ -5,20 +5,18 @@ import {
   Container,
   HStack,
   Icon,
-  IconButton,
   Stack,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { ModalType } from "../../enums"
+import { ModalType, ChainID } from "../../enums"
 import { FC, ReactElement, useMemo } from "react"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import WalletButton from "./WalletButton"
-import { HamburgerIcon, MoonIcon, SunIcon } from "@chakra-ui/icons"
 import { BsQuestionCircleFill } from "react-icons/all"
-import { ChainID } from "../../types"
 import { Ethereum } from "../../static/icons/Ethereum"
 import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
+import HamburgerButton from "../HamburgerButton"
+import DarkModeSwitcher from "../DarkModeSwitcher"
 
 interface NavbarComponentProps {
   account?: string | null
@@ -39,8 +37,8 @@ const networkIconMap: NetworkIconMap = {
 const NavbarComponent: FC<NavbarComponentProps> = ({
   account,
   chainId,
-  deactivate,
   openModal,
+  deactivate,
 }) => {
   const networkIcon = useMemo(
     () =>
@@ -49,8 +47,6 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
       ),
     [chainId]
   )
-
-  const { colorMode, toggleColorMode } = useColorMode()
 
   return (
     <Box
@@ -65,40 +61,8 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         position="relative"
       >
         <HStack>
-          {/* Dark/Light mode switcher */}
-          <IconButton
-            variant="ghost"
-            aria-label="color mode"
-            onClick={toggleColorMode}
-            _hover={{
-              bg: useColorModeValue("white", "gray.800"),
-            }}
-            icon={
-              colorMode === "light" ? (
-                <MoonIcon
-                  color={{
-                    base: "white",
-                    md: useColorModeValue("gray.800", "white"),
-                  }}
-                />
-              ) : (
-                <SunIcon
-                  color={{
-                    base: "white",
-                    md: useColorModeValue("gray.800", "white"),
-                  }}
-                />
-              )
-            }
-          />
-
-          {/* SideDrawer Hamburger Button for mobile only */}
-          <IconButton
-            variant="unstyled"
-            display={{ base: "block", md: "none" }}
-            aria-label="open navigation"
-            icon={<Icon as={HamburgerIcon} color="white" />}
-          />
+          <DarkModeSwitcher />
+          <HamburgerButton display={{ base: "block", md: "none" }} />
         </HStack>
 
         <Stack spacing={4} direction="row">

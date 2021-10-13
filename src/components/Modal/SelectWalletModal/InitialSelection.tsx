@@ -34,7 +34,9 @@ const InitialWalletSelection: FC<{
           <Stack justify="space-between" direction="row" px="40px">
             <Stack direction="row">
               <Icon as={opt.icon} h="40px" w="40px" mr="32px" />
-              <Text fontSize="30px">{opt.title}</Text>
+              <Text as="h4" fontSize="3xl">
+                {opt.title}
+              </Text>
             </Stack>
             <Icon as={BiRightArrowAlt} h="40px" w="40px" />
           </Stack>

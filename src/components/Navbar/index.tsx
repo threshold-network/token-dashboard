@@ -1,11 +1,7 @@
-import { FC, ReactElement, useMemo } from "react"
+import { FC } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../../hooks/useModal"
 import NavbarComponent from "./NavbarComponent"
-import { ChainID } from "../../types"
-import { Ethereum } from "../../static/icons/Ethereum"
-import { Circle, Icon } from "@chakra-ui/react"
-import { BsQuestionCircleFill } from "react-icons/all"
 
 const Navbar: FC = () => {
   const { openModal } = useModal()

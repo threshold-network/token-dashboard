@@ -6,7 +6,7 @@ import {
   WalletConnectionModalBase,
   WalletConnectStatusAlert,
 } from "./components"
-import { ConnectionError } from "../../../types"
+import { ConnectionError } from "../../../enums"
 
 const ConnectWalletConnect: FC<{ goBack: () => void; closeModal: () => void }> =
   ({ goBack, closeModal }) => {
