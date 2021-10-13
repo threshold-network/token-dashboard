@@ -1,4 +1,4 @@
-import { ChainID } from "../types"
+import { ChainID } from "../enums"
 
 const supportedChainIds = [ChainID.Ethereum, ChainID.Ropsten]
 

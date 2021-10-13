@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react"
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
-import { ConnectionError, WalletConnectionModalProps } from "../../../../types"
+import { WalletConnectionModalProps } from "../../../../types"
+import { ConnectionError } from "../../../../enums"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
@@ -44,7 +45,9 @@ const WalletConnectionModalBase: FC<Props> = ({
             ) : (
               <Icon as={WalletIcon} h="40px" w="40px" mr={4} />
             )}
-            <Text fontSize="30px">{title}</Text>
+            <Text as="h4" fontSize="3xl">
+              {title}
+            </Text>
           </HStack>
           {subTitle && (
             <Text align="center" color={useColorModeValue("gray.500", "white")}>

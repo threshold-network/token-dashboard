@@ -8,7 +8,7 @@ import {
 import CacheSubprovider from "web3-provider-engine/subproviders/cache.js"
 // @ts-ignore
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
-import { ChainID } from "../../types"
+import { ChainID } from "../../enums"
 // import TransportU2F from "@ledgerhq/hw-transport-u2f"
 import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
@@ -61,7 +61,6 @@ export class LedgerConnector extends AbstractConnector {
    * @return {Promise<ConnectorUpdate>}
    */
   async activate() {
-    console.log("activating@! ", this.provider)
     if (!this.provider) {
       const ledgerEthereumClientFactoryAsync = async () => {
         const ledgerConnection = await Transport.create()
@@ -77,13 +76,9 @@ export class LedgerConnector extends AbstractConnector {
         return ledgerEthClient
       }
 
-      console.log("got the factory set up ")
-
       const engine = new Web3ProviderEngine({
         pollingInterval: this.pollingInterval,
       })
-
-      console.log("and the engine ", engine)
 
       engine.addProvider(
         new LedgerSubprovider({
@@ -95,24 +90,13 @@ export class LedgerConnector extends AbstractConnector {
           baseDerivationPath: this.baseDerivationPath,
         })
       )
-      console.log("added the ledher subprovider")
       engine.addProvider(new CacheSubprovider())
-      console.log("added a cahce provider")
       engine.addProvider(new WebsocketSubprovider({ rpcUrl: this.url }))
-      console.log("added a wensocket provider")
       this.provider = engine
     }
 
-    console.log("starging the provider")
-    try {
-      this.provider.start()
-    } catch (e) {
-      console.log("failed to start ", e)
-    }
-    console.log("finished, returning out ", {
-      provider: this.provider,
-      chainId: this.chainId,
-    })
+    this.provider.start()
+
     return { provider: this.provider, chainId: this.chainId }
   }
 
@@ -135,16 +119,6 @@ export class LedgerConnector extends AbstractConnector {
   }
 
   async getAccounts(numberOfAccounts = 5, accountsOffSet = 0) {
-    console.log("YO Y OY OY OY OY O")
-    console.log(this.provider)
-    console.log(this.provider._providers[0])
-    console.log(
-      "get accounts: ",
-      await this.provider._providers[0].getAccountsAsync(
-        numberOfAccounts,
-        accountsOffSet
-      )
-    )
     return await this.provider._providers[0].getAccountsAsync(
       numberOfAccounts,
       accountsOffSet

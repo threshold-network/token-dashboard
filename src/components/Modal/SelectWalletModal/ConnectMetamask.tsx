@@ -3,7 +3,7 @@ import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
 import { MetamaskStatusAlert, WalletConnectionModalBase } from "./components"
-import { ConnectionError } from "../../../types"
+import { ConnectionError } from "../../../enums"
 
 const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
