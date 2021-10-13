@@ -18,6 +18,7 @@ import ConnectLedger from "./ConnectLedger"
 import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
+import { H5 } from "../../Typography"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
@@ -68,9 +69,7 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   return (
     <>
       <ModalHeader>
-        <Text as="h5" fontSize="2xl">
-          Connect a Wallet
-        </Text>
+        <H5>Connect a Wallet</H5>
       </ModalHeader>
       <ModalCloseButton />
       {walletToConnect === null && (

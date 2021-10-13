@@ -14,6 +14,7 @@ import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
 import { ConnectionError } from "../../../../enums"
+import { Body2, H4 } from "../../../Typography"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
@@ -45,14 +46,15 @@ const WalletConnectionModalBase: FC<Props> = ({
             ) : (
               <Icon as={WalletIcon} h="40px" w="40px" mr={4} />
             )}
-            <Text as="h4" fontSize="3xl">
-              {title}
-            </Text>
+            <H4>{title}</H4>
           </HStack>
           {subTitle && (
-            <Text align="center" color={useColorModeValue("gray.500", "white")}>
+            <Body2
+              align="center"
+              color={useColorModeValue("gray.500", "white")}
+            >
               {subTitle}
-            </Text>
+            </Body2>
           )}
         </Stack>
         <Box my={6}>{children}</Box>
