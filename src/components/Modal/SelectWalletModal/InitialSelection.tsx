@@ -1,14 +1,14 @@
+import { FC } from "react"
 import {
   Button,
   Icon,
   Stack,
   StackDivider,
-  Text,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
 import { BiRightArrowAlt } from "react-icons/all"
-import { FC } from "react"
+import { H4 } from "../../Typography"
 
 const InitialWalletSelection: FC<{
   walletOptions: {
@@ -34,9 +34,7 @@ const InitialWalletSelection: FC<{
           <Stack justify="space-between" direction="row" px="40px">
             <Stack direction="row">
               <Icon as={opt.icon} h="40px" w="40px" mr="32px" />
-              <Text as="h4" fontSize="3xl">
-                {opt.title}
-              </Text>
+              <H4>{opt.title}</H4>
             </Stack>
             <Icon as={BiRightArrowAlt} h="40px" w="40px" />
           </Stack>
