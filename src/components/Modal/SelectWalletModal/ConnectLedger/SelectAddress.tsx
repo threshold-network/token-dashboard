@@ -16,7 +16,7 @@ import { LedgerConnectionStage } from "../../../../enums"
 interface SelectAddressProps extends WalletConnectionModalProps {
   ledgerAddress: string
   setLedgerAddress: (address: string) => void
-  setConnectionStage: (stage: LedgerConnectionStage) => void
+  confirmAddress: () => void
   ledgerAddresses: string[]
 }
 
@@ -25,8 +25,8 @@ const SelectAddress: FC<SelectAddressProps> = ({
   closeModal,
   ledgerAddress,
   setLedgerAddress,
-  setConnectionStage,
   ledgerAddresses,
+  confirmAddress,
 }) => {
   return (
     <WalletConnectionModalBase
@@ -42,9 +42,7 @@ const SelectAddress: FC<SelectAddressProps> = ({
       }
       title="Ledger"
       subTitle="Choose an address below."
-      onContinue={() => {
-        setConnectionStage(LedgerConnectionStage.ConfirmSelected)
-      }}
+      onContinue={confirmAddress}
     >
       <RadioGroup
         onChange={setLedgerAddress}

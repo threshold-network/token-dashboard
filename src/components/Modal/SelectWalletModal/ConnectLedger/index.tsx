@@ -6,19 +6,28 @@ import { WalletConnectionModalProps } from "../../../../types"
 import ConfirmConnected from "./ConfirmConnected"
 import { LedgerConnectionStage } from "../../../../enums"
 import {
+  LedgerConnector,
   ledgerLegacyConnectorFactory,
   ledgerLiveConnectorFactory,
 } from "../../../../web3/connectors/ledger"
 import LoadingAddresses from "./LoadingAddresses"
+import { useWeb3React } from "@web3-react/core"
 
 const ConnectLedger: FC<WalletConnectionModalProps> = ({
   goBack,
   closeModal,
 }) => {
+  const { activate } = useWeb3React()
   const [derivationPath, setDerivationPath] = useState<string>(
     LEDGER_DERIVATION_PATHS.LEDGER_LIVE
   )
   const [connectionError, setConnectionError] = useState("")
+  const [connectionStage, setConnectionStage] = useState<LedgerConnectionStage>(
+    LedgerConnectionStage.SelectDerivation
+  )
+  const [ledgerAddresses, setLedgerAddresses] = useState([])
+  const [ledgerAddress, setLedgerAddress] = useState<string>("")
+  const [connector, setConnector] = useState<LedgerConnector | null>(null)
 
   const connectorFactory = useMemo(() => {
     if (derivationPath === LEDGER_DERIVATION_PATHS.LEDGER_LIVE) {
@@ -32,33 +41,27 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     return null
   }, [derivationPath])
 
-  const [connectionStage, setConnectionStage] = useState<LedgerConnectionStage>(
-    LedgerConnectionStage.SelectDerivation
-  )
-
-  const [ledgerAddresses, setLedgerAddresses] = useState([])
-  const [ledgerAddress, setLedgerAddress] = useState<string>("")
-
   const loadAddresses = async () => {
     if (connectorFactory) {
-      const connector = connectorFactory()
-      try {
-        await connector.activate()
-      } catch (error) {
-        console.log("e1", error)
-      }
+      const connectorInstance = connectorFactory()
+      connectorInstance?.activate()
       setConnectionStage(LedgerConnectionStage.LoadAddresses)
-
       try {
-        const accounts = await connector.getAccounts()
+        const accounts = await connectorInstance.getAccounts()
         setLedgerAddresses(accounts)
         setConnectionStage(LedgerConnectionStage.SelectAddress)
+        setConnector(connectorInstance)
       } catch (error: any) {
         setConnectionStage(LedgerConnectionStage.SelectDerivation)
         setConnectionError(error?.message)
-        console.log("e2", error)
       }
     }
+  }
+
+  const confirmAddress = async () => {
+    connector?.setDefaultAccount(ledgerAddress)
+    await activate(connector as LedgerConnector, undefined, true)
+    setConnectionStage(LedgerConnectionStage.ConfirmSuccess)
   }
 
   if (connectionStage === LedgerConnectionStage.SelectDerivation) {
@@ -83,7 +86,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
       <SelectAddress
         closeModal={closeModal}
         goBack={goBack}
-        setConnectionStage={setConnectionStage}
+        confirmAddress={confirmAddress}
         ledgerAddress={ledgerAddress}
         setLedgerAddress={setLedgerAddress}
         ledgerAddresses={ledgerAddresses}
@@ -91,7 +94,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     )
   }
 
-  if (connectionStage === LedgerConnectionStage.ConfirmSelected) {
+  if (connectionStage === LedgerConnectionStage.ConfirmSuccess) {
     return <ConfirmConnected goBack={goBack} closeModal={closeModal} />
   }
 

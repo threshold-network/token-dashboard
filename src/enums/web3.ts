@@ -7,7 +7,7 @@ export enum LedgerConnectionStage {
   SelectDerivation = "SELECT_DERIVATION",
   LoadAddresses = "LOAD_ADDRESSES",
   SelectAddress = "SELECT_ADDRESS",
-  ConfirmSelected = "CONFIRM_SELECTED",
+  ConfirmSuccess = "CONFIRM_SUCCESS",
 }
 
 export enum ConnectionError {
