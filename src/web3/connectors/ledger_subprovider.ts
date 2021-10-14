@@ -1,6 +1,5 @@
 import { LedgerSubprovider as LedgerSubprovider0x } from "@0x/subproviders/lib/src/subproviders/ledger" // https://github.com/0xProject/0x-monorepo/issues/1400
 import web3Utils from "web3-utils"
-import { ChainID } from "../../enums"
 import { LedgerSubproviderConfigs } from "@0x/subproviders"
 
 export const LEDGER_DERIVATION_PATHS = {
@@ -15,11 +14,11 @@ export const LEDGER_DERIVATION_PATHS = {
  * LedgerJS library.
  */
 class LedgerSubprovider extends LedgerSubprovider0x {
-  chainId: ChainID
+  chainId: string
   addressToPathMap: { [key: string]: string } = {}
   pathToAddressMap: { [key: string]: string } = {}
 
-  constructor(public config: { chainId: ChainID } & LedgerSubproviderConfigs) {
+  constructor(public config: { chainId: string } & LedgerSubproviderConfigs) {
     super(config)
     this.chainId = config.chainId
   }
@@ -49,7 +48,7 @@ class LedgerSubprovider extends LedgerSubprovider0x {
       // @ts-ignore
       ledgerResponse = await this._ledgerClientIfExists.getAddress(
         path,
-        // @ts-ignore
+        // @ts-ignorex
         this._shouldAlwaysAskForConfirmation,
         true
       )

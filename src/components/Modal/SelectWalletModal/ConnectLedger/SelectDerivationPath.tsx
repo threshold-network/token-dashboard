@@ -1,5 +1,9 @@
 import { FC } from "react"
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Icon,
   Radio,
   RadioGroup,
@@ -12,11 +16,13 @@ import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subp
 import { WalletConnectionModalBase } from "../components"
 import { WalletConnectionModalProps } from "../../../../types"
 import { LedgerConnectionStage } from "../../../../enums"
+import { ledgerLiveConnectorFactory } from "../../../../web3/connectors/ledger"
 
 interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
   setDerivationPath: (path: string) => void
-  setConnectionStage: (stage: LedgerConnectionStage) => void
+  loadAddresses: () => void
+  connectionError: string
 }
 
 const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
@@ -24,7 +30,8 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
   closeModal,
   derivationPath,
   setDerivationPath,
-  setConnectionStage,
+  loadAddresses,
+  connectionError,
 }) => {
   return (
     <WalletConnectionModalBase
@@ -40,9 +47,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
       }
       title="Ledger"
       subTitle="Plug in Ledger device and unlock. Choose one of the following:"
-      onContinue={() => {
-        setConnectionStage(LedgerConnectionStage.SelectAddress)
-      }}
+      onContinue={loadAddresses}
     >
       <RadioGroup
         onChange={setDerivationPath}
@@ -58,6 +63,18 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
           <Radio value={LEDGER_DERIVATION_PATHS.LEDGER_LIVE}>Ledger Live</Radio>
         </Stack>
       </RadioGroup>
+      {connectionError.length > 0 && (
+        <Alert status="error">
+          <AlertIcon />
+          <Stack>
+            <AlertTitle>Error loading addresses</AlertTitle>
+            <AlertDescription>
+              Is your ledger device plugged in, unlocked, and connected to the
+              Ethereum App?
+            </AlertDescription>
+          </Stack>
+        </Alert>
+      )}
     </WalletConnectionModalBase>
   )
 }

@@ -8,13 +8,12 @@ import {
 import CacheSubprovider from "web3-provider-engine/subproviders/cache.js"
 // @ts-ignore
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
-import { ChainID } from "../../enums"
 // import TransportU2F from "@ledgerhq/hw-transport-u2f"
 import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
 
 interface LedgerContructionInterface {
-  chainId?: ChainID
+  chainId?: string
   url?: string
   pollingInterval?: number
   requestTimeoutMs?: number
@@ -30,7 +29,7 @@ interface LedgerContructionInterface {
 export class LedgerConnector extends AbstractConnector {
   defaultAccount = ""
 
-  public chainId?: ChainID
+  public chainId?: string
   public url?: string
   public pollingInterval?: number
   public requestTimeoutMs?: number
@@ -111,7 +110,7 @@ export class LedgerConnector extends AbstractConnector {
    * @return {Promise<number>}
    */
   async getChainId() {
-    return this.chainId as ChainID
+    return this.chainId as string
   }
 
   async getAccount() {
@@ -134,17 +133,16 @@ export class LedgerConnector extends AbstractConnector {
   }
 }
 
-// TODO: These connectors need to be hooked up to the config and the radio buttons in the wallet modal
-export const ledgerLiveConnector = new LedgerConnector({
-  chainId: 1,
-  // url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
-  url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
-  baseDerivationPath: "m'/44'/60'/0'/0", // LEDGER_DERIVATION_PATHS.LEDGER_LIVE,
-})
+export const ledgerLiveConnectorFactory = () =>
+  new LedgerConnector({
+    chainId: "1",
+    url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
+    baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LIVE,
+  })
 
-export const ledgerLegacyConnector = new LedgerConnector({
-  chainId: 1,
-  // url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
-  url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
-  baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LEGACY,
-})
+export const ledgerLegacyConnectorFactory = () =>
+  new LedgerConnector({
+    chainId: "1",
+    url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
+    baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LEGACY,
+  })
