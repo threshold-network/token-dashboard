@@ -19,11 +19,13 @@ import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
+import { ledgerLiveConnectorFactory } from "../../../web3/connectors/ledger"
+import { WalletOption } from "../../../types"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
 
-  const walletOptions = [
+  const walletOptions: WalletOption[] = [
     {
       id: WalletType.Metamask,
       title: "MetaMask",
@@ -38,9 +40,6 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       title: "Ledger",
       icon: useColorModeValue(Ledger, LedgerWhite),
       onClick: async () => {
-        // await ledgerLiveConnector.activate()
-        // const accounts = await ledgerLiveConnector.getAccounts()
-        // activate(ledgerLiveConnector)
         setWalletToConnect(WalletType.Ledger)
       },
     },

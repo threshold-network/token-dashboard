@@ -9,14 +9,10 @@ import {
 } from "@chakra-ui/react"
 import { BiRightArrowAlt } from "react-icons/all"
 import { H4 } from "../../Typography"
+import { WalletOption } from "../../../types"
 
 const InitialWalletSelection: FC<{
-  walletOptions: {
-    id: string
-    onClick: () => void
-    icon: FC
-    title: string
-  }[]
+  walletOptions: WalletOption[]
 }> = ({ walletOptions }) => {
   return (
     <VStack divider={<StackDivider margin="0 40px !important" />}>

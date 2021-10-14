@@ -5,6 +5,7 @@ export enum ChainID {
 
 export enum LedgerConnectionStage {
   SelectDerivation = "SELECT_DERIVATION",
+  LoadAddresses = "LOAD_ADDRESSES",
   SelectAddress = "SELECT_ADDRESS",
   ConfirmSelected = "CONFIRM_SELECTED",
 }
