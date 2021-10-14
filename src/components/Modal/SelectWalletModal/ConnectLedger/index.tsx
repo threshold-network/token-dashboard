@@ -1,17 +1,14 @@
 import { FC, useMemo, useState } from "react"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
-import SelectDerivationPath from "./SelectDerivationPath"
-import SelectAddress from "./SelectAddress"
 import { WalletConnectionModalProps } from "../../../../types"
-import ConfirmConnected from "./ConfirmConnected"
 import { LedgerConnectionStage } from "../../../../enums"
 import {
   LedgerConnector,
   ledgerLegacyConnectorFactory,
   ledgerLiveConnectorFactory,
 } from "../../../../web3/connectors/ledger"
-import LoadingAddresses from "./LoadingAddresses"
 import { useWeb3React } from "@web3-react/core"
+import ConnectionStage from "./ConnectionStage"
 
 const ConnectLedger: FC<WalletConnectionModalProps> = ({
   goBack,
@@ -64,41 +61,24 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     setConnectionStage(LedgerConnectionStage.ConfirmSuccess)
   }
 
-  if (connectionStage === LedgerConnectionStage.SelectDerivation) {
-    return (
-      <SelectDerivationPath
-        closeModal={closeModal}
-        goBack={goBack}
-        loadAddresses={loadAddresses}
-        derivationPath={derivationPath}
-        setDerivationPath={setDerivationPath}
-        connectionError={connectionError}
-      />
-    )
-  }
+  const modalControls: WalletConnectionModalProps = { goBack, closeModal }
 
-  if (connectionStage === LedgerConnectionStage.LoadAddresses) {
-    return <LoadingAddresses closeModal={closeModal} goBack={goBack} />
-  }
-
-  if (connectionStage === LedgerConnectionStage.SelectAddress) {
-    return (
-      <SelectAddress
-        closeModal={closeModal}
-        goBack={goBack}
-        confirmAddress={confirmAddress}
-        ledgerAddress={ledgerAddress}
-        setLedgerAddress={setLedgerAddress}
-        ledgerAddresses={ledgerAddresses}
-      />
-    )
-  }
-
-  if (connectionStage === LedgerConnectionStage.ConfirmSuccess) {
-    return <ConfirmConnected goBack={goBack} closeModal={closeModal} />
-  }
-
-  return null
+  return (
+    <ConnectionStage
+      {...{
+        connectionStage,
+        modalControls,
+        loadAddresses,
+        derivationPath,
+        setDerivationPath,
+        connectionError,
+        confirmAddress,
+        ledgerAddress,
+        setLedgerAddress,
+        ledgerAddresses,
+      }}
+    />
+  )
 }
 
 export default ConnectLedger

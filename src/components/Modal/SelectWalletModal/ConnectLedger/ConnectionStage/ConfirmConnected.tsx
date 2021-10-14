@@ -1,9 +1,12 @@
 import { FC } from "react"
 import { Icon, useColorModeValue } from "@chakra-ui/react"
-import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
-import { Ledger } from "../../../../static/icons/Ledger"
-import { AccountSuccessAlert, WalletConnectionModalBase } from "../components"
-import { WalletConnectionModalProps } from "../../../../types"
+import { LedgerWhite } from "../../../../../static/icons/LedgerWhite"
+import { Ledger } from "../../../../../static/icons/Ledger"
+import {
+  AccountSuccessAlert,
+  WalletConnectionModalBase,
+} from "../../components"
+import { WalletConnectionModalProps } from "../../../../../types"
 
 const ConfirmConnected: FC<WalletConnectionModalProps> = ({
   goBack,

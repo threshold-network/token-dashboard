@@ -6,17 +6,17 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
-import { Ledger } from "../../../../static/icons/Ledger"
-import shortenAddress from "../../../../utils/shortenAddress"
-import { WalletConnectionModalProps } from "../../../../types"
-import { WalletConnectionModalBase } from "../components"
-import { LedgerConnectionStage } from "../../../../enums"
+import { LedgerWhite } from "../../../../../static/icons/LedgerWhite"
+import { Ledger } from "../../../../../static/icons/Ledger"
+import shortenAddress from "../../../../../utils/shortenAddress"
+import { WalletConnectionModalProps } from "../../../../../types"
+import { WalletConnectionModalBase } from "../../components"
+import { LedgerConnectionStage } from "../../../../../enums"
 
 interface SelectAddressProps extends WalletConnectionModalProps {
   ledgerAddress: string
   setLedgerAddress: (address: string) => void
-  confirmAddress: () => void
+  onContinue: () => void
   ledgerAddresses: string[]
 }
 
@@ -26,7 +26,7 @@ const SelectAddress: FC<SelectAddressProps> = ({
   ledgerAddress,
   setLedgerAddress,
   ledgerAddresses,
-  confirmAddress,
+  onContinue,
 }) => {
   return (
     <WalletConnectionModalBase
@@ -42,7 +42,7 @@ const SelectAddress: FC<SelectAddressProps> = ({
       }
       title="Ledger"
       subTitle="Choose an address below."
-      onContinue={confirmAddress}
+      onContinue={onContinue}
     >
       <RadioGroup
         onChange={setLedgerAddress}
