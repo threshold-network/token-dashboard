@@ -11,17 +11,18 @@ import {
 import { ModalType, ChainID } from "../../enums"
 import { FC, ReactElement, useMemo } from "react"
 import WalletConnectionAlert from "./WalletConnectionAlert"
-import WalletButton from "./WalletButton"
-import { BsQuestionCircleFill } from "react-icons/all"
+import HamburgerButton from "./HamburgerButton"
+import DarkModeSwitcher from "./DarkModeSwitcher"
+import NetworkButton from "./NetworkButton"
+import AccountButton from "./AccountButton"
+import { BsQuestionCircleFill, MdOutlineTrain } from "react-icons/all"
+
 import { Ethereum } from "../../static/icons/Ethereum"
-import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
-import HamburgerButton from "../HamburgerButton"
-import DarkModeSwitcher from "../DarkModeSwitcher"
 
 interface NavbarComponentProps {
   account?: string | null
   chainId?: number
-  openModal: (type: ModalType) => void
+  openWalletModal: () => void
   deactivate: () => void
 }
 
@@ -31,13 +32,13 @@ interface NetworkIconMap {
 
 const networkIconMap: NetworkIconMap = {
   [ChainID.Ethereum]: <Ethereum />,
-  [ChainID.Ropsten]: <Circle size="12px" bg="green.500" />,
+  [ChainID.Ropsten]: <MdOutlineTrain />,
 }
 
 const NavbarComponent: FC<NavbarComponentProps> = ({
   account,
   chainId,
-  openModal,
+  openWalletModal,
   deactivate,
 }) => {
   const networkIcon = useMemo(
@@ -64,25 +65,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
           <DarkModeSwitcher />
           <HamburgerButton display={{ base: "block", md: "none" }} />
         </HStack>
-
         <Stack spacing={4} direction="row">
-          {/* Network Button */}
-          {chainId && (
-            <Button
-              display={{
-                base: "none",
-                md: "block",
-              }}
-              variant="secondary"
-              leftIcon={networkIcon}
-            >
-              {chainIdToNetworkName(chainId)}
-            </Button>
-          )}
-          <WalletButton
-            onClick={() => openModal(ModalType.SelectWallet)}
-            {...{ account, networkIcon, deactivate }}
-          />
+          {/*<NetworkButton networkIcon={networkIcon} chainId={chainId} />*/}
+          <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <WalletConnectionAlert {...{ account, chainId }} />
       </Container>

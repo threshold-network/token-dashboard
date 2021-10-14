@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalFooter,
   Stack,
-  Text,
   useColorModeValue,
 } from "@chakra-ui/react"
 import { BiLeftArrowAlt } from "react-icons/all"
@@ -62,7 +61,7 @@ const WalletConnectionModalBase: FC<Props> = ({
       <ModalFooter>
         <Button
           variant="secondary"
-          leftWalletIcon={<BiLeftArrowAlt />}
+          leftIcon={<BiLeftArrowAlt />}
           onClick={goBack}
         >
           Change Wallet

@@ -1,10 +1,10 @@
 import { Meta, Story } from "@storybook/react"
-import NavbarComponent from "../components/Navbar/NavbarComponent"
 import { Provider } from "react-redux"
+import NavbarComponent from "../components/Navbar/NavbarComponent"
 import store from "../store"
 
 const requiredArgs = {
-  openModal: () => {},
+  openWalletModal: () => {},
   deactivate: () => {},
 }
 
