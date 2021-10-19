@@ -1,7 +1,6 @@
 import {
   ModalCloseButton,
   ModalHeader,
-  Text,
   useColorModeValue,
 } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
@@ -19,7 +18,6 @@ import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
-import { ledgerLiveConnectorFactory } from "../../../web3/connectors/ledger"
 import { WalletOption } from "../../../types"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {

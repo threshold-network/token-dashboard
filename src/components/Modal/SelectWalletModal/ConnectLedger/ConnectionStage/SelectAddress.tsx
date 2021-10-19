@@ -11,7 +11,6 @@ import { Ledger } from "../../../../../static/icons/Ledger"
 import shortenAddress from "../../../../../utils/shortenAddress"
 import { WalletConnectionModalProps } from "../../../../../types"
 import { WalletConnectionModalBase } from "../../components"
-import { LedgerConnectionStage } from "../../../../../enums"
 
 interface SelectAddressProps extends WalletConnectionModalProps {
   ledgerAddress: string
