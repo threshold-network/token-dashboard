@@ -55,6 +55,11 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     }
   }
 
+  const loadAdditionalAddresses = async () => {
+    const accounts = await connector?.getAccounts(10)
+    setLedgerAddresses(accounts)
+  }
+
   const confirmAddress = async () => {
     connector?.setDefaultAccount(ledgerAddress)
     await activate(connector as LedgerConnector, undefined, true)
@@ -69,6 +74,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
         connectionStage,
         modalControls,
         loadAddresses,
+        loadAdditionalAddresses,
         derivationPath,
         setDerivationPath,
         connectionError,

@@ -10,6 +10,7 @@ interface Props {
   connectionStage: LedgerConnectionStage
   modalControls: WalletConnectionModalProps
   loadAddresses: () => void
+  loadAdditionalAddresses: () => void
   derivationPath: string
   setDerivationPath: (path: string) => void
   connectionError: string
@@ -23,6 +24,7 @@ const ConnectionState: FC<Props> = ({
   connectionStage,
   modalControls,
   loadAddresses,
+  loadAdditionalAddresses,
   derivationPath,
   setDerivationPath,
   connectionError,
@@ -54,6 +56,7 @@ const ConnectionState: FC<Props> = ({
             ledgerAddress,
             setLedgerAddress,
             ledgerAddresses,
+            loadAdditionalAddresses,
           }}
           onContinue={confirmAddress}
         />
