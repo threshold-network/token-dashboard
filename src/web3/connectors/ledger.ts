@@ -8,11 +8,11 @@ import {
 import CacheSubprovider from "web3-provider-engine/subproviders/cache.js"
 // @ts-ignore
 import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
-// import TransportU2F from "@ledgerhq/hw-transport-u2f"
+import TransportU2F from "@ledgerhq/hw-transport-u2f"
 import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
 
-interface LedgerContructionInterface {
+interface LedgerConstructionInterface {
   chainId?: string
   url?: string
   pollingInterval?: number
@@ -44,7 +44,7 @@ export class LedgerConnector extends AbstractConnector {
     requestTimeoutMs,
     accountFetchingConfigs,
     baseDerivationPath,
-  }: Partial<LedgerContructionInterface>) {
+  }: Partial<LedgerConstructionInterface>) {
     super({ supportedChainIds: [1] })
 
     this.chainId = chainId
@@ -62,16 +62,30 @@ export class LedgerConnector extends AbstractConnector {
   async activate() {
     if (!this.provider) {
       const ledgerEthereumClientFactoryAsync = async () => {
-        const ledgerConnection = await Transport.create()
+        let transport
+        try {
+          // attempt to create a transport instance using web-hid (chrome, brave)
+          transport = await Transport.create()
+        } catch (error: any) {
+          // use U2F if web-hib is not supported (firefox)
+          if (error?.message === "navigator.hid is not supported") {
+            transport = await TransportU2F.create()
+          } else {
+            throw error
+          }
+        }
+
         // Ledger will automatically timeout the U2F "sign" request after `exchangeTimeout` ms.
         // The default is set at an annoyingly low threshold, of 10,000ms, wherein the connection breaks
         // and throws this cryptic error:
         //   `{name: "TransportError", message: "Failed to sign with Ledger device: U2F DEVICE_INELIGIBLE", ...}`
         // Here we set it to 3hrs, to avoid this occurring, even if the user leaves the tab
         // open and comes back to it later.
-        ledgerConnection.setExchangeTimeout(10800000)
+
         // @ts-ignore
-        const ledgerEthClient = new AppEth(ledgerConnection)
+        transport.setExchangeTimeout(10800000)
+        // @ts-ignore
+        const ledgerEthClient = new AppEth(transport)
         return ledgerEthClient
       }
 

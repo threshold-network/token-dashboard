@@ -15,8 +15,6 @@ import { Ledger } from "../../../../../static/icons/Ledger"
 import { LEDGER_DERIVATION_PATHS } from "../../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalBase } from "../../components"
 import { WalletConnectionModalProps } from "../../../../../types"
-import { LedgerConnectionStage } from "../../../../../enums"
-import { ledgerLiveConnectorFactory } from "../../../../../web3/connectors/ledger"
 
 interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
@@ -52,7 +50,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
       <RadioGroup
         onChange={setDerivationPath}
         value={derivationPath}
-        w="135px"
+        w="145px"
         mx="auto"
         my={6}
       >
