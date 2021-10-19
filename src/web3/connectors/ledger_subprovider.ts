@@ -24,16 +24,13 @@ class LedgerSubprovider extends LedgerSubprovider0x {
   }
 
   async getAccountsAsync(numberOfAccounts: number, accountsOffSet = 0) {
-    console.log("fetching accounts")
     const addresses = []
     for (
       let index = accountsOffSet;
       index < numberOfAccounts + accountsOffSet;
       index++
     ) {
-      console.log("getting a specific account")
       const address = await this.getAddress(index)
-
       addresses.push(address)
     }
 
@@ -43,25 +40,18 @@ class LedgerSubprovider extends LedgerSubprovider0x {
   async getAddress(index: number) {
     // @ts-ignore
     const path = this._baseDerivationPath.replace("x", index)
-    console.log("using path: ", path)
     let ledgerResponse
     try {
       // @ts-ignore
       this._ledgerClientIfExists = await this._createLedgerClientAsync()
-
-      console.log("creatied a ledger clients")
       // @ts-ignore
       ledgerResponse = await this._ledgerClientIfExists.getAddress(
         path,
-        // @ts-ignorex
+        // @ts-ignore
         this._shouldAlwaysAskForConfirmation,
         true
       )
-      console.log(" the leder response")
-    } catch (error) {
-      console.log(error)
     } finally {
-      console.log("finally....")
       // @ts-ignore
       await this._destroyLedgerClientAsync()
     }

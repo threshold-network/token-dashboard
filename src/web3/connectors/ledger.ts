@@ -11,6 +11,7 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
 import TransportU2F from "@ledgerhq/hw-transport-u2f"
 import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
+import { RPC_URL } from "../../config"
 
 interface LedgerConstructionInterface {
   chainId?: string
@@ -150,13 +151,13 @@ export class LedgerConnector extends AbstractConnector {
 export const ledgerLiveConnectorFactory = () =>
   new LedgerConnector({
     chainId: "1",
-    url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
+    url: RPC_URL[1],
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LIVE,
   })
 
 export const ledgerLegacyConnectorFactory = () =>
   new LedgerConnector({
     chainId: "1",
-    url: "wss://mainnet.infura.io/ws/v3/33593948cb074eea8e65ae716fc61afd",
+    url: RPC_URL[1],
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LEGACY,
   })
