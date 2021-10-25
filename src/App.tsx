@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { ChakraProvider, Container, Heading } from "@chakra-ui/react"
+import { ChakraProvider, Container, Heading, HStack } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { Web3ReactProvider } from "@web3-react/core"
 import theme from "./theme"
@@ -7,6 +7,7 @@ import reduxStore from "./store"
 import ModalRoot from "./components/Modal"
 import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
+import { ScratchPad } from "./components/ScratchPad"
 
 const App: FC = () => {
   return (
@@ -17,6 +18,7 @@ const App: FC = () => {
           <Navbar />
           <Container maxW="6xl" data-cy="app-container">
             <Heading>Threshold Token Dashboard</Heading>
+            <ScratchPad />
           </Container>
         </ChakraProvider>
       </ReduxProvider>
