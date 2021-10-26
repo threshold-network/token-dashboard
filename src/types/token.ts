@@ -32,7 +32,3 @@ export interface UseReduxToken {
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
   }
 }
-
-export interface UseTokenContext {
-  (): { fetchKeepBalance: () => void }
-}
