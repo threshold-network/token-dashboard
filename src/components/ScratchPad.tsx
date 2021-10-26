@@ -1,8 +1,16 @@
-import { useKeep } from "../web3/hooks/useKeep"
-import { useMemo } from "react"
+import { useReduxToken } from "../hooks/useReduxToken"
+import { useTokenContext } from "../contexts/TokenContext"
 
 export const ScratchPad = ({}) => {
-  const { balance } = useKeep()
+  const { keep } = useReduxToken()
+  const { fetchKeepBalance } = useTokenContext()
 
-  return <div>yo: {balance}</div>
+  if (keep.loading) {
+    return <div>LOADING</div>
+  }
+  return (
+    <div>
+      {keep.balance} <button onClick={fetchKeepBalance}>Fetch again</button>{" "}
+    </div>
+  )
 }
