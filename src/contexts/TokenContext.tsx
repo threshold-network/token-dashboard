@@ -1,29 +1,13 @@
 import React, { createContext } from "react"
-import { useReduxToken } from "../hooks/useReduxToken"
 import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
-import { Token } from "../enums"
-import { UseTokenContext } from "../types/token"
-import _noop from "../utils/_noop"
 
-const TokenContext = createContext({
-  fetchKeepBalance: _noop,
-})
+const TokenContext = createContext({})
 
-export const useTokenContext: UseTokenContext = () =>
-  React.useContext(TokenContext)
-
+// Context that handles data fetching when a user connects their wallet
 export const TokenContextProvider: React.FC = ({ children }) => {
-  const { setTokenLoading, setTokenBalance } = useReduxToken()
-  const { fetchBalance: keepBalanceFetcher } = useKeep()
+  const { fetchBalance: fetchKeepBalance } = useKeep()
   const { active } = useWeb3React()
-
-  const fetchKeepBalance = async () => {
-    setTokenLoading(Token.Keep, true)
-    const balance = await keepBalanceFetcher()
-    setTokenBalance(Token.Keep, balance)
-    setTokenLoading(Token.Keep, false)
-  }
 
   React.useEffect(() => {
     if (active) {
@@ -31,13 +15,5 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     }
   }, [active])
 
-  return (
-    <TokenContext.Provider
-      value={{
-        fetchKeepBalance,
-      }}
-    >
-      {children}
-    </TokenContext.Provider>
-  )
+  return <TokenContext.Provider value={{}}>{children}</TokenContext.Provider>
 }
