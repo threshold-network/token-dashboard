@@ -4,13 +4,13 @@ import { useKeep } from "../web3/hooks/useKeep"
 
 const TokenContext = createContext({})
 
-// Context that handles data fetching when a user connects their wallet
+// Context that handles token data fetching when a user connects their wallet
 export const TokenContextProvider: React.FC = ({ children }) => {
   const { fetchBalance: fetchKeepBalance } = useKeep()
-  const { active } = useWeb3React()
+  const { active, account } = useWeb3React()
 
   React.useEffect(() => {
-    if (active) {
+    if (active && account) {
       fetchKeepBalance()
     }
   }, [active])
