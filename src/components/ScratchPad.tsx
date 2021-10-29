@@ -1,5 +1,7 @@
 import { useReduxToken } from "../hooks/useReduxToken"
 import { useKeep } from "../web3/hooks/useKeep"
+import TokenBalanceInput from "./TokenBalanceInput"
+import KeepLight from "../static/icons/KeepLight"
 
 export const ScratchPad = ({}) => {
   const { keep } = useReduxToken()
@@ -11,6 +13,7 @@ export const ScratchPad = ({}) => {
   return (
     <div>
       {keep.balance} <button onClick={fetchBalance}>Fetch again</button>{" "}
+      <TokenBalanceInput max={keep.balance} icon={KeepLight} />
     </div>
   )
 }
