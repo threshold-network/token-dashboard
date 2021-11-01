@@ -1,37 +1,42 @@
-import { FC, ReactElement, useState } from "react"
+import { FC } from "react"
 import {
-  InputGroup,
-  Input,
-  InputLeftElement,
-  InputRightElement,
   Button,
-  InputProps,
   Icon,
+  InputGroup,
+  InputLeftElement,
+  InputProps,
+  InputRightElement,
 } from "@chakra-ui/react"
+import NumberInput, { NumberInputValues } from "../NumberInput"
 
-const TokenBalanceInput: FC<InputProps & { icon?: any; max: number }> = ({
+interface TokenBalanceInputProps {
+  icon: any
+  max: number
+  amount: string | number
+  setAmount: (val: string | number) => void
+}
+
+const TokenBalanceInput: FC<InputProps & TokenBalanceInputProps> = ({
   icon,
   max,
+  amount,
+  setAmount,
   ...inputProps
 }) => {
-  const [amount, setAmount] = useState(0)
-
   const setToMax = () => {
     setAmount(max)
   }
 
   return (
     <InputGroup size="md">
-      {icon && (
-        <InputLeftElement width="4.5rem">
-          <Icon h="16px" w="16px" as={icon} />
-        </InputLeftElement>
-      )}
-      <Input
-        pr="4.5rem"
+      <InputLeftElement>
+        <Icon boxSize="20px" as={icon} />
+      </InputLeftElement>
+      <NumberInput
+        paddingLeft="2.5rem"
+        paddingRight="4.5rem"
         value={amount}
-        type={inputProps.type || "number"}
-        onChange={(e) => e.target.value}
+        onValueChange={(values: NumberInputValues) => setAmount(values.value)}
         {...inputProps}
       />
       <InputRightElement width="4.5rem">
