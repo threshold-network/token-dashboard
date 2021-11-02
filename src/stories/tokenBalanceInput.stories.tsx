@@ -11,12 +11,15 @@ const iconMap = {
   Keep: Keep,
 }
 
-const Template: Story<TokenBalanceInputProps> = ({ icon, max }) => {
+const Template: Story<TokenBalanceInputProps> = ({ icon, max, label }) => {
   const [amount, setAmount] = useState<string | number>("")
   // @ts-ignore
   const Icon = iconMap[icon]
   return (
-    <TokenBalanceInputComponent {...{ max, amount, setAmount }} icon={Icon} />
+    <TokenBalanceInputComponent
+      {...{ max, amount, setAmount, label }}
+      icon={Icon}
+    />
   )
 }
 
@@ -25,6 +28,7 @@ export const TokenBalanceInput = Template.bind({})
 TokenBalanceInput.args = {
   max: 500123.5678,
   icon: "Keep",
+  label: "Keep Amount",
 }
 
 export default {
@@ -33,6 +37,11 @@ export default {
   argTypes: {
     max: {
       description: "The value user clicks the MAX button",
+      control: { type: "text" },
+    },
+    label: {
+      description: "The label above the input",
+      control: { type: "text" },
     },
     icon: {
       description: "Adjusts token icon",
