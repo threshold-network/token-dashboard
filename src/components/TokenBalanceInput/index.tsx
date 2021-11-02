@@ -1,5 +1,6 @@
 import { FC } from "react"
 import {
+  Box,
   Button,
   Icon,
   InputGroup,
@@ -8,12 +9,14 @@ import {
   InputRightElement,
 } from "@chakra-ui/react"
 import NumberInput, { NumberInputValues } from "../NumberInput"
+import { Body3 } from "../Typography"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: any
   max: number
   amount: string | number
   setAmount: (val: string | number) => void
+  label?: string
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -21,6 +24,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   max,
   amount,
   setAmount,
+  label,
   ...inputProps
 }) => {
   const setToMax = () => {
@@ -28,23 +32,30 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   }
 
   return (
-    <InputGroup size="md">
-      <InputLeftElement>
-        <Icon boxSize="20px" as={icon} />
-      </InputLeftElement>
-      <NumberInput
-        paddingLeft="2.5rem"
-        paddingRight="4.5rem"
-        value={amount}
-        onValueChange={(values: NumberInputValues) => setAmount(values.value)}
-        {...inputProps}
-      />
-      <InputRightElement width="4.5rem">
-        <Button h="1.75rem" size="sm" onClick={setToMax}>
-          MAX
-        </Button>
-      </InputRightElement>
-    </InputGroup>
+    <Box>
+      {label && (
+        <Body3 mb={2} fontWeight="bold">
+          {label}
+        </Body3>
+      )}
+      <InputGroup size="md">
+        <InputLeftElement>
+          <Icon boxSize="20px" as={icon} />
+        </InputLeftElement>
+        <NumberInput
+          paddingLeft="2.5rem"
+          paddingRight="4.5rem"
+          value={amount}
+          onValueChange={(values: NumberInputValues) => setAmount(values.value)}
+          {...inputProps}
+        />
+        <InputRightElement width="4.5rem">
+          <Button h="1.75rem" size="sm" onClick={setToMax}>
+            MAX
+          </Button>
+        </InputRightElement>
+      </InputGroup>
+    </Box>
   )
 }
 
