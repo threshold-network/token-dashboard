@@ -16,17 +16,6 @@ export interface UpgradeCardTemplateProps {
   onSubmit: () => void
 }
 
-const UpgradeIcon: FC<{ token: Token }> = ({ token }) => {
-  return (
-    <Box>
-      {token === Token.Keep && <Icon boxSize="32px" as={Keep} />}
-      {token === Token.Nu && <Icon boxSize="32px" as={Nu} />}
-      <Icon boxSize="32px" as={BsArrowRightShort} color="gray.400" />
-      <Icon boxSize="32px" as={T} />
-    </Box>
-  )
-}
-
 const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   token,
   children,
@@ -45,18 +34,18 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   }, [token])
 
   const tConversionText = useMemo(() => {
-    if (token === Token.Nu) {
-      return `1 NU = ${TConversionRates[token]} T`
-    }
-
-    if (token === Token.Keep) {
-      return `1 KEEP = ${TConversionRates[token]} T`
+    switch (token) {
+      case Token.Nu:
+        return `1 NU = ${TConversionRates[token]} T`
+      case Token.Keep:
+        return `1 KEEP = ${TConversionRates[token]} T`
+      default:
+        return ""
     }
   }, [token])
 
   const TConvertedAmount = useMemo(() => {
     // @ts-ignore
-    console.log(TConversionRates[token] * amountToConvert)
     if (amountToConvert === "") return 0
     // @ts-ignore
     const amountT = numeral(TConversionRates[token] * amountToConvert).format(
@@ -69,7 +58,12 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
     <Card maxW="720px">
       <Stack direction="row" justify="space-between">
         <H5>{titleText}</H5>
-        <UpgradeIcon token={token} />
+        <Box>
+          {token === Token.Keep && <Icon boxSize="32px" as={Keep} />}
+          {token === Token.Nu && <Icon boxSize="32px" as={Nu} />}
+          <Icon boxSize="32px" as={BsArrowRightShort} color="gray.400" />
+          <Icon boxSize="32px" as={T} />
+        </Box>
       </Stack>
       <Box mt={6}>
         {children}
