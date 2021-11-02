@@ -18,43 +18,42 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token }) => {
     console.log("time to upgrade!")
   }
 
-  if (token === Token.Nu) {
-    return (
-      <UpgradeCardTemplate
-        token={token}
-        amountToConvert={amount}
-        onSubmit={submitUpgrade}
-      >
-        <TokenBalanceInput
-          label="Nu Amount"
-          amount={amount}
-          setAmount={setAmount}
-          max={keep.balance}
-          icon={NuLight}
-        />
-      </UpgradeCardTemplate>
-    )
+  switch (token) {
+    case Token.Nu:
+      return (
+        <UpgradeCardTemplate
+          token={token}
+          amountToConvert={amount}
+          onSubmit={submitUpgrade}
+        >
+          <TokenBalanceInput
+            label="Nu Amount"
+            amount={amount}
+            setAmount={setAmount}
+            max={keep.balance}
+            icon={NuLight}
+          />
+        </UpgradeCardTemplate>
+      )
+    case Token.Keep:
+      return (
+        <UpgradeCardTemplate
+          token={token}
+          amountToConvert={amount}
+          onSubmit={submitUpgrade}
+        >
+          <TokenBalanceInput
+            label="KEEP Amount"
+            amount={amount}
+            setAmount={setAmount}
+            max={keep.balance}
+            icon={KeepLight}
+          />
+        </UpgradeCardTemplate>
+      )
+    default:
+      return null
   }
-
-  if (token === Token.Keep) {
-    return (
-      <UpgradeCardTemplate
-        token={token}
-        amountToConvert={amount}
-        onSubmit={submitUpgrade}
-      >
-        <TokenBalanceInput
-          label="KEEP Amount"
-          amount={amount}
-          setAmount={setAmount}
-          max={keep.balance}
-          icon={KeepLight}
-        />
-      </UpgradeCardTemplate>
-    )
-  }
-
-  return null
 }
 
 export default UpgradeCard
