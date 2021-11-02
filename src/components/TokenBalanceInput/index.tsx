@@ -9,14 +9,14 @@ import {
 } from "@chakra-ui/react"
 import NumberInput, { NumberInputValues } from "../NumberInput"
 
-interface TokenBalanceInputProps {
+export interface TokenBalanceInputProps extends InputProps {
   icon: any
   max: number
   amount: string | number
   setAmount: (val: string | number) => void
 }
 
-const TokenBalanceInput: FC<InputProps & TokenBalanceInputProps> = ({
+const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   icon,
   max,
   amount,
