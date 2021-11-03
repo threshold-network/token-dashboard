@@ -10,7 +10,7 @@ interface Props {
   connectionStage: LedgerConnectionStage
   modalControls: WalletConnectionModalProps
   loadAddresses: () => void
-  loadAdditionalAddresses: () => void
+  loadAdditionalAddresses: (count: number, offset: number) => Promise<void>
   derivationPath: string
   setDerivationPath: (path: string) => void
   connectionError: string

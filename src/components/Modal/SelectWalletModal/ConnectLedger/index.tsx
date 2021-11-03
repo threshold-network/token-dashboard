@@ -22,7 +22,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
   const [connectionStage, setConnectionStage] = useState<LedgerConnectionStage>(
     LedgerConnectionStage.SelectDerivation
   )
-  const [ledgerAddresses, setLedgerAddresses] = useState([])
+  const [ledgerAddresses, setLedgerAddresses] = useState<string[]>([])
   const [ledgerAddress, setLedgerAddress] = useState<string>("")
   const [connector, setConnector] = useState<LedgerConnector | null>(null)
 
@@ -55,9 +55,14 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     }
   }
 
-  const loadAdditionalAddresses = async () => {
-    const accounts = await connector?.getAccounts(10)
-    setLedgerAddresses(accounts)
+  const loadAdditionalAddresses = async (count: number, offset: number) => {
+    try {
+      const accounts = await connector?.getAccounts(count, offset)
+      setLedgerAddresses(accounts)
+    } catch (error: any) {
+      setConnectionStage(LedgerConnectionStage.SelectDerivation)
+      setConnectionError(error?.message)
+    }
   }
 
   const confirmAddress = async () => {
