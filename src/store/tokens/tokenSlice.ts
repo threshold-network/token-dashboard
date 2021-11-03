@@ -14,6 +14,10 @@ export const tokenSlice = createSlice({
       loading: false,
       balance: 0,
     },
+    [Token.Nu]: {
+      loading: false,
+      balance: 0,
+    },
   } as Record<Token, ReduxTokenInfo>,
   reducers: {
     setTokenLoading: (
