@@ -11,7 +11,7 @@ export interface UpgradeCardProps {
 }
 
 const UpgradeCard: FC<UpgradeCardProps> = ({ token }) => {
-  const { keep } = useReduxToken()
+  const { keep, nu } = useReduxToken()
   const [amount, setAmount] = useState<string | number>("")
 
   const submitUpgrade = () => {
@@ -30,7 +30,7 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token }) => {
             label="Nu Amount"
             amount={amount}
             setAmount={setAmount}
-            max={keep.balance}
+            max={nu.balance}
             icon={NuLight}
           />
         </UpgradeCardTemplate>
