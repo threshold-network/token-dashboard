@@ -1,29 +1,50 @@
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Button,
+  Skeleton,
+} from "@chakra-ui/react"
 import { useReduxToken } from "../hooks/useReduxToken"
 import { useKeep } from "../web3/hooks/useKeep"
-import TokenBalanceInput from "./TokenBalanceInput"
-import KeepLight from "../static/icons/KeepLight"
-import { Stack, Text } from "@chakra-ui/react"
-import { useState } from "react"
+import { useNu } from "../web3/hooks/useNu"
 
 export const ScratchPad = ({}) => {
-  const { keep } = useReduxToken()
-  const { fetchBalance } = useKeep()
+  const { keep, nu } = useReduxToken()
+  const { fetchBalance: fetchKeepBalance } = useKeep()
+  const { fetchBalance: fetchNuBalance } = useNu()
 
-  const [keepAmount, setKeepAmount] = useState<string | number>("")
-
-  if (keep.loading) {
-    return <div>LOADING</div>
-  }
   return (
-    <Stack spacing={4} maxW="md" mt={8}>
-      {keep.balance} <button onClick={fetchBalance}>Fetch again</button>{" "}
-      <TokenBalanceInput
-        amount={keepAmount}
-        setAmount={setKeepAmount}
-        max={keep.balance}
-        icon={KeepLight}
-      />
-      <Text mt={4}>The actual amount to upgrade: {+keepAmount} KEEP</Text>
-    </Stack>
+    <Table>
+      <Thead>
+        <Tr>
+          <Th>Token</Th>
+          <Th>Balance</Th>
+        </Tr>
+      </Thead>
+      <Tbody>
+        <Tr>
+          <Td>Keep</Td>
+          <Td>
+            <Skeleton isLoaded={!keep.loading}>{keep.balance}</Skeleton>
+          </Td>
+          <Td>
+            <Button onClick={fetchKeepBalance}>Fetch</Button>
+          </Td>
+        </Tr>
+        <Tr>
+          <Td>Nu</Td>
+          <Td>
+            <Skeleton isLoaded={!nu.loading}>{nu.balance}</Skeleton>
+          </Td>
+          <Td>
+            <Button onClick={fetchNuBalance}>Fetch</Button>
+          </Td>
+        </Tr>
+      </Tbody>
+    </Table>
   )
 }

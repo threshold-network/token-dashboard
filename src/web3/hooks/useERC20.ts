@@ -30,6 +30,7 @@ export function useErc20TokenContract(
   tokenAddress: string,
   withSignerIfPossible?: boolean
 ) {
+  // TODO: Figure out how to type the ERC20 contract
   // return useContract<Erc20>(tokenAddress, ERC20_ABI, withSignerIfPossible)
   return useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 }
