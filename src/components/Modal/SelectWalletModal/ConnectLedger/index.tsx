@@ -8,7 +8,12 @@ import {
   ledgerLiveConnectorFactory,
 } from "../../../../web3/connectors/ledger"
 import { useWeb3React } from "@web3-react/core"
-import ConnectionStage from "./ConnectionStage"
+import SelectDerivationPath from "./SelectDerivationPath"
+import HardwareAccountSelection from "../components/HardwareAccountSelection"
+import { Icon, useColorModeValue } from "@chakra-ui/react"
+import { Ledger } from "../../../../static/icons/Ledger"
+import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
+import ConfirmConnectedAddress from "../components/ConfirmConnectedAddress"
 
 const ConnectLedger: FC<WalletConnectionModalProps> = ({
   goBack,
@@ -22,7 +27,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
   const [connectionStage, setConnectionStage] = useState<LedgerConnectionStage>(
     LedgerConnectionStage.SelectDerivation
   )
-  const [ledgerAddresses, setLedgerAddresses] = useState<string[]>([])
+  const [ledgerAddressOptions, setLedgerAddressOptions] = useState<string[]>([])
   const [ledgerAddress, setLedgerAddress] = useState<string>("")
   const [connector, setConnector] = useState<LedgerConnector | null>(null)
 
@@ -38,15 +43,13 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     return null
   }, [derivationPath])
 
-  const loadAddresses = async () => {
+  const fetchAddresses = async (count: number, offset: number) => {
     if (connectorFactory) {
       const connectorInstance = connectorFactory()
       connectorInstance?.activate()
-      setConnectionStage(LedgerConnectionStage.LoadAddresses)
       try {
-        const accounts = await connectorInstance.getAccounts()
-        setLedgerAddresses(accounts)
-        setConnectionStage(LedgerConnectionStage.SelectAddress)
+        const accounts = await connectorInstance.getAccounts(count, offset)
+        setLedgerAddressOptions(accounts)
         setConnector(connectorInstance)
       } catch (error: any) {
         setConnectionStage(LedgerConnectionStage.SelectDerivation)
@@ -55,14 +58,8 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
     }
   }
 
-  const loadAdditionalAddresses = async (count: number, offset: number) => {
-    try {
-      const accounts = await connector?.getAccounts(count, offset)
-      setLedgerAddresses(accounts)
-    } catch (error: any) {
-      setConnectionStage(LedgerConnectionStage.SelectDerivation)
-      setConnectionError(error?.message)
-    }
+  const confirmDerivationPath = () => {
+    setConnectionStage(LedgerConnectionStage.SelectAddress)
   }
 
   const confirmAddress = async () => {
@@ -73,23 +70,59 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
 
   const modalControls: WalletConnectionModalProps = { goBack, closeModal }
 
-  return (
-    <ConnectionStage
-      {...{
-        connectionStage,
-        modalControls,
-        loadAddresses,
-        loadAdditionalAddresses,
-        derivationPath,
-        setDerivationPath,
-        connectionError,
-        confirmAddress,
-        ledgerAddress,
-        setLedgerAddress,
-        ledgerAddresses,
-      }}
-    />
-  )
+  switch (connectionStage) {
+    case LedgerConnectionStage.SelectDerivation:
+      return (
+        <SelectDerivationPath
+          {...modalControls}
+          onContinue={confirmDerivationPath}
+          derivationPath={derivationPath}
+          setDerivationPath={setDerivationPath}
+          connectionError={connectionError}
+        />
+      )
+
+    case LedgerConnectionStage.SelectAddress:
+      return (
+        <HardwareAccountSelection
+          {...modalControls}
+          selectedAddress={ledgerAddress}
+          setSelectedAddress={setLedgerAddress}
+          onContinue={confirmAddress}
+          addressOptions={ledgerAddressOptions}
+          fetchAddresses={fetchAddresses}
+          icon={() => (
+            <Icon
+              as={useColorModeValue(Ledger, LedgerWhite)}
+              h="40px"
+              w="40px"
+              mr={4}
+            />
+          )}
+          title="Ledger"
+        />
+      )
+
+    case LedgerConnectionStage.ConfirmSuccess:
+      return (
+        <ConfirmConnectedAddress
+          {...modalControls}
+          icon={() => (
+            <Icon
+              as={useColorModeValue(Ledger, LedgerWhite)}
+              h="40px"
+              w="40px"
+              mr={4}
+            />
+          )}
+          title="Ledger"
+          message="Your Ledger wallet is connected"
+        />
+      )
+
+    default:
+      return null
+  }
 }
 
 export default ConnectLedger
