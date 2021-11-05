@@ -10,16 +10,16 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { LedgerWhite } from "../../../../../static/icons/LedgerWhite"
-import { Ledger } from "../../../../../static/icons/Ledger"
-import { LEDGER_DERIVATION_PATHS } from "../../../../../web3/connectors/ledger_subprovider"
-import { WalletConnectionModalBase } from "../../components"
-import { WalletConnectionModalProps } from "../../../../../types"
+import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
+import { Ledger } from "../../../../static/icons/Ledger"
+import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
+import { WalletConnectionModalBase } from "../components"
+import { WalletConnectionModalProps } from "../../../../types"
 
 interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
   setDerivationPath: (path: string) => void
-  loadAddresses: () => void
+  onContinue: () => void
   connectionError: string
 }
 
@@ -28,7 +28,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
   closeModal,
   derivationPath,
   setDerivationPath,
-  loadAddresses,
+  onContinue,
   connectionError,
 }) => {
   return (
@@ -45,7 +45,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
       }
       title="Ledger"
       subTitle="Plug in Ledger device and unlock. Choose one of the following:"
-      onContinue={loadAddresses}
+      onContinue={onContinue}
     >
       <RadioGroup
         onChange={setDerivationPath}
