@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react"
 import { useReduxToken } from "../hooks/useReduxToken"
 import { useKeep } from "../web3/hooks/useKeep"
-
 import { useNu } from "../web3/hooks/useNu"
 
 export const ScratchPad = ({}) => {
