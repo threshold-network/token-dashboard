@@ -41,6 +41,8 @@ jobs:
 
       - name: Build
         run: yarn build
+        env:
+          PUBLIC_URL: /${{ github.head_ref }}
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
@@ -69,6 +71,8 @@ jobs:
 
       - name: Build
         run: yarn build
+        env:
+          PUBLIC_URL: /${{ github.head_ref }}
 
       # A pull_request event is a PR; deploy to preview testnet bucket.
       - name: Deploy PR preview to GCP
