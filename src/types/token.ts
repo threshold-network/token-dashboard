@@ -28,6 +28,7 @@ export type TokenActionTypes = SetTokenBalance | SetTokenLoading
 export interface UseReduxToken {
   (): {
     keep: ReduxTokenInfo
+    nu: ReduxTokenInfo
     setTokenBalance: (token: Token, balance: number) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
   }
