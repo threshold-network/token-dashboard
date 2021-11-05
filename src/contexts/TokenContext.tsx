@@ -9,6 +9,7 @@ const TokenContext = createContext({})
 export const TokenContextProvider: React.FC = ({ children }) => {
   const { fetchBalance: fetchKeepBalance } = useKeep()
   const { fetchBalance: fetchNuBalance } = useNu()
+
   const { active, account, chainId } = useWeb3React()
 
   React.useEffect(() => {

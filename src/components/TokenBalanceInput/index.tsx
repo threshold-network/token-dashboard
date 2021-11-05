@@ -1,45 +1,61 @@
-import { FC, ReactElement, useState } from "react"
+import { FC } from "react"
 import {
-  InputGroup,
-  Input,
-  InputLeftElement,
-  InputRightElement,
+  Box,
   Button,
-  InputProps,
   Icon,
+  InputGroup,
+  InputLeftElement,
+  InputProps,
+  InputRightElement,
 } from "@chakra-ui/react"
+import NumberInput, { NumberInputValues } from "../NumberInput"
+import { Body3 } from "../Typography"
 
-const TokenBalanceInput: FC<InputProps & { icon?: any; max: number }> = ({
+export interface TokenBalanceInputProps extends InputProps {
+  icon: any
+  max: number
+  amount: string | number
+  setAmount: (val: string | number) => void
+  label?: string
+}
+
+const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   icon,
   max,
+  amount,
+  setAmount,
+  label,
   ...inputProps
 }) => {
-  const [amount, setAmount] = useState(0)
-
   const setToMax = () => {
     setAmount(max)
   }
 
   return (
-    <InputGroup size="md">
-      {icon && (
-        <InputLeftElement width="4.5rem">
-          <Icon h="16px" w="16px" as={icon} />
-        </InputLeftElement>
+    <Box>
+      {label && (
+        <Body3 mb={2} fontWeight="bold">
+          {label}
+        </Body3>
       )}
-      <Input
-        pr="4.5rem"
-        value={amount}
-        type={inputProps.type || "number"}
-        onChange={(e) => e.target.value}
-        {...inputProps}
-      />
-      <InputRightElement width="4.5rem">
-        <Button h="1.75rem" size="sm" onClick={setToMax}>
-          MAX
-        </Button>
-      </InputRightElement>
-    </InputGroup>
+      <InputGroup size="md">
+        <InputLeftElement>
+          <Icon boxSize="20px" as={icon} />
+        </InputLeftElement>
+        <NumberInput
+          paddingLeft="2.5rem"
+          paddingRight="4.5rem"
+          value={amount}
+          onValueChange={(values: NumberInputValues) => setAmount(values.value)}
+          {...inputProps}
+        />
+        <InputRightElement width="4.5rem">
+          <Button h="1.75rem" size="sm" onClick={setToMax}>
+            MAX
+          </Button>
+        </InputRightElement>
+      </InputGroup>
+    </Box>
   )
 }
 
