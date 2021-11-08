@@ -16,9 +16,6 @@ import { RPC_URL } from "../../config"
 interface LedgerConstructionInterface {
   chainId?: string
   url?: string
-  pollingInterval?: number
-  requestTimeoutMs?: number
-  accountFetchingConfigs?: any
   baseDerivationPath?: string
 }
 
@@ -32,29 +29,19 @@ export class LedgerConnector extends AbstractConnector {
 
   public chainId?: string
   public url?: string
-  public pollingInterval?: number
-  public requestTimeoutMs?: number
-  public accountFetchingConfigs?: any
   public baseDerivationPath?: string
   public provider?: any
 
   constructor({
     chainId,
     url,
-    pollingInterval,
-    requestTimeoutMs,
-    accountFetchingConfigs,
     baseDerivationPath,
   }: Partial<LedgerConstructionInterface>) {
     super({ supportedChainIds: [1] })
 
     this.chainId = chainId
     this.url = url
-    this.pollingInterval = pollingInterval
-    this.requestTimeoutMs = requestTimeoutMs
-    this.accountFetchingConfigs = accountFetchingConfigs
     this.baseDerivationPath = baseDerivationPath
-    // this.provider = provider
   }
 
   /**
@@ -90,9 +77,7 @@ export class LedgerConnector extends AbstractConnector {
         return ledgerEthClient
       }
 
-      const engine = new Web3ProviderEngine({
-        pollingInterval: this.pollingInterval,
-      })
+      const engine = new Web3ProviderEngine()
 
       engine.addProvider(
         new LedgerSubprovider({
@@ -100,7 +85,6 @@ export class LedgerConnector extends AbstractConnector {
           chainId: this.chainId as string,
           // @ts-ignore
           ledgerEthereumClientFactoryAsync,
-          accountFetchingConfigs: this.accountFetchingConfigs,
           baseDerivationPath: this.baseDerivationPath,
         })
       )

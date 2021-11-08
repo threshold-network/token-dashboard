@@ -1,4 +1,6 @@
 import { FC, useMemo, useState } from "react"
+import { Icon, useColorModeValue } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalProps } from "../../../../types"
 import { LedgerConnectionStage } from "../../../../enums"
@@ -7,13 +9,11 @@ import {
   ledgerLegacyConnectorFactory,
   ledgerLiveConnectorFactory,
 } from "../../../../web3/connectors/ledger"
-import { useWeb3React } from "@web3-react/core"
 import SelectDerivationPath from "./SelectDerivationPath"
 import HardwareAccountSelection from "../components/HardwareAccountSelection"
-import { Icon, useColorModeValue } from "@chakra-ui/react"
+import ConfirmConnectedAddress from "../components/ConfirmConnectedAddress"
 import { Ledger } from "../../../../static/icons/Ledger"
 import { LedgerWhite } from "../../../../static/icons/LedgerWhite"
-import ConfirmConnectedAddress from "../components/ConfirmConnectedAddress"
 
 const ConnectLedger: FC<WalletConnectionModalProps> = ({
   goBack,
