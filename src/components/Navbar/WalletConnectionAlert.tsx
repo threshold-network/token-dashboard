@@ -44,7 +44,8 @@ const WalletConnectionAlert: FC<{
       status="warning"
       variant="solid"
       position="absolute"
-      w={{ base: "350px", md: "400px" }}
+      w={{ base: "fit-content", md: "400px" }}
+      paddingRight="40px"
       top="50px"
       right="16px"
     >

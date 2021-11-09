@@ -6,27 +6,20 @@ import { Ethereum } from "../../static/icons/Ethereum"
 import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 
 interface NetworkIconMap {
-  [chainId: number]: { icon: ReactElement; bg: string }
+  [chainId: number]: ReactElement
 }
 
 const networkIconMap: NetworkIconMap = {
-  [ChainID.Ethereum]: {
-    icon: <Icon as={Ethereum} />,
-    bg: "blue.500",
-  },
-  [ChainID.Ropsten]: {
-    icon: <Icon as={MdOutlineTrain} color="white" />,
-    bg: "yellow.500",
-  },
+  [ChainID.Ethereum]: <Icon as={Ethereum} />,
+  [ChainID.Ropsten]: <Icon as={MdOutlineTrain} color="white" />,
 }
 
 const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
   const networkIcon = useMemo(
     () =>
-      networkIconMap[chainId || 0] || {
-        icon: <Icon as={BsQuestionCircleFill} color="white" />,
-        bg: "red.500",
-      },
+      networkIconMap[chainId || 0] || (
+        <Icon as={BsQuestionCircleFill} color="white" />
+      ),
     [chainId]
   )
 
@@ -35,25 +28,19 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
       {/* Mobile */}
       <IconButton
         as={Button}
-        _hover={{
-          bg: networkIcon.bg,
-        }}
         display={{
           base: "inherit",
           md: "none",
         }}
-        _active={{
-          bg: networkIcon.bg,
-        }}
-        bg={networkIcon.bg}
-        icon={networkIcon.icon}
+        icon={networkIcon}
         aria-label="network"
+        variant="outline"
       />
 
       {/* Desktop */}
       <Button
         variant="outline"
-        leftIcon={networkIcon.icon}
+        leftIcon={networkIcon}
         display={{ base: "none", md: "inherit" }}
       >
         {chainIdToNetworkName(chainId)}
