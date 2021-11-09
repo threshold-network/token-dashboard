@@ -2,7 +2,6 @@ import { ConnectorUpdate } from "@web3-react/types"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import Web3ProviderEngine from "web3-provider-engine"
 import { TrezorSubprovider } from "@0x/subproviders/lib/src/subproviders/trezor" // https://github.com/0xProject/0x-monorepo/issues/1400
-// import CacheSubprovider from "web3-provider-engine/subproviders/cache.js"
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { RPC_URL_HTTPS } from "../../config"
 
@@ -53,10 +52,12 @@ export class TrezorConnector extends AbstractConnector {
       const TrezorConnect = await import("trezor-connect").then(
         (m) => m?.default ?? m
       )
+
       TrezorConnect.manifest({
         email: this.manifestEmail,
         appUrl: this.manifestAppUrl,
       })
+
       const engine = new Web3ProviderEngine({
         pollingInterval: this.pollingInterval,
       })
@@ -85,14 +86,18 @@ export class TrezorConnector extends AbstractConnector {
   }
 
   public async getAccount() {
-    return null
+    return this.defaultAccount
   }
 
   public async getAccounts(
     numAccounts: number = 10,
     offsetIdx: number = 0
   ): Promise<string[]> {
-    return this.provider._providers[0].getAccountsAsync(numAccounts, offsetIdx)
+    const trezorSubProvider = this.provider._providers[0]
+    const accounts = await trezorSubProvider.getAccountsAsync(
+      numAccounts + offsetIdx
+    )
+    return accounts.slice(numAccounts * -1)
   }
 
   setDefaultAccount(account: string) {

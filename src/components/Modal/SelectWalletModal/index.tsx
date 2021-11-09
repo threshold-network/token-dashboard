@@ -20,6 +20,8 @@ import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
 import { WalletOption } from "../../../types"
+import { Trezor } from "../../../static/icons/Trezor"
+import { TrezorLight } from "../../../static/icons/TrezorLight"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
@@ -56,7 +58,7 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
     {
       id: WalletType.Trezor,
       title: "Trezor",
-      icon: WalletConnectIcon,
+      icon: useColorModeValue(Trezor, TrezorLight),
       onClick: () => {
         setWalletToConnect(WalletType.Trezor)
       },
