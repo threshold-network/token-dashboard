@@ -1,12 +1,4 @@
-import {
-  Button,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuList,
-  useBreakpointValue,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
 import { FC } from "react"
 import shortenAddress from "../../utils/shortenAddress"
 import Identicon from "../Identicon"
@@ -16,17 +8,10 @@ const AccountButton: FC<{
   account?: string | null
   deactivate: () => void
 }> = ({ openWalletModal, account, deactivate }) => {
-  const variant = useBreakpointValue({ base: "secondary", md: "primary" })
-
   if (account) {
     return (
       <Menu>
-        <MenuButton
-          as={Button}
-          leftIcon={<Identicon address={account} />}
-          variant={variant}
-          color={{ base: "white", md: useColorModeValue("white", "gray.900") }}
-        >
+        <MenuButton as={Button} leftIcon={<Identicon address={account} />}>
           {shortenAddress(account)}
         </MenuButton>
         <MenuList>
@@ -36,15 +21,7 @@ const AccountButton: FC<{
     )
   }
 
-  return (
-    <Button
-      variant={variant}
-      onClick={openWalletModal}
-      color={{ base: "white", md: useColorModeValue("white", "gray.900") }}
-    >
-      Connect Wallet
-    </Button>
-  )
+  return <Button onClick={openWalletModal}>Connect Wallet</Button>
 }
 
 export default AccountButton
