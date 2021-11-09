@@ -10,7 +10,7 @@ const ExpanderIcon = () => {
       aria-label="toggle-sidebar"
       position="absolute"
       right="-12px"
-      top="10px"
+      top="30px"
       borderRadius="50%"
       bg={useColorModeValue("white", "gray.800")}
       color="gray.700"
