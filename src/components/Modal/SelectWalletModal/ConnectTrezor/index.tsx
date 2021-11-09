@@ -1,11 +1,15 @@
-import { FC, useState } from "react"
-import { Button, Icon } from "@chakra-ui/react"
+import { FC, useEffect, useMemo, useState } from "react"
+import { Icon, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
-import { TrezorConnectionStage } from "../../../../enums"
+import { ConnectionError, TrezorConnectionStage } from "../../../../enums"
 import HardwareAccountSelection from "../components/HardwareAccountSelection"
 import ConfirmConnectedAddress from "../components/ConfirmConnectedAddress"
 import trezorConnector from "../../../../web3/connectors/trezor"
+import { WalletConnectionModalBase } from "../components"
+import TrezorStatusAlert from "../components/TrezorStatusAlert"
+import { Trezor } from "../../../../static/icons/Trezor"
+import { TrezorLight } from "../../../../static/icons/TrezorLight"
 
 const ConnectTrezor: FC<WalletConnectionModalProps> = ({
   goBack,
@@ -18,12 +22,21 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
   )
   const [trezorAddressOptions, setTrezorAddressOptions] = useState<string[]>([])
   const [selectedTrezorAddress, setSlectedTrezorAddress] = useState<string>("")
+
+  const connectionRejected = useMemo(() => {
+    return (
+      connectionError === ConnectionError.TrezorCancelled ||
+      connectionError === ConnectionError.TrezorDenied
+    )
+  }, [connectionError])
+
   const connector = trezorConnector
 
   const fetchAddresses = async (count: number, offset: number) => {
-    connector?.activate()
+    await connector?.activate()
     try {
       const accounts = await connector.getAccounts(count, offset)
+
       setTrezorAddressOptions(accounts)
       setConnectionStage(TrezorConnectionStage.SelectAddress)
     } catch (error: any) {
@@ -40,13 +53,25 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
 
   const modalControls: WalletConnectionModalProps = { goBack, closeModal }
 
+  useEffect(() => {
+    fetchAddresses(10, 0)
+  }, [])
+
   switch (connectionStage) {
     case TrezorConnectionStage.InitializeTrezorConnection:
       return (
-        <div>
-          connect trezor
-          <Button onClick={() => fetchAddresses(10, 0)}>connect</Button>
-        </div>
+        <WalletConnectionModalBase
+          goBack={goBack}
+          closeModal={closeModal}
+          WalletIcon={useColorModeValue(Trezor, TrezorLight)}
+          title="Trezor"
+          subTitle="Plug in your Trezor device. If the setup screen doesn’t load right away, go to the Trezor setup"
+          tryAgain={
+            connectionRejected ? () => fetchAddresses(10, 0) : undefined
+          }
+        >
+          <TrezorStatusAlert connectionRejected={connectionRejected} />
+        </WalletConnectionModalBase>
       )
     case TrezorConnectionStage.SelectAddress:
       return (
@@ -57,8 +82,16 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
           onContinue={confirmAddress}
           addressOptions={trezorAddressOptions}
           fetchAddresses={fetchAddresses}
-          icon={() => <Icon h="40px" w="40px" mr={4} />}
+          icon={() => (
+            <Icon
+              h="40px"
+              w="40px"
+              mr={4}
+              as={useColorModeValue(Trezor, TrezorLight)}
+            />
+          )}
           title="Trezor"
+          eagerFetch={false}
         />
       )
 

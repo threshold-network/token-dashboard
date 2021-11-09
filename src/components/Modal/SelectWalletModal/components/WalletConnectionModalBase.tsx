@@ -12,7 +12,6 @@ import {
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
-import { ConnectionError } from "../../../../enums"
 import { Body2, H4 } from "../../../Typography"
 
 interface Props extends WalletConnectionModalProps {
@@ -67,7 +66,7 @@ const WalletConnectionModalBase: FC<Props> = ({
           Change Wallet
         </Button>
 
-        {error?.message.includes(ConnectionError.rejectedConnection) && (
+        {tryAgain && (
           <Button ml={4} onClick={tryAgain}>
             Try again
           </Button>

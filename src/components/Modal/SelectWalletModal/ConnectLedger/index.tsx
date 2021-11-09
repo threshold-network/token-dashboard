@@ -100,6 +100,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
             />
           )}
           title="Ledger"
+          eagerFetch
         />
       )
 

@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit"
 import { modalSlice } from "./modal"
+import { tokenSlice } from "./tokens"
 
 const store = configureStore({
   reducer: {
     modal: modalSlice.reducer,
+    token: tokenSlice.reducer,
   },
 })
 
