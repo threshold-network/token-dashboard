@@ -23,14 +23,18 @@ export const ScratchPad = ({}) => {
         <Tr>
           <Th>Token</Th>
           <Th>Balance</Th>
+          <Th>USD conversion</Th>
         </Tr>
       </Thead>
       <Tbody>
         <Tr>
           <Td>Keep</Td>
           <Td>
-            <Skeleton isLoaded={!keep.loading}>{keep.balance}</Skeleton>
+            <Skeleton isLoaded={!keep.loading}>
+              {keep.balance} ({keep.usdBalance})
+            </Skeleton>
           </Td>
+          <Td>{keep.usdConversion}</Td>
           <Td>
             <Button onClick={fetchKeepBalance}>Fetch</Button>
           </Td>
@@ -38,8 +42,11 @@ export const ScratchPad = ({}) => {
         <Tr>
           <Td>Nu</Td>
           <Td>
-            <Skeleton isLoaded={!nu.loading}>{nu.balance}</Skeleton>
+            <Skeleton isLoaded={!nu.loading}>
+              {nu.balance} ({nu.usdBalance})
+            </Skeleton>
           </Td>
+          <Td>{nu.usdConversion}</Td>
           <Td>
             <Button onClick={fetchNuBalance}>Fetch</Button>
           </Td>

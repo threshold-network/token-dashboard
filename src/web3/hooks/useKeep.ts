@@ -18,7 +18,6 @@ export const useKeep = () => {
   const keepContract = useErc20TokenContract(contractAddress)
 
   const fetchBalance = useCallback(async () => {
-    console.log("fetching balance for: ", contractAddress)
     if (account && keepContract) {
       try {
         setTokenLoading(Token.Keep, true)
@@ -28,7 +27,6 @@ export const useKeep = () => {
         setTokenBalance(Token.Keep, balance)
         setTokenLoading(Token.Keep, false)
       } catch (error) {
-        console.log(error)
         setTokenLoading(Token.Keep, false)
         console.log(`Error: Fetching KEEP balance failed for ${account}`, error)
       }
