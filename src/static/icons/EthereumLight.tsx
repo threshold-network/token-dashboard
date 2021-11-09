@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-export const Ethereum = createIcon({
-  displayName: "Ethereum",
+export const EthereumLight = createIcon({
+  displayName: "EthereumLight",
   viewBox: "0 0 24 24",
   path: (
     <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
