@@ -4,6 +4,7 @@ import { useSidebar } from "../../hooks/useSidebar"
 import { Body1, Body3 } from "../Typography"
 import { ExternalLink } from "../../enums"
 import { FC } from "react"
+import DarkModeSwitcher from "../DarkModeSwitcher"
 
 const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   href,
@@ -41,6 +42,7 @@ const SidebarFooter = () => {
       width="100%"
       spacing={4}
     >
+      <DarkModeSwitcher />
       <FooterItem
         text="Github"
         href={ExternalLink.THRESHOLD_GITHUB}
