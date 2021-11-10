@@ -1,10 +1,18 @@
-import { HStack, Icon, Link, Stack, useColorModeValue } from "@chakra-ui/react"
+import {
+  Button,
+  HStack,
+  Icon,
+  IconButton,
+  Link,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { BsDiscord, BsGithub } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
 import { Body1, Body3 } from "../Typography"
 import { ExternalLink } from "../../enums"
 import { FC } from "react"
-import DarkModeSwitcher from "../DarkModeSwitcher"
+import DarkModeSwitcher from "./DarkModeSwitcher"
 
 const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   href,
@@ -13,19 +21,28 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
 }) => {
   const { isOpen } = useSidebar()
   return (
-    <HStack as={Link} href={href} target="_blank">
-      <Icon
-        h={6}
-        w={6}
-        as={icon}
-        color="gray.300"
-        m={isOpen ? undefined : "auto"}
-        mr={isOpen ? 2 : undefined}
-      />
-      {isOpen && (
-        <Body1 fontWeight="bold" color="gray.300">
+    <HStack
+      as={Link}
+      href={href}
+      target="_blank"
+      tabIndex={-1}
+      _hover={{ textDecoration: "none" }}
+    >
+      {isOpen ? (
+        <Button
+          variant="side-bar"
+          leftIcon={<Icon as={icon} />}
+          w="100%"
+          justifyContent="flex-start"
+        >
           {text}
-        </Body1>
+        </Button>
+      ) : (
+        <IconButton
+          variant="side-bar"
+          aria-label={text}
+          icon={<Icon boxSize="24px" as={icon} />}
+        />
       )}
     </HStack>
   )
@@ -40,7 +57,7 @@ const SidebarFooter = () => {
       borderColor={useColorModeValue("gray.100", "gray.700")}
       padding={4}
       width="100%"
-      spacing={4}
+      // spacing={4}
     >
       <DarkModeSwitcher />
       <FooterItem

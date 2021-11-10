@@ -1,5 +1,6 @@
+import "focus-visible/dist/focus-visible"
 import { FC } from "react"
-import { Box, ChakraProvider, Container, Heading } from "@chakra-ui/react"
+import { Box, ChakraProvider, Container } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { Web3ReactProvider } from "@web3-react/core"
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom"

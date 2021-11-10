@@ -61,6 +61,7 @@ export const Button = {
     },
     "side-bar": (props: any) => {
       const { isOpen } = props
+
       return {
         bg: "transparent",
         display: "flex",
