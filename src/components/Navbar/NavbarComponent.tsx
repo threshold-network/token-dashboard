@@ -38,7 +38,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         maxW="6xl"
         position="relative"
       >
-        <HamburgerButton display={{ base: "block", md: "none" }} />
+        <Box>
+          <HamburgerButton display={{ base: "block", md: "none" }} />
+        </Box>
         <Stack spacing={4} direction="row">
           {chainId && <NetworkButton chainId={chainId} />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />

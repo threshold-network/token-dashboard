@@ -55,9 +55,7 @@ const SidebarFooter = () => {
       />
       <Stack>
         {isOpen && <Body3 color="gray.300">Threshold Network</Body3>}
-        <Body3 color="gray.300" mt="0 !important">
-          &copy; {new Date().getFullYear()}
-        </Body3>
+        <Body3 color="gray.300">&copy; {new Date().getFullYear()}</Body3>
       </Stack>
     </Stack>
   )
