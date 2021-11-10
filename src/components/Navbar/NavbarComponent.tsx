@@ -8,7 +8,7 @@ import {
 import { FC } from "react"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import HamburgerButton from "./HamburgerButton"
-import DarkModeSwitcher from "./DarkModeSwitcher"
+import DarkModeSwitcher from "../DarkModeSwitcher"
 import AccountButton from "./AccountButton"
 import NetworkButton from "./NetworkButton"
 
@@ -38,10 +38,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         maxW="6xl"
         position="relative"
       >
-        <HStack>
-          <DarkModeSwitcher />
-          <HamburgerButton display={{ base: "block", md: "none" }} />
-        </HStack>
+        <HamburgerButton display={{ base: "block", md: "none" }} />
         <Stack spacing={4} direction="row">
           {chainId && <NetworkButton chainId={chainId} />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />
