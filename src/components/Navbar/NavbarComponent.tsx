@@ -8,7 +8,7 @@ import {
 import { FC } from "react"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import HamburgerButton from "./HamburgerButton"
-import DarkModeSwitcher from "../DarkModeSwitcher"
+import DarkModeSwitcher from "../Sidebar/DarkModeSwitcher"
 import AccountButton from "./AccountButton"
 import NetworkButton from "./NetworkButton"
 

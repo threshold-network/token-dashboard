@@ -22,7 +22,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
   const { isOpen } = useSidebar()
 
   return (
-    <Box position="relative">
+    <Box position="relative" my={2}>
       {/* Active Border Highlight */}
       {isActive && (
         <Box
@@ -47,7 +47,12 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         gutter={32}
         arrowSize={16}
       >
-        <Link as={RouterLink} to={href} _hover={{ textDecoration: "none" }}>
+        <Link
+          as={RouterLink}
+          to={href}
+          _hover={{ textDecoration: "none" }}
+          tabIndex={-1}
+        >
           {isOpen ? (
             <Button
               isOpen
