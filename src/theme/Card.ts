@@ -4,9 +4,10 @@ export const Card = {
     alignItems: "center",
     gap: 6,
     border: "1px solid",
-    borderColor: "gray.300",
+    borderColor: "gray.100",
     boxShadow: "md",
     borderRadius: "lg",
     padding: 6,
+    width: "100%",
   },
 }

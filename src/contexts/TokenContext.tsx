@@ -12,7 +12,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const { fetchBalance: fetchKeepBalance } = useKeep()
   const { fetchBalance: fetchNuBalance } = useNu()
   const { active, chainId } = useWeb3React()
-  const { fetchTokenPriceUSD } = useReduxToken()
+  const { fetchTokenPriceUSD, setTokenBalance } = useReduxToken()
 
   React.useEffect(() => {
     for (const token in Token) {
@@ -27,6 +27,14 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     if (active) {
       fetchKeepBalance()
       fetchNuBalance()
+    } else {
+      // set all token balances to 0 if the user disconnects the wallet
+      for (const token in Token) {
+        if (token) {
+          // @ts-ignore
+          setTokenBalance(Token[token], 0)
+        }
+      }
     }
   }, [active, chainId])
 
