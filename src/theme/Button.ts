@@ -59,5 +59,20 @@ export const Button = {
         },
       }
     },
+    "side-bar": (props: any) => {
+      const { isOpen } = props
+      return {
+        bg: "transparent",
+        display: "flex",
+        margin: "auto",
+        height: "56px",
+        width: isOpen ? undefined : "56px",
+        color: mode("gray.500", "gray.300")(props),
+        _hover: {
+          bg: mode("brand.50", "whiteAlpha.400")(props),
+          color: mode("brand.500", "brand.50")(props),
+        },
+      }
+    },
   },
 }

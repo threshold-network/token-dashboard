@@ -1,14 +1,8 @@
 import { FC } from "react"
-import {
-  Box,
-  ChakraProvider,
-  Container,
-  Heading,
-  HStack,
-} from "@chakra-ui/react"
+import { Box, ChakraProvider, Container, Heading } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { Web3ReactProvider } from "@web3-react/core"
-import { BrowserRouter as Router } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom"
 import { TokenContextProvider } from "./contexts/TokenContext"
 import theme from "./theme"
 import reduxStore from "./store"
@@ -16,7 +10,9 @@ import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
-import { ScratchPad } from "./components/ScratchPad"
+import { ScratchPad } from "./pages/ScratchPad"
+import Upgrade from "./pages/Upgrade"
+import Portfolio from "./pages/Portfolio"
 
 const App: FC = () => {
   return (
@@ -26,14 +22,16 @@ const App: FC = () => {
           <ChakraProvider theme={theme}>
             <TokenContextProvider>
               <ModalRoot />
-
               <Box display="flex">
                 <Sidebar />
                 <Box w="100%">
                   <Navbar />
                   <Container maxW="6xl" data-cy="app-container">
-                    <Heading>Threshold Token Dashboard</Heading>
-                    <ScratchPad />
+                    <Switch>
+                      <Route exact path="/" component={ScratchPad} />
+                      <Route path="/upgrade" component={Upgrade} />
+                      <Route path="/portfolio" component={Portfolio} />
+                    </Switch>
                   </Container>
                 </Box>
               </Box>
