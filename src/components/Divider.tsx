@@ -1,12 +1,12 @@
 import { FC } from "react"
 import {
-  Icon,
   Box,
   Divider as ChakraDivider,
   DividerProps,
-  useMultiStyleConfig,
+  Icon,
   IconProps,
   StylesProvider,
+  useMultiStyleConfig,
   useStyles,
 } from "@chakra-ui/react"
 import { HTMLChakraProps } from "@chakra-ui/system"
