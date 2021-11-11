@@ -38,7 +38,7 @@ export interface UseReduxToken {
 }
 
 export interface BalanceOf {
-  (token: Token): Promise<number>
+  (token: Token): Promise<void>
 }
 
 export interface Approve {

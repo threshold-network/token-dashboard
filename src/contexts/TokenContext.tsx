@@ -9,8 +9,8 @@ const TokenContext = createContext({})
 
 // Context that handles data fetching when a user connects their wallet or switches their network
 export const TokenContextProvider: React.FC = ({ children }) => {
-  const { fetchBalance: fetchKeepBalance } = useKeep()
-  const { fetchBalance: fetchNuBalance } = useNu()
+  const { fetchKeepBalance } = useKeep()
+  const { fetchNuBalance } = useNu()
   const { active, chainId } = useWeb3React()
   const { fetchTokenPriceUSD, setTokenBalance } = useReduxToken()
 

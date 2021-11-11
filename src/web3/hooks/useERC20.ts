@@ -67,8 +67,6 @@ export const useErc20TokenContract: UseErc20Interface = (
           )
         }
       }
-
-      return 0
     },
     [account, contract]
   )
