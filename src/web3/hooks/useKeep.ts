@@ -6,16 +6,28 @@ import { Token } from "../../enums"
 const KEEP_MAINNET = "0x85eee30c52b0b379b046fb0f85f4f3dc3009afec"
 const KEEP_ROPSTEN = "0xab584929f7e0d994617209d7207527b5ed8da57e"
 
+export interface UseKeep {
+  (): {
+    approveKeep: () => void
+    fetchKeepBalance: () => void
+  }
+}
+
 export const useKeep = () => {
   const { chainId } = useWeb3React()
   const contractAddress = chainId === 3 ? KEEP_ROPSTEN : KEEP_MAINNET
-  const { balanceOf } = useErc20TokenContract(contractAddress)
+  const { balanceOf, approve } = useErc20TokenContract(contractAddress)
 
-  const fetchBalance = () => {
+  const approveKeep = () => {
+    approve(Token.Keep)
+  }
+
+  const fetchKeepBalance = () => {
     balanceOf(Token.Keep)
   }
 
   return {
-    fetchBalance,
+    approveKeep,
+    fetchKeepBalance,
   }
 }
