@@ -1,4 +1,4 @@
-import { extendTheme } from "@chakra-ui/react"
+import { extendTheme, theme } from "@chakra-ui/react"
 import { Button } from "./Button"
 import { Badge } from "./Badge"
 import { Alert } from "./Alert"
@@ -6,6 +6,32 @@ import { Divider } from "./Divider"
 import { Card } from "./Card"
 
 const colors = {
+  brand: {
+    50: "#FAF9FF",
+    100: "#D5C6FF",
+    // 200
+    300: "#9974FF",
+    // 400
+    500: "#7038F1", // main Threshold brand color
+    550: "#7C47EE", // main Threshold brand color - DARK MODE
+    // 600
+    700: "#4E2E99",
+    800: "#3B257A",
+    900: "#1C0758",
+  },
+  gray: {
+    ...theme.colors.gray,
+    50: "#F6F7FA",
+    100: "#E2E8F0",
+    // 200
+    300: "#B1BCCC",
+    // 400
+    500: "#718096",
+    // 600
+    700: "#4A5568",
+    800: "#323A47",
+    900: "#1D2229",
+  },
   yellow: {
     50: "#FFFBE6",
     100: "#FFF1B8",

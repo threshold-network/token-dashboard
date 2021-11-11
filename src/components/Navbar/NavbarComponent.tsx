@@ -29,7 +29,8 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
     <Box
       py={4}
       px={{ base: 0, md: 4 }}
-      bg={{ base: "gray.800", md: useColorModeValue("white", "gray.800") }}
+      borderBottom={{ base: "1px", md: "none" }}
+      borderColor="gray.100"
     >
       <Container
         display="flex"
