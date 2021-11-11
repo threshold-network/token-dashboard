@@ -27,7 +27,6 @@ export const useKeep = () => {
         setTokenBalance(Token.Keep, balance)
         setTokenLoading(Token.Keep, false)
       } catch (error) {
-        console.log(error)
         setTokenLoading(Token.Keep, false)
         console.log(`Error: Fetching KEEP balance failed for ${account}`, error)
       }
