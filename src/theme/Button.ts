@@ -1,93 +1,63 @@
 import { mode } from "@chakra-ui/theme-tools"
-import { getColorFromProps as gcfp } from "./utils"
-import { theme } from "@chakra-ui/react"
 
 export const Button = {
   defaultProps: {
     colorScheme: "brand",
   },
   variants: {
-    link: {
-      backgroundColor: "transparent",
-      _hover: {
-        backgroundColor: "transparent",
-      },
-      _active: {
-        backgroundColor: "transparent",
-      },
-    },
-    primary: (props: any) => {
-      return {
-        ...theme.components.Button.variants.solid(props),
-        _disabled: {
-          backgroundColor: gcfp(props, 500, "gray.400"),
-        },
+    solid: (props: any) => {
+      const _disabled = {
+        backgroundColor: "gray.100",
+        color: "gray.700",
       }
-    },
-    secondary: (props: any) => {
-      return {
-        ...theme.components.Button.variants.outline(props),
-        borderColor:
-          props.colorScheme === "brand"
-            ? "gray.400"
-            : gcfp(props, 600, "gray.200"),
-        backgroundColor: "transparent",
-        color: mode(
-          gcfp(props, 600, "gray.700"),
-          gcfp(props, 100, "white")
-        )(props),
-        _active: {
-          backgroundColor: gcfp(props, 600, "gray.300"),
-        },
-        _hover: {
-          borderColor:
-            props.colorScheme === "brand"
-              ? "gray.400"
-              : gcfp(props, 600, "gray.200"),
-          backgroundColor:
-            props.colorScheme === "brand"
-              ? "gray.100"
-              : gcfp(props, 50, "transparent"),
-          color: gcfp(props, 600, "gray.700"),
-        },
-        _disabled: {
-          color: gcfp(props, 600, "gray.700"),
-          backgroundColor: "white",
-          borderColor:
-            props.colorScheme === "brand"
-              ? "gray.200"
-              : gcfp(props, 400, "gray.200"),
-        },
-      }
-    },
-    tertiary: (props: any) => {
-      const ghostStyles = theme.components.Button.variants.ghost(props)
 
+      if (props.colorScheme === "brand") {
+        return {
+          color: "white",
+          backgroundColor: mode("brand.500", "brand.550")(props),
+          _disabled,
+          _hover: {
+            backgroundColor: "brand.700",
+            _disabled,
+          },
+          _active: {
+            backgroundColor: mode("brand.900", "brand.800")(props),
+          },
+        }
+      }
+    },
+    outline: (props: any) => {
+      if (props.colorScheme === "brand") {
+        return {
+          color: mode("gray.700", "gray.50")(props),
+          borderColor: "gray.300",
+          _hover: {
+            backgroundColor: mode("gray.100", "gray.700")(props),
+          },
+
+          _active: {
+            backgroundColor: mode("gray.700", "gray.800")(props),
+          },
+
+          _disabled: {
+            opacity: 0.25,
+          },
+        }
+      }
+    },
+    ghost: (props: any) => {
       return {
-        ...ghostStyles,
+        color: mode("gray.700", "gray.50")(props),
         _hover: {
-          bg: props.colorScheme === "brand" ? "gray.100" : gcfp(props, 50),
+          backgroundColor: mode("gray.100", "gray.700")(props),
         },
         _active: {
-          bg: props.colorScheme === "brand" ? "gray.300" : gcfp(props, 100),
+          backgroundColor: mode("gray.300", "gray.800")(props),
         },
         _disabled: {
-          bg: "transparent",
+          opacity: 0.25,
         },
       }
     },
   },
-  baseStyle: (props: any) => ({
-    backgroundColor: mode("gray.600", "gray.200")(props),
-    color: "white",
-    _active: {
-      backgroundColor: mode("gray.600", "gray.400")(props),
-    },
-    _hover: {
-      backgroundColor: mode("gray.700", "gray.300")(props),
-    },
-    _disabled: {
-      backgroundColor: "gray.400",
-    },
-  }),
 }
