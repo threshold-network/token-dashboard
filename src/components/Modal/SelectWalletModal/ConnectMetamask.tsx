@@ -9,14 +9,14 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
   closeModal,
 }) => {
-  const { activate, active, account, error } = useWeb3React()
+  const { activate, error } = useWeb3React()
 
   const metamaskNotInstalled = error?.message.includes(
-    ConnectionError.metamaskNotInstalled
+    ConnectionError.MetamaskNotInstalled
   )
 
   const connectionRejected = error?.message.includes(
-    ConnectionError.rejectedConnection
+    ConnectionError.RejectedConnection
   )
 
   return (
@@ -30,12 +30,11 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
           ? ""
           : "The MetaMask extension will open in an external window."
       }
-      tryAgain={() => activate(injected)}
+      tryAgain={connectionRejected ? () => activate(injected) : undefined}
     >
       <MetamaskStatusAlert
         metamaskNotInstalled={metamaskNotInstalled}
         connectionRejected={connectionRejected}
-        active={active && !!account}
       />
     </WalletConnectionModalBase>
   )

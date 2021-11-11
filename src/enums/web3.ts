@@ -9,13 +9,22 @@ export enum LedgerConnectionStage {
   ConfirmSuccess = "CONFIRM_SUCCESS",
 }
 
+export enum TrezorConnectionStage {
+  InitializeTrezorConnection = "INITIALIZE_TREZOR_CONNECTION",
+  SelectAddress = "SELECT_ADDRESS",
+  ConfirmSuccess = "CONFIRM_SUCCESS",
+}
+
 export enum ConnectionError {
-  metamaskNotInstalled = "No Ethereum provider was found on window.ethereum",
-  rejectedConnection = "The user rejected the request.",
+  MetamaskNotInstalled = "No Ethereum provider was found on window.ethereum",
+  RejectedConnection = "The user rejected the request.",
+  TrezorDenied = "Popup closed",
+  TrezorCancelled = "Cancelled",
 }
 
 export enum WalletType {
   Metamask = "METAMASK",
   Ledger = "LEDGER",
   WalletConnect = "WALLET_CONNECT",
+  Trezor = "TREZOR",
 }
