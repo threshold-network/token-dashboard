@@ -13,7 +13,7 @@ const ConnectWalletConnect: FC<{ goBack: () => void; closeModal: () => void }> =
     const { error, activate, active, account } = useWeb3React()
 
     const connectionRejected = error?.message.includes(
-      ConnectionError.rejectedConnection
+      ConnectionError.RejectedConnection
     )
 
     return (
