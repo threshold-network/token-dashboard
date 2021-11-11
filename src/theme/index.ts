@@ -3,6 +3,7 @@ import { Button } from "./Button"
 import { Badge } from "./Badge"
 import { Alert } from "./Alert"
 import { Divider } from "./Divider"
+import { Card } from "./Card"
 
 const colors = {
   yellow: {
@@ -33,6 +34,7 @@ const index = extendTheme({
     Alert,
     Button,
     Badge,
+    Card,
     Divider,
   },
 })
