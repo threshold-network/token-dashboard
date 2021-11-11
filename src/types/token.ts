@@ -36,3 +36,18 @@ export interface UseReduxToken {
     fetchTokenPriceUSD: (token: Token) => void
   }
 }
+
+export interface BalanceOf {
+  (token: Token): Promise<number>
+}
+
+export interface Approve {
+  (token: Token): any
+}
+
+export interface UseErc20Interface {
+  (tokenAddress: string): {
+    approve: Approve
+    balanceOf: BalanceOf
+  }
+}
