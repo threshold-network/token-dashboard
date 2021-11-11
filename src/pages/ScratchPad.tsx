@@ -1,7 +1,7 @@
 import { Stack, HStack } from "@chakra-ui/react"
-import UpgradeCard from "./UpgradeCard"
+import UpgradeCard from "./../components/UpgradeCard"
 import { Token } from "../enums"
-import TokenBalanceCard from "./TokenBalanceCard"
+import TokenBalanceCard from "../components/TokenBalanceCard"
 
 export const ScratchPad = ({}) => {
   return (
