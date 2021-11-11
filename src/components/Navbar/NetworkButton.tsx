@@ -31,6 +31,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
       networkIconMap[chainId || 0] || (
         <Icon as={BsQuestionCircleFill} color="white" />
       ),
+
     [chainId]
   )
 
@@ -45,7 +46,6 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
         }}
         icon={networkIcon}
         aria-label="network"
-        variant="outline"
       />
 
       {/* Desktop */}
