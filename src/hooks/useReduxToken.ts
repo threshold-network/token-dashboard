@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux"
 import {
   setTokenBalance as setTokenBalanceAction,
   setTokenLoading as setTokenLoadingAction,
+  fetchTokenPriceUSD as fetchTokenPriceAction,
 } from "../store/tokens"
 import { RootState } from "../store"
 import { Token } from "../enums"
@@ -19,9 +20,13 @@ export const useReduxToken: UseReduxToken = () => {
   const setTokenLoading = (token: Token, loading: boolean) =>
     dispatch(setTokenLoadingAction({ token, loading }))
 
+  const fetchTokenPriceUSD = (token: Token) =>
+    dispatch(fetchTokenPriceAction({ token }))
+
   return {
     keep,
     nu,
+    fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
   }

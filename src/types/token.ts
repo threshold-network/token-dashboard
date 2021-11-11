@@ -3,6 +3,8 @@ import { Token } from "../enums"
 export interface ReduxTokenInfo {
   loading: boolean
   balance: number
+  usdConversion: number
+  usdBalance: string
 }
 
 export interface SetTokenBalanceActionPayload {
@@ -31,5 +33,6 @@ export interface UseReduxToken {
     nu: ReduxTokenInfo
     setTokenBalance: (token: Token, balance: number) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
+    fetchTokenPriceUSD: (token: Token) => void
   }
 }
