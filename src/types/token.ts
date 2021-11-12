@@ -1,4 +1,5 @@
 import { Token } from "../enums"
+import { TransactionType } from "../enums/transactionType"
 
 export interface ReduxTokenInfo {
   loading: boolean
@@ -42,11 +43,11 @@ export interface BalanceOf {
 }
 
 export interface Approve {
-  (token: Token): any
+  (transactionType: TransactionType): any
 }
 
 export interface UseErc20Interface {
-  (tokenAddress: string): {
+  (tokenAddress: string, withSignerIfPossible?: boolean): {
     approve: Approve
     balanceOf: BalanceOf
   }

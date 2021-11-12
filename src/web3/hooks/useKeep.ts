@@ -1,6 +1,7 @@
 import { useErc20TokenContract } from "./useERC20"
 import { useWeb3React } from "@web3-react/core"
 import { Token } from "../../enums"
+import { TransactionType } from "../../enums/transactionType"
 
 // TODO grab these from env?
 const KEEP_MAINNET = "0x85eee30c52b0b379b046fb0f85f4f3dc3009afec"
@@ -19,7 +20,7 @@ export const useKeep = () => {
   const { balanceOf, approve } = useErc20TokenContract(contractAddress)
 
   const approveKeep = () => {
-    approve(Token.Keep)
+    approve(TransactionType.ApproveKeep)
   }
 
   const fetchKeepBalance = () => {
