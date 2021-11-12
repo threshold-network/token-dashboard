@@ -1,6 +1,7 @@
 import { useErc20TokenContract } from "./useERC20"
 import { useWeb3React } from "@web3-react/core"
 import { Token } from "../../enums"
+import { TransactionType } from "../../enums/transactionType"
 
 // TODO grab these from env?
 const NU_MAINNET = "0x4fe83213d56308330ec302a8bd641f1d0113a4cc"
@@ -20,7 +21,7 @@ export const useNu: UseNu = () => {
   const { balanceOf, approve } = useErc20TokenContract(contractAddress)
 
   const approveNu = () => {
-    approve(Token.Nu)
+    approve(TransactionType.ApproveNu)
   }
 
   const fetchNuBalance = () => {

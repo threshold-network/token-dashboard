@@ -1,9 +1,10 @@
 import { ConnectorUpdate } from "@web3-react/types"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import Web3ProviderEngine from "web3-provider-engine"
-import { TrezorSubprovider } from "@0x/subproviders/lib/src/subproviders/trezor" // https://github.com/0xProject/0x-monorepo/issues/1400
+// import { TrezorSubprovider } from "@0x/subproviders/lib/src/subproviders/trezor" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { RPC_URL_HTTPS } from "../../config"
+import { TrezorSubprovider } from "./trezor_subprovider"
 
 interface TrezorConnectorArguments {
   chainId: number

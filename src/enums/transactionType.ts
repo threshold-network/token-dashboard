@@ -7,7 +7,8 @@ export enum TransactionType {
 
 export enum TransactionStatus {
   Idle = "IDLE",
-  Pending = "PENDING",
+  PendingWallet = "PENDING_WALLET",
+  PendingOnChain = "PENDING_ON_CHAIN",
   Rejected = "REJECTED",
   Failed = "FAILED",
   Succeeded = "SUCCEEDED",
