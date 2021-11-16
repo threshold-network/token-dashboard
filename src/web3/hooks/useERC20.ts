@@ -50,9 +50,7 @@ export const useErc20TokenContract: UseErc20Interface = (
     async (transactionType) => {
       if (account) {
         try {
-          console.log("setting pending status")
           setTransactionStatus(transactionType, TransactionStatus.PendingWallet)
-          console.log("firing off tx with contract ", contract)
           const tx = await contract?.approve(
             tokenAddress,
             MaxUint256.toString()
@@ -64,7 +62,6 @@ export const useErc20TokenContract: UseErc20Interface = (
           await tx.wait(1)
           setTransactionStatus(transactionType, TransactionStatus.Succeeded)
         } catch (error: any) {
-          console.log("error ", error)
           setTransactionStatus(
             transactionType,
             isWalletRejectionError(error)

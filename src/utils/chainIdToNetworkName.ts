@@ -10,6 +10,7 @@ const networkMap: NetworkMap = {
   // 4: "Rinkeby",
   // 5: "Goerli",
   // 42: "Kovan",
+  [ChainID.Localhost]: "Localhost",
 }
 
 const chainIdToNetworkName = (chainId = 1): string => {
