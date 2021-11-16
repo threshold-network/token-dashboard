@@ -1,6 +1,7 @@
 export enum ChainID {
   Ethereum = 1,
   Ropsten = 3,
+  Localhost = 1337,
 }
 
 export enum LedgerConnectionStage {
