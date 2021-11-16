@@ -52,6 +52,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
         setLedgerAddressOptions(accounts)
         setConnector(connectorInstance)
       } catch (error: any) {
+        console.log(error)
         setConnectionStage(LedgerConnectionStage.SelectDerivation)
         setConnectionError(error?.message)
       }

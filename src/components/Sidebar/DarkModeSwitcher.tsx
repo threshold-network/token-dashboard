@@ -7,6 +7,7 @@ import {
 } from "@chakra-ui/react"
 import { MoonIcon, SunIcon } from "@chakra-ui/icons"
 import { useSidebar } from "../../hooks/useSidebar"
+import { ColorMode } from "../../enums/project"
 
 const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -20,7 +21,7 @@ const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
       icon={
         <Icon
           boxSize={isOpen ? "16px" : "24px"}
-          as={colorMode === "light" ? MoonIcon : SunIcon}
+          as={colorMode === ColorMode.LIGHT ? MoonIcon : SunIcon}
         />
       }
     />

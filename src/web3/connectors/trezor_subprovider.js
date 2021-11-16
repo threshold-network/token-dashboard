@@ -93,7 +93,6 @@ export class TrezorSubprovider extends TrezorSubprovider0x {
             gasPrice: txData.gasPrice,
           },
         })
-      console.log(response)
 
       if (!response.success) {
         throw new Error(response)
@@ -110,8 +109,6 @@ export class TrezorSubprovider extends TrezorSubprovider0x {
       tx.v = Buffer.from(v.slice(2), "hex") //hexToPaddedBuffer(v, 4)
       tx.r = Buffer.from(r.slice(2), "hex")
       tx.s = Buffer.from(s.slice(2), "hex")
-
-      console.log(tx)
 
       return `0x${tx.serialize().toString("hex")}`
     } catch (error) {

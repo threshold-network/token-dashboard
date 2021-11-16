@@ -5,7 +5,7 @@ import { Body3, H5 } from "../Typography"
 import Card from "../Card"
 import { TConversionRates, Token } from "../../enums"
 import Keep from "../../static/icons/Keep"
-import { BsArrowRightShort, BsArrowDownCircleFill } from "react-icons/all"
+import { BsArrowDownCircleFill, BsArrowRightShort } from "react-icons/all"
 import T from "../../static/icons/Ttoken"
 import Nu from "../../static/icons/Nu"
 import { Divider, DividerIcon } from "../Divider"
@@ -45,12 +45,12 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   }, [token])
 
   const TConvertedAmount = useMemo(() => {
-    // @ts-ignore
     if (amountToConvert === "") return 0
-    // @ts-ignore
-    const amountT = numeral(TConversionRates[token] * amountToConvert).format(
-      "0,0.00"
-    )
+
+    const amountT = numeral(
+      TConversionRates[token] * Number(amountToConvert)
+    ).format("0,0.00")
+
     return amountT === "NaN" ? "--" : amountT
   }, [amountToConvert])
 
