@@ -10,9 +10,10 @@ import {
 } from "@chakra-ui/react"
 import NumberInput, { NumberInputValues } from "../NumberInput"
 import { Body3 } from "../Typography"
+import { createIcon } from "@chakra-ui/icons"
 
 export interface TokenBalanceInputProps extends InputProps {
-  icon: any
+  icon: ReturnType<typeof createIcon>
   max: number
   amount: string | number
   setAmount: (val: string | number) => void
