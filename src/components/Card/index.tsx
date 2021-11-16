@@ -8,14 +8,7 @@ import { FC } from "react"
 
 const Card: FC<BoxProps> = (props) => {
   const styles = useStyleConfig("Card")
-  return (
-    <Box
-      __css={styles}
-      {...props}
-      bg={useColorModeValue("white", "gray.800")}
-      borderColor={useColorModeValue("gray.100", "gray.700")}
-    />
-  )
+  return <Box __css={styles} {...props} />
 }
 
 export default Card
