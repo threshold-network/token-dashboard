@@ -1,7 +1,7 @@
 import { mode } from "@chakra-ui/theme-tools"
 
-const baseIconSize = 24
-const mdIconSize = 40
+const baseIconSize = 18
+const mdIconSize = 24
 
 export const Divider = {
   parts: ["dividerWrapper", "divider", "icon"],
@@ -9,10 +9,10 @@ export const Divider = {
     return {
       dividerWrapper: {
         position: "relative",
-        my: 3,
+        my: 6,
       },
       icon: {
-        color: mode("gray.300", "gray.600")(props),
+        color: mode("gray.600", "gray.600")(props),
         bg: mode("white", "gray.800")(props),
         position: "absolute",
         left: 0,
