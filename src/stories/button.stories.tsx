@@ -31,7 +31,7 @@ const Template: Story<ButtonStoryProps> = ({
 
 export const Button = Template.bind({
   colorScheme: "brand",
-  variant: "primary",
+  variant: "solid",
   size: "md",
   leftIcon: undefined,
   rightIcon: undefined,
@@ -52,10 +52,10 @@ export default {
     },
     variant: {
       description: "Adjusts the variant of the button",
-      options: ["primary", "secondary", "tertiary"],
+      options: ["solid", "outline", "ghost"],
       control: { type: "radio" },
       table: {
-        defaultValue: { summary: "primary" },
+        defaultValue: { summary: "solid" },
       },
     },
     size: {

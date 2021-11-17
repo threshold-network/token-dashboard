@@ -5,23 +5,26 @@ import { Meta, Story } from "@storybook/react"
 import Nu from "../static/icons/NuLight"
 import Keep from "../static/icons/KeepLight"
 import { useState } from "react"
+import { ChakraIconMap } from "../types"
 
-const iconMap = {
+const iconMap: ChakraIconMap = {
   Nu: Nu,
   Keep: Keep,
 }
 
-const Template: Story<TokenBalanceInputProps> = ({ icon, max, label }) => {
-  const [amount, setAmount] = useState<string | number>("")
-  // @ts-ignore
-  const Icon = iconMap[icon]
-  return (
-    <TokenBalanceInputComponent
-      {...{ max, amount, setAmount, label }}
-      icon={Icon}
-    />
-  )
-}
+const Template: Story<Omit<TokenBalanceInputProps, "icon"> & { icon: string }> =
+  ({ icon, max, label }) => {
+    const [amount, setAmount] = useState<string | number>("")
+
+    const Icon = iconMap[icon]
+
+    return (
+      <TokenBalanceInputComponent
+        {...{ max, amount, setAmount, label }}
+        icon={Icon}
+      />
+    )
+  }
 
 export const TokenBalanceInput = Template.bind({})
 
