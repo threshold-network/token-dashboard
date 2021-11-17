@@ -1,10 +1,5 @@
-import {
-  ModalCloseButton,
-  ModalHeader,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { Ledger } from "../../../static/icons/Ledger"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import injected from "../../../web3/connectors/injected"
@@ -12,16 +7,17 @@ import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
 import withBaseModal from "../withBaseModal"
-import { LedgerWhite } from "../../../static/icons/LedgerWhite"
-import ConnectLedger from "./ConnectLedger"
-import ConnectTrezor from "./ConnectTrezor"
 import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
 import { WalletOption } from "../../../types"
-import { Trezor } from "../../../static/icons/Trezor"
-import { TrezorLight } from "../../../static/icons/TrezorLight"
+// import ConnectLedger from "./ConnectLedger"
+// import ConnectTrezor from "./ConnectTrezor"
+// import { Ledger } from "../../../static/icons/Ledger"
+// import { LedgerWhite } from "../../../static/icons/LedgerWhite"
+// import { Trezor } from "../../../static/icons/Trezor"
+// import { TrezorLight } from "../../../static/icons/TrezorLight"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
@@ -37,14 +33,6 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       },
     },
     {
-      id: WalletType.Ledger,
-      title: "Ledger",
-      icon: useColorModeValue(Ledger, LedgerWhite),
-      onClick: async () => {
-        setWalletToConnect(WalletType.Ledger)
-      },
-    },
-    {
       id: WalletType.WalletConnect,
       title: "WalletConnect",
       icon: WalletConnectIcon,
@@ -55,14 +43,25 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
         setWalletToConnect(WalletType.WalletConnect)
       },
     },
-    {
-      id: WalletType.Trezor,
-      title: "Trezor",
-      icon: useColorModeValue(Trezor, TrezorLight),
-      onClick: () => {
-        setWalletToConnect(WalletType.Trezor)
-      },
-    },
+
+    // TODO - Configure the hardware wallets when we have more time to build the provider in a bug-free way
+
+    // {
+    //   id: WalletType.Ledger,
+    //   title: "Ledger",
+    //   icon: useColorModeValue(Ledger, LedgerWhite),
+    //   onClick: async () => {
+    //     setWalletToConnect(WalletType.Ledger)
+    //   },
+    // },
+    // {
+    //   id: WalletType.Trezor,
+    //   title: "Trezor",
+    //   icon: useColorModeValue(Trezor, TrezorLight),
+    //   onClick: () => {
+    //     setWalletToConnect(WalletType.Trezor)
+    //   },
+    // },
   ]
 
   const [walletToConnect, setWalletToConnect] = useState<WalletType | null>(
@@ -86,15 +85,15 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       {walletToConnect === WalletType.Metamask && (
         <ConnectMetamask goBack={goBack} closeModal={closeModal} />
       )}
-      {walletToConnect === WalletType.Ledger && (
-        <ConnectLedger goBack={goBack} closeModal={closeModal} />
-      )}
       {walletToConnect === WalletType.WalletConnect && (
         <ConnectWalletConnect goBack={goBack} closeModal={closeModal} />
       )}
-      {walletToConnect === WalletType.Trezor && (
-        <ConnectTrezor goBack={goBack} closeModal={closeModal} />
-      )}
+      {/* {walletToConnect === WalletType.Ledger && ( */}
+      {/*   <ConnectLedger goBack={goBack} closeModal={closeModal} /> */}
+      {/* )} */}
+      {/* {walletToConnect === WalletType.Trezor && ( */}
+      {/*   <ConnectTrezor goBack={goBack} closeModal={closeModal} /> */}
+      {/* )} */}
     </>
   )
 }
