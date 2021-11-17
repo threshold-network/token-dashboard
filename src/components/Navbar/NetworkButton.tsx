@@ -51,7 +51,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
         }}
         display={{
           base: "inherit",
-          md: "none",
+          sm: "none",
         }}
         _active={{
           bg: networkIcon.bg,
@@ -64,7 +64,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
       {/* Desktop */}
       <Button
         leftIcon={networkIcon.icon}
-        display={{ base: "none", md: "inherit" }}
+        display={{ base: "none", sm: "inherit" }}
       >
         {chainIdToNetworkName(chainId)}
       </Button>

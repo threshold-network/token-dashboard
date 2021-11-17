@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
 import { useSidebar } from "../../hooks/useSidebar"
+import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
 export interface NavItemDetail {
   icon: any
@@ -20,9 +21,10 @@ export interface NavItemDetail {
 
 const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
   const { isOpen } = useSidebar()
+  const breakpoint = useChakraBreakpoint("sm")
 
   return (
-    <Box position="relative">
+    <Box position="relative" my={2}>
       {/* Active Border Highlight */}
       {isActive && (
         <Box
@@ -50,7 +52,8 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         <Link as={RouterLink} to={href} _hover={{ textDecoration: "none" }}>
           {isOpen ? (
             <Button
-              isOpen
+              w={breakpoint ? "100%" : "fit-content"}
+              justifyContent={breakpoint ? "left" : "center"}
               variant="side-bar"
               leftIcon={
                 <Icon

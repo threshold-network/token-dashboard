@@ -28,8 +28,8 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   return (
     <Box
       py={4}
-      px={{ base: 0, md: 4 }}
-      borderBottom={{ base: "1px", md: "none" }}
+      px={{ base: 0, sm: 4 }}
+      borderBottom={{ base: "1px", sm: "none" }}
       borderColor="gray.100"
     >
       <Container
@@ -39,7 +39,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         position="relative"
       >
         <Box>
-          <HamburgerButton display={{ base: "block", md: "none" }} />
+          <HamburgerButton display={{ base: "block", sm: "none" }} />
         </Box>
         <Stack spacing={4} direction="row">
           {chainId && <NetworkButton chainId={chainId} />}
