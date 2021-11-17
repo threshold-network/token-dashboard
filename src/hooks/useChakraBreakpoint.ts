@@ -1,33 +1,38 @@
 import { useState, useEffect } from "react"
 import { useTheme } from "@chakra-ui/react"
 
-function useChakraBreakpoint(breakpointToQuery: "sm" | "md" | "lg" | "xl") {
-  const [windowWidthPx, setWindowWidth] = useState(0)
+type ChakraTShirtSize = "sm" | "md" | "lg" | "xl"
 
+type BreakpointsEM = {
+  [size: string]: number
+}
+
+function useChakraBreakpoint(breakpointToQuery: ChakraTShirtSize) {
+  const [windowWidthEm, setWindowWidthEm] = useState(0)
   const { breakpoints } = useTheme()
   const breakpointsEm = Object.keys(breakpoints).reduce((acc, current) => {
-    // @ts-ignore
     acc[current] = Number(breakpoints[current].slice(0, -2))
     return acc
-  }, {})
+  }, {} as BreakpointsEM)
 
   useEffect(() => {
     function handleResize() {
       const emSize =
         innerWidth /
         parseFloat(
-          // @ts-ignore
-          getComputedStyle(document.querySelector("body"))["font-size"]
+          getComputedStyle(document.querySelector("body") as Element)[
+            // @ts-ignore
+            "font-size"
+          ]
         )
-      setWindowWidth(emSize)
+      setWindowWidthEm(emSize)
     }
     window.addEventListener("resize", handleResize)
     handleResize()
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // @ts-ignore
-  return windowWidthPx < breakpointsEm[breakpointToQuery]
+  return windowWidthEm < breakpointsEm[breakpointToQuery]
 }
 
 export default useChakraBreakpoint
