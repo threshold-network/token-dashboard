@@ -11,7 +11,6 @@ const BrandIcon = () => {
     return (
       <Image
         src={useColorModeValue(ThresholdBrandFull, ThresholdBrandFullWhite)}
-        height="14px"
         mx="auto"
         marginTop="35px"
         paddingRight="12px"

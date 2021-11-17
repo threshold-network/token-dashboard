@@ -1,5 +1,6 @@
 import {
   Box,
+  HStack,
   Icon,
   IconButton,
   Link,
@@ -11,8 +12,8 @@ import { useSidebar } from "../../hooks/useSidebar"
 import { Body1, Body3 } from "../Typography"
 import { ExternalLink } from "../../enums"
 import { FC } from "react"
-import DarkModeSwitcher from "../DarkModeSwitcher"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
+import DarkModeSwitcher from "./DarkModeSwitcher"
 
 const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   href,
@@ -20,7 +21,7 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   text,
 }) => {
   const { isOpen } = useSidebar()
-  const breakpoint = useChakraBreakpoint("sm")
+  const isMobile = useChakraBreakpoint("sm")
 
   return (
     <Box
@@ -31,27 +32,28 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
       _hover={{
         textDecoration: "none",
       }}
+      w={isMobile ? "100%" : undefined}
     >
-      {isOpen && !breakpoint ? (
-        <Icon
-          h={6}
-          w={6}
-          as={icon}
-          color="gray.300"
-          m={isOpen ? undefined : "auto"}
-          mr={isOpen ? 2 : undefined}
-        />
+      {isOpen && !isMobile ? (
+        <HStack>
+          <Icon
+            h={6}
+            w={6}
+            as={icon}
+            color="gray.300"
+            m={isOpen ? undefined : "auto"}
+            mr={isOpen ? 2 : undefined}
+          />
+          <Body1 fontWeight="bold" color="gray.300">
+            {text}
+          </Body1>
+        </HStack>
       ) : (
         <IconButton
-          icon={<Icon color="gray.300" as={icon} />}
-          variant="ghost"
+          variant="side-bar"
           aria-label={text}
+          icon={<Icon boxSize="24px" as={icon} />}
         />
-      )}
-      {isOpen && !breakpoint && (
-        <Body1 fontWeight="bold" color="gray.300">
-          {text}
-        </Body1>
       )}
     </Box>
   )
@@ -59,7 +61,7 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
 
 const SidebarFooter = () => {
   const { isOpen } = useSidebar()
-  const breakpoint = useChakraBreakpoint("sm")
+  const isMobile = useChakraBreakpoint("sm")
   return (
     <Stack
       alignSelf="flex-end"
@@ -67,11 +69,10 @@ const SidebarFooter = () => {
       borderColor={useColorModeValue("gray.100", "gray.700")}
       padding={4}
       width="100%"
-      spacing={4}
     >
       <Stack
-        direction={breakpoint ? "row" : "column"}
-        justifyContent={breakpoint ? "center" : "inherit"}
+        direction={isMobile ? "row" : "column"}
+        justifyContent={isMobile ? "center" : "inherit"}
         spacing={4}
       >
         <DarkModeSwitcher />
@@ -86,7 +87,7 @@ const SidebarFooter = () => {
           icon={BsDiscord}
         />
       </Stack>
-      <Stack textAlign={breakpoint ? "center" : "left"}>
+      <Stack textAlign={isMobile ? "center" : "left"}>
         {isOpen && <Body3 color="gray.300">Threshold Network</Body3>}
         <Body3 color="gray.300">&copy; {new Date().getFullYear()}</Body3>
       </Stack>
