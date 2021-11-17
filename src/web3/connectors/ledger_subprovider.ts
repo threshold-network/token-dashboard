@@ -38,8 +38,7 @@ class LedgerSubprovider extends LedgerSubprovider0x {
   }
 
   async getAddress(index: number) {
-    // @ts-ignore
-    const path = this._baseDerivationPath.replace("x", index)
+    const path = this.getPath().replace("x", index.toString())
     let ledgerResponse
     try {
       // @ts-ignore

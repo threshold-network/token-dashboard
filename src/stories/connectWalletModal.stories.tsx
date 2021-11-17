@@ -12,7 +12,7 @@ const Template: Story = (args) => {
 export const ConnectWalletModal = Template.bind({})
 
 export default {
-  title: "ConnectWalletModal",
+  title: "Connect Wallet Modal",
   component: ConnectWalletModal,
   decorators: [
     (Story) => {

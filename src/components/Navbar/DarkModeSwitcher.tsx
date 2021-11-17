@@ -4,9 +4,9 @@ import {
   IconButton,
   IconButtonProps,
   useColorMode,
-  useColorModeValue,
 } from "@chakra-ui/react"
 import { MoonIcon, SunIcon } from "@chakra-ui/icons"
+import { ColorMode } from "../../enums/project"
 
 const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -16,18 +16,7 @@ const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
       variant="ghost"
       aria-label="color mode"
       onClick={toggleColorMode}
-      icon={
-        <Icon
-          as={colorMode === "light" ? MoonIcon : SunIcon}
-          color={{ base: "white", md: useColorModeValue("gray.700", "white") }}
-        />
-      }
-      _hover={{
-        bg: {
-          base: "gray.700",
-          md: useColorModeValue("gray.100", "transparent"),
-        },
-      }}
+      icon={<Icon as={colorMode === ColorMode.LIGHT ? MoonIcon : SunIcon} />}
     />
   )
 }

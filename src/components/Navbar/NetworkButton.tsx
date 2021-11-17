@@ -1,30 +1,41 @@
 import { FC, ReactElement, useMemo } from "react"
-import { Button, Icon, IconButton } from "@chakra-ui/react"
+import { Button, Icon, IconButton, useColorMode } from "@chakra-ui/react"
 import { BsQuestionCircleFill, MdOutlineTrain } from "react-icons/all"
 import { ChainID } from "../../enums"
-import { Ethereum } from "../../static/icons/Ethereum"
+import { EthereumLight } from "../../static/icons/EthereumLight"
+import { EthereumDark } from "../../static/icons/EthereumDark"
 import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 
 interface NetworkIconMap {
   [chainId: number]: { icon: ReactElement; bg: string }
 }
 
-const networkIconMap: NetworkIconMap = {
-  [ChainID.Ethereum]: {
-    icon: <Icon as={Ethereum} />,
-    bg: "blue.500",
-  },
-  [ChainID.Ropsten]: {
-    icon: <Icon as={MdOutlineTrain} color="white" />,
-    bg: "yellow.500",
-  },
-}
-
 const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
+  const { colorMode } = useColorMode()
+  const ethereumLogo = useMemo(
+    () => (colorMode === "light" ? EthereumLight : EthereumDark),
+    [colorMode]
+  )
+  const iconColor = useMemo(
+    () => (colorMode === "light" ? "white" : "gray.800"),
+    [colorMode]
+  )
+
+  const networkIconMap: NetworkIconMap = {
+    [ChainID.Ethereum]: {
+      icon: <Icon as={ethereumLogo} />,
+      bg: "blue.500",
+    },
+    [ChainID.Ropsten]: {
+      icon: <Icon as={MdOutlineTrain} color={iconColor} />,
+      bg: "yellow.500",
+    },
+  }
+
   const networkIcon = useMemo(
     () =>
       networkIconMap[chainId || 0] || {
-        icon: <Icon as={BsQuestionCircleFill} color="white" />,
+        icon: <Icon as={BsQuestionCircleFill} color={iconColor} />,
         bg: "red.500",
       },
     [chainId]
@@ -39,7 +50,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
           bg: networkIcon.bg,
         }}
         display={{
-          base: "block",
+          base: "inherit",
           md: "none",
         }}
         _active={{
@@ -53,7 +64,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
       {/* Desktop */}
       <Button
         leftIcon={networkIcon.icon}
-        display={{ base: "none", md: "block" }}
+        display={{ base: "none", md: "inherit" }}
       >
         {chainIdToNetworkName(chainId)}
       </Button>
