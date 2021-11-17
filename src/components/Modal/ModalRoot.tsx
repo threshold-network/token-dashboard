@@ -7,7 +7,6 @@ const ModalRoot = () => {
   if (!modalType) {
     return <></>
   }
-
   const SpecificModal = MODAL_TYPES[modalType]
   return <SpecificModal closeModal={closeModal} {...modalProps} />
 }
