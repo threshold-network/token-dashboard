@@ -2,12 +2,9 @@ import { FC } from "react"
 import {
   Box,
   Drawer,
-  DrawerBody,
   DrawerContent,
-  DrawerHeader,
   DrawerOverlay,
   Stack,
-  StackDivider,
 } from "@chakra-ui/react"
 import { useSidebar } from "../../hooks/useSidebar"
 import SidebarFooter from "./SidebarFooter"

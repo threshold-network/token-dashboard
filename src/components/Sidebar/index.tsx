@@ -1,11 +1,10 @@
-import { useSidebar } from "../../hooks/useSidebar"
 import { NavItemDetail } from "./NavItem"
 import {
-  IoBarChart,
+  IoBarChartSharp,
   IoBarChartOutline,
-  IoHome,
+  IoHomeSharp,
   IoHomeOutline,
-  IoSwapHorizontal,
+  IoSwapHorizontalSharp,
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
@@ -19,19 +18,19 @@ const Sidebar = () => {
     () => [
       {
         text: "Overview",
-        icon: pathname === "/" ? IoHome : IoHomeOutline,
+        icon: pathname === "/" ? IoHomeSharp : IoHomeOutline,
         href: "/",
         isActive: pathname === "/",
       },
       {
         text: "Upgrade",
-        icon: IoSwapHorizontal,
+        icon: IoSwapHorizontalSharp,
         href: "/upgrade",
         isActive: pathname === "/upgrade",
       },
       {
         text: "Portfolio",
-        icon: pathname === "/portfolio" ? IoBarChart : IoBarChartOutline,
+        icon: pathname === "/portfolio" ? IoBarChartSharp : IoBarChartOutline,
         href: "/portfolio",
         isActive: pathname === "/portfolio",
       },

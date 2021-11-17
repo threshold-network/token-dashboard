@@ -13,7 +13,8 @@ const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
 
   return (
     <IconButton
-      variant="ghost"
+      w="100%"
+      variant="side-bar"
       aria-label="color mode"
       onClick={toggleColorMode}
       icon={<Icon as={colorMode === ColorMode.LIGHT ? MoonIcon : SunIcon} />}

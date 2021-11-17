@@ -13,7 +13,7 @@ const ExpanderIcon = () => {
       top="30px"
       borderRadius="50%"
       bg={useColorModeValue("white", "gray.800")}
-      color="gray.700"
+      color={useColorModeValue("gray.700", "gray.500")}
       border="1px solid"
       borderColor={useColorModeValue("gray.100", "gray.700")}
       h={6}

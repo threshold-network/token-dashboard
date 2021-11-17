@@ -28,6 +28,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
       {/* Active Border Highlight */}
       {isActive && (
         <Box
+          zIndex={999}
           top="-8px"
           height="calc(100% + 16px)"
           width="4px"
@@ -49,7 +50,12 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         gutter={32}
         arrowSize={16}
       >
-        <Link as={RouterLink} to={href} _hover={{ textDecoration: "none" }}>
+        <Link
+          as={RouterLink}
+          to={href}
+          _hover={{ textDecoration: "none" }}
+          tabIndex={-1}
+        >
           {isOpen ? (
             <Button
               w={breakpoint ? "100%" : "fit-content"}
