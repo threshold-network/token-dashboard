@@ -6,7 +6,7 @@ import ThresholdBrandFull from "../../static/images/ThresholdBrandFull.png"
 import ThresholdBrandFullWhite from "../../static/images/ThresholdBrandFullWhite.png"
 
 const BrandIcon = () => {
-  const { isOpen, openSidebar, closeSidebar } = useSidebar()
+  const { isOpen } = useSidebar()
   if (isOpen) {
     return (
       <Image
