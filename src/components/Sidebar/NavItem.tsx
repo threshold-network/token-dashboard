@@ -20,8 +20,8 @@ export interface NavItemDetail {
 }
 
 const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
-  const { isOpen } = useSidebar()
-  const breakpoint = useChakraBreakpoint("sm")
+  const { isOpen, closeSidebar } = useSidebar()
+  const isMobileDevice = useChakraBreakpoint("sm")
 
   return (
     <Box position="relative" my={2}>
@@ -58,8 +58,13 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         >
           {isOpen ? (
             <Button
-              w={breakpoint ? "100%" : "fit-content"}
-              justifyContent={breakpoint ? "left" : "center"}
+              onClick={() => {
+                if (isMobileDevice) {
+                  closeSidebar()
+                }
+              }}
+              w={isMobileDevice ? "100%" : "fit-content"}
+              justifyContent={isMobileDevice ? "left" : "center"}
               variant="side-bar"
               leftIcon={
                 <Icon
