@@ -5,19 +5,20 @@ import {
   IconButtonProps,
   useColorMode,
 } from "@chakra-ui/react"
-import { MoonIcon, SunIcon } from "@chakra-ui/icons"
 import { ColorMode } from "../../enums/project"
+import { IoMoonSharp, IoSunnySharp } from "react-icons/all"
 
 const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
   const { colorMode, toggleColorMode } = useColorMode()
 
   return (
     <IconButton
-      w="100%"
-      variant="side-bar"
+      variant="side-nav"
       aria-label="color mode"
       onClick={toggleColorMode}
-      icon={<Icon as={colorMode === ColorMode.LIGHT ? MoonIcon : SunIcon} />}
+      icon={
+        <Icon as={colorMode === ColorMode.LIGHT ? IoMoonSharp : IoSunnySharp} />
+      }
     />
   )
 }

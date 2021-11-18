@@ -1,5 +1,11 @@
 import { FC, ReactElement, useMemo } from "react"
-import { Button, Icon, IconButton, useColorMode } from "@chakra-ui/react"
+import {
+  Button,
+  Icon,
+  IconButton,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { BsQuestionCircleFill, MdOutlineTrain } from "react-icons/all"
 import { ChainID } from "../../enums"
 import { EthereumLight } from "../../static/icons/EthereumLight"
@@ -13,21 +19,22 @@ interface NetworkIconMap {
 const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
   const { colorMode } = useColorMode()
   const ethereumLogo = useMemo(
-    () => (colorMode === "light" ? EthereumLight : EthereumDark),
-    [colorMode]
-  )
-  const iconColor = useMemo(
-    () => (colorMode === "light" ? "white" : "gray.800"),
+    () => (colorMode === "light" ? EthereumDark : EthereumLight),
     [colorMode]
   )
 
   const networkIconMap: NetworkIconMap = {
     [ChainID.Ethereum]: {
       icon: <Icon as={ethereumLogo} />,
-      bg: "blue.500",
+      bg: "gray.700",
     },
     [ChainID.Ropsten]: {
-      icon: <Icon as={MdOutlineTrain} color={iconColor} />,
+      icon: (
+        <Icon
+          as={MdOutlineTrain}
+          color={useColorModeValue("yellow.500", "white")}
+        />
+      ),
       bg: "yellow.500",
     },
   }
@@ -35,7 +42,12 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
   const networkIcon = useMemo(
     () =>
       networkIconMap[chainId || 0] || {
-        icon: <Icon as={BsQuestionCircleFill} color={iconColor} />,
+        icon: (
+          <Icon
+            as={BsQuestionCircleFill}
+            color={useColorModeValue("red.500", "white")}
+          />
+        ),
         bg: "red.500",
       },
     [chainId]
@@ -45,24 +57,34 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
     <>
       {/* Mobile */}
       <IconButton
+        variant="unstyled"
         as={Button}
-        _hover={{
-          bg: networkIcon.bg,
-        }}
         display={{
           base: "inherit",
           sm: "none",
         }}
-        _active={{
-          bg: networkIcon.bg,
+        _hover={{
+          bg: useColorModeValue("transparent", networkIcon.bg),
         }}
-        bg={networkIcon.bg}
+        _active={{
+          bg: useColorModeValue("transparent", networkIcon.bg),
+        }}
+        bg={useColorModeValue("transparent", networkIcon.bg)}
+        border="1px solid"
+        borderColor={useColorModeValue("gray.300", "transparent")}
         icon={networkIcon.icon}
         aria-label="network"
       />
 
       {/* Desktop */}
       <Button
+        variant="outline"
+        _hover={{
+          bg: "transparent",
+        }}
+        _active={{
+          bg: "transparent",
+        }}
         leftIcon={networkIcon.icon}
         display={{ base: "none", sm: "inherit" }}
       >

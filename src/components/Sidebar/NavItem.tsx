@@ -58,12 +58,14 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         >
           {isOpen ? (
             <Button
+              iconSpacing={4}
               onClick={() => {
                 if (isMobileDevice) {
                   closeSidebar()
                 }
               }}
-              w={isMobileDevice ? "100%" : "fit-content"}
+              w={isMobileDevice ? "100%" : "calc(100% - 36px)"}
+              mx={isMobileDevice ? undefined : "18px"}
               justifyContent={isMobileDevice ? "left" : "center"}
               variant="side-bar"
               leftIcon={
@@ -80,6 +82,8 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
               color={
                 isActive ? useColorModeValue("gray.700", "brand.50") : undefined
               }
+              data-is-mobile={isMobileDevice}
+              fontSize="lg"
             >
               {text}
             </Button>
@@ -89,7 +93,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
               aria-label={text}
               icon={
                 <Icon
-                  boxSize="32px"
+                  boxSize="18px"
                   as={icon}
                   color={
                     isActive

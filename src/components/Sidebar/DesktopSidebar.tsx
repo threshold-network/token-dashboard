@@ -14,7 +14,7 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
       h="100vh"
       display={{ base: "none", sm: "flex" }}
       flexDirection="column"
-      w={isOpen ? "200px" : "87px"}
+      w={isOpen ? "208px" : "80x"}
       transition="width 0.3s"
       position="relative"
       borderRight="1px solid"
@@ -26,7 +26,7 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
       <Stack
         mt={isOpen ? 10 : 6}
         divider={
-          <StackDivider marginY="0 !important" marginX="14px !important" />
+          <StackDivider marginY="0 !important" marginX="18px !important" />
         }
         h="100%"
       >
