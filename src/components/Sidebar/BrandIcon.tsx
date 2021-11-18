@@ -2,8 +2,8 @@ import { Box, Icon, Image, useColorModeValue } from "@chakra-ui/react"
 import { useSidebar } from "../../hooks/useSidebar"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
-import ThresholdBrandFull from "../../static/images/ThresholdBrandFull.png"
-import ThresholdBrandFullWhite from "../../static/images/ThresholdBrandFullWhite.png"
+import ThresholdBrandFull from "../../static/images/ThresholdBrandFull.svg"
+import ThresholdBrandFullWhite from "../../static/images/ThresholdBrandFullWhite.svg"
 
 const BrandIcon = () => {
   const { isOpen } = useSidebar()
@@ -12,8 +12,9 @@ const BrandIcon = () => {
       <Image
         src={useColorModeValue(ThresholdBrandFull, ThresholdBrandFullWhite)}
         mx="auto"
-        marginTop="35px"
-        paddingRight="12px"
+        marginTop="36px"
+        w="150px"
+        px="16px"
       />
     )
   }

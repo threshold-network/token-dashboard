@@ -10,6 +10,8 @@ import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
+import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
+import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
@@ -18,7 +20,7 @@ const Sidebar = () => {
     () => [
       {
         text: "Overview",
-        icon: pathname === "/" ? IoHomeSharp : IoHomeOutline,
+        icon: pathname === "/" ? IoHomeSharp : IoHomeOutlineSharp,
         href: "/",
         isActive: pathname === "/",
       },
@@ -30,7 +32,7 @@ const Sidebar = () => {
       },
       {
         text: "Portfolio",
-        icon: pathname === "/portfolio" ? IoBarChartSharp : IoBarChartOutline,
+        icon: pathname === "/portfolio" ? IoBarChartSharp : IoChartOutlineSharp,
         href: "/portfolio",
         isActive: pathname === "/portfolio",
       },
