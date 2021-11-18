@@ -93,7 +93,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
               aria-label={text}
               icon={
                 <Icon
-                  boxSize="18px"
+                  boxSize="32px"
                   as={icon}
                   color={
                     isActive
