@@ -45,7 +45,7 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
             color="gray.300"
             mr={isOpen ? 4 : "auto"}
           />
-          <Body1 lineHeight={8} fontWeight="bold" color="gray.300" ml={0}>
+          <Body1 lineHeight={8} fontWeight="semibold" color="gray.300" ml={0}>
             {text}
           </Body1>
         </Flex>
