@@ -39,19 +39,15 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
     },
   }
 
-  const networkIcon = useMemo(
-    () =>
-      networkIconMap[chainId || 0] || {
-        icon: (
-          <Icon
-            as={BsQuestionCircleFill}
-            color={useColorModeValue("red.500", "white")}
-          />
-        ),
-        bg: "red.500",
-      },
-    [chainId]
-  )
+  const networkIcon = networkIconMap[chainId || 0] || {
+    icon: (
+      <Icon
+        as={BsQuestionCircleFill}
+        color={useColorModeValue("red.500", "white")}
+      />
+    ),
+    bg: "red.500",
+  }
 
   return (
     <>

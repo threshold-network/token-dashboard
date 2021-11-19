@@ -39,14 +39,13 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
       {isOpen && !isMobile ? (
         <Flex>
           <Icon
-            h="18px"
-            w="18px"
+            h={8}
+            w={8}
             as={icon}
             color="gray.300"
-            mt="4px"
-            mx={isOpen ? 2 : "auto"}
+            mr={isOpen ? 4 : "auto"}
           />
-          <Body1 fontWeight="bold" color="gray.300" ml={0}>
+          <Body1 lineHeight={8} fontWeight="bold" color="gray.300" ml={0}>
             {text}
           </Body1>
         </Flex>
@@ -54,7 +53,7 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
         <IconButton
           variant="side-bar"
           aria-label={text}
-          icon={<Icon boxSize="24px" as={icon} />}
+          icon={<Icon boxSize="32px" as={icon} />}
         />
       )}
     </Box>
@@ -70,11 +69,13 @@ const SidebarFooter = () => {
       borderColor={useColorModeValue("gray.100", "gray.700")}
       padding={4}
       width="100%"
+      spacing={6}
     >
-      <Divider mb={4} />
+      <Divider />
       <Stack
         direction={isMobile ? "row" : "column"}
         justifyContent={isMobile ? "center" : "inherit"}
+        spacing={6}
       >
         <FooterItem
           text="Github"
@@ -87,9 +88,21 @@ const SidebarFooter = () => {
           icon={BsDiscord}
         />
       </Stack>
-      <Stack textAlign={isMobile ? "center" : "left"} pt={4} ml="10px">
-        {isOpen && <Body3 color="gray.300">Threshold Network</Body3>}
-        <Body3 color="gray.300">&copy; {new Date().getFullYear()}</Body3>
+      <Stack>
+        {isOpen && (
+          <Body3
+            textAlign={isMobile || !isOpen ? "center" : "left"}
+            color="gray.300"
+          >
+            Threshold Network
+          </Body3>
+        )}
+        <Body3
+          color="gray.300"
+          textAlign={isMobile || !isOpen ? "center" : "left"}
+        >
+          &copy; {new Date().getFullYear()}
+        </Body3>
       </Stack>
     </Stack>
   )
