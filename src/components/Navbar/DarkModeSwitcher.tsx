@@ -13,7 +13,7 @@ const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
 
   return (
     <IconButton
-      variant="side-nav"
+      variant="ghost"
       aria-label="color mode"
       onClick={toggleColorMode}
       icon={

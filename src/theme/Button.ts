@@ -67,6 +67,7 @@ export const Button = {
         bg: "transparent",
         display: "flex",
         margin: "auto",
+        px: "8px",
         height: (p: any) => p.height || p.h || "56px",
         width: (p: any) => (isOpen ? undefined : p.height || p.h || "56px"),
         color: mode("gray.500", "gray.300")(props),
