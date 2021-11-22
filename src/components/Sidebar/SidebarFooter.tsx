@@ -10,13 +10,15 @@ import {
   StackDivider,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BsDiscord, BsGithub } from "react-icons/all"
+import { BsDiscord, BsGithub, IoHomeSharp } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
 import { Body1, Body3 } from "../Typography"
 import { ExternalLink } from "../../enums"
 import { FC } from "react"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import DarkModeSwitcher from "../Navbar/DarkModeSwitcher"
+import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
+import NavItem from "./NavItem"
 
 const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   href,
@@ -31,31 +33,18 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
       as={Link}
       href={href}
       target="_blank"
-      display={isOpen ? "flex" : "grid"}
+      // display={isOpen ? "flex" : "grid"}
       _hover={{
         textDecoration: "none",
+        color: "gray.700",
+        cursor: "pointer",
       }}
     >
-      {isOpen && !isMobile ? (
-        <Flex>
-          <Icon
-            h={8}
-            w={8}
-            as={icon}
-            color="gray.300"
-            mr={isOpen ? 4 : "auto"}
-          />
-          <Body1 lineHeight={8} fontWeight="semibold" color="gray.300" ml={0}>
-            {text}
-          </Body1>
-        </Flex>
-      ) : (
-        <IconButton
-          variant="side-bar"
-          aria-label={text}
-          icon={<Icon boxSize="32px" as={icon} />}
-        />
-      )}
+      <IconButton
+        variant="side-bar"
+        aria-label={text}
+        icon={<Icon as={icon} />}
+      />
     </Box>
   )
 }
@@ -64,47 +53,43 @@ const SidebarFooter = () => {
   const { isOpen } = useSidebar()
   const isMobile = useChakraBreakpoint("sm")
   return (
-    <Stack
-      alignSelf="flex-end"
-      borderColor={useColorModeValue("gray.100", "gray.700")}
-      padding={4}
-      width="100%"
-      spacing={6}
-    >
-      <Divider />
-      <Stack
-        direction={isMobile ? "row" : "column"}
-        justifyContent={isMobile ? "center" : "inherit"}
-        spacing={6}
-      >
-        <FooterItem
-          text="Github"
-          href={ExternalLink.THRESHOLD_GITHUB}
-          icon={BsGithub}
-        />
-        <FooterItem
-          text="Discord"
-          href={ExternalLink.THRESHOLD_DISCORD}
-          icon={BsDiscord}
-        />
-      </Stack>
-      <Stack>
-        {isOpen && (
-          <Body3
-            textAlign={isMobile || !isOpen ? "center" : "left"}
-            color="gray.300"
-          >
-            Threshold Network
+    <Box>
+      <Divider w="auto" marginX={isOpen ? "18px !important" : "8px"} />
+      {isMobile ? (
+        <Box p={8}>
+          <HStack justify="center">
+            <FooterItem
+              text="Github"
+              href={ExternalLink.THRESHOLD_GITHUB}
+              icon={BsGithub}
+            />
+            <FooterItem
+              text="Discord"
+              href={ExternalLink.THRESHOLD_DISCORD}
+              icon={BsDiscord}
+            />
+          </HStack>
+          <Body3 color="gray.300" textAlign="center">
+            &copy; {new Date().getFullYear()} Threshold Network
           </Body3>
-        )}
-        <Body3
-          color="gray.300"
-          textAlign={isMobile || !isOpen ? "center" : "left"}
-        >
-          &copy; {new Date().getFullYear()}
-        </Body3>
-      </Stack>
-    </Stack>
+        </Box>
+      ) : (
+        <>
+          <NavItem
+            isFooter
+            text="Github"
+            icon={BsGithub}
+            href={ExternalLink.THRESHOLD_GITHUB}
+          />
+          <NavItem
+            isFooter
+            text="Discord"
+            icon={BsDiscord}
+            href={ExternalLink.THRESHOLD_DISCORD}
+          />
+        </>
+      )}
+    </Box>
   )
 }
 

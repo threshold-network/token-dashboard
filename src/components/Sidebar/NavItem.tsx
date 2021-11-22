@@ -16,10 +16,17 @@ export interface NavItemDetail {
   icon: any
   text: string
   href: string
-  isActive: boolean
+  isActive?: boolean
+  isFooter?: boolean
 }
 
-const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
+const NavItem: FC<NavItemDetail> = ({
+  icon,
+  text,
+  href,
+  isActive,
+  isFooter,
+}) => {
   const { isOpen, closeSidebar } = useSidebar()
   const isMobileDevice = useChakraBreakpoint("sm")
 
@@ -44,15 +51,16 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         label={text}
         isDisabled={isOpen}
         boxShadow="md"
-        bg={useColorModeValue("white", "gray.800")}
-        color={useColorModeValue("gray.700", "white")}
+        bg={useColorModeValue("gray.800", "white")}
+        color={useColorModeValue("white", "gray.700")}
         padding={2}
         gutter={32}
         arrowSize={16}
       >
         <Link
-          as={RouterLink}
+          as={isFooter ? undefined : RouterLink}
           to={href}
+          href={href}
           _hover={{ textDecoration: "none" }}
           tabIndex={-1}
         >
@@ -64,9 +72,8 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
                   closeSidebar()
                 }
               }}
-              w={isMobileDevice ? "100%" : "calc(100% - 36px)"}
-              mx={isMobileDevice ? undefined : "18px"}
-              justifyContent={isMobileDevice ? "left" : "center"}
+              w="calc(100% - 32px)"
+              justifyContent="left"
               variant="side-bar"
               leftIcon={
                 <Icon
@@ -82,7 +89,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
               color={
                 isActive ? useColorModeValue("gray.700", "brand.50") : undefined
               }
-              data-is-mobile={isMobileDevice}
+              // data-is-mobile={true}
               fontSize="lg"
             >
               {text}
