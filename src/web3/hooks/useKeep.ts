@@ -18,7 +18,6 @@ export const useKeep = () => {
   const keepContract = useErc20TokenContract(contractAddress)
 
   const fetchBalance = useCallback(async () => {
-    console.log("fetching balance for: ", contractAddress)
     if (account && keepContract) {
       try {
         setTokenLoading(Token.Keep, true)
