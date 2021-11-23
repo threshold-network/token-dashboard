@@ -12,8 +12,6 @@ const WalletConnectStatusAlert: FC<{
   const { chainId } = useWeb3React()
   const networkOK = isSupportedNetwork(chainId)
 
-  console.log(chainId, networkOK)
-
   if (connectionRejected) {
     return <WalletRejectedAlert />
   }
