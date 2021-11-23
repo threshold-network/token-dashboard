@@ -1,9 +1,10 @@
-import { ChainID } from "../enums"
+import { getEnvVariable } from "./getEnvVariable"
+import { EnvVariable } from "../enums"
 
-const supportedChainIds = [ChainID.Ethereum, ChainID.Ropsten, ChainID.Localhost]
+const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
-const isSupportedNetwork = (network?: number) => {
-  return network && supportedChainIds.includes(network)
+const isSupportedNetwork = (networkChainId?: number) => {
+  return networkChainId == supportedChainId
 }
 
 export default isSupportedNetwork
