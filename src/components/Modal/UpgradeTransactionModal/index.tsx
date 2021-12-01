@@ -1,8 +1,10 @@
 import { FC, useMemo, useState } from "react"
-import { ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import withBaseModal from "../withBaseModal"
-import { H5 } from "../../Typography"
 import TransactionSuccess from "./TransactionSuccess"
+import TransactionPending from "./TransactionPending"
+import { Body3, H5 } from "../../Typography"
+import { HStack } from "@chakra-ui/react"
+import TransactionFailed from "./TransactionFailed"
 
 enum TransactionStatus {
   Idle = "IDLE",
@@ -16,52 +18,69 @@ enum TransactionStatus {
 const UpgradeTransactionModal: FC<{ closeModal: () => void }> = ({
   closeModal,
 }) => {
+  // TODO: Compute these values from a transasction store
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Succeeded
   )
-
   const upgradedAmount = 1000000.68
   const receivedAmount = 4870003.31
   const exchangeRate = 4.87
   const transactionId = "0x_TRANSACTION_ID"
-
-  // TODO: use token enum (or something else)
   const upgradedToken = "KEEP"
+  const transactionError = "Transaction Rejected"
 
-  const modalTitle = useMemo(() => {
+  const ModalScreen = useMemo(() => {
     switch (transactionStatus) {
       case TransactionStatus.Idle: {
-        return "Upgrade Tokens"
+        return <div>"Upgrade Tokens"</div>
       }
-      case TransactionStatus.PendingSignature: {
-        return "1/2 Sign Approval"
-      }
-      case TransactionStatus.InFlight: {
-        return "TransactionStatus.InFlight"
-      }
-      case TransactionStatus.Failed: {
-        return "TransactionStatus.Failed"
-      }
-      case TransactionStatus.Succeeded: {
-        return "Success"
-      }
-    }
-  }, [transactionStatus])
 
-  const modalBody = useMemo(() => {
-    switch (transactionStatus) {
-      case TransactionStatus.Idle: {
-        return "Upgrade Tokens"
-      }
       case TransactionStatus.PendingSignature: {
-        return "1/2 Sign Approval"
+        return (
+          <TransactionPending
+            modalTitle="1/2 Sign Approval"
+            pendingText="Please, sign the approval in your wallet."
+            withFooter
+            closeBtnText="Close"
+          />
+        )
       }
+
+      case TransactionStatus.PendingApproval: {
+        return (
+          <TransactionPending
+            modalTitle="2/2 Confirm Upgrade"
+            pendingText="Please, confirm your upgrade in your wallet."
+            withFooter
+            closeBtnText="Confirm"
+          />
+        )
+      }
+
       case TransactionStatus.InFlight: {
-        return "TransactionStatus.InFlight"
+        return (
+          <TransactionPending
+            modalTitle={
+              <HStack>
+                <H5>1/2 Sign Approval</H5> <Body3>(pending)</Body3>
+              </HStack>
+            }
+            pendingText="Pending..."
+            transactionId={transactionId}
+          />
+        )
       }
+
       case TransactionStatus.Failed: {
-        return "TransactionStatus.Failed"
+        return (
+          <TransactionFailed
+            transactionId={transactionId}
+            error={transactionError}
+            // isExpandableError
+          />
+        )
       }
+
       case TransactionStatus.Succeeded: {
         return (
           <TransactionSuccess
@@ -76,14 +95,6 @@ const UpgradeTransactionModal: FC<{ closeModal: () => void }> = ({
     }
   }, [transactionStatus])
 
-  return (
-    <>
-      <ModalHeader>
-        <H5>{modalTitle}</H5>
-      </ModalHeader>
-      <ModalBody>{modalBody}</ModalBody>
-      <ModalCloseButton />
-    </>
-  )
+  return ModalScreen
 }
 export default withBaseModal(UpgradeTransactionModal)
