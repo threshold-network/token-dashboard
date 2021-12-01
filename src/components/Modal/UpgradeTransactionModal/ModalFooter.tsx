@@ -4,7 +4,10 @@ import { useModal } from "../../../hooks/useModal"
 import ViewTransactionLink from "./ViewTransactionLink"
 import { Divider } from "../../Divider"
 
-const ModalFooter: FC<{ transactionId?: string }> = ({ transactionId }) => {
+const ModalFooter: FC<{ transactionId?: string; closeBtnText?: string }> = ({
+  transactionId,
+  closeBtnText,
+}) => {
   const { closeModal } = useModal()
 
   return (
@@ -15,8 +18,8 @@ const ModalFooter: FC<{ transactionId?: string }> = ({ transactionId }) => {
           <Divider mt={4} mb={8} />
         </>
       )}
-      <HStack justify="flex-end" mb={4}>
-        <Button onClick={closeModal}>Dismiss</Button>
+      <HStack justify="flex-end" mb={2}>
+        <Button onClick={closeModal}>{closeBtnText || "Dismiss"}</Button>
       </HStack>
     </Box>
   )
