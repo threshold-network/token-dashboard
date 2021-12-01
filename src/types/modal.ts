@@ -1,9 +1,11 @@
 import { ModalType } from "../enums"
 import { ElementType } from "react"
 import SelectWalletModal from "../components/Modal/SelectWalletModal"
+import UpgradeTransactionModal from "../components/Modal/UpgradeTransactionModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
+  [ModalType.UpgradeTransaction]: UpgradeTransactionModal,
 }
 
 export interface BaseModalProps {
