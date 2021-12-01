@@ -36,8 +36,7 @@ export function useContract<T extends Contract = Contract>(
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
-  withSignerIfPossible,
-  abi = ERC20_ABI
+  withSignerIfPossible
 ) => {
   const { account } = useWeb3React()
   const { setTokenLoading, setTokenBalance } = useReduxToken()
@@ -45,7 +44,7 @@ export const useErc20TokenContract: UseErc20Interface = (
 
   // TODO: Figure out how to type the ERC20 contract
   // return useContract<Erc20>(tokenAddress, ERC20_ABI, withSignerIfPossible)
-  const contract = useContract(tokenAddress, abi, withSignerIfPossible)
+  const contract = useContract(tokenAddress, ERC20_ABI, withSignerIfPossible)
 
   const approve: Approve = useCallback(
     async (transactionType) => {
@@ -80,10 +79,10 @@ export const useErc20TokenContract: UseErc20Interface = (
       if (account) {
         try {
           setTokenLoading(token, true)
-          const balance = await contract?.balanceOf(account as string)
+          const rawWalletBalance = await contract?.balanceOf(account as string)
           // TODO do not hard code decimals
-          // const balance = rawWalletBalance / 10 ** 18
-          setTokenBalance(token, balance.toString())
+          const balance = rawWalletBalance / 10 ** 18
+          setTokenBalance(token, balance)
           setTokenLoading(token, false)
         } catch (error) {
           setTokenLoading(Token.Nu, false)
@@ -97,5 +96,5 @@ export const useErc20TokenContract: UseErc20Interface = (
     [account, contract]
   )
 
-  return { approve, balanceOf, contract }
+  return { approve, balanceOf }
 }
