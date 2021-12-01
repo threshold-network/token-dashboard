@@ -11,10 +11,13 @@ import { H5 } from "../../Typography"
 import { useKeep } from "../../../web3/hooks/useKeep"
 import { useTransaction } from "../../../hooks/useTransaction"
 import { TransactionStatus } from "../../../enums/transactionType"
+import { useUpgradeToT } from "../../../web3/hooks/useUpgradeToT"
+import { Token } from "../../../enums"
 
 const UpgradeTxnModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
-  const { approveKeep } = useKeep()
+  const { approveKeep, contract } = useKeep()
   const { keepApproval } = useTransaction()
+  const upgradeToT = useUpgradeToT(Token.Keep)
 
   const approveErc20 = () => {
     approveKeep()
@@ -40,14 +43,16 @@ const UpgradeTxnModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
             keepApproval.status === TransactionStatus.PendingWallet ||
             keepApproval.status === TransactionStatus.PendingOnChain
           }
-          onClick={approveErc20}
+          onClick={async () => {
+            await upgradeToT("1000000000000000000")
+          }}
           loadingText={
             keepApproval.status === TransactionStatus.PendingWallet
               ? "Please confirm with your wallet"
               : "Approval pending..."
           }
         >
-          Approve ERC20
+          Upgrade To T
         </Button>
       </ModalBody>
     </>

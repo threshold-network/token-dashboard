@@ -1,5 +1,7 @@
+import NuCypherToken from "@threshold-network/solidity-contracts/artifacts/NuCypherToken.json"
+import { Contract } from "@ethersproject/contracts"
+// import { useWeb3React } from "@web3-react/core"
 import { useErc20TokenContract } from "./useERC20"
-import { useWeb3React } from "@web3-react/core"
 import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
 
@@ -12,13 +14,17 @@ export interface UseNu {
   (): {
     approveNu: () => void
     fetchNuBalance: () => void
+    contract: Contract | null
   }
 }
 
 export const useNu: UseNu = () => {
-  const { chainId } = useWeb3React()
-  const contractAddress = chainId === 3 ? NU_GOERLI : NU_MAINNET
-  const { balanceOf, approve } = useErc20TokenContract(contractAddress)
+  // const { chainId } = useWeb3React()
+  const { balanceOf, approve, contract } = useErc20TokenContract(
+    NuCypherToken.address,
+    undefined,
+    NuCypherToken.abi
+  )
 
   const approveNu = () => {
     approve(TransactionType.ApproveNu)
@@ -31,5 +37,6 @@ export const useNu: UseNu = () => {
   return {
     fetchNuBalance,
     approveNu,
+    contract,
   }
 }
