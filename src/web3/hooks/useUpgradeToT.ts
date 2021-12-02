@@ -1,7 +1,9 @@
-import { Token } from "../../enums"
+import { useCallback } from "react"
 import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
+import { Token } from "../../enums"
 import { useToken } from "../../hooks/useToken"
+import { useSendTransaction } from "./useSendTransaction"
 
 const TOKEN_TO_VENDING_MACHINE_ARTIFACT = {
   [Token.Keep]: VendingMachineKeep,
@@ -10,21 +12,18 @@ const TOKEN_TO_VENDING_MACHINE_ARTIFACT = {
 
 export const useUpgradeToT = (from: Token.Keep | Token.Nu) => {
   const { contract } = useToken(from)
+  const { sendTransaction, status } = useSendTransaction(
+    contract,
+    "approveAndCall"
+  )
 
-  const upgradeToT = async (amount: string) => {
-    const vendingMachineArtifact = TOKEN_TO_VENDING_MACHINE_ARTIFACT[from]
-    try {
-      const tx = await contract?.approveAndCall(
-        vendingMachineArtifact.address,
-        amount,
-        []
-      )
-      await tx.wait()
-      console.log("Sucessfull transaction")
-    } catch (error: any) {
-      console.log("error", error)
-    }
-  }
+  const upgradeToT = useCallback(
+    async (amount: string) => {
+      const vendingMachineArtifact = TOKEN_TO_VENDING_MACHINE_ARTIFACT[from]
+      await sendTransaction(vendingMachineArtifact.address, amount, [])
+    },
+    [sendTransaction]
+  )
 
-  return upgradeToT
+  return { upgradeToT, status }
 }
