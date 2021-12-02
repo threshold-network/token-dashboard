@@ -1,5 +1,6 @@
+import KeepToken from "@keep-network/keep-core/artifacts/KeepToken.json"
+// import { useWeb3React } from "@web3-react/core"
 import { useErc20TokenContract } from "./useERC20"
-import { useWeb3React } from "@web3-react/core"
 import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
 
@@ -15,9 +16,14 @@ export interface UseKeep {
 }
 
 export const useKeep = () => {
-  const { chainId } = useWeb3React()
-  const contractAddress = chainId === 3 ? KEEP_ROPSTEN : KEEP_MAINNET
-  const { balanceOf, approve } = useErc20TokenContract(contractAddress)
+  // const { chainId } = useWeb3React()
+
+  const { balanceOf, approve, contract } = useErc20TokenContract(
+    // TODO handle chainID
+    KeepToken.networks[1337].address,
+    undefined,
+    KeepToken.abi
+  )
 
   const approveKeep = () => {
     approve(TransactionType.ApproveKeep)
@@ -30,5 +36,6 @@ export const useKeep = () => {
   return {
     approveKeep,
     fetchKeepBalance,
+    contract,
   }
 }

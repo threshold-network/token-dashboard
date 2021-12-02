@@ -1,3 +1,4 @@
+import { Contract } from "@ethersproject/contracts"
 import { Token } from "../enums"
 import { TransactionType } from "../enums/transactionType"
 
@@ -47,8 +48,9 @@ export interface Approve {
 }
 
 export interface UseErc20Interface {
-  (tokenAddress: string, withSignerIfPossible?: boolean): {
+  (tokenAddress: string, withSignerIfPossible?: boolean, abi?: any): {
     approve: Approve
     balanceOf: BalanceOf
+    contract: Contract | null
   }
 }
