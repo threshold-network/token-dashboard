@@ -1,38 +1,14 @@
 import { useCallback, useMemo } from "react"
 import { MaxUint256 } from "@ethersproject/constants"
-import { Contract } from "@ethersproject/contracts"
 import { useWeb3React } from "@web3-react/core"
+import { useContract } from "./useContract"
 import ERC20_ABI from "../abi/ERC20.json"
-import { getContract } from "../../utils/getContract"
 import { Token } from "../../enums"
 import { useReduxToken } from "../../hooks/useReduxToken"
 import { Approve, UseErc20Interface } from "../../types/token"
 import { useTransaction } from "../../hooks/useTransaction"
 import { TransactionStatus } from "../../enums/transactionType"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
-
-// import { Erc20 } from "../abis/types"
-
-export function useContract<T extends Contract = Contract>(
-  address: string,
-  ABI: any,
-  withSignerIfPossible = true
-): T | null {
-  const { library, account, chainId } = useWeb3React()
-
-  return useMemo(() => {
-    if (!address || !ABI || !library || !chainId) {
-      return null
-    }
-
-    return getContract(
-      address,
-      ABI,
-      library,
-      withSignerIfPossible && account ? account : undefined
-    )
-  }, [address, ABI, library, chainId, withSignerIfPossible, account]) as T
-}
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
