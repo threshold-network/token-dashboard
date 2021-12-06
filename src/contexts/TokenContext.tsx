@@ -19,7 +19,12 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const keep = useKeep()
   const nu = useNu()
   const { active, chainId } = useWeb3React()
-  const { fetchTokenPriceUSD, setTokenBalance } = useReduxToken()
+  const {
+    fetchTokenPriceUSD,
+    setTokenBalance,
+    keep: keepData,
+    nu: nuData,
+  } = useReduxToken()
 
   React.useEffect(() => {
     for (const token in Token) {
@@ -48,8 +53,14 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   return (
     <TokenContext.Provider
       value={{
-        [Token.Keep]: keep,
-        [Token.Nu]: nu,
+        [Token.Keep]: {
+          ...keep,
+          balance: keepData.balance,
+        },
+        [Token.Nu]: {
+          ...nu,
+          balance: nuData.balance,
+        },
       }}
     >
       {children}

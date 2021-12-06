@@ -1,4 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
+import { BigNumber } from "@ethersproject/bignumber"
 import { Token } from "../../enums/token"
 import { useSubscribeToContractEvent } from "./useSubscribeToContractEvent"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
@@ -16,9 +17,19 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
   useSubscribeToContractEvent(contract, "Transfer", (from, to, amount) => {
     console.log(`Recived ${token}.Transfer event`, from, to, amount.toString())
     if (isSameETHAddress(to, account!)) {
-      setTokenBalance(token, currentTokenBalance + amount.toString())
+      setTokenBalance(
+        token,
+        BigNumber.from(currentTokenBalance)
+          .add(BigNumber.from(amount))
+          .toString()
+      )
     } else if (isSameETHAddress(from, account!)) {
-      setTokenBalance(token, currentTokenBalance - amount.toString())
+      setTokenBalance(
+        token,
+        BigNumber.from(currentTokenBalance)
+          .sub(BigNumber.from(amount))
+          .toString()
+      )
     }
   })
 }
