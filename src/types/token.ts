@@ -4,14 +4,14 @@ import { TransactionType } from "../enums/transactionType"
 
 export interface ReduxTokenInfo {
   loading: boolean
-  balance: number
+  balance: number | string
   usdConversion: number
   usdBalance: string
 }
 
 export interface SetTokenBalanceActionPayload {
   token: Token
-  balance: number
+  balance: number | string
 }
 
 export interface SetTokenLoadingActionPayload {
@@ -33,7 +33,10 @@ export interface UseReduxToken {
   (): {
     keep: ReduxTokenInfo
     nu: ReduxTokenInfo
-    setTokenBalance: (token: Token, balance: number) => TokenActionTypes
+    setTokenBalance: (
+      token: Token,
+      balance: number | string
+    ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void
   }
