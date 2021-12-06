@@ -22,7 +22,7 @@ export const useUpgradeToT = (from: Token.Keep | Token.Nu) => {
       const vendingMachineArtifact = TOKEN_TO_VENDING_MACHINE_ARTIFACT[from]
       await sendTransaction(vendingMachineArtifact.address, amount, [])
     },
-    [sendTransaction]
+    [sendTransaction, from]
   )
 
   return { upgradeToT, status }
