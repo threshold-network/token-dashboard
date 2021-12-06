@@ -34,11 +34,13 @@ export const useSubscribeToContractEvent = (
       // @ts-ignore
       callbackRef.current(...args)
     }
+
     const fileterParams = [
       firstIndexedParam,
       secondIndexedParam,
       thirdIndexedParam,
     ]
+
     // Remove unnecessary params, otherwise encoding topic filter will fail. For
     // example, we can't pass `[<address>, null]` if we want to filter the
     // `Transfer` event only by `from`.
@@ -48,9 +50,20 @@ export const useSubscribeToContractEvent = (
         ? eventName
         : contract.filters[eventName](fileterParams)
 
-    contract.on(eventNameOrFilter, cb)
+    // Ethers.js considers the current block as part of "from now on" so we
+    // start subscribing to event in the next block. If the user submit a
+    // transactions, that certainly won't be part of the current block, so we
+    // can omit event from a current block.
+    const onBlockGuard = () => {
+      contract.on(eventNameOrFilter, cb)
+    }
+    // TODO: consider if we should do it in this way because it creates a
+    // subscription to `block` on every use of this hook. Maybe we should fetch
+    // the current block when the dapp starts and save it in the context?
+    contract.provider.once("block", onBlockGuard)
 
     return () => {
+      contract.provider.off("block", onBlockGuard)
       contract.off(eventNameOrFilter, cb)
     }
   }, [
