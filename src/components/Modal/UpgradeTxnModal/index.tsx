@@ -8,17 +8,12 @@ import {
 import { FC } from "react"
 import withBaseModal from "../withBaseModal"
 import { H5 } from "../../Typography"
-import { useKeep } from "../../../web3/hooks/useKeep"
-import { useTransaction } from "../../../hooks/useTransaction"
 import { TransactionStatus } from "../../../enums/transactionType"
+import { useUpgradeToT } from "../../../web3/hooks/useUpgradeToT"
+import { Token } from "../../../enums"
 
 const UpgradeTxnModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
-  const { approveKeep } = useKeep()
-  const { keepApproval } = useTransaction()
-
-  const approveErc20 = () => {
-    approveKeep()
-  }
+  const { upgradeToT, status } = useUpgradeToT(Token.Keep)
 
   return (
     <>
@@ -27,27 +22,29 @@ const UpgradeTxnModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        {keepApproval.status === TransactionStatus.Succeeded && (
+        {status === TransactionStatus.Succeeded && (
           <Alert status="success">Keep has been approved</Alert>
         )}
 
-        {keepApproval.status === TransactionStatus.Failed && (
+        {status === TransactionStatus.Failed && (
           <Alert status="error">Txn has failed</Alert>
         )}
 
         <Button
           isLoading={
-            keepApproval.status === TransactionStatus.PendingWallet ||
-            keepApproval.status === TransactionStatus.PendingOnChain
+            status === TransactionStatus.PendingWallet ||
+            status === TransactionStatus.PendingOnChain
           }
-          onClick={approveErc20}
+          onClick={async () => {
+            await upgradeToT("1000000000000000000")
+          }}
           loadingText={
-            keepApproval.status === TransactionStatus.PendingWallet
+            status === TransactionStatus.PendingWallet
               ? "Please confirm with your wallet"
               : "Approval pending..."
           }
         >
-          Approve ERC20
+          Upgrade To T
         </Button>
       </ModalBody>
     </>
