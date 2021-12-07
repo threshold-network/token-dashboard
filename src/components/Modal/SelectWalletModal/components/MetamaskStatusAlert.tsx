@@ -10,7 +10,6 @@ import {
 const MetamaskStatusAlert: FC<{
   metamaskNotInstalled?: boolean
   connectionRejected?: boolean
-  active?: boolean
 }> = ({ metamaskNotInstalled, connectionRejected }) => {
   const { active } = useWeb3React()
   if (metamaskNotInstalled) {
