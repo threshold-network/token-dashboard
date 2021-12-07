@@ -6,6 +6,7 @@ import UpgradeTransactionModal from "../components/Modal/UpgradeTransactionModal
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
   [ModalType.UpgradeTransaction]: UpgradeTransactionModal,
+  [ModalType.SelectWallet]: SelectWalletModal,
 }
 
 export interface BaseModalProps {

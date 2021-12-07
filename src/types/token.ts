@@ -1,8 +1,11 @@
 import { Token } from "../enums"
+import { TransactionType } from "../enums/transactionType"
 
 export interface ReduxTokenInfo {
   loading: boolean
   balance: number
+  usdConversion: number
+  usdBalance: string
 }
 
 export interface SetTokenBalanceActionPayload {
@@ -31,5 +34,21 @@ export interface UseReduxToken {
     nu: ReduxTokenInfo
     setTokenBalance: (token: Token, balance: number) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
+    fetchTokenPriceUSD: (token: Token) => void
+  }
+}
+
+export interface BalanceOf {
+  (token: Token): Promise<void>
+}
+
+export interface Approve {
+  (transactionType: TransactionType): any
+}
+
+export interface UseErc20Interface {
+  (tokenAddress: string, withSignerIfPossible?: boolean): {
+    approve: Approve
+    balanceOf: BalanceOf
   }
 }
