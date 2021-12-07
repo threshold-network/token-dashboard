@@ -9,6 +9,7 @@ import { BsArrowDownCircleFill, BsArrowRightShort } from "react-icons/all"
 import T from "../../static/icons/Ttoken"
 import Nu from "../../static/icons/Nu"
 import { Divider, DividerIcon } from "../Divider"
+import UpgradeIconGroup from "../UpgradeIconGroup"
 
 export interface UpgradeCardTemplateProps {
   token: Token
@@ -58,12 +59,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
     <Card maxW="720px">
       <Stack direction="row" justify="space-between">
         <H5>{titleText}</H5>
-        <Box>
-          {token === Token.Keep && <Icon boxSize="32px" as={Keep} />}
-          {token === Token.Nu && <Icon boxSize="32px" as={Nu} />}
-          <Icon boxSize="32px" as={BsArrowRightShort} color="gray.400" />
-          <Icon boxSize="32px" as={T} />
-        </Box>
+        <UpgradeIconGroup token={token} />
       </Stack>
       <Box mt={6}>
         {children}

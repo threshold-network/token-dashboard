@@ -5,6 +5,8 @@ import TransactionPending from "./TransactionPending"
 import { Body3, H5 } from "../../Typography"
 import { HStack } from "@chakra-ui/react"
 import TransactionFailed from "./TransactionFailed"
+import TransactionIdle from "./TransactionIdle"
+import { Token } from "../../../enums"
 
 enum TransactionStatus {
   Idle = "IDLE",
@@ -20,19 +22,39 @@ const UpgradeTransactionModal: FC<{ closeModal: () => void }> = ({
 }) => {
   // TODO: Compute these values from a transasction store
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
-    TransactionStatus.Succeeded
+    TransactionStatus.Failed
   )
   const upgradedAmount = 1000000.68
   const receivedAmount = 4870003.31
   const exchangeRate = 4.87
   const transactionId = "0x_TRANSACTION_ID"
-  const upgradedToken = "KEEP"
-  const transactionError = "Transaction Rejected"
+  const upgradedToken = Token.Keep
+  const transactionError = `Error: call revert exception (method="getTokenAmount(uint256)", errorArgs=null, errorName=null, errorSignature=null, reason=null, code=CALL_EXCEPTION, version=abi/5.4.0)\n' +
+    "    at Logger.makeError (index.ts:213)\n" +
+    "    at Logger.throwError (index.ts:225)\n" +
+    "    at Interface.decodeFunctionResult (interface.ts:425)\n" +
+    "    at Contract.<anonymous> (index.ts:332)\n" +
+    "    at Generator.next (<anonymous>)\n" +
+    "    at fulfilled (index.ts:2)\n"
+    "    at Logger.makeError (index.ts:213)\n" +
+    "    at Logger.throwError (index.ts:225)\n" +
+    "    at Interface.decodeFunctionResult (interface.ts:425)\n" +
+    "    at Contract.<anonymous> (index.ts:332)\n" +
+    "    at Generator.next (<anonymous>)\n" +
+    "    at fulfilled (index.ts:2)\n"`
 
   const ModalScreen = useMemo(() => {
     switch (transactionStatus) {
       case TransactionStatus.Idle: {
-        return <div>"Upgrade Tokens"</div>
+        return (
+          <TransactionIdle
+            upgradedAmount={upgradedAmount}
+            receivedAmount={receivedAmount}
+            exchangeRate={exchangeRate}
+            transactionId={transactionId}
+            token={upgradedToken}
+          />
+        )
       }
 
       case TransactionStatus.PendingSignature: {
@@ -76,7 +98,7 @@ const UpgradeTransactionModal: FC<{ closeModal: () => void }> = ({
           <TransactionFailed
             transactionId={transactionId}
             error={transactionError}
-            // isExpandableError
+            isExpandableError
           />
         )
       }
