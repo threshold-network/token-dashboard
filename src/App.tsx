@@ -33,7 +33,7 @@ const App: FC = () => {
                 <Sidebar />
                 <Box w="100%">
                   <Navbar />
-                  <Container maxW="6xl" data-cy="app-container">
+                  <Container maxW="6xl" data-cy="app-container" pb={8}>
                     <Switch>
                       <Redirect from="/" to="/overview" exact />
                       <Route path="/overview" component={Overview} />
