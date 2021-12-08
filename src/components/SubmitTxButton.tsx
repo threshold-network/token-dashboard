@@ -1,17 +1,26 @@
 import React, { FC } from "react"
-import { Button } from "@chakra-ui/react"
+import { Button, ButtonProps } from "@chakra-ui/react"
 import { ModalType } from "../enums"
 import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../hooks/useModal"
 
-const SubmitTxButton: FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
+interface Props extends ButtonProps {
+  onSubmit: () => void
+  submitText?: string
+}
+
+const SubmitTxButton: FC<Props> = ({
+  onSubmit,
+  submitText = "Upgrade",
+  ...buttonProps
+}) => {
   const { active } = useWeb3React()
   const { openModal } = useModal()
 
   if (active) {
     return (
-      <Button mt={6} isFullWidth onClick={onSubmit}>
-        Upgrade
+      <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
+        {submitText}
       </Button>
     )
   }
@@ -21,6 +30,7 @@ const SubmitTxButton: FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
       mt={6}
       isFullWidth
       onClick={() => openModal(ModalType.SelectWallet)}
+      {...buttonProps}
     >
       Connect Wallet
     </Button>
