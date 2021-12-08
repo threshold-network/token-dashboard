@@ -1,23 +1,10 @@
-import {
-  Box,
-  Divider,
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Link,
-  Stack,
-  StackDivider,
-  useColorModeValue,
-} from "@chakra-ui/react"
-import { BsDiscord, BsGithub, IoHomeSharp } from "react-icons/all"
+import { Box, Divider, HStack, Icon, IconButton, Link } from "@chakra-ui/react"
+import { BsDiscord, BsGithub } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
-import { Body1, Body3 } from "../Typography"
+import { Body3 } from "../Typography"
 import { ExternalLink } from "../../enums"
 import { FC } from "react"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
-import DarkModeSwitcher from "../Navbar/DarkModeSwitcher"
-import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
 import NavItem from "./NavItem"
 
 const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
@@ -25,15 +12,11 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
   icon,
   text,
 }) => {
-  const { isOpen } = useSidebar()
-  const isMobile = useChakraBreakpoint("sm")
-
   return (
     <Box
       as={Link}
       href={href}
       target="_blank"
-      // display={isOpen ? "flex" : "grid"}
       _hover={{
         textDecoration: "none",
         color: "gray.700",
