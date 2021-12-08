@@ -12,20 +12,19 @@ const iconMap: ChakraIconMap = {
   Keep: Keep,
 }
 
-const Template: Story<
-  Omit<TokenBalanceInputProps, "icon"> & { icon: string }
-> = ({ icon, max, label }) => {
-  const [amount, setAmount] = useState<string | number>("")
+const Template: Story<Omit<TokenBalanceInputProps, "icon"> & { icon: string }> =
+  ({ icon, max, label }) => {
+    const [amount, setAmount] = useState<string | number>("")
 
-  const Icon = iconMap[icon]
+    const Icon = iconMap[icon]
 
-  return (
-    <TokenBalanceInputComponent
-      {...{ max, amount, setAmount, label }}
-      icon={Icon}
-    />
-  )
-}
+    return (
+      <TokenBalanceInputComponent
+        {...{ max, amount, setAmount, label }}
+        icon={Icon}
+      />
+    )
+  }
 
 export const TokenBalanceInput = Template.bind({})
 
