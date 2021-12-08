@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from "react"
 import numeral from "numeral"
-import { Box, Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
 import { TConversionRates, Token } from "../../enums"
@@ -9,6 +9,7 @@ import { BsArrowDownCircleFill, BsArrowRightShort } from "react-icons/all"
 import T from "../../static/icons/Ttoken"
 import Nu from "../../static/icons/Nu"
 import { Divider, DividerIcon } from "../Divider"
+import SubmitTxButton from "../SubmitTxButton"
 
 export interface UpgradeCardTemplateProps {
   token: Token
@@ -77,9 +78,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           </Body3>
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : TConvertedAmount}</Text>
-        <Button mt={6} isFullWidth onClick={onSubmit}>
-          Upgrade
-        </Button>
+        <SubmitTxButton onSubmit={onSubmit} />
       </Box>
     </Card>
   )
