@@ -1,16 +1,15 @@
 import React, { FC, useMemo } from "react"
 import numeral from "numeral"
-import { Box, Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, Icon, Stack, Text } from "@chakra-ui/react"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
-import { ModalType, TConversionRates, Token } from "../../enums"
+import { TConversionRates, Token } from "../../enums"
 import Keep from "../../static/icons/Keep"
 import { BsArrowDownCircleFill, BsArrowRightShort } from "react-icons/all"
 import T from "../../static/icons/Ttoken"
 import Nu from "../../static/icons/Nu"
 import { Divider, DividerIcon } from "../Divider"
-import { useWeb3React } from "@web3-react/core"
-import { useModal } from "../../hooks/useModal"
+import SubmitTxButton from "../SubmitTxButton"
 
 export interface UpgradeCardTemplateProps {
   token: Token
@@ -24,9 +23,6 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   amountToConvert,
   onSubmit,
 }) => {
-  const { active } = useWeb3React()
-  const { openModal } = useModal()
-
   const titleText = useMemo(() => {
     switch (token) {
       case Token.Nu:
@@ -82,19 +78,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           </Body3>
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : TConvertedAmount}</Text>
-        {active ? (
-          <Button mt={6} isFullWidth onClick={onSubmit}>
-            Upgrade
-          </Button>
-        ) : (
-          <Button
-            mt={6}
-            isFullWidth
-            onClick={() => openModal(ModalType.SelectWallet)}
-          >
-            Connect Wallet
-          </Button>
-        )}
+        <SubmitTxButton onSubmit={onSubmit} />
       </Box>
     </Card>
   )
