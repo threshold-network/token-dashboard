@@ -89,7 +89,6 @@ const NavItem: FC<NavItemDetail> = ({
               color={
                 isActive ? useColorModeValue("gray.700", "brand.50") : undefined
               }
-              // data-is-mobile={true}
               fontSize="lg"
             >
               {text}
