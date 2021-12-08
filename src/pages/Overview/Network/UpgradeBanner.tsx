@@ -1,10 +1,10 @@
 import { FC } from "react"
+import Card from "../../../components/Card"
 import { Button, HStack, Image } from "@chakra-ui/react"
-import overviewPeople from "../../static/images/overview-people.png"
-import Card from "../../components/Card"
-import { H4 } from "../../components/Typography"
+import overviewPeople from "../../../static/images/overview-people.png"
+import { H4 } from "../../../components/Typography"
 
-const Network: FC = () => {
+const UpgradeBanner: FC = () => {
   return (
     <Card>
       <HStack>
@@ -18,4 +18,5 @@ const Network: FC = () => {
     </Card>
   )
 }
-export default Network
+
+export default UpgradeBanner
