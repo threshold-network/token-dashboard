@@ -1,5 +1,7 @@
 import numeral from "numeral"
 import axios from "axios"
+import { FixedNumber } from "@ethersproject/bignumber"
+import { formatUnits } from "@ethersproject/units"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { CoingeckoID, Token } from "../../enums/token"
@@ -49,9 +51,10 @@ export const tokenSlice = createSlice({
     ) => {
       const { token, balance } = action.payload
       state[token].balance = balance
-      state[token].usdBalance = numeral(
-        state[token].usdConversion * state[token].balance
-      ).format("$0,0.00")
+      state[token].usdBalance = getUsdBalance(
+        state[token].balance,
+        state[token].usdConversion
+      )
     },
   },
   extraReducers: (builder) => {
@@ -59,11 +62,23 @@ export const tokenSlice = createSlice({
       const { token, usd } = action.payload
 
       state[token].usdConversion = usd
-      state[token].usdBalance = numeral(usd * state[token].balance).format(
-        "$0,0.00"
+      state[token].usdBalance = getUsdBalance(
+        state[token].balance,
+        state[token].usdConversion
       )
     })
   },
 })
+
+const getUsdBalance = (
+  balance: string | number,
+  usdConversion: number
+): string => {
+  return numeral(
+    FixedNumber.fromString(usdConversion.toString())
+      .mulUnsafe(FixedNumber.fromString(formatUnits(balance)))
+      .toString()
+  ).format("$0,0.00")
+}
 
 export const { setTokenBalance, setTokenLoading } = tokenSlice.actions
