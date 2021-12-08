@@ -63,8 +63,10 @@ export const useSubscribeToContractEvent = (
     contract.provider.once("block", onBlockGuard)
 
     return () => {
-      contract.provider.off("block", onBlockGuard)
-      contract.off(eventNameOrFilter, cb)
+      if (contract) {
+        contract.provider.off("block", onBlockGuard)
+        contract.off(eventNameOrFilter, cb)
+      }
     }
   }, [
     contract,
