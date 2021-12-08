@@ -20,9 +20,9 @@ const Sidebar = () => {
     () => [
       {
         text: "Overview",
-        icon: pathname === "/" ? IoHomeSharp : IoHomeOutlineSharp,
+        icon: pathname.includes("/overview") ? IoHomeSharp : IoHomeOutlineSharp,
         href: "/",
-        isActive: pathname === "/",
+        isActive: pathname.includes("/overview"),
       },
       {
         text: "Upgrade",

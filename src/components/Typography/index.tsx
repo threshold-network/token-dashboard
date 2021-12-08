@@ -36,3 +36,13 @@ export const Body2: FC<TextProps> = (props) => {
 export const Body3: FC<TextProps> = (props) => {
   return <Text as="p" fontSize="sm" {...props} />
 }
+
+export const Label1: FC<TextProps> = (props) => {
+  return <Text as="p" fontSize="28px" letterSpacing=".75rem" {...props} />
+}
+export const Label2: FC<TextProps> = (props) => {
+  return <Text as="p" fontSize="16px" letterSpacing=".75rem" {...props} />
+}
+export const Label3: FC<TextProps> = (props) => {
+  return <Text as="p" fontSize="lg" {...props} />
+}
