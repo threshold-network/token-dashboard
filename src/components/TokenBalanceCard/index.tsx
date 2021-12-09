@@ -4,36 +4,28 @@ import { Token } from "../../enums"
 import TokenBalanceCardTemplate from "./TokenBalanceCardTemplate"
 import Keep from "../../static/icons/Keep"
 import Nu from "../../static/icons/Nu"
+import { useToken } from "../../hooks/useToken"
 
 export interface TokenBalanceCardProps {
   token: Token
 }
 
-const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
-  const { keep, nu } = useReduxToken()
+const tokenToIconMap = {
+  [Token.Keep]: Keep,
+  [Token.Nu]: Nu,
+}
 
-  switch (token) {
-    case Token.Nu:
-      return (
-        <TokenBalanceCardTemplate
-          icon={Keep}
-          title="KEEP"
-          tokenBalance={keep.balance}
-          usdBalance={keep.usdBalance}
-        />
-      )
-    case Token.Keep:
-      return (
-        <TokenBalanceCardTemplate
-          icon={Nu}
-          title="NU"
-          tokenBalance={nu.balance}
-          usdBalance={nu.usdBalance}
-        />
-      )
-    default:
-      return null
-  }
+const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
+  const { balance, usdBalance } = useToken(token)
+
+  return (
+    <TokenBalanceCardTemplate
+      icon={tokenToIconMap[token]}
+      title={token}
+      tokenBalance={balance}
+      usdBalance={usdBalance}
+    />
+  )
 }
 
 export default TokenBalanceCard
