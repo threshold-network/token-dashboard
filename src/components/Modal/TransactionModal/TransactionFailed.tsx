@@ -11,22 +11,28 @@ import {
   ModalCloseButton,
   ModalHeader,
   useDisclosure,
+  ModalFooter,
+  Button,
 } from "@chakra-ui/react"
 import TransactionError from "../../../static/icons/TransactionError"
-import ModalFooter from "./ModalFooter"
 import { Body3 } from "../../Typography"
 import { ExternalLink } from "../../../enums"
+import { BaseModalProps } from "../../../types"
+import ViewInBlockExplorer from "../../ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import withBaseModal from "../withBaseModal"
 
-interface TransactionFailedProps {
-  transactionId?: string
+interface TransactionFailedProps extends BaseModalProps {
+  transactionHash?: string
   error: string
   isExpandableError?: boolean
 }
 
 const TransactionFailed: FC<TransactionFailedProps> = ({
-  transactionId,
   error,
   isExpandableError,
+  closeModal,
+  transactionHash,
 }) => {
   const { isOpen, onToggle } = useDisclosure()
 
@@ -102,10 +108,22 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             </Box>
           )}
         </Box>
-        <ModalFooter transactionId={transactionId} />
+        {transactionHash && (
+          <Body3>
+            <ViewInBlockExplorer
+              id={transactionHash}
+              type={ExplorerDataType.TRANSACTION}
+              text="View"
+            />
+            transaction on Etherscan
+          </Body3>
+        )}
       </ModalBody>
+      <ModalFooter>
+        <Button onClick={closeModal}>Dismiss</Button>
+      </ModalFooter>
     </>
   )
 }
 
-export default TransactionFailed
+export default withBaseModal(TransactionFailed)
