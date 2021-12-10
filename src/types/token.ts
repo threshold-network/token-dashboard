@@ -33,6 +33,7 @@ export interface UseReduxToken {
   (): {
     keep: ReduxTokenInfo
     nu: ReduxTokenInfo
+    t: ReduxTokenInfo
     setTokenBalance: (
       token: Token,
       balance: number | string
