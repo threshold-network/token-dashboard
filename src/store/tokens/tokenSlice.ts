@@ -6,6 +6,9 @@ import {
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
+import Threshold from "../../static/icons/Threshold"
+import Keep from "../../static/icons/Keep"
+import Nu from "../../static/icons/Nu"
 
 export const tokenSlice = createSlice({
   name: "tokens",
@@ -13,10 +16,23 @@ export const tokenSlice = createSlice({
     [Token.Keep]: {
       loading: false,
       balance: 0,
+      conversionRate: 4.87,
+      text: Token.Keep,
+      icon: Keep,
     },
     [Token.Nu]: {
       loading: false,
       balance: 0,
+      conversionRate: 2.66,
+      text: Token.Nu,
+      icon: Nu,
+    },
+    [Token.T]: {
+      loading: false,
+      balance: 0,
+      conversionRate: 1,
+      text: Token.T,
+      icon: Threshold,
     },
   } as Record<Token, ReduxTokenInfo>,
   reducers: {

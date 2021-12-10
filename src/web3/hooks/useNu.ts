@@ -7,14 +7,14 @@ import { Token } from "../../enums"
 // TODO grab these from env?
 const NU_MAINNET = "0x4fe83213d56308330ec302a8bd641f1d0113a4cc"
 const NU_GOERLI = "0x02B50E38E5872068F325B1A7ca94D90ce2bfff63"
-const NU_RINKEBY = "0x78D591D90a4a768B9D2790deA465D472b6Fe0f18"
+const DAI_ROPSTEN = "0xc2118d4d90b274016cB7a54c03EF52E6c537D957"
 
 export const useNu = () => {
   const { account, chainId } = useWeb3React()
   const { setTokenLoading, setTokenBalance } = useReduxToken()
 
   // Checking for goerli Nu specifically
-  const contractAddress = chainId === 3 ? NU_GOERLI : NU_MAINNET
+  const contractAddress = chainId === 3 ? DAI_ROPSTEN : NU_MAINNET
   const nuContract = useErc20TokenContract(contractAddress)
 
   const fetchBalance = useCallback(async () => {
@@ -23,7 +23,7 @@ export const useNu = () => {
         setTokenLoading(Token.Nu, true)
         const rawWalletBalance = await nuContract.balanceOf(account as string)
         // TODO do not hard code decimals
-        const balance = rawWalletBalance / 10 ** 18
+        const balance = rawWalletBalance / 10 ** (await nuContract.decimals())
         setTokenBalance(Token.Nu, balance)
         setTokenLoading(Token.Nu, false)
       } catch (error) {

@@ -3,6 +3,9 @@ import { Token } from "../enums"
 export interface ReduxTokenInfo {
   loading: boolean
   balance: number
+  conversionRate: number
+  text: string
+  icon: any
 }
 
 export interface SetTokenBalanceActionPayload {
@@ -29,6 +32,7 @@ export interface UseReduxToken {
   (): {
     keep: ReduxTokenInfo
     nu: ReduxTokenInfo
+    t: ReduxTokenInfo
     setTokenBalance: (token: Token, balance: number) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
   }

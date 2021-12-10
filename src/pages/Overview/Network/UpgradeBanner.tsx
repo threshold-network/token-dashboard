@@ -6,14 +6,14 @@ import { H4 } from "../../../components/Typography"
 
 const UpgradeBanner: FC = () => {
   return (
-    <Card>
-      <HStack>
+    <Card w="100%">
+      <HStack justify="space-between">
         <Image src={overviewPeople} />
         <H4 maxW="500px">
           Have KEEP or Nu tokens? Upgrade them to T and harness the power of
           Threshold.
         </H4>
-        <Button>Upgrade Tokens</Button>
+        <Button size="lg">Upgrade Tokens</Button>
       </HStack>
     </Card>
   )

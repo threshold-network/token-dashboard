@@ -1,38 +1,29 @@
 import { FC } from "react"
-import { Button, Grid, GridItem, HStack, Image } from "@chakra-ui/react"
+import { Stack, VStack } from "@chakra-ui/react"
 import TotalValueLocked from "./TotalValueLocked"
 import Interest from "./Interest"
 import Governance from "./Governance"
 import UpgradeBanner from "./UpgradeBanner"
 import WalletBalances from "./WalletBalances"
 import Nodes from "./Nodes"
+import { useReduxToken } from "../../../hooks/useReduxToken"
 
 const Network: FC = () => {
+  const totalValueLocked = 30838938
+
   return (
-    <Grid
-      templateRows="repeat(5, 1fr)"
-      templateColumns="repeat(2, 1fr)"
-      gap={4}
-    >
-      <GridItem colSpan={2} rowSpan={1}>
-        <UpgradeBanner />
-      </GridItem>
-      <GridItem rowSpan={{ base: 1, md: 2 }} colSpan={{ base: 2, md: 1 }}>
+    <VStack spacing={4} mt={4}>
+      <UpgradeBanner />
+      <Stack direction={{ base: "column", md: "row" }} w="100%">
         <WalletBalances />
-      </GridItem>
-      <GridItem colSpan={{ base: 2, md: 1 }} rowSpan={1}>
-        <TotalValueLocked />
-      </GridItem>
-      <GridItem colSpan={{ base: 2, md: 1 }} rowSpan={1}>
-        <Nodes />
-      </GridItem>
-      <GridItem colSpan={{ base: 2, md: 1 }} rowSpan={2}>
-        <Governance />
-      </GridItem>
-      <GridItem colSpan={{ base: 2, md: 1 }} rowSpan={1}>
-        <Interest />
-      </GridItem>
-    </Grid>
+        <VStack>
+          <TotalValueLocked totalValueLocked={totalValueLocked} />
+          <Nodes />
+        </VStack>
+      </Stack>
+      <Governance />
+      <Interest />
+    </VStack>
   )
 }
 export default Network
