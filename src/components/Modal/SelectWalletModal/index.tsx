@@ -14,11 +14,14 @@ import ConnectMetamask from "./ConnectMetamask"
 import withBaseModal from "../withBaseModal"
 import { LedgerWhite } from "../../../static/icons/LedgerWhite"
 import ConnectLedger from "./ConnectLedger"
+import ConnectTrezor from "./ConnectTrezor"
 import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
 import { WalletOption } from "../../../types"
+import { Trezor } from "../../../static/icons/Trezor"
+import { TrezorLight } from "../../../static/icons/TrezorLight"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
@@ -52,6 +55,14 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
         setWalletToConnect(WalletType.WalletConnect)
       },
     },
+    {
+      id: WalletType.Trezor,
+      title: "Trezor",
+      icon: useColorModeValue(Trezor, TrezorLight),
+      onClick: () => {
+        setWalletToConnect(WalletType.Trezor)
+      },
+    },
   ]
 
   const [walletToConnect, setWalletToConnect] = useState<WalletType | null>(
@@ -80,6 +91,9 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       )}
       {walletToConnect === WalletType.WalletConnect && (
         <ConnectWalletConnect goBack={goBack} closeModal={closeModal} />
+      )}
+      {walletToConnect === WalletType.Trezor && (
+        <ConnectTrezor goBack={goBack} closeModal={closeModal} />
       )}
     </>
   )

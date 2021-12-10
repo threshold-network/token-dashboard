@@ -2,9 +2,10 @@ import TokenBalanceInput from "../TokenBalanceInput"
 import KeepLight from "../../static/icons/KeepLight"
 import { FC, useState } from "react"
 import { useReduxToken } from "../../hooks/useReduxToken"
-import { Token } from "../../enums"
+import { ModalType, Token } from "../../enums"
 import NuLight from "../../static/icons/NuLight"
 import UpgradeCardTemplate from "./UpgradeCardTemplate"
+import { useModal } from "../../hooks/useModal"
 
 export interface UpgradeCardProps {
   token: Token
@@ -13,9 +14,10 @@ export interface UpgradeCardProps {
 const UpgradeCard: FC<UpgradeCardProps> = ({ token }) => {
   const { keep, nu } = useReduxToken()
   const [amount, setAmount] = useState<string | number>("")
+  const { openModal } = useModal()
 
   const submitUpgrade = () => {
-    console.log("time to upgrade!")
+    openModal(ModalType.UpgradeTxn)
   }
 
   switch (token) {

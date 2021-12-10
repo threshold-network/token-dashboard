@@ -15,7 +15,7 @@ const ConnectWalletConnect: FC<{
   const { error, activate, active, account } = useWeb3React()
 
   const connectionRejected = error?.message.includes(
-    ConnectionError.rejectedConnection
+    ConnectionError.RejectedConnection
   )
 
   return (
