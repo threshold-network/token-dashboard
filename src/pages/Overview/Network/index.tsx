@@ -6,7 +6,6 @@ import Governance from "./Governance"
 import UpgradeBanner from "./UpgradeBanner"
 import WalletBalances from "./WalletBalances"
 import Nodes from "./Nodes"
-import { useReduxToken } from "../../../hooks/useReduxToken"
 
 const Network: FC = () => {
   const totalValueLocked = 30838938
