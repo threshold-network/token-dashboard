@@ -10,10 +10,6 @@ const multiSegmentFilledTrack = (props: any) => {
 
   // @ts-ignore
   for (const [fillColor, { value }] of Object.entries(values)) {
-    // const fillColor = getColor(
-    //   theme,
-    //   mode(`${color}.500`, `${color}.200`)(props)
-    // )
     // @ts-ignore
     const pct = +Number.parseFloat((value / max) * 100).toFixed(1)
 
@@ -47,6 +43,9 @@ const multiSegmentFilledTrack = (props: any) => {
 }
 
 export const Progress = {
+  defaultProps: {
+    colorScheme: "whiteAlpha",
+  },
   variants: {
     multiSegment: (props: any) => ({
       track: {

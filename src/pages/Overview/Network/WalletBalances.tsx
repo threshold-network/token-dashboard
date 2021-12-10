@@ -1,8 +1,15 @@
 import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import CardTemplate from "./CardTemplate"
-import { Button, HStack, Icon, Link, Stack } from "@chakra-ui/react"
-import { Body2, Body3, H1, H3, H5 } from "../../../components/Typography"
+import {
+  Button,
+  HStack,
+  Icon,
+  Link,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react"
+import { Body2, Body3, H3, H5 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import numeral from "numeral"
@@ -41,15 +48,15 @@ const WalletBalances: FC = () => {
     return {
       ["#7D00FF"]: {
         value: (keep.balance / totalAssetBalance) * 100,
-        tooltip: keep.text,
+        tooltip: `${numeral(keep.balance).format("0,00.00")} ${keep.text}`,
       },
       ["#1E65F3"]: {
         value: (nu.balance / totalAssetBalance) * 100,
-        tooltip: nu.text,
+        tooltip: `${numeral(nu.balance).format("0,00.00")} ${nu.text}`,
       },
       ["#48dbb4"]: {
         value: (t.balance / totalAssetBalance) * 100,
-        tooltip: t.text,
+        tooltip: `${numeral(t.balance).format("0,00.00")} ${t.text}`,
       },
     }
   }, [account, totalAssetBalance, t.balance, nu.balance, t.balance])
@@ -81,7 +88,13 @@ const WalletBalances: FC = () => {
       </Stack>
       <Divider borderColor="gray.300" />
       <Body2>Upgrades to</Body2>
-      <HStack bg="gray.50" mt={4} px={6} py={2} borderRadius="md">
+      <HStack
+        bg={useColorModeValue("gray.50", "gray.700")}
+        mt={4}
+        px={6}
+        py={2}
+        borderRadius="md"
+      >
         <Icon as={t.icon} boxSize="32px" />
         <H3>{numeral(conversionToTAmount).format("0,00.00")}</H3>
       </HStack>

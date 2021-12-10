@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Box } from "@chakra-ui/react"
+import { Box, useColorModeValue } from "@chakra-ui/react"
 import { Body2, H2 } from "../../../components/Typography"
 
 const StatBox: FC<{ value: number | string; text: string }> = ({
@@ -7,7 +7,12 @@ const StatBox: FC<{ value: number | string; text: string }> = ({
   text,
 }) => {
   return (
-    <Box background="gray.50" padding={6} borderRadius="md">
+    <Box
+      background={useColorModeValue("gray.50", "gray.700")}
+      padding={6}
+      borderRadius="md"
+      h="100%"
+    >
       <H2 textAlign="center">{value}</H2>
       <Body2 textAlign="center">{text}</Body2>
     </Box>

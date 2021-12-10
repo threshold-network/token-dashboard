@@ -16,10 +16,10 @@ const Network: FC = () => {
       <UpgradeBanner />
       <Stack direction={{ base: "column", md: "row" }} w="100%">
         <WalletBalances />
-        <VStack>
+        <Stack>
           <TotalValueLocked totalValueLocked={totalValueLocked} />
           <Nodes />
-        </VStack>
+        </Stack>
       </Stack>
       <Governance />
       <Interest />
