@@ -1,5 +1,11 @@
 import { Container } from "@chakra-ui/react"
-import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
+import {
+  Redirect,
+  Route,
+  Switch,
+  useLocation,
+  useRouteMatch,
+} from "react-router-dom"
 import { H1, Label1 } from "../../components/Typography"
 import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"
@@ -7,10 +13,16 @@ import tBTC from "./tBTC"
 import Pre from "./Pre"
 
 const Overview = ({}) => {
+  const { pathname } = useLocation()
+
   const subNavLinks = [
-    { text: "Network", href: "/network", isActive: true },
-    { text: "tBTC", href: "/tBTC", isActive: false },
-    { text: "PRE", href: "/pre", isActive: false },
+    {
+      text: "Network",
+      href: "/network",
+      isActive: pathname.includes("/network"),
+    },
+    { text: "tBTC", href: "/tBTC", isActive: pathname.includes("/tBTC") },
+    { text: "PRE", href: "/pre", isActive: pathname.includes("/pre") },
   ]
 
   const { path } = useRouteMatch()
