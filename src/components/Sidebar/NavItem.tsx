@@ -10,22 +10,32 @@ import {
 } from "@chakra-ui/react"
 import { Link as RouterLink } from "react-router-dom"
 import { useSidebar } from "../../hooks/useSidebar"
+import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
 export interface NavItemDetail {
   icon: any
   text: string
   href: string
-  isActive: boolean
+  isActive?: boolean
+  isFooter?: boolean
 }
 
-const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
-  const { isOpen } = useSidebar()
+const NavItem: FC<NavItemDetail> = ({
+  icon,
+  text,
+  href,
+  isActive,
+  isFooter,
+}) => {
+  const { isOpen, closeSidebar } = useSidebar()
+  const isMobileDevice = useChakraBreakpoint("sm")
 
   return (
     <Box position="relative" my={2}>
       {/* Active Border Highlight */}
       {isActive && (
         <Box
+          zIndex={999}
           top="-8px"
           height="calc(100% + 16px)"
           width="4px"
@@ -41,21 +51,29 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
         label={text}
         isDisabled={isOpen}
         boxShadow="md"
-        bg={useColorModeValue("white", "gray.800")}
-        color={useColorModeValue("gray.700", "white")}
+        bg={useColorModeValue("gray.800", "white")}
+        color={useColorModeValue("white", "gray.700")}
         padding={2}
         gutter={32}
         arrowSize={16}
       >
         <Link
-          as={RouterLink}
+          as={isFooter ? undefined : RouterLink}
           to={href}
+          href={href}
           _hover={{ textDecoration: "none" }}
           tabIndex={-1}
         >
           {isOpen ? (
             <Button
-              isOpen
+              iconSpacing={4}
+              onClick={() => {
+                if (isMobileDevice) {
+                  closeSidebar()
+                }
+              }}
+              w="calc(100% - 32px)"
+              justifyContent="left"
               variant="side-bar"
               leftIcon={
                 <Icon
@@ -71,6 +89,7 @@ const NavItem: FC<NavItemDetail> = ({ icon, text, href, isActive }) => {
               color={
                 isActive ? useColorModeValue("gray.700", "brand.50") : undefined
               }
+              fontSize="lg"
             >
               {text}
             </Button>
