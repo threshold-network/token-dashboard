@@ -1,8 +1,8 @@
 import { FC } from "react"
-import Card from "../../../components/Card"
+import CardTemplate from "./CardTemplate"
 
 const Governance: FC = () => {
-  return <Card>Governance</Card>
+  return <CardTemplate title="Governance" />
 }
 
 export default Governance

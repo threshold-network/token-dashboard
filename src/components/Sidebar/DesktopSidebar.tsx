@@ -11,7 +11,6 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
 
   return (
     <Box
-      h="100vh"
       display={{ base: "none", sm: "flex" }}
       flexDirection="column"
       width={isOpen ? "285px" : "90px"}
