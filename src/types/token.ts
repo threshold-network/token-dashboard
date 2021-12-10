@@ -57,3 +57,5 @@ export interface UseErc20Interface {
     contract: Contract | null
   }
 }
+
+export type UpgredableToken = Token.Nu | Token.Keep
