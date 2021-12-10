@@ -4,6 +4,7 @@ import { Token } from "../../enums"
 import TokenBalanceCardTemplate from "./TokenBalanceCardTemplate"
 import Keep from "../../static/icons/Keep"
 import Nu from "../../static/icons/Nu"
+import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
 
 export interface TokenBalanceCardProps {
@@ -13,6 +14,7 @@ export interface TokenBalanceCardProps {
 const tokenToIconMap = {
   [Token.Keep]: Keep,
   [Token.Nu]: Nu,
+  [Token.T]: T,
 }
 
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
