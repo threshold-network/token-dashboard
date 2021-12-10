@@ -27,6 +27,7 @@ interface HardwareAccountSelectionProps extends WalletConnectionModalProps {
   fetchAddresses: (count: number, offset: number) => void
   icon: any
   title: string
+  eagerFetch: boolean
 }
 
 const HARDWARE_LOADING_TIMEOUT_MS = 60000
@@ -41,6 +42,7 @@ const HardwareAccountSelection: FC<HardwareAccountSelectionProps> = ({
   fetchAddresses,
   icon: WalletIcon,
   title,
+  eagerFetch,
 }) => {
   const [loadingCountDown, setCounter] = useState(HARDWARE_LOADING_TIMEOUT_MS)
 
@@ -90,7 +92,9 @@ const HardwareAccountSelection: FC<HardwareAccountSelectionProps> = ({
   const confirmAddress = loading || !selectedAddress ? () => {} : onContinue
 
   useEffect(() => {
-    _fetchAddresses(ROWS_PER_PAGE, offsetIdx)
+    if (eagerFetch) {
+      _fetchAddresses(ROWS_PER_PAGE, offsetIdx)
+    }
   }, [])
 
   return (

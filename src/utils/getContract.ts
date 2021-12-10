@@ -2,9 +2,13 @@ import { getAddress } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 import { Contract } from "@ethersproject/contracts"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
+import { LedgerSigner } from "@ethersproject/hardware-wallets"
 
 // account is not optional
-function getSigner(library: Web3Provider, account: string): JsonRpcSigner {
+export function getSigner(
+  library: Web3Provider,
+  account: string
+): JsonRpcSigner {
   return library.getSigner(account).connectUnchecked()
 }
 

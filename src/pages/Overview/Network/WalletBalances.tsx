@@ -42,46 +42,56 @@ const WalletBalances: FC = () => {
   const { account } = useWeb3React()
   const { keep, nu, t } = useReduxToken()
 
-  const totalAssetBalance = keep.balance + nu.balance + t.balance
+  const totalAssetBalance =
+    keep.formattedBalance + nu.formattedBalance + t.formattedBalance
 
   const progressBarValues = useMemo(() => {
     return {
       ["#7D00FF"]: {
-        value: (keep.balance / totalAssetBalance) * 100,
-        tooltip: `${numeral(keep.balance).format("0,00.00")} ${keep.text}`,
+        value: (keep.formattedBalance / totalAssetBalance) * 100,
+        tooltip: `${numeral(keep.formattedBalance).format("0,00.00")} ${
+          keep.text
+        }`,
       },
       ["#1E65F3"]: {
-        value: (nu.balance / totalAssetBalance) * 100,
-        tooltip: `${numeral(nu.balance).format("0,00.00")} ${nu.text}`,
+        value: (nu.formattedBalance / totalAssetBalance) * 100,
+        tooltip: `${numeral(nu.formattedBalance).format("0,00.00")} ${nu.text}`,
       },
       ["#48dbb4"]: {
-        value: (t.balance / totalAssetBalance) * 100,
-        tooltip: `${numeral(t.balance).format("0,00.00")} ${t.text}`,
+        value: (t.formattedBalance / totalAssetBalance) * 100,
+        tooltip: `${numeral(t.formattedBalance).format("0,00.00")} ${t.text}`,
       },
     }
   }, [account, totalAssetBalance, t.balance, nu.balance, t.balance])
 
   const conversionToTAmount = useMemo(() => {
-    return keep.balance * keep.conversionRate + nu.balance * nu.conversionRate
-  }, [keep.balance, nu.balance])
+    return (
+      Number(keep.formattedBalance) * keep.conversionRate +
+      Number(nu.formattedBalance) * nu.conversionRate
+    )
+  }, [keep.formattedBalance, nu.formattedBalance])
 
   return (
     <CardTemplate title="WALLET">
       <Body2 mb={2}>Liquid Tokens</Body2>
       <MultiSegmentProgress values={progressBarValues} />
       <Stack spacing={2} mt={4}>
-        {t.balance !== 0 && (
-          <BalanceStat balance={t.balance} icon={t.icon} text={t.text} />
+        {t.formattedBalance !== 0 && (
+          <BalanceStat
+            balance={Number(t.formattedBalance)}
+            icon={t.icon}
+            text={t.text}
+          />
         )}
         <BalanceStat
           conversionRate={keep.conversionRate}
-          balance={keep.balance}
+          balance={Number(keep.formattedBalance)}
           icon={keep.icon}
           text={keep.text}
         />
         <BalanceStat
           conversionRate={8.26}
-          balance={nu.balance}
+          balance={Number(nu.formattedBalance)}
           icon={nu.icon}
           text={nu.text}
         />
