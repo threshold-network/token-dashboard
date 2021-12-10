@@ -14,7 +14,7 @@ const Nodes: FC = () => {
     <CardTemplate title="NODES">
       <HStack justifyContent="space-between" spacing={4}>
         {nodes.map((node) => (
-          <StatBox {...node} />
+          <StatBox key={node.text} {...node} />
         ))}
       </HStack>
     </CardTemplate>
