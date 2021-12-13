@@ -7,8 +7,7 @@ export enum Token {
 export enum CoingeckoID {
   KEEP = "keep-network",
   NU = "nucypher",
-  // TODO: This needs to be updated when coingecko recognizes T
-  T = "threshold",
+  T = "ttoken",
 }
 
 export enum TConversionRates {
