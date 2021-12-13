@@ -11,7 +11,8 @@ import WebsocketSubprovider from "web3-provider-engine/subproviders/websocket"
 import TransportU2F from "@ledgerhq/hw-transport-u2f"
 import Transport from "@ledgerhq/hw-transport-webhid"
 import { Web3ProviderEngine } from "@0x/subproviders"
-import { RPC_URL } from "../../config"
+import { getEnvVariable } from "../../utils/getEnvVariable"
+import { EnvVariable } from "../../enums"
 
 interface LedgerConstructionInterface {
   chainId?: string
@@ -21,6 +22,9 @@ interface LedgerConstructionInterface {
   accountFetchingConfigs?: any
   baseDerivationPath?: string
 }
+
+const rpcUrl = getEnvVariable(EnvVariable.RpcUrl)
+const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
 /**
  * Based on:
@@ -150,14 +154,14 @@ export class LedgerConnector extends AbstractConnector {
 
 export const ledgerLiveConnectorFactory = () =>
   new LedgerConnector({
-    chainId: "1",
-    url: RPC_URL[1],
+    chainId: supportedChainId,
+    url: rpcUrl,
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LIVE,
   })
 
 export const ledgerLegacyConnectorFactory = () =>
   new LedgerConnector({
-    chainId: "1",
-    url: RPC_URL[1],
+    chainId: supportedChainId,
+    url: rpcUrl,
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LEGACY,
   })
