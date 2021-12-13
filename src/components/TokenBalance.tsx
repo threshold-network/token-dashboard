@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react"
-import { Box } from "@chakra-ui/react"
+import { Box, TextProps } from "@chakra-ui/react"
 import { formatUnits } from "@ethersproject/units"
 import numeral from "numeral"
 import { Body3, H5 } from "./Typography"
@@ -12,12 +12,13 @@ interface TokenBalanceProps {
   withSymbol?: boolean
 }
 
-const TokenBalance: FC<TokenBalanceProps> = ({
+const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   tokenAmount,
   usdBalance,
   tokenSymbol,
   withUSDBalance = false,
   withSymbol = false,
+  ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
     return numeral(formatUnits(tokenAmount)).format("0,0.00")
@@ -27,7 +28,7 @@ const TokenBalance: FC<TokenBalanceProps> = ({
   // balance.
   return (
     <Box>
-      <H5>
+      <H5 {...restProps}>
         {`${tokenAmount ? _tokenAmount : "--"}${
           withSymbol && tokenSymbol ? ` ${tokenSymbol}` : ""
         }`}

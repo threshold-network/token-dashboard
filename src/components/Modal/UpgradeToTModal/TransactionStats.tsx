@@ -26,18 +26,28 @@ const TransactionStats: FC<TransactionStatsProps> = ({
           tokenAmount={upgradedAmount}
           withSymbol
           tokenSymbol={token}
+          as="p"
+          fontSize="sm"
+          color="gray.700"
         />
       ),
     },
     {
       text: "Receive Amount",
       value: (
-        <TokenBalance tokenAmount={receivedAmount} withSymbol tokenSymbol="T" />
+        <TokenBalance
+          tokenAmount={receivedAmount}
+          withSymbol
+          tokenSymbol="T"
+          as="p"
+          fontSize="sm"
+          color="gray.700"
+        />
       ),
     },
     {
       text: "Exchange Rate",
-      value: `1 ${token} = ${exchangeRate} T`,
+      value: <Body3 color="gray.700">{`1 ${token} = ${exchangeRate} T`}</Body3>,
     },
   ]
 
@@ -46,7 +56,7 @@ const TransactionStats: FC<TransactionStatsProps> = ({
       {transactionInfo.map((info) => (
         <HStack justify="space-between" key={info.text}>
           <Body3 color="gray.500">{info.text}</Body3>
-          <Body3 color="gray.700">{info.value}</Body3>
+          {info.value}
         </HStack>
       ))}
     </Stack>
