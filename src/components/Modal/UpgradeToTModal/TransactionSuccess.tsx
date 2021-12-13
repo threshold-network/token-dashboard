@@ -14,29 +14,30 @@ import {
 import Confetti from "react-confetti"
 import Threshold from "../../../static/icons/Ttoken"
 import { Body3, H5 } from "../../Typography"
-import { Token } from "../../../enums"
+import { Divider } from "../../Divider"
 import TransactionStats from "./TransactionStats"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
+import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
-import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import { BaseModalProps, UpgredableToken } from "../../../types"
 
 interface TransactionSuccessProps extends BaseModalProps {
-  upgradedAmount: number
-  receivedAmount: number
-  exchangeRate: number
+  upgradedAmount: string
+  receivedAmount: string
   transactionHash: string
-  token: Token
+  token: UpgredableToken
 }
 
 const TransactionSuccess: FC<TransactionSuccessProps> = ({
   upgradedAmount,
   receivedAmount,
-  exchangeRate,
   transactionHash,
   token,
   closeModal,
 }) => {
+  const { formattedAmount: exchangeRate } = useTExchangeRate(token)
+
   return (
     <>
       <ModalHeader>
@@ -75,14 +76,15 @@ const TransactionSuccess: FC<TransactionSuccessProps> = ({
           upgradedAmount={upgradedAmount}
         />
 
-        <Body3>
+        <Body3 mt="4rem" align="center">
           <ViewInBlockExplorer
             text="View"
             id={transactionHash}
             type={ExplorerDataType.TRANSACTION}
-          />
+          />{" "}
           transaction on Etherscan
         </Body3>
+        <Divider />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal}>Dismiss</Button>

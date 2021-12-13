@@ -1,13 +1,13 @@
-import numeral from "numeral"
+import { FC } from "react"
 import { HStack, Stack } from "@chakra-ui/react"
+import TokenBalance from "../../TokenBalance"
 import { Body3 } from "../../Typography"
 import { Token } from "../../../enums"
-import { FC } from "react"
 
 interface TransactionStatsProps {
-  upgradedAmount: number
-  receivedAmount: number
-  exchangeRate: number
+  upgradedAmount: string
+  receivedAmount: string
+  exchangeRate: string
   token: Token
 }
 
@@ -21,11 +21,19 @@ const TransactionStats: FC<TransactionStatsProps> = ({
     {
       text: "Upgrade Amount",
       // todo: Token might not be a string, so this should be updated once we decide on the interface
-      value: `${numeral(upgradedAmount).format("0,00.00")} ${token}`,
+      value: (
+        <TokenBalance
+          tokenAmount={upgradedAmount}
+          withSymbol
+          tokenSymbol={token}
+        />
+      ),
     },
     {
       text: "Receive Amount",
-      value: `${numeral(receivedAmount).format("0,00.00")} T`,
+      value: (
+        <TokenBalance tokenAmount={receivedAmount} withSymbol tokenSymbol="T" />
+      ),
     },
     {
       text: "Exchange Rate",
@@ -34,7 +42,7 @@ const TransactionStats: FC<TransactionStatsProps> = ({
   ]
 
   return (
-    <Stack spacing={4} mb={12}>
+    <Stack spacing="0.5rem">
       {transactionInfo.map((info) => (
         <HStack justify="space-between" key={info.text}>
           <Body3 color="gray.500">{info.text}</Body3>

@@ -27,22 +27,20 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
       <ModalHeader>Confirm (pending)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box mb={6}>
-          <Box borderRadius="md" bg="gray.50" pt={12} pb={8} mb={8}>
-            <Spinner />
-            <Body1 color="gray.700" align="center" mt={8}>
-              {pendingText}
-            </Body1>
-          </Box>
+        <Box borderRadius="md" bg="gray.50" pt={12} pb={8}>
+          <Spinner />
+          <Body1 color="gray.700" align="center" mt={8}>
+            {pendingText}
+          </Body1>
         </Box>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter justifyContent="center">
         <Body3>
           <ViewInBlockExplorer
             text="View"
             id={transactionHash}
             type={ExplorerDataType.TRANSACTION}
-          />
+          />{" "}
           transaction on Etherscan
         </Body3>
       </ModalFooter>
