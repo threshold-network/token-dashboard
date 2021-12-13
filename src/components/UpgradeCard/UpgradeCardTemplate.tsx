@@ -1,18 +1,17 @@
-import React, { FC, useMemo } from "react"
-import numeral from "numeral"
-import { Box, Button, HStack, Icon, Stack, Text } from "@chakra-ui/react"
+import { FC, useMemo } from "react"
+import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
-import { TConversionRates, Token } from "../../enums"
-import Keep from "../../static/icons/Keep"
-import { BsArrowDownCircleFill, BsArrowRightShort } from "react-icons/all"
-import T from "../../static/icons/Ttoken"
-import Nu from "../../static/icons/Nu"
+import { Token } from "../../enums"
+import { BsArrowDownCircleFill } from "react-icons/all"
 import { Divider, DividerIcon } from "../Divider"
 import UpgradeIconGroup from "../UpgradeIconGroup"
+import { UpgredableToken } from "../../types"
+import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
+import { useTExchangeRate } from "../../hooks/useTExchangeRate"
 
 export interface UpgradeCardTemplateProps {
-  token: Token
+  token: UpgredableToken
   amountToConvert: number | string
   onSubmit: () => void
 }
@@ -23,6 +22,9 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   amountToConvert,
   onSubmit,
 }) => {
+  const { formattedAmount } = useTConvertedAmount(token, amountToConvert)
+  const { formattedAmount: exchangeRate } = useTExchangeRate(token)
+
   const titleText = useMemo(() => {
     switch (token) {
       case Token.Nu:
@@ -33,27 +35,6 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         return ""
     }
   }, [token])
-
-  const tConversionText = useMemo(() => {
-    switch (token) {
-      case Token.Nu:
-        return `1 NU = ${TConversionRates[token]} T`
-      case Token.Keep:
-        return `1 KEEP = ${TConversionRates[token]} T`
-      default:
-        return ""
-    }
-  }, [token])
-
-  const TConvertedAmount = useMemo(() => {
-    if (amountToConvert === "") return 0
-
-    const amountT = numeral(
-      TConversionRates[token] * Number(amountToConvert)
-    ).format("0,0.00")
-
-    return amountT === "NaN" ? "--" : amountT
-  }, [amountToConvert])
 
   return (
     <Card maxW="720px">
@@ -69,10 +50,10 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         <HStack>
           <Body3 fontWeight="bold">T Amount</Body3>
           <Body3 ml={4} color="gray.500">
-            {tConversionText}
+            {`1 ${token} = ${exchangeRate} T`}
           </Body3>
         </HStack>
-        <Text mt={2}>{amountToConvert === "" ? "--" : TConvertedAmount}</Text>
+        <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
         <Button mt={6} isFullWidth onClick={onSubmit}>
           Upgrade
         </Button>

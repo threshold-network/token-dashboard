@@ -1,61 +1,45 @@
+import { FC, useState } from "react"
+import UpgradeCardTemplate from "./UpgradeCardTemplate"
 import TokenBalanceInput from "../TokenBalanceInput"
 import KeepLight from "../../static/icons/KeepLight"
-import { FC, useState } from "react"
-import { useReduxToken } from "../../hooks/useReduxToken"
-import { ModalType, Token } from "../../enums"
 import NuLight from "../../static/icons/NuLight"
-import UpgradeCardTemplate from "./UpgradeCardTemplate"
-import { useModal } from "../../hooks/useModal"
+import { useTokenBalance } from "../../hooks/useTokenBalance"
+import { Token } from "../../enums"
+import { UpgredableToken } from "../../types"
 
 export interface UpgradeCardProps {
-  token: Token
+  token: UpgredableToken
+  onSubmit: (amount: string | number, token: UpgredableToken) => void
 }
 
-const UpgradeCard: FC<UpgradeCardProps> = ({ token }) => {
-  const { keep, nu } = useReduxToken()
+const tokenToIconMap = {
+  [Token.Keep]: KeepLight,
+  [Token.Nu]: NuLight,
+}
+
+const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
+  const balance = useTokenBalance(token)
   const [amount, setAmount] = useState<string | number>("")
-  const { openModal } = useModal()
 
   const submitUpgrade = () => {
-    openModal(ModalType.UpgradeTransaction)
+    onSubmit(amount, token)
   }
 
-  switch (token) {
-    case Token.Nu:
-      return (
-        <UpgradeCardTemplate
-          token={token}
-          amountToConvert={amount}
-          onSubmit={submitUpgrade}
-        >
-          <TokenBalanceInput
-            label="Nu Amount"
-            amount={amount}
-            setAmount={setAmount}
-            max={nu.balance}
-            icon={NuLight}
-          />
-        </UpgradeCardTemplate>
-      )
-    case Token.Keep:
-      return (
-        <UpgradeCardTemplate
-          token={token}
-          amountToConvert={amount}
-          onSubmit={submitUpgrade}
-        >
-          <TokenBalanceInput
-            label="KEEP Amount"
-            amount={amount}
-            setAmount={setAmount}
-            max={keep.balance}
-            icon={KeepLight}
-          />
-        </UpgradeCardTemplate>
-      )
-    default:
-      return null
-  }
+  return (
+    <UpgradeCardTemplate
+      token={token}
+      amountToConvert={amount}
+      onSubmit={submitUpgrade}
+    >
+      <TokenBalanceInput
+        label={`${token} Amount`}
+        amount={amount}
+        setAmount={setAmount}
+        max={balance}
+        icon={tokenToIconMap[token]}
+      />
+    </UpgradeCardTemplate>
+  )
 }
 
 export default UpgradeCard
