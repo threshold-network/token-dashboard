@@ -8,7 +8,7 @@ const Spinner = () => {
     <Flex position="relative" alignItems="center" justifyContent="center">
       <ChakraSpinner
         thickness="8px"
-        speed="0"
+        speed="1.3s"
         emptyColor="gray.200"
         color="brand.500"
         height="120px"
