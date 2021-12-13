@@ -9,7 +9,7 @@ import {
 import { H1, Label1 } from "../../components/Typography"
 import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"
-import tBTC from "./tBTC"
+import TBTC from "./tBTC"
 import Pre from "./Pre"
 
 const Overview = ({}) => {
@@ -32,11 +32,16 @@ const Overview = ({}) => {
       <Label1>Threshold</Label1>
       <H1>Network Overview</H1>
       <SubNavigationPills links={subNavLinks} />
-
       <Redirect from="/overview" to="/overview/network" />
-      <Route path={`${path}/network`} component={Network} />
-      <Route path={`${path}/tBTC`} component={tBTC} />
-      <Route path={`${path}/pre`} component={Pre} />
+      <Route path={`${path}/network`}>
+        <Network />
+      </Route>
+      <Route path={`${path}/tBTC`}>
+        <TBTC />
+      </Route>
+      <Route path={`${path}/pre`}>
+        <Pre />
+      </Route>
     </Container>
   )
 }

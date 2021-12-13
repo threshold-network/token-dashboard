@@ -6,13 +6,18 @@ import { useNu } from "../web3/hooks/useNu"
 import { useT } from "../web3/hooks/useT"
 import { useReduxToken } from "../hooks/useReduxToken"
 import { Token } from "../enums"
+import { ReduxTokenInfo } from "../types"
+
+interface TokenContextState extends ReduxTokenInfo {
+  contract: Contract | null
+}
 
 export const TokenContext = createContext<{
-  [key in Token]: any
+  [key in Token]: TokenContextState
 }>({
-  [Token.Keep]: {} as { contract: Contract },
-  [Token.Nu]: {} as { contract: Contract },
-  [Token.T]: {} as { contract: Contract },
+  [Token.Keep]: {} as TokenContextState,
+  [Token.Nu]: {} as TokenContextState,
+  [Token.T]: {} as TokenContextState,
 })
 
 // Context that handles data fetching when a user connects their wallet or
@@ -33,7 +38,8 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     for (const token in Token) {
-      if (token) {
+      // TODO: how to calculate T token price in USD.
+      if (token !== Token.T) {
         // @ts-ignore
         fetchTokenPriceUSD(Token[token])
       }
@@ -61,15 +67,15 @@ export const TokenContextProvider: React.FC = ({ children }) => {
       value={{
         [Token.Keep]: {
           ...keep,
-          balance: keepData.balance,
+          ...keepData,
         },
         [Token.Nu]: {
           ...nu,
-          balance: nuData.balance,
+          ...nuData,
         },
         [Token.T]: {
-          ...nu,
-          balance: tData.balance,
+          ...t,
+          ...tData,
         },
       }}
     >
