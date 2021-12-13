@@ -11,7 +11,6 @@ import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
-import { ScratchPad } from "./pages/ScratchPad"
 import Upgrade from "./pages/Upgrade"
 import Portfolio from "./pages/Portfolio"
 import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
@@ -55,7 +54,6 @@ const App: FC = () => {
                   <Navbar />
                   <Container maxW="6xl" data-cy="app-container">
                     <Switch>
-                      <Route exact path="/" component={ScratchPad} />
                       <Route path="/upgrade" component={Upgrade} />
                       <Route path="/portfolio" component={Portfolio} />
                     </Switch>
