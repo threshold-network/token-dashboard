@@ -10,32 +10,32 @@ import {
 } from "@chakra-ui/react"
 import { Body1, Body3, H5 } from "../../Typography"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
-import { Token } from "../../../enums"
 import TransactionStats from "./TransactionStats"
 import { Divider } from "../../Divider"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
+import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
+import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
+import { useVendingMachineContract } from "../../../web3/hooks/useVendingMachineContract"
+import { useUpgradeToT } from "../../../web3/hooks/useUpgradeToT"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
-import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import { BaseModalProps, UpgredableToken } from "../../../types"
 
 interface TransactionIdleProps extends BaseModalProps {
-  upgradedAmount: number
-  receivedAmount: number
-  exchangeRate: number
-  token: Token
-  vendingMachineContractAddress: string
-  onSubmit: () => void
+  upgradedAmount: string
+  token: UpgredableToken
 }
 
 const TransactionIdle: FC<TransactionIdleProps> = ({
   upgradedAmount,
-  receivedAmount,
-  exchangeRate,
   token,
-  vendingMachineContractAddress,
-  onSubmit,
   closeModal,
 }) => {
+  const { amount: receivedAmount } = useTConvertedAmount(token, upgradedAmount)
+  const { formattedAmount: exchangeRate } = useTExchangeRate(token)
+  const contract = useVendingMachineContract(token)
+  const { upgradeToT } = useUpgradeToT(token)
+
   return (
     <>
       <ModalHeader>Upgrade Tokens</ModalHeader>
@@ -43,7 +43,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
       <ModalBody>
         <Box borderRadius="md" bg="gray.50" padding={6}>
           <H5>You are about to upgrade {token} to T.</H5>
-          <Body1>
+          <Body1 mt="1rem">
             The upgrade uses an ApproveAndCall function which requires one
             confirmation transaction
           </Body1>
@@ -58,18 +58,28 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           receivedAmount={receivedAmount}
           upgradedAmount={upgradedAmount}
         />
-        <Body3>
+        <Body3 align="center" color="gray.500" mt="2rem">
           This action i reversible via the{" "}
           <ViewInBlockExplorer
-            id={vendingMachineContractAddress}
+            id={contract!.address}
             type={ExplorerDataType.ADDRESS}
             text="vending machine contract."
           />
         </Body3>
+        <Divider />
       </ModalBody>
+
       <ModalFooter>
-        <Button onClick={closeModal}>cancel</Button>
-        <Button onClick={onSubmit}>upgrade</Button>
+        <Button onClick={closeModal} variant="outline" mr="0.75rem">
+          Cancel
+        </Button>
+        <Button
+          onClick={async () => {
+            await upgradeToT(upgradedAmount)
+          }}
+        >
+          Upgrade
+        </Button>
       </ModalFooter>
     </>
   )
