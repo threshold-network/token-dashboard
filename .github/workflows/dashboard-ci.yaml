@@ -63,11 +63,17 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
+      # TODO: Use this step once we tag `threshold-network/solidity-contracts`
+      # pacakge with `ropsten` tag to fetch latest ropsten contracts.
+      # - name: Resolve latest ropsten contracts run: | yarn upgrade \
+      #       @keep-network/keep-core@ropsten \
+      #       @threshold-network/solidity-contracts@ropsten
+
       - name: Resolve latest ropsten contracts
         run: |
           yarn upgrade \
-            @keep-network/keep-core \
-            @threshold-network/solidity-contracts
+            @keep-network/keep-core@ropsten \
+            @threshold-network/solidity-contracts@0.0.2-ropsten.1
 
       - name: Build
         run: yarn build
