@@ -2,26 +2,22 @@ import { FC } from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
   AccountSuccessAlert,
-  MetamaskNotInstalledAlert,
   WalletInitializeAlert,
   WalletRejectedAlert,
 } from "."
 
-const MetamaskStatusAlert: FC<{
-  metamaskNotInstalled?: boolean
+const TrezorStatusAlert: FC<{
   connectionRejected?: boolean
-}> = ({ metamaskNotInstalled, connectionRejected }) => {
+  active?: boolean
+}> = ({ connectionRejected }) => {
   const { active } = useWeb3React()
-  if (metamaskNotInstalled) {
-    return <MetamaskNotInstalledAlert />
-  }
   if (connectionRejected) {
     return <WalletRejectedAlert />
   }
   if (active) {
-    return <AccountSuccessAlert message="Your MetaMask wallet is connected" />
+    return <AccountSuccessAlert message="Your Trezor wallet is connected" />
   }
   return <WalletInitializeAlert />
 }
 
-export default MetamaskStatusAlert
+export default TrezorStatusAlert

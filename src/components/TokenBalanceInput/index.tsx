@@ -14,7 +14,7 @@ import { createIcon } from "@chakra-ui/icons"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>
-  max: number
+  max: number | string
   amount: string | number
   setAmount: (val: string | number) => void
   label?: string
