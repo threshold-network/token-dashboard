@@ -1,14 +1,15 @@
 import { FC, useMemo } from "react"
-import { Box, Button, HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { BsArrowDownCircleFill } from "react-icons/all"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
-import { Token } from "../../enums"
-import { BsArrowDownCircleFill } from "react-icons/all"
 import { Divider, DividerIcon } from "../Divider"
 import UpgradeIconGroup from "../UpgradeIconGroup"
-import { UpgredableToken } from "../../types"
+import SubmitTxButton from "../SubmitTxButton"
 import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../hooks/useTExchangeRate"
+import { UpgredableToken } from "../../types"
+import { Token } from "../../enums"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
@@ -54,9 +55,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           </Body3>
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
-        <Button mt={6} isFullWidth onClick={onSubmit}>
-          Upgrade
-        </Button>
+        <SubmitTxButton onSubmit={onSubmit} />
       </Box>
     </Card>
   )

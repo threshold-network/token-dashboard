@@ -1,9 +1,4 @@
-import { Box, Stack, StackDivider, useColorModeValue } from "@chakra-ui/react"
-import { useSidebar } from "../../hooks/useSidebar"
-import ExpanderIcon from "./ExpanderIcon"
-import SidebarFooter from "./SidebarFooter"
-import BrandIcon from "./BrandIcon"
-import NavItem, { NavItemDetail } from "./NavItem"
+import { NavItemDetail } from "./NavItem"
 import {
   IoBarChartSharp,
   IoBarChartOutline,
@@ -13,16 +8,19 @@ import {
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
+import DesktopSidebar from "./DesktopSidebar"
+import MobileSidebar from "./MobileSidebar"
+import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
+import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 
 const Sidebar = () => {
-  const { isOpen } = useSidebar()
   const { pathname } = useLocation()
 
   const navItems: NavItemDetail[] = useMemo(
     () => [
       {
         text: "Overview",
-        icon: pathname === "/" ? IoHomeSharp : IoHomeOutline,
+        icon: pathname === "/" ? IoHomeSharp : IoHomeOutlineSharp,
         href: "/",
         isActive: pathname === "/",
       },
@@ -34,7 +32,7 @@ const Sidebar = () => {
       },
       {
         text: "Portfolio",
-        icon: pathname === "/portfolio" ? IoBarChartSharp : IoBarChartOutline,
+        icon: pathname === "/portfolio" ? IoBarChartSharp : IoChartOutlineSharp,
         href: "/portfolio",
         isActive: pathname === "/portfolio",
       },
@@ -43,33 +41,10 @@ const Sidebar = () => {
   )
 
   return (
-    <Box
-      h="100vh"
-      display="flex"
-      flexDirection="column"
-      w={isOpen ? "200px" : "87px"}
-      transition="width 0.3s"
-      position="relative"
-      borderRight="1px solid"
-      borderColor={useColorModeValue("gray.100", "gray.700")}
-      bg={useColorModeValue("white", "gray.800")}
-    >
-      <ExpanderIcon />
-      <BrandIcon />
-      <Stack
-        mt={isOpen ? 10 : 6}
-        divider={
-          <StackDivider marginY="0 !important" marginX="14px !important" />
-        }
-        h="100%"
-      >
-        {navItems.map((props) => (
-          <NavItem key={props.text} {...props} />
-        ))}
-      </Stack>
-
-      <SidebarFooter />
-    </Box>
+    <>
+      <DesktopSidebar navItems={navItems} />
+      <MobileSidebar navItems={navItems} />
+    </>
   )
 }
 
