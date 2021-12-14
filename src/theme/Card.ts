@@ -10,5 +10,6 @@ export const Card = {
     boxShadow: mode("md", "none")(props),
     borderRadius: "lg",
     padding: 6,
+    width: "100%",
   }),
 }

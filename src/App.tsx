@@ -11,9 +11,33 @@ import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
-import { ScratchPad } from "./pages/ScratchPad"
 import Upgrade from "./pages/Upgrade"
 import Portfolio from "./pages/Portfolio"
+import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
+import { useContract } from "./web3/hooks/useContract"
+import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
+import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
+import { Token } from "./enums"
+
+const Web3EventHandlerComponent = () => {
+  useSubscribeToVendingMachineContractEvents()
+  useSubscribeToERC20TransferEvent(Token.Keep)
+  useSubscribeToERC20TransferEvent(Token.Nu)
+
+  return <></>
+}
+
+const useSubscribeToVendingMachineContractEvents = () => {
+  const contract = useContract(
+    VendingMachineKeep.address,
+    VendingMachineKeep.abi
+  )
+
+  useSubscribeToContractEvent(contract, "Wrapped", (...args) => {
+    console.log("Recived VendingMachineKeep.Wrapped event", args)
+    // TODO dispatch action that opens the correct success modal.
+  })
+}
 
 const App: FC = () => {
   return (
@@ -22,6 +46,7 @@ const App: FC = () => {
         <ReduxProvider store={reduxStore}>
           <ChakraProvider theme={theme}>
             <TokenContextProvider>
+              <Web3EventHandlerComponent />
               <ModalRoot />
               <Box display="flex">
                 <Sidebar />
@@ -29,7 +54,6 @@ const App: FC = () => {
                   <Navbar />
                   <Container maxW="6xl" data-cy="app-container">
                     <Switch>
-                      <Route exact path="/" component={ScratchPad} />
                       <Route path="/upgrade" component={Upgrade} />
                       <Route path="/portfolio" component={Portfolio} />
                     </Switch>

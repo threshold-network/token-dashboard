@@ -36,8 +36,11 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      - name: Resolve latest contracts
+        run: |
+          yarn upgrade \
+            @keep-network/keep-core \
+            @threshold-network/solidity-contracts
 
       - name: Build
         run: yarn build
@@ -60,14 +63,17 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
+      # TODO: Use this step once we tag `threshold-network/solidity-contracts`
+      # pacakge with `ropsten` tag to fetch latest ropsten contracts.
+      # - name: Resolve latest ropsten contracts run: | yarn upgrade \
+      #       @keep-network/keep-core@ropsten \
+      #       @threshold-network/solidity-contracts@ropsten
 
-      # FIXME: It's work in progress, the contracts are not yet published.
-      # - name: Resolve latest ropsten contracts
-      #   run: |
-      #     yarn upgrade \
-      #       @threshold-network/contracts@ropsten
+      - name: Resolve latest ropsten contracts
+        run: |
+          yarn upgrade \
+            @keep-network/keep-core@ropsten \
+            @threshold-network/solidity-contracts@0.0.2-ropsten.1
 
       - name: Build
         run: yarn build
