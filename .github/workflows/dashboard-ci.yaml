@@ -63,11 +63,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      # FIXME: It's work in progress, the contracts are not yet published.
-      # - name: Resolve latest ropsten contracts
-      #   run: |
-      #     yarn upgrade \
-      #       @threshold-network/contracts@ropsten
+      - name: Resolve latest ropsten contracts
+        run: |
+          yarn upgrade \
+            @keep-network/keep-core \
+            @threshold-network/contracts
 
       - name: Build
         run: yarn build
