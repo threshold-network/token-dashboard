@@ -67,7 +67,7 @@ jobs:
         run: |
           yarn upgrade \
             @keep-network/keep-core \
-            @threshold-network/contracts
+            @threshold-network/solidity-contracts
 
       - name: Build
         run: yarn build
