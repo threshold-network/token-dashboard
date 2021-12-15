@@ -33,6 +33,7 @@ export interface UseReduxToken {
   (): {
     keep: ReduxTokenInfo
     nu: ReduxTokenInfo
+    t: ReduxTokenInfo
     setTokenBalance: (
       token: Token,
       balance: number | string
@@ -57,3 +58,5 @@ export interface UseErc20Interface {
     contract: Contract | null
   }
 }
+
+export type UpgredableToken = Token.Nu | Token.Keep

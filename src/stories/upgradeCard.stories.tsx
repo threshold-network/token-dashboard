@@ -8,8 +8,8 @@ import { Provider } from "react-redux"
 import store from "../store"
 import { Token } from "../enums"
 
-const Template: Story<UpgradeCardProps> = ({ token }) => {
-  return <UpgradeCardComponent token={token} />
+const Template: Story<UpgradeCardProps> = ({ token, onSubmit = () => {} }) => {
+  return <UpgradeCardComponent token={token} onSubmit={onSubmit} />
 }
 
 export const UpgradeCard = Template.bind({})
