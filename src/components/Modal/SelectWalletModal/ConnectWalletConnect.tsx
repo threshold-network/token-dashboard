@@ -8,16 +8,14 @@ import {
 } from "./components"
 import { ConnectionError } from "../../../enums"
 
-interface Props {
+const ConnectWalletConnect: FC<{
   goBack: () => void
   closeModal: () => void
-}
-
-const ConnectWalletConnect: FC<Props> = ({ goBack, closeModal }) => {
+}> = ({ goBack, closeModal }) => {
   const { error, activate, active, account } = useWeb3React()
 
   const connectionRejected = error?.message.includes(
-    ConnectionError.rejectedConnection
+    ConnectionError.RejectedConnection
   )
 
   return (

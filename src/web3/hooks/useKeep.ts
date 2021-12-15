@@ -1,42 +1,46 @@
+import KeepToken from "@keep-network/keep-core/artifacts/KeepToken.json"
 import { useErc20TokenContract } from "./useERC20"
-import { useWeb3React } from "@web3-react/core"
-import { useCallback } from "react"
-import { useReduxToken } from "../../hooks/useReduxToken"
 import { Token } from "../../enums"
+import { TransactionType } from "../../enums/transactionType"
 
-// TODO grab these from env?
-const KEEP_MAINNET = "0x85eee30c52b0b379b046fb0f85f4f3dc3009afec"
-const KEEP_ROPSTEN = "0xab584929f7e0d994617209d7207527b5ed8da57e"
+// The artifacts from `@keep-network/keep-core` for a given build only support a
+// single network id.
+const networks = Object.keys(KeepToken.networks) as Array<
+  keyof typeof KeepToken.networks
+>
+
+const KEEP_TOKEN_ADDRESS =
+  networks && networks.length > 0
+    ? (KeepToken.networks[networks[0]] as { address: string }).address
+    : null
+
+export interface UseKeep {
+  (): {
+    approveKeep: () => void
+    fetchKeepBalance: () => void
+  }
+}
 
 export const useKeep = () => {
-  const { account, chainId } = useWeb3React()
-  const { setTokenLoading, setTokenBalance } = useReduxToken()
+  // const { chainId } = useWeb3React()
 
-  // check for ropsten, otherwise use mainnet
-  // TODO: we could map this better to future proof when we need additional chainId's instead of defaulting immediately to mainnet
-  const contractAddress = chainId === 3 ? KEEP_ROPSTEN : KEEP_MAINNET
-  const keepContract = useErc20TokenContract(contractAddress)
+  const { balanceOf, approve, contract } = useErc20TokenContract(
+    KEEP_TOKEN_ADDRESS as string,
+    undefined,
+    KeepToken.abi
+  )
 
-  const fetchBalance = useCallback(async () => {
-    if (account && keepContract) {
-      try {
-        setTokenLoading(Token.Keep, true)
-        const rawWalletBalance = await keepContract.balanceOf(account as string)
-        // TODO do not hard code decimals
-        const balance = rawWalletBalance / 10 ** 18
-        setTokenBalance(Token.Keep, balance)
-        setTokenLoading(Token.Keep, false)
-      } catch (error) {
-        console.log(error)
-        setTokenLoading(Token.Keep, false)
-        console.log(`Error: Fetching KEEP balance failed for ${account}`, error)
-      }
-    }
+  const approveKeep = () => {
+    approve(TransactionType.ApproveKeep)
+  }
 
-    return 0
-  }, [account, keepContract])
+  const fetchKeepBalance = () => {
+    balanceOf(Token.Keep)
+  }
 
   return {
-    fetchBalance,
+    approveKeep,
+    fetchKeepBalance,
+    contract,
   }
 }
