@@ -1,7 +1,6 @@
 import { FC } from "react"
-import { Box, Button, HStack, Link } from "@chakra-ui/react"
+import { Box, Divider, HStack, Link, Stack } from "@chakra-ui/react"
 import { Link as RouterLink, useRouteMatch } from "react-router-dom"
-import Card from "../Card"
 
 interface Props {
   links: {
@@ -15,31 +14,38 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
   const { url } = useRouteMatch()
 
   return (
-    <Card w="fit-content" padding={2}>
-      <HStack>
+    <Box w="100%" borderBottom="1px solid" borderColor="gray.100" padding={6}>
+      <HStack
+        spacing={4}
+        divider={<Divider orientation="vertical" borderColor="gray.300" />}
+        height="28px"
+      >
         {links.map((link) => (
-          <Link
-            as={RouterLink}
-            key={link.href}
-            to={`${url}${link.href}`}
-            _hover={{
-              textDecoration: "none",
-            }}
-          >
-            <Button
-              colorScheme="blackAlpha"
-              variant={link.isActive ? "solid" : "ghost"}
-              paddingX={6}
-              paddingY="6px"
-              borderRadius="md"
-              cursor="pointer"
+          <Stack key={link.href} position="relative" padding={2}>
+            <Link
+              fontWeight={link.isActive ? "700" : undefined}
+              color={link.isActive ? "brand.500" : undefined}
+              as={RouterLink}
+              to={`${url}${link.href}`}
+              _hover={{
+                textDecoration: "none",
+              }}
             >
               {link.text}
-            </Button>
-          </Link>
+            </Link>
+            {link.isActive && (
+              <Divider
+                borderColor="brand.500"
+                border="2px solid"
+                top="47px"
+                position="absolute"
+                left={0}
+              />
+            )}
+          </Stack>
         ))}
       </HStack>
-    </Card>
+    </Box>
   )
 }
 
