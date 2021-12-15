@@ -99,7 +99,7 @@ const App: FC = () => {
               <ModalRoot />
               <Box display="flex">
                 <Sidebar />
-                <Box w="100%">
+                <Box w="calc(100% - 80px)">
                   <Navbar />
                   <Container
                     as="main"

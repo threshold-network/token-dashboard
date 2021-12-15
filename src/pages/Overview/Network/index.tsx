@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Stack, VStack } from "@chakra-ui/react"
+import { Box, Stack, VStack } from "@chakra-ui/react"
 import TotalValueLocked from "./TotalValueLocked"
 import Interest from "./Interest"
 import Governance from "./Governance"
@@ -14,8 +14,10 @@ const Network: FC = () => {
     <VStack spacing={4} mt={4}>
       <UpgradeBanner />
       <Stack direction={{ base: "column", md: "row" }} w="100%">
-        <WalletBalances />
-        <Stack>
+        <Box w={{ base: "100%", md: "50%" }}>
+          <WalletBalances />
+        </Box>
+        <Stack w={{ base: "100%", md: "50%" }}>
           <TotalValueLocked totalValueLocked={totalValueLocked} />
           <Nodes />
         </Stack>

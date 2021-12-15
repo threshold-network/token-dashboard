@@ -13,7 +13,7 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
     <Box
       display={{ base: "none", sm: "flex" }}
       flexDirection="column"
-      width={isOpen ? "285px" : "90px"}
+      width={isOpen ? "208px" : "90px"}
       transition="width 0.3s"
       position="relative"
       borderRight="1px solid"

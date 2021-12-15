@@ -6,11 +6,12 @@ import {
   useLocation,
   useRouteMatch,
 } from "react-router-dom"
-import { H1, Label1 } from "../../components/Typography"
+import { H1, H3, Label1 } from "../../components/Typography"
 import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"
 import TBTC from "./tBTC"
 import Pre from "./Pre"
+import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
 const Overview = ({}) => {
   const { pathname } = useLocation()
@@ -27,10 +28,12 @@ const Overview = ({}) => {
 
   const { path } = useRouteMatch()
 
+  const isMobile = useChakraBreakpoint("md")
+
   return (
     <Container maxW="xxxl" mt={16}>
       <Label1>Threshold</Label1>
-      <H1>Network Overview</H1>
+      {isMobile ? <H3>Network Overview</H3> : <H1>Network Overview</H1>}
       <SubNavigationPills links={subNavLinks} />
       <Redirect from="/overview" to="/overview/network" />
       <Route path={`${path}/network`}>

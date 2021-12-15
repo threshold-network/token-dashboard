@@ -13,7 +13,7 @@ const Interest: FC = () => {
 
   return (
     <CardTemplate title="INTEREST">
-      <HStack justifyContent="space-between" spacing={4}>
+      <HStack justifyContent="space-between" spacing={{ base: 2, md: 4 }}>
         {yieldData.map((node) => (
           <StatBox key={node.text} {...node} />
         ))}
