@@ -1,15 +1,15 @@
 import { FC, useMemo } from "react"
 import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { BsArrowDownCircleFill } from "react-icons/all"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
-import { Token } from "../../enums"
-import { BsArrowDownCircleFill } from "react-icons/all"
 import { Divider, DividerIcon } from "../Divider"
 import SubmitTxButton from "../SubmitTxButton"
 import UpgradeIconGroup from "../UpgradeIconGroup"
-import { UpgredableToken } from "../../types"
 import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../hooks/useTExchangeRate"
+import { UpgredableToken } from "../../types"
+import { Token } from "../../enums"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
