@@ -7,12 +7,12 @@ import { Card } from "./Card"
 
 const colors = {
   brand: {
-    50: "#FAF9FF",
+    50: "#FCF9FF",
     100: "#D5C6FF",
     // 200
     300: "#9974FF",
     // 400
-    500: "#7038F1", // main Threshold brand color
+    500: "#7D00FF", // main Threshold brand color
     550: "#7C47EE", // main Threshold brand color - DARK MODE
     // 600
     700: "#4E2E99",
