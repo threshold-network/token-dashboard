@@ -1,13 +1,9 @@
 import { act, renderHook } from "@testing-library/react-hooks"
-// @ts-ignore
-import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
-// @ts-ignore
-import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
 import { useUpgradeToT } from "../useUpgradeToT"
-import { getContract } from "../../../utils/getContract"
 import { useToken } from "../../../hooks/useToken"
 import { useSendTransaction } from "../useSendTransaction"
 import { Token, TransactionStatus } from "../../../enums"
+import { useVendingMachineContract } from "../useVendingMachineContract"
 
 jest.mock("../useSendTransaction", () => ({
   useSendTransaction: jest.fn(),
@@ -17,18 +13,9 @@ jest.mock("../../../hooks/useToken", () => ({
   useToken: jest.fn(),
 }))
 
-jest.mock(
-  "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json",
-  () => ({
-    address: "0x1",
-  })
-)
-jest.mock(
-  "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json",
-  () => ({
-    address: "0x2",
-  })
-)
+jest.mock("../useVendingMachineContract", () => ({
+  useVendingMachineContract: jest.fn(),
+}))
 
 describe("Test `useUpgradeToT` hook", () => {
   const amount = "10000000000000000000" //10
@@ -44,14 +31,18 @@ describe("Test `useUpgradeToT` hook", () => {
   })
 
   test.each`
-    token         | contractArtifact
-    ${Token.Keep} | ${VendingMachineKeep}
-    ${Token.Nu}   | ${VendingMachineNuCypher}
+    token         | contractAddress
+    ${Token.Keep} | ${"0x1"}
+    ${Token.Nu}   | ${"0x2"}
   `(
     "should trigger `approveAndCall` transaction of $token token",
-    ({ token, contractArtifact }) => {
+    ({ token, contractAddress }) => {
+      ;(useVendingMachineContract as jest.Mock).mockReturnValue({
+        address: contractAddress,
+      })
       const { result } = renderHook(() => useUpgradeToT(token))
 
+      expect(useVendingMachineContract).toHaveBeenCalledWith(token)
       expect(useToken).toHaveBeenCalledWith(token)
       expect(useSendTransaction).toHaveBeenCalledWith(
         mockedContract,
@@ -62,7 +53,7 @@ describe("Test `useUpgradeToT` hook", () => {
         result.current.upgradeToT(amount)
       })
       expect(mockedSendTransaction).toHaveBeenCalledWith(
-        contractArtifact.address,
+        contractAddress,
         amount,
         []
       )
