@@ -11,6 +11,7 @@ import { UseReduxToken } from "../types/token"
 export const useReduxToken: UseReduxToken = () => {
   const keep = useSelector((state: RootState) => state.token[Token.Keep])
   const nu = useSelector((state: RootState) => state.token[Token.Nu])
+  const t = useSelector((state: RootState) => state.token[Token.T])
 
   const dispatch = useDispatch()
 
@@ -26,6 +27,7 @@ export const useReduxToken: UseReduxToken = () => {
   return {
     keep,
     nu,
+    t,
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
