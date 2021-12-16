@@ -1,9 +1,9 @@
-import { act, renderHook } from "@testing-library/react-hooks"
+import { renderHook } from "@testing-library/react-hooks"
 import { useWeb3React } from "@web3-react/core"
-import { Contract } from "@ethersproject/contracts"
 import { getSigner } from "../../../utils/getContract"
 import { useSendTransaction } from "../useSendTransaction"
-import { TransactionStatus } from "../../../enums"
+import { ModalType, TransactionStatus } from "../../../enums"
+import { useModal } from "../../../hooks/useModal"
 
 jest.mock("@web3-react/core", () => ({
   ...(jest.requireActual("@web3-react/core") as {}),
@@ -15,20 +15,29 @@ jest.mock("../../../utils/getContract", () => ({
   getSigner: jest.fn(),
 }))
 
+jest.mock("../../../hooks/useModal", () => ({
+  ...(jest.requireActual("../../../hooks/useModal") as {}),
+  useModal: jest.fn(),
+}))
+
 describe("Test `useSendTransaction` hook", () => {
   const methodName = "Transfer"
   const mockedLibrary = {}
   const account = "0x086813525A7dC7dafFf015Cdf03896Fd276eab60"
   const txHash = "0x0"
+  const receipt = {}
   const from = "0x407C3329eA8f6BEFB984D97AE4Fa71945E43170b"
   const value = "1000000000000000000"
   const mockedTx = {
-    wait: jest.fn().mockResolvedValue({ txHash }),
+    wait: jest.fn().mockResolvedValue(receipt),
+    hash: txHash,
   }
   const mockedContract = {
     connect: jest.fn(),
     [methodName]: jest.fn(),
   }
+
+  const mockedOpenModalFn = jest.fn()
 
   const mockedSigner = {}
   const userRejectedErrMsg =
@@ -41,6 +50,7 @@ describe("Test `useSendTransaction` hook", () => {
       account,
     })
     ;(getSigner as jest.Mock).mockReturnValue(mockedSigner)
+    ;(useModal as jest.Mock).mockReturnValue({ openModal: mockedOpenModalFn })
   })
 
   test("should proceed the transaciton correctly", async () => {
@@ -61,6 +71,15 @@ describe("Test `useSendTransaction` hook", () => {
     expect(mockedContract[methodName]).toHaveBeenCalledWith(from, value)
     expect(mockedTx.wait).toHaveBeenCalled()
     expect(result.current.status).toEqual(TransactionStatus.Succeeded)
+    expect(mockedOpenModalFn).toHaveBeenNthCalledWith(
+      1,
+      ModalType.TransactionIsWaitingForConfirmation
+    )
+    expect(mockedOpenModalFn).toHaveBeenNthCalledWith(
+      2,
+      ModalType.TransactionIsPending,
+      { transactionHash: txHash }
+    )
   })
 
   test("should do nothing if there is no signer", async () => {
@@ -84,6 +103,7 @@ describe("Test `useSendTransaction` hook", () => {
     expect(mockedContract[methodName]).not.toHaveBeenCalledWith(from, value)
     expect(mockedTx.wait).not.toHaveBeenCalled()
     expect(result.current.status).toEqual(TransactionStatus.Idle)
+    expect(mockedOpenModalFn).not.toHaveBeenCalled()
   })
 
   test.each`
@@ -93,7 +113,8 @@ describe("Test `useSendTransaction` hook", () => {
   `(
     "should set $expectedStatus transaction status based on the error",
     async ({ errorMsg, expectedStatus }) => {
-      mockedContract[methodName].mockRejectedValue(new Error(errorMsg))
+      const error = new Error(errorMsg)
+      mockedContract[methodName].mockRejectedValue(error)
 
       const { result, waitForNextUpdate } = renderHook(() =>
         // @ts-ignore
@@ -110,6 +131,10 @@ describe("Test `useSendTransaction` hook", () => {
       expect(mockedContract[methodName]).toHaveBeenCalledWith(from, value)
       expect(mockedTx.wait).not.toHaveBeenCalled()
       expect(result.current.status).toEqual(expectedStatus)
+      expect(mockedOpenModalFn).toHaveBeenCalledWith(
+        ModalType.TransactionFailed,
+        { error, transactionHash: undefined }
+      )
     }
   )
 })
