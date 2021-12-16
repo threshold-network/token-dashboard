@@ -1,12 +1,14 @@
 import { useCallback, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Contract, ContractTransaction } from "@ethersproject/contracts"
-import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
-import { TransactionStatus } from "../../enums"
+import { ModalType, TransactionStatus } from "../../enums"
+import { useModal } from "../../hooks/useModal"
 import { getSigner } from "../../utils/getContract"
+import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 
 export const useSendTransaction = (contract: Contract, methodName: string) => {
   const { library, account } = useWeb3React()
+  const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
   )
@@ -21,22 +23,23 @@ export const useSendTransaction = (contract: Contract, methodName: string) => {
       try {
         contract.connect(getSigner(library, account))
         setTransactionStatus(TransactionStatus.PendingWallet)
-        console.log("open waiting for confirmation modal")
-        // TODO: open modal indicating that the transacion waitng for confirmation.
-        // @ts-ignore
+        openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = (await contract[methodName](...args)) as ContractTransaction
+        openModal(ModalType.TransactionIsPending, { transactionHash: tx.hash })
         setTransactionStatus(TransactionStatus.PendingOnChain)
-        // TODO: open modal indicating that the transacion is pending and pass
-        // transaction hash.
-        console.log("open transaction is pending modal")
+
         await tx.wait()
         // TODO: close modal- the correct success modal should be displayed when
-        // dapp catches an event.
-        console.log("close modal")
+        // dapp catches an event. We should close modals by id to avoid race
+        // between close and open action.
         setTransactionStatus(TransactionStatus.Succeeded)
       } catch (error: any) {
-        // TODO: open error state modal
-        console.log("open error state ")
+        openModal(ModalType.TransactionFailed, {
+          transactionHash: error?.transaction?.hash,
+          error: error,
+          // TODO: how to check if an error is expandable?
+          // isExpandableError,
+        })
         setTransactionStatus(
           isWalletRejectionError(error)
             ? TransactionStatus.Rejected

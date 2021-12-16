@@ -1,5 +1,6 @@
 import { Meta, Story } from "@storybook/react"
 import { Provider } from "react-redux"
+import { MemoryRouter } from "react-router-dom"
 import NavbarComponent from "../components/Navbar/NavbarComponent"
 import store from "../store"
 
@@ -54,9 +55,11 @@ export default {
   decorators: [
     (Story) => {
       return (
-        <Provider store={store}>
-          <Story />
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <Story />
+          </Provider>
+        </MemoryRouter>
       )
     },
   ],

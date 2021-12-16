@@ -3,6 +3,7 @@ import { mode } from "@chakra-ui/theme-tools"
 export const Button = {
   defaultProps: {
     colorScheme: "brand",
+    iconSpacing: "16px",
   },
   variants: {
     solid: (props: any) => {
@@ -66,12 +67,17 @@ export const Button = {
         bg: "transparent",
         display: "flex",
         margin: "auto",
-        height: "56px",
-        width: isOpen ? undefined : "56px",
+        px: "8px",
+        height: (p: any) => p.height || p.h || "56px",
+        width: (p: any) => (isOpen ? undefined : p.height || p.h || "56px"),
         color: mode("gray.500", "gray.300")(props),
         _hover: {
-          bg: mode("brand.50", "whiteAlpha.400")(props),
-          color: mode("brand.500", "brand.50")(props),
+          bg: props["data-is-mobile"]
+            ? undefined
+            : mode("brand.50", "whiteAlpha.400")(props),
+          color: props["data-is-mobile"]
+            ? undefined
+            : mode("brand.500", "brand.50")(props),
         },
       }
     },
