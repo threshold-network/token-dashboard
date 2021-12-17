@@ -32,7 +32,7 @@ export const TokenBalanceInput = Template.bind({})
 TokenBalanceInput.args = {
   max: 500123.5678,
   icon: "Keep",
-  label: "KeepCircleBrand Amount",
+  label: "Keep Amount",
 }
 
 export default {

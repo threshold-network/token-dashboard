@@ -4,7 +4,6 @@ import {
   Box,
   ChakraProvider,
   Container,
-  useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
@@ -26,7 +25,7 @@ import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
 import Overview from "./pages/Overview"
 import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
-// import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
+import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
 import Upgrade from "./pages/Upgrade"
 import Portfolio from "./pages/Portfolio"
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
@@ -48,10 +47,8 @@ const Web3EventHandlerComponent = () => {
 const useSubscribeToVendingMachineContractEvents = () => {
   // TODO: can we use useVendingMachineContract here?
   const contract = useContract(
-    // VendingMachineKeep.address,
-    // random hardcoded address to avoid local deployment:
-    "0x71d82Eb6A5051CfF99582F4CDf2aE9cD402A4883",
-    // VendingMachineKeep.abi
+    VendingMachineKeep.address,
+    VendingMachineKeep.abi,
     undefined
   )
 
