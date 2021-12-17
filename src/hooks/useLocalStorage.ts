@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 
-const getStorageValue = <T>(key: string, defaultValue: T) => {
+const getStorageValue = <T>(key: string | null, defaultValue: T) => {
+  if (!key) {
+    return defaultValue
+  }
   const item = window.localStorage.getItem(key)
   return item ? JSON.parse(item) : defaultValue
 }
@@ -9,7 +12,7 @@ export const useLocalStorage = <T>(
   key: string | null,
   defaultValue: T
 ): [T, (value: T) => void] => {
-  const [value, setValue] = useState(defaultValue)
+  const [value, setValue] = useState(getStorageValue(key, defaultValue))
 
   useEffect(() => {
     if (key) {
@@ -20,13 +23,15 @@ export const useLocalStorage = <T>(
         setValue(defaultValue)
       }
     }
-  }, [key, defaultValue])
+    // eslint-disable-next-line
+  }, [key, JSON.stringify(defaultValue)])
 
   useEffect(() => {
-    if (key) {
+    if (key && JSON.stringify(value) !== JSON.stringify(defaultValue)) {
       localStorage.setItem(key, JSON.stringify(value))
     }
-  }, [key, value])
+    // eslint-disable-next-line
+  }, [key, JSON.stringify(value), JSON.stringify(defaultValue)])
 
   return [value, setValue]
 }

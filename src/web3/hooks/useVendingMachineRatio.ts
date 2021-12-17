@@ -1,34 +1,47 @@
 import { useEffect } from "react"
+import { AddressZero } from "@ethersproject/constants"
 import { useVendingMachineContract } from "./useVendingMachineContract"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
 import { UpgredableToken } from "../../types"
-import { usePrevious } from "@chakra-ui/react"
+import { isSameETHAddress } from "../../utils/isSameETHAddress"
 
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
 export const useVendingMachineRatio = (token: UpgredableToken) => {
   const contract = useVendingMachineContract(token)
-  const prevAddress = usePrevious(contract?.address)
+  const contractAddress = contract?.address
 
-  const [ratio, setRatio] = useLocalStorage(
-    contract?.address ? `${contract.address}-ratio` : null,
-    ""
-  )
+  const [ratio, setRatio] = useLocalStorage(`${token}-to-T-ratio`, {
+    value: "0",
+    contractAddress: AddressZero,
+  })
+
+  const { value: ratioValue, contractAddress: localStorageContractAddress } =
+    ratio
 
   useEffect(() => {
-    if (ratio || !contract || !prevAddress) {
-      return
+    if (
+      ratioValue === "0" &&
+      contractAddress &&
+      (localStorageContractAddress === AddressZero ||
+        !isSameETHAddress(contractAddress, localStorageContractAddress))
+    ) {
+      contract
+        ?.ratio()
+        .then((value: any) => {
+          setRatio({ value: value.toString(), contractAddress })
+        })
+        .catch((error: any) => {
+          console.log("error", error)
+        })
     }
+  }, [
+    ratioValue,
+    localStorageContractAddress,
+    setRatio,
+    contract,
+    contractAddress,
+  ])
 
-    contract
-      .ratio()
-      .then((value: any) => {
-        setRatio(value.toString())
-      })
-      .catch((error: any) => {
-        console.log("error", error)
-      })
-  }, [ratio, setRatio, contract, prevAddress])
-
-  return ratio
+  return ratioValue
 }
