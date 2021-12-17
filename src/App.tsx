@@ -1,6 +1,12 @@
 import "focus-visible/dist/focus-visible"
 import { FC } from "react"
-import { Box, ChakraProvider, Container } from "@chakra-ui/react"
+import {
+  Box,
+  ChakraProvider,
+  Container,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import {
@@ -88,6 +94,37 @@ const useSubscribeToVendingMachineContractEvents = () => {
   )
 }
 
+const AppBody = () => {
+  return (
+    <Box display="flex">
+      <Sidebar />
+      <Box
+        w={{ base: "100%", sm: "calc(100% - 80px)" }}
+        bg={useColorModeValue("transparent", "gray.900")}
+      >
+        <Navbar />
+        <Container as="main" mt="12" maxW="6xl" data-cy="app-container" pb={8}>
+          <Switch>
+            <Redirect from="/" to="/overview" exact />
+            <Route path="/overview">
+              <Overview />
+            </Route>
+            <Route path="/upgrade/:token">
+              <Upgrade />
+            </Route>
+            <Route path="/upgrade">
+              <Redirect to="/upgrade/keep" />
+            </Route>
+            <Route path="/portfolio">
+              <Portfolio />
+            </Route>
+          </Switch>
+        </Container>
+      </Box>
+    </Box>
+  )
+}
+
 const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
@@ -97,35 +134,7 @@ const App: FC = () => {
             <TokenContextProvider>
               <Web3EventHandlerComponent />
               <ModalRoot />
-              <Box display="flex">
-                <Sidebar />
-                <Box w={{ base: "100%", sm: "calc(100% - 80px)" }}>
-                  <Navbar />
-                  <Container
-                    as="main"
-                    mt="12"
-                    maxW="6xl"
-                    data-cy="app-container"
-                    pb={8}
-                  >
-                    <Switch>
-                      <Redirect from="/" to="/overview" exact />
-                      <Route path="/overview">
-                        <Overview />
-                      </Route>
-                      <Route path="/upgrade/:token">
-                        <Upgrade />
-                      </Route>
-                      <Route path="/upgrade">
-                        <Redirect to="/upgrade/keep" />
-                      </Route>
-                      <Route path="/portfolio">
-                        <Portfolio />
-                      </Route>
-                    </Switch>
-                  </Container>
-                </Box>
-              </Box>
+              <AppBody />
             </TokenContextProvider>
           </ChakraProvider>
         </ReduxProvider>
