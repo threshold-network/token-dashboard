@@ -3,6 +3,6 @@ import App from "./App"
 
 test("renders learn react link", () => {
   render(<App />)
-  const header = screen.getByText("Threshold Token Dashboard")
+  const header = screen.getByText("ThresholdCircleBrand Token Dashboard")
   expect(header).toBeInTheDocument()
 })

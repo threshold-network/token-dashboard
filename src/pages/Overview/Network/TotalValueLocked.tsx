@@ -12,7 +12,7 @@ const TotalValueLocked: FC<{ totalValueLocked: number }> = ({
 
   return (
     <CardTemplate title="TOTAL VALUE LOCKED" h="auto">
-      <Flex justifyContent={{ base: "flex-end", md: "center" }}>
+      <Flex justifyContent={{ base: "flex-start", md: "center" }}>
         <H1 fontSize={{ base: "4xl", lg: "6xl" }} fontWeight="700">
           {tvl}
         </H1>

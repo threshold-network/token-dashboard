@@ -5,8 +5,8 @@ import { Token } from "../../enums"
 import { UpgredableToken } from "../../types"
 
 // const TOKEN_TO_VENDING_MACHINE_ARTIFACT = {
-//   [Token.Keep]: VendingMachineKeep,
-//   [Token.Nu]: VendingMachineNuCypher,
+//   [Token.KeepCircleBrand]: VendingMachineKeep,
+//   [Token.NuCircleBrand]: VendingMachineNuCypher,
 // }
 
 export const useVendingMachineContract = (token: UpgredableToken) => {

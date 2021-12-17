@@ -10,9 +10,7 @@ import {
   SetTokenBalanceActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
-import Threshold from "../../static/icons/Threshold"
-import Keep from "../../static/icons/Keep"
-import Nu from "../../static/icons/Nu"
+import Icon from "../../enums/icon"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -34,8 +32,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 4.87,
       text: Token.Keep,
-      // TODO: Non-serializable values should not exist here. We could use an icon Enum that can be mapped to the icon instead
-      icon: Keep,
+      icon: Icon.KeepCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },
@@ -44,7 +41,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 2.66,
       text: Token.Nu,
-      icon: Nu,
+      icon: Icon.NuCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },
@@ -53,13 +50,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 1,
       text: Token.T,
-      icon: Threshold,
-      usdConversion: 0,
-      usdBalance: "0",
-    },
-    [Token.T]: {
-      loading: false,
-      balance: 0,
+      icon: Icon.TCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },

@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-const Threshold = createIcon({
-  displayName: "Threshold",
+const ThresholdCircleBrand = createIcon({
+  displayName: "ThresholdCircleBrand",
   viewBox: "0 0 33 33",
   path: (
     <svg
@@ -32,4 +32,4 @@ const Threshold = createIcon({
   ),
 })
 
-export default Threshold
+export default ThresholdCircleBrand
