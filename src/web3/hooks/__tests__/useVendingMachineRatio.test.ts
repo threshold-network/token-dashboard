@@ -4,7 +4,6 @@ import { useVendingMachineContract } from "../useVendingMachineContract"
 import { useLocalStorage } from "../../../hooks/useLocalStorage"
 import { useVendingMachineRatio } from "../useVendingMachineRatio"
 import { Token } from "../../../enums"
-import { usePrevious } from "../../../hooks/usePrevious"
 
 jest.mock("../useVendingMachineContract", () => ({
   useVendingMachineContract: jest.fn(),
@@ -12,10 +11,6 @@ jest.mock("../useVendingMachineContract", () => ({
 
 jest.mock("../../../hooks/useLocalStorage", () => ({
   useLocalStorage: jest.fn(),
-}))
-
-jest.mock("../../../hooks/usePrevious", () => ({
-  usePrevious: jest.fn(),
 }))
 
 describe("Test `useVendingMachineRatio` hook", () => {
@@ -41,8 +36,6 @@ describe("Test `useVendingMachineRatio` hook", () => {
   })
 
   test("should fetch ratio from chain and save in local storage", async () => {
-    ;(usePrevious as jest.Mock).mockReturnValue(mockedContract.address)
-
     renderHook(() => useVendingMachineRatio(token))
 
     expect(useVendingMachineContract).toHaveBeenCalledWith(token)
@@ -58,7 +51,6 @@ describe("Test `useVendingMachineRatio` hook", () => {
   })
 
   test("should not fetch ratio from chain if the value is in the local storage", async () => {
-    ;(usePrevious as jest.Mock).mockReturnValue(mockedContract.address)
     const mockedLocalStorageValue = {
       value: mockedRatioValue,
       contractAddress: mockedContract.address,
