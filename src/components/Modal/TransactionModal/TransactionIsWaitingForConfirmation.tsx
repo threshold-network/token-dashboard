@@ -9,24 +9,25 @@ interface TransactionIsWaitingFroConfirmationProps extends BaseModalProps {
   pendingText?: string
 }
 
-const TransactionIsWaitingForConfirmation: FC<TransactionIsWaitingFroConfirmationProps> =
-  ({ pendingText = "Please confirm the transaction in your wallet" }) => {
-    return (
-      <>
-        <ModalHeader>Confirm (waiting)</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Box mb={6}>
-            <Box borderRadius="md" bg="gray.50" pt={12} pb={8} mb={8}>
-              <Spinner />
-              <Body1 color="gray.700" align="center" mt={8}>
-                {pendingText}
-              </Body1>
-            </Box>
+const TransactionIsWaitingForConfirmation: FC<
+  TransactionIsWaitingFroConfirmationProps
+> = ({ pendingText = "Please confirm the transaction in your wallet" }) => {
+  return (
+    <>
+      <ModalHeader>Confirm (waiting)</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Box mb={6}>
+          <Box borderRadius="md" bg="gray.50" pt={12} pb={8} mb={8}>
+            <Spinner />
+            <Body1 color="gray.700" align="center" mt={8}>
+              {pendingText}
+            </Body1>
           </Box>
-        </ModalBody>
-      </>
-    )
-  }
+        </Box>
+      </ModalBody>
+    </>
+  )
+}
 
 export default withBaseModal(TransactionIsWaitingForConfirmation)
