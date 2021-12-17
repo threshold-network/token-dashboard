@@ -4,6 +4,7 @@ import { HStack, Icon, Stack } from "@chakra-ui/react"
 import { formatUnits } from "@ethersproject/units"
 import Card from "../Card"
 import { Body3, H5 } from "../Typography"
+import TokenBalance from "../TokenBalance"
 
 interface Props {
   icon: any
@@ -20,13 +21,16 @@ const TokenBalanceCardTemplate: FC<Props> = ({
 }) => {
   return (
     <Card>
-      <Stack spacing={4}>
+      <Stack>
         <HStack>
           <Icon boxSize="16px" as={icon} />
           <Body3>{title}</Body3>
         </HStack>
-        <H5>{numeral(formatUnits(tokenBalance)).format("0,0.00")}</H5>
-        <Body3 color="gray.500">{usdBalance}</Body3>
+        <TokenBalance
+          tokenAmount={tokenBalance}
+          usdBalance={usdBalance}
+          withUSDBalance
+        />
       </Stack>
     </Card>
   )

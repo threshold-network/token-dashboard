@@ -8,9 +8,10 @@ import {
   InputProps,
   InputRightElement,
 } from "@chakra-ui/react"
+import { createIcon } from "@chakra-ui/icons"
+import { formatUnits, parseUnits } from "@ethersproject/units"
 import NumberInput, { NumberInputValues } from "../NumberInput"
 import { Body3 } from "../Typography"
-import { createIcon } from "@chakra-ui/icons"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>
@@ -29,7 +30,11 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   ...inputProps
 }) => {
   const setToMax = () => {
-    setAmount(max)
+    _setAmount(formatUnits(max))
+  }
+
+  const _setAmount = (value: string | number) => {
+    setAmount(parseUnits(value ? value.toString() : "0").toString())
   }
 
   return (
@@ -46,8 +51,10 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
         <NumberInput
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
-          value={amount}
-          onValueChange={(values: NumberInputValues) => setAmount(values.value)}
+          value={formatUnits(amount || "0")}
+          onValueChange={(values: NumberInputValues) =>
+            _setAmount(values.value)
+          }
           {...inputProps}
         />
         <InputRightElement width="4.5rem">
