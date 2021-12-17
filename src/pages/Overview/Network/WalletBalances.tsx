@@ -94,7 +94,7 @@ const WalletBalances: FC = () => {
         />
       </Stack>
       <Divider borderColor="gray.300" />
-      <Body2>Upgrades to</Body2>
+      <Body2>Possible T amount</Body2>
       <HStack
         bg={useColorModeValue("gray.50", "gray.700")}
         mt={4}
@@ -105,13 +105,16 @@ const WalletBalances: FC = () => {
         <Icon as={t.icon} boxSize="32px" />
         <H3>{numeral(conversionToTAmount).format("0,00.00")}</H3>
       </HStack>
-      <Link as={RouterLink} to="/upgrade">
+      <Link as={RouterLink} to="/upgrade" _hover={{ textDecoration: "none" }}>
         <Button size="lg" isFullWidth mt={8}>
           Upgrade Tokens
         </Button>
       </Link>
       <HStack justify="center" mt={4}>
-        <Link color="brand.500" textDecoration="underline">
+        <Link
+          color={useColorModeValue("brand.500", "white")}
+          textDecoration="underline"
+        >
           Read More
         </Link>{" "}
         <Body3 color="gray.500">about Exchange Rate</Body3>

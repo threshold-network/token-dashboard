@@ -1,5 +1,12 @@
 import { FC } from "react"
-import { Box, Divider, HStack, Link, Stack } from "@chakra-ui/react"
+import {
+  Box,
+  Divider,
+  HStack,
+  Link,
+  Stack,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { Link as RouterLink, useRouteMatch } from "react-router-dom"
 
 interface Props {
@@ -24,7 +31,11 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
           <Stack key={link.href} position="relative" padding={2}>
             <Link
               fontWeight={link.isActive ? "700" : undefined}
-              color={link.isActive ? "brand.500" : undefined}
+              color={
+                link.isActive
+                  ? useColorModeValue("brand.500", "white")
+                  : undefined
+              }
               as={RouterLink}
               to={`${url}${link.href}`}
               _hover={{

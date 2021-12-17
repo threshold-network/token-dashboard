@@ -5,12 +5,14 @@ import {
   CloseButton,
   HStack,
   Image,
+  Link,
   Stack,
   useDisclosure,
 } from "@chakra-ui/react"
 import overviewPeople from "../../../static/images/overview-people.png"
 import { Body2, H4 } from "../../../components/Typography"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
+import { Link as RouterLink } from "react-router-dom"
 
 const UpgradeBanner: FC = () => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
@@ -45,14 +47,21 @@ const UpgradeBanner: FC = () => {
           ) : (
             <H4 maxW="500px">{heroText}</H4>
           )}
-          <Button
-            size={isMobile ? "sm" : "lg"}
-            px={{ base: 0, md: 12 }}
+          <Link
+            as={RouterLink}
+            to="/upgrade"
+            _hover={{ textDecoration: "none" }}
             marginY="auto !important"
             mt={{ base: 12, xl: "auto !important" }}
           >
-            {isMobile ? "Upgrade Now" : "Upgrade Tokens"}
-          </Button>
+            <Button
+              size={isMobile ? "sm" : "lg"}
+              px={{ base: 4, md: 12 }}
+              isFullWidth
+            >
+              {isMobile ? "Upgrade Now" : "Upgrade Tokens"}
+            </Button>
+          </Link>
         </Stack>
       </Stack>
     </Card>
