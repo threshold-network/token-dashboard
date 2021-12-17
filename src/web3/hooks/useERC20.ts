@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { MaxUint256 } from "@ethersproject/constants"
 import { useWeb3React } from "@web3-react/core"
 import { useContract } from "./useContract"
@@ -59,11 +59,7 @@ export const useErc20TokenContract: UseErc20Interface = (
           const balance = await contract?.balanceOf(account as string)
           // TODO do not hard code decimals
           // const balance = rawWalletBalance / 10 ** 18
-          setTokenBalance(
-            token,
-            balance.toString(),
-            balance / 10 ** (await contract?.decimals())
-          )
+          setTokenBalance(token, balance.toString())
           setTokenLoading(token, false)
         } catch (error) {
           setTokenLoading(Token.Nu, false)

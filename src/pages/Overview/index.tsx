@@ -31,7 +31,7 @@ const Overview = ({}) => {
   const isMobile = useChakraBreakpoint("md")
 
   return (
-    <Container maxW="xxxl" mt={16}>
+    <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
       <Label1>Threshold</Label1>
       {isMobile ? <H3>Network Overview</H3> : <H1>Network Overview</H1>}
       <SubNavigationPills links={subNavLinks} />

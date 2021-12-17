@@ -15,11 +15,8 @@ export const useReduxToken: UseReduxToken = () => {
 
   const dispatch = useDispatch()
 
-  const setTokenBalance = (
-    token: Token,
-    balance: number | string,
-    formattedBalance: number
-  ) => dispatch(setTokenBalanceAction({ token, balance, formattedBalance }))
+  const setTokenBalance = (token: Token, balance: number | string) =>
+    dispatch(setTokenBalanceAction({ token, balance }))
 
   const setTokenLoading = (token: Token, loading: boolean) =>
     dispatch(setTokenLoadingAction({ token, loading }))

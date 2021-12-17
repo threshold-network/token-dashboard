@@ -8,7 +8,6 @@ export interface ReduxTokenInfo {
   text: string
   icon: any
   balance: number | string
-  formattedBalance: number
   usdConversion: number
   usdBalance: string
 }
@@ -16,7 +15,6 @@ export interface ReduxTokenInfo {
 export interface SetTokenBalanceActionPayload {
   token: Token
   balance: number | string
-  formattedBalance: number
 }
 
 export interface SetTokenLoadingActionPayload {
@@ -41,8 +39,7 @@ export interface UseReduxToken {
     t: ReduxTokenInfo
     setTokenBalance: (
       token: Token,
-      balance: number | string,
-      formattedBalance: number
+      balance: number | string
     ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void

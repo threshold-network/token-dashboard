@@ -99,7 +99,7 @@ const App: FC = () => {
               <ModalRoot />
               <Box display="flex">
                 <Sidebar />
-                <Box w="calc(100% - 80px)">
+                <Box w={{ base: "100%", sm: "calc(100% - 80px)" }}>
                   <Navbar />
                   <Container
                     as="main"
