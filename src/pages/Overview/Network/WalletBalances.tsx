@@ -1,25 +1,26 @@
 import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import CardTemplate from "./CardTemplate"
 import {
   Button,
   HStack,
-  Icon,
   Link,
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
+import numeral from "numeral"
+import { useWeb3React } from "@web3-react/core"
+import { formatUnits } from "@ethersproject/units"
+import IconEnum from "../../../enums/icon"
+import CardTemplate from "./CardTemplate"
 import { Body2, Body3, H3, H5 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
-import numeral from "numeral"
-import { useWeb3React } from "@web3-react/core"
 import { useReduxToken } from "../../../hooks/useReduxToken"
-import { formatUnits } from "@ethersproject/units"
+import Icon from "../../../components/Icon"
 
 const BalanceStat: FC<{
   balance: number
-  icon: any
+  icon: IconEnum
   text: string
   conversionRate?: number
 }> = ({ balance, icon, text, conversionRate }) => {

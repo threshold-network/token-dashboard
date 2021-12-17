@@ -7,13 +7,13 @@ export { TransactionIdle, TransactionSuccess }
 //   closeModal,
 // }) => {
 //   // TODO: Compute these values from a transasction store
-//   const { upgradeToT, status } = useUpgradeToT(Token.Keep)
+//   const { upgradeToT, status } = useUpgradeToT(Token.KeepCircleBrand)
 
 //   const upgradedAmount = 1000000.68
 //   const receivedAmount = 4870003.31
 //   const exchangeRate = 4.87
 //   const transactionId = "0x_TRANSACTION_ID"
-//   const upgradedToken = Token.Keep
+//   const upgradedToken = Token.KeepCircleBrand
 //   const transactionError = `Error: call revert exception (method="getTokenAmount(uint256)", errorArgs=null, errorName=null, errorSignature=null, reason=null, code=CALL_EXCEPTION, version=abi/5.4.0)\n' +
 //     "    at Logger.makeError (index.ts:213)\n" +
 //     "    at Logger.throwError (index.ts:225)\n" +

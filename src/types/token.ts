@@ -1,12 +1,13 @@
 import { Contract } from "@ethersproject/contracts"
 import { Token } from "../enums"
 import { TransactionType } from "../enums/transactionType"
+import Icon from "../enums/icon"
 
 export interface ReduxTokenInfo {
   loading: boolean
   conversionRate: number
   text: string
-  icon: any
+  icon: Icon
   balance: number | string
   usdConversion: number
   usdBalance: string

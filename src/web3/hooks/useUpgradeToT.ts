@@ -8,8 +8,8 @@ import { useVendingMachineContract } from "./useVendingMachineContract"
 import { UpgredableToken } from "../../types"
 
 // const TOKEN_TO_VENDING_MACHINE_ARTIFACT = {
-//   [Token.Keep]: VendingMachineKeep,
-//   [Token.Nu]: VendingMachineNuCypher,
+//   [Token.KeepCircleBrand]: VendingMachineKeep,
+//   [Token.NuCircleBrand]: VendingMachineNuCypher,
 // }
 
 export const useUpgradeToT = (from: UpgredableToken) => {

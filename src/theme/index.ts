@@ -13,8 +13,8 @@ const colors = {
     // 200
     300: "#9974FF",
     // 400
-    500: "#7D00FF", // main Threshold brand color
-    550: "#7C47EE", // main Threshold brand color - DARK MODE
+    500: "#7D00FF", // main ThresholdCircleBrand brand color
+    550: "#7C47EE", // main ThresholdCircleBrand brand color - DARK MODE
     // 600
     700: "#4E2E99",
     800: "#3B257A",
