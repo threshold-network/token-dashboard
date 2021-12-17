@@ -6,7 +6,7 @@ import {
   IoHomeOutline,
   IoSwapHorizontalSharp,
 } from "react-icons/all"
-import { useLocation } from "react-router-dom"
+import { useLocation, useRouteMatch } from "react-router-dom"
 import { useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
@@ -20,21 +20,23 @@ const Sidebar = () => {
     () => [
       {
         text: "Overview",
-        icon: pathname.includes("/overview") ? IoHomeSharp : IoHomeOutlineSharp,
+        icon: useRouteMatch("/overview") ? IoHomeSharp : IoHomeOutlineSharp,
         href: "/",
-        isActive: pathname.includes("/overview"),
+        isActive: useRouteMatch("/overview"),
       },
       {
         text: "Upgrade",
         icon: IoSwapHorizontalSharp,
         href: "/upgrade",
-        isActive: pathname === "/upgrade",
+        isActive: useRouteMatch("/upgrade"),
       },
       {
         text: "Portfolio",
-        icon: pathname === "/portfolio" ? IoBarChartSharp : IoChartOutlineSharp,
+        icon: useRouteMatch("/portfolio")
+          ? IoBarChartSharp
+          : IoChartOutlineSharp,
         href: "/portfolio",
-        isActive: pathname === "/portfolio",
+        isActive: useRouteMatch("/portfolio"),
       },
     ],
     [pathname]
