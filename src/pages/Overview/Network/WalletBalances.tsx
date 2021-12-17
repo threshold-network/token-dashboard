@@ -15,6 +15,7 @@ import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import numeral from "numeral"
 import { useWeb3React } from "@web3-react/core"
 import { useReduxToken } from "../../../hooks/useReduxToken"
+import { formatUnits } from "@ethersproject/units"
 
 const BalanceStat: FC<{
   balance: number
@@ -42,56 +43,51 @@ const WalletBalances: FC = () => {
   const { account } = useWeb3React()
   const { keep, nu, t } = useReduxToken()
 
-  const totalAssetBalance =
-    keep.formattedBalance + nu.formattedBalance + t.formattedBalance
+  // do to: figure out how to pass in the token decimals
+  const formattedKeep = Number(formatUnits(keep.balance, 6))
+  const formattedNu = Number(formatUnits(nu.balance))
+  const formattedT = Number(formatUnits(t.balance))
+
+  const totalAssetBalance = formattedKeep + formattedNu + formattedT
 
   const progressBarValues = useMemo(() => {
     return {
       ["#7D00FF"]: {
-        value: (keep.formattedBalance / totalAssetBalance) * 100,
-        tooltip: `${numeral(keep.formattedBalance).format("0,00.00")} ${
-          keep.text
-        }`,
+        value: (formattedKeep / totalAssetBalance) * 100,
+        tooltip: `${numeral(formattedKeep).format("0,00.00")} ${keep.text}`,
       },
       ["#1E65F3"]: {
-        value: (nu.formattedBalance / totalAssetBalance) * 100,
-        tooltip: `${numeral(nu.formattedBalance).format("0,00.00")} ${nu.text}`,
+        value: (formattedNu / totalAssetBalance) * 100,
+        tooltip: `${numeral(formattedNu).format("0,00.00")} ${nu.text}`,
       },
       ["#48dbb4"]: {
-        value: (t.formattedBalance / totalAssetBalance) * 100,
-        tooltip: `${numeral(t.formattedBalance).format("0,00.00")} ${t.text}`,
+        value: (formattedT / totalAssetBalance) * 100,
+        tooltip: `${numeral(formattedT).format("0,00.00")} ${t.text}`,
       },
     }
   }, [account, totalAssetBalance, t.balance, nu.balance, t.balance])
 
   const conversionToTAmount = useMemo(() => {
-    return (
-      Number(keep.formattedBalance) * keep.conversionRate +
-      Number(nu.formattedBalance) * nu.conversionRate
-    )
-  }, [keep.formattedBalance, nu.formattedBalance])
+    return formattedKeep * keep.conversionRate + formattedNu * nu.conversionRate
+  }, [formattedKeep, formattedNu])
 
   return (
     <CardTemplate title="WALLET">
       <Body2 mb={2}>Liquid Tokens</Body2>
       <MultiSegmentProgress values={progressBarValues} />
       <Stack spacing={2} mt={4}>
-        {t.formattedBalance !== 0 && (
-          <BalanceStat
-            balance={Number(t.formattedBalance)}
-            icon={t.icon}
-            text={t.text}
-          />
+        {formattedT !== 0 && (
+          <BalanceStat balance={formattedT} icon={t.icon} text={t.text} />
         )}
         <BalanceStat
           conversionRate={keep.conversionRate}
-          balance={Number(keep.formattedBalance)}
+          balance={formattedKeep}
           icon={keep.icon}
           text={keep.text}
         />
         <BalanceStat
           conversionRate={8.26}
-          balance={Number(nu.formattedBalance)}
+          balance={formattedNu}
           icon={nu.icon}
           text={nu.text}
         />

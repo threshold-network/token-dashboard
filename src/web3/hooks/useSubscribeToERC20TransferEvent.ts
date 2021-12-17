@@ -22,18 +22,14 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
         token,
         BigNumber.from(currentTokenBalance)
           .add(BigNumber.from(amount))
-          .toString(),
-        0
-        // HOW DO WE ADD THE FORMATTED BALANCE HERE? NEED ACCESS TO THE ERC20's DECIMALS
+          .toString()
       )
     } else if (isSameETHAddress(from, account!)) {
       setTokenBalance(
         token,
         BigNumber.from(currentTokenBalance)
           .sub(BigNumber.from(amount))
-          .toString(),
-        0
-        // HOW DO WE ADD THE FORMATTED BALANCE HERE? NEED ACCESS TO THE ERC20's DECIMALS
+          .toString()
       )
     }
   })

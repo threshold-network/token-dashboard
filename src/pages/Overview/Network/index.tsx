@@ -13,11 +13,11 @@ const Network: FC = () => {
   return (
     <VStack spacing={4} mt={4}>
       <UpgradeBanner />
-      <Stack direction={{ base: "column", md: "row" }} w="100%">
-        <Box w={{ base: "100%", md: "50%" }}>
+      <Stack direction={{ base: "column", xl: "row" }} w="100%">
+        <Box w={{ base: "100%", xl: "50%" }}>
           <WalletBalances />
         </Box>
-        <Stack w={{ base: "100%", md: "50%" }}>
+        <Stack w={{ base: "100%", xl: "50%" }}>
           <TotalValueLocked totalValueLocked={totalValueLocked} />
           <Nodes />
         </Stack>

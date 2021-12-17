@@ -36,7 +36,7 @@ const SidebarFooter = () => {
   const { isOpen } = useSidebar()
   const isMobile = useChakraBreakpoint("sm")
   return (
-    <Box>
+    <Box as="footer">
       <Divider w="auto" marginX={isOpen ? "18px !important" : "8px"} />
       {isMobile ? (
         <Box p={8}>

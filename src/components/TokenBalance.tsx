@@ -21,11 +21,15 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
-    return numeral(formatUnits(tokenAmount)).format("0,0.00")
+    return numeral(
+      formatUnits(
+        tokenAmount
+        // TODO: need token decimals here
+      )
+    ).format("0,0.00")
   }, [tokenAmount])
 
-  // TODO: more flexible approach to style wrapper, token balance and USD
-  // balance.
+  // TODO: more flexible approach to style wrapper, token balance and USD balance.
   return (
     <Box>
       <H5 {...restProps}>

@@ -32,9 +32,9 @@ export const tokenSlice = createSlice({
     [Token.Keep]: {
       loading: false,
       balance: 0,
-      formattedBalance: 0,
       conversionRate: 4.87,
       text: Token.Keep,
+      // TODO: Non-serializable values should not exist here. We could use an icon Enum that can be mapped to the icon instead
       icon: Keep,
       usdConversion: 0,
       usdBalance: "0",
@@ -42,7 +42,6 @@ export const tokenSlice = createSlice({
     [Token.Nu]: {
       loading: false,
       balance: 0,
-      formattedBalance: 0,
       conversionRate: 2.66,
       text: Token.Nu,
       icon: Nu,
@@ -52,7 +51,6 @@ export const tokenSlice = createSlice({
     [Token.T]: {
       loading: false,
       balance: 0,
-      formattedBalance: 0,
       conversionRate: 1,
       text: Token.T,
       icon: Threshold,
@@ -77,9 +75,8 @@ export const tokenSlice = createSlice({
       state,
       action: PayloadAction<SetTokenBalanceActionPayload>
     ) => {
-      const { token, balance, formattedBalance } = action.payload
+      const { token, balance } = action.payload
       state[token].balance = balance
-      state[token].formattedBalance = formattedBalance
       state[token].usdBalance = getUsdBalance(
         state[token].balance,
         state[token].usdConversion

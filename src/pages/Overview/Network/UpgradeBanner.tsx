@@ -28,28 +28,33 @@ const UpgradeBanner: FC = () => {
         top="12px"
         onClick={onClose}
       />
-      <HStack justify="space-between" spacing={6}>
-        <Image src={overviewPeople} width={{ base: "140px" }} />
+      <Stack
+        justify="space-between"
+        spacing={6}
+        direction={{ base: "column", sm: "row" }}
+      >
+        <Image src={overviewPeople} width={{ base: "140px" }} m="auto" />
         <Stack
-          direction={{ base: "column", lg: "row" }}
+          direction={{ base: "column", xl: "row" }}
           justify="space-around"
-          w="100%"
+          w={{ base: "auto", lg: "100%" }}
+          spacing={6}
         >
           {isMobile ? (
-            <Body2>{heroText}</Body2>
+            <Body2 paddingRight={8}>{heroText}</Body2>
           ) : (
             <H4 maxW="500px">{heroText}</H4>
           )}
           <Button
             size={isMobile ? "sm" : "lg"}
-            marginY="auto !important"
             px={{ base: 0, md: 12 }}
-            marginTop={{ base: 8, md: "auto !important" }}
+            marginY="auto !important"
+            mt={{ base: 12, xl: "auto !important" }}
           >
-            Upgrade Tokens
+            {isMobile ? "Upgrade Now" : "Upgrade Tokens"}
           </Button>
         </Stack>
-      </HStack>
+      </Stack>
     </Card>
   )
 }
