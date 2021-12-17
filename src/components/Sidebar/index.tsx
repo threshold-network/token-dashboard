@@ -16,27 +16,29 @@ import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 const Sidebar = () => {
   const { pathname } = useLocation()
 
+  const isOverview = useRouteMatch("/overview")
+  const isUpgrade = useRouteMatch("/upgrade")
+  const isPortfolio = useRouteMatch("/portfolio")
+
   const navItems: NavItemDetail[] = useMemo(
     () => [
       {
         text: "Overview",
-        icon: useRouteMatch("/overview") ? IoHomeSharp : IoHomeOutlineSharp,
+        icon: isOverview ? IoHomeSharp : IoHomeOutlineSharp,
         href: "/",
-        isActive: useRouteMatch("/overview"),
+        isActive: isOverview,
       },
       {
         text: "Upgrade",
         icon: IoSwapHorizontalSharp,
         href: "/upgrade",
-        isActive: useRouteMatch("/upgrade"),
+        isActive: isUpgrade,
       },
       {
         text: "Portfolio",
-        icon: useRouteMatch("/portfolio")
-          ? IoBarChartSharp
-          : IoChartOutlineSharp,
+        icon: isPortfolio ? IoBarChartSharp : IoChartOutlineSharp,
         href: "/portfolio",
-        isActive: useRouteMatch("/portfolio"),
+        isActive: isPortfolio,
       },
     ],
     [pathname]
