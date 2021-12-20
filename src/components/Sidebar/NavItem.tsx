@@ -28,7 +28,7 @@ const NavItem: FC<NavItemDetail> = ({
   isFooter,
 }) => {
   const { isOpen, closeSidebar } = useSidebar()
-  const isMobileDevice = useChakraBreakpoint("sm")
+  const isMobileDevice = useChakraBreakpoint("md")
 
   return (
     <Box position="relative" my={2}>

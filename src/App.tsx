@@ -25,7 +25,6 @@ import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
 import Overview from "./pages/Overview"
 import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
-import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
 import Upgrade from "./pages/Upgrade"
 import Portfolio from "./pages/Portfolio"
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
@@ -33,7 +32,6 @@ import { useModal } from "./hooks/useModal"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
-import { useContract } from "./web3/hooks/useContract"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -44,14 +42,8 @@ const Web3EventHandlerComponent = () => {
   return <></>
 }
 
+// TODO: Let's move this to its own hook like useKeep, useT, etc
 const useSubscribeToVendingMachineContractEvents = () => {
-  // TODO: can we use useVendingMachineContract here?
-  const contract = useContract(
-    VendingMachineKeep.address,
-    VendingMachineKeep.abi,
-    undefined
-  )
-
   const { account } = useWeb3React()
   const { openModal } = useModal()
   const keepVendingMachine = useVendingMachineContract(Token.Keep)
@@ -96,7 +88,8 @@ const AppBody = () => {
     <Box display="flex">
       <Sidebar />
       <Box
-        w={{ base: "100%", sm: "calc(100% - 80px)" }}
+        // 100% - 80px is to account for the sidebar
+        w={{ base: "100%", md: "calc(100% - 80px)" }}
         bg={useColorModeValue("transparent", "gray.900")}
       >
         <Navbar />
