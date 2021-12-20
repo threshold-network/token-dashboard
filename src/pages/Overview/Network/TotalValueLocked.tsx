@@ -1,9 +1,8 @@
 import { FC } from "react"
 import numeral from "numeral"
-import { Flex, useMediaQuery } from "@chakra-ui/react"
+import { Flex } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
-import { H1, H3 } from "../../../components/Typography"
-import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
+import { H1 } from "../../../components/Typography"
 
 const TotalValueLocked: FC<{ totalValueLocked: number }> = ({
   totalValueLocked,
@@ -12,7 +11,7 @@ const TotalValueLocked: FC<{ totalValueLocked: number }> = ({
 
   return (
     <CardTemplate title="TOTAL VALUE LOCKED" h="auto">
-      <Flex justifyContent={{ base: "flex-start", md: "center" }}>
+      <Flex justifyContent="center">
         <H1 fontSize={{ base: "4xl", lg: "6xl" }} fontWeight="700">
           {tvl}
         </H1>

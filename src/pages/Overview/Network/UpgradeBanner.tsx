@@ -7,9 +7,11 @@ import {
   Image,
   Link,
   Stack,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import overviewPeople from "../../../static/images/overview-people.png"
+import vortex from "../../../static/images/vortex.png"
 import { Body2, H4 } from "../../../components/Typography"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
@@ -33,9 +35,13 @@ const UpgradeBanner: FC = () => {
       <Stack
         justify="space-between"
         spacing={6}
-        direction={{ base: "column", sm: "row" }}
+        direction={{ base: "column", md: "row" }}
       >
-        <Image src={overviewPeople} width={{ base: "140px" }} m="auto" />
+        <Image
+          src={useColorModeValue(overviewPeople, vortex)}
+          width={{ base: "140px" }}
+          m="auto"
+        />
         <Stack
           direction={{ base: "column", xl: "row" }}
           justify="space-around"

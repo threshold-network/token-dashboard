@@ -34,7 +34,7 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
 
 const SidebarFooter = () => {
   const { isOpen } = useSidebar()
-  const isMobile = useChakraBreakpoint("sm")
+  const isMobile = useChakraBreakpoint("md")
   return (
     <Box as="footer">
       <Divider w="auto" marginX={isOpen ? "18px !important" : "8px"} />
