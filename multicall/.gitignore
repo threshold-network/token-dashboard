@@ -1,0 +1,17 @@
+node_modules/
+
+artifacts/
+build/
+cache/
+deployments/
+export/
+export.json
+
+typechain/
+
+yarn-error.log
+
+.vscode/
+
+.hardhat/*
+!.hardhat/networks_TEMPLATE.ts
