@@ -5,6 +5,7 @@ import { useKeep } from "../web3/hooks/useKeep"
 import { useNu } from "../web3/hooks/useNu"
 import { useT } from "../web3/hooks/useT"
 import { useReduxToken } from "../hooks/useReduxToken"
+import { useTokensBalanceCall } from "../hooks/useTokensBalanceCall"
 import { Token } from "../enums"
 import { ReduxTokenInfo } from "../types"
 
@@ -22,7 +23,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const keep = useKeep()
   const nu = useNu()
   const t = useT()
-  const { active, chainId } = useWeb3React()
+  const { active, chainId, account } = useWeb3React()
   const {
     fetchTokenPriceUSD,
     setTokenBalance,
@@ -30,6 +31,11 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     nu: nuData,
     t: tData,
   } = useReduxToken()
+
+  const fetchBalances = useTokensBalanceCall(
+    [keep.contract!, nu.contract!, t.contract!],
+    account!
+  )
 
   React.useEffect(() => {
     for (const token in Token) {
@@ -43,9 +49,11 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   React.useEffect(() => {
     if (active) {
-      keep.fetchKeepBalance()
-      nu.fetchNuBalance()
-      t.fetchTBalance()
+      fetchBalances().then(([keepBalance, nuBalance, tBalance]) => {
+        setTokenBalance(Token.Keep, keepBalance.toString())
+        setTokenBalance(Token.Nu, nuBalance.toString())
+        setTokenBalance(Token.T, tBalance.toString())
+      })
     } else {
       // set all token balances to 0 if the user disconnects the wallet
       for (const token in Token) {
