@@ -60,6 +60,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:dev": ". ./scripts/start_dashboard.sh",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
