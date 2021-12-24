@@ -102,7 +102,9 @@ const App: FC = () => {
                       <Route path="/upgrade">
                         <Redirect to="/upgrade/keep" />
                       </Route>
-                      <Route path="/portfolio">{Portfolio}</Route>
+                      <Route path="/portfolio">
+                        <Portfolio />
+                      </Route>
                     </Switch>
                   </Container>
                 </Box>
