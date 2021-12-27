@@ -1,4 +1,4 @@
-import { renderHook } from "@testing-library/react-hooks"
+import { renderHook, RenderHookResult } from "@testing-library/react-hooks"
 import { AddressZero } from "@ethersproject/constants"
 import { useVendingMachineContract } from "../useVendingMachineContract"
 import { useLocalStorage } from "../../../hooks/useLocalStorage"
@@ -22,21 +22,26 @@ describe("Test `useVendingMachineRatio` hook", () => {
   const mockedRatioValue = "500000000000000000"
   let mockedLocalStorageValue = { value: "0", contractAddress: AddressZero }
   const mockedSetRatio = jest.fn()
+  let renderHookResult
 
   beforeEach(() => {
     ;(useVendingMachineContract as jest.Mock).mockReturnValue(mockedContract)
 
     mockedLocalStorageValue = { value: "0", contractAddress: AddressZero }
+    mockedSetRatio.mockImplementation((value) => {
+      mockedLocalStorageValue = value
+    })
     ;(useLocalStorage as jest.Mock).mockReturnValue([
       mockedLocalStorageValue,
       mockedSetRatio,
     ])
 
     mockedContract.ratio.mockResolvedValue(mockedRatioValue)
+    renderHookResult = renderHook(() => useVendingMachineRatio(token))
   })
 
   test("should fetch ratio from chain and save in local storage", async () => {
-    renderHook(() => useVendingMachineRatio(token))
+    const { result } = renderHookResult
 
     expect(useVendingMachineContract).toHaveBeenCalledWith(token)
     expect(useLocalStorage).toHaveBeenCalledWith(`${token}-to-T-ratio`, {
@@ -45,9 +50,8 @@ describe("Test `useVendingMachineRatio` hook", () => {
     })
 
     expect(mockedContract.ratio).toHaveBeenCalled()
-    // TODO: The `mockedSetRatio` should be called but probably there is a
-    // problem with hoisting when `jest` running test.
-    // expect(mockedSetRatio).toHaveBeenCalled()
+
+    expect(mockedSetRatio).toHaveBeenCalled()
   })
 
   test("should not fetch ratio from chain if the value is in the local storage", async () => {

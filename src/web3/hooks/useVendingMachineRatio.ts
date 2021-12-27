@@ -5,6 +5,26 @@ import { useLocalStorage } from "../../hooks/useLocalStorage"
 import { UpgredableToken } from "../../types"
 import { isSameETHAddress } from "../../utils/isSameETHAddress"
 
+// Mutex implementation adapted from
+// https://spin.atomicobject.com/2018/09/10/javascript-concurrency/
+class Mutex {
+  private mutex = Promise.resolve()
+
+  lock(): PromiseLike<() => void> {
+    let begin: (unlock: () => void) => void = (unlock) => {}
+
+    this.mutex = this.mutex.then(() => {
+      return new Promise(begin)
+    })
+
+    return new Promise((res) => {
+      begin = res
+    })
+  }
+}
+
+const mutex = new Mutex()
+
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
 export const useVendingMachineRatio = (token: UpgredableToken) => {
@@ -26,14 +46,17 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
       (localStorageContractAddress === AddressZero ||
         !isSameETHAddress(contractAddress, localStorageContractAddress))
     ) {
-      contract
-        ?.ratio()
-        .then((value: any) => {
-          setRatio({ value: value.toString(), contractAddress })
-        })
-        .catch((error: any) => {
+      const fn = async () => {
+        const unlock = await mutex.lock()
+        try {
+          const ratio = await contract?.ratio()
+          setRatio({ value: ratio.toString(), contractAddress })
+        } catch (error) {
+          unlock()
           console.log("error", error)
-        })
+        }
+      }
+      fn()
     }
   }, [
     ratioValue,
