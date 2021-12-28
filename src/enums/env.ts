@@ -1,4 +1,5 @@
 export enum EnvVariable {
   SupportedChainId = "SupportedChainId",
-  RpcUrl = "RpcUrl",
+  ETH_HOSTNAME_HTTP = "ETH_HOSTNAME_HTTP",
+  ETH_HOSTNAME_WS = "ETH_HOSTNAME_WS",
 }

@@ -1,10 +1,15 @@
-import { EnvVariable } from "../enums/env"
+import { EnvVariable } from "../enums"
 
 const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.SupportedChainId]: process.env[
     "REACT_APP_SUPPORTED_CHAIN_ID"
   ] as string,
-  [EnvVariable.RpcUrl]: process.env["REACT_APP_RPC_URL"] as string,
+  [EnvVariable.ETH_HOSTNAME_HTTP]: process.env[
+    "REACT_APP_ETH_HOSTNAME_HTTP"
+  ] as string,
+  [EnvVariable.ETH_HOSTNAME_WS]: process.env[
+    "REACT_APP_ETH_HOSTNAME_WS"
+  ] as string,
 }
 
 export const getEnvVariable = (envVar: EnvVariable) => {
