@@ -3,8 +3,9 @@ import { AbstractConnector } from "@web3-react/abstract-connector"
 import Web3ProviderEngine from "web3-provider-engine"
 // import { TrezorSubprovider } from "@0x/subproviders/lib/src/subproviders/trezor" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider" // https://github.com/0xProject/0x-monorepo/issues/1400
-import { RPC_URL_HTTPS } from "../../config"
 import { TrezorSubprovider } from "./trezor_subprovider"
+import { getEnvVariable } from "../../utils/getEnvVariable"
+import { EnvVariable } from "../../enums"
 
 interface TrezorConnectorArguments {
   chainId: number
@@ -112,9 +113,12 @@ export class TrezorConnector extends AbstractConnector {
 
 const TREZOR_POLLING_INTERVAL = 12000
 
+const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
+const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
+
 const trezor = new TrezorConnector({
-  chainId: 1,
-  url: RPC_URL_HTTPS[1],
+  chainId,
+  url,
   pollingInterval: TREZOR_POLLING_INTERVAL,
   manifestEmail: "work@keep.network",
   manifestAppUrl: "https://keep.network",
