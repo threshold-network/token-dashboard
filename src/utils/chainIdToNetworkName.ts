@@ -13,8 +13,8 @@ const networkMap: NetworkMap = {
   [ChainID.Localhost]: "Localhost",
 }
 
-const chainIdToNetworkName = (chainId = 1): string => {
-  const network = networkMap[chainId]
+const chainIdToNetworkName = (chainId: string | number = 1): string => {
+  const network = networkMap[Number(chainId)]
   return network || "Unsupported"
 }
 

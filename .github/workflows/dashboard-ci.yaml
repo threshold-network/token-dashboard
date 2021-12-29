@@ -46,6 +46,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
+          CHAIN_ID: 3
+          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
@@ -79,6 +82,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
+          CHAIN_ID: 3
+          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
 
       # A pull_request event is a PR; deploy to preview testnet bucket.
       - name: Deploy PR preview to GCP
