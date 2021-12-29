@@ -114,7 +114,7 @@ export class TrezorConnector extends AbstractConnector {
 const TREZOR_POLLING_INTERVAL = 12000
 
 const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
-const url = getEnvVariable(EnvVariable.RpcUrl)
+const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
 const trezor = new TrezorConnector({
   chainId,

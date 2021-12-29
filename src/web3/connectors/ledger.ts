@@ -15,7 +15,7 @@ import {
   LedgerEthereumClient,
 } from "@0x/subproviders/lib/src/types"
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider"
-import { ChainID, EnvVariable } from "../../enums"
+import { EnvVariable } from "../../enums"
 import { getEnvVariable } from "../../utils/getEnvVariable"
 
 interface LedgerConnectorArguments {
@@ -120,7 +120,7 @@ export class LedgerConnector extends AbstractConnector {
 }
 
 const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
-const url = getEnvVariable(EnvVariable.RpcUrl)
+const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
 export const ledgerLiveConnectorFactory = () => {
   return new LedgerConnector({

@@ -4,7 +4,7 @@ import { EnvVariable } from "../enums"
 const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
 const isSupportedNetwork = (networkChainId?: number) => {
-  return networkChainId == +supportedChainId
+  return networkChainId === Number(supportedChainId)
 }
 
 export default isSupportedNetwork
