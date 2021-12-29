@@ -8,6 +8,7 @@ export enum CoingeckoID {
   KEEP = "keep-network",
   NU = "nucypher",
   T = "ttoken",
+  ETH = "ethereum",
 }
 
 export enum TConversionRates {
