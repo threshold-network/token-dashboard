@@ -15,8 +15,8 @@ import {
   LedgerEthereumClient,
 } from "@0x/subproviders/lib/src/types"
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider"
-import { RPC_URL_HTTPS } from "../../config"
-import { ChainID } from "../../enums"
+import { EnvVariable } from "../../enums"
+import { getEnvVariable } from "../../utils/getEnvVariable"
 
 interface LedgerConnectorArguments {
   chainId: number
@@ -119,17 +119,20 @@ export class LedgerConnector extends AbstractConnector {
   }
 }
 
+const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
+const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
+
 export const ledgerLiveConnectorFactory = () => {
   return new LedgerConnector({
-    chainId: ChainID.Ropsten,
-    url: RPC_URL_HTTPS[ChainID.Ropsten],
+    chainId,
+    url,
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LIVE,
   })
 }
 
 export const ledgerLegacyConnectorFactory = () =>
   new LedgerConnector({
-    chainId: 1,
-    url: RPC_URL_HTTPS[1],
+    chainId,
+    url,
     baseDerivationPath: LEDGER_DERIVATION_PATHS.LEDGER_LEGACY,
   })
