@@ -5,7 +5,6 @@ import {
   useKeepBondingContract,
   useMulticall,
   useMulticallContract,
-  useTBTCTokenContract,
   useKeepAssetPoolContract,
 } from "../web3/hooks"
 import { useETHData } from "./useETHData"
@@ -38,10 +37,9 @@ export const useFetchTvl = (): [
   const { ecdsaTVL, tbtcTVL, keepCoveragePoolTVL } = rawData
   const eth = useETHData()
   const keep = useToken(Token.Keep)
-  const tbtc = { usdConversion: 0 } // TODO: add TBTC token to context
+  const tbtc = useToken(Token.TBTC)
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()
-  const { contract: tbtcToken } = useTBTCTokenContract()
   const keepAssetPool = useKeepAssetPoolContract()
 
   const fetchOnChainData = useMulticall([
@@ -51,7 +49,7 @@ export const useFetchTvl = (): [
       args: [keepBonding?.address],
     },
     {
-      contract: tbtcToken!,
+      contract: tbtc.contract!,
       method: "totalSupply",
     },
     { contract: keepAssetPool!, method: "totalValue" },

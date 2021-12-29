@@ -8,6 +8,7 @@ import { useReduxToken } from "../hooks/useReduxToken"
 import { useTokensBalanceCall } from "../hooks/useTokensBalanceCall"
 import { Token } from "../enums"
 import { ReduxTokenInfo } from "../types"
+import { useTBTCTokenContract } from "../web3/hooks"
 
 export const TokenContext = createContext<{
   [key in Token]: { contract: Contract | null } & ReduxTokenInfo
@@ -15,6 +16,7 @@ export const TokenContext = createContext<{
   [Token.Keep]: {} as any,
   [Token.Nu]: {} as any,
   [Token.T]: {} as any,
+  [Token.TBTC]: {} as any,
 })
 
 // Context that handles data fetching when a user connects their wallet or
@@ -23,6 +25,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const keep = useKeep()
   const nu = useNu()
   const t = useT()
+  const tbtc = useTBTCTokenContract()
   const { active, chainId, account } = useWeb3React()
   const {
     fetchTokenPriceUSD,
@@ -30,6 +33,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     keep: keepData,
     nu: nuData,
     t: tData,
+    tbtc: tbtcData,
   } = useReduxToken()
 
   const fetchBalances = useTokensBalanceCall(
@@ -79,6 +83,10 @@ export const TokenContextProvider: React.FC = ({ children }) => {
         [Token.T]: {
           ...t,
           ...tData,
+        },
+        [Token.TBTC]: {
+          ...tbtc,
+          ...tbtcData,
         },
       }}
     >
