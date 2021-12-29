@@ -12,6 +12,7 @@ export const useReduxToken: UseReduxToken = () => {
   const keep = useSelector((state: RootState) => state.token[Token.Keep])
   const nu = useSelector((state: RootState) => state.token[Token.Nu])
   const t = useSelector((state: RootState) => state.token[Token.T])
+  const tbtc = useSelector((state: RootState) => state.token[Token.TBTC])
 
   const dispatch = useDispatch()
 
@@ -28,6 +29,7 @@ export const useReduxToken: UseReduxToken = () => {
     keep,
     nu,
     t,
+    tbtc,
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,

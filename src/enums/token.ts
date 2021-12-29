@@ -2,6 +2,7 @@ export enum Token {
   Keep = "KEEP",
   Nu = "NU",
   T = "T",
+  TBTC = "TBTC",
 }
 
 export enum CoingeckoID {
@@ -9,6 +10,7 @@ export enum CoingeckoID {
   NU = "nucypher",
   T = "ttoken",
   ETH = "ethereum",
+  TBTC = "tbtc",
 }
 
 export enum TConversionRates {
