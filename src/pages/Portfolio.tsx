@@ -1,22 +1,24 @@
 import { useEffect } from "react"
+import { useDispatch } from "react-redux"
 import { useFetchTvl } from "../hooks/useFetchTvl"
+import { useETHData } from "../hooks/useETHData"
+import { fetchETHPriceUSD } from "../store/eth"
 
 const PortfolioPage = () => {
-  const fetchtTvlData = useFetchTvl()
+  const [data, fetchtTvlData] = useFetchTvl()
+  console.log("Test fetching tvl data", data)
+
+  // TODO: fetch eth price in the root component.
+  const { usdPrice } = useETHData()
+  const dispatch = useDispatch()
+  useEffect(() => {
+    dispatch(fetchETHPriceUSD())
+  }, [dispatch])
 
   useEffect(() => {
     fetchtTvlData()
-      .then(([ethInKeepBonding, tbtcTokenTotalSupply, coveragePoolTvl]) =>
-        // TODO: convert to USD and display on page.
-        console.log(
-          "ethInKeepBonding, tbtcTokenTotalSupply, coveragePoolTvl",
-          ethInKeepBonding.toString(),
-          tbtcTokenTotalSupply.toString(),
-          coveragePoolTvl.toString()
-        )
-      )
-      .catch((error) => console.log("error", error))
   }, [fetchtTvlData])
+
   return <div>Portfolio Page</div>
 }
 
