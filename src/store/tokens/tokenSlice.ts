@@ -10,15 +10,14 @@ import {
   SetTokenBalanceActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
+import { exchangeAPI } from "../../utils/exchangeAPI"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
   async ({ token }: { token: Token }) => {
     const coingeckoID = CoingeckoID[token]
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoID}&vs_currencies=usd`
-    )
-    return { usd: response.data[coingeckoID].usd, token }
+    const usd = await exchangeAPI.fetchCryptoCurrencyPriceUSD(coingeckoID)
+    return { usd, token }
   }
 )
 
