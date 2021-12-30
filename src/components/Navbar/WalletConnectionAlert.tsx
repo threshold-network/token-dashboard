@@ -6,6 +6,11 @@ import {
 } from "@chakra-ui/react"
 import { FC, useEffect, useMemo, useState } from "react"
 import isSupportedNetwork from "../../utils/isSupportedNetwork"
+import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
+import { getEnvVariable } from "../../utils/getEnvVariable"
+import { EnvVariable } from "../../enums"
+
+const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
 const WalletConnectionAlert: FC<{
   account?: string | null
@@ -19,7 +24,9 @@ const WalletConnectionAlert: FC<{
     }
 
     if (!isSupportedNetwork(chainId)) {
-      return "Your wallet is on an unsupported network. Switch to the ethereum network"
+      return `Your wallet is on an unsupported network. Switch to the ${chainIdToNetworkName(
+        supportedChainId
+      )} network`
     }
   }, [account, chainId])
 
