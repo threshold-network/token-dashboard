@@ -39,8 +39,11 @@ jobs:
       - name: Resolve latest contracts
         run: |
           yarn upgrade \
+            @threshold-network/solidity-contracts \ 
             @keep-network/keep-core \
-            @threshold-network/solidity-contracts
+            @keep-network/keep-ecdsa \
+            @keep-network/tbtc \
+            @keep-network/coverage-pools
 
       - name: Build
         run: yarn build
@@ -66,17 +69,18 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
-      # TODO: Use this step once we tag `threshold-network/solidity-contracts`
-      # pacakge with `ropsten` tag to fetch latest ropsten contracts.
-      # - name: Resolve latest ropsten contracts run: | yarn upgrade \
-      #       @keep-network/keep-core@ropsten \
-      #       @threshold-network/solidity-contracts@ropsten
+      # TODO: Use `ropsten` tag for `threshold-network/solidity-contracts`
+      # pacakge to fetch latest ropsten contracts.
+      # `@threshold-network/solidity-contracts@ropsten`
 
       - name: Resolve latest ropsten contracts
         run: |
           yarn upgrade \
+            @threshold-network/solidity-contracts@0.0.2-ropsten.1 \ 
             @keep-network/keep-core@ropsten \
-            @threshold-network/solidity-contracts@0.0.2-ropsten.1
+            @keep-network/keep-ecdsa@ropsten \
+            @keep-network/tbtc@ropsten \
+            @keep-network/coverage-pools@ropsten
 
       - name: Build
         run: yarn build
