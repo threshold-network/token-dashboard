@@ -2,7 +2,6 @@ import T from "@threshold-network/solidity-contracts/artifacts/T.json"
 import { Contract } from "@ethersproject/contracts"
 import { useErc20TokenContract } from "./useERC20"
 import { Token } from "../../enums"
-import { TransactionType } from "../../enums/transactionType"
 
 export interface UseT {
   (): {

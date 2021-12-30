@@ -1,7 +1,14 @@
 import { useContract } from "./useContract"
 import KeepBonding from "@keep-network/keep-ecdsa/artifacts/KeepBonding.json"
+import { supportedChainId } from "../../utils/getEnvVariable"
 
 export const useKeepBondingContract = () => {
-  // TODO get chainId from env
-  return useContract(KeepBonding.networks["1337"].address, KeepBonding.abi)
+  return useContract(
+    (
+      KeepBonding.networks[
+        supportedChainId as keyof typeof KeepBonding.networks
+      ] as { address: string }
+    )?.address,
+    KeepBonding.abi
+  )
 }
