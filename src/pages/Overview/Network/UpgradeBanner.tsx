@@ -3,9 +3,7 @@ import Card from "../../../components/Card"
 import {
   Button,
   CloseButton,
-  HStack,
   Image,
-  Link,
   Stack,
   useColorModeValue,
   useDisclosure,
@@ -53,21 +51,18 @@ const UpgradeBanner: FC = () => {
           ) : (
             <H4 maxW="500px">{heroText}</H4>
           )}
-          <Link
+
+          <Button
             as={RouterLink}
             to="/upgrade"
             _hover={{ textDecoration: "none" }}
             marginY="auto !important"
             mt={{ base: 12, xl: "auto !important" }}
+            size={isMobile ? "sm" : "lg"}
+            px={{ base: 4, md: 12 }}
           >
-            <Button
-              size={isMobile ? "sm" : "lg"}
-              px={{ base: 4, md: 12 }}
-              isFullWidth
-            >
-              {isMobile ? "Upgrade Now" : "Upgrade Tokens"}
-            </Button>
-          </Link>
+            {isMobile ? "Upgrade Now" : "Upgrade Tokens"}
+          </Button>
         </Stack>
       </Stack>
     </Card>

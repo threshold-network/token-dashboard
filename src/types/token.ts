@@ -11,6 +11,7 @@ export interface ReduxTokenInfo {
   balance: number | string
   usdConversion: number
   usdBalance: string
+  decimals?: number
 }
 
 export interface SetTokenBalanceActionPayload {

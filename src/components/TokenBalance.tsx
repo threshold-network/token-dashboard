@@ -10,6 +10,7 @@ interface TokenBalanceProps {
   tokenSymbol?: string
   withUSDBalance?: boolean
   withSymbol?: boolean
+  tokenDecimals?: number
 }
 
 const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
@@ -18,15 +19,11 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   tokenSymbol,
   withUSDBalance = false,
   withSymbol = false,
+  tokenDecimals,
   ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
-    return numeral(
-      formatUnits(
-        tokenAmount
-        // TODO: need token decimals here
-      )
-    ).format("0,0.00")
+    return numeral(formatUnits(tokenAmount, tokenDecimals)).format("0,0.00")
   }, [tokenAmount])
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.

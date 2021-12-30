@@ -1,7 +1,6 @@
 import { FC } from "react"
 import CardTemplate from "./CardTemplate"
 import { HStack } from "@chakra-ui/react"
-import { Label3 } from "../../../components/Typography"
 import StatBox from "./StatBox"
 
 const Interest: FC = () => {
