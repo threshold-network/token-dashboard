@@ -61,13 +61,15 @@ const SidebarFooter = () => {
           <NavItem
             isFooter
             text="Github"
-            icon={BsGithub}
+            activeIcon={BsGithub}
+            passiveIcon={BsGithub}
             href={ExternalLink.THRESHOLD_GITHUB}
           />
           <NavItem
             isFooter
             text="Discord"
-            icon={BsDiscord}
+            activeIcon={BsDiscord}
+            passiveIcon={BsDiscord}
             href={ExternalLink.THRESHOLD_DISCORD}
           />
         </>

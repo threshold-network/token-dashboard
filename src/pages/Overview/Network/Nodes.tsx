@@ -1,6 +1,6 @@
 import { FC } from "react"
 import CardTemplate from "./CardTemplate"
-import { Stack, useMediaQuery, HStack } from "@chakra-ui/react"
+import { HStack } from "@chakra-ui/react"
 import StatBox from "./StatBox"
 
 const Nodes: FC = () => {

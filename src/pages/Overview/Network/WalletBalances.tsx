@@ -7,29 +7,38 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import numeral from "numeral"
 import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
 import CardTemplate from "./CardTemplate"
-import { Body2, Body3, H3, H5 } from "../../../components/Typography"
+import { Body2, Body3, H3 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import { useReduxToken } from "../../../hooks/useReduxToken"
 import Icon from "../../../components/Icon"
+import TokenBalance from "../../../components/TokenBalance"
+import { BigNumber } from "ethers"
+import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
+import { Token } from "../../../enums"
+import { formatNumeral, formatTokenAmount } from "../../../utils/formatAmount"
 
 const BalanceStat: FC<{
-  balance: number
+  balance: string | number
   icon: IconEnum
   text: string
   conversionRate?: number
-}> = ({ balance, icon, text, conversionRate }) => {
+  tokenDecimals?: number
+}> = ({ balance, icon, text, conversionRate, tokenDecimals }) => {
   return (
     <HStack justify="space-between">
       <HStack>
         <Icon as={icon} boxSize="24px" />
-        <H5>{numeral(balance).format("0,00.00")}</H5>
-        <Body3 color="gray.500">{text}</Body3>
+        <TokenBalance
+          tokenAmount={balance}
+          tokenSymbol={text}
+          withSymbol
+          tokenDecimals={tokenDecimals}
+        />
       </HStack>
       {conversionRate && (
         <Body3 color="gray.500">
@@ -48,29 +57,33 @@ const WalletBalances: FC = () => {
   const formattedKeep = Number(formatUnits(keep.balance, 6))
   const formattedNu = Number(formatUnits(nu.balance))
   const formattedT = Number(formatUnits(t.balance))
-
   const totalAssetBalance = formattedKeep + formattedNu + formattedT
 
   const progressBarValues = useMemo(() => {
     return {
       ["#7D00FF"]: {
         value: (formattedKeep / totalAssetBalance) * 100,
-        tooltip: `${numeral(formattedKeep).format("0,00.00")} ${keep.text}`,
+        tooltip: `${formatTokenAmount(keep.balance, undefined, 6)} ${
+          keep.text
+        }`,
       },
       ["#1E65F3"]: {
         value: (formattedNu / totalAssetBalance) * 100,
-        tooltip: `${numeral(formattedNu).format("0,00.00")} ${nu.text}`,
+        tooltip: `${formatTokenAmount(nu.balance)} ${nu.text}`,
       },
       ["#48dbb4"]: {
         value: (formattedT / totalAssetBalance) * 100,
-        tooltip: `${numeral(formattedT).format("0,00.00")} ${t.text}`,
+        tooltip: `${formatTokenAmount(t.balance)} ${t.text}`,
       },
     }
   }, [account, totalAssetBalance, t.balance, nu.balance, t.balance])
 
+  const { amount: keepToT } = useTConvertedAmount(Token.Keep, keep.balance)
+  const { amount: nuToT } = useTConvertedAmount(Token.Nu, nu.balance)
+
   const conversionToTAmount = useMemo(() => {
-    return formattedKeep * keep.conversionRate + formattedNu * nu.conversionRate
-  }, [formattedKeep, formattedNu])
+    return BigNumber.from(keepToT).add(nuToT).toString()
+  }, [keepToT, nuToT])
 
   return (
     <CardTemplate title="WALLET">
@@ -78,17 +91,18 @@ const WalletBalances: FC = () => {
       <MultiSegmentProgress values={progressBarValues} />
       <Stack spacing={2} mt={4}>
         {formattedT !== 0 && (
-          <BalanceStat balance={formattedT} icon={t.icon} text={t.text} />
+          <BalanceStat balance={t.balance} icon={t.icon} text={t.text} />
         )}
         <BalanceStat
           conversionRate={keep.conversionRate}
-          balance={formattedKeep}
+          balance={keep.balance}
           icon={keep.icon}
           text={keep.text}
+          tokenDecimals={keep.decimals}
         />
         <BalanceStat
           conversionRate={8.26}
-          balance={formattedNu}
+          balance={nu.balance}
           icon={nu.icon}
           text={nu.text}
         />
@@ -103,13 +117,20 @@ const WalletBalances: FC = () => {
         borderRadius="md"
       >
         <Icon as={t.icon} boxSize="32px" />
-        <H3>{numeral(conversionToTAmount).format("0,00.00")}</H3>
+        <H3>{formatNumeral(conversionToTAmount)}</H3>
       </HStack>
-      <Link as={RouterLink} to="/upgrade" _hover={{ textDecoration: "none" }}>
-        <Button size="lg" isFullWidth mt={8}>
-          Upgrade Tokens
-        </Button>
-      </Link>
+
+      <Button
+        size="lg"
+        isFullWidth
+        mt={8}
+        as={RouterLink}
+        to="/upgrade"
+        _hover={{ textDecoration: "none" }}
+      >
+        Upgrade Tokens
+      </Button>
+
       <HStack justify="center" mt={4}>
         <Link
           color={useColorModeValue("brand.500", "white")}

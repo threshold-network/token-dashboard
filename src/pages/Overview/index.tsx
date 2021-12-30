@@ -1,11 +1,5 @@
 import { Container } from "@chakra-ui/react"
-import {
-  Redirect,
-  Route,
-  Switch,
-  useLocation,
-  useRouteMatch,
-} from "react-router-dom"
+import { Redirect, Route, useLocation, useRouteMatch } from "react-router-dom"
 import { H1, H3, Label1 } from "../../components/Typography"
 import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"

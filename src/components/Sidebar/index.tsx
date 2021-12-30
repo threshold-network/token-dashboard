@@ -1,12 +1,10 @@
 import { NavItemDetail } from "./NavItem"
 import {
   IoBarChartSharp,
-  IoBarChartOutline,
   IoHomeSharp,
-  IoHomeOutline,
   IoSwapHorizontalSharp,
 } from "react-icons/all"
-import { useLocation, useRouteMatch } from "react-router-dom"
+import { useLocation } from "react-router-dom"
 import { useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
@@ -16,29 +14,25 @@ import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 const Sidebar = () => {
   const { pathname } = useLocation()
 
-  const isOverview = useRouteMatch("/overview")
-  const isUpgrade = useRouteMatch("/upgrade")
-  const isPortfolio = useRouteMatch("/portfolio")
-
   const navItems: NavItemDetail[] = useMemo(
     () => [
       {
         text: "Overview",
-        icon: isOverview ? IoHomeSharp : IoHomeOutlineSharp,
-        href: "/",
-        isActive: isOverview,
+        activeIcon: IoHomeSharp,
+        passiveIcon: IoHomeOutlineSharp,
+        href: "/overview",
       },
       {
         text: "Upgrade",
-        icon: IoSwapHorizontalSharp,
+        activeIcon: IoSwapHorizontalSharp,
+        passiveIcon: IoSwapHorizontalSharp,
         href: "/upgrade",
-        isActive: isUpgrade,
       },
       {
         text: "Portfolio",
-        icon: isPortfolio ? IoBarChartSharp : IoChartOutlineSharp,
+        activeIcon: IoBarChartSharp,
+        passiveIcon: IoChartOutlineSharp,
         href: "/portfolio",
-        isActive: isPortfolio,
       },
     ],
     [pathname]

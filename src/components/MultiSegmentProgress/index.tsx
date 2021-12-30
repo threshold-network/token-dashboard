@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Box, HStack, Progress, ProgressProps, Tooltip } from "@chakra-ui/react"
+import { Box, Progress, ProgressProps, Tooltip } from "@chakra-ui/react"
 
 interface Props extends ProgressProps {
   values: {
