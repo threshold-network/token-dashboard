@@ -39,7 +39,7 @@ jobs:
       - name: Resolve latest contracts
         run: |
           yarn upgrade \
-            @threshold-network/solidity-contracts \ 
+            @threshold-network/solidity-contracts \
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
