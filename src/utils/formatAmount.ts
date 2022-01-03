@@ -10,7 +10,7 @@ export const formatTokenAmount = (
   format = "0,00.00",
   decimals = 18
 ) => {
-  return numeral(formatUnits(rawAmount, decimals)).format(format)
+  return formatNumeral(formatUnits(rawAmount, decimals), format)
 }
 
 export const formatFiatCurrencyAmount = (
@@ -18,5 +18,5 @@ export const formatFiatCurrencyAmount = (
   format = "0,00",
   currencySymbol = "$"
 ) => {
-  return numeral(amount).format(`${currencySymbol}${format}`)
+  return formatNumeral(formatUnits(amount), `${currencySymbol}${format}`)
 }

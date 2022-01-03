@@ -1,5 +1,5 @@
 import { Container } from "@chakra-ui/react"
-import { Redirect, Route, useLocation, useRouteMatch } from "react-router-dom"
+import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
 import { H1, H3, Label1 } from "../../components/Typography"
 import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"
@@ -8,16 +8,13 @@ import Pre from "./Pre"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
 const Overview = ({}) => {
-  const { pathname } = useLocation()
-
   const subNavLinks = [
     {
       text: "Network",
-      href: "/network",
-      isActive: pathname.includes("/network"),
+      path: "/network",
     },
-    { text: "tBTC", href: "/tBTC", isActive: pathname.includes("/tBTC") },
-    { text: "PRE", href: "/pre", isActive: pathname.includes("/pre") },
+    { text: "tBTC", path: "/tBTC" },
+    { text: "PRE", path: "/pre" },
   ]
 
   const { path } = useRouteMatch()
@@ -28,17 +25,19 @@ const Overview = ({}) => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
       <Label1>Threshold</Label1>
       {isMobile ? <H3>Network Overview</H3> : <H1>Network Overview</H1>}
-      <SubNavigationPills links={subNavLinks} />
-      <Redirect from="/overview" to="/overview/network" />
-      <Route path={`${path}/network`}>
-        <Network />
-      </Route>
-      <Route path={`${path}/tBTC`}>
-        <TBTC />
-      </Route>
-      <Route path={`${path}/pre`}>
-        <Pre />
-      </Route>
+      <SubNavigationPills parentPath={path} links={subNavLinks} />
+      <Switch>
+        <Route path={`${path}/network`}>
+          <Network />
+        </Route>
+        <Route path={`${path}/tBTC`}>
+          <TBTC />
+        </Route>
+        <Route path={`${path}/pre`}>
+          <Pre />
+        </Route>
+        <Redirect from="/overview" to="/overview/network" />
+      </Switch>
     </Container>
   )
 }
