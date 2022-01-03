@@ -49,33 +49,40 @@ const BalanceStat: FC<{
   )
 }
 
+const progressBarColors = {
+  keep: "#7D00FF",
+  nu: "#1E65F3",
+  t: "#48dbb4",
+}
+
 const WalletBalances: FC = () => {
   const { account } = useWeb3React()
   const { keep, nu, t } = useReduxToken()
 
   // do to: figure out how to pass in the token decimals
-  const formattedKeep = Number(formatUnits(keep.balance, 6))
+  const formattedKeep = Number(formatUnits(keep.balance))
   const formattedNu = Number(formatUnits(nu.balance))
   const formattedT = Number(formatUnits(t.balance))
   const totalAssetBalance = formattedKeep + formattedNu + formattedT
 
   const progressBarValues = useMemo(() => {
-    return {
-      ["#7D00FF"]: {
+    return [
+      {
+        color: progressBarColors.keep,
         value: (formattedKeep / totalAssetBalance) * 100,
-        tooltip: `${formatTokenAmount(keep.balance, undefined, 6)} ${
-          keep.text
-        }`,
+        tooltip: `${formatTokenAmount(keep.balance)} ${keep.text}`,
       },
-      ["#1E65F3"]: {
+      {
+        color: progressBarColors.nu,
         value: (formattedNu / totalAssetBalance) * 100,
         tooltip: `${formatTokenAmount(nu.balance)} ${nu.text}`,
       },
-      ["#48dbb4"]: {
+      {
+        color: progressBarColors.t,
         value: (formattedT / totalAssetBalance) * 100,
         tooltip: `${formatTokenAmount(t.balance)} ${t.text}`,
       },
-    }
+    ]
   }, [account, totalAssetBalance, t.balance, nu.balance, t.balance])
 
   const { amount: keepToT } = useTConvertedAmount(Token.Keep, keep.balance)

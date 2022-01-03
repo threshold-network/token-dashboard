@@ -9,7 +9,7 @@ const multiSegmentFilledTrack = (props: any) => {
   const trackColor = getColor(theme, mode("gray.100", "gray.600")(props))
 
   // @ts-ignore
-  for (const [fillColor, { value }] of Object.entries(values)) {
+  values.forEach(({ color: fillColor, value }) => {
     // @ts-ignore
     const pct = +Number.parseFloat((value / max) * 100).toFixed(1)
 
@@ -21,7 +21,7 @@ const multiSegmentFilledTrack = (props: any) => {
     }
 
     breakpoints.push(`${fillColor} ${totalPct}%`)
-  }
+  })
 
   if (totalPct < max) {
     breakpoints.push(`${trackColor} ${totalPct}%`)

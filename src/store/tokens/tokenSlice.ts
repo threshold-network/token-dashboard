@@ -35,7 +35,6 @@ export const tokenSlice = createSlice({
       icon: Icon.KeepCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
-      decimals: 6,
     },
     [Token.Nu]: {
       loading: false,

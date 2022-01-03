@@ -3,26 +3,24 @@ import { Box, Progress, ProgressProps, Tooltip } from "@chakra-ui/react"
 
 interface Props extends ProgressProps {
   values: {
-    [key: string]: {
-      value: number
-      tooltip?: string
-    }
-  }
+    color: string
+    value: number
+    tooltip?: string
+  }[]
 }
 
 const MultiSegmentProgress: FC<Props> = ({ values }) => {
   return (
     <Box position="relative">
       <Box display="flex" position="absolute" zIndex={999} w="100%" h="100%">
-        {Object.values(values).map((value) => {
+        {values.map(({ color, tooltip, value }) => {
           return (
-            <Tooltip label={value.tooltip} key={value.tooltip}>
-              <Box h="100%" w={`${value.value}%`} />
+            <Tooltip label={tooltip} key={tooltip}>
+              <Box h="100%" w={`${value}%`} />
             </Tooltip>
           )
         })}
       </Box>
-
       <Progress
         variant="multiSegment"
         height={4}
