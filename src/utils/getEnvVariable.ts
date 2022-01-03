@@ -15,3 +15,5 @@ const envMap: { [key in EnvVariable]: string } = {
 export const getEnvVariable = (envVar: EnvVariable) => {
   return envMap[envVar]
 }
+
+export const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
