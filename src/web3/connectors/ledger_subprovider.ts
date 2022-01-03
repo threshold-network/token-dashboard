@@ -78,8 +78,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
     this.addressToPathMap[address] = path
 
-    console.log("the address: ", address)
-
     return address
   }
 
@@ -120,7 +118,6 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
 
     // Set the EIP155 bits
     const vIndex = 6
-    console.log("setting up the neworkID: ", this._networkId)
     tx.raw[vIndex] = Buffer.from([this._networkId]) // v
     const rIndex = 7
     tx.raw[rIndex] = Buffer.from([]) // r
@@ -141,17 +138,12 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
       // EIP155: v should be chain_id * 2 + {35, 36}
       const eip55Constant = 35
       const signedChainId = Math.floor((tx.v[0] - eip55Constant) / 2)
-      console.log("signed chain ID: ", signedChainId)
       if (signedChainId !== this._networkId) {
-        console.log("they they match")
         await this._destroyLedgerClientAsync()
         const err = new Error(LedgerSubproviderErrors.TooOldLedgerFirmware)
         throw err
       }
-
-      console.log("signign the tx to hex", tx)
       const signedTxHex = `0x${tx.serialize().toString("hex")}`
-      console.log("sigbed hex", signedTxHex)
       await this._destroyLedgerClientAsync()
       return signedTxHex
     } catch (err) {
