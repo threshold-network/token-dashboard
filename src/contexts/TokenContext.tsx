@@ -7,6 +7,7 @@ import { useT } from "../web3/hooks/useT"
 import { useReduxToken } from "../hooks/useReduxToken"
 import { Token } from "../enums"
 import { ReduxTokenInfo } from "../types"
+import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 
 interface TokenContextState extends ReduxTokenInfo {
   contract: Contract | null
@@ -27,15 +28,30 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const nu = useNu()
   const t = useT()
 
+  const nuConversion = useVendingMachineRatio(Token.Nu)
+  const keepConversion = useVendingMachineRatio(Token.Keep)
+
   const { active, chainId } = useWeb3React()
   const {
     fetchTokenPriceUSD,
     setTokenBalance,
+    setTokenConversionRate,
     keep: keepData,
     nu: nuData,
     t: tData,
   } = useReduxToken()
 
+  //
+  // SET T CONVERSION RATE FOR KEEP, NU
+  //
+  React.useEffect(() => {
+    setTokenConversionRate(Token.Nu, nuConversion)
+    setTokenConversionRate(Token.Keep, keepConversion)
+  }, [nuConversion, keepConversion])
+
+  //
+  // SET USD PRICE
+  //
   React.useEffect(() => {
     for (const token in Token) {
       // TODO: how to calculate T token price in USD.
@@ -46,6 +62,9 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     }
   }, [])
 
+  //
+  // FETCH BALANCES ON WALLET LOAD OR NETWORK SWITCH
+  //
   React.useEffect(() => {
     if (active) {
       keep.fetchKeepBalance()

@@ -5,7 +5,7 @@ import Icon from "../enums/icon"
 
 export interface ReduxTokenInfo {
   loading: boolean
-  conversionRate: number
+  conversionRate: number | string
   text: string
   icon: Icon
   balance: number | string
@@ -17,6 +17,11 @@ export interface ReduxTokenInfo {
 export interface SetTokenBalanceActionPayload {
   token: Token
   balance: number | string
+}
+
+export interface SetTokenConversionRateActionPayload {
+  token: Token
+  conversionRate: string | number
 }
 
 export interface SetTokenLoadingActionPayload {
@@ -32,7 +37,14 @@ export interface SetTokenLoading {
   payload: SetTokenLoadingActionPayload
 }
 
-export type TokenActionTypes = SetTokenBalance | SetTokenLoading
+export interface SetTokenConversionRate {
+  payload: SetTokenConversionRateActionPayload
+}
+
+export type TokenActionTypes =
+  | SetTokenBalance
+  | SetTokenLoading
+  | SetTokenConversionRate
 
 export interface UseReduxToken {
   (): {
@@ -42,6 +54,10 @@ export interface UseReduxToken {
     setTokenBalance: (
       token: Token,
       balance: number | string
+    ) => TokenActionTypes
+    setTokenConversionRate: (
+      token: Token,
+      conversionRate: number | string
     ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void

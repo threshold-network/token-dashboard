@@ -18,5 +18,5 @@ export const formatFiatCurrencyAmount = (
   format = "0,00",
   currencySymbol = "$"
 ) => {
-  return formatNumeral(formatUnits(amount), `${currencySymbol}${format}`)
+  return formatNumeral(amount, `${currencySymbol}${format}`)
 }

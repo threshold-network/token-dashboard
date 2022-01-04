@@ -7,20 +7,20 @@ import { usePrevious } from "@chakra-ui/react"
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
 export const useVendingMachineRatio = (token: UpgredableToken) => {
-  const contract = useVendingMachineContract(token)
-  const prevAddress = usePrevious(contract?.address)
+  const vendingMachine = useVendingMachineContract(token)
+  const prevAddress = usePrevious(vendingMachine?.address)
 
   const [ratio, setRatio] = useLocalStorage(
-    contract?.address ? `${contract.address}-ratio` : null,
+    vendingMachine?.address ? `${vendingMachine.address}-ratio` : null,
     ""
   )
 
   useEffect(() => {
-    if (ratio || !contract || !prevAddress) {
+    if (ratio || !vendingMachine || !prevAddress) {
       return
     }
 
-    contract
+    vendingMachine
       .ratio()
       .then((value: any) => {
         setRatio(value.toString())
@@ -28,7 +28,7 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
       .catch((error: any) => {
         console.log("error", error)
       })
-  }, [ratio, setRatio, contract, prevAddress])
+  }, [ratio, setRatio, vendingMachine, prevAddress])
 
   return ratio
 }

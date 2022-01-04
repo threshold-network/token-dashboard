@@ -18,7 +18,7 @@ const UpgradeBanner: FC = () => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
   const heroText =
-    "Have KEEP or NuCircleBrand tokens? Upgrade them to T and harness the power of ThresholdCircleBrand."
+    "Have KEEP or Nu tokens? Upgrade them to T and harness the power of Threshold."
 
   const isMobile = useChakraBreakpoint("md")
 
