@@ -8,6 +8,7 @@ import { CoingeckoID, Token } from "../../enums/token"
 import {
   ReduxTokenInfo,
   SetTokenBalanceActionPayload,
+  SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import Icon from "../../enums/icon"
@@ -73,6 +74,18 @@ export const tokenSlice = createSlice({
         state[token].usdConversion
       )
     },
+    setTokenConversionRate: (
+      state,
+      action: PayloadAction<SetTokenConversionRateActionPayload>
+    ) => {
+      const { token, conversionRate } = action.payload
+
+      const formattedConversionRate = numeral(
+        +conversionRate / 10 ** 15
+      ).format("0.0000")
+
+      state[token].conversionRate = formattedConversionRate
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTokenPriceUSD.fulfilled, (state, action) => {
@@ -98,4 +111,5 @@ const getUsdBalance = (
   ).format("$0,0.00")
 }
 
-export const { setTokenBalance, setTokenLoading } = tokenSlice.actions
+export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
+  tokenSlice.actions

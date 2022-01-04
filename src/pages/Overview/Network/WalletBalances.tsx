@@ -11,7 +11,7 @@ import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
 import CardTemplate from "./CardTemplate"
-import { Body2, Body3, H3 } from "../../../components/Typography"
+import { Body2, Body3 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import { useReduxToken } from "../../../hooks/useReduxToken"
@@ -20,13 +20,13 @@ import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { Token } from "../../../enums"
-import { formatNumeral, formatTokenAmount } from "../../../utils/formatAmount"
+import { formatTokenAmount } from "../../../utils/formatAmount"
 
 const BalanceStat: FC<{
   balance: string | number
   icon: IconEnum
   text: string
-  conversionRate?: number
+  conversionRate?: number | string
   tokenDecimals?: number
 }> = ({ balance, icon, text, conversionRate, tokenDecimals }) => {
   return (
@@ -108,7 +108,7 @@ const WalletBalances: FC = () => {
           tokenDecimals={keep.decimals}
         />
         <BalanceStat
-          conversionRate={8.26}
+          conversionRate={nu.conversionRate}
           balance={nu.balance}
           icon={nu.icon}
           text={nu.text}
@@ -124,7 +124,7 @@ const WalletBalances: FC = () => {
         borderRadius="md"
       >
         <Icon as={t.icon} boxSize="32px" />
-        <H3>{formatNumeral(conversionToTAmount)}</H3>
+        <TokenBalance tokenAmount={conversionToTAmount} />
       </HStack>
 
       <Button
@@ -142,6 +142,9 @@ const WalletBalances: FC = () => {
         <Link
           color={useColorModeValue("brand.500", "white")}
           textDecoration="underline"
+          rel="noopener noreferrer"
+          target="_blank"
+          href="https://github.com/threshold-network/solidity-contracts/blob/main/docs/rfc-2-vending-machine.adoc"
         >
           Read More
         </Link>{" "}
