@@ -3,6 +3,7 @@ export enum TransactionType {
   ApproveNu = "APPROVE_NU",
   UpgradeKeep = "UPGRADE_KEEP",
   UpgradeNu = "UPGRADE_NU",
+  ApproveT = "APPROVE_T",
 }
 
 export enum TransactionStatus {

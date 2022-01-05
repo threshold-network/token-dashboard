@@ -14,7 +14,7 @@ import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
 const MobileSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
   const { isOpen, closeSidebar } = useSidebar()
-  const breakpoint = useChakraBreakpoint("sm")
+  const breakpoint = useChakraBreakpoint("md")
 
   return (
     <Drawer
