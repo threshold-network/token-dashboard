@@ -11,6 +11,22 @@ const store = configureStore({
     sidebar: sidebarSlice.reducer,
     transaction: transactionSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: ["modal/updateProps", "modal/openModal"],
+        // Ignore these field paths in all actions
+        ignoredPaths: [
+          "modal.props.setOperator",
+          "modal.props.setBeneficiary",
+          "modal.props.setAuthorizer",
+          "modal.props.onSubmit",
+          "modal.props.setAmountToStake",
+          "payload.props.setAmountToStake",
+        ],
+      },
+    }),
 })
 
 export type RootState = ReturnType<typeof store.getState>

@@ -3,6 +3,7 @@ import { UseModal } from "../types"
 import {
   openModal as openModalAction,
   closeModal as closeModalAction,
+  updateProps as updatePropsAction,
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
@@ -17,10 +18,13 @@ export const useModal: UseModal = () => {
 
   const closeModal = () => dispatch(closeModalAction())
 
+  const updateProps = (newProps: any) => dispatch(updatePropsAction(newProps))
+
   return {
     modalType,
     modalProps,
     openModal,
     closeModal,
+    updateProps,
   }
 }

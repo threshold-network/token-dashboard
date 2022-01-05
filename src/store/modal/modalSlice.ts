@@ -15,7 +15,13 @@ export const modalSlice = createSlice({
       state.modalType = null
       state.props = {}
     },
+    updateProps: (state, action) => {
+      state.props = {
+        ...state.props,
+        ...action.payload,
+      }
+    },
   },
 })
 
-export const { openModal, closeModal } = modalSlice.actions
+export const { openModal, closeModal, updateProps } = modalSlice.actions
