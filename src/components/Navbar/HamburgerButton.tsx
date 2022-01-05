@@ -4,7 +4,7 @@ import { HamburgerIcon } from "@chakra-ui/icons"
 import { useSidebar } from "../../hooks/useSidebar"
 
 const HamburgerButton: FC<Omit<IconButtonProps, "aria-label">> = (props) => {
-  const { openSidebar, closeSidebar } = useSidebar()
+  const { openSidebar } = useSidebar()
   return (
     <IconButton
       onClick={openSidebar}

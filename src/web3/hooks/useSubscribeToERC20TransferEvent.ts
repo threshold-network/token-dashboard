@@ -16,6 +16,7 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
   // @ts-ignore
   useSubscribeToContractEvent(contract, "Transfer", (from, to, amount) => {
     console.log(`Recived ${token}.Transfer event`, from, to, amount.toString())
+
     if (isSameETHAddress(to, account!)) {
       setTokenBalance(
         token,

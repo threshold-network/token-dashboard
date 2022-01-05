@@ -24,7 +24,7 @@ import withBaseModal from "../withBaseModal"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
-  error: string
+  error: Error
   isExpandableError?: boolean
 }
 
@@ -36,7 +36,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
 }) => {
   const { isOpen, onToggle } = useDisclosure()
 
-  const errorTitle = "Error Text"
+  const errorTitle = error?.name || "Error"
 
   return (
     <>
@@ -81,13 +81,13 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                     </Body3>
                   </HStack>
                 ) : (
-                  error
+                  error.message
                 )}
               </AlertTitle>
             </HStack>
             {isOpen && (
               <AlertDescription>
-                <Body3>{error}</Body3>
+                <Body3>{error?.stack?.toString()}</Body3>
                 <Link
                   textDecoration="underline"
                   bold="md"

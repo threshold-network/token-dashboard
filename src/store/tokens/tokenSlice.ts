@@ -8,9 +8,11 @@ import { CoingeckoID, Token } from "../../enums/token"
 import {
   ReduxTokenInfo,
   SetTokenBalanceActionPayload,
+  SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
+import Icon from "../../enums/icon"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -27,18 +29,27 @@ export const tokenSlice = createSlice({
     [Token.Keep]: {
       loading: false,
       balance: 0,
+      conversionRate: 4.87,
+      text: Token.Keep,
+      icon: Icon.KeepCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },
     [Token.Nu]: {
       loading: false,
       balance: 0,
+      conversionRate: 2.66,
+      text: Token.Nu,
+      icon: Icon.NuCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },
     [Token.T]: {
       loading: false,
       balance: 0,
+      conversionRate: 1,
+      text: Token.T,
+      icon: Icon.TCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
     },
@@ -67,6 +78,18 @@ export const tokenSlice = createSlice({
         state[token].usdConversion
       )
     },
+    setTokenConversionRate: (
+      state,
+      action: PayloadAction<SetTokenConversionRateActionPayload>
+    ) => {
+      const { token, conversionRate } = action.payload
+
+      const formattedConversionRate = numeral(
+        +conversionRate / 10 ** 15
+      ).format("0.0000")
+
+      state[token].conversionRate = formattedConversionRate
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTokenPriceUSD.fulfilled, (state, action) => {
@@ -92,4 +115,5 @@ const getUsdBalance = (
   ).format("$0,0.00")
 }
 
-export const { setTokenBalance, setTokenLoading } = tokenSlice.actions
+export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
+  tokenSlice.actions

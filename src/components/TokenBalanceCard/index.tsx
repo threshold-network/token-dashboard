@@ -2,8 +2,8 @@ import { FC } from "react"
 import { useReduxToken } from "../../hooks/useReduxToken"
 import { Token } from "../../enums"
 import TokenBalanceCardTemplate from "./TokenBalanceCardTemplate"
-import Keep from "../../static/icons/Keep"
-import Nu from "../../static/icons/Nu"
+import KeepCircleBrand from "../../static/icons/KeepCircleBrand"
+import NuCircleBrand from "../../static/icons/NuCircleBrand"
 import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
 
@@ -12,8 +12,8 @@ export interface TokenBalanceCardProps {
 }
 
 const tokenToIconMap = {
-  [Token.Keep]: Keep,
-  [Token.Nu]: Nu,
+  [Token.Keep]: KeepCircleBrand,
+  [Token.Nu]: NuCircleBrand,
   [Token.T]: T,
 }
 
