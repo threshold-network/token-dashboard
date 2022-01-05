@@ -18,6 +18,10 @@ export const transactionSlice = createSlice({
       token: Token.Nu,
       status: TransactionStatus.Idle,
     },
+    [TransactionType.ApproveT]: {
+      token: Token.T,
+      status: TransactionStatus.Idle,
+    },
     [TransactionType.UpgradeKeep]: {
       token: Token.Keep,
       status: TransactionStatus.Idle,

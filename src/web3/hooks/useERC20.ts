@@ -9,6 +9,7 @@ import { Approve, UseErc20Interface } from "../../types/token"
 import { useTransaction } from "../../hooks/useTransaction"
 import { TransactionStatus } from "../../enums/transactionType"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
+import { once } from "@storybook/node-logger"
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
@@ -25,13 +26,16 @@ export const useErc20TokenContract: UseErc20Interface = (
 
   const approve: Approve = useCallback(
     async (transactionType) => {
+      console.log("attemping to approve T")
       if (account) {
         try {
           setTransactionStatus(transactionType, TransactionStatus.PendingWallet)
+          console.log("set the tx type to pending wallet")
           const tx = await contract?.approve(
             tokenAddress,
             MaxUint256.toString()
           )
+          console.log("got the tx", tx)
           setTransactionStatus(
             transactionType,
             TransactionStatus.PendingOnChain
@@ -56,9 +60,12 @@ export const useErc20TokenContract: UseErc20Interface = (
       if (account) {
         try {
           setTokenLoading(token, true)
+          console.log("using ", contract)
           const balance = await contract?.balanceOf(account as string)
+          console.log("got the token balance", balance)
           // TODO do not hard code decimals
           // const balance = rawWalletBalance / 10 ** 18
+
           setTokenBalance(token, balance.toString())
           setTokenLoading(token, false)
         } catch (error) {
