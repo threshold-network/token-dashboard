@@ -26,12 +26,13 @@ import Navbar from "./components/Navbar"
 import Overview from "./pages/Overview"
 import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
 import Upgrade from "./pages/Upgrade"
-import Portfolio from "./pages/Portfolio"
+import Staking from "./pages/Staking"
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
 import { useModal } from "./hooks/useModal"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
+import { useTStakingContract } from "./web3/hooks/useTStakingContract"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -48,6 +49,7 @@ const useSubscribeToVendingMachineContractEvents = () => {
   const { openModal } = useModal()
   const keepVendingMachine = useVendingMachineContract(Token.Keep)
   const nuVendingMachine = useVendingMachineContract(Token.Nu)
+  const tStaking = useTStakingContract()
 
   const onEvent = (
     token: UpgredableToken,
@@ -81,6 +83,22 @@ const useSubscribeToVendingMachineContractEvents = () => {
     },
     [account as string]
   )
+
+  useSubscribeToContractEvent(
+    tStaking,
+    "OperatorStaked",
+    // @ts-ignore
+    (recipient, wrappedTokenAmount, tTokenAmount, event) => {
+      console.log(
+        "operator staked event",
+        recipient,
+        wrappedTokenAmount,
+        tTokenAmount,
+        event
+      )
+    },
+    [account as string]
+  )
 }
 
 const AppBody = () => {
@@ -105,8 +123,8 @@ const AppBody = () => {
             <Route path="/upgrade">
               <Redirect to="/upgrade/keep" />
             </Route>
-            <Route path="/portfolio">
-              <Portfolio />
+            <Route path="/staking">
+              <Staking />
             </Route>
           </Switch>
         </Container>

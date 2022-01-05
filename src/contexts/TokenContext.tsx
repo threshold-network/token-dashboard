@@ -27,11 +27,9 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const keep = useKeep()
   const nu = useNu()
   const t = useT()
-
   const nuConversion = useVendingMachineRatio(Token.Nu)
   const keepConversion = useVendingMachineRatio(Token.Keep)
-
-  const { active, chainId } = useWeb3React()
+  const { active, chainId, account } = useWeb3React()
   const {
     fetchTokenPriceUSD,
     setTokenBalance,
@@ -79,7 +77,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
         }
       }
     }
-  }, [active, chainId])
+  }, [active, chainId, account])
 
   return (
     <TokenContext.Provider

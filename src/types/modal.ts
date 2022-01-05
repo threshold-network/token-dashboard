@@ -10,6 +10,8 @@ import {
   TransactionIsWaitingForConfirmation,
   TransactionFailed,
 } from "../components/Modal/TransactionModal"
+import StakingSuccessModal from "../components/Modal/Staking"
+import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -19,6 +21,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TransactionFailed]: TransactionFailed,
   [ModalType.UpgradeToT]: UpgradeToT,
   [ModalType.UpgradedToT]: UpgradeToTSuccess,
+  [ModalType.ConfirmStakingParams]: ConfirmStakingParams,
+  [ModalType.StakeSuccess]: StakingSuccessModal,
 }
 
 export interface BaseModalProps {

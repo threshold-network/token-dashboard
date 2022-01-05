@@ -4,6 +4,8 @@ import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
 import { Contract } from "@ethersproject/contracts"
 
+console.log("KEEP NPM: ", KeepToken)
+
 // The artifacts from `@keep-network/keep-core` for a given build only support a
 // single network id.
 const networks = Object.keys(KeepToken.networks) as Array<

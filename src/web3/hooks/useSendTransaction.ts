@@ -16,11 +16,13 @@ export const useSendTransaction = (contract: Contract, methodName: string) => {
   const sendTransaction = useCallback(
     async (...args) => {
       if (!account) {
+        console.log("no account!")
         // Maybe we should do something here?
         return
       }
 
       try {
+        console.log("attemping the transaction")
         contract.connect(getSigner(library, account))
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
@@ -33,12 +35,13 @@ export const useSendTransaction = (contract: Contract, methodName: string) => {
         // dapp catches an event. We should close modals by id to avoid race
         // between close and open action.
         setTransactionStatus(TransactionStatus.Succeeded)
+        console.log("succccccess")
       } catch (error: any) {
         openModal(ModalType.TransactionFailed, {
           transactionHash: error?.transaction?.hash,
           error,
           // TODO: how to check if an error is expandable?
-          // isExpandableError,
+          isExpandableError: true,
         })
         setTransactionStatus(
           isWalletRejectionError(error)

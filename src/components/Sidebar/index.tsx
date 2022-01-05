@@ -29,10 +29,10 @@ const Sidebar = () => {
         href: "/upgrade",
       },
       {
-        text: "Portfolio",
+        text: "Staking",
         activeIcon: IoBarChartSharp,
         passiveIcon: IoChartOutlineSharp,
-        href: "/portfolio",
+        href: "/staking",
       },
     ],
     [pathname]
