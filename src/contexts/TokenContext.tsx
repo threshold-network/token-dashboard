@@ -9,14 +9,19 @@ import { useTokensBalanceCall } from "../hooks/useTokensBalanceCall"
 import { Token } from "../enums"
 import { ReduxTokenInfo } from "../types"
 import { useTBTCTokenContract } from "../web3/hooks"
+import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
+
+interface TokenContextState extends ReduxTokenInfo {
+  contract: Contract | null
+}
 
 export const TokenContext = createContext<{
-  [key in Token]: { contract: Contract | null } & ReduxTokenInfo
+  [key in Token]: TokenContextState
 }>({
-  [Token.Keep]: {} as any,
-  [Token.Nu]: {} as any,
-  [Token.T]: {} as any,
-  [Token.TBTC]: {} as any,
+  [Token.Keep]: {} as TokenContextState,
+  [Token.Nu]: {} as TokenContextState,
+  [Token.T]: {} as TokenContextState,
+  [Token.TBTC]: {} as TokenContextState,
 })
 
 // Context that handles data fetching when a user connects their wallet or
@@ -27,9 +32,14 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const t = useT()
   const tbtc = useTBTCTokenContract()
   const { active, chainId, account } = useWeb3React()
+
+  const nuConversion = useVendingMachineRatio(Token.Nu)
+  const keepConversion = useVendingMachineRatio(Token.Keep)
+
   const {
     fetchTokenPriceUSD,
     setTokenBalance,
+    setTokenConversionRate,
     keep: keepData,
     nu: nuData,
     t: tData,
@@ -41,6 +51,17 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     account!
   )
 
+  //
+  // SET T CONVERSION RATE FOR KEEP, NU
+  //
+  React.useEffect(() => {
+    setTokenConversionRate(Token.Nu, nuConversion)
+    setTokenConversionRate(Token.Keep, keepConversion)
+  }, [nuConversion, keepConversion])
+
+  //
+  // SET USD PRICE
+  //
   React.useEffect(() => {
     for (const token in Token) {
       // TODO: how to calculate T token price in USD.
@@ -51,6 +72,9 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     }
   }, [])
 
+  //
+  // FETCH BALANCES ON WALLET LOAD OR NETWORK SWITCH
+  //
   React.useEffect(() => {
     if (active) {
       fetchBalances().then(([keepBalance, nuBalance, tBalance]) => {

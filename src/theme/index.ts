@@ -4,6 +4,7 @@ import { Badge } from "./Badge"
 import { Alert } from "./Alert"
 import { Divider } from "./Divider"
 import { Card } from "./Card"
+import { Progress } from "./Progress"
 
 const colors = {
   brand: {
@@ -62,6 +63,7 @@ const index = extendTheme({
     Badge,
     Card,
     Divider,
+    Progress,
   },
 })
 

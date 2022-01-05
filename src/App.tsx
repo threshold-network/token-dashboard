@@ -1,6 +1,11 @@
 import "focus-visible/dist/focus-visible"
 import { FC } from "react"
-import { Box, ChakraProvider, Container } from "@chakra-ui/react"
+import {
+  Box,
+  ChakraProvider,
+  Container,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { Provider as ReduxProvider } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import {
@@ -18,9 +23,10 @@ import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
+import Overview from "./pages/Overview"
+import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
 import Upgrade from "./pages/Upgrade"
 import Portfolio from "./pages/Portfolio"
-import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
 import { useModal } from "./hooks/useModal"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
@@ -36,6 +42,7 @@ const Web3EventHandlerComponent = () => {
   return <></>
 }
 
+// TODO: Let's move this to its own hook like useKeep, useT, etc
 const useSubscribeToVendingMachineContractEvents = () => {
   const { account } = useWeb3React()
   const { openModal } = useModal()
@@ -76,6 +83,38 @@ const useSubscribeToVendingMachineContractEvents = () => {
   )
 }
 
+const AppBody = () => {
+  return (
+    <Box display="flex">
+      <Sidebar />
+      <Box
+        // 100% - 80px is to account for the sidebar
+        w={{ base: "100%", md: "calc(100% - 80px)" }}
+        bg={useColorModeValue("transparent", "gray.900")}
+      >
+        <Navbar />
+        <Container as="main" mt="12" maxW="6xl" data-cy="app-container" pb={8}>
+          <Switch>
+            <Redirect from="/" to="/overview" exact />
+            <Route path="/overview">
+              <Overview />
+            </Route>
+            <Route path="/upgrade/:token">
+              <Upgrade />
+            </Route>
+            <Route path="/upgrade">
+              <Redirect to="/upgrade/keep" />
+            </Route>
+            <Route path="/portfolio">
+              <Portfolio />
+            </Route>
+          </Switch>
+        </Container>
+      </Box>
+    </Box>
+  )
+}
+
 const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
@@ -85,30 +124,7 @@ const App: FC = () => {
             <TokenContextProvider>
               <Web3EventHandlerComponent />
               <ModalRoot />
-              <Box display="flex">
-                <Sidebar />
-                <Box w="100%">
-                  <Navbar />
-                  <Container
-                    as="main"
-                    mt="12"
-                    maxW="6xl"
-                    data-cy="app-container"
-                  >
-                    <Switch>
-                      <Route path="/upgrade/:token">
-                        <Upgrade />
-                      </Route>
-                      <Route path="/upgrade">
-                        <Redirect to="/upgrade/keep" />
-                      </Route>
-                      <Route path="/portfolio">
-                        <Portfolio />
-                      </Route>
-                    </Switch>
-                  </Container>
-                </Box>
-              </Box>
+              <AppBody />
             </TokenContextProvider>
           </ChakraProvider>
         </ReduxProvider>

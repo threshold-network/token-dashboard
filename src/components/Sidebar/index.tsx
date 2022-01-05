@@ -1,9 +1,7 @@
 import { NavItemDetail } from "./NavItem"
 import {
   IoBarChartSharp,
-  IoBarChartOutline,
   IoHomeSharp,
-  IoHomeOutline,
   IoSwapHorizontalSharp,
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
@@ -20,21 +18,21 @@ const Sidebar = () => {
     () => [
       {
         text: "Overview",
-        icon: pathname === "/" ? IoHomeSharp : IoHomeOutlineSharp,
-        href: "/",
-        isActive: pathname === "/",
+        activeIcon: IoHomeSharp,
+        passiveIcon: IoHomeOutlineSharp,
+        href: "/overview",
       },
       {
         text: "Upgrade",
-        icon: IoSwapHorizontalSharp,
+        activeIcon: IoSwapHorizontalSharp,
+        passiveIcon: IoSwapHorizontalSharp,
         href: "/upgrade",
-        isActive: pathname === "/upgrade",
       },
       {
         text: "Portfolio",
-        icon: pathname === "/portfolio" ? IoBarChartSharp : IoChartOutlineSharp,
+        activeIcon: IoBarChartSharp,
+        passiveIcon: IoChartOutlineSharp,
         href: "/portfolio",
-        isActive: pathname === "/portfolio",
       },
     ],
     [pathname]

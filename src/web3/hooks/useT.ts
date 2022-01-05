@@ -1,7 +1,7 @@
 import T from "@threshold-network/solidity-contracts/artifacts/T.json"
 import { Contract } from "@ethersproject/contracts"
 import { useErc20TokenContract } from "./useERC20"
-import { Token } from "../../enums"
+import { Token, TransactionType } from "../../enums"
 
 export interface UseT {
   (): {
@@ -19,7 +19,7 @@ export const useT: UseT = () => {
   )
 
   const approveT = () => {
-    // approve(TransactionType.ApproveNu)
+    approve(TransactionType.ApproveT)
   }
 
   const fetchTBalance = () => {
@@ -27,8 +27,8 @@ export const useT: UseT = () => {
   }
 
   return {
-    fetchTBalance,
     approveT,
+    fetchTBalance,
     contract,
   }
 }

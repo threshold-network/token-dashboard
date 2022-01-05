@@ -34,9 +34,9 @@ const FooterItem: FC<{ href: string; icon: any; text: string }> = ({
 
 const SidebarFooter = () => {
   const { isOpen } = useSidebar()
-  const isMobile = useChakraBreakpoint("sm")
+  const isMobile = useChakraBreakpoint("md")
   return (
-    <Box>
+    <Box as="footer">
       <Divider w="auto" marginX={isOpen ? "18px !important" : "8px"} />
       {isMobile ? (
         <Box p={8}>
@@ -61,13 +61,15 @@ const SidebarFooter = () => {
           <NavItem
             isFooter
             text="Github"
-            icon={BsGithub}
+            activeIcon={BsGithub}
+            passiveIcon={BsGithub}
             href={ExternalLink.THRESHOLD_GITHUB}
           />
           <NavItem
             isFooter
             text="Discord"
-            icon={BsDiscord}
+            activeIcon={BsDiscord}
+            passiveIcon={BsDiscord}
             href={ExternalLink.THRESHOLD_DISCORD}
           />
         </>

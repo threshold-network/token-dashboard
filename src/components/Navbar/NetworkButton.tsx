@@ -57,7 +57,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
         as={Button}
         display={{
           base: "inherit",
-          sm: "none",
+          md: "none",
         }}
         _hover={{
           bg: useColorModeValue("transparent", networkIcon.bg),
@@ -82,7 +82,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
           bg: "transparent",
         }}
         leftIcon={networkIcon.icon}
-        display={{ base: "none", sm: "inherit" }}
+        display={{ base: "none", md: "inherit" }}
       >
         {chainIdToNetworkName(chainId)}
       </Button>
