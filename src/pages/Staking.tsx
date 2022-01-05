@@ -1,58 +1,68 @@
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useMemo, useState } from "react"
 import { Button, HStack, Stack } from "@chakra-ui/react"
 import { useModal } from "../hooks/useModal"
-import { ModalType, TransactionStatus } from "../enums"
+import { ModalType } from "../enums"
 import { useReduxToken } from "../hooks/useReduxToken"
 import { useWeb3React } from "@web3-react/core"
 import { useApproveTStaking } from "../web3/hooks/useApproveTStaking"
 import { useStakeTransaction } from "../web3/hooks/useStakeTransaction"
 
 const StakingPage: FC = () => {
-  const { openModal } = useModal()
+  const { openModal, updateProps } = useModal()
   const { t } = useReduxToken()
   const { account } = useWeb3React()
-
-  const { approveTStaking, status: approvalStatus } = useApproveTStaking()
-  const { stake, status: stakingStatus } = useStakeTransaction()
-
-  useEffect(() => {
-    if (approvalStatus === TransactionStatus.Succeeded) {
-      onApprovalSuccess()
-    }
-  }, [approvalStatus])
-
-  useEffect(() => {
-    if (stakingStatus === TransactionStatus.Succeeded) {
-      onStakingSuccess()
-    }
-  }, [stakingStatus])
-
   const [amountToStake, setAmountToStake] = useState(0)
+  const [operator, setOperator] = useState(account)
+  const [beneficiary, setBeneficiary] = useState(account)
+  const [authorizer, setAuthorizer] = useState(account)
   const maxAmount = t.balance
 
-  const onStakingParamSubmit = () => {
-    approveTStaking()
-  }
+  const onApprovalSuccess = useMemo(
+    () => () => stake(operator, beneficiary, authorizer, amountToStake),
+    [operator, beneficiary, authorizer, amountToStake]
+  )
 
-  const onApprovalSuccess = async () => {
-    stake(
-      "0x3a16F944293Dc0C509948351bCcb2D149844aFf3",
-      account,
-      account,
-      "100000000000000000000"
-    )
-  }
+  const { approveTStaking } = useApproveTStaking(onApprovalSuccess)
+  const { stake } = useStakeTransaction(() => openModal(ModalType.StakeSuccess))
 
-  const onStakingSuccess = () => {
-    openModal(ModalType.StakeSuccess)
-  }
+  useEffect(() => {
+    updateProps({
+      amountToStake,
+      setAmountToStake,
+      operator,
+      setOperator,
+      beneficiary,
+      setBeneficiary,
+      authorizer,
+      setAuthorizer,
+      maxAmount,
+      onSubmit: approveTStaking,
+    })
+  }, [
+    amountToStake,
+    setAmountToStake,
+    operator,
+    setOperator,
+    beneficiary,
+    setBeneficiary,
+    authorizer,
+    setAuthorizer,
+    maxAmount,
+    approveTStaking,
+  ])
 
   const initStakingTransaction = async () => {
     openModal(ModalType.ConfirmStakingParams, {
       amountToStake,
       setAmountToStake,
+      operator,
+      setOperator,
+      beneficiary,
+      setBeneficiary,
+      authorizer,
+      setAuthorizer,
       maxAmount,
-      onSubmit: onStakingParamSubmit,
+      onSubmit: approveTStaking,
     })
   }
 

@@ -20,20 +20,35 @@ import tIcon from "../../../static/icons/ThresholdPurple"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
+import { set } from "husky"
 
 interface StakingModalProps extends BaseModalProps {
   amountToStake: number
   setAmountToStake: (amount: number | string) => void
   maxAmount: number
   onSubmit: () => void
+  operator: string
+  setOperator: (val: string) => void
+  beneficiary: string
+  setBeneficiary: (val: string) => void
+  authorizer: string
+  setAuthorizer: (val: string) => void
 }
 
-const StakingModal: FC<StakingModalProps> = ({
-  amountToStake,
-  setAmountToStake,
-  maxAmount,
-  onSubmit,
-}) => {
+const StakingModal: FC<StakingModalProps> = (props) => {
+  console.log("hi hi hi", props)
+  const {
+    amountToStake,
+    setAmountToStake,
+    maxAmount,
+    onSubmit,
+    operator,
+    setOperator,
+    beneficiary,
+    setBeneficiary,
+    authorizer,
+    setAuthorizer,
+  } = props
   const { closeModal } = useModal()
 
   return (
@@ -64,7 +79,10 @@ const StakingModal: FC<StakingModalProps> = ({
           <Divider />
           <FormControl>
             <FormLabel>Operator Address</FormLabel>
-            <Input />
+            <Input
+              value={operator}
+              onChange={(e) => setOperator(e.target.value)}
+            />
             <FormHelperText>
               If you are using a staking provider, this will be their provided
               address.
@@ -72,12 +90,18 @@ const StakingModal: FC<StakingModalProps> = ({
           </FormControl>
           <FormControl>
             <FormLabel>Beneficiary Address</FormLabel>
-            <Input />
+            <Input
+              value={beneficiary}
+              onChange={(e) => setBeneficiary(e.target.value)}
+            />
             <FormHelperText>This address will receive rewards</FormHelperText>
           </FormControl>
           <FormControl>
             <FormLabel>Authorizer Address</FormLabel>
-            <Input />
+            <Input
+              value={authorizer}
+              onChange={(e) => setAuthorizer(e.target.value)}
+            />
             <FormHelperText>
               This address will authorize applications.
             </FormHelperText>

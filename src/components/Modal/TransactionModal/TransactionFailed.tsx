@@ -76,6 +76,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                       ml={4}
                       textDecoration="underline"
                       cursor="pointer"
+                      minW="80px"
                     >
                       Show {isOpen ? "Less" : "More"}
                     </Body3>
