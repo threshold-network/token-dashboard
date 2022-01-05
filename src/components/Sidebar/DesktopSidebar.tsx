@@ -11,10 +11,10 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
 
   return (
     <Box
-      h="100vh"
-      display={{ base: "none", sm: "flex" }}
+      as="nav"
+      display={{ base: "none", md: "flex" }}
       flexDirection="column"
-      width={isOpen ? "285px" : "90px"}
+      width={isOpen ? "208px" : "90px"}
       transition="width 0.3s"
       position="relative"
       borderRight="1px solid"

@@ -3,6 +3,7 @@ import {
   setTokenBalance as setTokenBalanceAction,
   setTokenLoading as setTokenLoadingAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
+  setTokenConversionRate as setTokenConversionRateAction,
 } from "../store/tokens"
 import { RootState } from "../store"
 import { Token } from "../enums"
@@ -14,6 +15,11 @@ export const useReduxToken: UseReduxToken = () => {
   const t = useSelector((state: RootState) => state.token[Token.T])
 
   const dispatch = useDispatch()
+
+  const setTokenConversionRate = (
+    token: Token,
+    conversionRate: number | string
+  ) => dispatch(setTokenConversionRateAction({ token, conversionRate }))
 
   const setTokenBalance = (token: Token, balance: number | string) =>
     dispatch(setTokenBalanceAction({ token, balance }))
@@ -31,5 +37,6 @@ export const useReduxToken: UseReduxToken = () => {
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
+    setTokenConversionRate,
   }
 }

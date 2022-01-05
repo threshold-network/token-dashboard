@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-const Nu = createIcon({
-  displayName: "Nu",
+const NuCircleBrand = createIcon({
+  displayName: "NuCircleBrand",
   viewBox: "0 0 32 32",
   path: (
     <svg
@@ -20,4 +20,4 @@ const Nu = createIcon({
   ),
 })
 
-export default Nu
+export default NuCircleBrand

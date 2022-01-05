@@ -31,12 +31,12 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   openWalletModal,
   deactivate,
 }) => {
-  const isMobile = useChakraBreakpoint("sm")
+  const isMobile = useChakraBreakpoint("md")
   return (
     <Box
       py={4}
-      px={{ base: 0, sm: 4 }}
-      borderBottom={{ base: "1px", sm: "none" }}
+      px={{ base: 0, md: 4 }}
+      borderBottom={{ base: "1px", md: "none" }}
       borderColor="gray.100"
     >
       <Container
@@ -46,7 +46,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         position="relative"
       >
         <Flex>
-          <HamburgerButton display={{ base: "block", sm: "none" }} />
+          <HamburgerButton display={{ base: "block", md: "none" }} />
           {isMobile && (
             <Link to="/">
               <IconButton

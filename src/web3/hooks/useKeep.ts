@@ -2,6 +2,7 @@ import KeepToken from "@keep-network/keep-core/artifacts/KeepToken.json"
 import { useErc20TokenContract } from "./useERC20"
 import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
+import { Contract } from "@ethersproject/contracts"
 
 // The artifacts from `@keep-network/keep-core` for a given build only support a
 // single network id.
@@ -18,12 +19,11 @@ export interface UseKeep {
   (): {
     approveKeep: () => void
     fetchKeepBalance: () => void
+    contract: Contract | null
   }
 }
 
-export const useKeep = () => {
-  // const { chainId } = useWeb3React()
-
+export const useKeep: UseKeep = () => {
   const { balanceOf, approve, contract } = useErc20TokenContract(
     KEEP_TOKEN_ADDRESS as string,
     undefined,
