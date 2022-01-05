@@ -3869,6 +3869,46 @@
   resolved "https://registry.npmjs.org/@solidity-parser/parser/-/parser-0.8.2.tgz#a6a5e93ac8dca6884a99a532f133beba59b87b69"
   integrity sha512-8LySx3qrNXPgB5JiULfG10O3V7QTxI/TLzSw5hFQhXWSkVxZBAv4rZQ0sYgLEbc8g3L2lmnujj1hKul38Eu5NQ==
 
+"@stablelib/binary@^0.7.2":
+  version "0.7.2"
+  resolved "https://registry.npmjs.org/@stablelib/binary/-/binary-0.7.2.tgz#1b3392170c8a8741c8b8f843ea294de71aeb2cf7"
+  integrity sha1-GzOSFwyKh0HIuPhD6ilN5xrrLPc=
+  dependencies:
+    "@stablelib/int" "^0.5.0"
+
+"@stablelib/blake2s@^0.10.4":
+  version "0.10.4"
+  resolved "https://registry.npmjs.org/@stablelib/blake2s/-/blake2s-0.10.4.tgz#8a708f28a9c78d4a1a9fbcc6ce8bacbda469f302"
+  integrity sha512-IasdklC7YfXXLmVbnsxqmd66+Ki+Ysbp0BtcrNxAtrGx/HRGjkUZbSTbEa7HxFhBWIstJRcE5ExgY+RCqAiULQ==
+  dependencies:
+    "@stablelib/binary" "^0.7.2"
+    "@stablelib/hash" "^0.5.0"
+    "@stablelib/wipe" "^0.5.0"
+
+"@stablelib/blake2xs@0.10.4":
+  version "0.10.4"
+  resolved "https://registry.npmjs.org/@stablelib/blake2xs/-/blake2xs-0.10.4.tgz#b3ae9e145cbf924a7f598412b586e4af24d10cb7"
+  integrity sha512-1N0S4cruso/StV9TmoujPGj3RU0Cy42wlZneBWLWby7m2ssnY57l/CsYQSm03TshOoYss4hqc5kwSy5pmWAdUA==
+  dependencies:
+    "@stablelib/blake2s" "^0.10.4"
+    "@stablelib/hash" "^0.5.0"
+    "@stablelib/wipe" "^0.5.0"
+
+"@stablelib/hash@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@stablelib/hash/-/hash-0.5.0.tgz#89fe9040a3d4383b1921c7d8a60948bc30846068"
+  integrity sha1-if6QQKPUODsZIcfYpglIvDCEYGg=
+
+"@stablelib/int@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@stablelib/int/-/int-0.5.0.tgz#cca9225951d55d2de48656755784788633660c2b"
+  integrity sha1-zKkiWVHVXS3khlZ1V4R4hjNmDCs=
+
+"@stablelib/wipe@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.npmjs.org/@stablelib/wipe/-/wipe-0.5.0.tgz#a682d5f9448e950e099e537e6f72fc960275d151"
+  integrity sha1-poLV+USOlQ4JnlN+b3L8lgJ10VE=
+
 "@storybook/addon-actions@6.4.8":
   version "6.4.8"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.4.8.tgz#1070f89d30449e0f1f2118ca1140681a20a04591"
@@ -5186,6 +5226,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/bn.js@^4.11.0", "@types/bn.js@^4.11.3", "@types/bn.js@^4.11.4", "@types/bn.js@^4.11.5":
+  version "4.11.6"
+  resolved "https://registry.npmjs.org/@types/bn.js/-/bn.js-4.11.6.tgz#c306c70d9358aaea33cd4eda092a742b9505967c"
+  integrity sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/cbor@^2.0.0":
   version "2.0.0"
   resolved "https://registry.npmjs.org/@types/cbor/-/cbor-2.0.0.tgz#c627afc2ee22f23f2337fecb34628a4f97c6afbb"
@@ -5521,6 +5568,13 @@
   version "6.9.7"
   resolved "https://registry.yarnpkg.com/@types/qs/-/qs-6.9.7.tgz#63bb7d067db107cc1e457c303bc25d511febf6cb"
   integrity sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==
+
+"@types/randombytes@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@types/randombytes/-/randombytes-2.0.0.tgz#0087ff5e60ae68023b9bc4398b406fea7ad18304"
+  integrity sha512-bz8PhAVlwN72vqefzxa14DKNT8jK/mV66CSjwdVQM/k3Th3EPKfUtdMniwZgMedQTFuywAsfjnZsg+pEnltaMA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/reach__router@^1.3.7":
   version "1.3.9"
@@ -9250,6 +9304,14 @@ create-react-context@0.3.0:
   dependencies:
     gud "^1.0.0"
     warning "^4.0.3"
+
+cross-fetch@3.0.4:
+  version "3.0.4"
+  resolved "https://registry.npmjs.org/cross-fetch/-/cross-fetch-3.0.4.tgz#7bef7020207e684a7638ef5f2f698e24d9eb283c"
+  integrity sha512-MSHgpjQqgbT/94D4CyADeNoYh52zMkCX4pcJvPP5WqPsLFMKjr2TCMg381ox5qI0ii2dPwaLx/00477knXqXVw==
+  dependencies:
+    node-fetch "2.6.0"
+    whatwg-fetch "3.0.0"
 
 cross-fetch@^2.1.0, cross-fetch@^2.1.1:
   version "2.2.5"
@@ -18006,7 +18068,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.0.0, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@^15.0.0, prop-types@^15.6.0, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
