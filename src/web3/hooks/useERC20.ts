@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { MaxUint256 } from "@ethersproject/constants"
 import { useWeb3React } from "@web3-react/core"
 import { useContract } from "./useContract"

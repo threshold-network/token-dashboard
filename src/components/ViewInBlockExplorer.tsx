@@ -3,6 +3,7 @@ import { Link, LinkProps } from "@chakra-ui/react"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../utils/createEtherscanLink"
+import { supportedChainId } from "../utils/getEnvVariable"
 
 const ViewInBlockExplorer: FC<
   {
@@ -12,8 +13,7 @@ const ViewInBlockExplorer: FC<
   } & LinkProps
 > = ({ id, type, text = "View in Block Explorer", ...restProps }) => {
   const etherscanLink = createEtherscanLink(
-    // TO DO: This should be pulled from the ENV once PR #30 is approved & merged
-    1,
+    Number(supportedChainId),
     id || "",
     type
   )
@@ -26,6 +26,8 @@ const ViewInBlockExplorer: FC<
       _hover={{
         fontWeight: "bold",
       }}
+      rel="noopener noreferrer"
+      target="_blank"
       {...restProps}
     >
       {text}

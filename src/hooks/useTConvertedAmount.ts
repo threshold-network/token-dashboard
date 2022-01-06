@@ -34,6 +34,7 @@ export const useTConvertedAmount = (
       .mul(BigNumber.from(ratio))
       .div(FLOATING_POINT_DIVISOR)
       .toString()
+
     return {
       amount,
       formattedAmount: numeral(formatUnits(amount)).format("0,0.00"),
