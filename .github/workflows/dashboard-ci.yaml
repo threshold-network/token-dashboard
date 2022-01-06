@@ -72,7 +72,7 @@ jobs:
       - name: Resolve latest ropsten contracts
         run: |
           yarn upgrade \
-            @threshold-network/solidity-contracts@0ropsten \
+            @threshold-network/solidity-contracts@ropsten \
             @keep-network/keep-core@ropsten \
             @keep-network/keep-ecdsa@ropsten \
             @keep-network/tbtc@ropsten \
