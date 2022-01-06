@@ -24,7 +24,13 @@ class Mutex {
   }
 }
 
-const mutex = new Mutex()
+const keepMutex = new Mutex()
+const nuMutex = new Mutex()
+
+const TOKEN_TO_MUTEX = {
+  [Token.Keep]: keepMutex,
+  [Token.Nu]: nuMutex,
+}
 
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
@@ -48,13 +54,14 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
         !isSameETHAddress(contractAddress, localStorageContractAddress))
     ) {
       const fn = async () => {
+        const mutex = TOKEN_TO_MUTEX[token]
         const unlock = await mutex.lock()
         try {
           const ratio = await vendingMachine?.ratio()
           setRatio({ value: ratio.toString(), contractAddress })
         } catch (error) {
           unlock()
-          console.log("error", error)
+          console.error(`error fetching ${token} VendingMachine ratio`, error)
         }
       }
       fn()
@@ -65,6 +72,7 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
     setRatio,
     vendingMachine,
     contractAddress,
+    token,
   ])
 
   return ratioValue
