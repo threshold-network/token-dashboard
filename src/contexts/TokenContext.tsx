@@ -64,8 +64,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   React.useEffect(() => {
     for (const token in Token) {
-      // TODO: how to calculate T token price in USD.
-      if (token !== Token.T) {
+      if (token) {
         // @ts-ignore
         fetchTokenPriceUSD(Token[token])
       }

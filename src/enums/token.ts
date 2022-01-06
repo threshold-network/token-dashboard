@@ -8,7 +8,7 @@ export enum Token {
 export enum CoingeckoID {
   KEEP = "keep-network",
   NU = "nucypher",
-  T = "ttoken",
+  T = "threshold-network-token",
   ETH = "ethereum",
   TBTC = "tbtc",
 }
