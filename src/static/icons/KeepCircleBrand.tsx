@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-const Keep = createIcon({
-  displayName: "Keep",
+const KeepCircleBrand = createIcon({
+  displayName: "KeepCircleBrand",
   viewBox: "0 0 32 32",
   path: (
     <svg width="32" height="32" xmlns="http://www.w3.org/2000/svg">
@@ -14,4 +14,4 @@ const Keep = createIcon({
   ),
 })
 
-export default Keep
+export default KeepCircleBrand

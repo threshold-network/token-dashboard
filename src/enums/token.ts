@@ -13,4 +13,5 @@ export enum CoingeckoID {
 export enum TConversionRates {
   KEEP = 4.87,
   NU = 3.46,
+  T = 1,
 }

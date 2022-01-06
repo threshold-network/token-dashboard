@@ -36,7 +36,7 @@ export const useSendTransaction = (contract: Contract, methodName: string) => {
       } catch (error: any) {
         openModal(ModalType.TransactionFailed, {
           transactionHash: error?.transaction?.hash,
-          error: error,
+          error,
           // TODO: how to check if an error is expandable?
           // isExpandableError,
         })

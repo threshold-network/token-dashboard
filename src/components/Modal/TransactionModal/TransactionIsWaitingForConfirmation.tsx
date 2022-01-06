@@ -5,13 +5,13 @@ import Spinner from "../../Spinner"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 
-interface TransactionIsWaitingFroConfirmationProps extends BaseModalProps {
+interface Props extends BaseModalProps {
   pendingText?: string
 }
 
-const TransactionIsWaitingForConfirmation: FC<
-  TransactionIsWaitingFroConfirmationProps
-> = ({ pendingText = "Please confirm the transaction in your wallet" }) => {
+const TransactionIsWaitingForConfirmation: FC<Props> = ({
+  pendingText = "Please confirm the transaction in your wallet",
+}) => {
   return (
     <>
       <ModalHeader>Confirm (waiting)</ModalHeader>
