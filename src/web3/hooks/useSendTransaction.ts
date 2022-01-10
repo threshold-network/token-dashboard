@@ -9,7 +9,8 @@ import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 export const useSendTransaction = (
   contract: Contract,
   methodName: string,
-  onSuccess?: () => void
+  onSuccess?: () => void | Promise<void>,
+  onError?: (error: any) => void | Promise<void>
 ) => {
   const { library, account } = useWeb3React()
   const { openModal } = useModal()
@@ -20,13 +21,11 @@ export const useSendTransaction = (
   const sendTransaction = useCallback(
     async (...args) => {
       if (!account) {
-        console.log("no account!")
         // Maybe we should do something here?
         return
       }
 
       try {
-        console.log("attemping the transaction")
         contract.connect(getSigner(library, account))
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
@@ -39,17 +38,22 @@ export const useSendTransaction = (
           onSuccess()
         }
       } catch (error: any) {
-        openModal(ModalType.TransactionFailed, {
-          transactionHash: error?.transaction?.hash,
-          error,
-          // TODO: how to check if an error is expandable?
-          isExpandableError: true,
-        })
         setTransactionStatus(
           isWalletRejectionError(error)
             ? TransactionStatus.Rejected
             : TransactionStatus.Failed
         )
+
+        if (onError) {
+          onError(error)
+        } else {
+          openModal(ModalType.TransactionFailed, {
+            transactionHash: error?.transaction?.hash,
+            error,
+            // TODO: how to check if an error is expandable?
+            isExpandableError: true,
+          })
+        }
       }
     },
     [contract, methodName, library, account]

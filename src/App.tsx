@@ -32,7 +32,6 @@ import { useModal } from "./hooks/useModal"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
-import { useTStakingContract } from "./web3/hooks/useTStakingContract"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -49,7 +48,6 @@ const useSubscribeToVendingMachineContractEvents = () => {
   const { openModal } = useModal()
   const keepVendingMachine = useVendingMachineContract(Token.Keep)
   const nuVendingMachine = useVendingMachineContract(Token.Nu)
-  const tStaking = useTStakingContract()
 
   const onEvent = (
     token: UpgredableToken,
@@ -80,22 +78,6 @@ const useSubscribeToVendingMachineContractEvents = () => {
     // @ts-ignore
     (recipient, wrappedTokenAmount, tTokenAmount, event) => {
       onEvent(Token.Nu, wrappedTokenAmount, tTokenAmount, event)
-    },
-    [account as string]
-  )
-
-  useSubscribeToContractEvent(
-    tStaking,
-    "OperatorStaked",
-    // @ts-ignore
-    (recipient, wrappedTokenAmount, tTokenAmount, event) => {
-      console.log(
-        "operator staked event",
-        recipient,
-        wrappedTokenAmount,
-        tTokenAmount,
-        event
-      )
     },
     [account as string]
   )

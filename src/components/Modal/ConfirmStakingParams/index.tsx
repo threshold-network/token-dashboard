@@ -1,28 +1,24 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
+import { useWeb3React } from "@web3-react/core"
 import {
   Box,
   Button,
-  Divider,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { Body1, Body2, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import TokenBalanceInput from "../../TokenBalanceInput"
-import tIcon from "../../../static/icons/ThresholdPurple"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { set } from "husky"
+import AdvancedParamsForm from "./AdvancedParamsForm"
+import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 
-interface StakingModalProps extends BaseModalProps {
+interface ConfirmStakingParamsProps extends BaseModalProps {
   amountToStake: number
   setAmountToStake: (amount: number | string) => void
   maxAmount: number
@@ -35,21 +31,27 @@ interface StakingModalProps extends BaseModalProps {
   setAuthorizer: (val: string) => void
 }
 
-const StakingModal: FC<StakingModalProps> = (props) => {
-  console.log("hi hi hi", props)
-  const {
-    amountToStake,
-    setAmountToStake,
-    maxAmount,
-    onSubmit,
-    operator,
-    setOperator,
-    beneficiary,
-    setBeneficiary,
-    authorizer,
-    setAuthorizer,
-  } = props
+const ConfirmStakingParams: FC<ConfirmStakingParamsProps> = ({
+  amountToStake,
+  setAmountToStake,
+  maxAmount,
+  onSubmit,
+  operator,
+  setOperator,
+  beneficiary,
+  setBeneficiary,
+  authorizer,
+  setAuthorizer,
+}) => {
   const { closeModal } = useModal()
+  const { account } = useWeb3React()
+
+  // close itself if the wallet is disconnected
+  useEffect(() => {
+    if (!account) {
+      closeModal()
+    }
+  }, [account])
 
   return (
     <>
@@ -69,53 +71,40 @@ const StakingModal: FC<StakingModalProps> = (props) => {
               amount={amountToStake}
               setAmount={setAmountToStake}
               max={maxAmount}
-              icon={tIcon}
+              icon={ThresholdCircleBrand}
               mb={2}
             />
-            <FormHelperText>
-              {formatTokenAmount(maxAmount)} T available to stake.
-            </FormHelperText>
+            <Body3>{formatTokenAmount(maxAmount)} T available to stake.</Body3>
           </Box>
-          <Divider />
-          <FormControl>
-            <FormLabel>Operator Address</FormLabel>
-            <Input
-              value={operator}
-              onChange={(e) => setOperator(e.target.value)}
-            />
-            <FormHelperText>
-              If you are using a staking provider, this will be their provided
-              address.
-            </FormHelperText>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Beneficiary Address</FormLabel>
-            <Input
-              value={beneficiary}
-              onChange={(e) => setBeneficiary(e.target.value)}
-            />
-            <FormHelperText>This address will receive rewards</FormHelperText>
-          </FormControl>
-          <FormControl>
-            <FormLabel>Authorizer Address</FormLabel>
-            <Input
-              value={authorizer}
-              onChange={(e) => setAuthorizer(e.target.value)}
-            />
-            <FormHelperText>
-              This address will authorize applications.
-            </FormHelperText>
-          </FormControl>
+          <Body2>
+            Operator, Beneficiary, and Authorizer addresses are currently set
+            to: {account}
+          </Body2>
+          <AdvancedParamsForm
+            {...{
+              operator,
+              setOperator,
+              beneficiary,
+              setBeneficiary,
+              authorizer,
+              setAuthorizer,
+            }}
+          />
         </Stack>
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button onClick={onSubmit}>Stake</Button>
+        <Button
+          disabled={+amountToStake === 0 || +amountToStake > +maxAmount}
+          onClick={onSubmit}
+        >
+          Stake
+        </Button>
       </ModalFooter>
     </>
   )
 }
 
-export default withBaseModal(StakingModal)
+export default withBaseModal(ConfirmStakingParams)
