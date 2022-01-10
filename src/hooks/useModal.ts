@@ -18,13 +18,14 @@ export const useModal: UseModal = () => {
 
   const closeModal = () => dispatch(closeModalAction())
 
-  const updateProps = (newProps: any) => dispatch(updatePropsAction(newProps))
+  const updateModalProps = (newProps: any) =>
+    dispatch(updatePropsAction(newProps))
 
   return {
     modalType,
     modalProps,
     openModal,
     closeModal,
-    updateProps,
+    updateModalProps,
   }
 }

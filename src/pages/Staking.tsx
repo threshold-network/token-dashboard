@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react"
+import { FC, useCallback, useEffect, useMemo, useState } from "react"
 import { Button, HStack, Stack } from "@chakra-ui/react"
 import { useModal } from "../hooks/useModal"
 import { ModalType } from "../enums"
@@ -6,27 +6,81 @@ import { useReduxToken } from "../hooks/useReduxToken"
 import { useWeb3React } from "@web3-react/core"
 import { useApproveTStaking } from "../web3/hooks/useApproveTStaking"
 import { useStakeTransaction } from "../web3/hooks/useStakeTransaction"
+import { useTStakingAllowance } from "../web3/hooks/useTStakingAllowance"
+import { BigNumber } from "ethers"
 
 const StakingPage: FC = () => {
-  const { openModal, updateProps } = useModal()
+  const { openModal, updateModalProps } = useModal()
   const { t } = useReduxToken()
-  const { account } = useWeb3React()
-  const [amountToStake, setAmountToStake] = useState(0)
-  const [operator, setOperator] = useState(account)
-  const [beneficiary, setBeneficiary] = useState(account)
-  const [authorizer, setAuthorizer] = useState(account)
-  const maxAmount = t.balance
+  const { active, account } = useWeb3React()
+  const { allowance } = useTStakingAllowance()
 
-  const onApprovalSuccess = useMemo(
-    () => () => stake(operator, beneficiary, authorizer, amountToStake),
-    [operator, beneficiary, authorizer, amountToStake]
-  )
-
-  const { approveTStaking } = useApproveTStaking(onApprovalSuccess)
+  // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction(() => openModal(ModalType.StakeSuccess))
 
+  //
+  // staking form values
+  //
+  const [amountToStake, setAmountToStake] = useState(0)
+  const [operator, setOperator] = useState<string | undefined | null>(
+    account || ""
+  )
+  const [beneficiary, setBeneficiary] = useState<string | undefined | null>(
+    account || ""
+  )
+  const [authorizer, setAuthorizer] = useState<string | undefined | null>(
+    account || ""
+  )
+  const maxAmount = t.balance
+
+  //
+  // staking callback - to be invoked after approval, or if already approved
+  //
+  const submitStakingTx = () =>
+    stake(operator, beneficiary, authorizer, amountToStake)
+
+  //
+  // approval tx - staking tx callback on success
+  //
+  const { approveTStaking } = useApproveTStaking(submitStakingTx)
+
+  //
+  // onSubmit callback - either start with approval or skip if account is already approved for the amountToStake
+  //
+  const isApprovedForAmount = useMemo(
+    () => BigNumber.from(amountToStake).lt(allowance),
+    [amountToStake, allowance]
+  )
+
+  const onSubmit = useCallback(
+    isApprovedForAmount ? submitStakingTx : approveTStaking,
+    [
+      isApprovedForAmount,
+      account,
+      operator,
+      beneficiary,
+      authorizer,
+      amountToStake,
+      maxAmount,
+    ]
+  )
+
+  //
+  // initializes all values to the connected wallet
+  //
   useEffect(() => {
-    updateProps({
+    if (account) {
+      setOperator(account)
+      setBeneficiary(account)
+      setAuthorizer(account)
+    }
+  }, [account])
+
+  //
+  // updates the staking modal props when state is changed
+  //
+  useEffect(() => {
+    updateModalProps({
       amountToStake,
       setAmountToStake,
       operator,
@@ -36,7 +90,7 @@ const StakingPage: FC = () => {
       authorizer,
       setAuthorizer,
       maxAmount,
-      onSubmit: approveTStaking,
+      onSubmit,
     })
   }, [
     amountToStake,
@@ -49,9 +103,10 @@ const StakingPage: FC = () => {
     setAuthorizer,
     maxAmount,
     approveTStaking,
+    onSubmit,
   ])
 
-  const initStakingTransaction = async () => {
+  const openStakingModal = async () => {
     openModal(ModalType.ConfirmStakingParams, {
       amountToStake,
       setAmountToStake,
@@ -62,14 +117,16 @@ const StakingPage: FC = () => {
       authorizer,
       setAuthorizer,
       maxAmount,
-      onSubmit: approveTStaking,
+      onSubmit,
     })
   }
 
   return (
     <HStack w="100%" align="flex-start" spacing="1rem">
       <Stack w="50%" spacing="1rem">
-        <Button onClick={initStakingTransaction}>STAKE</Button>
+        <Button disabled={!active || !account} onClick={openStakingModal}>
+          STAKE
+        </Button>
       </Stack>
     </HStack>
   )

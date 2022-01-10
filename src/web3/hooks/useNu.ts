@@ -13,8 +13,6 @@ export interface UseNu {
 }
 
 export const useNu: UseNu = () => {
-  console.log("hohoho ", NuCypherToken)
-
   const { balanceOf, approve, contract } = useErc20TokenContract(
     NuCypherToken.address,
     undefined,

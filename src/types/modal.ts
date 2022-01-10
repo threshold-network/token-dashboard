@@ -50,6 +50,6 @@ export interface UseModal {
     modalProps: any
     openModal: (type: ModalType, props?: any) => ModalActionTypes
     closeModal: () => ModalActionTypes
-    updateProps: (newProps: any) => ModalActionTypes
+    updateModalProps: (newProps: any) => ModalActionTypes
   }
 }

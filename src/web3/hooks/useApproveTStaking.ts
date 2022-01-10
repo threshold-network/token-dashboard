@@ -5,7 +5,7 @@ import { Token } from "../../enums"
 import { useTStakingContract } from "./useTStakingContract"
 import { MaxUint256 } from "@ethersproject/constants"
 
-export const useApproveTStaking = (onSuccess: () => Promise<void>) => {
+export const useApproveTStaking = (onSuccess: () => Promise<void> | void) => {
   const { contract: TTokenContract } = useToken(Token.T)
   const tStakingContract = useTStakingContract()
   const { sendTransaction, status } = useSendTransaction(
