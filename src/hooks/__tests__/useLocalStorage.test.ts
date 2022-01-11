@@ -29,6 +29,7 @@ describe("Test `useLocalStorage` hook", () => {
 
     expect(result.current[0]).toEqual(value)
     expect(getItemSpy).toHaveBeenCalledWith(key)
+    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
   })
 
   test("should save data in local storage and return updated value", () => {
@@ -50,9 +51,10 @@ describe("Test `useLocalStorage` hook", () => {
 
     expect(setItemSpy).toHaveBeenLastCalledWith(key, JSON.stringify(newValue))
     expect(result.current[0]).toEqual(newValue)
+    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(newValue))
   })
 
-  test("should not override storage data by a default value if use hook seconde time", () => {
+  test("should not override storage data by a default value if use hook second time", () => {
     const newValue = { test: "999" }
     const { result } = renderHook(() => useLocalStorage(key, value))
 
@@ -65,21 +67,7 @@ describe("Test `useLocalStorage` hook", () => {
     expect(result.current[0]).toEqual(newValue)
     expect(result2.current[0]).toEqual(newValue)
     expect(result.current[0]).toEqual(result2.current[0])
-  })
-
-  test("should not override storage data by a default value if use hook seconde time", () => {
-    const newValue = { test: "999" }
-    const { result } = renderHook(() => useLocalStorage(key, value))
-
-    act(() => {
-      result.current[1](newValue)
-    })
-
-    const { result: result2 } = renderHook(() => useLocalStorage(key, value))
-
-    expect(result.current[0]).toEqual(newValue)
-    expect(result2.current[0]).toEqual(newValue)
-    expect(result.current[0]).toEqual(result2.current[0])
+    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(newValue))
   })
 
   test("can have a numeric default value", () => {
@@ -88,5 +76,15 @@ describe("Test `useLocalStorage` hook", () => {
     const { result } = renderHook(() => useLocalStorage(key, value))
 
     expect(result.current[0]).toEqual(value)
+    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
+  })
+
+  test("can have a string default value", () => {
+    const value = "string"
+    const key = "numeric-value"
+    const { result } = renderHook(() => useLocalStorage(key, value))
+
+    expect(result.current[0]).toEqual(value)
+    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
   })
 })
