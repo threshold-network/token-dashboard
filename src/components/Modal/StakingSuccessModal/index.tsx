@@ -15,28 +15,22 @@ import Confetti from "react-confetti"
 import Threshold from "../../../static/icons/Ttoken"
 import { Body3, H5 } from "../../Typography"
 import { Divider } from "../../Divider"
-import TransactionStats from "./TransactionStats"
+import StakingStats from "./StakingStats"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
-import { BaseModalProps, UpgredableToken } from "../../../types"
+import { BaseModalProps } from "../../../types"
+import { useReduxStaking } from "../../../hooks/useReduxStaking"
 
-interface TransactionSuccessProps extends BaseModalProps {
-  upgradedAmount: string
-  receivedAmount: string
+interface StakingSuccessProps extends BaseModalProps {
   transactionHash: string
-  token: UpgredableToken
 }
 
-const TransactionSuccess: FC<TransactionSuccessProps> = ({
-  upgradedAmount,
-  receivedAmount,
+const StakingSuccessModal: FC<StakingSuccessProps> = ({
   transactionHash,
-  token,
   closeModal,
 }) => {
-  const { formattedAmount: exchangeRate } = useTExchangeRate(token)
+  const { stakeAmount, operator, beneficiary, authorizer } = useReduxStaking()
 
   return (
     <>
@@ -69,12 +63,7 @@ const TransactionSuccess: FC<TransactionSuccessProps> = ({
           <Icon zIndex={999} height="105px" w="105px" as={Threshold} />
         </HStack>
 
-        <TransactionStats
-          token={token}
-          exchangeRate={exchangeRate}
-          receivedAmount={receivedAmount}
-          upgradedAmount={upgradedAmount}
-        />
+        <StakingStats {...{ stakeAmount, beneficiary, operator, authorizer }} />
 
         <Body3 mt="4rem" align="center">
           <ViewInBlockExplorer
@@ -93,4 +82,4 @@ const TransactionSuccess: FC<TransactionSuccessProps> = ({
   )
 }
 
-export default withBaseModal(TransactionSuccess)
+export default withBaseModal(StakingSuccessModal)

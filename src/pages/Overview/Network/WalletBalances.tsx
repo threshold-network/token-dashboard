@@ -50,9 +50,9 @@ const BalanceStat: FC<{
 }
 
 const progressBarColors = {
-  keep: "#7D00FF",
+  t: "#7D00FF",
   nu: "#1E65F3",
-  t: "#48dbb4",
+  keep: "#48dbb4",
 }
 
 const WalletBalances: FC = () => {

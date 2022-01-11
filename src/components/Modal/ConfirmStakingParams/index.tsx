@@ -17,38 +17,63 @@ import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import AdvancedParamsForm from "./AdvancedParamsForm"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
+import { useReduxStaking } from "../../../hooks/useReduxStaking"
+import { useReduxToken } from "../../../hooks/useReduxToken"
+import { useTStakingAllowance } from "../../../web3/hooks/useTStakingAllowance"
+import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
+import { ModalType } from "../../../enums"
+import { useApproveTStaking } from "../../../web3/hooks/useApproveTStaking"
+import { BigNumber } from "ethers"
 
-interface ConfirmStakingParamsProps extends BaseModalProps {
-  amountToStake: number
-  setAmountToStake: (amount: number | string) => void
-  maxAmount: number
-  onSubmit: () => void
-  operator: string
-  setOperator: (val: string) => void
-  beneficiary: string
-  setBeneficiary: (val: string) => void
-  authorizer: string
-  setAuthorizer: (val: string) => void
-}
-
-const ConfirmStakingParams: FC<ConfirmStakingParamsProps> = ({
-  amountToStake,
-  setAmountToStake,
-  maxAmount,
-  onSubmit,
-  operator,
-  setOperator,
-  beneficiary,
-  setBeneficiary,
-  authorizer,
-  setAuthorizer,
-}) => {
-  const { closeModal } = useModal()
+const ConfirmStakingParams: FC<BaseModalProps> = () => {
+  const { closeModal, openModal } = useModal()
+  const {
+    t: { balance: maxAmount },
+  } = useReduxToken()
   const { account } = useWeb3React()
+  const { allowance } = useTStakingAllowance()
+  const {
+    stakeAmount,
+    setStakeAmount,
+    operator,
+    setOperator,
+    beneficiary,
+    setBeneficiary,
+    authorizer,
+    setAuthorizer,
+  } = useReduxStaking()
 
-  // close itself if the wallet is disconnected
+  // stake transaction, opens success modal on success callback
+  const { stake } = useStakeTransaction((tx) =>
+    openModal(ModalType.StakeSuccess, {
+      transactionHash: tx.hash,
+    })
+  )
+
+  //
+  // approval tx - staking tx callback on success
+  //
+  const { approveTStaking } = useApproveTStaking(() =>
+    stake(operator, beneficiary, authorizer, stakeAmount)
+  )
+
+  //
+  // onSubmit callback - either start with approval or skip if account is already approved for the amountToStake
+  //
+  const isApprovedForAmount = BigNumber.from(stakeAmount).lt(allowance)
+  const onSubmit = isApprovedForAmount
+    ? () => stake(operator, beneficiary, authorizer, stakeAmount)
+    : approveTStaking
+
+  //
+  // initializes all values to the connected wallet
+  //
   useEffect(() => {
-    if (!account) {
+    if (account) {
+      setOperator(account)
+      setBeneficiary(account)
+      setAuthorizer(account)
+    } else {
       closeModal()
     }
   }, [account])
@@ -68,8 +93,8 @@ const ConfirmStakingParams: FC<ConfirmStakingParamsProps> = ({
           <Box>
             <TokenBalanceInput
               label={`T Amount`}
-              amount={amountToStake}
-              setAmount={setAmountToStake}
+              amount={stakeAmount}
+              setAmount={setStakeAmount}
               max={maxAmount}
               icon={ThresholdCircleBrand}
               mb={2}
@@ -97,7 +122,7 @@ const ConfirmStakingParams: FC<ConfirmStakingParamsProps> = ({
           Cancel
         </Button>
         <Button
-          disabled={+amountToStake === 0 || +amountToStake > +maxAmount}
+          disabled={+stakeAmount === 0 || +stakeAmount > +maxAmount}
           onClick={onSubmit}
         >
           Stake

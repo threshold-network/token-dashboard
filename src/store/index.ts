@@ -3,6 +3,7 @@ import { modalSlice } from "./modal"
 import { tokenSlice } from "./tokens"
 import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
+import { stakingSlice } from "./staking"
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     token: tokenSlice.reducer,
     sidebar: sidebarSlice.reducer,
     transaction: transactionSlice.reducer,
+    staking: stakingSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
