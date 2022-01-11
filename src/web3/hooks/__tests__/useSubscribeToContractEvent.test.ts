@@ -25,7 +25,7 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
   }
 
   beforeEach(() => {
-    // Cleare listeners
+    // Clear listeners
     contractEventEmitter.removeAllListeners()
     providerEventEmitter.removeAllListeners()
 

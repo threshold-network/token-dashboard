@@ -9,12 +9,12 @@ jest.mock("../../web3/hooks/useVendingMachineRatio", () => ({
 
 describe("Test `useTConvertedAmount` hook", () => {
   const token = Token.Nu
-  const mocedNuRatio = "4500000000000000" // 0.0045
+  const mockedNuRatio = "4500000000000000" // 0.0045
   const amountToConvert = "1000000000000000000" // 1
   const expectedTAmount = "4500000000000000000" // 4.5
 
   beforeEach(() => {
-    ;(useVendingMachineRatio as jest.Mock).mockReturnValue(mocedNuRatio)
+    ;(useVendingMachineRatio as jest.Mock).mockReturnValue(mockedNuRatio)
   })
 
   test("should convert token amount to T", () => {
@@ -31,6 +31,8 @@ describe("Test `useTConvertedAmount` hook", () => {
     value
     ${null}
     ${"0"}
+    ${undefined}
+    ${""}
   `("should return default values if ratio is $value ", ({ value }) => {
     ;(useVendingMachineRatio as jest.Mock).mockReturnValue(value)
     const { result } = renderHook(() =>

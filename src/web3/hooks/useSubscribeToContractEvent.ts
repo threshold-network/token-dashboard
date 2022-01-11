@@ -55,7 +55,7 @@ export const useSubscribeToContractEvent = (
     // transactions, that certainly won't be part of the current block, so we
     // can omit event from a current block.
     const onBlockGuard = () => {
-      contract.on(eventNameOrFilter, cb)
+      contract.on(eventNameOrFilter, callback)
     }
     // TODO: consider if we should do it in this way because it creates a
     // subscription to `block` on every use of this hook. Maybe we should fetch
@@ -63,10 +63,8 @@ export const useSubscribeToContractEvent = (
     contract.provider.once("block", onBlockGuard)
 
     return () => {
-      if (contract) {
-        contract.provider.off("block", onBlockGuard)
-        contract.off(eventNameOrFilter, cb)
-      }
+      contract.provider.off("block", onBlockGuard)
+      contract.off(eventNameOrFilter, callback)
     }
   }, [
     contract,
