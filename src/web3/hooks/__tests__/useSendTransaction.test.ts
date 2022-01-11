@@ -32,10 +32,13 @@ describe("Test `useSendTransaction` hook", () => {
     wait: jest.fn().mockResolvedValue(receipt),
     hash: txHash,
   }
-  const mockedContract = {
-    connect: jest.fn(),
-    [methodName]: jest.fn(),
-  }
+  const MockedContract = jest.fn().mockImplementation(() => {
+    return {
+      connect: jest.fn(),
+      [methodName]: jest.fn(),
+    }
+  })
+  const mockedContract = new MockedContract()
 
   const mockedOpenModalFn = jest.fn()
 
@@ -53,11 +56,10 @@ describe("Test `useSendTransaction` hook", () => {
     ;(useModal as jest.Mock).mockReturnValue({ openModal: mockedOpenModalFn })
   })
 
-  test("should proceed the transaciton correctly", async () => {
+  test("should proceed the transaction correctly", async () => {
     mockedContract[methodName].mockResolvedValue(mockedTx)
 
     const { result, waitForNextUpdate } = renderHook(() =>
-      // @ts-ignore
       useSendTransaction(mockedContract, methodName)
     )
 
@@ -90,7 +92,6 @@ describe("Test `useSendTransaction` hook", () => {
     })
 
     const { result } = renderHook(() =>
-      // @ts-ignore
       useSendTransaction(mockedContract, methodName)
     )
 
@@ -101,6 +102,29 @@ describe("Test `useSendTransaction` hook", () => {
     expect(getSigner).not.toHaveBeenCalledWith(mockedLibrary, account)
     expect(mockedContract.connect).not.toHaveBeenCalledWith(mockedSigner)
     expect(mockedContract[methodName]).not.toHaveBeenCalledWith(from, value)
+    expect(mockedTx.wait).not.toHaveBeenCalled()
+    expect(result.current.status).toEqual(TransactionStatus.Idle)
+    expect(mockedOpenModalFn).not.toHaveBeenCalled()
+  })
+
+  test("should do nothing if there is no method name", async () => {
+    ;(useWeb3React as jest.Mock).mockReturnValue({
+      chainId: 1,
+      library: mockedLibrary,
+      account: null,
+    })
+    const nonExistentMethodName = "asd"
+
+    const { result } = renderHook(() =>
+      useSendTransaction(mockedContract, nonExistentMethodName)
+    )
+
+    expect(result.current.status).toEqual(TransactionStatus.Idle)
+
+    result.current.sendTransaction(from, value)
+
+    expect(getSigner).not.toHaveBeenCalledWith(mockedLibrary, account)
+    expect(mockedContract.connect).not.toHaveBeenCalledWith(mockedSigner)
     expect(mockedTx.wait).not.toHaveBeenCalled()
     expect(result.current.status).toEqual(TransactionStatus.Idle)
     expect(mockedOpenModalFn).not.toHaveBeenCalled()
@@ -117,7 +141,6 @@ describe("Test `useSendTransaction` hook", () => {
       mockedContract[methodName].mockRejectedValue(error)
 
       const { result, waitForNextUpdate } = renderHook(() =>
-        // @ts-ignore
         useSendTransaction(mockedContract, methodName)
       )
 
