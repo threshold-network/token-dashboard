@@ -1,0 +1,1131 @@
+{
+  "contractName": "DelegatedAuthorityStub",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_recognizedContract",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_contract",
+          "type": "address"
+        }
+      ],
+      "name": "__isRecognized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingContract",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "source",
+          "type": "address"
+        }
+      ],
+      "name": "claimAuthorityRecursively",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.17+commit.d19bba13\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_recognizedContract\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"_contract\",\"type\":\"address\"}],\"name\":\"__isRecognized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"stakingContract\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"source\",\"type\":\"address\"}],\"name\":\"claimAuthorityRecursively\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/stubs/DelegatedAuthorityStub.sol\":\"DelegatedAuthorityStub\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/Authorizations.sol\":{\"keccak256\":\"0x340bb3d18b59fde20dce41ecd5128d891f871a274f8384a89f14754cd293c3cf\",\"urls\":[\"bzz-raw://b9084255d117f6f6307247a0bebc87387a2e5c7a7eec420ff976736ab9417af4\",\"dweb:/ipfs/QmZ7tx4ued84cXNmi7mmvaEAhcpNCWeisiivnbM4aSHeFw\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/GrantStakingPolicy.sol\":{\"keccak256\":\"0x433e1f5c70af09ca1b9fac5e602be3ffec7e8e50b34b07f5141bd14e8cca0674\",\"urls\":[\"bzz-raw://d0b4ad0aa3c174856ca32c3ffd7685141873b9549f941894cca8118b5ae99275\",\"dweb:/ipfs/QmdMA1csXSSQHmnsSQs2tmeDJ6zdoKdyD2EneKJfM9VtRj\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/KeepRegistry.sol\":{\"keccak256\":\"0xbc0e44a838bae38c1d11db28b5bfcfdfd79394d423ce6fd85dcb90a6420e1f10\",\"urls\":[\"bzz-raw://74b140b3a4547cc742785c613e2927bc3592e71f0f42eff5112462a9985083cb\",\"dweb:/ipfs/QmQLsNVWAcgHhtoJAfiXjipYaksfLpcoaa45c2LvRh9hfg\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/KeepToken.sol\":{\"keccak256\":\"0x42abcd9c9c67d8d83b91a01e42abde3355b3a67fb7c510d7d8b63b5e23d3defe\",\"urls\":[\"bzz-raw://ef26e4ad4042c74e230a343f9e69c2d142b581e4a2c7ee27ec51a1f7e9f91a68\",\"dweb:/ipfs/QmfJ9cEpzj2WQ5upvizC16pthvC2vQP8geFeUATFb4ov2G\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/ManagedGrant.sol\":{\"keccak256\":\"0x3f0f6e2107f6154a619b02dbc694c9e3341005dd0879a10e7f105d2a540a1158\",\"urls\":[\"bzz-raw://f6559e8ad8bea87d1d7a1f333935c8e42d7979e2de47f1a34a7cb7121f35f021\",\"dweb:/ipfs/QmSKdVqS9AiEQ2UjtpPGnz3UBgaVA6enGadZHjqsxaSnHj\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/StakeDelegatable.sol\":{\"keccak256\":\"0x328b20a9f89222294dd8aaff19097bcbe427e211f7e8006ffb107d5813ce7522\",\"urls\":[\"bzz-raw://65316b2733aa23fac341170a9d668a78ddef663d59c7fa6aa68ad4b1c98c3e03\",\"dweb:/ipfs/QmShjVArh35v93n5erjbZMxHnBcctNS3tkgd1jRqTNWaEA\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenGrant.sol\":{\"keccak256\":\"0x8aa80561282a5e4eeb3de864e7d3425314f45442c7aa8af3ba8991f13de8f3fe\",\"urls\":[\"bzz-raw://e7d993377146c0fa2b494cbb03120e781d5b50f08866b542bcb483f2bf7f607e\",\"dweb:/ipfs/QmR4MWgYhyZRhQZfgqEL2yd2FebgLx9Nabr9mGwRU5hzPz\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenGrantStake.sol\":{\"keccak256\":\"0x55f16cd0566659da7db27f136f13db4d5b9be5d970ae481caf50ae1066339758\",\"urls\":[\"bzz-raw://289afc90c055062a781434e4a15adec36e22a85caf6a0f923d44dbdccab3abad\",\"dweb:/ipfs/Qme5dAkEGG5gkydFsCAKURU7a4PGKwwEL4iutBpoJyEqFX\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenSender.sol\":{\"keccak256\":\"0xd2209f6cb3122bf4b6367ff80dcd24a108885e37fd86a87d127467c5782ae12f\",\"urls\":[\"bzz-raw://c0496338c50a4e29eea1702780b7887418f5df4a251c3512308f109187a20d71\",\"dweb:/ipfs/QmP6seRmXzSf59g8iAFEvbwmtcQyU4x8H523auAM9KhujG\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenStaking.sol\":{\"keccak256\":\"0x285142cb59dea7e8ed3291eee412e49522bab77108805e24cadbf7bc4cac5966\",\"urls\":[\"bzz-raw://e046efc9d63d925b77d01be60d7f75b755ab1dc2c84c44a17198dc748debef6f\",\"dweb:/ipfs/QmNc2X9Cby4T1LzHCELKhfS6qe33wgXgLzWzssGyDGJ99R\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenStakingEscrow.sol\":{\"keccak256\":\"0x046fc3b328b1b9ecb8a85b595dcdc5a1519ffcf1c49e72d8ffab675b29fa7ef6\",\"urls\":[\"bzz-raw://36c5ea56265974bcf13ecb6cf7425169f71d287754436ecbea6f1ef8344dfe3e\",\"dweb:/ipfs/QmVkeiBXzEMpPuGoer9n2JWoxV7DHjkVPfYsF5Nh4uPqTM\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/RolesLookup.sol\":{\"keccak256\":\"0x3f5750a8cf219f35fc5d2233c4db2812083f8e53949b315b44ad342c70bec4c7\",\"urls\":[\"bzz-raw://47a0350004b4fc99bf22c07684129665111512603fd167bd87da91bd027a87b7\",\"dweb:/ipfs/Qmd6EfqiMrg4xbrQcs1Zk6aZ4YW1d1egfrXfr45HVUoXaR\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/grant/UnlockingSchedule.sol\":{\"keccak256\":\"0xf1704afe7ae23810b02ec5f64a752a2217dcc6a03d0be6422372a3b106156e69\",\"urls\":[\"bzz-raw://4792dee0044b1748d80e083387911f417e0367001a5aa649b7e59a2e7507a8d5\",\"dweb:/ipfs/QmWNgFNmFUiRQvKCEiyJed8wCF8GzmMw315GrhPGsMWetw\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/staking/GrantStaking.sol\":{\"keccak256\":\"0x281e5716582e26b3c4ee63aad71f130c2b9b40be94a337826872b45daf4c0afe\",\"urls\":[\"bzz-raw://4e17a1ca3b362f303bdc09205db719e8e49b5a49e17ac576a0ab310f07fa63b6\",\"dweb:/ipfs/QmcvQHF1mUuMiwfBM3op55zmYuJCpffCU3yT7pUax7yjyh\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/staking/LockUtils.sol\":{\"keccak256\":\"0x8bde6802329174c60343acdb2ac9914a05a7bc7c1c0ce4e981d3f797f6190dab\",\"urls\":[\"bzz-raw://1c847315d4a132e7363b3eba918ea7e44921a65e82580e61885400d921cbd8d3\",\"dweb:/ipfs/Qmdg7ECyE3r4Q1n3fQWFtBJvMDMj6kvzKQMpPCGfQFwNnP\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/staking/Locks.sol\":{\"keccak256\":\"0x60c93b4a1964e06087ddb6ebd6e20b80728e24cc24956a952eb7d1267be45fe0\",\"urls\":[\"bzz-raw://912540915aaa83a10be70b22b9f67197e63df48fcb60a4c92819da628a1844e5\",\"dweb:/ipfs/QmeYjotXEQruDqZCxh7tUhfLM34Bvq6n2gbGVsd7aaQbaG\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/staking/MinimumStakeSchedule.sol\":{\"keccak256\":\"0xf99053f84873f54d036ebffac7245aa899227ef3673ed1b9dc86bde6add76fbf\",\"urls\":[\"bzz-raw://1f8bc44e7058fbbc9410495651dce3b358834022ae0fd2c66824e404cbbe0b17\",\"dweb:/ipfs/QmV3csHqadQ5gdQiFRUSP64t8a11q8Znbr8Szstm7hiN1G\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/libraries/staking/TopUps.sol\":{\"keccak256\":\"0x2454e61ed5f91ec7d086cc5555ce50e5b402cb3a96e19480840ceb51ea5c6a00\",\"urls\":[\"bzz-raw://37e118f637389cefb040c241c3af268b4a9847ac86ca455c6fa59effd2925ad7\",\"dweb:/ipfs/QmdWwcDwXpREsx15mGqMmu9z64gqAbvaY1PN1j6mG578XR\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/stubs/DelegatedAuthorityStub.sol\":{\"keccak256\":\"0x99de0f53d1e9a4ac90601776ea6003974820a6ae6205ed71ed2f9ff38bac5773\",\"urls\":[\"bzz-raw://40741a2c1e18b5290938e3dcaff7e793a66282bfa9a1a1b6df29dd5d7adb939f\",\"dweb:/ipfs/QmPyfRjGkZXVeK3kimsh3JUwmaEQpDFD8ZJBB5kUQYHf3t\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/utils/AddressArrayUtils.sol\":{\"keccak256\":\"0x4f05678830599afa325ec43ac007f6a17e66037a66d258cb46294bfcf4572dcd\",\"urls\":[\"bzz-raw://1704df5b46bb2868337bfaaf6472eba5466b60d1963495c0683cb4b062e1565f\",\"dweb:/ipfs/QmVVN4uF8dzGsGYAvtqJF3Ut8Ssfmx4LGGhksT1Gr3JV4i\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/utils/BytesLib.sol\":{\"keccak256\":\"0xad3f2453f490e1f74fcb3c278f82e26e75f074eaeaa023168c687d96f0b35b9d\",\"urls\":[\"bzz-raw://001f36244a08a9f306415c25b0812bd0a37389e878fbad3a682d59301d9da0c8\",\"dweb:/ipfs/QmXurBXY19xmJKL6ABDqwn6BKwuBgW2qxiM6V58EHB5s3s\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/utils/OperatorParams.sol\":{\"keccak256\":\"0xba9b216c249d6c30081b23ec0322104ce729b9c51adc8fd8c80a38dba09461b0\",\"urls\":[\"bzz-raw://a8602b066c13018255a685a77aa637eb91305d30f856a20efd3bd9d1dbcffed2\",\"dweb:/ipfs/QmRYxLLEgN5p2MLp29DGYFq3J3BYhV2RiZC2dahVgkcmfD\"]},\"/home/runner/work/keep-core/keep-core/solidity-v1/contracts/utils/PercentUtils.sol\":{\"keccak256\":\"0x696b15997a739e6c47c5bc29e1f9023998bb188405221a6b337377bca4ab3f68\",\"urls\":[\"bzz-raw://e93e2287fe6b6e1c5cc45ebc92b9d682e19a5b1302e00cb037391da753282bbf\",\"dweb:/ipfs/QmRXmEopRWNaL7mvY5nTyNNob3EPHF67R6Nxhm3F4VsDoo\"]},\"openzeppelin-solidity/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzz-raw://216ef9d6b614db4eb46970b4e84903f2534a45572dd30a79f0041f1a5830f436\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"openzeppelin-solidity/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x640b6dee7a4b830bdfd52b5031a07fc2b12209f5b2e29e5d364a7d37f69d8076\",\"urls\":[\"bzz-raw://31113152e1ddb78fe7a4197f247591ca894e93f916867beb708d8e747b6cc74f\",\"dweb:/ipfs/QmbZaJyXdpsYGykVhHH9qpVGQg9DGCxE2QufbCUy3daTgq\"]},\"openzeppelin-solidity/contracts/ownership/Ownable.sol\":{\"keccak256\":\"0xecd8ab29d9a5771c3964d0cd1788c4a5098a0081b20fb275da850a22b1c59806\",\"urls\":[\"bzz-raw://696a75bc2c55407ce8251ccc7d19ecb1b7b2be1796a160a6524312babcc7e3d4\",\"dweb:/ipfs/QmQViKEp3y99h9uhRssE29TmjBKRnFMaoz3eJZ4eggggg2\"]},\"openzeppelin-solidity/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x65a4078c03875c25413a068ce9cfdd7e68a90f8786612d1189c89341e6e3b802\",\"urls\":[\"bzz-raw://45c0d95495b944fbb1aa09d900b0ab530903a432125ab8fddfa05064a7988991\",\"dweb:/ipfs/Qma2VeknkKA1THeubGzshWFk44BktXkXP1UKp9Un2uDSsu\"]},\"openzeppelin-solidity/contracts/token/ERC20/ERC20Burnable.sol\":{\"keccak256\":\"0x9b94356691f3cbf90a5d83ae3fdf6a5a662bb004d2bd8b034160d60221807e64\",\"urls\":[\"bzz-raw://14a9d33db455302b8bb9fdb28998efefbe5a1cb41b29e31391609f646b2ab351\",\"dweb:/ipfs/Qmd4wFr6GEMZnnxgXeq3gmp7cs8tqDuHp3TVNhCbjnux2V\"]},\"openzeppelin-solidity/contracts/token/ERC20/ERC20Detailed.sol\":{\"keccak256\":\"0x4a3a810b7ebe742e897e1fd428b3eeed2196d3acea58eaf9c566ed10d545d2ed\",\"urls\":[\"bzz-raw://28d03f328e19e4099d5013de0649afaeaabac1a614e130767ab1cb4aca9775b6\",\"dweb:/ipfs/Qmb9iW7yNuYehB2NfhRMs9TakqbLVQhBhmGMkaDZ5g1Eb4\"]},\"openzeppelin-solidity/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]},\"openzeppelin-solidity/contracts/token/ERC20/SafeERC20.sol\":{\"keccak256\":\"0x6f2c9955d65c522b80f4b8792f076512d2df947d2112cbc4d98a4781ed42ede2\",\"urls\":[\"bzz-raw://7d8ec81683520c06baeef3f7e06cd82bd6fd5fa611f26857f475f6c829540aff\",\"dweb:/ipfs/QmTDkFzKnrpiV1UKnSoiZAHPuguWzokrr4pFbSPvyaSo56\"]},\"openzeppelin-solidity/contracts/utils/Address.sol\":{\"keccak256\":\"0x70df50e240407aa50915ad14f61b1a901fa335b37de20955b99ed647be756af0\",\"urls\":[\"bzz-raw://9404711f3206610c08ea97fa52c7b6b4d2e9d536e96fc4b7210aa7e24f796c36\",\"dweb:/ipfs/QmZDzpVzjoap13SuPEq5pVCrmdjoKVZnTsQPLKXAbynTTW\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516102b83803806102b88339818101604052602081101561003357600080fd5b8101908080519060200190929190505050806000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff16021790555050610224806100946000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063a489a8971461003b578063d870c0341461009f575b600080fd5b61009d6004803603604081101561005157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100fb565b005b6100e1600480360360208110156100b557600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610196565b604051808215151515815260200191505060405180910390f35b8173ffffffffffffffffffffffffffffffffffffffff1663a590ae36826040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050600060405180830381600087803b15801561017a57600080fd5b505af115801561018e573d6000803e3d6000fd5b505050505050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1614905091905056fea265627a7a723158207afce61c8e8bae7687ef11bb45f69b1fa587874f8ffa60d2b34347b8cae5eccd64736f6c63430005110032",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063a489a8971461003b578063d870c0341461009f575b600080fd5b61009d6004803603604081101561005157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506100fb565b005b6100e1600480360360208110156100b557600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190505050610196565b604051808215151515815260200191505060405180910390f35b8173ffffffffffffffffffffffffffffffffffffffff1663a590ae36826040518263ffffffff1660e01b8152600401808273ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168152602001915050600060405180830381600087803b15801561017a57600080fd5b505af115801561018e573d6000803e3d6000fd5b505050505050565b60008060009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff168273ffffffffffffffffffffffffffffffffffffffff1614905091905056fea265627a7a723158207afce61c8e8bae7687ef11bb45f69b1fa587874f8ffa60d2b34347b8cae5eccd64736f6c63430005110032",
+  "sourceMap": "56:488:49:-;;;127:105;8:9:-1;5:2;;;30:1;27;20:12;5:2;127:105:49;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;127:105:49;;;;;;;;;;;;;;;;206:19;185:18;;:40;;;;;;;;;;;;;;;;;;127:105;56:488;;;;;;",
+  "deployedSourceMap": "56:488:49:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;56:488:49;;;;;;;;;;;;;;;;;;;;;;;;369:173;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;369:173:49;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;238:125;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;238:125:49;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;369:173;487:15;474:53;;;528:6;474:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;474:61:49;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;474:61:49;;;;369:173;;:::o;238:125::-;302:4;338:18;;;;;;;;;;;325:31;;:9;:31;;;318:38;;238:125;;;:::o",
+  "source": "pragma solidity 0.5.17;\n\nimport \"../TokenStaking.sol\";\n\ncontract DelegatedAuthorityStub {\n    address recognizedContract;\n\n    constructor(address _recognizedContract) public {\n        recognizedContract = _recognizedContract;\n    }\n\n    function __isRecognized(address _contract) public view returns (bool) {\n        return _contract == recognizedContract;\n    }\n\n    function claimAuthorityRecursively(address stakingContract, address source)\n        public\n    {\n        TokenStaking(stakingContract).claimDelegatedAuthority(source);\n    }\n}\n",
+  "sourcePath": "/home/runner/work/keep-core/keep-core/solidity-v1/contracts/stubs/DelegatedAuthorityStub.sol",
+  "ast": {
+    "absolutePath": "/home/runner/work/keep-core/keep-core/solidity-v1/contracts/stubs/DelegatedAuthorityStub.sol",
+    "exportedSymbols": {
+      "DelegatedAuthorityStub": [19142]
+    },
+    "id": 19143,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 19101,
+        "literals": ["solidity", "0.5", ".17"],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:49"
+      },
+      {
+        "absolutePath": "/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenStaking.sol",
+        "file": "../TokenStaking.sol",
+        "id": 19102,
+        "nodeType": "ImportDirective",
+        "scope": 19143,
+        "sourceUnit": 10915,
+        "src": "25:29:49",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 19142,
+        "linearizedBaseContracts": [19142],
+        "name": "DelegatedAuthorityStub",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 19104,
+            "name": "recognizedContract",
+            "nodeType": "VariableDeclaration",
+            "scope": 19142,
+            "src": "94:26:49",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 19103,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "94:7:49",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "body": {
+              "id": 19113,
+              "nodeType": "Block",
+              "src": "175:57:49",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 19111,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 19109,
+                      "name": "recognizedContract",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 19104,
+                      "src": "185:18:49",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "id": 19110,
+                      "name": "_recognizedContract",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 19106,
+                      "src": "206:19:49",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "185:40:49",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 19112,
+                  "nodeType": "ExpressionStatement",
+                  "src": "185:40:49"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 19114,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 19107,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19106,
+                  "name": "_recognizedContract",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19114,
+                  "src": "139:27:49",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19105,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "139:7:49",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "138:29:49"
+            },
+            "returnParameters": {
+              "id": 19108,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "175:0:49"
+            },
+            "scope": 19142,
+            "src": "127:105:49",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 19125,
+              "nodeType": "Block",
+              "src": "308:55:49",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "commonType": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    },
+                    "id": 19123,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftExpression": {
+                      "argumentTypes": null,
+                      "id": 19121,
+                      "name": "_contract",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 19116,
+                      "src": "325:9:49",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "BinaryOperation",
+                    "operator": "==",
+                    "rightExpression": {
+                      "argumentTypes": null,
+                      "id": 19122,
+                      "name": "recognizedContract",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 19104,
+                      "src": "338:18:49",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "325:31:49",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "functionReturnParameters": 19120,
+                  "id": 19124,
+                  "nodeType": "Return",
+                  "src": "318:38:49"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 19126,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "__isRecognized",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 19117,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19116,
+                  "name": "_contract",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19126,
+                  "src": "262:17:49",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19115,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "262:7:49",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "261:19:49"
+            },
+            "returnParameters": {
+              "id": 19120,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19119,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19126,
+                  "src": "302:4:49",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 19118,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "302:4:49",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "301:6:49"
+            },
+            "scope": 19142,
+            "src": "238:125:49",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 19140,
+              "nodeType": "Block",
+              "src": "464:78:49",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 19137,
+                        "name": "source",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 19130,
+                        "src": "528:6:49",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "arguments": [
+                          {
+                            "argumentTypes": null,
+                            "id": 19134,
+                            "name": "stakingContract",
+                            "nodeType": "Identifier",
+                            "overloadedDeclarations": [],
+                            "referencedDeclaration": 19128,
+                            "src": "487:15:49",
+                            "typeDescriptions": {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          }
+                        ],
+                        "expression": {
+                          "argumentTypes": [
+                            {
+                              "typeIdentifier": "t_address",
+                              "typeString": "address"
+                            }
+                          ],
+                          "id": 19133,
+                          "name": "TokenStaking",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 10914,
+                          "src": "474:12:49",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_type$_t_contract$_TokenStaking_$10914_$",
+                            "typeString": "type(contract TokenStaking)"
+                          }
+                        },
+                        "id": 19135,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "kind": "typeConversion",
+                        "lValueRequested": false,
+                        "names": [],
+                        "nodeType": "FunctionCall",
+                        "src": "474:29:49",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_contract$_TokenStaking_$10914",
+                          "typeString": "contract TokenStaking"
+                        }
+                      },
+                      "id": 19136,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "claimDelegatedAuthority",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": 262,
+                      "src": "474:53:49",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_external_nonpayable$_t_address_$returns$__$",
+                        "typeString": "function (address) external"
+                      }
+                    },
+                    "id": 19138,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "474:61:49",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 19139,
+                  "nodeType": "ExpressionStatement",
+                  "src": "474:61:49"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 19141,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "claimAuthorityRecursively",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 19131,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 19128,
+                  "name": "stakingContract",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19141,
+                  "src": "404:23:49",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19127,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "404:7:49",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 19130,
+                  "name": "source",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 19141,
+                  "src": "429:14:49",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 19129,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "429:7:49",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "403:41:49"
+            },
+            "returnParameters": {
+              "id": 19132,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "464:0:49"
+            },
+            "scope": 19142,
+            "src": "369:173:49",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 19143,
+        "src": "56:488:49"
+      }
+    ],
+    "src": "0:545:49"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/home/runner/work/keep-core/keep-core/solidity-v1/contracts/stubs/DelegatedAuthorityStub.sol",
+      "exportedSymbols": {
+        "DelegatedAuthorityStub": [19142]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": ["solidity", "0.5", ".17"]
+        },
+        "id": 19101,
+        "name": "PragmaDirective",
+        "src": "0:23:49"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 10915,
+          "absolutePath": "/home/runner/work/keep-core/keep-core/solidity-v1/contracts/TokenStaking.sol",
+          "file": "../TokenStaking.sol",
+          "scope": 19143,
+          "symbolAliases": [null],
+          "unitAlias": ""
+        },
+        "id": 19102,
+        "name": "ImportDirective",
+        "src": "25:29:49"
+      },
+      {
+        "attributes": {
+          "baseContracts": [null],
+          "contractDependencies": [null],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [19142],
+          "name": "DelegatedAuthorityStub",
+          "scope": 19143
+        },
+        "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "name": "recognizedContract",
+              "scope": 19142,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "address",
+              "value": null,
+              "visibility": "internal"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "address",
+                  "stateMutability": "nonpayable",
+                  "type": "address"
+                },
+                "id": 19103,
+                "name": "ElementaryTypeName",
+                "src": "94:7:49"
+              }
+            ],
+            "id": 19104,
+            "name": "VariableDeclaration",
+            "src": "94:26:49"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": true,
+              "kind": "constructor",
+              "modifiers": [null],
+              "name": "",
+              "scope": 19142,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_recognizedContract",
+                      "scope": 19114,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 19105,
+                        "name": "ElementaryTypeName",
+                        "src": "139:7:49"
+                      }
+                    ],
+                    "id": 19106,
+                    "name": "VariableDeclaration",
+                    "src": "139:27:49"
+                  }
+                ],
+                "id": 19107,
+                "name": "ParameterList",
+                "src": "138:29:49"
+              },
+              {
+                "attributes": {
+                  "parameters": [null]
+                },
+                "children": [],
+                "id": 19108,
+                "name": "ParameterList",
+                "src": "175:0:49"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "=",
+                          "type": "address"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [null],
+                              "referencedDeclaration": 19104,
+                              "type": "address",
+                              "value": "recognizedContract"
+                            },
+                            "id": 19109,
+                            "name": "Identifier",
+                            "src": "185:18:49"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [null],
+                              "referencedDeclaration": 19106,
+                              "type": "address",
+                              "value": "_recognizedContract"
+                            },
+                            "id": 19110,
+                            "name": "Identifier",
+                            "src": "206:19:49"
+                          }
+                        ],
+                        "id": 19111,
+                        "name": "Assignment",
+                        "src": "185:40:49"
+                      }
+                    ],
+                    "id": 19112,
+                    "name": "ExpressionStatement",
+                    "src": "185:40:49"
+                  }
+                ],
+                "id": 19113,
+                "name": "Block",
+                "src": "175:57:49"
+              }
+            ],
+            "id": 19114,
+            "name": "FunctionDefinition",
+            "src": "127:105:49"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [null],
+              "name": "__isRecognized",
+              "scope": 19142,
+              "stateMutability": "view",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "_contract",
+                      "scope": 19126,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 19115,
+                        "name": "ElementaryTypeName",
+                        "src": "262:7:49"
+                      }
+                    ],
+                    "id": 19116,
+                    "name": "VariableDeclaration",
+                    "src": "262:17:49"
+                  }
+                ],
+                "id": 19117,
+                "name": "ParameterList",
+                "src": "261:19:49"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 19126,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "bool",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "bool",
+                          "type": "bool"
+                        },
+                        "id": 19118,
+                        "name": "ElementaryTypeName",
+                        "src": "302:4:49"
+                      }
+                    ],
+                    "id": 19119,
+                    "name": "VariableDeclaration",
+                    "src": "302:4:49"
+                  }
+                ],
+                "id": 19120,
+                "name": "ParameterList",
+                "src": "301:6:49"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 19120
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "commonType": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          },
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "lValueRequested": false,
+                          "operator": "==",
+                          "type": "bool"
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [null],
+                              "referencedDeclaration": 19116,
+                              "type": "address",
+                              "value": "_contract"
+                            },
+                            "id": 19121,
+                            "name": "Identifier",
+                            "src": "325:9:49"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [null],
+                              "referencedDeclaration": 19104,
+                              "type": "address",
+                              "value": "recognizedContract"
+                            },
+                            "id": 19122,
+                            "name": "Identifier",
+                            "src": "338:18:49"
+                          }
+                        ],
+                        "id": 19123,
+                        "name": "BinaryOperation",
+                        "src": "325:31:49"
+                      }
+                    ],
+                    "id": 19124,
+                    "name": "Return",
+                    "src": "318:38:49"
+                  }
+                ],
+                "id": 19125,
+                "name": "Block",
+                "src": "308:55:49"
+              }
+            ],
+            "id": 19126,
+            "name": "FunctionDefinition",
+            "src": "238:125:49"
+          },
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [null],
+              "name": "claimAuthorityRecursively",
+              "scope": 19142,
+              "stateMutability": "nonpayable",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "stakingContract",
+                      "scope": 19141,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 19127,
+                        "name": "ElementaryTypeName",
+                        "src": "404:7:49"
+                      }
+                    ],
+                    "id": 19128,
+                    "name": "VariableDeclaration",
+                    "src": "404:23:49"
+                  },
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "source",
+                      "scope": 19141,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 19129,
+                        "name": "ElementaryTypeName",
+                        "src": "429:7:49"
+                      }
+                    ],
+                    "id": 19130,
+                    "name": "VariableDeclaration",
+                    "src": "429:14:49"
+                  }
+                ],
+                "id": 19131,
+                "name": "ParameterList",
+                "src": "403:41:49"
+              },
+              {
+                "attributes": {
+                  "parameters": [null]
+                },
+                "children": [],
+                "id": 19132,
+                "name": "ParameterList",
+                "src": "464:0:49"
+              },
+              {
+                "children": [
+                  {
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": false,
+                          "isStructConstructorCall": false,
+                          "lValueRequested": false,
+                          "names": [null],
+                          "type": "tuple()",
+                          "type_conversion": false
+                        },
+                        "children": [
+                          {
+                            "attributes": {
+                              "argumentTypes": [
+                                {
+                                  "typeIdentifier": "t_address",
+                                  "typeString": "address"
+                                }
+                              ],
+                              "isConstant": false,
+                              "isLValue": false,
+                              "isPure": false,
+                              "lValueRequested": false,
+                              "member_name": "claimDelegatedAuthority",
+                              "referencedDeclaration": 262,
+                              "type": "function (address) external"
+                            },
+                            "children": [
+                              {
+                                "attributes": {
+                                  "argumentTypes": null,
+                                  "isConstant": false,
+                                  "isLValue": false,
+                                  "isPure": false,
+                                  "isStructConstructorCall": false,
+                                  "lValueRequested": false,
+                                  "names": [null],
+                                  "type": "contract TokenStaking",
+                                  "type_conversion": true
+                                },
+                                "children": [
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": [
+                                        {
+                                          "typeIdentifier": "t_address",
+                                          "typeString": "address"
+                                        }
+                                      ],
+                                      "overloadedDeclarations": [null],
+                                      "referencedDeclaration": 10914,
+                                      "type": "type(contract TokenStaking)",
+                                      "value": "TokenStaking"
+                                    },
+                                    "id": 19133,
+                                    "name": "Identifier",
+                                    "src": "474:12:49"
+                                  },
+                                  {
+                                    "attributes": {
+                                      "argumentTypes": null,
+                                      "overloadedDeclarations": [null],
+                                      "referencedDeclaration": 19128,
+                                      "type": "address",
+                                      "value": "stakingContract"
+                                    },
+                                    "id": 19134,
+                                    "name": "Identifier",
+                                    "src": "487:15:49"
+                                  }
+                                ],
+                                "id": 19135,
+                                "name": "FunctionCall",
+                                "src": "474:29:49"
+                              }
+                            ],
+                            "id": 19136,
+                            "name": "MemberAccess",
+                            "src": "474:53:49"
+                          },
+                          {
+                            "attributes": {
+                              "argumentTypes": null,
+                              "overloadedDeclarations": [null],
+                              "referencedDeclaration": 19130,
+                              "type": "address",
+                              "value": "source"
+                            },
+                            "id": 19137,
+                            "name": "Identifier",
+                            "src": "528:6:49"
+                          }
+                        ],
+                        "id": 19138,
+                        "name": "FunctionCall",
+                        "src": "474:61:49"
+                      }
+                    ],
+                    "id": 19139,
+                    "name": "ExpressionStatement",
+                    "src": "474:61:49"
+                  }
+                ],
+                "id": 19140,
+                "name": "Block",
+                "src": "464:78:49"
+              }
+            ],
+            "id": 19141,
+            "name": "FunctionDefinition",
+            "src": "369:173:49"
+          }
+        ],
+        "id": 19142,
+        "name": "ContractDefinition",
+        "src": "56:488:49"
+      }
+    ],
+    "id": 19143,
+    "name": "SourceUnit",
+    "src": "0:545:49"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.17+commit.d19bba13.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-11-26T17:03:20.348Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

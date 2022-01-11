@@ -2,7 +2,6 @@ import { FC } from "react"
 import { HStack, Stack } from "@chakra-ui/react"
 import TokenBalance from "../../TokenBalance"
 import { Body3 } from "../../Typography"
-import { Token } from "../../../enums"
 
 interface StakingStatsProps {
   stakeAmount: string | number
