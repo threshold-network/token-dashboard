@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { EventEmitter } from "events"
 
-const localStorageEmittetr = new EventEmitter()
+const localStorageEmitter = new EventEmitter()
 
 const getStorageValue = <T>(key: string | null, defaultValue: T) => {
   if (!key) {
@@ -31,22 +31,22 @@ export const useLocalStorage = <T>(
 
   useEffect(() => {
     if (key) {
-      localStorageEmittetr.emit("value_changed", key, value)
+      localStorageEmitter.emit("value_changed", key, value)
       localStorage.setItem(key, JSON.stringify(value))
     }
     // eslint-disable-next-line
   }, [key, JSON.stringify(value)])
 
   useEffect(() => {
-    const cb = (emittedKey: string, value: T) => {
+    const callback = (emittedKey: string, value: T) => {
       if (key === emittedKey) {
         setValue(value)
       }
     }
-    localStorageEmittetr.on("value_changed", cb)
+    localStorageEmitter.on("value_changed", callback)
 
     return () => {
-      localStorageEmittetr.off("value_changed", cb)
+      localStorageEmitter.off("value_changed", callback)
     }
   }, [key])
 
