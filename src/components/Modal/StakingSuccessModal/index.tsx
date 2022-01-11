@@ -41,7 +41,7 @@ const StakingSuccessModal: FC<StakingSuccessProps> = ({
       <ModalBody>
         <Alert status="success" mb={4}>
           <AlertIcon />
-          Your upgrade was successful
+          Your stake was successful!
         </Alert>
         <HStack
           borderRadius="md"
