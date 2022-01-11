@@ -1,4 +1,4 @@
-import { renderHook, RenderHookResult } from "@testing-library/react-hooks"
+import { renderHook } from "@testing-library/react-hooks"
 import { AddressZero } from "@ethersproject/constants"
 import { useVendingMachineContract } from "../useVendingMachineContract"
 import { useLocalStorage } from "../../../hooks/useLocalStorage"
@@ -20,14 +20,15 @@ describe("Test `useVendingMachineRatio` hook", () => {
     ratio: jest.fn(),
   }
   const mockedRatioValue = "500000000000000000"
-  let mockedLocalStorageValue = { value: "0", contractAddress: AddressZero }
+  const localStorageDefaultValue = { value: "0", contractAddress: AddressZero }
+  let mockedLocalStorageValue = localStorageDefaultValue
   const mockedSetRatio = jest.fn()
   let renderHookResult
 
   beforeEach(() => {
     ;(useVendingMachineContract as jest.Mock).mockReturnValue(mockedContract)
 
-    mockedLocalStorageValue = { value: "0", contractAddress: AddressZero }
+    mockedLocalStorageValue = localStorageDefaultValue
     mockedSetRatio.mockImplementation((value) => {
       mockedLocalStorageValue = value
     })
@@ -41,8 +42,6 @@ describe("Test `useVendingMachineRatio` hook", () => {
   })
 
   test("should fetch ratio from chain and save in local storage", async () => {
-    const { result } = renderHookResult
-
     expect(useVendingMachineContract).toHaveBeenCalledWith(token)
     expect(useLocalStorage).toHaveBeenCalledWith(`${token}-to-T-ratio`, {
       value: "0",

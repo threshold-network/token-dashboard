@@ -50,7 +50,7 @@ describe("Test `useSubscribeToERC20TransferEvent` hook", () => {
   }
 
   beforeEach(() => {
-    // Cleare listeners
+    // Clear listeners
     contractEventEmitter.removeAllListeners()
     providerEventEmitter.removeAllListeners()
 
