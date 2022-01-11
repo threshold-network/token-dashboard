@@ -29,7 +29,7 @@ const Sidebar = () => {
         href: "/upgrade",
       },
       {
-        text: "Staking",
+        text: "StakingSuccessModal",
         activeIcon: IoBarChartSharp,
         passiveIcon: IoChartOutlineSharp,
         href: "/staking",

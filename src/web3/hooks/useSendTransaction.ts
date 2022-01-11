@@ -9,7 +9,7 @@ import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 export const useSendTransaction = (
   contract: Contract,
   methodName: string,
-  onSuccess?: () => void | Promise<void>,
+  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
   const { library, account } = useWeb3React()
@@ -35,7 +35,7 @@ export const useSendTransaction = (
         await tx.wait()
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
-          onSuccess()
+          onSuccess(tx)
         }
       } catch (error: any) {
         setTransactionStatus(

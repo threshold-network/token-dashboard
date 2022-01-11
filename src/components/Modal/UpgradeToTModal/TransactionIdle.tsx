@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import { Body1, Body3, H5 } from "../../Typography"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
-import TransactionStats from "./TransactionStats"
+import UpgradeStats from "./UpgradeStats"
 import { Divider } from "../../Divider"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
@@ -52,7 +52,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           <UpgradeIconGroup token={token} boxSize="48px" />
         </HStack>
         <Divider />
-        <TransactionStats
+        <UpgradeStats
           token={token}
           exchangeRate={exchangeRate}
           receivedAmount={receivedAmount}

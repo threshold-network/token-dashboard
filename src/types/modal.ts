@@ -10,7 +10,7 @@ import {
   TransactionIsWaitingForConfirmation,
   TransactionFailed,
 } from "../components/Modal/TransactionModal"
-import StakingSuccessModal from "../components/Modal/Staking"
+import StakingSuccessModal from "../components/Modal/StakingSuccessModal"
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
@@ -50,6 +50,5 @@ export interface UseModal {
     modalProps: any
     openModal: (type: ModalType, props?: any) => ModalActionTypes
     closeModal: () => ModalActionTypes
-    updateModalProps: (newProps: any) => ModalActionTypes
   }
 }

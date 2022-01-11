@@ -4,39 +4,26 @@ import TokenBalance from "../../TokenBalance"
 import { Body3 } from "../../Typography"
 import { Token } from "../../../enums"
 
-interface TransactionStatsProps {
-  upgradedAmount: string
-  receivedAmount: string
-  exchangeRate: string
-  token: Token
+interface StakingStatsProps {
+  stakeAmount: string | number
+  operator: string
+  beneficiary: string
+  authorizer: string
 }
 
-const TransactionStats: FC<TransactionStatsProps> = ({
-  token,
-  upgradedAmount,
-  receivedAmount,
-  exchangeRate,
+const StakingStats: FC<StakingStatsProps> = ({
+  stakeAmount,
+  operator,
+  beneficiary,
+  authorizer,
 }) => {
   const transactionInfo = [
     {
-      text: "Upgrade Amount",
+      text: "Stake Amount",
       // todo: Token might not be a string, so this should be updated once we decide on the interface
       value: (
         <TokenBalance
-          tokenAmount={upgradedAmount}
-          withSymbol
-          tokenSymbol={token}
-          as="p"
-          fontSize="sm"
-          color="gray.700"
-        />
-      ),
-    },
-    {
-      text: "Receive Amount",
-      value: (
-        <TokenBalance
-          tokenAmount={receivedAmount}
+          tokenAmount={stakeAmount}
           withSymbol
           tokenSymbol="T"
           as="p"
@@ -46,8 +33,16 @@ const TransactionStats: FC<TransactionStatsProps> = ({
       ),
     },
     {
-      text: "Exchange Rate",
-      value: <Body3 color="gray.700">{`1 ${token} = ${exchangeRate} T`}</Body3>,
+      text: "Operator",
+      value: <Body3 color="gray.700">{operator}</Body3>,
+    },
+    {
+      text: "Beneficiary",
+      value: <Body3 color="gray.700">{beneficiary}</Body3>,
+    },
+    {
+      text: "Authorizer",
+      value: <Body3 color="gray.700">{authorizer}</Body3>,
     },
   ]
 
@@ -63,4 +58,4 @@ const TransactionStats: FC<TransactionStatsProps> = ({
   )
 }
 
-export default TransactionStats
+export default StakingStats
