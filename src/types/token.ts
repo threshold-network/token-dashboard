@@ -51,6 +51,7 @@ export interface UseReduxToken {
     keep: ReduxTokenInfo
     nu: ReduxTokenInfo
     t: ReduxTokenInfo
+    tbtc: ReduxTokenInfo
     setTokenBalance: (
       token: Token,
       balance: number | string
