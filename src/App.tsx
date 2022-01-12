@@ -33,12 +33,14 @@ import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContrac
 import { fetchETHPriceUSD } from "./store/eth"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
+import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
   useSubscribeToERC20TransferEvent(Token.Keep)
   useSubscribeToERC20TransferEvent(Token.Nu)
   useSubscribeToERC20TransferEvent(Token.T)
+  useSubscribeToOperatorStakedEvent()
 
   return <></>
 }
