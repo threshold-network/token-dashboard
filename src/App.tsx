@@ -1,12 +1,12 @@
 import "focus-visible/dist/focus-visible"
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import {
   Box,
   ChakraProvider,
   Container,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Provider as ReduxProvider } from "react-redux"
+import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import {
   BrowserRouter as Router,
@@ -30,6 +30,7 @@ import Staking from "./pages/Staking"
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
 import { useModal } from "./hooks/useModal"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
+import { fetchETHPriceUSD } from "./store/eth"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
 
@@ -84,6 +85,12 @@ const useSubscribeToVendingMachineContractEvents = () => {
 }
 
 const AppBody = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchETHPriceUSD())
+  }, [dispatch])
+
   return (
     <Box display="flex">
       <Sidebar />

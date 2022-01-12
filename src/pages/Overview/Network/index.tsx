@@ -5,9 +5,7 @@ import UpgradeBanner from "./UpgradeBanner"
 import WalletBalances from "./WalletBalances"
 import StakingOverview from "./StakingOverview"
 
-const Network: FC = () => {
-  const totalValueLocked = 30838938
-
+const Network: FC<{ totalValueLocked: string }> = ({ totalValueLocked }) => {
   return (
     <VStack spacing={4} mt={4}>
       <UpgradeBanner />

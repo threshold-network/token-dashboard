@@ -11,17 +11,15 @@ import {
   SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
+import { exchangeAPI } from "../../utils/exchangeAPI"
 import Icon from "../../enums/icon"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
   async ({ token }: { token: Token }) => {
     const coingeckoID = CoingeckoID[token]
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoID}&vs_currencies=usd`
-    )
-    // @ts-ignore
-    return { usd: response.data[coingeckoID].usd, token }
+    const usd = await exchangeAPI.fetchCryptoCurrencyPriceUSD(coingeckoID)
+    return { usd, token }
   }
 )
 
@@ -52,6 +50,12 @@ export const tokenSlice = createSlice({
       conversionRate: 1,
       text: Token.T,
       icon: Icon.TCircleBrand,
+      usdConversion: 0,
+      usdBalance: "0",
+    },
+    [Token.TBTC]: {
+      loading: false,
+      balance: 0,
       usdConversion: 0,
       usdBalance: "0",
     },

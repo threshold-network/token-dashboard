@@ -3,11 +3,12 @@ import numeral from "numeral"
 import { Flex } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
 import { H1 } from "../../../components/Typography"
+import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
 
-const TotalValueLocked: FC<{ totalValueLocked: number }> = ({
+const TotalValueLocked: FC<{ totalValueLocked: number | string }> = ({
   totalValueLocked,
 }) => {
-  const tvl = numeral(totalValueLocked).format("$0,00")
+  const tvl = formatFiatCurrencyAmount(totalValueLocked)
 
   return (
     <CardTemplate title="TOTAL VALUE LOCKED" h="auto">
