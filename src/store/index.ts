@@ -4,6 +4,7 @@ import { tokenSlice } from "./tokens"
 import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
 import { stakingSlice } from "./staking"
+import { ethSlice } from "./eth"
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     sidebar: sidebarSlice.reducer,
     transaction: transactionSlice.reducer,
     staking: stakingSlice.reducer,
+    eth: ethSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

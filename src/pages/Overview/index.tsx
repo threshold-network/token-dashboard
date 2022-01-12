@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Container } from "@chakra-ui/react"
 import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom"
 import { H1, H3, Label1 } from "../../components/Typography"
@@ -6,20 +7,25 @@ import Network from "./Network"
 import TBTC from "./tBTC"
 import Pre from "./Pre"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
+import { useFetchTvl } from "../../hooks/useFetchTvl"
+
+const subNavLinks = [
+  {
+    text: "Network",
+    path: "/network",
+  },
+  { text: "tBTC", path: "/tBTC" },
+  { text: "PRE", path: "/pre" },
+]
 
 const Overview = ({}) => {
-  const subNavLinks = [
-    {
-      text: "Network",
-      path: "/network",
-    },
-    { text: "tBTC", path: "/tBTC" },
-    { text: "PRE", path: "/pre" },
-  ]
-
   const { path } = useRouteMatch()
-
   const isMobile = useChakraBreakpoint("md")
+  const [data, fetchtTvlData] = useFetchTvl()
+
+  useEffect(() => {
+    fetchtTvlData()
+  }, [fetchtTvlData])
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
@@ -28,7 +34,7 @@ const Overview = ({}) => {
       <SubNavigationPills parentPath={path} links={subNavLinks} />
       <Switch>
         <Route path={`${path}/network`}>
-          <Network />
+          <Network totalValueLocked={data.total} />
         </Route>
         <Route path={`${path}/tBTC`}>
           <TBTC />
