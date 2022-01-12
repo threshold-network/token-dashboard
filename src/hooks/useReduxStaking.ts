@@ -12,6 +12,7 @@ export const useReduxStaking: UseReduxStaking = () => {
   const stakeAmount = useSelector(
     (state: RootState) => state.staking.stakeAmount
   )
+  const stakes = useSelector((state: RootState) => state.staking.stakes)
 
   const dispatch = useDispatch()
 
@@ -22,7 +23,9 @@ export const useReduxStaking: UseReduxStaking = () => {
   const setOperator = (operator: string) =>
     dispatch(updateStateAction({ key: "operator", value: operator }))
   const setStakeAmount = (stakeAmount: string | number) =>
-    dispatch(updateStateAction({ key: "stakeAmount", value: stakeAmount }))
+    dispatch(
+      updateStateAction({ key: "stakeAmount", value: stakeAmount as string })
+    )
 
   return {
     setOperator,
@@ -33,5 +36,6 @@ export const useReduxStaking: UseReduxStaking = () => {
     operator,
     stakeAmount,
     setStakeAmount,
+    stakes,
   }
 }
