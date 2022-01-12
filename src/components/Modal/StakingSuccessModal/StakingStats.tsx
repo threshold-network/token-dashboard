@@ -2,6 +2,7 @@ import { FC } from "react"
 import { HStack, Stack } from "@chakra-ui/react"
 import TokenBalance from "../../TokenBalance"
 import { Body3 } from "../../Typography"
+import shortenAddress from "../../../utils/shortenAddress"
 
 interface StakingStatsProps {
   stakeAmount: string | number
@@ -33,15 +34,15 @@ const StakingStats: FC<StakingStatsProps> = ({
     },
     {
       text: "Operator",
-      value: <Body3 color="gray.700">{operator}</Body3>,
+      value: <Body3 color="gray.700">{shortenAddress(operator)}</Body3>,
     },
     {
       text: "Beneficiary",
-      value: <Body3 color="gray.700">{beneficiary}</Body3>,
+      value: <Body3 color="gray.700">{shortenAddress(beneficiary)}</Body3>,
     },
     {
       text: "Authorizer",
-      value: <Body3 color="gray.700">{authorizer}</Body3>,
+      value: <Body3 color="gray.700">{shortenAddress(authorizer)}</Body3>,
     },
   ]
 
