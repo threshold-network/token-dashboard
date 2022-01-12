@@ -43,10 +43,10 @@ describe("Test `useVendingMachineRatio` hook", () => {
 
   test("should fetch ratio from chain and save in local storage", async () => {
     expect(useVendingMachineContract).toHaveBeenCalledWith(token)
-    expect(useLocalStorage).toHaveBeenCalledWith(`${token}-to-T-ratio`, {
-      value: "0",
-      contractAddress: AddressZero,
-    })
+    expect(useLocalStorage).toHaveBeenCalledWith(
+      `${token}-to-T-ratio`,
+      localStorageDefaultValue
+    )
 
     expect(mockedContract.ratio).toHaveBeenCalled()
 
@@ -66,10 +66,10 @@ describe("Test `useVendingMachineRatio` hook", () => {
     const { result } = renderHook(() => useVendingMachineRatio(token))
 
     expect(useVendingMachineContract).toHaveBeenCalledWith(token)
-    expect(useLocalStorage).toHaveBeenCalledWith(`${token}-to-T-ratio`, {
-      value: "0",
-      contractAddress: AddressZero,
-    })
+    expect(useLocalStorage).toHaveBeenCalledWith(
+      `${token}-to-T-ratio`,
+      localStorageDefaultValue
+    )
 
     expect(mockedContract.ratio).not.toHaveBeenCalled()
     expect(result.current).toEqual(mockedLocalStorageValue.value)
