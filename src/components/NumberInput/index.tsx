@@ -16,6 +16,7 @@ const NumberInput: FC<
   const { field: css } = useMultiStyleConfig("Input", props)
 
   return (
+    // @ts-ignore
     <ChakraWrapper
       allowLeadingZeros={false}
       thousandSeparator
