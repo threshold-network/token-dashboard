@@ -14,7 +14,6 @@ import { stripHexPrefix } from "ethjs-util"
 import { Lock } from "semaphore-async-await"
 import { Dictionary } from "ts-essentials"
 import { BaseWalletSubprovider } from "@0x/subproviders/lib/src/subproviders/base_wallet_subprovider"
-import { add } from "husky"
 
 export const LEDGER_DERIVATION_PATHS = {
   LEDGER_LIVE: `m/44'/60'/x'/0/0`,
