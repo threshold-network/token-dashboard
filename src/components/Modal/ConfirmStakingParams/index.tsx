@@ -19,11 +19,8 @@ import AdvancedParamsForm from "./AdvancedParamsForm"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { useTokenState } from "../../../hooks/useTokenState"
-import { useTStakingAllowance } from "../../../web3/hooks/useTStakingAllowance"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
-import { useApproveTStaking } from "../../../web3/hooks/useApproveTStaking"
-import { BigNumber } from "ethers"
 
 const ConfirmStakingParams: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
@@ -31,7 +28,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
     t: { balance: maxAmount },
   } = useTokenState()
   const { account } = useWeb3React()
-  const allowance = useTStakingAllowance()
+
   const {
     stakingState: { stakeAmount, operator, beneficiary, authorizer },
     updateState,
@@ -50,21 +47,8 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
     })
   )
 
-  //
-  // approval tx - staking tx callback on success
-  //
-  const { approve: approveTStaking } = useApproveTStaking(() =>
-    stake(operator, beneficiary, authorizer, stakeAmount)
-  )
-
-  //
-  // onSubmit callback - either start with approval or skip if account is already approved for the amountToStake
-  //
-  const isApprovedForAmount = BigNumber.from(stakeAmount).lte(allowance)
-
-  const onSubmit = isApprovedForAmount
-    ? () => stake(operator, beneficiary, authorizer, stakeAmount)
-    : () => approveTStaking()
+  const onSubmit = () =>
+    stake({ operator, beneficiary, authorizer, amount: stakeAmount })
 
   //
   // initializes all values to the connected wallet

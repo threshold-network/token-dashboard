@@ -6,5 +6,5 @@ import { useTokenAllowance } from "./useTokenAllowance"
 export const useTStakingAllowance = () => {
   const { contract: TTokenContract } = useToken(Token.T)
   const tStakingContract = useTStakingContract()
-  return useTokenAllowance(TTokenContract, tStakingContract?.address)
+  return useTokenAllowance(TTokenContract!, tStakingContract?.address)
 }
