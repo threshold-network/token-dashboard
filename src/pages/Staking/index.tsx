@@ -6,15 +6,15 @@ import StakingChecklistCard from "./StakingChecklistCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import RewardsCard from "./RewardsCard"
 import { useFetchOwnerStakes } from "../../hooks/useFetchOwnerStakes"
-import { useReduxStaking } from "../../hooks/useReduxStaking"
 import { Body1, H1 } from "../../components/Typography"
 import { setStakes } from "../../store/staking"
+import { useStakingState } from "../../hooks/useStakingState"
 
 const StakingPage: FC = () => {
   const fetchOwnerStakes = useFetchOwnerStakes()
   const dispatch = useDispatch()
   const { account } = useWeb3React()
-  const { stakes } = useReduxStaking()
+  const { stakes } = useStakingState()
 
   useEffect(() => {
     const fn = async () => {

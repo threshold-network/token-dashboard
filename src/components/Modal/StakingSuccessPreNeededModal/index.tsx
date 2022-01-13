@@ -16,10 +16,12 @@ import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { FiArrowUpRight } from "react-icons/all"
 import StakingStats from "../StakingSuccessModal/StakingStats"
-import { useReduxStaking } from "../../../hooks/useReduxStaking"
+import { useStakingState } from "../../../hooks/useStakingState"
 
 const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
-  const { stakeAmount, operator, beneficiary, authorizer } = useReduxStaking()
+  const {
+    stakingState: { stakeAmount, operator, beneficiary, authorizer },
+  } = useStakingState()
 
   return (
     <>
