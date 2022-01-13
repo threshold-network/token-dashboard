@@ -20,7 +20,7 @@ export const useSendTransaction = (
 
   const sendTransaction = useCallback(
     async (...args) => {
-      if (!account) {
+      if (!account || !contract[methodName]) {
         // Maybe we should do something here?
         return
       }
