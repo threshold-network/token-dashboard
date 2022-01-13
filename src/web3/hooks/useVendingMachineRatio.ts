@@ -1,34 +1,79 @@
 import { useEffect } from "react"
+import { AddressZero } from "@ethersproject/constants"
 import { useVendingMachineContract } from "./useVendingMachineContract"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
 import { UpgredableToken } from "../../types"
-import { usePrevious } from "@chakra-ui/react"
+import { isSameETHAddress } from "../../utils/isSameETHAddress"
+import { Token } from "../../enums"
+
+// Mutex implementation adapted from
+// https://spin.atomicobject.com/2018/09/10/javascript-concurrency/
+class Mutex {
+  private mutex = Promise.resolve()
+
+  lock(): PromiseLike<() => void> {
+    let begin: (unlock: () => void) => void = (unlock) => {}
+
+    this.mutex = this.mutex.then(() => {
+      return new Promise(begin)
+    })
+
+    return new Promise((res) => {
+      begin = res
+    })
+  }
+}
+
+const keepMutex = new Mutex()
+const nuMutex = new Mutex()
+
+const TOKEN_TO_MUTEX = {
+  [Token.Keep]: keepMutex,
+  [Token.Nu]: nuMutex,
+}
 
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
 export const useVendingMachineRatio = (token: UpgredableToken) => {
   const vendingMachine = useVendingMachineContract(token)
-  const prevAddress = usePrevious(vendingMachine?.address)
+  const contractAddress = vendingMachine?.address
 
-  const [ratio, setRatio] = useLocalStorage(
-    vendingMachine?.address ? `${vendingMachine.address}-ratio` : null,
-    ""
-  )
+  const [ratio, setRatio] = useLocalStorage(`${token}-to-T-ratio`, {
+    value: "0",
+    contractAddress: AddressZero,
+  })
+
+  const { value: ratioValue, contractAddress: localStorageContractAddress } =
+    ratio
 
   useEffect(() => {
-    if (ratio || !vendingMachine || !prevAddress) {
-      return
+    if (
+      ratioValue === "0" &&
+      contractAddress &&
+      (localStorageContractAddress === AddressZero ||
+        !isSameETHAddress(contractAddress, localStorageContractAddress))
+    ) {
+      const fn = async () => {
+        const mutex = TOKEN_TO_MUTEX[token]
+        const unlock = await mutex.lock()
+        try {
+          const ratio = await vendingMachine?.ratio()
+          setRatio({ value: ratio.toString(), contractAddress })
+        } catch (error) {
+          unlock()
+          console.error(`error fetching ${token} VendingMachine ratio`, error)
+        }
+      }
+      fn()
     }
+  }, [
+    ratioValue,
+    localStorageContractAddress,
+    setRatio,
+    vendingMachine,
+    contractAddress,
+    token,
+  ])
 
-    vendingMachine
-      .ratio()
-      .then((value: any) => {
-        setRatio(value.toString())
-      })
-      .catch((error: any) => {
-        console.log("error", error)
-      })
-  }, [ratio, setRatio, vendingMachine, prevAddress])
-
-  return ratio
+  return ratioValue
 }
