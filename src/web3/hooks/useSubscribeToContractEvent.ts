@@ -48,7 +48,7 @@ export const useSubscribeToContractEvent = (
     const eventNameOrFilter: string | EventFilter =
       indexedFilterParamsLength === 0
         ? eventName
-        : contract.filters[eventName](fileterParams)
+        : contract.filters[eventName](...fileterParams)
 
     // Ethers.js considers the current block as part of "from now on" so we
     // start subscribing to event in the next block. If the user submit a
