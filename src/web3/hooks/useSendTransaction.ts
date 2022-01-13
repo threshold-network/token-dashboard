@@ -25,8 +25,6 @@ export const useSendTransaction = (
         return
       }
 
-      console.log("The contract ", contract)
-
       try {
         contract.connect(getSigner(library, account))
         setTransactionStatus(TransactionStatus.PendingWallet)
