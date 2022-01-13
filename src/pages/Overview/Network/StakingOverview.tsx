@@ -3,12 +3,12 @@ import { Link as RouterLink } from "react-router-dom"
 import { Button, HStack, Link, useColorModeValue } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
 import { Body2, Body3, H3 } from "../../../components/Typography"
-import { useReduxToken } from "../../../hooks/useReduxToken"
+import { useTokenState } from "../../../hooks/useTokenState"
 import Icon from "../../../components/Icon"
 import { formatNumeral } from "../../../utils/formatAmount"
 
 const StakingOverview: FC = () => {
-  const { t } = useReduxToken()
+  const { t } = useTokenState()
 
   return (
     <CardTemplate title="STAKING">

@@ -7,9 +7,9 @@ import {
 } from "../store/tokens"
 import { RootState } from "../store"
 import { Token } from "../enums"
-import { UseReduxToken } from "../types/token"
+import { UseTokenState } from "../types/token"
 
-export const useReduxToken: UseReduxToken = () => {
+export const useTokenState: UseTokenState = () => {
   const keep = useSelector((state: RootState) => state.token[Token.Keep])
   const nu = useSelector((state: RootState) => state.token[Token.Nu])
   const t = useSelector((state: RootState) => state.token[Token.T])

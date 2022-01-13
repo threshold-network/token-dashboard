@@ -17,31 +17,28 @@ import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import AdvancedParamsForm from "./AdvancedParamsForm"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
-import { useReduxStaking } from "../../../hooks/useReduxStaking"
-import { useReduxToken } from "../../../hooks/useReduxToken"
-import { useTStakingAllowance } from "../../../web3/hooks/useTStakingAllowance"
+import { useStakingState } from "../../../hooks/useStakingState"
+import { useTokenState } from "../../../hooks/useTokenState"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
-import { useApproveTStaking } from "../../../web3/hooks/useApproveTStaking"
-import { BigNumber } from "ethers"
 
 const ConfirmStakingParams: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
-  } = useReduxToken()
+  } = useTokenState()
   const { account } = useWeb3React()
-  const { allowance } = useTStakingAllowance()
+
   const {
-    stakeAmount,
-    setStakeAmount,
-    operator,
-    setOperator,
-    beneficiary,
-    setBeneficiary,
-    authorizer,
-    setAuthorizer,
-  } = useReduxStaking()
+    stakingState: { stakeAmount, operator, beneficiary, authorizer },
+    updateState,
+  } = useStakingState()
+
+  const setStakeAmount = (value: string | number) =>
+    updateState("stakeAmount", value)
+  const setOperator = (value: string) => updateState("operator", value)
+  const setBeneficiary = (value: string) => updateState("beneficiary", value)
+  const setAuthorizer = (value: string) => updateState("authorizer", value)
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
@@ -50,20 +47,8 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
     })
   )
 
-  //
-  // approval tx - staking tx callback on success
-  //
-  const { approveTStaking } = useApproveTStaking(() =>
-    stake(operator, beneficiary, authorizer, stakeAmount)
-  )
-
-  //
-  // onSubmit callback - either start with approval or skip if account is already approved for the amountToStake
-  //
-  const isApprovedForAmount = BigNumber.from(stakeAmount).lt(allowance)
-  const onSubmit = isApprovedForAmount
-    ? () => stake(operator, beneficiary, authorizer, stakeAmount)
-    : approveTStaking
+  const onSubmit = () =>
+    stake({ operator, beneficiary, authorizer, amount: stakeAmount })
 
   //
   // initializes all values to the connected wallet
