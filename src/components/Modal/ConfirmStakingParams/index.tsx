@@ -31,7 +31,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
     t: { balance: maxAmount },
   } = useTokenState()
   const { account } = useWeb3React()
-  const { allowance } = useTStakingAllowance()
+  const allowance = useTStakingAllowance()
   const {
     stakingState: { stakeAmount, operator, beneficiary, authorizer },
     updateState,
@@ -53,17 +53,18 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
   //
   // approval tx - staking tx callback on success
   //
-  const { approveTStaking } = useApproveTStaking(() =>
+  const { approve: approveTStaking } = useApproveTStaking(() =>
     stake(operator, beneficiary, authorizer, stakeAmount)
   )
 
   //
   // onSubmit callback - either start with approval or skip if account is already approved for the amountToStake
   //
-  const isApprovedForAmount = BigNumber.from(stakeAmount).lt(allowance)
+  const isApprovedForAmount = BigNumber.from(stakeAmount).lte(allowance)
+
   const onSubmit = isApprovedForAmount
     ? () => stake(operator, beneficiary, authorizer, stakeAmount)
-    : approveTStaking
+    : () => approveTStaking()
 
   //
   // initializes all values to the connected wallet
