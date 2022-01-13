@@ -4,14 +4,14 @@ import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
 import { useNu } from "../web3/hooks/useNu"
 import { useT } from "../web3/hooks/useT"
-import { useReduxToken } from "../hooks/useReduxToken"
+import { useTokenState } from "../hooks/useTokenState"
 import { useTokensBalanceCall } from "../hooks/useTokensBalanceCall"
 import { Token } from "../enums"
-import { ReduxTokenInfo } from "../types"
+import { TokenState } from "../types"
 import { useTBTCTokenContract } from "../web3/hooks"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 
-interface TokenContextState extends ReduxTokenInfo {
+interface TokenContextState extends TokenState {
   contract: Contract | null
 }
 
@@ -43,7 +43,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     nu: nuData,
     t: tData,
     tbtc: tbtcData,
-  } = useReduxToken()
+  } = useTokenState()
 
   const fetchBalances = useTokensBalanceCall(
     [keep.contract!, nu.contract!, t.contract!],

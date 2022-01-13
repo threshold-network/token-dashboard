@@ -6,7 +6,7 @@ import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { CoingeckoID, Token } from "../../enums/token"
 import {
-  ReduxTokenInfo,
+  TokenState,
   SetTokenBalanceActionPayload,
   SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
@@ -59,7 +59,7 @@ export const tokenSlice = createSlice({
       usdConversion: 0,
       usdBalance: "0",
     },
-  } as Record<Token, ReduxTokenInfo>,
+  } as Record<Token, TokenState>,
   reducers: {
     setTokenLoading: (
       state,

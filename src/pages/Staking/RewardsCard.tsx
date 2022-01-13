@@ -35,16 +35,6 @@ const RewardsCard: FC = () => {
             Rewards are released at the end of each month
           </Body3>
         </Box>
-        <Alert status="error">
-          <AlertIcon />
-          <Body2>
-            You must enter a PRE Worker Address for one or more of your taking
-            positions before it will generate rewards{" "}
-            <Link href="SOME_LINK" target="_blank" textDecoration="underline">
-              set up <Icon boxSize="12px" as={FiArrowUpRight} />
-            </Link>
-          </Body2>
-        </Alert>
       </Stack>
     </Card>
   )

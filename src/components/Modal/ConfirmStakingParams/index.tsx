@@ -17,8 +17,8 @@ import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import AdvancedParamsForm from "./AdvancedParamsForm"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
-import { useReduxStaking } from "../../../hooks/useReduxStaking"
-import { useReduxToken } from "../../../hooks/useReduxToken"
+import { useStakingState } from "../../../hooks/useStakingState"
+import { useTokenState } from "../../../hooks/useTokenState"
 import { useTStakingAllowance } from "../../../web3/hooks/useTStakingAllowance"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
@@ -29,7 +29,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
-  } = useReduxToken()
+  } = useTokenState()
   const { account } = useWeb3React()
   const { allowance } = useTStakingAllowance()
   const {
@@ -41,7 +41,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
     setBeneficiary,
     authorizer,
     setAuthorizer,
-  } = useReduxStaking()
+  } = useStakingState()
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
