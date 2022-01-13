@@ -53,4 +53,7 @@ export interface OperatorStakedEvent {
 }
 
 export type OperatorStakedActionPayload = OperatorStakedEvent &
-  Omit<StakeData, StakingStateKey>
+  Omit<
+    StakeData,
+    "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
+  >
