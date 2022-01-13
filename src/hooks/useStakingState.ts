@@ -1,9 +1,9 @@
 import { useSelector, useDispatch } from "react-redux"
 import { updateState as updateStateAction } from "../store/staking"
 import { RootState } from "../store"
-import { UseReduxStaking } from "../types/staking"
+import { UseStakingState } from "../types/staking"
 
-export const useReduxStaking: UseReduxStaking = () => {
+export const useStakingState: UseStakingState = () => {
   const operator = useSelector((state: RootState) => state.staking.operator)
   const beneficiary = useSelector(
     (state: RootState) => state.staking.beneficiary

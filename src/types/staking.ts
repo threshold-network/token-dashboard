@@ -7,7 +7,7 @@ export interface UpdateState {
   payload: UpdateStateActionPayload
 }
 
-export interface UseReduxStaking {
+export interface UseStakingState {
   (): {
     stakeAmount: string | number
     operator: string

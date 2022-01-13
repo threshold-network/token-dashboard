@@ -20,7 +20,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
-import { useReduxStaking } from "../../../hooks/useReduxStaking"
+import { useStakingState } from "../../../hooks/useStakingState"
 
 interface StakingSuccessProps extends BaseModalProps {
   transactionHash: string
@@ -30,7 +30,7 @@ const StakingSuccessModal: FC<StakingSuccessProps> = ({
   transactionHash,
   closeModal,
 }) => {
-  const { stakeAmount, operator, beneficiary, authorizer } = useReduxStaking()
+  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
 
   return (
     <>
