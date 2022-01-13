@@ -1,37 +1,18 @@
 import { useSelector, useDispatch } from "react-redux"
 import { updateState as updateStateAction } from "../store/staking"
 import { RootState } from "../store"
-import { UseStakingState } from "../types/staking"
+import { StakingStateKey, UseStakingState } from "../types/staking"
 
 export const useStakingState: UseStakingState = () => {
-  const operator = useSelector((state: RootState) => state.staking.operator)
-  const beneficiary = useSelector(
-    (state: RootState) => state.staking.beneficiary
-  )
-  const authorizer = useSelector((state: RootState) => state.staking.authorizer)
-  const stakeAmount = useSelector(
-    (state: RootState) => state.staking.stakeAmount
-  )
+  const stakingState = useSelector((state: RootState) => state.staking)
 
   const dispatch = useDispatch()
 
-  const setBeneficiary = (beneficiary: string) =>
-    dispatch(updateStateAction({ key: "beneficiary", value: beneficiary }))
-  const setAuthorizer = (authorizer: string) =>
-    dispatch(updateStateAction({ key: "authorizer", value: authorizer }))
-  const setOperator = (operator: string) =>
-    dispatch(updateStateAction({ key: "operator", value: operator }))
-  const setStakeAmount = (stakeAmount: string | number) =>
-    dispatch(updateStateAction({ key: "stakeAmount", value: stakeAmount }))
+  const updateState = (key: StakingStateKey, value: any) =>
+    dispatch(updateStateAction({ key, value }))
 
   return {
-    setOperator,
-    setAuthorizer,
-    setBeneficiary,
-    beneficiary,
-    authorizer,
-    operator,
-    stakeAmount,
-    setStakeAmount,
+    stakingState,
+    updateState,
   }
 }

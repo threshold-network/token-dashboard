@@ -30,7 +30,9 @@ const StakingSuccessModal: FC<StakingSuccessProps> = ({
   transactionHash,
   closeModal,
 }) => {
-  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
+  const {
+    stakingState: { stakeAmount, operator, beneficiary, authorizer },
+  } = useStakingState()
 
   return (
     <>

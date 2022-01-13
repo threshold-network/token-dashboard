@@ -33,15 +33,15 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
   const { account } = useWeb3React()
   const { allowance } = useTStakingAllowance()
   const {
-    stakeAmount,
-    setStakeAmount,
-    operator,
-    setOperator,
-    beneficiary,
-    setBeneficiary,
-    authorizer,
-    setAuthorizer,
+    stakingState: { stakeAmount, operator, beneficiary, authorizer },
+    updateState,
   } = useStakingState()
+
+  const setStakeAmount = (value: string | number) =>
+    updateState("stakeAmount", value)
+  const setOperator = (value: string) => updateState("operator", value)
+  const setBeneficiary = (value: string) => updateState("beneficiary", value)
+  const setAuthorizer = (value: string) => updateState("authorizer", value)
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
