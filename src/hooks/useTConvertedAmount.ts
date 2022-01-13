@@ -18,7 +18,7 @@ export const useTConvertedAmount = (
   const ratio = useVendingMachineRatio(token)
 
   return useMemo(() => {
-    if (amountToConvert === "" || !ratio) {
+    if (!amountToConvert || !ratio || ratio === "0") {
       return {
         amount: "0",
         formattedAmount: "--",
