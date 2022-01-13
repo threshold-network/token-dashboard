@@ -5,6 +5,7 @@ import { StakingStateKey, UseStakingState } from "../types/staking"
 
 export const useStakingState: UseStakingState = () => {
   const stakingState = useSelector((state: RootState) => state.staking)
+  const stakes = useSelector((state: RootState) => state.staking.stakes)
 
   const dispatch = useDispatch()
 
@@ -12,6 +13,7 @@ export const useStakingState: UseStakingState = () => {
     dispatch(updateStateAction({ key, value }))
 
   return {
+    stakes,
     stakingState,
     updateState,
   }

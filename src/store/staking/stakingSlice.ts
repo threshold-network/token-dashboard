@@ -1,4 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
+import { StakeType } from "../../enums"
+import {
+  OperatorStakedActionPayload,
+  StakeData,
+  UpdateStateActionPayload,
+} from "../../types/staking"
+
+interface StakingState {
+  operator: string
+  beneficiary: string
+  authorizer: string
+  stakeAmount: string
+  stakes: StakeData[]
+}
 
 export const stakingSlice = createSlice({
   name: "staking",
@@ -6,14 +21,33 @@ export const stakingSlice = createSlice({
     operator: "",
     beneficiary: "",
     authorizer: "",
-    stakeAmount: 0,
-  },
+    stakeAmount: "0",
+    stakes: [],
+  } as StakingState,
   reducers: {
-    updateState: (state, action) => {
+    updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
       // @ts-ignore
       state[action.payload.key] = action.payload.value
+    },
+    setStakes: (state, action) => {
+      state.stakes = action.payload
+    },
+    operatorStaked: (
+      state,
+      action: PayloadAction<OperatorStakedActionPayload>
+    ) => {
+      const eventData = action.payload
+      const { amount, stakeType, ...restData } = eventData
+      const _amount = amount.toString()
+      const newStake = { ...restData } as StakeData
+      newStake.stakeType = stakeType
+      newStake.nuInTStake = stakeType === StakeType.NU ? _amount : "0"
+      newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
+      newStake.tStake = stakeType === StakeType.T ? _amount : "0"
+
+      state.stakes = [newStake, ...state.stakes]
     },
   },
 })
 
-export const { updateState } = stakingSlice.actions
+export const { updateState, setStakes, operatorStaked } = stakingSlice.actions

@@ -1,3 +1,6 @@
+import { BigNumberish } from "@ethersproject/bignumber"
+import { StakeType } from "../enums"
+
 export type StakingStateKey =
   | "authorizer"
   | "beneficiary"
@@ -6,7 +9,7 @@ export type StakingStateKey =
 
 export interface UpdateStateActionPayload {
   key: StakingStateKey
-  value: string
+  value: string | number
 }
 
 export interface UpdateState {
@@ -15,6 +18,7 @@ export interface UpdateState {
 
 export interface UseStakingState {
   (): {
+    stakes: StakeData[]
     stakingState: {
       stakeAmount: string | number
       operator: string
@@ -24,3 +28,32 @@ export interface UseStakingState {
     updateState: (key: StakingStateKey, value: any) => UpdateState
   }
 }
+
+export interface StakeData {
+  stakeType: StakeType
+  owner: string
+  operator: string
+  beneficiary: string
+  authorizer: string
+  blockNumber: number
+  blockHash: string
+  transactionHash: string
+  nuInTStake: string
+  keepInTStake: string
+  tStake: string
+}
+
+export interface OperatorStakedEvent {
+  stakeType: number
+  owner: string
+  operator: string
+  beneficiary: string
+  authorizer: string
+  amount: BigNumberish
+}
+
+export type OperatorStakedActionPayload = OperatorStakedEvent &
+  Omit<
+    StakeData,
+    "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
+  >
