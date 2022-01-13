@@ -19,7 +19,9 @@ import StakingStats from "../StakingSuccessModal/StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 
 const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
-  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
+  const {
+    stakingState: { stakeAmount, operator, beneficiary, authorizer },
+  } = useStakingState()
 
   return (
     <>

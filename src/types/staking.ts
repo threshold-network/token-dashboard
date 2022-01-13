@@ -1,5 +1,11 @@
+export type StakingStateKey =
+  | "authorizer"
+  | "beneficiary"
+  | "operator"
+  | "stakeAmount"
+
 export interface UpdateStateActionPayload {
-  key: "authorizer" | "beneficiary" | "operator"
+  key: StakingStateKey
   value: string
 }
 
@@ -9,13 +15,12 @@ export interface UpdateState {
 
 export interface UseStakingState {
   (): {
-    stakeAmount: string | number
-    operator: string
-    beneficiary: string
-    authorizer: string
-    setOperator: (operator: string) => UpdateState
-    setBeneficiary: (beneficiary: string) => UpdateState
-    setAuthorizer: (authorizer: string) => UpdateState
-    setStakeAmount: (amount: string | number) => UpdateState
+    stakingState: {
+      stakeAmount: string | number
+      operator: string
+      beneficiary: string
+      authorizer: string
+    }
+    updateState: (key: StakingStateKey, value: any) => UpdateState
   }
 }
