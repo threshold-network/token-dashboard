@@ -1,14 +1,15 @@
 import { FC, useEffect } from "react"
-import { Box, HStack, Stack } from "@chakra-ui/react"
+import { Box, Stack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { useDispatch } from "react-redux"
 import StakingChecklistCard from "./StakingChecklistCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import RewardsCard from "./RewardsCard"
 import { useFetchOwnerStakes } from "../../hooks/useFetchOwnerStakes"
-import { Body1, H1 } from "../../components/Typography"
+import { H1 } from "../../components/Typography"
 import { setStakes } from "../../store/staking"
 import { useStakingState } from "../../hooks/useStakingState"
+import StakesTable from "./StakesTable"
 
 const StakingPage: FC = () => {
   const fetchOwnerStakes = useFetchOwnerStakes()
@@ -26,6 +27,8 @@ const StakingPage: FC = () => {
     fn()
   }, [fetchOwnerStakes, account, dispatch])
 
+  console.log("stakes", stakes)
+
   return (
     <Box>
       <Stack direction={{ base: "column", lg: "row" }} w="100%">
@@ -35,19 +38,11 @@ const StakingPage: FC = () => {
           <StakingChecklistCard />
         </Stack>
       </Stack>
-      <Stack direction="column" w="100%">
-        {/* Render test- replace it with the correct UI*/}
-        <H1>Your stakes</H1>
-        {stakes.map((stake) => {
-          return (
-            <HStack key={stake.operator}>
-              <Body1>{stake.operator}</Body1>
-              <Body1>{stake.tStake.toString()}</Body1>
-              <Body1>{stake.stakeType}</Body1>
-            </HStack>
-          )
-        })}
-      </Stack>
+      {stakes.length > 0 && (
+        <Box mt={4} w="100%">
+          <StakesTable stakes={stakes} />
+        </Box>
+      )}
     </Box>
   )
 }
