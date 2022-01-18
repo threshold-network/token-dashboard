@@ -1,8 +1,7 @@
 import { FC, useMemo } from "react"
-import { Badge, HStack, Td } from "@chakra-ui/react"
+import { Td } from "@chakra-ui/react"
 import { StakeCellProps } from "../../../types/staking"
 import TokenBalance from "../../../components/TokenBalance"
-import { useT } from "../../../web3/hooks"
 import { useTokenState } from "../../../hooks/useTokenState"
 import getUsdBalance from "../../../utils/getUsdBalance"
 

@@ -19,7 +19,11 @@ const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         // Ignore these action types
-        ignoredActions: ["modal/updateProps", "modal/openModal"],
+        ignoredActions: [
+          "modal/updateProps",
+          "modal/openModal",
+          "staking/unstaked",
+        ],
         // Ignore these field paths in all actions
         ignoredPaths: [
           "modal.props.setOperator",
