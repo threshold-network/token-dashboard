@@ -27,8 +27,6 @@ const StakingPage: FC = () => {
     fn()
   }, [fetchOwnerStakes, account, dispatch])
 
-  console.log("stakes", stakes)
-
   return (
     <Box>
       <Stack direction={{ base: "column", lg: "row" }} w="100%">
