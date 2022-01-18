@@ -6,8 +6,6 @@ import { useTStakingContract } from "./useTStakingContract"
 interface UnstakeRequest {
   amount: string | number
   operator: string
-  beneficiary: string
-  authorizer: string
 }
 
 const useUnstakeTransaction = (
@@ -17,12 +15,13 @@ const useUnstakeTransaction = (
 
   const { sendTransaction, status } = useSendTransaction(
     stakingContract!,
-    "unstake",
+    "unstakeT",
     onSuccess
   )
 
   const unstake = useCallback(
     async ({ amount, operator }: UnstakeRequest) => {
+      console.log("waiting for unstake ", amount, operator)
       await sendTransaction(operator, amount)
     },
     [sendTransaction, stakingContract?.address]

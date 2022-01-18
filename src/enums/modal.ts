@@ -8,6 +8,7 @@ export enum ModalType {
   StakingChecklist = "STAKING_CHECKLIST",
   ConfirmStakingParams = "CONFIRM_STAKING_PARAMS",
   StakeSuccess = "STAKE_SUCCESS",
+  UnstakeSuccess = "UNSTAKE_SUCCESS",
   StakeSuccessPreNeeded = "STAKE_SUCCESS_PRE_NEEDED",
   SubmitPreAddress = "SUBMIT_PRE_ADDRESS",
 }

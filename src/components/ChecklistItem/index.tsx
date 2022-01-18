@@ -1,5 +1,11 @@
 import { FC } from "react"
-import { Box, Stack, ListIcon, ListItem } from "@chakra-ui/react"
+import {
+  Box,
+  Stack,
+  ListIcon,
+  ListItem,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { BsCheckCircleFill } from "react-icons/all"
 import { Body2, Body3 } from "../Typography"
 
@@ -21,7 +27,9 @@ const ChecklistItem: FC<ChecklistItemProps> = ({ title, subTitle }) => {
         />
         <Box>
           {typeof title === "string" ? (
-            <Body2 color="gray.700">{title}</Body2>
+            <Body2 color={useColorModeValue("gray.700", "white")}>
+              {title}
+            </Body2>
           ) : (
             title
           )}

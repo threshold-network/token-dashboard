@@ -10,7 +10,9 @@ const StakingAddressRow: FC<{
 }> = ({ address, text }) => {
   return (
     <HStack justify="space-between" w="100%">
-      <Badge colorScheme="gray">{text}</Badge>
+      <Badge variant="subtle" colorScheme="gray">
+        {text}
+      </Badge>
       <Body3 color="brand.500">{shortenAddress(address)}</Body3>
     </HStack>
   )
@@ -19,11 +21,13 @@ const StakingAddressRow: FC<{
 const PreAddress: FC<{ address?: string }> = ({ address }) => {
   return (
     <HStack justify="space-between" w="100%">
-      <Badge colorScheme="gray">PRE</Badge>
+      <Badge variant="subtle" colorScheme="gray">
+        PRE
+      </Badge>
       {address ? (
         <Body3 color="brand.500">{shortenAddress(address)}</Body3>
       ) : (
-        <Badge size="sm" colorScheme="red">
+        <Badge variant="subtle" size="sm" colorScheme="red">
           ADDRESS MISSING
         </Badge>
       )}
@@ -32,6 +36,7 @@ const PreAddress: FC<{ address?: string }> = ({ address }) => {
 }
 
 const StakeAddressesCell: FC<StakeCellProps> = ({ stake }) => {
+  console.log("operator ", stake.operator)
   return (
     <Td minW="325px">
       <VStack spacing={2}>

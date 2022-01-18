@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Icon, Link, List, useTheme } from "@chakra-ui/react"
+import { Icon, Link, List, useColorModeValue, useTheme } from "@chakra-ui/react"
 import ChecklistItem from "../ChecklistItem"
 import { Body2, Body3 } from "../Typography"
 import { FiArrowUpRight } from "react-icons/all"
@@ -57,7 +57,7 @@ const StakingChecklist: FC<StakingChecklistProps> = () => {
     {
       key: 4,
       title: (
-        <Body2 color="gray.700">
+        <Body2 color={useColorModeValue("gray.700", "white")}>
           Gas costs{" "}
           <span style={{ color: theme.colors.gray["500"] }}>
             (est ~0.05 ETH)
