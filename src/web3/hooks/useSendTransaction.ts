@@ -21,6 +21,8 @@ export const useSendTransaction = (
   const sendTransaction = useCallback(
     async (...args) => {
       if (!account || !contract[methodName]) {
+        console.log(contract)
+        console.log("Wallet not connected or invalid method name")
         // Maybe we should do something here?
         return
       }

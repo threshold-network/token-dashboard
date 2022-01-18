@@ -34,6 +34,8 @@ import { fetchETHPriceUSD } from "./store/eth"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
 import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
+import { useT } from "./web3/hooks"
+import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -41,6 +43,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToERC20TransferEvent(Token.Nu)
   useSubscribeToERC20TransferEvent(Token.T)
   useSubscribeToOperatorStakedEvent()
+  useSubscribeToUnstakedEvent()
 
   return <></>
 }
