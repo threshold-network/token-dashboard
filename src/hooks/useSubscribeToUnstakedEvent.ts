@@ -12,7 +12,6 @@ export const useSubscribeToUnstakedEvent = () => {
     // TODO: figure out how to type callback.
     // @ts-ignore
     (operator, amount) => {
-      console.log("the envet obj ", operator, amount)
       dispatch(unstaked({ operator, amount }))
     }
   )

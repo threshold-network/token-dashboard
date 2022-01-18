@@ -36,7 +36,6 @@ const PreAddress: FC<{ address?: string }> = ({ address }) => {
 }
 
 const StakeAddressesCell: FC<StakeCellProps> = ({ stake }) => {
-  console.log("operator ", stake.operator)
   return (
     <Td minW="325px">
       <VStack spacing={2}>

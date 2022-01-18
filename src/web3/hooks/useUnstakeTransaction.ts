@@ -21,7 +21,6 @@ const useUnstakeTransaction = (
 
   const unstake = useCallback(
     async ({ amount, operator }: UnstakeRequest) => {
-      console.log("waiting for unstake ", amount, operator)
       await sendTransaction(operator, amount)
     },
     [sendTransaction, stakingContract?.address]
