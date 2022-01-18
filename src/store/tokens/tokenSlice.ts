@@ -13,6 +13,7 @@ import {
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import Icon from "../../enums/icon"
+import getUsdBalance from "../../utils/getUsdBalance"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -103,17 +104,6 @@ export const tokenSlice = createSlice({
     })
   },
 })
-
-const getUsdBalance = (
-  balance: string | number,
-  usdConversion: number
-): string => {
-  return numeral(
-    FixedNumber.fromString(usdConversion.toString())
-      .mulUnsafe(FixedNumber.fromString(formatUnits(balance)))
-      .toString()
-  ).format("$0,0.00")
-}
 
 export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
   tokenSlice.actions
