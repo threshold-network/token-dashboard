@@ -10,6 +10,7 @@ import { StakeData } from "../types/staking"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
+
   const multicallContract = useMulticallContract()
 
   return useCallback(
@@ -17,6 +18,7 @@ export const useFetchOwnerStakes = () => {
       if (!tStakingContract || !multicallContract) {
         return []
       }
+
       const operatorStakedEvents = await getContractPastEvents(
         tStakingContract,
         {

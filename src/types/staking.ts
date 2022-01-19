@@ -19,12 +19,10 @@ export interface UpdateState {
 export interface UseStakingState {
   (): {
     stakes: StakeData[]
-    stakingState: {
-      stakeAmount: string | number
-      operator: string
-      beneficiary: string
-      authorizer: string
-    }
+    stakeAmount: string | number
+    operator: string
+    beneficiary: string
+    authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateState
   }
 }
