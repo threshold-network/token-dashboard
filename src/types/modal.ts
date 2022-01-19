@@ -46,13 +46,9 @@ export interface OpenModal {
   }
 }
 
-export interface UpdateProps {
-  payload: any
-}
-
 export interface CloseModal {}
 
-export type ModalActionTypes = OpenModal | CloseModal | UpdateProps
+export type ModalActionTypes = OpenModal | CloseModal
 
 export interface UseModal {
   (): {
