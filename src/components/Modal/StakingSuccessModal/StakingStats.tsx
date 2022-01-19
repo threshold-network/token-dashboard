@@ -1,8 +1,10 @@
 import { FC } from "react"
-import { HStack, Stack } from "@chakra-ui/react"
 import TokenBalance from "../../TokenBalance"
 import { Body3 } from "../../Typography"
 import shortenAddress from "../../../utils/shortenAddress"
+import TransactionInfoTable, {
+  TransactionInfo,
+} from "../../TransactionInfoTable"
 
 interface StakingStatsProps {
   stakeAmount: string | number
@@ -17,7 +19,7 @@ const StakingStats: FC<StakingStatsProps> = ({
   beneficiary,
   authorizer,
 }) => {
-  const transactionInfo = [
+  const transactionInfo: TransactionInfo[] = [
     {
       text: "Stake Amount",
       // todo: Token might not be a string, so this should be updated once we decide on the interface
@@ -46,16 +48,7 @@ const StakingStats: FC<StakingStatsProps> = ({
     },
   ]
 
-  return (
-    <Stack spacing="0.5rem">
-      {transactionInfo.map((info) => (
-        <HStack justify="space-between" key={info.text}>
-          <Body3 color="gray.500">{info.text}</Body3>
-          {info.value}
-        </HStack>
-      ))}
-    </Stack>
-  )
+  return <TransactionInfoTable transactionInfo={transactionInfo} />
 }
 
 export default StakingStats
