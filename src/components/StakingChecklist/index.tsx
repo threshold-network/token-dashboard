@@ -11,7 +11,6 @@ const StakingChecklist: FC<StakingChecklistProps> = () => {
 
   const stakingChecklistItems = [
     {
-      key: 0,
       title: "Node address (Operator), Beneficiary, and Authorizer addresses",
       subTitle: (
         <Body3 color="gray.500">
@@ -29,7 +28,6 @@ const StakingChecklist: FC<StakingChecklistProps> = () => {
       ),
     },
     {
-      key: 1,
       title: "Run a PRE Node",
       subTitle: (
         <Body3 color="gray.500">
@@ -46,16 +44,13 @@ const StakingChecklist: FC<StakingChecklistProps> = () => {
       ),
     },
     {
-      key: 2,
       title: "PRE Node Worker address",
       subTitle: "Make sure you add your Worker address to gain rewards",
     },
     {
-      key: 3,
       title: "50,000 T Minimum Stake",
     },
     {
-      key: 4,
       title: (
         <Body2 color="gray.700">
           Gas costs{" "}
@@ -68,8 +63,8 @@ const StakingChecklist: FC<StakingChecklistProps> = () => {
   ]
   return (
     <List spacing={6}>
-      {stakingChecklistItems.map((item) => (
-        <ChecklistItem {...item} key={item.key} />
+      {stakingChecklistItems.map((item, i) => (
+        <ChecklistItem {...item} key={i} />
       ))}
     </List>
   )
