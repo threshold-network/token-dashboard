@@ -20,7 +20,12 @@ const StakeActionsCell: FC<StakeCellProps> = ({ stake }) => {
             Unstake
           </Button>
         )}
-        <Button size="sm">Top up</Button>
+        <Button
+          size="sm"
+          onClick={() => openModal(ModalType.TopupT, { stake })}
+        >
+          Top up
+        </Button>
       </HStack>
     </Td>
   )

@@ -4,7 +4,7 @@ import { StakeType } from "../../enums"
 import {
   OperatorStakedActionPayload,
   StakeData,
-  UnstakedActionPayload,
+  UpdateStakeAmountActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
 import { BigNumber } from "ethers"
@@ -49,8 +49,12 @@ export const stakingSlice = createSlice({
 
       state.stakes = [newStake, ...state.stakes]
     },
-    unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
-      const { operator, amount } = action.payload
+    updateStakeAmountForOperator: (
+      state,
+      action: PayloadAction<UpdateStakeAmountActionPayload>
+    ) => {
+      const { operator, amount, increaseOrDecrease } = action.payload
+
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
         (stake) => stake.operator === operator
@@ -62,12 +66,22 @@ export const stakingSlice = createSlice({
 
       const amountUnstaked = BigNumber.from(amount)
 
-      stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-        .sub(amountUnstaked)
-        .toString()
+      if (increaseOrDecrease === "increase") {
+        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
+          .add(amountUnstaked)
+          .toString()
+      } else if (increaseOrDecrease === "decrease") {
+        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
+          .sub(amountUnstaked)
+          .toString()
+      }
     },
   },
 })
 
-export const { updateState, setStakes, operatorStaked, unstaked } =
-  stakingSlice.actions
+export const {
+  updateState,
+  setStakes,
+  operatorStaked,
+  updateStakeAmountForOperator,
+} = stakingSlice.actions
