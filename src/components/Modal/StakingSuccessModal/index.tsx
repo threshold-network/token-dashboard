@@ -10,9 +10,7 @@ interface StakingSuccessProps extends BaseModalProps {
 }
 
 const StakingSuccessModal: FC<StakingSuccessProps> = ({ transactionHash }) => {
-  const {
-    stakingState: { stakeAmount, operator, beneficiary, authorizer },
-  } = useStakingState()
+  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
 
   return (
     <TransactionSuccessModal

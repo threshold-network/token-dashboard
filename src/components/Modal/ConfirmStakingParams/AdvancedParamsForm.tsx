@@ -10,7 +10,7 @@ import {
   Stack,
   useDisclosure,
 } from "@chakra-ui/react"
-import { BsChevronRight, BsChevronDown } from "react-icons/all"
+import { BsChevronDown, BsChevronRight } from "react-icons/all"
 
 interface AdvancedParamsFormProps {
   operator: string
@@ -19,6 +19,23 @@ interface AdvancedParamsFormProps {
   setBeneficiary: (val: string) => void
   authorizer: string
   setAuthorizer: (val: string) => void
+  isValidAuthorizer: boolean
+  isValidBeneficiary: boolean
+  isValidOperator: boolean
+}
+
+const HelperText = ({
+  text,
+  isInvalid,
+}: {
+  text: string
+  isInvalid: boolean
+}) => {
+  return (
+    <FormHelperText color={isInvalid ? "red.500" : "gray.500"}>
+      {isInvalid ? "Please enter a valid ETH address" : text}
+    </FormHelperText>
+  )
 }
 
 const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
@@ -29,6 +46,9 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     setBeneficiary,
     authorizer,
     setAuthorizer,
+    isValidAuthorizer,
+    isValidBeneficiary,
+    isValidOperator,
   } = props
 
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: false })
@@ -52,10 +72,10 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
               value={operator}
               onChange={(e) => setOperator(e.target.value)}
             />
-            <FormHelperText>
-              If you are using a staking provider, this will be their provided
-              address.
-            </FormHelperText>
+            <HelperText
+              text="If you are using a staking provider, this will be their provided address."
+              isInvalid={!isValidOperator}
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Beneficiary Address</FormLabel>
@@ -63,7 +83,10 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
               value={beneficiary}
               onChange={(e) => setBeneficiary(e.target.value)}
             />
-            <FormHelperText>This address will receive rewards</FormHelperText>
+            <HelperText
+              text="This address will receive rewards"
+              isInvalid={!isValidBeneficiary}
+            />
           </FormControl>
           <FormControl>
             <FormLabel>Authorizer Address</FormLabel>
@@ -71,9 +94,10 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
               value={authorizer}
               onChange={(e) => setAuthorizer(e.target.value)}
             />
-            <FormHelperText>
-              This address will authorize applications.
-            </FormHelperText>
+            <HelperText
+              text="This address will authorize applications."
+              isInvalid={!isValidAuthorizer}
+            />
           </FormControl>
         </Stack>
       </Collapse>

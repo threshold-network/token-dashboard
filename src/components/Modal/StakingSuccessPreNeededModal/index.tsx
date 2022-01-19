@@ -19,9 +19,7 @@ import StakingStats from "../StakingSuccessModal/StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 
 const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
-  const {
-    stakingState: { stakeAmount, operator, beneficiary, authorizer },
-  } = useStakingState()
+  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
 
   return (
     <>
@@ -37,8 +35,7 @@ const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
             Your Stake was successful.
           </H5>
           <Body1 color="gray.700">
-            You'll need to run a PRE node to receive rewards. You can this this
-            up{" "}
+            You'll need to run a PRE node to receive rewards. You can this up{" "}
             <Link
               href="SOME_LINK"
               target="_blank"
