@@ -12,6 +12,8 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
   const providerEventEmitter = new EventEmitter()
 
   const mockedCallback = jest.fn()
+  const mockedCallback2 = jest.fn()
+
   const mockedContract: any = {
     on: jest.fn(),
     off: jest.fn(),
@@ -112,7 +114,7 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
     )
 
     expect(mockedContract.filters[eventName]).toHaveBeenCalledWith(
-      indexedFilterParams
+      ...indexedFilterParams
     )
 
     expect(mockedContract.provider.once).toHaveBeenCalledWith(
@@ -134,5 +136,35 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
     })
 
     expect(mockedCallback).toHaveBeenCalledWith(from, to, value)
+  })
+
+  test("should call updated callback", () => {
+    const { rerender } = renderHook(({ contract, callback }) =>
+      useSubscribeToContractEvent(contract, eventName, callback)
+    )
+
+    act(() => {
+      rerender({ contract: mockedContract, callback: mockedCallback })
+    })
+
+    // Update callback.
+    act(() => {
+      rerender({ contract: mockedContract, callback: mockedCallback2 })
+    })
+
+    act(() => {
+      providerEventEmitter.emit("block", 1)
+    })
+
+    expect(mockedContract.on).toHaveBeenCalledWith(
+      eventName,
+      expect.any(Function)
+    )
+
+    act(() => {
+      contractEventEmitter.emit(eventName, from, to, value)
+    })
+
+    expect(mockedCallback2).toHaveBeenCalledWith(from, to, value)
   })
 })
