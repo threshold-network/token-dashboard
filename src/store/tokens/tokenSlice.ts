@@ -73,7 +73,6 @@ export const tokenSlice = createSlice({
       action: PayloadAction<SetTokenBalanceActionPayload>
     ) => {
       const { token, balance } = action.payload
-      console.log("setting token balance to: ", balance)
       state[token].balance = balance
       state[token].usdBalance = getUsdBalance(
         state[token].balance,
