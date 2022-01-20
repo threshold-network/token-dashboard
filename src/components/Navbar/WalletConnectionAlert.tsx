@@ -53,8 +53,8 @@ const WalletConnectionAlert: FC<{
       position="absolute"
       w="fit-content"
       paddingRight="40px"
-      top="50px"
-      right="16px"
+      top="88px"
+      right="5.25rem"
     >
       <AlertIcon />
       <AlertDescription>{alertDescription}</AlertDescription>
