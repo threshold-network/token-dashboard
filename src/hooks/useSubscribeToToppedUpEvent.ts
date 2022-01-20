@@ -2,13 +2,13 @@ import { useDispatch } from "react-redux"
 import { updateStakeAmountForOperator } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
 
-export const useSubscribeToUnstakedEvent = () => {
+export const useSubscribeToToppedUpEvent = () => {
   const tStakingContract = useTStakingContract()
   const dispatch = useDispatch()
 
   useSubscribeToContractEvent(
     tStakingContract!,
-    "Unstaked",
+    "ToppedUp",
     // TODO: figure out how to type callback.
     // @ts-ignore
     (operator, amount) => {
@@ -16,7 +16,7 @@ export const useSubscribeToUnstakedEvent = () => {
         updateStakeAmountForOperator({
           operator,
           amount,
-          increaseOrDecrease: "decrease",
+          increaseOrDecrease: "increase",
         })
       )
     }

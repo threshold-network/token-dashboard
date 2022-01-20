@@ -20,6 +20,10 @@ export const useSubscribeToContractEvent = (
   const secondIndexedParam = indexedFilterParams[1] || null
   const thirdIndexedParam = indexedFilterParams[2] || null
 
+  // TODO: Debug this issue: https://keepnetwork.atlassian.net/browse/DAPP-515
+  // When called by the ERC20 transfer hook ,the balance is always 0 in the callback.
+  // Seems like the ref updater in useSubscribeToContractEvent is not updating this callback the correct balances
+
   useEffect(() => {
     callbackRef.current = callback // Update ref to the latest callback.
   }, [callback])
