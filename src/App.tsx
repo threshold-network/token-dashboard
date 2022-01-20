@@ -28,6 +28,7 @@ import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContrac
 import { useModal } from "./hooks/useModal"
 import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
+import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
 import Overview from "./pages/Overview"
 import UpgradePage, { UpgradeTokenPage } from "./pages/Upgrade"
 import Network from "./pages/Overview/Network"
@@ -42,6 +43,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToERC20TransferEvent(Token.T)
   useSubscribeToOperatorStakedEvent()
   useSubscribeToUnstakedEvent()
+  useSubscribeToToppedUpEvent()
 
   return <></>
 }
