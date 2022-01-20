@@ -17,6 +17,7 @@ import { BaseModalProps } from "../../../types"
 import { FiArrowUpRight } from "react-icons/all"
 import StakingStats from "../StakingSuccessModal/StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
+import InfoBox from "../../InfoBox"
 
 const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
@@ -30,7 +31,7 @@ const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
           <AlertIcon />
           You haven't added a PRE Worker Adddress
         </Alert>
-        <Box borderRadius="md" bg="gray.50" p={6} mb={8}>
+        <InfoBox>
           <H5 mb={4} color="gray.800">
             Your Stake was successful.
           </H5>
@@ -45,7 +46,7 @@ const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
               here <Icon boxSize="12px" as={FiArrowUpRight} color="brand.500" />
             </Link>
           </Body1>
-        </Box>
+        </InfoBox>
         <StakingStats {...{ stakeAmount, beneficiary, operator, authorizer }} />
       </ModalBody>
       <ModalFooter>

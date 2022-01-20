@@ -1,14 +1,16 @@
-import { useSelector, useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { UseModal } from "../types"
 import {
-  openModal as openModalAction,
   closeModal as closeModalAction,
+  openModal as openModalAction,
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
+import { useMemo } from "react"
 
 export const useModal: UseModal = () => {
   const modalType = useSelector((state: RootState) => state.modal.modalType)
+  const isOpen = useMemo(() => !!modalType, [modalType])
   const modalProps = useSelector((state: RootState) => state.modal.props)
   const dispatch = useDispatch()
 
@@ -18,6 +20,7 @@ export const useModal: UseModal = () => {
   const closeModal = () => dispatch(closeModalAction())
 
   return {
+    isOpen,
     modalType,
     modalProps,
     openModal,
