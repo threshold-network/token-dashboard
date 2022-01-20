@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import {
   Box,
   Flex,
@@ -33,15 +33,23 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
 }) => {
   const isMobile = useChakraBreakpoint("md")
   const IconComponent = useColorModeValue(ThresholdPurple, ThresholdWhite)
-  //TODO: Get title based on the current path.
-  const title = "Upgrade"
+
+  //TODO: put this logic somewhere else and find a better way to determine
   const isOverviewPage = useMatch("overview/*")
+  const isUpgradePage = useMatch("upgrade/*")
+  const isStakingPage = useMatch("staking/*")
+  const title = useMemo(() => {
+    if (isOverviewPage) return ""
+    if (isUpgradePage) return "Upgrade"
+    if (isStakingPage) return "Staking"
+    return ""
+  }, [isOverviewPage, isUpgradePage, isStakingPage])
 
   return (
     <>
       <Box
         p={6}
-        pr="5.25rem"
+        pr={{ base: 6, md: 24 }}
         borderBottom={isOverviewPage ? undefined : "1px"}
         borderColor="gray.100"
         display="flex"
