@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux"
 import { RootState } from "../store"
-import { EthReduxData } from "../types"
+import { EthStateData } from "../types"
 
-export const useETHData = (): EthReduxData => {
+export const useETHData = (): EthStateData => {
   return useSelector((state: RootState) => state.eth)
 }

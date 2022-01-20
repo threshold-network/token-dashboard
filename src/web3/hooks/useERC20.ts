@@ -4,11 +4,12 @@ import { useWeb3React } from "@web3-react/core"
 import { useContract } from "./useContract"
 import ERC20_ABI from "../abi/ERC20.json"
 import { Token } from "../../enums"
-import { useReduxToken } from "../../hooks/useReduxToken"
+import { useTokenState } from "../../hooks/useTokenState"
 import { Approve, UseErc20Interface } from "../../types/token"
 import { useTransaction } from "../../hooks/useTransaction"
 import { TransactionStatus } from "../../enums/transactionType"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
+import { once } from "@storybook/node-logger"
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
@@ -16,7 +17,7 @@ export const useErc20TokenContract: UseErc20Interface = (
   abi = ERC20_ABI
 ) => {
   const { account } = useWeb3React()
-  const { setTokenLoading, setTokenBalance } = useReduxToken()
+  const { setTokenLoading, setTokenBalance } = useTokenState()
   const { setTransactionStatus } = useTransaction()
 
   // TODO: Figure out how to type the ERC20 contract
@@ -57,8 +58,6 @@ export const useErc20TokenContract: UseErc20Interface = (
         try {
           setTokenLoading(token, true)
           const balance = await contract?.balanceOf(account as string)
-          // TODO do not hard code decimals
-          // const balance = rawWalletBalance / 10 ** 18
           setTokenBalance(token, balance.toString())
           setTokenLoading(token, false)
         } catch (error) {

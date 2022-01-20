@@ -6,7 +6,12 @@ import { useModal } from "../../hooks/useModal"
 import { getSigner } from "../../utils/getContract"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 
-export const useSendTransaction = (contract: Contract, methodName: string) => {
+export const useSendTransaction = (
+  contract: Contract,
+  methodName: string,
+  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
+  onError?: (error: any) => void | Promise<void>
+) => {
   const { library, account } = useWeb3React()
   const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
@@ -27,24 +32,28 @@ export const useSendTransaction = (contract: Contract, methodName: string) => {
         const tx = (await contract[methodName](...args)) as ContractTransaction
         openModal(ModalType.TransactionIsPending, { transactionHash: tx.hash })
         setTransactionStatus(TransactionStatus.PendingOnChain)
-
         await tx.wait()
-        // TODO: close modal- the correct success modal should be displayed when
-        // dapp catches an event. We should close modals by id to avoid race
-        // between close and open action.
         setTransactionStatus(TransactionStatus.Succeeded)
+        if (onSuccess) {
+          onSuccess(tx)
+        }
       } catch (error: any) {
-        openModal(ModalType.TransactionFailed, {
-          transactionHash: error?.transaction?.hash,
-          error,
-          // TODO: how to check if an error is expandable?
-          // isExpandableError,
-        })
         setTransactionStatus(
           isWalletRejectionError(error)
             ? TransactionStatus.Rejected
             : TransactionStatus.Failed
         )
+
+        if (onError) {
+          onError(error)
+        } else {
+          openModal(ModalType.TransactionFailed, {
+            transactionHash: error?.transaction?.hash,
+            error,
+            // TODO: how to check if an error is expandable?
+            isExpandableError: true,
+          })
+        }
       }
     },
     [contract, methodName, library, account]

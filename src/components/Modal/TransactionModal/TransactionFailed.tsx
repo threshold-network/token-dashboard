@@ -36,7 +36,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
 }) => {
   const { isOpen, onToggle } = useDisclosure()
 
-  const errorTitle = error?.name || "Error"
+  const errorTitle = error?.message || error.name || "Error"
 
   return (
     <>
@@ -76,22 +76,22 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                       ml={4}
                       textDecoration="underline"
                       cursor="pointer"
+                      minW="80px"
                     >
                       Show {isOpen ? "Less" : "More"}
                     </Body3>
                   </HStack>
                 ) : (
-                  error.message
+                  errorTitle
                 )}
               </AlertTitle>
             </HStack>
             {isOpen && (
-              <AlertDescription>
-                <Body3>{error?.stack?.toString()}</Body3>
+              <AlertDescription maxWidth="100%">
+                <Body3 mb={8}>{error?.stack?.toString()}</Body3>
                 <Link
                   textDecoration="underline"
                   bold="md"
-                  mt={8}
                   href={ExternalLink.THRESHOLD_DISCORD}
                   target="_blank"
                 >

@@ -6,13 +6,14 @@ import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { CoingeckoID, Token } from "../../enums/token"
 import {
-  ReduxTokenInfo,
+  TokenState,
   SetTokenBalanceActionPayload,
   SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import Icon from "../../enums/icon"
+import getUsdBalance from "../../utils/getUsdBalance"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -59,7 +60,7 @@ export const tokenSlice = createSlice({
       usdConversion: 0,
       usdBalance: "0",
     },
-  } as Record<Token, ReduxTokenInfo>,
+  } as Record<Token, TokenState>,
   reducers: {
     setTokenLoading: (
       state,
@@ -103,17 +104,6 @@ export const tokenSlice = createSlice({
     })
   },
 })
-
-const getUsdBalance = (
-  balance: string | number,
-  usdConversion: number
-): string => {
-  return numeral(
-    FixedNumber.fromString(usdConversion.toString())
-      .mulUnsafe(FixedNumber.fromString(formatUnits(balance)))
-      .toString()
-  ).format("$0,0.00")
-}
 
 export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
   tokenSlice.actions

@@ -1,4 +1,4 @@
 import TransactionIdle from "./TransactionIdle"
-import TransactionSuccess from "./TransactionSuccess"
+import TransactionSuccess from "./UpgradeSuccess"
 
 export { TransactionIdle, TransactionSuccess }

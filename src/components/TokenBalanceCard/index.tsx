@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { useReduxToken } from "../../hooks/useReduxToken"
+import { useTokenState } from "../../hooks/useTokenState"
 import { Token } from "../../enums"
 import TokenBalanceCardTemplate from "./TokenBalanceCardTemplate"
 import KeepCircleBrand from "../../static/icons/KeepCircleBrand"

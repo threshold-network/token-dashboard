@@ -1,8 +1,8 @@
 import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
 import { useContract } from "./useContract"
-import { Token } from "../../enums"
 import { UpgredableToken } from "../../types"
+import { Token } from "../../enums"
 
 const TOKEN_TO_VENDING_MACHINE_ARTIFACT = {
   [Token.Keep]: VendingMachineKeep,

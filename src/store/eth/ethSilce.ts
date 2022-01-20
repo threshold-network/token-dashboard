@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import { CoingeckoID } from "../../enums"
-import { EthReduxData } from "../../types"
+import { EthStateData } from "../../types"
 
 export const fetchETHPriceUSD = createAsyncThunk(
   "eth/fetchETHPriceUSD",
@@ -17,7 +17,7 @@ export const ethSlice = createSlice({
   initialState: {
     isLoadingPriceUSD: false,
     usdPrice: 0,
-  } as EthReduxData,
+  } as EthStateData,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(fetchETHPriceUSD.pending, (state) => {

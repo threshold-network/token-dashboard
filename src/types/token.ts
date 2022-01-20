@@ -3,7 +3,7 @@ import { Token } from "../enums"
 import { TransactionType } from "../enums/transactionType"
 import Icon from "../enums/icon"
 
-export interface ReduxTokenInfo {
+export interface TokenState {
   loading: boolean
   conversionRate: number | string
   text: string
@@ -46,12 +46,12 @@ export type TokenActionTypes =
   | SetTokenLoading
   | SetTokenConversionRate
 
-export interface UseReduxToken {
+export interface UseTokenState {
   (): {
-    keep: ReduxTokenInfo
-    nu: ReduxTokenInfo
-    t: ReduxTokenInfo
-    tbtc: ReduxTokenInfo
+    keep: TokenState
+    nu: TokenState
+    t: TokenState
+    tbtc: TokenState
     setTokenBalance: (
       token: Token,
       balance: number | string
