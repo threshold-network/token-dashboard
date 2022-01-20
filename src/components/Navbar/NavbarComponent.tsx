@@ -1,14 +1,13 @@
+import { FC } from "react"
 import {
   Box,
-  Container,
   Flex,
   Icon,
   IconButton,
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Link } from "react-router-dom"
-import { FC } from "react"
+import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
@@ -17,6 +16,7 @@ import NetworkButton from "./NetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
+import { H5 } from "../Typography"
 
 interface NavbarComponentProps {
   account?: string | null
@@ -32,19 +32,24 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   deactivate,
 }) => {
   const isMobile = useChakraBreakpoint("md")
+  const IconComponent = useColorModeValue(ThresholdPurple, ThresholdWhite)
+  //TODO: Get title based on the current path.
+  const title = "Upgrade"
+  const isOverviewPage = useMatch("overview/*")
+
   return (
-    <Box
-      py={4}
-      px={{ base: 0, md: 4 }}
-      borderBottom={{ base: "1px", md: "none" }}
-      borderColor="gray.100"
-    >
-      <Container
+    <>
+      <Box
+        p={6}
+        pr="5.25rem"
+        borderBottom={isOverviewPage ? undefined : "1px"}
+        borderColor="gray.100"
         display="flex"
-        justifyContent="space-between"
-        maxW="6xl"
-        position="relative"
       >
+        <Routes>
+          <Route path="overview/*" element={<></>} />
+          <Route path="*" element={<PageTitle title={title} />} />
+        </Routes>
         <Flex>
           <HamburgerButton display={{ base: "block", md: "none" }} />
           {isMobile && (
@@ -52,26 +57,47 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
               <IconButton
                 variant="ghost"
                 aria-label="home"
-                icon={
-                  <Icon
-                    mt="5px"
-                    boxSize="22px"
-                    as={useColorModeValue(ThresholdPurple, ThresholdWhite)}
-                  />
-                }
+                icon={<Icon mt="5px" boxSize="22px" as={IconComponent} />}
               />
             </Link>
           )}
         </Flex>
-
-        <Stack spacing={4} direction="row">
+        <Stack spacing={4} direction="row" ml="auto">
           <DarkModeSwitcher />
           {chainId && <NetworkButton chainId={chainId} />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <WalletConnectionAlert {...{ account, chainId }} />
-      </Container>
+      </Box>
+      <Routes>
+        <Route path="overview/*" element={<></>} />
+        <Route path="*" element={<MobileHeader title={title} />} />
+      </Routes>
+    </>
+  )
+}
+
+const PageTitle: FC<{ title: string }> = ({ title }) => {
+  const isMobile = useChakraBreakpoint("md")
+  return !isMobile ? <H5 ml={"2.75rem"}>{title}</H5> : <></>
+}
+
+const MobileHeader: FC<{ title: string }> = ({ title }) => {
+  const isMobile = useChakraBreakpoint("md")
+
+  return isMobile ? (
+    <Box
+      as="header"
+      pl={10}
+      py={6}
+      borderBottom="1px"
+      borderColor="gray.100"
+      display="flex"
+    >
+      <H5>{title}</H5>
     </Box>
+  ) : (
+    <></>
   )
 }
 
