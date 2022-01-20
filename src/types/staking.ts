@@ -56,6 +56,12 @@ export type OperatorStakedActionPayload = OperatorStakedEvent &
     "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
   >
 
+export type UpdateStakeAmountActionPayload = {
+  operator: string
+  amount: string | number
+  increaseOrDecrease: "increase" | "decrease"
+}
+
 export interface StakeCellProps {
   stake: StakeData
 }
