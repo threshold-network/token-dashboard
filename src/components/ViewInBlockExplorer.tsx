@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Link, LinkProps } from "@chakra-ui/react"
+import { Link, LinkProps, useColorModeValue } from "@chakra-ui/react"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../utils/createEtherscanLink"
@@ -21,7 +21,7 @@ const ViewInBlockExplorer: FC<
   return (
     <Link
       textDecoration="underline"
-      color="brand.500"
+      color={useColorModeValue("brand.500", "brand.300")}
       href={etherscanLink}
       _hover={{
         fontWeight: "bold",

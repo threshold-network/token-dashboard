@@ -21,6 +21,7 @@ import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { ModalType } from "../../../enums"
 import { StakeData } from "../../../types/staking"
 import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
+import InfoBox from "../../InfoBox"
 
 const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
   stake,
@@ -37,10 +38,10 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <Box borderRadius="md" bg="gray.50" p={6}>
+          <InfoBox>
             <H5 mb={4}>You are about to unstake your T</H5>
             <Body1>Lorem Ipsum about what unstaking means</Body1>
-          </Box>
+          </InfoBox>
           <Alert status="warning">
             <AlertIcon />
             <AlertDescription>
