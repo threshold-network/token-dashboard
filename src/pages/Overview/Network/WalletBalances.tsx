@@ -14,7 +14,7 @@ import CardTemplate from "./CardTemplate"
 import { Body2, Body3 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
-import { useReduxToken } from "../../../hooks/useReduxToken"
+import { useTokenState } from "../../../hooks/useTokenState"
 import Icon from "../../../components/Icon"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
@@ -50,14 +50,14 @@ const BalanceStat: FC<{
 }
 
 const progressBarColors = {
-  keep: "#7D00FF",
+  t: "#7D00FF",
   nu: "#1E65F3",
-  t: "#48dbb4",
+  keep: "#48dbb4",
 }
 
 const WalletBalances: FC = () => {
   const { account } = useWeb3React()
-  const { keep, nu, t } = useReduxToken()
+  const { keep, nu, t } = useTokenState()
 
   // do to: figure out how to pass in the token decimals
   const formattedKeep = Number(formatUnits(keep.balance))

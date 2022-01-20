@@ -15,21 +15,21 @@ import Confetti from "react-confetti"
 import Threshold from "../../../static/icons/Ttoken"
 import { Body3, H5 } from "../../Typography"
 import { Divider } from "../../Divider"
-import TransactionStats from "./TransactionStats"
+import UpgradeStats from "./UpgradeStats"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, UpgredableToken } from "../../../types"
 
-interface TransactionSuccessProps extends BaseModalProps {
+interface UpgradeSuccessProps extends BaseModalProps {
   upgradedAmount: string
   receivedAmount: string
   transactionHash: string
   token: UpgredableToken
 }
 
-const TransactionSuccess: FC<TransactionSuccessProps> = ({
+const UpgradeSuccess: FC<UpgradeSuccessProps> = ({
   upgradedAmount,
   receivedAmount,
   transactionHash,
@@ -69,7 +69,7 @@ const TransactionSuccess: FC<TransactionSuccessProps> = ({
           <Icon zIndex={999} height="105px" w="105px" as={Threshold} />
         </HStack>
 
-        <TransactionStats
+        <UpgradeStats
           token={token}
           exchangeRate={exchangeRate}
           receivedAmount={receivedAmount}
@@ -93,4 +93,4 @@ const TransactionSuccess: FC<TransactionSuccessProps> = ({
   )
 }
 
-export default withBaseModal(TransactionSuccess)
+export default withBaseModal(UpgradeSuccess)

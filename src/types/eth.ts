@@ -1,4 +1,4 @@
-export interface EthReduxData {
+export interface EthStateData {
   isLoadingPriceUSD: boolean
   usdPrice: number
 }
