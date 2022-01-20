@@ -1,18 +1,14 @@
 import "focus-visible/dist/focus-visible"
 import { FC, useEffect } from "react"
-import {
-  Box,
-  ChakraProvider,
-  Container,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import {
   BrowserRouter as Router,
-  Redirect,
+  Routes,
   Route,
-  Switch,
+  Outlet,
+  Navigate,
 } from "react-router-dom"
 import { BigNumberish } from "@ethersproject/bignumber"
 import { Event } from "@ethersproject/contracts"
@@ -21,20 +17,23 @@ import theme from "./theme"
 import reduxStore from "./store"
 import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
-import getLibrary from "./web3/library"
 import Navbar from "./components/Navbar"
-import Overview from "./pages/Overview"
-import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
-import Upgrade from "./pages/Upgrade"
-import Staking from "./pages/Staking"
-import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
-import { useModal } from "./hooks/useModal"
-import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
 import { fetchETHPriceUSD } from "./store/eth"
 import { UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
+import getLibrary from "./web3/library"
+import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
+import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
+import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
+import { useModal } from "./hooks/useModal"
 import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
+import Overview from "./pages/Overview"
+import UpgradePage, { UpgradeTokenPage } from "./pages/Upgrade"
+import Network from "./pages/Overview/Network"
+import TBTCPage from "./pages/Overview/tBTC"
+import Pre from "./pages/Overview/Pre"
+import StakingPage from "./pages/Staking"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -95,6 +94,10 @@ const AppBody = () => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
 
+  return <Routing />
+}
+
+const Layout = () => {
   return (
     <Box display="flex">
       <Sidebar />
@@ -104,25 +107,32 @@ const AppBody = () => {
         bg={useColorModeValue("transparent", "gray.900")}
       >
         <Navbar />
-        <Container as="main" mt="12" maxW="6xl" data-cy="app-container" pb={8}>
-          <Switch>
-            <Redirect from="/" to="/overview" exact />
-            <Route path="/overview">
-              <Overview />
-            </Route>
-            <Route path="/upgrade/:token">
-              <Upgrade />
-            </Route>
-            <Route path="/upgrade">
-              <Redirect to="/upgrade/keep" />
-            </Route>
-            <Route path="/staking">
-              <Staking />
-            </Route>
-          </Switch>
-        </Container>
+        <Box as="main" data-cy="app-container">
+          <Outlet />
+        </Box>
       </Box>
     </Box>
+  )
+}
+
+const Routing = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Navigate to="overview" />} />
+        <Route path="overview" element={<Overview />}>
+          <Route index element={<Navigate to="network" />} />
+          <Route path="network" element={<Network totalValueLocked="0" />} />
+          <Route path="tbtc" element={<TBTCPage />} />
+          <Route path="pre" element={<Pre />} />
+        </Route>
+        <Route path="upgrade" element={<UpgradePage />}>
+          <Route index element={<Navigate to="keep" />} />
+          <Route path=":token" element={<UpgradeTokenPage />} />
+        </Route>
+        <Route path="staking" element={<StakingPage />} />
+      </Route>
+    </Routes>
   )
 }
 
