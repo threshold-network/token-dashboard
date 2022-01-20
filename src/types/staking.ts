@@ -18,6 +18,7 @@ export interface UpdateState {
 
 export interface UseStakingState {
   (): {
+    stakedBalance: BigNumberish
     stakes: StakeData[]
     stakeAmount: string | number
     operator: string
