@@ -1,4 +1,4 @@
-import { FC, createContext, useContext } from "react"
+import { FC } from "react"
 import {
   Box,
   Divider,
@@ -7,7 +7,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Link as RouterLink, useRouteMatch } from "react-router-dom"
+import { Link as RouterLink, useMatch, useResolvedPath } from "react-router-dom"
 
 interface NavPillProps {
   path: string
@@ -16,18 +16,11 @@ interface NavPillProps {
 
 interface Props {
   links: NavPillProps[]
-  parentPath: string
 }
 
-const SubNavigationPillContext = createContext({ parentPath: "" })
-
-const useSubNavigationPillContext = () => {
-  return useContext(SubNavigationPillContext)
-}
-
-const SubNavigationPills: FC<Props> = ({ parentPath, links }) => {
+const SubNavigationPills: FC<Props> = ({ links }) => {
   return (
-    <SubNavigationPillContext.Provider value={{ parentPath }}>
+    <>
       <Box
         w="100%"
         borderBottom="1px solid"
@@ -44,22 +37,22 @@ const SubNavigationPills: FC<Props> = ({ parentPath, links }) => {
           {links.map(renderPill)}
         </HStack>
       </Box>
-    </SubNavigationPillContext.Provider>
+    </>
   )
 }
 
 const NavPill: FC<NavPillProps> = ({ path, text }) => {
-  const { parentPath } = useSubNavigationPillContext()
-  const _path = `${parentPath}${path}`
-  const isActive = useRouteMatch({ path: _path, exact: true })
+  const resolved = useResolvedPath(path)
+  const isActive = useMatch({ path: resolved.pathname, end: true })
+  const activeColor = useColorModeValue("brand.500", "white")
 
   return (
     <Stack position="relative" padding={2} as="li">
       <Link
         fontWeight={isActive ? "700" : undefined}
-        color={isActive ? useColorModeValue("brand.500", "white") : undefined}
+        color={isActive ? activeColor : undefined}
         as={RouterLink}
-        to={_path}
+        to={path}
         _hover={{
           textDecoration: "none",
         }}

@@ -1,16 +1,45 @@
-import { FC } from "react"
-import { useParams } from "react-router-dom"
-import { Stack, HStack } from "@chakra-ui/react"
+import { FC, useEffect } from "react"
+import { useParams, Outlet, useNavigate } from "react-router-dom"
+import { Stack, HStack, Container } from "@chakra-ui/react"
 import UpgradeCard from "../components/UpgradeCard"
 import TokenBalanceCard from "../components/TokenBalanceCard"
 import { useModal } from "../hooks/useModal"
 import { UpgredableToken } from "../types"
 import { ModalType, Token } from "../enums"
+import SubNavigationPills from "../components/SubNavigationPills"
 
-const UpgradePage: FC = () => {
+const subNavLinks = [
+  {
+    text: "KEEP to T",
+    path: "keep",
+  },
+  { text: "NU to T", path: "nu" },
+]
+
+const UpgradePage: FC & { route: {} } = () => {
+  return (
+    <>
+      <SubNavigationPills links={subNavLinks} />
+      <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
+        <Outlet />
+      </Container>
+    </>
+  )
+}
+
+UpgradePage.route = {}
+
+export const UpgradeTokenPage = () => {
   const { token } = useParams()
+  const navigate = useNavigate()
   const _token = token === "nu" ? Token.Nu : Token.Keep
   const { openModal } = useModal()
+
+  useEffect(() => {
+    if (token !== "nu" && token !== "keep") {
+      navigate("/upgrade/nu", { replace: true })
+    }
+  }, [token, navigate])
 
   const onSubmit = (amount: string | number, token: UpgredableToken) => {
     openModal(ModalType.UpgradeToT, {
