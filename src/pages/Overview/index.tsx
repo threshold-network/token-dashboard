@@ -29,9 +29,9 @@ const Overview = ({}) => {
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
-      <SubNavigationPills links={subNavLinks} />
       <Label1>Threshold</Label1>
       {isMobile ? <H3>Network Overview</H3> : <H1>Network Overview</H1>}
+      <SubNavigationPills links={subNavLinks} />
       {/* <Switch>
       <Route path={`${path}/network`}>
         <Network totalValueLocked={data.total} />

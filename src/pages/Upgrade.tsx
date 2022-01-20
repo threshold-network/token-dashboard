@@ -1,6 +1,6 @@
 import { FC, useEffect } from "react"
 import { useParams, Outlet, useNavigate } from "react-router-dom"
-import { Stack, HStack, Container } from "@chakra-ui/react"
+import { Stack, Container } from "@chakra-ui/react"
 import UpgradeCard from "../components/UpgradeCard"
 import TokenBalanceCard from "../components/TokenBalanceCard"
 import { useModal } from "../hooks/useModal"
@@ -20,7 +20,7 @@ const UpgradePage: FC & { route: {} } = () => {
   return (
     <>
       <SubNavigationPills links={subNavLinks} />
-      <Container maxW={{ base: "2xl", xl: "6xl" }} mt={16}>
+      <Container maxW={{ base: "2xl", xl: "6xl" }} mt="6.25rem">
         <Outlet />
       </Container>
     </>
@@ -49,13 +49,18 @@ export const UpgradeTokenPage = () => {
   }
 
   return (
-    <HStack w="100%" align="flex-start" spacing="1rem">
+    <Stack
+      direction={{ base: "column-reverse", md: "row" }}
+      w="100%"
+      align="flex-start"
+      spacing="1rem"
+    >
       <UpgradeCard token={_token} onSubmit={onSubmit} />
-      <Stack w="50%" spacing="1rem">
+      <Stack w={{ base: "100%", md: "50%" }} spacing="1rem">
         <TokenBalanceCard token={_token} />
         <TokenBalanceCard token={Token.T} />
       </Stack>
-    </HStack>
+    </Stack>
   )
 }
 
