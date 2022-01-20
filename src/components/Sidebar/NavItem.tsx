@@ -8,7 +8,7 @@ import {
   Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Link as RouterLink, useRouteMatch } from "react-router-dom"
+import { Link as RouterLink, useMatch } from "react-router-dom"
 import { useSidebar } from "../../hooks/useSidebar"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
@@ -29,7 +29,7 @@ const NavItem: FC<NavItemDetail> = ({
 }) => {
   const { isOpen, closeSidebar } = useSidebar()
   const isMobileDevice = useChakraBreakpoint("md")
-  const isActive = useRouteMatch(href)
+  const isActive = useMatch(href)
 
   return (
     <Box position="relative" my={2}>
