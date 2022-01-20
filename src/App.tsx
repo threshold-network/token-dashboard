@@ -120,7 +120,7 @@ const Layout = () => {
 const Routing = () => {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
         <Route path="overview" element={<Overview />}>
           <Route index element={<Navigate to="network" />} />

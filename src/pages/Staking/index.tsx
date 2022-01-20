@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react"
-import { Box, Stack } from "@chakra-ui/react"
+import { Box, Container, Stack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { useDispatch } from "react-redux"
 import StakingChecklistCard from "./StakingChecklistCard"
@@ -27,7 +27,7 @@ const StakingPage: FC = () => {
   }, [fetchOwnerStakes, account, dispatch])
 
   return (
-    <Box>
+    <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Stack direction={{ base: "column", lg: "row" }} w="100%">
         <StakedPortfolioCard />
         <Stack direction="column" w="100%">
@@ -40,7 +40,7 @@ const StakingPage: FC = () => {
           <StakesTable stakes={stakes} />
         </Box>
       )}
-    </Box>
+    </Container>
   )
 }
 

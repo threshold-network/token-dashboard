@@ -13,11 +13,6 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
   const { contract } = useToken(token)
   const currentTokenBalance = useTokenBalance(token)
 
-  // TODO: Debug this issue: https://keepnetwork.atlassian.net/browse/DAPP-515
-  // the balance is always 0 in the callback. Seems like the ref updater in useSubscribeToContractEvent
-  // is not updating this callback the correct balances ˆ
-  console.log("current token balance: " + currentTokenBalance, token)
-
   const { setTokenBalance } = useTokenState()
 
   const balanceUpdater = useCallback(
@@ -27,9 +22,6 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
         to,
         amount: amount.toString(),
       })
-
-      console.log("increase? ", isSameETHAddress(to, account!))
-      console.log("decrease? ", isSameETHAddress(from, account!))
 
       // transfer in - increase token balance
       if (isSameETHAddress(to, account!)) {
@@ -42,8 +34,6 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
 
         // transfer out - decrease token balance
       } else if (isSameETHAddress(from, account!)) {
-        console.log("the current token balance: ", currentTokenBalance)
-
         setTokenBalance(
           token,
           BigNumber.from(currentTokenBalance)
