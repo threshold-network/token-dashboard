@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Circle, HStack, Td, VStack } from "@chakra-ui/react"
+import { Badge, Circle, HStack, Td, VStack } from "@chakra-ui/react"
 import gradient from "random-gradient"
 import { StakeCellProps } from "../../../types/staking"
 import { Body2, Body3 } from "../../../components/Typography"
@@ -15,6 +15,11 @@ const StakeNameCell: FC<StakeCellProps & { index: number }> = ({
         <VStack>
           <Body2>T Stake {index + 1}</Body2>
           <Body3 color="gray.500">Threshold</Body3>
+          {stake.tStake == "0" && (
+            <Badge variant="subtle" colorScheme="yellow">
+              Inactive
+            </Badge>
+          )}
         </VStack>
       </HStack>
     </Td>

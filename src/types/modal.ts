@@ -15,6 +15,10 @@ import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import StakingPreNeededModal from "../components/Modal/StakingSuccessPreNeededModal"
 import SubmitPreAddressModal from "../components/Modal/SubmitPreAddressModal"
+import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
+import UnstakeTModal from "../components/Modal/UnstakeTModal"
+import TopupTModal from "../components/Modal/TopupTModal"
+import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -26,9 +30,13 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UpgradedToT]: UpgradeToTSuccess,
   [ModalType.ConfirmStakingParams]: ConfirmStakingParams,
   [ModalType.StakeSuccess]: StakingSuccessModal,
+  [ModalType.UnstakeSuccess]: UnstakingSuccessModal,
+  [ModalType.UnstakeT]: UnstakeTModal,
   [ModalType.StakingChecklist]: StakingChecklistModal,
   [ModalType.StakeSuccessPreNeeded]: StakingPreNeededModal,
   [ModalType.SubmitPreAddress]: SubmitPreAddressModal,
+  [ModalType.TopupT]: TopupTModal,
+  [ModalType.TopupTSuccess]: TopupTSuccessModal,
 }
 
 export interface BaseModalProps {
