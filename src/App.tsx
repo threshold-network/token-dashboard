@@ -32,8 +32,6 @@ import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent
 import Overview from "./pages/Overview"
 import UpgradePage, { UpgradeTokenPage } from "./pages/Upgrade"
 import Network from "./pages/Overview/Network"
-import TBTCPage from "./pages/Overview/tBTC"
-import Pre from "./pages/Overview/Pre"
 import StakingPage from "./pages/Staking"
 
 const Web3EventHandlerComponent = () => {
@@ -125,8 +123,6 @@ const Routing = () => {
         <Route path="overview" element={<Overview />}>
           <Route index element={<Navigate to="network" />} />
           <Route path="network" element={<Network totalValueLocked="0" />} />
-          <Route path="tbtc" element={<TBTCPage />} />
-          <Route path="pre" element={<Pre />} />
         </Route>
         <Route path="upgrade" element={<UpgradePage />}>
           <Route index element={<Navigate to="keep" />} />
