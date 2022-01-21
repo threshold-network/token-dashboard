@@ -21,6 +21,7 @@ import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { Token } from "../../../enums"
 import { formatTokenAmount } from "../../../utils/formatAmount"
+import InfoBox from "../../../components/InfoBox"
 
 const BalanceStat: FC<{
   balance: string | number
@@ -116,17 +117,10 @@ const WalletBalances: FC = () => {
       </Stack>
       <Divider borderColor="gray.300" />
       <Body2>Possible T amount</Body2>
-      <HStack
-        bg={useColorModeValue("gray.50", "gray.700")}
-        mt={4}
-        px={6}
-        py={2}
-        borderRadius="md"
-      >
+      <InfoBox mt={4} direction="row">
         <Icon as={t.icon} boxSize="32px" />
         <TokenBalance tokenAmount={conversionToTAmount} />
-      </HStack>
-
+      </InfoBox>
       <Button
         size="lg"
         isFullWidth
