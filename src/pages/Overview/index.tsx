@@ -4,8 +4,11 @@ import { Outlet } from "react-router-dom"
 import { H1, H3, Label1 } from "../../components/Typography"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 const Overview = ({}) => {
+  useDocumentTitle("Threshold - Overview")
+
   const isMobile = useChakraBreakpoint("md")
   const [data, fetchtTvlData] = useFetchTvl()
 
