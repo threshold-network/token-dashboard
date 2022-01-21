@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Button, HStack, Stack } from "@chakra-ui/react"
+import { Button, HStack, Stack, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
@@ -35,7 +35,7 @@ const BalanceStat: FC<{
         iconSize="24px"
       />
       {conversionRate && (
-        <Body3 color="gray.500">
+        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
           1 {text} = {conversionRate} T
         </Body3>
       )}
@@ -124,11 +124,12 @@ const WalletBalances: FC = () => {
           withSymbol
           tokenSymbol="T"
           icon={t.icon}
+          isLarge
         />
       </InfoBox>
 
       {/* Link to upgrade page */}
-      <Button size="lg" isFullWidth mt={8} as={RouterLink} to="/upgrade">
+      <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/upgrade">
         Upgrade Tokens
       </Button>
 
@@ -141,7 +142,9 @@ const WalletBalances: FC = () => {
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
         />
-        <Body3 color="gray.500">about Exchange Rate</Body3>
+        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          about Exchange Rate
+        </Body3>
       </HStack>
     </CardTemplate>
   )

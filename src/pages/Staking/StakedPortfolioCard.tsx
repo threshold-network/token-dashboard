@@ -2,14 +2,16 @@ import { FC } from "react"
 import Card from "../../components/Card"
 import { Body1, Body2, Body3, Label3 } from "../../components/Typography"
 import { useModal } from "../../hooks/useModal"
-import { ModalType } from "../../enums"
+import { ExternalHref, ModalType } from "../../enums"
 import SubmitTxButton from "../../components/SubmitTxButton"
 import InfoBox from "../../components/InfoBox"
 import { useStakingState } from "../../hooks/useStakingState"
 import { formatTokenAmount } from "../../utils/formatAmount"
-import { HStack, Link, Stack, useColorModeValue } from "@chakra-ui/react"
+import { HStack, Stack, useColorModeValue } from "@chakra-ui/react"
 import { useTokenState } from "../../hooks/useTokenState"
-import { Divider } from "../../components/Divider"
+import TokenBalance from "../../components/TokenBalance"
+import BoxLabel from "../../components/BoxLabel"
+import ExternalLink from "../../components/ExternalLink"
 
 const StakedPortfolioCard: FC = () => {
   const { openModal } = useModal()
@@ -28,28 +30,27 @@ const StakedPortfolioCard: FC = () => {
           Staked Portfolio
         </Label3>
         <Body2 mb={2}>Staked Balance</Body2>
-        <InfoBox text={`${formatTokenAmount(stakedBalance.toString())} T`} />
+        <InfoBox>
+          <TokenBalance
+            tokenAmount={stakedBalance.toString()}
+            withSymbol
+            tokenSymbol="T"
+            isLarge
+          />
+        </InfoBox>
         <HStack justify="space-between" w="100%">
-          <Body1
-            borderRadius="md"
-            px={2}
-            py={1}
-            bg={useColorModeValue("gray.50", "gray.700")}
-          >
-            Wallet
-          </Body1>
+          <BoxLabel>Wallet</BoxLabel>
           <Body1>{formatTokenAmount(t.balance)} T</Body1>
         </HStack>
-        <Divider />
-        <SubmitTxButton onSubmit={openStakingModal} submitText="STAKE" />
+        <SubmitTxButton onSubmit={openStakingModal} submitText="Stake" />
         <HStack justify="center" mt={4}>
-          <Link
-            color={useColorModeValue("brand.500", "white")}
-            textDecoration="underline"
-          >
-            Read More
-          </Link>{" "}
-          <Body3 color="gray.500">about Staking Contract</Body3>
+          <ExternalLink
+            href={ExternalHref.stakingContractLeanMore}
+            text="Read More"
+          />
+          <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+            about Staking Contract
+          </Body3>
         </HStack>
       </Stack>
     </Card>

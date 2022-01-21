@@ -34,7 +34,9 @@ const ChecklistItem: FC<ChecklistItemProps> = ({ title, subTitle }) => {
             title
           )}
           {typeof subTitle === "string" ? (
-            <Body3 color="gray.500">{subTitle}</Body3>
+            <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+              {subTitle}
+            </Body3>
           ) : (
             subTitle
           )}
