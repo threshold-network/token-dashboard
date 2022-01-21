@@ -42,7 +42,7 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
         )
       }
     },
-    [account, contract, currentTokenBalance, setTokenBalance]
+    [account, currentTokenBalance, setTokenBalance]
   )
 
   // @ts-ignore
