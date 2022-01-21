@@ -28,7 +28,7 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
       <ModalHeader>Confirm (pending)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox py={12}>
+        <InfoBox py={12} variant="modal">
           <Spinner />
           <Body1 align="center" mt={8}>
             {pendingText}

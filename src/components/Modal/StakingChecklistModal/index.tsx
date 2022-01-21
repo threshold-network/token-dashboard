@@ -28,7 +28,7 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <InfoBox>
+          <InfoBox variant="modal">
             <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
               Before you continue
             </H5>

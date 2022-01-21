@@ -38,7 +38,7 @@ const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalHeader>Stake Tokens (2 of 2)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox>
+        <InfoBox variant="modal">
           <H5 mb={4} color="gray.800">
             PRE Worker Address
           </H5>
