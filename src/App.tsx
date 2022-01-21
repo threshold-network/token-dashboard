@@ -139,7 +139,6 @@ const Routing = () => {
 }
 
 const App: FC = () => {
-  console.log("PROCESS A - ", process)
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
