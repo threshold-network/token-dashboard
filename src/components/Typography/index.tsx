@@ -21,7 +21,8 @@ export const H1: FC<TextProps> = (props) => {
   return (
     <Text
       as="h1"
-      fontSize="6xl"
+      fontSize="60px"
+      lineHeight="64px"
       fontWeight="bold"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
@@ -33,7 +34,8 @@ export const H2: FC<TextProps> = (props) => {
   return (
     <Text
       as="h2"
-      fontSize="5xl"
+      fontSize="48px"
+      lineHeight="48px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -44,7 +46,8 @@ export const H3: FC<TextProps> = (props) => {
   return (
     <Text
       as="h3"
-      fontSize="4xl"
+      fontSize="36px"
+      lineHeight="40px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -55,7 +58,8 @@ export const H4: FC<TextProps> = (props) => {
   return (
     <Text
       as="h4"
-      fontSize="3xl"
+      fontSize="30px"
+      lineHeight="38px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -66,7 +70,8 @@ export const H5: FC<TextProps> = (props) => {
   return (
     <Text
       as="h5"
-      fontSize="2xl"
+      fontSize="24px"
+      lineHeight="32px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -77,7 +82,8 @@ export const Body1: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
-      fontSize="lg"
+      fontSize="18px"
+      lineHeight="28px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -88,7 +94,8 @@ export const Body2: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
-      fontSize="md"
+      fontSize="16px"
+      lineHeight="24px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -99,7 +106,8 @@ export const Body3: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
-      fontSize="sm"
+      fontSize="14px"
+      lineHeight="20px"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />

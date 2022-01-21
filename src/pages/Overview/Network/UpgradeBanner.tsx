@@ -1,6 +1,7 @@
 import { FC } from "react"
 import Card from "../../../components/Card"
 import {
+  Box,
   Button,
   CloseButton,
   Image,
@@ -17,8 +18,9 @@ import { Link as RouterLink } from "react-router-dom"
 const UpgradeBanner: FC = () => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
-  const heroText =
-    "Have KEEP or Nu tokens? Upgrade them to T and harness the power of Threshold."
+  const heroText1 = "Have KEEP or NU tokens?"
+
+  const heroText2 = "Upgrade them to T and harness the power of Threshold."
 
   const isMobile = useChakraBreakpoint("md")
 
@@ -47,9 +49,15 @@ const UpgradeBanner: FC = () => {
           spacing={6}
         >
           {isMobile ? (
-            <Body2 paddingRight={8}>{heroText}</Body2>
+            <>
+              <Body2>{heroText1}</Body2>
+              <Body2>{heroText2}</Body2>
+            </>
           ) : (
-            <H4 maxW="500px">{heroText}</H4>
+            <Stack maxW="450px" justify="center">
+              <H4>{heroText1}</H4>
+              <H4 noOfLines={2}>{heroText2}</H4>
+            </Stack>
           )}
 
           <Button
