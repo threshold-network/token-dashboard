@@ -8,8 +8,8 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
-import overviewPeople from "../../../static/images/overview-people.png"
-import vortex from "../../../static/images/vortex.png"
+import vortexLight from "../../../static/images/vortextLight.png"
+import vortexDark from "../../../static/images/vortexDark.png"
 import { Body2, H4 } from "../../../components/Typography"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
@@ -36,7 +36,7 @@ const UpgradeBanner: FC = () => {
         direction={{ base: "column", md: "row" }}
       >
         <Image
-          src={useColorModeValue(overviewPeople, vortex)}
+          src={useColorModeValue(vortexLight, vortexDark)}
           width={{ base: "140px" }}
           m="auto"
         />
