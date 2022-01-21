@@ -3,6 +3,7 @@ import { Box, Icon, Link, Stack } from "@chakra-ui/react"
 import { Body3 } from "../Typography"
 import { FiArrowUpRight } from "react-icons/all"
 import ChecklistGroup from "../ChecklistGroup"
+import { ExternalLink } from "../../enums"
 
 export const StakingDepositSteps: FC = () => {
   return (
@@ -17,7 +18,7 @@ export const StakingDepositSteps: FC = () => {
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
               <Link
-                href="SOME_LINK"
+                href={ExternalLink.preStakingProvider}
                 target="_blank"
                 color="brand.500"
                 textDecoration="underline"
@@ -44,7 +45,7 @@ export const PreSetupSteps: FC = () => {
             <Body3 color="gray.500">
               If you don't have one yet, set this up{" "}
               <Link
-                href="SOME_LINK"
+                href={ExternalLink.preNodeSetup}
                 target="_blank"
                 color="brand.500"
                 textDecoration="underline"

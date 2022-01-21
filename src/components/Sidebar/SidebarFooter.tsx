@@ -43,12 +43,12 @@ const SidebarFooter = () => {
           <HStack justify="center">
             <FooterItem
               text="Github"
-              href={ExternalLink.THRESHOLD_GITHUB}
+              href={ExternalLink.thresholdGithub}
               icon={BsGithub}
             />
             <FooterItem
               text="Discord"
-              href={ExternalLink.THRESHOLD_DISCORD}
+              href={ExternalLink.thresholdDiscord}
               icon={BsDiscord}
             />
           </HStack>
@@ -63,14 +63,14 @@ const SidebarFooter = () => {
             text="Github"
             activeIcon={BsGithub}
             passiveIcon={BsGithub}
-            href={ExternalLink.THRESHOLD_GITHUB}
+            href={ExternalLink.thresholdGithub}
           />
           <NavItem
             isFooter
             text="Discord"
             activeIcon={BsDiscord}
             passiveIcon={BsDiscord}
-            href={ExternalLink.THRESHOLD_DISCORD}
+            href={ExternalLink.thresholdDiscord}
           />
         </>
       )}

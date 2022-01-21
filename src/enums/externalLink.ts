@@ -1,4 +1,9 @@
 export enum ExternalLink {
-  THRESHOLD_GITHUB = "https://github.com/threshold-network/token-dashboard",
-  THRESHOLD_DISCORD = "https://discord.gg/hHHZF4rA",
+  thresholdGithub = "https://github.com/threshold-network/token-dashboard",
+  thresholdDiscord = "https://discord.gg/hHHZF4rA",
+  metamaskHomePage = "https://metamask.io/",
+  stakingContractLeanMore = "",
+  preNodeSetup = "",
+  preStakingProvider = "",
+  exchangeRateLearnMore = " ",
 }

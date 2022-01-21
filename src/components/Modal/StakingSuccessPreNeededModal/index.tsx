@@ -17,6 +17,7 @@ import { BaseModalProps } from "../../../types"
 import { FiArrowUpRight } from "react-icons/all"
 import StakingStats from "../StakingSuccessModal/StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
+import { ExternalLink } from "../../../enums"
 
 const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
@@ -37,7 +38,7 @@ const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
           <Body1 color="gray.700">
             You'll need to run a PRE node to receive rewards. You can this up{" "}
             <Link
-              href="SOME_LINK"
+              href={ExternalLink.preNodeSetup}
               target="_blank"
               color="brand.500"
               textDecoration="underline"
