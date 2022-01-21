@@ -31,7 +31,7 @@ const StakingSuccessPreNeededModal: FC<BaseModalProps> = ({ closeModal }) => {
           <AlertIcon />
           You haven't added a PRE Worker Adddress
         </Alert>
-        <InfoBox>
+        <InfoBox variant="modal">
           <H5 mb={4} color="gray.800">
             Your Stake was successful.
           </H5>
