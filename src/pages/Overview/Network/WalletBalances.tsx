@@ -19,7 +19,7 @@ import Icon from "../../../components/Icon"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
-import { Token } from "../../../enums"
+import { ExternalLink, Token } from "../../../enums"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import InfoBox from "../../../components/InfoBox"
 
@@ -138,7 +138,7 @@ const WalletBalances: FC = () => {
           textDecoration="underline"
           rel="noopener noreferrer"
           target="_blank"
-          href="https://github.com/threshold-network/solidity-contracts/blob/main/docs/rfc-2-vending-machine.adoc"
+          href={ExternalLink.exchangeRateLearnMore}
         >
           Read More
         </Link>{" "}

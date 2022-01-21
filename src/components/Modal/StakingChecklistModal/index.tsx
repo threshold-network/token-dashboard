@@ -1,6 +1,5 @@
 import { FC } from "react"
 import {
-  Box,
   Button,
   Divider,
   Link,
@@ -15,7 +14,7 @@ import { Body1, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { ModalType } from "../../../enums"
+import { ExternalLink, ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
 
@@ -29,7 +28,7 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox>
-            <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
+            <H5 mb={4} color="gray.800">
               Before you continue
             </H5>
             <Body1 color={useColorModeValue("gray.700", "white")}>
@@ -37,10 +36,10 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
             </Body1>
           </InfoBox>
           <StakingChecklist />
-          <Body3 align="center" color="gray.500">
+          <Body3 align="center" color="gray.500" mt={12} mb={6}>
             Read more about the{" "}
             <Link
-              href={"SOME_LINK"}
+              href={ExternalLink.stakingContractLeanMore}
               target="_blank"
               color="brand.500"
               textDecoration="underline"

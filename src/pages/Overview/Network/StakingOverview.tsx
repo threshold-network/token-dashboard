@@ -8,6 +8,7 @@ import Icon from "../../../components/Icon"
 import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
 import { useStakingState } from "../../../hooks/useStakingState"
+import { ExternalLink } from "../../../enums"
 
 const StakingOverview: FC = () => {
   const { t } = useTokenState()
@@ -34,6 +35,8 @@ const StakingOverview: FC = () => {
         <Link
           color={useColorModeValue("brand.500", "white")}
           textDecoration="underline"
+          target="_blank"
+          href={ExternalLink.stakingContractLeanMore}
         >
           Read More
         </Link>{" "}
