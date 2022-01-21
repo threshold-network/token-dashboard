@@ -9,7 +9,6 @@ import { Body2, Body3 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import { useTokenState } from "../../../hooks/useTokenState"
-import Icon from "../../../components/Icon"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
@@ -27,15 +26,14 @@ const BalanceStat: FC<{
 }> = ({ balance, icon, text, conversionRate, tokenDecimals }) => {
   return (
     <HStack justify="space-between">
-      <HStack>
-        <Icon as={icon} boxSize="24px" />
-        <TokenBalance
-          tokenAmount={balance}
-          tokenSymbol={text}
-          withSymbol
-          tokenDecimals={tokenDecimals}
-        />
-      </HStack>
+      <TokenBalance
+        tokenAmount={balance}
+        tokenSymbol={text}
+        withSymbol
+        tokenDecimals={tokenDecimals}
+        icon={icon}
+        iconSize="24px"
+      />
       {conversionRate && (
         <Body3 color="gray.500">
           1 {text} = {conversionRate} T
@@ -90,8 +88,13 @@ const WalletBalances: FC = () => {
 
   return (
     <CardTemplate title="WALLET">
+      {/* title */}
       <Body2 mb={2}>Liquid Tokens</Body2>
+
+      {/* colored asset bar */}
       <MultiSegmentProgress values={progressBarValues} />
+
+      {/* token balances */}
       <Stack spacing={2} mt={4}>
         {formattedT !== 0 && (
           <BalanceStat balance={t.balance} icon={t.icon} text={t.text} />
@@ -110,12 +113,21 @@ const WalletBalances: FC = () => {
           text={nu.text}
         />
       </Stack>
+
       <Divider borderColor="gray.300" />
+
+      {/* Possible amount */}
       <Body2>Possible T amount</Body2>
-      <InfoBox mt={4} direction="row">
-        <Icon as={t.icon} boxSize="32px" />
-        <TokenBalance tokenAmount={conversionToTAmount} />
+      <InfoBox mt={4} direction="row" p={4}>
+        <TokenBalance
+          tokenAmount={conversionToTAmount}
+          withSymbol
+          tokenSymbol="T"
+          icon={t.icon}
+        />
       </InfoBox>
+
+      {/* Link to upgrade page */}
       <Button
         size="lg"
         isFullWidth
@@ -126,8 +138,13 @@ const WalletBalances: FC = () => {
       >
         Upgrade Tokens
       </Button>
+
+      {/* exchange rate link */}
       <HStack justify="center" mt={4}>
         <ExternalLink
+          as="p"
+          fontSize="14px"
+          lineHeight="20px"
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
         />

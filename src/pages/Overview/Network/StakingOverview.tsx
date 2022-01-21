@@ -18,9 +18,8 @@ const StakingOverview: FC = () => {
   return (
     <CardTemplate title="STAKING">
       <Body2 mb={2}>Staked Balance</Body2>
-      <InfoBox mt={4} direction="row">
-        <Icon as={t.icon} boxSize="32px" />
-        <TokenBalance tokenAmount={stakedBalance.toString()} />
+      <InfoBox mt={4}>
+        <TokenBalance icon={t.icon} tokenAmount={stakedBalance.toString()} />
       </InfoBox>
       <Button
         size="lg"
