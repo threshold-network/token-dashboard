@@ -26,7 +26,9 @@ import { useTStakingContract } from "../../../web3/hooks"
 import { BigNumber } from "ethers"
 import InfoBox from "../../InfoBox"
 
-const ConfirmStakingParams: FC<BaseModalProps> = () => {
+const ConfirmStakingParamsModal: FC<
+  BaseModalProps & { operatorInUse: boolean }
+> = ({ operatorInUse }) => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
@@ -161,6 +163,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
               isValidAuthorizer,
               isValidBeneficiary,
               isValidOperator,
+              operatorInUse,
             }}
           />
         </Stack>
@@ -177,4 +180,4 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
   )
 }
 
-export default withBaseModal(ConfirmStakingParams)
+export default withBaseModal(ConfirmStakingParamsModal)
