@@ -12,6 +12,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
+import InfoBox from "../../InfoBox"
 
 interface TransactionIsPendingProps extends BaseModalProps {
   pendingText?: string
@@ -27,12 +28,12 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
       <ModalHeader>Confirm (pending)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box borderRadius="md" bg="gray.50" pt={12} pb={8}>
+        <InfoBox py={12} variant="modal">
           <Spinner />
-          <Body1 color="gray.700" align="center" mt={8}>
+          <Body1 align="center" mt={8}>
             {pendingText}
           </Body1>
-        </Box>
+        </InfoBox>
       </ModalBody>
       <ModalFooter justifyContent="center">
         <Body3>
