@@ -122,7 +122,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
       <ModalHeader>Stake Tokens</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox>
+        <InfoBox variant="modal">
           <H5 mb={4}>You are about to stake T</H5>
           <Body1>
             Here is some sub text copy to explain the staking process

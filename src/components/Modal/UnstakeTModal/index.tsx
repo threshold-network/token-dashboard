@@ -38,7 +38,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <InfoBox>
+          <InfoBox variant="modal">
             <H5 mb={4}>You are about to unstake your T</H5>
             <Body1>Lorem Ipsum about what unstaking means</Body1>
           </InfoBox>

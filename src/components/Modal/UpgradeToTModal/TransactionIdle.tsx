@@ -42,7 +42,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
       <ModalHeader>Upgrade Tokens</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox>
+        <InfoBox variant="modal">
           <H5>You are about to upgrade {token} to T.</H5>
           <Body1 mt="1rem">
             The upgrade uses an ApproveAndCall function which requires one
