@@ -1,8 +1,8 @@
-import { useSelector, useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { UseModal } from "../types"
 import {
-  openModal as openModalAction,
   closeModal as closeModalAction,
+  openModal as openModalAction,
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
