@@ -5,10 +5,10 @@ import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import {
   BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
   Navigate,
+  Outlet,
+  Route,
+  Routes,
 } from "react-router-dom"
 import { BigNumberish } from "@ethersproject/bignumber"
 import { Event } from "@ethersproject/contracts"
@@ -33,6 +33,7 @@ import Overview from "./pages/Overview"
 import UpgradePage, { UpgradeTokenPage } from "./pages/Upgrade"
 import Network from "./pages/Overview/Network"
 import StakingPage from "./pages/Staking"
+import useDocumentTitle from "./hooks/useDocumentTitle"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -135,6 +136,8 @@ const Routing = () => {
 }
 
 const App: FC = () => {
+  useDocumentTitle("Threshold")
+
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
