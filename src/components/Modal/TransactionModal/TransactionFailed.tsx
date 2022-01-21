@@ -92,7 +92,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                 <Link
                   textDecoration="underline"
                   bold="md"
-                  href={ExternalLink.THRESHOLD_DISCORD}
+                  href={ExternalLink.thresholdDiscord}
                   target="_blank"
                 >
                   Get help on discord

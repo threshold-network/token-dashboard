@@ -13,7 +13,7 @@ import { Body1, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { ModalType } from "../../../enums"
+import { ExternalLink, ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 
 const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
@@ -36,7 +36,7 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Body3 align="center" color="gray.500" mt={12} mb={6}>
           Read more about the{" "}
           <Link
-            href={"SOME_LINK"}
+            href={ExternalLink.stakingContractLeanMore}
             target="_blank"
             color="brand.500"
             textDecoration="underline"

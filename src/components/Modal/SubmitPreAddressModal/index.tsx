@@ -18,7 +18,7 @@ import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { FiArrowUpRight } from "react-icons/all"
 import { useModal } from "../../../hooks/useModal"
-import { ModalType } from "../../../enums"
+import { ExternalLink, ModalType } from "../../../enums"
 
 const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
@@ -44,7 +44,7 @@ const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
           <Body1 color="gray.700">
             You'll need to run a PRE node to receive rewards. You can this up
             <Link
-              href="SOME_LINK"
+              href={ExternalLink.preNodeSetup}
               target="_blank"
               color="brand.500"
               textDecoration="underline"
