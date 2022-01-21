@@ -19,6 +19,7 @@ import { BaseModalProps } from "../../../types"
 import { FiArrowUpRight } from "react-icons/all"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
+import InfoBox from "../../InfoBox"
 
 const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
@@ -37,7 +38,7 @@ const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalHeader>Stake Tokens (2 of 2)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box borderRadius="md" bg="gray.50" p={6} mb={8}>
+        <InfoBox variant="modal">
           <H5 mb={4} color="gray.800">
             PRE Worker Address
           </H5>
@@ -52,7 +53,7 @@ const SubmitPreAddressModal: FC<BaseModalProps> = ({ closeModal }) => {
               here <Icon boxSize="12px" as={FiArrowUpRight} color="brand.500" />
             </Link>
           </Body1>
-        </Box>
+        </InfoBox>
 
         <FormControl>
           <FormLabel>PRE Worker Address</FormLabel>

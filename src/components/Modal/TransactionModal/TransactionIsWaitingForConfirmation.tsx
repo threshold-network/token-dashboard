@@ -1,9 +1,10 @@
 import { FC } from "react"
-import { Box, ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
+import { ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
 import { Body1 } from "../../Typography"
 import Spinner from "../../Spinner"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
+import InfoBox from "../../InfoBox"
 
 interface Props extends BaseModalProps {
   pendingText?: string
@@ -17,14 +18,12 @@ const TransactionIsWaitingForConfirmation: FC<Props> = ({
       <ModalHeader>Confirm (waiting)</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box mb={6}>
-          <Box borderRadius="md" bg="gray.50" pt={12} pb={8} mb={8}>
-            <Spinner />
-            <Body1 color="gray.700" align="center" mt={8}>
-              {pendingText}
-            </Body1>
-          </Box>
-        </Box>
+        <InfoBox py={12} variant="modal">
+          <Spinner />
+          <Body1 align="center" mt={8}>
+            {pendingText}
+          </Body1>
+        </InfoBox>
       </ModalBody>
     </>
   )
