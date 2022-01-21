@@ -10,15 +10,12 @@ const MULTICALL_ABI = [
 
 // Addresses exported from:
 // https://github.com/makerdao/multicall#multicall-contract-addresses
-console.log("PROCESS C - ", process)
 const MULTICALL_ADDRESSESS = {
   [ChainID.Ethereum.valueOf()]: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
   [ChainID.Ropsten.valueOf()]: "0x53c43764255c17bd724f74c4ef150724ac50a3ed",
   [ChainID.Localhost.valueOf()]:
     process.env.REACT_APP_MULTICALL_ADDRESS || AddressZero,
 } as Record<number, string>
-
-// wtf
 
 export const useMulticallContract = () => {
   return useContract(
