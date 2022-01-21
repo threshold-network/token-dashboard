@@ -1,5 +1,11 @@
 import { FC, useMemo } from "react"
-import { Box, Stack, TextProps, useColorModeValue } from "@chakra-ui/react"
+import {
+  Box,
+  HStack,
+  Stack,
+  TextProps,
+  useColorModeValue,
+} from "@chakra-ui/react"
 import { formatUnits } from "@ethersproject/units"
 import numeral from "numeral"
 import { useWeb3React } from "@web3-react/core"
@@ -42,32 +48,34 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.
   return (
-    <Box>
-      <Stack direction="row">
-        {icon && <Icon as={icon} boxSize={iconSize} alignSelf="center" />}
-        {isLarge ? (
-          <H3 {...restProps}>
-            {shouldRenderTokenAmount ? _tokenAmount : "--"}
-          </H3>
-        ) : (
-          <H5 {...restProps}>
-            {shouldRenderTokenAmount ? _tokenAmount : "--"}
-          </H5>
-        )}
-        {withSymbol &&
-          tokenSymbol &&
-          (isLarge ? (
-            <Body1 alignSelf="center">{tokenSymbol}</Body1>
+    <HStack>
+      {icon && <Icon as={icon} boxSize={iconSize} alignSelf="center" />}
+      <Box>
+        <Stack direction="row">
+          {isLarge ? (
+            <H3 {...restProps}>
+              {shouldRenderTokenAmount ? _tokenAmount : "--"}
+            </H3>
           ) : (
-            <Body3 alignSelf="center">{tokenSymbol}</Body3>
-          ))}
-      </Stack>
-      {withUSDBalance && usdBalance && (
-        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-          {usdBalance}
-        </Body3>
-      )}
-    </Box>
+            <H5 {...restProps}>
+              {shouldRenderTokenAmount ? _tokenAmount : "--"}
+            </H5>
+          )}
+          {withSymbol &&
+            tokenSymbol &&
+            (isLarge ? (
+              <Body1 alignSelf="center">{tokenSymbol}</Body1>
+            ) : (
+              <Body3 alignSelf="center">{tokenSymbol}</Body3>
+            ))}
+        </Stack>
+        {withUSDBalance && usdBalance && (
+          <Body3 ml={1} color={useColorModeValue("gray.500", "gray.300")}>
+            {usdBalance}
+          </Body3>
+        )}
+      </Box>
+    </HStack>
   )
 }
 
