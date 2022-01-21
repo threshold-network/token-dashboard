@@ -19,6 +19,7 @@ import { ModalType } from "../../../enums"
 import { StakeData } from "../../../types/staking"
 import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
 import { useTokenState } from "../../../hooks/useTokenState"
+import InfoBox from "../../InfoBox"
 
 const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
   const { closeModal, openModal } = useModal()
@@ -37,10 +38,10 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <Box borderRadius="md" bg="gray.50" p={6}>
+          <InfoBox>
             <H5 mb={4}>You are about to top up your T stake</H5>
             <Body1>Lorem Ipsum about what topping up does means</Body1>
-          </Box>
+          </InfoBox>
 
           <Stack spacing={6} mb={6}>
             <Box>
