@@ -38,7 +38,7 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <InfoBox>
+          <InfoBox variant="modal">
             <H5 mb={4}>You are about to top up your T stake</H5>
             <Body1>Lorem Ipsum about what topping up does means</Body1>
           </InfoBox>

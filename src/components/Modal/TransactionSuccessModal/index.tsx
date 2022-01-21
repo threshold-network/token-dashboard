@@ -46,6 +46,7 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
           {subTitle}
         </Alert>
         <InfoBox
+          variant="modal"
           direction="row"
           justify="center"
           py={12}

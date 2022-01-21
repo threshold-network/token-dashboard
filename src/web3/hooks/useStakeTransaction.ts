@@ -28,10 +28,9 @@ export const useStakeTransaction = (
 
   const onError = (error: any) => {
     if (error?.data?.message.includes(CommonStakingErrors.OperatorInUse)) {
-      openModal(ModalType.TransactionFailed, {
-        error: new Error(
-          "This operator is already in use. Please resubmit with a different operator address."
-        ),
+      // send the user back to the first staking step, but with validated form fields
+      openModal(ModalType.ConfirmStakingParams, {
+        operatorInUse: true,
       })
     } else {
       openModal(ModalType.TransactionFailed, {
