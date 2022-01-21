@@ -8,6 +8,8 @@ import {
   UpdateStateActionPayload,
 } from "../../types/staking"
 import { BigNumber } from "ethers"
+import { fetchETHPriceUSD } from "../eth"
+import { BigNumberish } from "@ethersproject/bignumber"
 
 interface StakingState {
   operator: string
@@ -15,6 +17,15 @@ interface StakingState {
   authorizer: string
   stakeAmount: string
   stakes: StakeData[]
+  stakedBalance: BigNumberish
+}
+
+const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
+  return stakes.reduce(
+    (balance, stake) =>
+      BigNumber.from(balance).add(BigNumber.from(stake.tStake)),
+    BigNumber.from(0)
+  )
 }
 
 export const stakingSlice = createSlice({
@@ -25,6 +36,7 @@ export const stakingSlice = createSlice({
     authorizer: "",
     stakeAmount: "0",
     stakes: [],
+    stakedBalance: 0,
   } as StakingState,
   reducers: {
     updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
@@ -33,6 +45,7 @@ export const stakingSlice = createSlice({
     },
     setStakes: (state, action) => {
       state.stakes = action.payload
+      state.stakedBalance = calculateStakedBalance(action.payload)
     },
     operatorStaked: (
       state,
@@ -48,6 +61,7 @@ export const stakingSlice = createSlice({
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
 
       state.stakes = [newStake, ...state.stakes]
+      state.stakedBalance = calculateStakedBalance(state.stakes)
     },
     updateStakeAmountForOperator: (
       state,
@@ -75,6 +89,8 @@ export const stakingSlice = createSlice({
           .sub(amountUnstaked)
           .toString()
       }
+
+      state.stakedBalance = calculateStakedBalance(state.stakes)
     },
   },
 })
