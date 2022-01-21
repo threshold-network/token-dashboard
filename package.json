@@ -94,7 +94,8 @@
   },
   "resolutions": {
     "eslint-plugin-prettier": "^4.0.0",
-    "babel-loader": "8.1.0"
+    "babel-loader": "8.1.0",
+    "react-error-overlay": "6.0.9"
   },
   "devDependencies": {
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",

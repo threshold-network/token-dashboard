@@ -14,7 +14,7 @@ const StakingPage: FC = () => {
   const fetchOwnerStakes = useFetchOwnerStakes()
   const dispatch = useDispatch()
   const { account } = useWeb3React()
-  const { stakes } = useStakingState()
+  const { stakes, stakedBalance } = useStakingState()
 
   useEffect(() => {
     const fn = async () => {
