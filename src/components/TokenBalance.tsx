@@ -1,9 +1,9 @@
 import { FC, useMemo } from "react"
-import { Box, Stack, TextProps } from "@chakra-ui/react"
+import { Box, Stack, TextProps, useColorModeValue } from "@chakra-ui/react"
 import { formatUnits } from "@ethersproject/units"
 import numeral from "numeral"
 import { useWeb3React } from "@web3-react/core"
-import { Body3, H5 } from "./Typography"
+import { Body1, Body3, H3, H5 } from "./Typography"
 import Icon from "./Icon"
 
 interface TokenBalanceProps {
@@ -15,6 +15,7 @@ interface TokenBalanceProps {
   tokenDecimals?: number
   icon?: any
   iconSize?: string
+  isLarge?: boolean
 }
 
 const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
@@ -26,6 +27,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   tokenDecimals,
   icon,
   iconSize = "32px",
+  isLarge,
   ...restProps
 }) => {
   const { account, active } = useWeb3React()
@@ -43,13 +45,27 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
     <Box>
       <Stack direction="row">
         {icon && <Icon as={icon} boxSize={iconSize} alignSelf="center" />}
-        <H5 {...restProps}>{shouldRenderTokenAmount ? _tokenAmount : "--"}</H5>
-        {withSymbol && tokenSymbol && (
-          <Body3 alignSelf="center">{tokenSymbol}</Body3>
+        {isLarge ? (
+          <H3 {...restProps}>
+            {shouldRenderTokenAmount ? _tokenAmount : "--"}
+          </H3>
+        ) : (
+          <H5 {...restProps}>
+            {shouldRenderTokenAmount ? _tokenAmount : "--"}
+          </H5>
         )}
+        {withSymbol &&
+          tokenSymbol &&
+          (isLarge ? (
+            <Body1 alignSelf="center">{tokenSymbol}</Body1>
+          ) : (
+            <Body3 alignSelf="center">{tokenSymbol}</Body3>
+          ))}
       </Stack>
       {withUSDBalance && usdBalance && (
-        <Body3 color="gray.500">{usdBalance}</Body3>
+        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          {usdBalance}
+        </Body3>
       )}
     </Box>
   )

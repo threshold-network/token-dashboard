@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react"
-import { Box, HStack, Stack, Text } from "@chakra-ui/react"
+import { Box, HStack, Stack, Text, useColorModeValue } from "@chakra-ui/react"
 import { BsArrowDownCircleFill } from "react-icons/all"
 import { Body3, H5 } from "../Typography"
 import Card from "../Card"
@@ -61,7 +61,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         </Divider>
         <HStack mt={9}>
           <Body3 fontWeight="bold">T Amount</Body3>
-          <Body3 ml={4} color="gray.500">
+          <Body3 ml={4} color={useColorModeValue("gray.500", "gray.300")}>
             {`1 ${token} = ${exchangeRate} T`}
           </Body3>
         </HStack>
