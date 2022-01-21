@@ -1,26 +1,63 @@
 import { FC } from "react"
-import StakingStats from "./StakingStats"
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  Button,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  ModalHeader,
+  Stack,
+} from "@chakra-ui/react"
+import { Body1, Body3 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
+import StakingChecklist, { PreSetupSteps } from "../../StakingChecklist"
+import StakingStats from "./StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
-import TransactionSuccessModal from "../TransactionSuccessModal"
+import ViewInBlockExplorer from "../../ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 
-interface StakingSuccessProps extends BaseModalProps {
-  transactionHash: string
-}
-
-const StakingSuccessModal: FC<StakingSuccessProps> = ({ transactionHash }) => {
+const StakingChecklistModal: FC<
+  BaseModalProps & { transactionHash: string }
+> = ({ closeModal, transactionHash }) => {
   const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
 
   return (
-    <TransactionSuccessModal
-      subTitle="Your stake was successful!"
-      transactionHash={transactionHash}
-      body={
-        <StakingStats {...{ stakeAmount, beneficiary, operator, authorizer }} />
-      }
-    />
+    <>
+      <ModalHeader>Step 1 Completed</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <Stack spacing={6}>
+          <Alert status="success">
+            <AlertIcon />
+            <AlertDescription>Your deposit was successful!</AlertDescription>
+          </Alert>
+          <StakingStats
+            {...{ stakeAmount, beneficiary, operator, authorizer }}
+          />
+          <Alert status="warning">
+            <Body1>Complete Step 2 to start earning Rewards</Body1>
+          </Alert>
+          <PreSetupSteps />
+          {transactionHash && (
+            <Body3 mt="4rem" align="center">
+              <ViewInBlockExplorer
+                text="View"
+                id={transactionHash}
+                type={ExplorerDataType.TRANSACTION}
+              />{" "}
+              transaction on Etherscan
+            </Body3>
+          )}
+        </Stack>
+      </ModalBody>
+      <ModalFooter>
+        <Button onClick={closeModal}>Dismiss</Button>
+      </ModalFooter>
+    </>
   )
 }
 
-export default withBaseModal(StakingSuccessModal)
+export default withBaseModal(StakingChecklistModal)
