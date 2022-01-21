@@ -128,14 +128,7 @@ const WalletBalances: FC = () => {
       </InfoBox>
 
       {/* Link to upgrade page */}
-      <Button
-        size="lg"
-        isFullWidth
-        mt={8}
-        as={RouterLink}
-        to="/upgrade"
-        _hover={{ textDecoration: "none" }}
-      >
+      <Button size="lg" isFullWidth mt={8} as={RouterLink} to="/upgrade">
         Upgrade Tokens
       </Button>
 

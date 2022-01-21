@@ -21,14 +21,7 @@ const StakingOverview: FC = () => {
       <InfoBox mt={4}>
         <TokenBalance icon={t.icon} tokenAmount={stakedBalance.toString()} />
       </InfoBox>
-      <Button
-        size="lg"
-        isFullWidth
-        mt={8}
-        as={RouterLink}
-        to="/staking"
-        _hover={{ textDecoration: "none" }}
-      >
+      <Button size="lg" isFullWidth mt={8} as={RouterLink} to="/staking">
         Go to Staking
       </Button>
       <HStack justify="center" mt={4}>

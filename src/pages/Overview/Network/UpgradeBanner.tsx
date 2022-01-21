@@ -63,7 +63,6 @@ const UpgradeBanner: FC = () => {
           <Button
             as={RouterLink}
             to="/upgrade"
-            _hover={{ textDecoration: "none" }}
             marginY="auto !important"
             mt={{ base: 12, xl: "auto !important" }}
             size={isMobile ? "sm" : "lg"}
