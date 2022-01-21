@@ -10,11 +10,14 @@ import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../hooks/useTExchangeRate"
 import { UpgredableToken } from "../../types"
 import { Token } from "../../enums"
+import { useWeb3React } from "@web3-react/core"
+import { BigNumber } from "ethers"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
   amountToConvert: number | string
   onSubmit: () => void
+  max: string | number
 }
 
 const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
@@ -22,9 +25,11 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   children,
   amountToConvert,
   onSubmit,
+  max,
 }) => {
   const { formattedAmount } = useTConvertedAmount(token, amountToConvert)
   const { formattedAmount: exchangeRate } = useTExchangeRate(token)
+  const { account } = useWeb3React()
 
   const titleText = useMemo(() => {
     switch (token) {
@@ -61,7 +66,16 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           </Body3>
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
-        <SubmitTxButton mt={10} onSubmit={onSubmit} />
+        <SubmitTxButton
+          mt={10}
+          onSubmit={onSubmit}
+          disabled={
+            !!account &&
+            (amountToConvert == 0 ||
+              amountToConvert == "" ||
+              BigNumber.from(amountToConvert).gt(max))
+          }
+        />
       </Box>
     </Card>
   )
