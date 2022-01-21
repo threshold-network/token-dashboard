@@ -20,7 +20,7 @@ const UpgradePage: FC & { route: {} } = () => {
   return (
     <>
       <SubNavigationPills links={subNavLinks} />
-      <Container maxW={{ base: "2xl", xl: "6xl" }} mt="6.25rem">
+      <Container maxW={{ base: "2xl", xl: "6xl" }} my={{ base: 6, md: 24 }}>
         <Outlet />
       </Container>
     </>
