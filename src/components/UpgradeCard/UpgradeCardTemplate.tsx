@@ -43,19 +43,25 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         <H5>{titleText}</H5>
         <UpgradeIconGroup token={token} />
       </Stack>
-      <Box mt={6}>
-        {children}
-        <Divider>
-          <DividerIcon color="gray.600" as={BsArrowDownCircleFill} />
+      <Box mt={10}>
+        <Box>{children}</Box>
+        <Divider mt={9}>
+          <DividerIcon
+            left="30px"
+            height="40px !important"
+            width="40px !important"
+            color="gray.600"
+            as={BsArrowDownCircleFill}
+          />
         </Divider>
-        <HStack>
+        <HStack mt={9}>
           <Body3 fontWeight="bold">T Amount</Body3>
           <Body3 ml={4} color="gray.500">
             {`1 ${token} = ${exchangeRate} T`}
           </Body3>
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
-        <SubmitTxButton onSubmit={onSubmit} />
+        <SubmitTxButton mt={10} onSubmit={onSubmit} />
       </Box>
     </Card>
   )
