@@ -9,8 +9,11 @@ import { useFetchOwnerStakes } from "../../hooks/useFetchOwnerStakes"
 import { setStakes } from "../../store/staking"
 import { useStakingState } from "../../hooks/useStakingState"
 import StakesTable from "./StakesTable"
+import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 const StakingPage: FC = () => {
+  useDocumentTitle("Threshold - Staking")
+
   const fetchOwnerStakes = useFetchOwnerStakes()
   const dispatch = useDispatch()
   const { account } = useWeb3React()
