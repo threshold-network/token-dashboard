@@ -6,7 +6,6 @@ import SubNavigationPills from "../../components/SubNavigationPills"
 import Network from "./Network"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
-import useDocumentTitle from "../../hooks/useDocumentTitle"
 
 const subNavLinks = [
   {
@@ -18,8 +17,7 @@ const subNavLinks = [
 ]
 
 const Overview = ({}) => {
-  useDocumentTitle("Threshold - Overview")
-
+  // const { path } = useRouteMatch()
   const isMobile = useChakraBreakpoint("md")
   const [data, fetchtTvlData] = useFetchTvl()
 

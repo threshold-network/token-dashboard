@@ -7,7 +7,6 @@ import { useModal } from "../hooks/useModal"
 import { UpgredableToken } from "../types"
 import { ModalType, Token } from "../enums"
 import SubNavigationPills from "../components/SubNavigationPills"
-import useDocumentTitle from "../hooks/useDocumentTitle"
 
 const subNavLinks = [
   {
@@ -18,8 +17,6 @@ const subNavLinks = [
 ]
 
 const UpgradePage: FC & { route: {} } = () => {
-  useDocumentTitle("Threshold - Upgrade")
-
   return (
     <>
       <SubNavigationPills links={subNavLinks} />
