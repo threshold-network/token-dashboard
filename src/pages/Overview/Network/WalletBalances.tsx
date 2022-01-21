@@ -1,12 +1,6 @@
 import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import {
-  Button,
-  HStack,
-  Link,
-  Stack,
-  useColorModeValue,
-} from "@chakra-ui/react"
+import { Button, HStack, Stack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
@@ -19,9 +13,10 @@ import Icon from "../../../components/Icon"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
-import { ExternalLink, Token } from "../../../enums"
+import { ExternalHref, Token } from "../../../enums"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import InfoBox from "../../../components/InfoBox"
+import ExternalLink from "../../../components/ExternalLink"
 
 const BalanceStat: FC<{
   balance: string | number
@@ -131,17 +126,11 @@ const WalletBalances: FC = () => {
       >
         Upgrade Tokens
       </Button>
-
       <HStack justify="center" mt={4}>
-        <Link
-          color={useColorModeValue("brand.500", "white")}
-          textDecoration="underline"
-          rel="noopener noreferrer"
-          target="_blank"
-          href={ExternalLink.exchangeRateLearnMore}
-        >
-          Read More
-        </Link>{" "}
+        <ExternalLink
+          href={ExternalHref.exchangeRateLearnMore}
+          text="Read More"
+        />
         <Body3 color="gray.500">about Exchange Rate</Body3>
       </HStack>
     </CardTemplate>

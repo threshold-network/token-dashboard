@@ -2,7 +2,7 @@ import { Box, Divider, HStack, Icon, IconButton, Link } from "@chakra-ui/react"
 import { BsDiscord, BsGithub } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
 import { Body3 } from "../Typography"
-import { ExternalLink } from "../../enums"
+import { ExternalHref } from "../../enums"
 import { FC } from "react"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import NavItem from "./NavItem"
@@ -43,12 +43,12 @@ const SidebarFooter = () => {
           <HStack justify="center">
             <FooterItem
               text="Github"
-              href={ExternalLink.thresholdGithub}
+              href={ExternalHref.thresholdGithub}
               icon={BsGithub}
             />
             <FooterItem
               text="Discord"
-              href={ExternalLink.thresholdDiscord}
+              href={ExternalHref.thresholdDiscord}
               icon={BsDiscord}
             />
           </HStack>
@@ -63,14 +63,14 @@ const SidebarFooter = () => {
             text="Github"
             activeIcon={BsGithub}
             passiveIcon={BsGithub}
-            href={ExternalLink.thresholdGithub}
+            href={ExternalHref.thresholdGithub}
           />
           <NavItem
             isFooter
             text="Discord"
             activeIcon={BsDiscord}
             passiveIcon={BsDiscord}
-            href={ExternalLink.thresholdDiscord}
+            href={ExternalHref.thresholdDiscord}
           />
         </>
       )}

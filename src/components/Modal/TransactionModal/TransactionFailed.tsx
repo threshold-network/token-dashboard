@@ -5,22 +5,22 @@ import {
   AlertIcon,
   AlertTitle,
   Box,
+  Button,
   HStack,
-  Link,
   ModalBody,
   ModalCloseButton,
+  ModalFooter,
   ModalHeader,
   useDisclosure,
-  ModalFooter,
-  Button,
 } from "@chakra-ui/react"
 import TransactionError from "../../../static/icons/TransactionError"
 import { Body3 } from "../../Typography"
-import { ExternalLink } from "../../../enums"
+import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
+import ExternalLink from "../../ExternalLink"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
@@ -89,14 +89,11 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             {isOpen && (
               <AlertDescription maxWidth="100%">
                 <Body3 mb={8}>{error?.stack?.toString()}</Body3>
-                <Link
-                  textDecoration="underline"
-                  bold="md"
-                  href={ExternalLink.thresholdDiscord}
-                  target="_blank"
-                >
-                  Get help on discord
-                </Link>
+                <ExternalLink
+                  href={ExternalHref.thresholdDiscord}
+                  text="Get help on discord"
+                  fontWeight="bold"
+                />
               </AlertDescription>
             )}
           </Alert>

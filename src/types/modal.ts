@@ -13,8 +13,6 @@ import {
 import StakingSuccessModal from "../components/Modal/StakingSuccessModal"
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
-import StakingPreNeededModal from "../components/Modal/StakingSuccessPreNeededModal"
-import SubmitPreAddressModal from "../components/Modal/SubmitPreAddressModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
 import UnstakeTModal from "../components/Modal/UnstakeTModal"
 import TopupTModal from "../components/Modal/TopupTModal"
@@ -33,8 +31,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UnstakeSuccess]: UnstakingSuccessModal,
   [ModalType.UnstakeT]: UnstakeTModal,
   [ModalType.StakingChecklist]: StakingChecklistModal,
-  [ModalType.StakeSuccessPreNeeded]: StakingPreNeededModal,
-  [ModalType.SubmitPreAddress]: SubmitPreAddressModal,
   [ModalType.TopupT]: TopupTModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
 }
