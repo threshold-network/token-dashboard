@@ -30,7 +30,6 @@ const UpgradeStats: FC<TransactionStatsProps> = ({
           tokenSymbol={token}
           as="p"
           fontSize="sm"
-          color="gray.700"
         />
       ),
     },
@@ -43,13 +42,12 @@ const UpgradeStats: FC<TransactionStatsProps> = ({
           tokenSymbol="T"
           as="p"
           fontSize="sm"
-          color="gray.700"
         />
       ),
     },
     {
       text: "Exchange Rate",
-      value: <Body3 color="gray.700">{`1 ${token} = ${exchangeRate} T`}</Body3>,
+      value: <Body3>{`1 ${token} = ${exchangeRate} T`}</Body3>,
     },
   ]
 

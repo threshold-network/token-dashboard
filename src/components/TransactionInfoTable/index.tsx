@@ -14,7 +14,7 @@ const TransactionInfoTable: FC<{ transactionInfo: TransactionInfo[] }> = ({
     <Stack spacing="0.5rem">
       {transactionInfo.map((info) => (
         <HStack justify="space-between" key={info.text}>
-          <Body3 color="gray.500">{info.text}</Body3>
+          <Body3>{info.text}</Body3>
           {info.value}
         </HStack>
       ))}

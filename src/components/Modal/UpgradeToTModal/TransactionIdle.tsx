@@ -20,6 +20,7 @@ import { useUpgradeToT } from "../../../web3/hooks/useUpgradeToT"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, UpgredableToken } from "../../../types"
+import InfoBox from "../../InfoBox"
 
 interface TransactionIdleProps extends BaseModalProps {
   upgradedAmount: string
@@ -41,13 +42,13 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
       <ModalHeader>Upgrade Tokens</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box borderRadius="md" bg="gray.50" padding={6}>
+        <InfoBox variant="modal">
           <H5>You are about to upgrade {token} to T.</H5>
           <Body1 mt="1rem">
             The upgrade uses an ApproveAndCall function which requires one
             confirmation transaction
           </Body1>
-        </Box>
+        </InfoBox>
         <HStack justifyContent="center" my={6}>
           <UpgradeIconGroup token={token} boxSize="48px" />
         </HStack>
@@ -59,7 +60,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           upgradedAmount={upgradedAmount}
         />
         <Body3 align="center" color="gray.500" mt="2rem">
-          This action i reversible via the{" "}
+          This action is reversible via the{" "}
           <ViewInBlockExplorer
             id={contract!.address}
             type={ExplorerDataType.ADDRESS}
