@@ -6,11 +6,9 @@ import {
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
-import { useMemo } from "react"
 
 export const useModal: UseModal = () => {
   const modalType = useSelector((state: RootState) => state.modal.modalType)
-  const isOpen = useMemo(() => !!modalType, [modalType])
   const modalProps = useSelector((state: RootState) => state.modal.props)
   const dispatch = useDispatch()
 
@@ -20,7 +18,6 @@ export const useModal: UseModal = () => {
   const closeModal = () => dispatch(closeModalAction())
 
   return {
-    isOpen,
     modalType,
     modalProps,
     openModal,

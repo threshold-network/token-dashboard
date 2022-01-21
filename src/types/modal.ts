@@ -56,7 +56,6 @@ export type ModalActionTypes = OpenModal | CloseModal
 
 export interface UseModal {
   (): {
-    isOpen: boolean
     modalType: ModalType | null
     modalProps: any
     openModal: (type: ModalType, props?: any) => ModalActionTypes
