@@ -9,7 +9,7 @@ import {
 import { BsCheckCircleFill } from "react-icons/all"
 import { Body2, Body3 } from "../Typography"
 
-interface ChecklistItemProps {
+export interface ChecklistItemProps {
   title: string | JSX.Element
   subTitle?: string | JSX.Element
 }
