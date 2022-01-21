@@ -1,5 +1,7 @@
 import { FC } from "react"
-import { Alert, AlertDescription, AlertIcon, Link } from "@chakra-ui/react"
+import { Alert, AlertDescription, AlertIcon } from "@chakra-ui/react"
+import { ExternalHref } from "../../../../enums"
+import ExternalLink from "../../../ExternalLink"
 
 const MetamaskNotInstalledAlert: FC = () => {
   return (
@@ -7,7 +9,11 @@ const MetamaskNotInstalledAlert: FC = () => {
       <AlertIcon />
       <AlertDescription>
         MetaMask is not installed. Please install the MetaMask extension on{" "}
-        <Link href="https://metamask.io/">their website</Link>
+        <ExternalLink
+          href={ExternalHref.metamaskHomePage}
+          text="their website"
+          withArrow
+        />
       </AlertDescription>
     </Alert>
   )

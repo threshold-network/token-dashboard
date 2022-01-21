@@ -1,9 +1,7 @@
 import { FC } from "react"
 import {
-  Box,
   Button,
   Divider,
-  Link,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -15,9 +13,10 @@ import { Body1, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { ModalType } from "../../../enums"
+import { ExternalHref, ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
+import ExternalLink from "../../ExternalLink"
 
 const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
@@ -39,14 +38,10 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
           <StakingChecklist />
           <Body3 align="center" color="gray.500">
             Read more about the{" "}
-            <Link
-              href={"SOME_LINK"}
-              target="_blank"
-              color="brand.500"
-              textDecoration="underline"
-            >
-              staking contract
-            </Link>
+            <ExternalLink
+              href={ExternalHref.stakingContractLeanMore}
+              text="staking contract"
+            />
           </Body3>
           <Divider />
         </Stack>
