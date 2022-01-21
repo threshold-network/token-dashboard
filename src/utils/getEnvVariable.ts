@@ -1,5 +1,7 @@
 import { EnvVariable } from "../enums"
 
+console.log("PROCESS B - ", process)
+
 const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.SupportedChainId]: process.env[
     "REACT_APP_SUPPORTED_CHAIN_ID"
