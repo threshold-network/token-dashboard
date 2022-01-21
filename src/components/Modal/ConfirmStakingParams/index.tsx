@@ -55,7 +55,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
-    openModal(ModalType.SubmitPreAddress, {
+    openModal(ModalType.StakeSuccess, {
       transactionHash: tx.hash,
     })
   )
