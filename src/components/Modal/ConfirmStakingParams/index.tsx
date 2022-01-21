@@ -24,6 +24,7 @@ import { ModalType } from "../../../enums"
 import { isAddress } from "ethers/lib/utils"
 import { useTStakingContract } from "../../../web3/hooks"
 import { BigNumber } from "ethers"
+import InfoBox from "../../InfoBox"
 
 const ConfirmStakingParams: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
@@ -121,12 +122,12 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
       <ModalHeader>Stake Tokens</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Box borderRadius="md" bg="gray.50" p={6} mb={8}>
+        <InfoBox variant="modal">
           <H5 mb={4}>You are about to stake T</H5>
           <Body1>
             Here is some sub text copy to explain the staking process
           </Body1>
-        </Box>
+        </InfoBox>
         <Stack spacing={6} mb={6}>
           <Box>
             <TokenBalanceInput

@@ -3,7 +3,6 @@ import {
   Alert,
   AlertIcon,
   Box,
-  HStack,
   Icon,
   ModalBody,
   ModalCloseButton,
@@ -18,6 +17,7 @@ import { Divider } from "../../Divider"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useModal } from "../../../hooks/useModal"
+import InfoBox from "../../InfoBox"
 
 interface SuccessModalProps {
   title?: string
@@ -45,9 +45,9 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
           <AlertIcon />
           {subTitle}
         </Alert>
-        <HStack
-          borderRadius="md"
-          bg="gray.50"
+        <InfoBox
+          variant="modal"
+          direction="row"
           justify="center"
           py={12}
           position="relative"
@@ -61,8 +61,8 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
               numberOfPieces={50}
             />
           </Box>
-          <Icon zIndex={999} height="105px" w="105px" as={Threshold} />
-        </HStack>
+          <Icon zIndex={999} height="105px" w="105px" as={Threshold} m="auto" />
+        </InfoBox>
         {body}
         {transactionHash && (
           <Body3 mt="4rem" align="center">
