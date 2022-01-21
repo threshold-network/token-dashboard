@@ -22,18 +22,21 @@ interface AdvancedParamsFormProps {
   isValidAuthorizer: boolean
   isValidBeneficiary: boolean
   isValidOperator: boolean
+  operatorInUse?: boolean
 }
 
 const HelperText = ({
   text,
   isInvalid,
+  errorText,
 }: {
   text: string
   isInvalid: boolean
+  errorText?: string
 }) => {
   return (
     <FormHelperText color={isInvalid ? "red.500" : "gray.500"}>
-      {isInvalid ? "Please enter a valid ETH address" : text}
+      {isInvalid ? errorText || "Please enter a valid ETH address" : text}
     </FormHelperText>
   )
 }
@@ -49,9 +52,10 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     isValidAuthorizer,
     isValidBeneficiary,
     isValidOperator,
+    operatorInUse = false,
   } = props
 
-  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: false })
+  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: operatorInUse })
 
   return (
     <Box>
@@ -74,7 +78,12 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
             />
             <HelperText
               text="If you are using a staking provider, this will be their provided address."
-              isInvalid={!isValidOperator}
+              errorText={
+                operatorInUse
+                  ? "Operator already in use. Please provide a different Operator address."
+                  : undefined
+              }
+              isInvalid={!isValidOperator || operatorInUse}
             />
           </FormControl>
           <FormControl>

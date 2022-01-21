@@ -25,7 +25,9 @@ import { isAddress } from "ethers/lib/utils"
 import { useTStakingContract } from "../../../web3/hooks"
 import { BigNumber } from "ethers"
 
-const ConfirmStakingParams: FC<BaseModalProps> = () => {
+const ConfirmStakingParamsModal: FC<
+  BaseModalProps & { operatorInUse: boolean }
+> = ({ operatorInUse }) => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
@@ -160,6 +162,7 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
               isValidAuthorizer,
               isValidBeneficiary,
               isValidOperator,
+              operatorInUse,
             }}
           />
         </Stack>
@@ -176,4 +179,4 @@ const ConfirmStakingParams: FC<BaseModalProps> = () => {
   )
 }
 
-export default withBaseModal(ConfirmStakingParams)
+export default withBaseModal(ConfirmStakingParamsModal)
