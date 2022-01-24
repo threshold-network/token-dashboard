@@ -1,5 +1,5 @@
-import { FC, useEffect } from "react"
-import { Box, Container, Stack } from "@chakra-ui/react"
+import { useEffect } from "react"
+import { Box, Stack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { useDispatch } from "react-redux"
 import StakingChecklistCard from "./StakingChecklistCard"
@@ -9,10 +9,10 @@ import { useFetchOwnerStakes } from "../../hooks/useFetchOwnerStakes"
 import { setStakes } from "../../store/staking"
 import { useStakingState } from "../../hooks/useStakingState"
 import StakesTable from "./StakesTable"
-import useDocumentTitle from "../../hooks/useDocumentTitle"
+import { PageComponent } from "../../types"
+import PageLayout from "../PageLayout"
 
-const StakingPage: FC = () => {
-  useDocumentTitle("Threshold - Staking")
+const StakingPage: PageComponent = (props) => {
   const fetchOwnerStakes = useFetchOwnerStakes()
   const dispatch = useDispatch()
   const { account } = useWeb3React()
@@ -29,7 +29,7 @@ const StakingPage: FC = () => {
   }, [fetchOwnerStakes, account, dispatch])
 
   return (
-    <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
+    <PageLayout {...props}>
       <Stack direction={{ base: "column", lg: "row" }} w="100%">
         <StakedPortfolioCard />
         <Stack direction="column" w="100%">
@@ -42,8 +42,14 @@ const StakingPage: FC = () => {
           <StakesTable stakes={stakes} />
         </Box>
       )}
-    </Container>
+    </PageLayout>
   )
+}
+
+StakingPage.route = {
+  path: "staking",
+  index: false,
+  title: "Staking",
 }
 
 export default StakingPage
