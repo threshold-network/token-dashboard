@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { FC } from "react"
 import {
   Box,
   Flex,
@@ -17,6 +17,8 @@ import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import { H5 } from "../Typography"
+import { pages } from "../../pages"
+import { PageComponent } from "../../types"
 
 interface NavbarComponentProps {
   account?: string | null
@@ -33,17 +35,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
 }) => {
   const isMobile = useChakraBreakpoint("md")
   const IconComponent = useColorModeValue(ThresholdPurple, ThresholdWhite)
-
-  //TODO: put this logic somewhere else and find a better way to determine
   const isOverviewPage = useMatch("overview/*")
-  const isUpgradePage = useMatch("upgrade/*")
-  const isStakingPage = useMatch("staking/*")
-  const title = useMemo(() => {
-    if (isOverviewPage) return ""
-    if (isUpgradePage) return "Upgrade"
-    if (isStakingPage) return "Staking"
-    return ""
-  }, [isOverviewPage, isUpgradePage, isStakingPage])
 
   return (
     <>
@@ -54,10 +46,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         borderColor="gray.100"
         display="flex"
       >
-        <Routes>
-          <Route path="overview/*" element={<></>} />
-          <Route path="*" element={<PageTitle title={title} />} />
-        </Routes>
+        <Routes>{pages.map(renderPageTitle)}</Routes>
         <Flex>
           <HamburgerButton display={{ base: "block", md: "none" }} />
           {isMobile && (
@@ -77,35 +66,63 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         </Stack>
         <WalletConnectionAlert {...{ account, chainId }} />
       </Box>
-      <Routes>
-        <Route path="overview/*" element={<></>} />
-        <Route path="*" element={<MobileHeader title={title} />} />
-      </Routes>
+      <Routes>{pages.map(renderMobileHeader)}</Routes>
     </>
   )
 }
 
+const renderPageTitle = (PageComponent: PageComponent) => {
+  return (
+    <Route
+      key={PageComponent.route.path}
+      path={`${PageComponent.route.path}/*`}
+      element={
+        PageComponent.route.title ? (
+          <PageTitle title={PageComponent.route.title} />
+        ) : (
+          <></>
+        )
+      }
+    />
+  )
+}
+
 const PageTitle: FC<{ title: string }> = ({ title }) => {
-  const isMobile = useChakraBreakpoint("md")
-  return !isMobile ? <H5 ml={"2.75rem"}>{title}</H5> : <></>
+  return (
+    <H5 ml={"2.75rem"} display={{ base: "none", md: "block" }}>
+      {title}
+    </H5>
+  )
+}
+
+const renderMobileHeader = (PageComponent: PageComponent) => {
+  return (
+    <Route
+      key={PageComponent.route.path}
+      path={`${PageComponent.route.path}/*`}
+      element={
+        PageComponent.route.title ? (
+          <MobileHeader title={PageComponent.route.title} />
+        ) : (
+          <></>
+        )
+      }
+    />
+  )
 }
 
 const MobileHeader: FC<{ title: string }> = ({ title }) => {
-  const isMobile = useChakraBreakpoint("md")
-
-  return isMobile ? (
+  return (
     <Box
+      display={{ base: "flex", md: "none" }}
       as="header"
       pl={10}
       py={6}
       borderBottom="1px"
       borderColor="gray.100"
-      display="flex"
     >
       <H5>{title}</H5>
     </Box>
-  ) : (
-    <></>
   )
 }
 
