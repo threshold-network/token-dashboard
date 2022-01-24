@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Button, HStack, Stack } from "@chakra-ui/react"
+import { Button, HStack, Stack, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
@@ -9,7 +9,6 @@ import { Body2, Body3 } from "../../../components/Typography"
 import { Divider } from "../../../components/Divider"
 import MultiSegmentProgress from "../../../components/MultiSegmentProgress"
 import { useTokenState } from "../../../hooks/useTokenState"
-import Icon from "../../../components/Icon"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
@@ -27,17 +26,16 @@ const BalanceStat: FC<{
 }> = ({ balance, icon, text, conversionRate, tokenDecimals }) => {
   return (
     <HStack justify="space-between">
-      <HStack>
-        <Icon as={icon} boxSize="24px" />
-        <TokenBalance
-          tokenAmount={balance}
-          tokenSymbol={text}
-          withSymbol
-          tokenDecimals={tokenDecimals}
-        />
-      </HStack>
+      <TokenBalance
+        tokenAmount={balance}
+        tokenSymbol={text}
+        withSymbol
+        tokenDecimals={tokenDecimals}
+        icon={icon}
+        iconSize="24px"
+      />
       {conversionRate && (
-        <Body3 color="gray.500">
+        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
           1 {text} = {conversionRate} T
         </Body3>
       )}
@@ -90,8 +88,13 @@ const WalletBalances: FC = () => {
 
   return (
     <CardTemplate title="WALLET">
+      {/* title */}
       <Body2 mb={2}>Liquid Tokens</Body2>
+
+      {/* colored asset bar */}
       <MultiSegmentProgress values={progressBarValues} />
+
+      {/* token balances */}
       <Stack spacing={2} mt={4}>
         {formattedT !== 0 && (
           <BalanceStat balance={t.balance} icon={t.icon} text={t.text} />
@@ -110,28 +113,35 @@ const WalletBalances: FC = () => {
           text={nu.text}
         />
       </Stack>
+
       <Divider borderColor="gray.300" />
+
+      {/* Possible amount */}
       <Body2>Possible T amount</Body2>
-      <InfoBox mt={4} direction="row">
-        <Icon as={t.icon} boxSize="32px" />
-        <TokenBalance tokenAmount={conversionToTAmount} />
+      <InfoBox mt={4} direction="row" p={4}>
+        <TokenBalance
+          tokenAmount={conversionToTAmount}
+          withSymbol
+          tokenSymbol="T"
+          icon={t.icon}
+          isLarge
+        />
       </InfoBox>
-      <Button
-        size="lg"
-        isFullWidth
-        mt={8}
-        as={RouterLink}
-        to="/upgrade"
-        _hover={{ textDecoration: "none" }}
-      >
+
+      {/* Link to upgrade page */}
+      <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/upgrade">
         Upgrade Tokens
       </Button>
+
+      {/* exchange rate link */}
       <HStack justify="center" mt={4}>
         <ExternalLink
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
         />
-        <Body3 color="gray.500">about Exchange Rate</Body3>
+        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          about Exchange Rate
+        </Body3>
       </HStack>
     </CardTemplate>
   )

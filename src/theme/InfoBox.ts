@@ -13,7 +13,8 @@ export const InfoBox = {
   },
   variants: {
     modal: (props: any) => ({
-      background: mode("gray.50", "gray.500")(props),
+      background: mode("gray.50", "gray.800")(props),
+      padding: props.padding || 4,
     }),
     base: (props: any) => ({
       background: mode("gray.50", "gray.700")(props),

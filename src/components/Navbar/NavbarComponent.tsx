@@ -87,7 +87,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
 
 const PageTitle: FC<{ title: string }> = ({ title }) => {
   const isMobile = useChakraBreakpoint("md")
-  return !isMobile ? <H5 ml={"2.75rem"}>{title}</H5> : <></>
+  return !isMobile ? <H5 ml="20px">{title}</H5> : <></>
 }
 
 const MobileHeader: FC<{ title: string }> = ({ title }) => {
