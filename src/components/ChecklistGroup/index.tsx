@@ -1,8 +1,7 @@
 import { FC } from "react"
-import { Body3 } from "../Typography"
-import { Icon, Link, List, useColorModeValue } from "@chakra-ui/react"
-import { FiArrowUpRight } from "react-icons/all"
+import { List } from "@chakra-ui/react"
 import ChecklistItem, { ChecklistItemProps } from "../ChecklistItem"
+import BoxLabel from "../BoxLabel"
 
 interface ChecklistGroupProps {
   checklistItems: ChecklistItemProps[]
@@ -13,16 +12,9 @@ const ChecklistGroup: FC<ChecklistGroupProps> = ({ checklistItems, title }) => {
   return (
     <>
       {title && (
-        <Body3
-          mb={2}
-          w="fit-content"
-          bg={useColorModeValue("gray.50", "gray.700")}
-          px={2}
-          py={1}
-          borderRadius="md"
-        >
+        <BoxLabel w="fit-content" mb={4}>
           {title}
-        </Body3>
+        </BoxLabel>
       )}
       <List spacing={4}>
         {checklistItems.map((item, i) => (

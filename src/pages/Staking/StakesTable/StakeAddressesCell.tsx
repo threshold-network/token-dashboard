@@ -3,6 +3,7 @@ import { Badge, HStack, Td, VStack } from "@chakra-ui/react"
 import { StakeCellProps } from "../../../types/staking"
 import { Body3 } from "../../../components/Typography"
 import shortenAddress from "../../../utils/shortenAddress"
+import BoxLabel from "../../../components/BoxLabel"
 
 const StakingAddressRow: FC<{
   address: string
@@ -10,10 +11,8 @@ const StakingAddressRow: FC<{
 }> = ({ address, text }) => {
   return (
     <HStack justify="space-between" w="100%">
-      <Badge variant="subtle" colorScheme="gray">
-        {text}
-      </Badge>
-      <Body3 color="brand.500">{shortenAddress(address)}</Body3>
+      <BoxLabel>{text}</BoxLabel>
+      <Body3>{shortenAddress(address)}</Body3>
     </HStack>
   )
 }
@@ -21,14 +20,12 @@ const StakingAddressRow: FC<{
 const PreAddress: FC<{ address?: string }> = ({ address }) => {
   return (
     <HStack justify="space-between" w="100%">
-      <Badge variant="subtle" colorScheme="gray">
-        PRE
-      </Badge>
+      <BoxLabel>PRE</BoxLabel>
       {address ? (
-        <Body3 color="brand.500">{shortenAddress(address)}</Body3>
+        <Body3>{shortenAddress(address)}</Body3>
       ) : (
         <Badge variant="subtle" size="sm" colorScheme="red">
-          ADDRESS MISSING
+          MISSING
         </Badge>
       )}
     </HStack>
@@ -37,7 +34,7 @@ const PreAddress: FC<{ address?: string }> = ({ address }) => {
 
 const StakeAddressesCell: FC<StakeCellProps> = ({ stake }) => {
   return (
-    <Td minW="325px">
+    <Td>
       <VStack spacing={2}>
         <StakingAddressRow text="Operator" address={stake.operator} />
         <StakingAddressRow text="Beneficiary" address={stake.beneficiary} />

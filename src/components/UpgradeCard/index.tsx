@@ -22,7 +22,9 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
   const [amount, setAmount] = useState<string | number>("")
 
   const submitUpgrade = () => {
-    onSubmit(amount, token)
+    if (+amount > 0) {
+      onSubmit(amount, token)
+    }
   }
 
   return (
@@ -30,6 +32,7 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
       token={token}
       amountToConvert={amount}
       onSubmit={submitUpgrade}
+      max={balance}
     >
       <TokenBalanceInput
         label={`${token} Amount`}

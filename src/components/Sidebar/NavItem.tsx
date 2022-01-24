@@ -68,6 +68,8 @@ const NavItem: FC<NavItemDetail> = ({
           href={href}
           _hover={{ textDecoration: "none" }}
           tabIndex={-1}
+          rel={isFooter ? "noopener noreferrer" : undefined}
+          target={isFooter ? "_blank" : undefined}
         >
           {isOpen ? (
             <Button

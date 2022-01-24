@@ -6,6 +6,7 @@ import StakeBalanceCell from "./StakeAmountCell"
 import StakeNameCell from "./StakeNameCell"
 import StakeActionsCell from "./StakeActionsCell"
 import Card from "../../../components/Card"
+import { Label3 } from "../../../components/Typography"
 
 interface StakingTableProps {
   stakes: StakeData[]
@@ -14,13 +15,18 @@ interface StakingTableProps {
 const StakesTable: FC<StakingTableProps> = ({ stakes }) => {
   return (
     <Card>
+      <Label3 mb={6} textDecoration="uppercase">
+        Stakes
+      </Label3>
       <Table variant="simple">
         <Thead>
           <Tr>
-            <Th>Name</Th>
-            <Th>Addresses</Th>
-            <Th>Balance</Th>
-            <Th isNumeric>Action</Th>
+            <Th color="gray.500">Name</Th>
+            <Th color="gray.500">Addresses</Th>
+            <Th color="gray.500">Balance</Th>
+            <Th color="gray.500" isNumeric>
+              Action
+            </Th>
           </Tr>
         </Thead>
         <Tbody>

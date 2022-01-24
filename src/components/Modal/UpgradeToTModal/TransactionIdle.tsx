@@ -7,6 +7,7 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import { Body1, Body3, H5 } from "../../Typography"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
@@ -59,7 +60,11 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           receivedAmount={receivedAmount}
           upgradedAmount={upgradedAmount}
         />
-        <Body3 align="center" color="gray.500" mt="2rem">
+        <Body3
+          align="center"
+          color={useColorModeValue("gray.500", "gray.300")}
+          mt="2rem"
+        >
           This action is reversible via the{" "}
           <ViewInBlockExplorer
             id={contract!.address}
