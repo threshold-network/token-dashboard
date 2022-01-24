@@ -17,6 +17,8 @@ const StakeAmountCell: FC<StakeCellProps> = ({ stake }) => {
   return (
     <Td>
       <TokenBalance
+        icon={t.icon}
+        iconSize="24px"
         tokenAmount={stake.tStake}
         tokenSymbol="T"
         withSymbol

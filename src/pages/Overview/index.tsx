@@ -1,19 +1,20 @@
-import { Container } from "@chakra-ui/react"
+import { Container, Image } from "@chakra-ui/react"
 import { Outlet } from "react-router-dom"
-import { H1, H3, Label1 } from "../../components/Typography"
+import thresholdWordMark from "../../static/images/thresholdWordMark.svg"
+import { H1, H3 } from "../../components/Typography"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
 import { PageComponent } from "../../types"
 
-const Overview: PageComponent = ({ pages }) => {
+const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
   const isMobile = useChakraBreakpoint("md")
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
-      <Label1>Threshold</Label1>
-      {isMobile ? <H3>Network Overview</H3> : <H1>Network Overview</H1>}
+      <Image src={thresholdWordMark} />
+      {isMobile ? <H3>Overview</H3> : <H1>Overview</H1>}
       <Outlet />
     </Container>
   )
