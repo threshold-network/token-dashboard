@@ -1,41 +1,38 @@
 import { FC } from "react"
-import { Button, HStack, Td } from "@chakra-ui/react"
+import { Button, HStack, Td, Link } from "@chakra-ui/react"
 import { StakeCellProps } from "../../../types/staking"
 import { useModal } from "../../../hooks/useModal"
-import { ModalType } from "../../../enums"
+import { ExternalHref, ModalType } from "../../../enums"
 
 const StakeActionsCell: FC<StakeCellProps> = ({ stake }) => {
-  const pre = "yo yo"
   const { openModal } = useModal()
-
-  const highlightPreCTA = !pre
-  const highlightUnstakeCTA = !highlightPreCTA && stake.tStake != "0"
-  const highlightTopUpCTA = !highlightPreCTA && !highlightUnstakeCTA
-
   return (
     <Td>
       <HStack justify="end">
-        {!pre && (
-          <Button size="sm" variant={highlightPreCTA ? "solid" : "outline"}>
-            Set PRE
-          </Button>
-        )}
-        <Button
-          variant={highlightTopUpCTA ? "solid" : "outline"}
-          size="sm"
-          onClick={() => openModal(ModalType.TopupT, { stake })}
+        <Link
+          href={ExternalHref.preNodeSetup}
+          target="_blank"
+          rel="noopener noreferrer"
+          _hover={{ textDecoration: "none" }}
         >
-          Top up
-        </Button>
+          <Button size="sm">Setup PRE</Button>
+        </Link>
         {stake.tStake != "0" && (
           <Button
-            variant={highlightUnstakeCTA ? "solid" : "outline"}
+            variant="outline"
             size="sm"
             onClick={() => openModal(ModalType.UnstakeT, { stake })}
           >
             Unstake
           </Button>
         )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => openModal(ModalType.TopupT, { stake })}
+        >
+          Top up
+        </Button>
       </HStack>
     </Td>
   )

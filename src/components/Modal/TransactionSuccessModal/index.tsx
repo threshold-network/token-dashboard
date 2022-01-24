@@ -49,9 +49,9 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
           variant="modal"
           direction="row"
           justify="center"
-          py={12}
           position="relative"
           mb={8}
+          py="64px !important"
         >
           <Box position="absolute" left="-20px" top="-25px" zindex="-1">
             <Confetti

@@ -1,10 +1,8 @@
 import { FC } from "react"
-import TokenBalance from "../../TokenBalance"
-import { Body3 } from "../../Typography"
-import shortenAddress from "../../../utils/shortenAddress"
-import TransactionInfoTable, {
-  TransactionInfo,
-} from "../../TransactionInfoTable"
+import TokenBalance from "../TokenBalance"
+import { Body3 } from "../Typography"
+import TransactionInfoTable, { TransactionInfo } from "../TransactionInfoTable"
+import shortenAddress from "../../utils/shortenAddress"
 
 interface StakingStatsProps {
   stakeAmount: string | number
