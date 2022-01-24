@@ -35,4 +35,6 @@ const ExternalLink: FC<Props & LinkProps> = ({
   )
 }
 
+export * from "./SharedLinks"
+
 export default ExternalLink
