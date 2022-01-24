@@ -136,9 +136,6 @@ const WalletBalances: FC = () => {
       {/* exchange rate link */}
       <HStack justify="center" mt={4}>
         <ExternalLink
-          as="p"
-          fontSize="14px"
-          lineHeight="20px"
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
         />
