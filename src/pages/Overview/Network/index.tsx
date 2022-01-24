@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { useEffect } from "react"
 import { Box, Stack, VStack } from "@chakra-ui/react"
 import TotalValueLocked from "./TotalValueLocked"
 import UpgradeBanner from "./UpgradeBanner"
