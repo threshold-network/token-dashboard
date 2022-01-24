@@ -8,14 +8,10 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 import { Link as RouterLink, useMatch, useResolvedPath } from "react-router-dom"
-
-interface NavPillProps {
-  path: string
-  text: string
-}
+import { RouteProps } from "../../types"
 
 interface Props {
-  links: NavPillProps[]
+  links: RouteProps[]
 }
 
 const SubNavigationPills: FC<Props> = ({ links }) => {
@@ -42,7 +38,7 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
   )
 }
 
-const NavPill: FC<NavPillProps> = ({ path, text }) => {
+const NavPill: FC<RouteProps> = ({ path, title }) => {
   const resolved = useResolvedPath(path)
   const isActive = useMatch({ path: resolved.pathname, end: true })
   const activeColor = useColorModeValue("brand.500", "white")
@@ -58,7 +54,7 @@ const NavPill: FC<NavPillProps> = ({ path, text }) => {
           textDecoration: "none",
         }}
       >
-        {text}
+        {title}
       </Link>
       {isActive && (
         <Divider
@@ -73,6 +69,6 @@ const NavPill: FC<NavPillProps> = ({ path, text }) => {
   )
 }
 
-const renderPill = (pill: NavPillProps) => <NavPill key={pill.path} {...pill} />
+const renderPill = (pill: RouteProps) => <NavPill key={pill.path} {...pill} />
 
 export default SubNavigationPills
