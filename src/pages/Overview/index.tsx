@@ -1,20 +1,15 @@
-import { useEffect } from "react"
 import { Container, Image } from "@chakra-ui/react"
 import { Outlet } from "react-router-dom"
 import thresholdWordMark from "../../static/images/thresholdWordMark.svg"
 import { H1, H3 } from "../../components/Typography"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
-import { useFetchTvl } from "../../hooks/useFetchTvl"
 import useDocumentTitle from "../../hooks/useDocumentTitle"
+import Network from "./Network"
+import { PageComponent } from "../../types"
 
-const Overview = ({}) => {
+const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
   const isMobile = useChakraBreakpoint("md")
-  const [data, fetchtTvlData] = useFetchTvl()
-
-  useEffect(() => {
-    fetchtTvlData()
-  }, [fetchtTvlData])
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
@@ -23,6 +18,12 @@ const Overview = ({}) => {
       <Outlet />
     </Container>
   )
+}
+
+Overview.route = {
+  path: "overview",
+  index: false,
+  pages: [Network],
 }
 
 export default Overview
