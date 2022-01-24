@@ -29,12 +29,7 @@ import { useModal } from "./hooks/useModal"
 import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
-import Overview from "./pages/Overview"
-import UpgradePage from "./pages/Upgrade"
-import Network from "./pages/Overview/Network"
-import StakingPage from "./pages/Staking"
 import { pages } from "./pages"
-import NestedPageLayout from "./pages/PageLayout"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
