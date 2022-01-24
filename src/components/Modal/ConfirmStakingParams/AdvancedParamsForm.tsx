@@ -8,6 +8,7 @@ import {
   FormLabel,
   Input,
   Stack,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import { BsChevronDown, BsChevronRight } from "react-icons/all"
@@ -61,7 +62,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     <Box>
       <Button
         variant="link"
-        color="purple.600"
+        color={useColorModeValue("brand.500", "white")}
         onClick={onToggle}
         mb={6}
         rightIcon={isOpen ? <BsChevronDown /> : <BsChevronRight />}
@@ -73,6 +74,8 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
           <FormControl>
             <FormLabel>Operator Address</FormLabel>
             <Input
+              isInvalid={operatorInUse || !isValidOperator}
+              errorBorderColor="red.300"
               value={operator}
               onChange={(e) => setOperator(e.target.value)}
             />
@@ -89,6 +92,8 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
           <FormControl>
             <FormLabel>Beneficiary Address</FormLabel>
             <Input
+              isInvalid={!isValidBeneficiary}
+              errorBorderColor="red.300"
               value={beneficiary}
               onChange={(e) => setBeneficiary(e.target.value)}
             />
@@ -100,6 +105,8 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
           <FormControl>
             <FormLabel>Authorizer Address</FormLabel>
             <Input
+              isInvalid={!isValidAuthorizer}
+              errorBorderColor="red.300"
               value={authorizer}
               onChange={(e) => setAuthorizer(e.target.value)}
             />

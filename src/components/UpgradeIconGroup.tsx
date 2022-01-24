@@ -1,5 +1,5 @@
 import { Token } from "../enums"
-import { Box, HStack, Icon } from "@chakra-ui/react"
+import { Box, HStack, Icon, Stack } from "@chakra-ui/react"
 import KeepCircleBrand from "../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../static/icons/NuCircleBrand"
 import { BsArrowRightShort } from "react-icons/all"
@@ -11,12 +11,22 @@ const UpgradeIconGroup: FC<{ token: Token; boxSize?: number | string }> = ({
   boxSize = "32px",
 }) => {
   return (
-    <HStack>
-      {token === Token.Keep && <Icon boxSize={boxSize} as={KeepCircleBrand} />}
-      {token === Token.Nu && <Icon boxSize={boxSize} as={NuCircleBrand} />}
-      <Icon boxSize="32px" as={BsArrowRightShort} color="gray.400" />
-      <Icon boxSize={boxSize} as={T} />
-    </HStack>
+    <Stack direction="row">
+      {token === Token.Keep && (
+        <Icon boxSize={boxSize} as={KeepCircleBrand} margin="0 !important" />
+      )}
+      {token === Token.Nu && (
+        <Icon boxSize={boxSize} as={NuCircleBrand} margin="0 !important" />
+      )}
+      <Icon
+        boxSize="32px"
+        as={BsArrowRightShort}
+        color="gray.400"
+        margin="0 !important"
+        alignSelf="center"
+      />
+      <Icon boxSize={boxSize} as={T} margin="0 !important" />
+    </Stack>
   )
 }
 

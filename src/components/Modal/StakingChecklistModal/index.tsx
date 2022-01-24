@@ -36,7 +36,10 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
             </Body1>
           </InfoBox>
           <StakingChecklist />
-          <Body3 align="center" color="gray.500">
+          <Body3
+            align="center"
+            color={useColorModeValue("gray.500", "gray.300")}
+          >
             Read more about the{" "}
             <ExternalLink
               href={ExternalHref.stakingContractLeanMore}

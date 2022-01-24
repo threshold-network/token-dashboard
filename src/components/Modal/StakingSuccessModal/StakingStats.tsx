@@ -30,21 +30,20 @@ const StakingStats: FC<StakingStatsProps> = ({
           tokenSymbol="T"
           as="p"
           fontSize="sm"
-          color="gray.700"
         />
       ),
     },
     {
       text: "Operator",
-      value: <Body3 color="gray.700">{shortenAddress(operator)}</Body3>,
+      value: <Body3>{shortenAddress(operator)}</Body3>,
     },
     {
       text: "Beneficiary",
-      value: <Body3 color="gray.700">{shortenAddress(beneficiary)}</Body3>,
+      value: <Body3>{shortenAddress(beneficiary)}</Body3>,
     },
     {
       text: "Authorizer",
-      value: <Body3 color="gray.700">{shortenAddress(authorizer)}</Body3>,
+      value: <Body3>{shortenAddress(authorizer)}</Body3>,
     },
   ]
 
