@@ -1,5 +1,5 @@
 import "focus-visible/dist/focus-visible"
-import { FC, useEffect } from "react"
+import { FC, useEffect, Fragment } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
@@ -19,7 +19,7 @@ import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
 import { fetchETHPriceUSD } from "./store/eth"
-import { UpgredableToken } from "./types"
+import { PageComponent, UpgredableToken } from "./types"
 import { ModalType, Token } from "./enums"
 import getLibrary from "./web3/library"
 import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContractEvent"
@@ -30,9 +30,11 @@ import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperato
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
 import Overview from "./pages/Overview"
-import UpgradePage, { UpgradeTokenPage } from "./pages/Upgrade"
+import UpgradePage from "./pages/Upgrade"
 import Network from "./pages/Overview/Network"
 import StakingPage from "./pages/Staking"
+import { pages } from "./pages"
+import NestedPageLayout from "./pages/PageLayout"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -120,17 +122,28 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        <Route path="overview" element={<Overview />}>
-          <Route index element={<Navigate to="network" />} />
-          <Route path="network" element={<Network totalValueLocked="0" />} />
-        </Route>
-        <Route path="upgrade" element={<UpgradePage />}>
-          <Route index element={<Navigate to="keep" />} />
-          <Route path=":token" element={<UpgradeTokenPage />} />
-        </Route>
-        <Route path="staking" element={<StakingPage />} />
+        {pages.map(renderPageComponent)}
       </Route>
     </Routes>
+  )
+}
+
+const renderPageComponent = (PageComponent: PageComponent) => {
+  return (
+    <Fragment key={PageComponent.route.path}>
+      {PageComponent.route.index && (
+        <Route
+          index
+          element={<Navigate to={PageComponent.route.path} replace />}
+        />
+      )}
+      <Route
+        path={PageComponent.route.path}
+        element={<PageComponent {...PageComponent.route} />}
+      >
+        {PageComponent.route.pages?.map(renderPageComponent)}
+      </Route>
+    </Fragment>
   )
 }
 
