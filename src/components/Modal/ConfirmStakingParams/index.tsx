@@ -25,6 +25,7 @@ import { isAddress } from "ethers/lib/utils"
 import { useTStakingContract } from "../../../web3/hooks"
 import { BigNumber } from "ethers"
 import InfoBox from "../../InfoBox"
+import { StakingContractLearnMore } from "../../ExternalLink"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { operatorInUse: boolean }
@@ -125,9 +126,12 @@ const ConfirmStakingParamsModal: FC<
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5 mb={4}>You are about to stake T</H5>
+          <H5 mb={4}>
+            You are about to make a deposit into the T Staking Contract
+          </H5>
           <Body1>
-            Here is some sub text copy to explain the staking process
+            Staking is a two step action which requires approve and confirm
+            transactions.
           </Body1>
         </InfoBox>
         <Stack spacing={6} mb={6}>
@@ -167,6 +171,7 @@ const ConfirmStakingParamsModal: FC<
             }}
           />
         </Stack>
+        <StakingContractLearnMore />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
