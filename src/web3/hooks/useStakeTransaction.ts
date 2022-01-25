@@ -27,7 +27,10 @@ export const useStakeTransaction = (
   const { approve } = useApproveTStaking()
 
   const onError = (error: any) => {
-    if (error?.data?.message.includes(CommonStakingErrors.OperatorInUse)) {
+    if (
+      error?.data?.message.includes(CommonStakingErrors.OperatorInUse) ||
+      error?.message.includes(CommonStakingErrors.OperatorInUse)
+    ) {
       // send the user back to the first staking step, but with validated form fields
       openModal(ModalType.ConfirmStakingParams, {
         operatorInUse: true,
