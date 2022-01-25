@@ -3,14 +3,10 @@ name: Token Dashboard / Mainnet
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
       - releases/mainnet/**
   release:
     types:
       - "published"
-  workflow_dispatch:
 
 jobs:
   build:
@@ -63,25 +59,13 @@ jobs:
           service-key: ${{ secrets.MAINNET_PREVIEW_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
           project: ${{ secrets.MAINNET_PREVIEW_GOOGLE_PROJECT_ID }}
           bucket-name: preview.dashboard.threshold.network
-          bucket-path: ${{ github.head_ref }}
+          bucket-path: ${{ github.ref_name }}
           build-folder: build
-
-      - name: Post mainnet preview URL to PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Preview uploaded to https://preview.dashboard.threshold.network/${{ github.head_ref }}/index.html.'
-            })
 
   deploy:
     name: Deploy mainnet
     needs: build
-    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'release'
     # mainnet environment is protected, it requires an approval before execution.
     environment:
       name: mainnet
