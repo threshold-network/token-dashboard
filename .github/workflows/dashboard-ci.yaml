@@ -48,7 +48,7 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          PUBLIC_URL: /${{ github.head_ref }}
+          PUBLIC_URL: /${{ github.ref_name }}
           CHAIN_ID: 3
           ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
@@ -81,7 +81,7 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          PUBLIC_URL: /${{ github.head_ref }}
+          PUBLIC_URL: /${{ github.ref_name }}
           CHAIN_ID: 3
           ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
@@ -94,7 +94,7 @@ jobs:
           service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
           bucket-name: preview.dashboard.test.threshold.network
-          bucket-path: ${{ github.head_ref }}
+          bucket-path: ${{ github.ref_name }}
           build-folder: build
 
       - name: Post preview URL to PR
@@ -106,7 +106,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
+              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.ref_name }}/'
             })
 
       # A push event is triggered on main branch merge; deploy to testnet bucket.
