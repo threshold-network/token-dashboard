@@ -2,8 +2,11 @@ import UpgradeKEEP from "./UpgradeKEEP"
 import UpgradeNU from "./UpgradeNU"
 import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
+import useRouteByKeepNuBalance from "../../hooks/useRouteByKeepNuBalance"
 
 const UpgradePage: PageComponent = (props) => {
+  useRouteByKeepNuBalance()
+
   return <PageLayout {...props} />
 }
 
