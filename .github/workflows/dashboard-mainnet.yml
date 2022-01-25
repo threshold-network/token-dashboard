@@ -32,9 +32,19 @@ jobs:
       #       @threshold-network/contracts@mainnet
 
       - name: Build
+        if: github.event_name == 'push'
         run: yarn build
         env:
-          PUBLIC_URL: /${{ github.head_ref }}
+          PUBLIC_URL: /${{ github.ref_name }}
+          CHAIN_ID: 1
+          ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+
+      - name: Build
+        if: github.event_name == 'release'
+        run: yarn build
+        env:
+          PUBLIC_URL: /
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
@@ -47,6 +57,7 @@ jobs:
   deploy-preview:
     name: Deploy mainnet preview
     needs: build
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
