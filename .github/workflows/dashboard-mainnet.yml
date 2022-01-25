@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: yarn build
         env:
-          PUBLIC_URL: /${{ github.head_ref }}
+          PUBLIC_URL: /${{ github.ref_name }}
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
