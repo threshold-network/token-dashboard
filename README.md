@@ -62,3 +62,25 @@ yarn upgrade @threshold-network/solidity-contracts@ropsten \
 `yarn start`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+# Production deployment
+
+
+The following procedure allows to deploy T token dashboard to production:
+
+1. Developer with write access to the repository creates a release branch:
+   `releases/mainnet/<version>`. Dependencies and project version needs to be
+   updated on the release branch. Release branch should never be merged to `main`
+   and creating a PR with a release branch is not required.
+2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`
+   under the directory named after the release branch. For example:
+   `https://preview.dashboard.threshold.network/releases/mainnet/v1.0.0/index.html`.
+   A new version will be uploaded after each push to the release branch.
+3. After reviewing the mainnet dashboard preview, any developer with write
+   access to the repository can tag the commit on the release branch and create
+   a new release on GitHub.
+4. Once a new release is created, GitHub Action for mainnet T dashboard
+   deployment will get automatically invoked. This action requires the manual
+   approval of someone else from the development team.
+5. Once the release action is approved, the new version is automatically
+   deployed to `dashboard.threshold.network`.
