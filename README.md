@@ -65,7 +65,6 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 # Production deployment
 
-
 The following procedure allows to deploy T token dashboard to production:
 
 1. Developer with write access to the repository creates a release branch:
