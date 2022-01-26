@@ -8,7 +8,7 @@ import { useTStakingAllowance } from "./useTStakingAllowance"
 
 interface TopupRequest {
   amount: string | number
-  operator: string
+  stakingProvider: string
 }
 
 export const useTopupTransaction = (
@@ -26,13 +26,13 @@ export const useTopupTransaction = (
   const allowance = useTStakingAllowance()
 
   const topup = useCallback(
-    async ({ amount, operator }: TopupRequest) => {
+    async ({ amount, stakingProvider }: TopupRequest) => {
       const isApprovedForAmount = BigNumber.from(amount).lte(allowance)
       if (!isApprovedForAmount) {
         await approve(amount.toString())
       }
 
-      await sendTransaction(operator, amount)
+      await sendTransaction(stakingProvider, amount)
     },
     [sendTransaction, stakingContract?.address, allowance, approve]
   )

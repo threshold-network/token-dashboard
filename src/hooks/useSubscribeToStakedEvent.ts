@@ -5,20 +5,20 @@ import { BigNumberish } from "@ethersproject/bignumber"
 import { operatorStaked } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
 
-export const useSubscribeToOperatorStakedEvent = () => {
+export const useSubscribeToStakedEvent = () => {
   const tStakingContract = useTStakingContract()
   const { account } = useWeb3React()
   const dispatch = useDispatch()
 
   useSubscribeToContractEvent(
     tStakingContract!,
-    "OperatorStaked",
+    "Staked",
     // TODO: figure out how to type callback.
     // @ts-ignore
     (
       stakeType: number,
       owner: string,
-      operator: string,
+      stakingProvider: string,
       beneficiary: string,
       authorizer: string,
       amount: BigNumberish,
@@ -30,7 +30,7 @@ export const useSubscribeToOperatorStakedEvent = () => {
         operatorStaked({
           stakeType,
           owner,
-          operator,
+          stakingProvider,
           authorizer,
           beneficiary,
           blockHash,

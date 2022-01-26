@@ -11,10 +11,10 @@ export const useSubscribeToToppedUpEvent = () => {
     "ToppedUp",
     // TODO: figure out how to type callback.
     // @ts-ignore
-    (operator, amount) => {
+    (stakingProvider, amount) => {
       dispatch(
         updateStakeAmountForOperator({
-          operator,
+          stakingProvider,
           amount,
           increaseOrDecrease: "increase",
         })
