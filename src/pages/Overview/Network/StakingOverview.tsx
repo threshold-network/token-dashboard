@@ -4,7 +4,6 @@ import { Button, HStack, useColorModeValue } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
 import { Body2, Body3 } from "../../../components/Typography"
 import { useTokenState } from "../../../hooks/useTokenState"
-import Icon from "../../../components/Icon"
 import { ExternalHref } from "../../../enums"
 import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
@@ -14,6 +13,8 @@ import { useStakingState } from "../../../hooks/useStakingState"
 const StakingOverview: FC = () => {
   const { t } = useTokenState()
   const { stakedBalance } = useStakingState()
+
+  console.log("got the staked balance ", stakedBalance)
 
   return (
     <CardTemplate title="STAKING" height="fit-content">
