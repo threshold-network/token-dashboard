@@ -16,7 +16,7 @@ interface StakeRequest {
 }
 
 enum CommonStakingErrors {
-  OperatorInUse = "Operator is already in use",
+  OperatorInUse = "Provider is already in use",
 }
 
 export const useStakeTransaction = (

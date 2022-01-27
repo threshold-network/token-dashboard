@@ -16,7 +16,7 @@ const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
   stake,
   unstakeAmount,
 }) => {
-  const { beneficiary, operator, authorizer } = stake
+  const { beneficiary, stakingProvider, authorizer } = stake
 
   return (
     <TransactionSuccessModal
@@ -24,7 +24,12 @@ const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
       transactionHash={transactionHash}
       body={
         <StakingStats
-          {...{ stakeAmount: unstakeAmount, beneficiary, operator, authorizer }}
+          {...{
+            stakeAmount: unstakeAmount,
+            beneficiary,
+            stakingProvider,
+            authorizer,
+          }}
         />
       }
     />
