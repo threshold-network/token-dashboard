@@ -23,7 +23,8 @@ import InfoBox from "../../InfoBox"
 const StakingChecklistModal: FC<
   BaseModalProps & { transactionHash: string }
 > = ({ closeModal, transactionHash }) => {
-  const { stakeAmount, operator, beneficiary, authorizer } = useStakingState()
+  const { stakeAmount, stakingProvider, beneficiary, authorizer } =
+    useStakingState()
 
   return (
     <>
@@ -40,7 +41,7 @@ const StakingChecklistModal: FC<
               {...{
                 stakeAmount,
                 beneficiary,
-                stakingProvider: operator,
+                stakingProvider,
                 authorizer,
               }}
             />
