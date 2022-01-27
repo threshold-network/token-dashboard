@@ -21,9 +21,13 @@ import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
 import { useTokenState } from "../../../hooks/useTokenState"
 import InfoBox from "../../InfoBox"
 
-const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
+const TopupTModal: FC<
+  BaseModalProps & { stake: StakeData; initialTopupAmount?: number }
+> = ({ stake, initialTopupAmount }) => {
   const { closeModal, openModal } = useModal()
-  const [amountTopUp, setAmountToTopup] = useState<string | number>(0)
+  const [amountTopUp, setAmountToTopup] = useState<string | number>(
+    initialTopupAmount || 0
+  )
   const { topup } = useTopupTransaction((tx) =>
     openModal(ModalType.TopupTSuccess, { transactionHash: tx.hash })
   )
@@ -67,7 +71,10 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
         <Button
           disabled={+amountTopUp == 0 || +amountTopUp > +maxAmount}
           onClick={() =>
-            topup({ operator: stake.operator, amount: amountTopUp })
+            topup({
+              stakingProvider: stake.stakingProvider,
+              amount: amountTopUp,
+            })
           }
         >
           Top Up

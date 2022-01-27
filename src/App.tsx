@@ -26,7 +26,7 @@ import { useSubscribeToContractEvent } from "./web3/hooks/useSubscribeToContract
 import { useSubscribeToERC20TransferEvent } from "./web3/hooks/useSubscribeToERC20TransferEvent"
 import { useVendingMachineContract } from "./web3/hooks/useVendingMachineContract"
 import { useModal } from "./hooks/useModal"
-import { useSubscribeToOperatorStakedEvent } from "./hooks/useSubscribeToOperatorStakedEvent"
+import { useSubscribeToStakedEvent } from "./hooks/useSubscribeToStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
 import { pages } from "./pages"
@@ -36,7 +36,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToERC20TransferEvent(Token.Keep)
   useSubscribeToERC20TransferEvent(Token.Nu)
   useSubscribeToERC20TransferEvent(Token.T)
-  useSubscribeToOperatorStakedEvent()
+  useSubscribeToStakedEvent()
   useSubscribeToUnstakedEvent()
   useSubscribeToToppedUpEvent()
 
@@ -118,6 +118,7 @@ const Routing = () => {
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
         {pages.map(renderPageComponent)}
+        <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
   )
