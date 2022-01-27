@@ -1,6 +1,7 @@
-import { FC } from "react"
+import { FC, useState } from "react"
 import {
   Button,
+  Checkbox,
   Divider,
   ModalBody,
   ModalCloseButton,
@@ -9,17 +10,18 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { Body1, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { ModalType } from "../../../enums"
+import { ExternalHref, ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import ExternalLink, { StakingContractLearnMore } from "../../ExternalLink"
 
 const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
+  const [alphaConsent, setAlphaConsent] = useState(false)
 
   return (
     <>
@@ -38,6 +40,25 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
           </InfoBox>
           <StakingChecklist />
           <StakingContractLearnMore />
+          <Checkbox
+            checked={alphaConsent}
+            onChange={() => setAlphaConsent(!alphaConsent)}
+            spacing="1rem"
+            color={useColorModeValue("gray.500", "gray.300")}
+          >
+            I am aware this is an alpha version and I have read the requirements
+            for Threshold Staking.
+          </Checkbox>
+          <Body3
+            align="center"
+            color={useColorModeValue("gray.500", "gray.300")}
+          >
+            Read more about the{" "}
+            <ExternalLink
+              href={ExternalHref.stakingContractLeanMore}
+              text="staking contract"
+            />
+          </Body3>
           <Divider />
         </Stack>
       </ModalBody>
@@ -45,7 +66,10 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button onClick={() => openModal(ModalType.ConfirmStakingParams)}>
+        <Button
+          onClick={() => openModal(ModalType.ConfirmStakingParams)}
+          disabled={!alphaConsent}
+        >
           Stake
         </Button>
       </ModalFooter>

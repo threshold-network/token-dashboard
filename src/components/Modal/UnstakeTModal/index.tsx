@@ -52,7 +52,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
               You can partially or totally unstake depending on your needs.
             </Body1>
           </InfoBox>
-          <Stack spacing={6}>
+          <Stack spacing={6} mb={6}>
             <Box>
               <TokenBalanceInput
                 label={`T Amount`}
@@ -85,7 +85,10 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         <Button
           disabled={+amountToUnstake == 0 || +amountToUnstake > +stake.tStake}
           onClick={() =>
-            unstake({ operator: stake.operator, amount: amountToUnstake })
+            unstake({
+              stakingProvider: stake.stakingProvider,
+              amount: amountToUnstake,
+            })
           }
         >
           Unstake

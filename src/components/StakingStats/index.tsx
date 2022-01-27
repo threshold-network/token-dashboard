@@ -6,14 +6,14 @@ import shortenAddress from "../../utils/shortenAddress"
 
 interface StakingStatsProps {
   stakeAmount: string | number
-  operator: string
+  stakingProvider: string
   beneficiary: string
   authorizer: string
 }
 
 const StakingStats: FC<StakingStatsProps> = ({
   stakeAmount,
-  operator,
+  stakingProvider,
   beneficiary,
   authorizer,
 }) => {
@@ -33,7 +33,7 @@ const StakingStats: FC<StakingStatsProps> = ({
     },
     {
       text: "Operator",
-      value: <Body3>{shortenAddress(operator)}</Body3>,
+      value: <Body3>{shortenAddress(stakingProvider)}</Body3>,
     },
     {
       text: "Beneficiary",
