@@ -37,7 +37,12 @@ const StakingChecklistModal: FC<
           </Alert>
           <InfoBox variant="modal">
             <StakingStats
-              {...{ stakeAmount, beneficiary, operator, authorizer }}
+              {...{
+                stakeAmount,
+                beneficiary,
+                stakingProvider: operator,
+                authorizer,
+              }}
             />
           </InfoBox>
           <Alert status="warning">
