@@ -3476,6 +3476,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@openzeppelin/contracts-upgradeable@^4.4":
+  version "4.4.2"
+  resolved "https://registry.npmjs.org/@openzeppelin/contracts-upgradeable/-/contracts-upgradeable-4.4.2.tgz#748a5986a02548ef541cabc2ce8c67a890044c40"
+  integrity sha512-bavxs18L47EmcdnL9I6DzsVSUJO+0/zD6zH7/6qG7QRBugvR3VNVZR+nMvuZlCNwuTTnCa3apR00PYzYr/efAw==
+
 "@openzeppelin/contracts@^2.4.0":
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-2.5.1.tgz#c76e3fc57aa224da3718ec351812a4251289db31"
@@ -4776,13 +4781,14 @@
   dependencies:
     "@openzeppelin/contracts" "^4.1.0"
 
-"@threshold-network/solidity-contracts@>0.0.2-dev <0.0.2-ropsten":
-  version "0.0.2-dev.18"
-  resolved "https://registry.yarnpkg.com/@threshold-network/solidity-contracts/-/solidity-contracts-0.0.2-dev.18.tgz#70ba580760b42765656c7675a936dc3813161eee"
-  integrity sha512-dS8iBkEraD2FpOCXymCg3FxVZqelR65SEjkkENNTbCLxxPQraKGVSU1BYs/tvX6cKvg0pcLfqXDwcEjxc4+rMQ==
+"@threshold-network/solidity-contracts@>1.1.0-dev <1.1.0-ropsten":
+  version "1.1.0-dev.7"
+  resolved "https://registry.npmjs.org/@threshold-network/solidity-contracts/-/solidity-contracts-1.1.0-dev.7.tgz#59de2112dba02d0872ddd4ba9e428050e8a23eb5"
+  integrity sha512-XdyoUdwTA/5Q6DCNs0Qp8vASzDJ9Tji5LhwdoHa6f9VSAHNNtKAQ2uFIYG3Sy9C/Yn/oU4pHkgaGGyOWGDLhMw==
   dependencies:
-    "@keep-network/keep-core" ">1.8.0-dev <1.8.0-ropsten"
+    "@keep-network/keep-core" ">1.8.0-dev <1.8.0-pre"
     "@openzeppelin/contracts" "^4.4"
+    "@openzeppelin/contracts-upgradeable" "^4.4"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@threshold-network/solidity-contracts@github:threshold-network/solidity-contracts#6664c73":
