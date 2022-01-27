@@ -67,10 +67,7 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
         <Button
           disabled={+amountTopUp == 0 || +amountTopUp > +maxAmount}
           onClick={() =>
-            topup({
-              stakingProvider: stake.stakingProvider,
-              amount: amountTopUp,
-            })
+            topup({ operator: stake.operator, amount: amountTopUp })
           }
         >
           Top Up

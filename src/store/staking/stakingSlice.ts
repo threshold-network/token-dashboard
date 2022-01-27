@@ -67,11 +67,11 @@ export const stakingSlice = createSlice({
       state,
       action: PayloadAction<UpdateStakeAmountActionPayload>
     ) => {
-      const { stakingProvider, amount, increaseOrDecrease } = action.payload
+      const { operator, amount, increaseOrDecrease } = action.payload
 
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
-        (stake) => stake.stakingProvider === stakingProvider
+        (stake) => stake.operator === operator
       )
 
       const originalStakeAmount = BigNumber.from(

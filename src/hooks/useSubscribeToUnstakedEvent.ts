@@ -11,10 +11,10 @@ export const useSubscribeToUnstakedEvent = () => {
     "Unstaked",
     // TODO: figure out how to type callback.
     // @ts-ignore
-    (stakingProvider, amount) => {
+    (operator, amount) => {
       dispatch(
         updateStakeAmountForOperator({
-          stakingProvider,
+          operator,
           amount,
           increaseOrDecrease: "decrease",
         })

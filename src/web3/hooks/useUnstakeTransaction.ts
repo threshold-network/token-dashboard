@@ -5,7 +5,7 @@ import { useTStakingContract } from "./useTStakingContract"
 
 interface UnstakeRequest {
   amount: string | number
-  stakingProvider: string
+  operator: string
 }
 
 const useUnstakeTransaction = (
@@ -20,8 +20,8 @@ const useUnstakeTransaction = (
   )
 
   const unstake = useCallback(
-    async ({ amount, stakingProvider }: UnstakeRequest) => {
-      await sendTransaction(stakingProvider, amount)
+    async ({ amount, operator }: UnstakeRequest) => {
+      await sendTransaction(operator, amount)
     },
     [sendTransaction, stakingContract?.address]
   )

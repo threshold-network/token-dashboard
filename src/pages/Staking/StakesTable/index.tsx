@@ -32,7 +32,7 @@ const StakesTable: FC<StakingTableProps> = ({ stakes }) => {
         <Tbody>
           {stakes.map((stake, i) => {
             return (
-              <Tr key={stake.stakingProvider}>
+              <Tr key={stake.operator}>
                 <StakeNameCell stake={stake} index={i} />
                 <StakeAddressesCell stake={stake} />
                 <StakeBalanceCell stake={stake} />

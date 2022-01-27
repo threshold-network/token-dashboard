@@ -46,7 +46,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
             <AlertIcon />
             <AlertDescription>
               Some info about not using the same operator again:{" "}
-              {stake.stakingProvider}
+              {stake.operator}
             </AlertDescription>
           </Alert>
           <Stack spacing={6} mb={6}>
@@ -73,10 +73,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         <Button
           disabled={+amountToUnstake == 0 || +amountToUnstake > +stake.tStake}
           onClick={() =>
-            unstake({
-              stakingProvider: stake.stakingProvider,
-              amount: amountToUnstake,
-            })
+            unstake({ operator: stake.operator, amount: amountToUnstake })
           }
         >
           Unstake

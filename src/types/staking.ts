@@ -31,7 +31,7 @@ export interface UseStakingState {
 export interface StakeData {
   stakeType: StakeType
   owner: string
-  stakingProvider: string
+  operator: string
   beneficiary: string
   authorizer: string
   blockNumber: number
@@ -45,7 +45,7 @@ export interface StakeData {
 export interface OperatorStakedEvent {
   stakeType: number
   owner: string
-  stakingProvider: string
+  operator: string
   beneficiary: string
   authorizer: string
   amount: BigNumberish
@@ -58,7 +58,7 @@ export type OperatorStakedActionPayload = OperatorStakedEvent &
   >
 
 export type UpdateStakeAmountActionPayload = {
-  stakingProvider: string
+  operator: string
   amount: string | number
   increaseOrDecrease: "increase" | "decrease"
 }
