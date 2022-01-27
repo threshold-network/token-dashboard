@@ -99,7 +99,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
                 stakingProviderInUse ? (
                   <Stack direction="row">
                     <Body3 color="red.500">
-                      Staking Provider is already in use. Did you mean to{" "}
+                      Provider is already in use. Did you mean to{" "}
                     </Body3>
                     <Button
                       variant="link"

@@ -155,8 +155,8 @@ const ConfirmStakingParamsModal: FC<
             </Body3>
           </Box>
           <Body2>
-            Staking Provider, Beneficiary, and Authorizer addresses are
-            currently set to: {account}
+            Provider, Beneficiary, and Authorizer are currently set to:{" "}
+            {account}
           </Body2>
           <AdvancedParamsForm
             {...{
