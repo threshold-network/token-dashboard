@@ -18,16 +18,16 @@ import { ModalType } from "../../../enums"
 import { useStakingState } from "../../../hooks/useStakingState"
 
 interface AdvancedParamsFormProps {
-  operator: string
-  setOperator: (val: string) => void
+  stakingProvider: string
+  setStakingProvider: (val: string) => void
   beneficiary: string
   setBeneficiary: (val: string) => void
   authorizer: string
   setAuthorizer: (val: string) => void
   isValidAuthorizer: boolean
   isValidBeneficiary: boolean
-  isValidOperator: boolean
-  operatorInUse?: boolean
+  isValidStakingProvider: boolean
+  stakingProviderInUse?: boolean
 }
 
 const HelperText = ({
@@ -48,21 +48,23 @@ const HelperText = ({
 
 const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
   const {
-    operator,
-    setOperator,
+    stakingProvider,
+    setStakingProvider,
     beneficiary,
     setBeneficiary,
     authorizer,
     setAuthorizer,
     isValidAuthorizer,
     isValidBeneficiary,
-    isValidOperator,
-    operatorInUse = false,
+    isValidStakingProvider,
+    stakingProviderInUse = false,
   } = props
 
   const { openModal } = useModal()
 
-  const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: operatorInUse })
+  const { isOpen, onToggle } = useDisclosure({
+    defaultIsOpen: stakingProviderInUse,
+  })
 
   const { stakeAmount } = useStakingState()
 
@@ -84,20 +86,20 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
       <Collapse in={isOpen} animateOpacity>
         <Stack spacing={6} mb={6}>
           <FormControl>
-            <FormLabel>Operator Address</FormLabel>
+            <FormLabel>Staking Provider Address</FormLabel>
             <Input
-              isInvalid={operatorInUse || !isValidOperator}
+              isInvalid={stakingProviderInUse || !isValidStakingProvider}
               errorBorderColor="red.300"
-              value={operator}
-              onChange={(e) => setOperator(e.target.value)}
+              value={stakingProvider}
+              onChange={(e) => setStakingProvider(e.target.value)}
             />
             <HelperText
               text="If you are using a staking provider, this will be their provided address."
               errorText={
-                operatorInUse ? (
+                stakingProviderInUse ? (
                   <Stack direction="row">
                     <Body3 color="red.500">
-                      Operator is already in use. Did you mean to{" "}
+                      Provider is already in use. Did you mean to{" "}
                     </Body3>
                     <Button
                       variant="link"
@@ -110,7 +112,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
                   </Stack>
                 ) : undefined
               }
-              isInvalid={!isValidOperator || operatorInUse}
+              isInvalid={!isValidStakingProvider || stakingProviderInUse}
             />
           </FormControl>
           <FormControl>
