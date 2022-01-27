@@ -14,7 +14,7 @@ import { Body1, Body3 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { PreSetupSteps } from "../../StakingChecklist"
-import StakingStats from "./StakingStats"
+import StakingStats from "../../StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
@@ -37,7 +37,12 @@ const StakingChecklistModal: FC<
           </Alert>
           <InfoBox variant="modal">
             <StakingStats
-              {...{ stakeAmount, beneficiary, operator, authorizer }}
+              {...{
+                stakeAmount,
+                beneficiary,
+                stakingProvider: operator,
+                authorizer,
+              }}
             />
           </InfoBox>
           <Alert status="warning">
