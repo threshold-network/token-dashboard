@@ -19,22 +19,19 @@ export const useFetchOwnerStakes = () => {
         return []
       }
 
-      const operatorStakedEvents = await getContractPastEvents(
-        tStakingContract,
-        {
-          eventName: "OperatorStaked",
-          fromBlock: 0, // TODO: get contract deployment block.
-          filterParams: [undefined, address],
-        }
-      )
+      const stakedEvents = await getContractPastEvents(tStakingContract, {
+        eventName: "Staked",
+        fromBlock: 0, // TODO: get contract deployment block.
+        filterParams: [undefined, address],
+      })
 
-      const stakes = operatorStakedEvents.map((_) => {
+      const stakes = stakedEvents.map((_) => {
         const amount = _.args?.amount.toString()
         const stakeType = _.args?.stakeType as StakeType
         return {
           stakeType,
           owner: _.args?.owner as string,
-          operator: _.args?.operator as string,
+          stakingProvider: _.args?.stakingProvider as string,
           beneficiary: _.args?.beneficiary as string,
           authorizer: _.args?.authorizer as string,
           blockNumber: _.blockNumber,
@@ -49,7 +46,7 @@ export const useFetchOwnerStakes = () => {
       const multicalls = stakes.map((_) => ({
         contract: tStakingContract,
         method: "stakes",
-        args: [_.operator],
+        args: [_.stakingProvider],
       }))
       const multiCallsRequests = multicalls.map(getMulticallContractCall)
 

@@ -13,17 +13,17 @@ interface TopupTSuccessProps extends BaseModalProps {
 
 const TopupTSuccessModal: FC<TopupTSuccessProps> = ({
   transactionHash,
-  stake,
+  stake: { beneficiary, stakingProvider, authorizer },
   stakeAmount,
 }) => {
-  const { beneficiary, operator, authorizer } = stake
-
   return (
     <TransactionSuccessModal
       subTitle="You have successfully topped up your T stake"
       transactionHash={transactionHash}
       body={
-        <StakingStats {...{ stakeAmount, beneficiary, operator, authorizer }} />
+        <StakingStats
+          {...{ stakeAmount, beneficiary, stakingProvider, authorizer }}
+        />
       }
     />
   )
