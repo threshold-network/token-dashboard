@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import {
   Box,
   Button,
@@ -12,6 +12,10 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { BsChevronDown, BsChevronRight } from "react-icons/all"
+import { Body3 } from "../../Typography"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
+import { useStakingState } from "../../../hooks/useStakingState"
 
 interface AdvancedParamsFormProps {
   operator: string
@@ -33,7 +37,7 @@ const HelperText = ({
 }: {
   text: string
   isInvalid: boolean
-  errorText?: string
+  errorText?: string | JSX.Element
 }) => {
   return (
     <FormHelperText color={isInvalid ? "red.500" : "gray.500"}>
@@ -56,7 +60,15 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     operatorInUse = false,
   } = props
 
+  const { openModal } = useModal()
+
   const { isOpen, onToggle } = useDisclosure({ defaultIsOpen: operatorInUse })
+
+  const { stakeAmount } = useStakingState()
+
+  const openTopupModal = useCallback(() => {
+    openModal(ModalType.TopupT, { initialTopupAmount: stakeAmount })
+  }, [stakeAmount])
 
   return (
     <Box>
@@ -82,9 +94,21 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
             <HelperText
               text="If you are using a staking provider, this will be their provided address."
               errorText={
-                operatorInUse
-                  ? "Operator already in use. Please provide a different Operator address."
-                  : undefined
+                operatorInUse ? (
+                  <Stack direction="row">
+                    <Body3 color="red.500">
+                      Operator is already in use. Did you mean to{" "}
+                    </Body3>
+                    <Button
+                      variant="link"
+                      colorScheme="brand"
+                      onClick={openTopupModal}
+                    >
+                      top up your stake
+                    </Button>
+                    <Body3 color="red.500"> ?</Body3>
+                  </Stack>
+                ) : undefined
               }
               isInvalid={!isValidOperator || operatorInUse}
             />
