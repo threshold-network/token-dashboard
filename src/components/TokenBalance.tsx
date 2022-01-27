@@ -69,7 +69,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
               <Body3 alignSelf="center">{tokenSymbol}</Body3>
             ))}
         </Stack>
-        {withUSDBalance && usdBalance && (
+        {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
           <Body3 ml={1} color={useColorModeValue("gray.500", "gray.300")}>
             {usdBalance}
           </Body3>

@@ -17,7 +17,7 @@ import { BaseModalProps } from "../../../types"
 import { ExternalHref, ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
-import ExternalLink from "../../ExternalLink"
+import ExternalLink, { StakingContractLearnMore } from "../../ExternalLink"
 
 const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
@@ -30,14 +30,16 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
-              Before you continue
-            </H5>
             <Body1 color={useColorModeValue("gray.700", "white")}>
-              Make sure you have the following items in check
+              <H5 mb={4}>Before you continue</H5>
+              <Body1>
+                Please take note about the Staking Process and requirements you
+                need to meet so you can gain rewards.
+              </Body1>
             </Body1>
           </InfoBox>
           <StakingChecklist />
+          <StakingContractLearnMore />
           <Checkbox
             checked={alphaConsent}
             onChange={() => setAlphaConsent(!alphaConsent)}
