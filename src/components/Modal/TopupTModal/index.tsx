@@ -22,9 +22,14 @@ import { useTokenState } from "../../../hooks/useTokenState"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
 
-const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
+const TopupTModal: FC<
+  BaseModalProps & { stake: StakeData; initialTopupAmount?: number }
+> = ({ stake, initialTopupAmount }) => {
+  const [amountTopUp, setAmountToTopup] = useState<string | number>(
+    initialTopupAmount || 0
+  )
+
   const { closeModal, openModal } = useModal()
-  const [amountTopUp, setAmountToTopup] = useState<string | number>(0)
 
   const onSuccess = useCallback(
     (tx) => {
