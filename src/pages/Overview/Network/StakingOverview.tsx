@@ -1,14 +1,12 @@
 import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
-import { Button, HStack, useColorModeValue } from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
-import { Body2, Body3 } from "../../../components/Typography"
+import { Body2 } from "../../../components/Typography"
 import { useTokenState } from "../../../hooks/useTokenState"
-import Icon from "../../../components/Icon"
-import { ExternalHref } from "../../../enums"
 import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
-import ExternalLink from "../../../components/ExternalLink"
+import { StakingContractLearnMore } from "../../../components/ExternalLink"
 import { useStakingState } from "../../../hooks/useStakingState"
 
 const StakingOverview: FC = () => {
@@ -28,15 +26,7 @@ const StakingOverview: FC = () => {
       <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/staking">
         Go to Staking
       </Button>
-      <HStack justify="center" mt={4}>
-        <ExternalLink
-          href={ExternalHref.stakingContractLeanMore}
-          text="Read More"
-        />
-        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-          about Staking Contract
-        </Body3>
-      </HStack>
+      <StakingContractLearnMore />
     </CardTemplate>
   )
 }

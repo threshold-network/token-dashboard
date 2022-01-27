@@ -39,7 +39,7 @@ const StakeAddressesCell: FC<StakeCellProps> = ({ stake }) => {
         <StakingAddressRow text="Operator" address={stake.stakingProvider} />
         <StakingAddressRow text="Beneficiary" address={stake.beneficiary} />
         <StakingAddressRow text="Authorizer" address={stake.authorizer} />
-        <PreAddress address={undefined} />
+        {/* <PreAddress address={undefined} /> */}
       </VStack>
     </Td>
   )
