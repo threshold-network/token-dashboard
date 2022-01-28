@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useCallback, useState } from "react"
 import {
   Alert,
   AlertDescription,
@@ -22,15 +22,23 @@ import { ModalType } from "../../../enums"
 import { StakeData } from "../../../types/staking"
 import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
 import InfoBox from "../../InfoBox"
+import { StakingContractLearnMore } from "../../ExternalLink"
 
 const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
   stake,
 }) => {
-  const { unstake } = useUnstakeTransaction((tx) =>
-    openModal(ModalType.UnstakeSuccess, { transactionHash: tx.hash })
-  )
   const { closeModal, openModal } = useModal()
   const [amountToUnstake, setAmountToUnstake] = useState<string | number>(0)
+  const onSuccess = useCallback(
+    (tx) =>
+      openModal(ModalType.UnstakeSuccess, {
+        transactionHash: tx.hash,
+        stake,
+        unstakeAmount: amountToUnstake,
+      }),
+    [amountToUnstake, stake]
+  )
+  const { unstake } = useUnstakeTransaction(onSuccess)
 
   return (
     <>
@@ -39,16 +47,11 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <H5 mb={4}>You are about to unstake your T</H5>
-            <Body1>Lorem Ipsum about what unstaking means</Body1>
+            <H5 mb={4}>You are about to unstake your tokens</H5>
+            <Body1>
+              You can partially or totally unstake depending on your needs.
+            </Body1>
           </InfoBox>
-          <Alert status="warning">
-            <AlertIcon />
-            <AlertDescription>
-              Some info about not using the same operator again:{" "}
-              {stake.operator}
-            </AlertDescription>
-          </Alert>
           <Stack spacing={6} mb={6}>
             <Box>
               <TokenBalanceInput
@@ -60,11 +63,20 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 mb={2}
               />
               <Body3>
-                {formatTokenAmount(stake.tStake)} T available to unstake.
+                {formatTokenAmount(stake.tStake)} T available to unstake
               </Body3>
             </Box>
           </Stack>
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertDescription>
+              Take note! If you fully unstake you will not be able to use the
+              same Staking Provider Address for new stakes. This unstaked stake
+              can be toppped up anytime you want.
+            </AlertDescription>
+          </Alert>
         </Stack>
+        <StakingContractLearnMore />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
@@ -73,7 +85,10 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         <Button
           disabled={+amountToUnstake == 0 || +amountToUnstake > +stake.tStake}
           onClick={() =>
-            unstake({ operator: stake.operator, amount: amountToUnstake })
+            unstake({
+              stakingProvider: stake.stakingProvider,
+              amount: amountToUnstake,
+            })
           }
         >
           Unstake

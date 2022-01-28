@@ -18,7 +18,7 @@ const StakeNameCell: FC<StakeCellProps & { index: number }> = ({
   return (
     <Td>
       <HStack>
-        <Circle size="24px" bg={gradient(stake.operator)} />
+        <Circle size="24px" bg={gradient(stake.stakingProvider)} />
         <VStack>
           <Body2>T Stake {index + 1}</Body2>
           <Body3 color={useColorModeValue("gray.500", "gray.300")}>

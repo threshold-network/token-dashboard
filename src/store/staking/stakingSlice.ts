@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { StakeType } from "../../enums"
 import {
-  OperatorStakedActionPayload,
+  ProviderStakedActionPayload,
   StakeData,
   UpdateStakeAmountActionPayload,
   UpdateStateActionPayload,
@@ -12,7 +12,7 @@ import { fetchETHPriceUSD } from "../eth"
 import { BigNumberish } from "@ethersproject/bignumber"
 
 interface StakingState {
-  operator: string
+  stakingProvider: string
   beneficiary: string
   authorizer: string
   stakeAmount: string
@@ -31,7 +31,7 @@ const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
 export const stakingSlice = createSlice({
   name: "staking",
   initialState: {
-    operator: "",
+    stakingProvider: "",
     beneficiary: "",
     authorizer: "",
     stakeAmount: "0",
@@ -47,9 +47,9 @@ export const stakingSlice = createSlice({
       state.stakes = action.payload
       state.stakedBalance = calculateStakedBalance(action.payload)
     },
-    operatorStaked: (
+    providerStaked: (
       state,
-      action: PayloadAction<OperatorStakedActionPayload>
+      action: PayloadAction<ProviderStakedActionPayload>
     ) => {
       const eventData = action.payload
       const { amount, stakeType, ...restData } = eventData
@@ -63,15 +63,15 @@ export const stakingSlice = createSlice({
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
-    updateStakeAmountForOperator: (
+    updateStakeAmountForProvider: (
       state,
       action: PayloadAction<UpdateStakeAmountActionPayload>
     ) => {
-      const { operator, amount, increaseOrDecrease } = action.payload
+      const { stakingProvider, amount, increaseOrDecrease } = action.payload
 
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
-        (stake) => stake.operator === operator
+        (stake) => stake.stakingProvider === stakingProvider
       )
 
       const originalStakeAmount = BigNumber.from(
@@ -98,6 +98,6 @@ export const stakingSlice = createSlice({
 export const {
   updateState,
   setStakes,
-  operatorStaked,
-  updateStakeAmountForOperator,
+  providerStaked,
+  updateStakeAmountForProvider,
 } = stakingSlice.actions

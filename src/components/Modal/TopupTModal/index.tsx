@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useCallback, useState } from "react"
 import {
   Box,
   Button,
@@ -20,13 +20,29 @@ import { StakeData } from "../../../types/staking"
 import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
 import { useTokenState } from "../../../hooks/useTokenState"
 import InfoBox from "../../InfoBox"
+import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
 
-const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
-  const { closeModal, openModal } = useModal()
-  const [amountTopUp, setAmountToTopup] = useState<string | number>(0)
-  const { topup } = useTopupTransaction((tx) =>
-    openModal(ModalType.TopupTSuccess, { transactionHash: tx.hash })
+const TopupTModal: FC<
+  BaseModalProps & { stake: StakeData; initialTopupAmount?: number }
+> = ({ stake, initialTopupAmount }) => {
+  const [amountTopUp, setAmountToTopup] = useState<string | number>(
+    initialTopupAmount || 0
   )
+
+  const { closeModal, openModal } = useModal()
+
+  const onSuccess = useCallback(
+    (tx) => {
+      openModal(ModalType.TopupTSuccess, {
+        transactionHash: tx.hash,
+        stakeAmount: amountTopUp,
+        stake,
+      })
+    },
+    [amountTopUp, stake]
+  )
+
+  const { topup } = useTopupTransaction(onSuccess)
 
   const {
     t: { balance: maxAmount },
@@ -34,19 +50,21 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
 
   return (
     <>
-      <ModalHeader>Top up your T stake</ModalHeader>
+      <ModalHeader>Topping up Stake</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <H5 mb={4}>You are about to top up your T stake</H5>
-            <Body1>Lorem Ipsum about what topping up does means</Body1>
+            <H5 mb={4}>You are about to top up your stake</H5>
+            <Body1>
+              By topping up your stake you will add a new deposit of tokens to
+              your initial stake.
+            </Body1>
           </InfoBox>
-
-          <Stack spacing={6} mb={6}>
+          <Stack spacing={6} mb={12}>
             <Box>
               <TokenBalanceInput
-                label={`T Amount to top up`}
+                label={`T Amount`}
                 amount={amountTopUp}
                 setAmount={setAmountToTopup}
                 max={maxAmount}
@@ -59,6 +77,7 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
             </Box>
           </Stack>
         </Stack>
+        <StakingContractLearnMore />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
@@ -67,7 +86,10 @@ const TopupTModal: FC<BaseModalProps & { stake: StakeData }> = ({ stake }) => {
         <Button
           disabled={+amountTopUp == 0 || +amountTopUp > +maxAmount}
           onClick={() =>
-            topup({ operator: stake.operator, amount: amountTopUp })
+            topup({
+              stakingProvider: stake.stakingProvider,
+              amount: amountTopUp,
+            })
           }
         >
           Top Up

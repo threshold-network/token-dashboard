@@ -2,23 +2,23 @@ import { useWeb3React } from "@web3-react/core"
 import { useDispatch } from "react-redux"
 import { Event } from "@ethersproject/contracts"
 import { BigNumberish } from "@ethersproject/bignumber"
-import { operatorStaked } from "../store/staking"
+import { providerStaked } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
 
-export const useSubscribeToOperatorStakedEvent = () => {
+export const useSubscribeToStakedEvent = () => {
   const tStakingContract = useTStakingContract()
   const { account } = useWeb3React()
   const dispatch = useDispatch()
 
   useSubscribeToContractEvent(
     tStakingContract!,
-    "OperatorStaked",
+    "Staked",
     // TODO: figure out how to type callback.
     // @ts-ignore
     (
       stakeType: number,
       owner: string,
-      operator: string,
+      stakingProvider: string,
       beneficiary: string,
       authorizer: string,
       amount: BigNumberish,
@@ -27,10 +27,10 @@ export const useSubscribeToOperatorStakedEvent = () => {
       // TODO: open success modal here
       const { blockNumber, blockHash, transactionHash } = event
       dispatch(
-        operatorStaked({
+        providerStaked({
           stakeType,
           owner,
-          operator,
+          stakingProvider,
           authorizer,
           beneficiary,
           blockHash,
