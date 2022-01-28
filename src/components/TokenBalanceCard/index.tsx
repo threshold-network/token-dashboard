@@ -5,10 +5,8 @@ import KeepCircleBrand from "../../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../../static/icons/NuCircleBrand"
 import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
-import { Contract } from "@ethersproject/contracts"
 
 export interface TokenBalanceCardProps {
-  contract: Contract | null
   token: Exclude<Token, Token.TBTC>
 }
 
@@ -18,8 +16,8 @@ const tokenToIconMap = {
   [Token.T]: T,
 }
 
-const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token, contract }) => {
-  const { balance, usdBalance } = useToken(token)
+const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
+  const { balance, usdBalance, contract } = useToken(token)
 
   return (
     <TokenBalanceCardTemplate

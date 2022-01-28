@@ -4,10 +4,7 @@ import { PageComponent } from "../../types"
 import { useKeep } from "../../web3/hooks"
 
 const UpgradeKEEP: PageComponent = (props) => {
-  const keep = useKeep()
-  return (
-    <UpgradeToken {...props} token={Token.Keep} contract={keep?.contract} />
-  )
+  return <UpgradeToken {...props} token={Token.Keep} />
 }
 
 UpgradeKEEP.route = {
