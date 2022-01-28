@@ -4,7 +4,7 @@ import { StakeType } from "../enums"
 export type StakingStateKey =
   | "authorizer"
   | "beneficiary"
-  | "operator"
+  | "stakingProvider"
   | "stakeAmount"
 
 export interface UpdateStateActionPayload {
@@ -21,7 +21,7 @@ export interface UseStakingState {
     stakedBalance: BigNumberish
     stakes: StakeData[]
     stakeAmount: string | number
-    operator: string
+    stakingProvider: string
     beneficiary: string
     authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateState
@@ -31,7 +31,7 @@ export interface UseStakingState {
 export interface StakeData {
   stakeType: StakeType
   owner: string
-  operator: string
+  stakingProvider: string
   beneficiary: string
   authorizer: string
   blockNumber: number
@@ -42,23 +42,23 @@ export interface StakeData {
   tStake: string
 }
 
-export interface OperatorStakedEvent {
+export interface ProviderStakedEvent {
   stakeType: number
   owner: string
-  operator: string
+  stakingProvider: string
   beneficiary: string
   authorizer: string
   amount: BigNumberish
 }
 
-export type OperatorStakedActionPayload = OperatorStakedEvent &
+export type ProviderStakedActionPayload = ProviderStakedEvent &
   Omit<
     StakeData,
     "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
   >
 
 export type UpdateStakeAmountActionPayload = {
-  operator: string
+  stakingProvider: string
   amount: string | number
   increaseOrDecrease: "increase" | "decrease"
 }
