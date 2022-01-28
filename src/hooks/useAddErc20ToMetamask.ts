@@ -25,8 +25,8 @@ const useAddErc20ToMetamask = (tokenContract?: Contract | null) => {
           method: "wallet_watchAsset",
           params,
         })
-      } catch (e) {
-        console.log(e) // eslint-disable-line no-console
+      } catch (error) {
+        console.error("Could not add ERC20 token to MetaMask", error)
       }
     }
   }, [library, tokenContract])
