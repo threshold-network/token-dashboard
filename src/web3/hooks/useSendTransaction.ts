@@ -56,7 +56,7 @@ export const useSendTransaction = (
         }
       }
     },
-    [contract, methodName, library, account]
+    [contract, methodName, library, account, onError, onSuccess]
   )
 
   return { sendTransaction, status: transactionStatus }

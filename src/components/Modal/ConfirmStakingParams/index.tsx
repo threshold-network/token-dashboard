@@ -26,16 +26,17 @@ import { isAddress } from "ethers/lib/utils"
 import { useTStakingContract } from "../../../web3/hooks"
 import { BigNumber } from "ethers"
 import InfoBox from "../../InfoBox"
+import { StakingContractLearnMore } from "../../ExternalLink"
 
 const ConfirmStakingParamsModal: FC<
-  BaseModalProps & { operatorInUse: boolean }
-> = ({ operatorInUse }) => {
+  BaseModalProps & { stakingProviderInUse: boolean }
+> = ({ stakingProviderInUse }) => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
   } = useTokenState()
   const { account } = useWeb3React()
-  const { stakeAmount, operator, beneficiary, authorizer, updateState } =
+  const { stakeAmount, stakingProvider, beneficiary, authorizer, updateState } =
     useStakingState()
   const tStakingContract = useTStakingContract()
 
@@ -53,7 +54,8 @@ const ConfirmStakingParamsModal: FC<
 
   const setStakeAmount = (value: string | number) =>
     updateState("stakeAmount", value)
-  const setOperator = (value: string) => updateState("operator", value)
+  const setStakingProvider = (value: string) =>
+    updateState("stakingProvider", value)
   const setBeneficiary = (value: string) => updateState("beneficiary", value)
   const setAuthorizer = (value: string) => updateState("authorizer", value)
 
@@ -65,14 +67,14 @@ const ConfirmStakingParamsModal: FC<
   )
 
   const onSubmit = () =>
-    stake({ operator, beneficiary, authorizer, amount: stakeAmount })
+    stake({ stakingProvider, beneficiary, authorizer, amount: stakeAmount })
 
   //
   // initializes all values to the connected wallet
   //
   useEffect(() => {
     if (account) {
-      setOperator(account)
+      setStakingProvider(account)
       setBeneficiary(account)
       setAuthorizer(account)
     } else {
@@ -82,7 +84,7 @@ const ConfirmStakingParamsModal: FC<
 
   const isValidBeneficiary = isAddress(beneficiary)
   const isValidAuthorizer = isAddress(authorizer)
-  const isValidOperator = isAddress(operator)
+  const isValidStakingProvider = isAddress(stakingProvider)
   const isMoreThanMax = BigNumber.from(stakeAmount).gt(
     BigNumber.from(maxAmount)
   )
@@ -94,7 +96,7 @@ const ConfirmStakingParamsModal: FC<
       isZero ||
       isLessThanMin ||
       isMoreThanMax ||
-      !isValidOperator ||
+      !isValidStakingProvider ||
       !isValidBeneficiary ||
       !isValidAuthorizer
     )
@@ -102,7 +104,7 @@ const ConfirmStakingParamsModal: FC<
     stakeAmount,
     maxAmount,
     minTStake,
-    isValidOperator,
+    isValidStakingProvider,
     isValidBeneficiary,
     isValidAuthorizer,
     isMoreThanMax,
@@ -126,9 +128,12 @@ const ConfirmStakingParamsModal: FC<
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5 mb={4}>You are about to stake T</H5>
+          <H5 mb={4}>
+            You are about to make a deposit into the T Staking Contract
+          </H5>
           <Body1>
-            Here is some sub text copy to explain the staking process
+            Staking is a two step action which requires approve and confirm
+            transactions.
           </Body1>
         </InfoBox>
         <Stack spacing={6} mb={6}>
@@ -150,24 +155,25 @@ const ConfirmStakingParamsModal: FC<
             </Body3>
           </Box>
           <Body2>
-            Operator, Beneficiary, and Authorizer addresses are currently set
-            to: {account}
+            Provider, Beneficiary, and Authorizer are currently set to:{" "}
+            {account}
           </Body2>
           <AdvancedParamsForm
             {...{
-              operator,
-              setOperator,
+              stakingProvider,
+              setStakingProvider,
               beneficiary,
               setBeneficiary,
               authorizer,
               setAuthorizer,
               isValidAuthorizer,
               isValidBeneficiary,
-              isValidOperator,
-              operatorInUse,
+              isValidStakingProvider,
+              stakingProviderInUse,
             }}
           />
         </Stack>
+        <StakingContractLearnMore />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
