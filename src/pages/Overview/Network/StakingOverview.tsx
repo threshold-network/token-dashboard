@@ -13,8 +13,6 @@ const StakingOverview: FC = () => {
   const { t } = useTokenState()
   const { stakedBalance } = useStakingState()
 
-  console.log("got the staked balance ", stakedBalance)
-
   return (
     <CardTemplate title="STAKING" height="fit-content">
       <Body2 mb={2}>Staked Balance</Body2>
