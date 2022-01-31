@@ -22,12 +22,12 @@ const store = configureStore({
         ignoredActions: [
           "modal/openModal",
           "staking/unstaked",
-          "staking/updateStakeAmountForOperator",
+          "staking/updateStakeAmountForProvider",
         ],
         // Ignore these field paths in all actions
         ignoredPaths: [
           "staking.stakedBalance",
-          "modal.props.setOperator",
+          "modal.props.setStakingProvider",
           "modal.props.setBeneficiary",
           "modal.props.setAuthorizer",
           "modal.props.onSubmit",

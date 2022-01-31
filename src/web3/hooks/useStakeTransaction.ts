@@ -10,13 +10,13 @@ import { useTStakingAllowance } from "./useTStakingAllowance"
 
 interface StakeRequest {
   amount: string | number
-  operator: string
+  stakingProvider: string
   beneficiary: string
   authorizer: string
 }
 
 enum CommonStakingErrors {
-  OperatorInUse = "Operator is already in use",
+  ProviderInUse = "Provider is already in use",
 }
 
 export const useStakeTransaction = (
@@ -27,10 +27,13 @@ export const useStakeTransaction = (
   const { approve } = useApproveTStaking()
 
   const onError = (error: any) => {
-    if (error?.data?.message.includes(CommonStakingErrors.OperatorInUse)) {
+    if (
+      error?.data?.message.includes(CommonStakingErrors.ProviderInUse) ||
+      error?.message.includes(CommonStakingErrors.ProviderInUse)
+    ) {
       // send the user back to the first staking step, but with validated form fields
       openModal(ModalType.ConfirmStakingParams, {
-        operatorInUse: true,
+        stakingProviderInUse: true,
       })
     } else {
       openModal(ModalType.TransactionFailed, {
@@ -50,12 +53,17 @@ export const useStakeTransaction = (
   const allowance = useTStakingAllowance()
 
   const stake = useCallback(
-    async ({ amount, operator, beneficiary, authorizer }: StakeRequest) => {
+    async ({
+      amount,
+      stakingProvider,
+      beneficiary,
+      authorizer,
+    }: StakeRequest) => {
       const isApprovedForAmount = BigNumber.from(amount).lte(allowance)
       if (!isApprovedForAmount) {
         await approve(amount.toString())
       }
-      await sendTransaction(operator, beneficiary, authorizer, amount)
+      await sendTransaction(stakingProvider, beneficiary, authorizer, amount)
     },
     [sendTransaction, stakingContract?.address, allowance, approve]
   )
