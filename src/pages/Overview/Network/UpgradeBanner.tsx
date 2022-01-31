@@ -14,9 +14,12 @@ import vortexDark from "../../../static/images/vortexDark.png"
 import { Body2, H4 } from "../../../components/Typography"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
+import useUpgradeHref from "../../../hooks/useUpgradeHref"
 
 const UpgradeBanner: FC = () => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
+
+  const upgradeHref = useUpgradeHref()
 
   const heroText1 = "Have KEEP or NU tokens?"
 
@@ -62,7 +65,7 @@ const UpgradeBanner: FC = () => {
 
           <Button
             as={RouterLink}
-            to="/upgrade"
+            to={upgradeHref}
             marginY="auto !important"
             mt={{ base: 12, xl: "auto !important" }}
             size={isMobile ? "sm" : "lg"}
