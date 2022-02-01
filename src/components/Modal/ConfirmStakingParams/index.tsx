@@ -3,7 +3,6 @@ import { useWeb3React } from "@web3-react/core"
 import {
   Box,
   Button,
-  Checkbox,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -52,7 +51,7 @@ const ConfirmStakingParamsModal: FC<
     }
   }, [])
 
-  const setStakeAmount = (value: string | number) =>
+  const setStakeAmount = (value?: string | number) =>
     updateState("stakeAmount", value)
   const setStakingProvider = (value: string) =>
     updateState("stakingProvider", value)
@@ -83,13 +82,20 @@ const ConfirmStakingParamsModal: FC<
   }, [account])
 
   const isValidBeneficiary = isAddress(beneficiary)
+
   const isValidAuthorizer = isAddress(authorizer)
+
   const isValidStakingProvider = isAddress(stakingProvider)
-  const isMoreThanMax = BigNumber.from(stakeAmount).gt(
-    BigNumber.from(maxAmount)
-  )
-  const isLessThanMin = BigNumber.from(stakeAmount).lt(minTStake)
-  const isZero = stakeAmount == 0
+
+  const isMoreThanMax = stakeAmount
+    ? BigNumber.from(stakeAmount).gt(BigNumber.from(maxAmount))
+    : false
+
+  const isLessThanMin = stakeAmount
+    ? BigNumber.from(stakeAmount).lt(minTStake)
+    : false
+
+  const isZero = !stakeAmount || stakeAmount == 0
 
   const disableSubmit = useMemo(() => {
     return (
@@ -140,7 +146,7 @@ const ConfirmStakingParamsModal: FC<
           <Box>
             <TokenBalanceInput
               label={`T Amount`}
-              amount={stakeAmount}
+              amount={stakeAmount == 0 ? undefined : stakeAmount}
               setAmount={setStakeAmount}
               max={maxAmount}
               icon={ThresholdCircleBrand}
