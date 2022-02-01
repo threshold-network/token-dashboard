@@ -28,7 +28,9 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
   stake,
 }) => {
   const { closeModal, openModal } = useModal()
-  const [amountToUnstake, setAmountToUnstake] = useState<string | number>(0)
+  const [amountToUnstake, setAmountToUnstake] = useState<
+    string | number | undefined
+  >(undefined)
   const onSuccess = useCallback(
     (tx) =>
       openModal(ModalType.UnstakeSuccess, {
@@ -83,13 +85,19 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
           Cancel
         </Button>
         <Button
-          disabled={+amountToUnstake == 0 || +amountToUnstake > +stake.tStake}
-          onClick={() =>
-            unstake({
-              stakingProvider: stake.stakingProvider,
-              amount: amountToUnstake,
-            })
+          disabled={
+            !amountToUnstake ||
+            +amountToUnstake == 0 ||
+            +amountToUnstake > +stake.tStake
           }
+          onClick={() => {
+            if (amountToUnstake) {
+              unstake({
+                stakingProvider: stake.stakingProvider,
+                amount: amountToUnstake,
+              })
+            }
+          }}
         >
           Unstake
         </Button>
