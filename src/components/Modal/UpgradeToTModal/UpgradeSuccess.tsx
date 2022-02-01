@@ -1,11 +1,11 @@
 import { FC } from "react"
-import { Flex, Stack } from "@chakra-ui/react"
+import { Stack } from "@chakra-ui/react"
 import UpgradeStats from "./UpgradeStats"
 import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, UpgredableToken } from "../../../types"
 import TransactionSuccessModal from "../TransactionSuccessModal"
-import AddToMetamaskButton from "../../AddToMetamaskButton"
+// import AddToMetamaskButton from "../../AddToMetamaskButton"
 import { useT } from "../../../web3/hooks"
 
 interface UpgradeSuccessProps extends BaseModalProps {
@@ -36,9 +36,9 @@ const UpgradeSuccess: FC<UpgradeSuccessProps> = ({
             receivedAmount={receivedAmount}
             upgradedAmount={upgradedAmount}
           />
-          <Flex justify="center">
+          {/* <Flex justify="center">
             <AddToMetamaskButton contract={T?.contract} />
-          </Flex>
+          </Flex> */}
         </Stack>
       }
     />
