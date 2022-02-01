@@ -27,7 +27,7 @@ interface SuccessModalProps {
 }
 
 const StakingSuccessModal: FC<SuccessModalProps> = ({
-  title = "success",
+  title = "Success",
   subTitle = "Your transaction was successful!",
   body,
   transactionHash,

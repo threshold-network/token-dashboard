@@ -9,6 +9,7 @@ import { PageComponent } from "../../types"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
+
   const isMobile = useChakraBreakpoint("md")
 
   return (
