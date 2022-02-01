@@ -16,6 +16,7 @@ import { ExternalHref, Token } from "../../../enums"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import InfoBox from "../../../components/InfoBox"
 import ExternalLink from "../../../components/ExternalLink"
+import useUpgradeHref from "../../../hooks/useUpgradeHref"
 
 const BalanceStat: FC<{
   balance: string | number
@@ -52,6 +53,8 @@ const progressBarColors = {
 const WalletBalances: FC = () => {
   const { account } = useWeb3React()
   const { keep, nu, t } = useTokenState()
+
+  const upgradeHref = useUpgradeHref()
 
   // do to: figure out how to pass in the token decimals
   const formattedKeep = Number(formatUnits(keep.balance))
@@ -129,7 +132,7 @@ const WalletBalances: FC = () => {
       </InfoBox>
 
       {/* Link to upgrade page */}
-      <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/upgrade">
+      <Button size="lg" isFullWidth mt={4} as={RouterLink} to={upgradeHref}>
         Upgrade Tokens
       </Button>
 
