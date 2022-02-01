@@ -1,4 +1,4 @@
-import React, { createContext } from "react"
+import React, { createContext, useEffect } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
@@ -10,6 +10,7 @@ import { Token } from "../enums"
 import { TokenState } from "../types"
 import { useTBTCTokenContract } from "../web3/hooks"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
+import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
 
 interface TokenContextState extends TokenState {
   contract: Contract | null
@@ -34,6 +35,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const nuConversion = useVendingMachineRatio(Token.Nu)
   const keepConversion = useVendingMachineRatio(Token.Keep)
   const { active, chainId, account } = useWeb3React()
+  const fetchOwnerStakes = useFetchOwnerStakes()
 
   const {
     fetchTokenPriceUSD,
@@ -90,6 +92,16 @@ export const TokenContextProvider: React.FC = ({ children }) => {
       }
     }
   }, [active, chainId, account])
+
+  // fetch user stakes when they connect their wallet
+  React.useEffect(() => {
+    const fn = async () => {
+      if (account) {
+        await fetchOwnerStakes(account)
+      }
+    }
+    fn()
+  }, [fetchOwnerStakes, account])
 
   return (
     <TokenContext.Provider

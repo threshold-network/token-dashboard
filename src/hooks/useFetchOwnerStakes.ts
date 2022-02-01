@@ -7,11 +7,15 @@ import {
 } from "../web3/utils"
 import { StakeType } from "../enums"
 import { StakeData } from "../types/staking"
+import { setStakes } from "../store/staking"
+import { useDispatch } from "react-redux"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
 
   const multicallContract = useMulticallContract()
+
+  const dispatch = useDispatch()
 
   return useCallback(
     async (address: string): Promise<StakeData[]> => {
@@ -61,6 +65,8 @@ export const useFetchOwnerStakes = () => {
           nuInTStake: _.nuInTStake.toString(),
         }
       })
+
+      dispatch(setStakes(stakes))
 
       return stakes
     },

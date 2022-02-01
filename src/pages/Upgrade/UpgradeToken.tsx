@@ -1,5 +1,4 @@
-import { FC, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { FC } from "react"
 import { Stack } from "@chakra-ui/react"
 import UpgradeCard from "../../components/UpgradeCard"
 import TokenBalanceCard from "../../components/TokenBalanceCard"

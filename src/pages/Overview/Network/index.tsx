@@ -21,14 +21,10 @@ const Network: PageComponent = () => {
         <Box w={{ base: "100%", xl: "50%" }}>
           <WalletBalances />
         </Box>
-        <Box w={{ base: "100%", xl: "50%" }}>
+        <Stack w={{ base: "100%", xl: "50%" }} spacing={4}>
           <StakingOverview />
-        </Box>
-      </Stack>
-      <Stack direction={{ base: "column", xl: "row" }} w="100%">
-        <Box w={{ base: "100%", xl: "50%" }}>
           <TotalValueLocked totalValueLocked={data.total} />
-        </Box>
+        </Stack>
       </Stack>
     </VStack>
   )

@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { useTokenState } from "../../hooks/useTokenState"
 import { Token } from "../../enums"
 import TokenBalanceCardTemplate from "./TokenBalanceCardTemplate"
 import KeepCircleBrand from "../../static/icons/KeepCircleBrand"
@@ -18,7 +17,7 @@ const tokenToIconMap = {
 }
 
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
-  const { balance, usdBalance } = useToken(token)
+  const { balance, usdBalance, contract } = useToken(token)
 
   return (
     <TokenBalanceCardTemplate
@@ -26,6 +25,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({ token }) => {
       title={token}
       tokenBalance={balance}
       usdBalance={usdBalance}
+      contract={contract}
     />
   )
 }
