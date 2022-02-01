@@ -6,6 +6,7 @@
 # Generated
 build/
 dist/
+external/
 
 # Storybook
 storybook-static
