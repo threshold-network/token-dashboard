@@ -15,7 +15,7 @@ const iconMap: ChakraIconMap = {
 const Template: Story<
   Omit<TokenBalanceInputProps, "icon"> & { icon: string }
 > = ({ icon, max, label }) => {
-  const [amount, setAmount] = useState<string | number>("")
+  const [amount, setAmount] = useState<string | number | undefined>(undefined)
 
   const Icon = iconMap[icon]
 

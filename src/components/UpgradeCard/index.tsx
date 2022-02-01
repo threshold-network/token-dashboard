@@ -19,10 +19,10 @@ const tokenToIconMap = {
 
 const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
   const balance = useTokenBalance(token)
-  const [amount, setAmount] = useState<string | number>("")
+  const [amount, setAmount] = useState<string | number | undefined>(undefined)
 
   const submitUpgrade = () => {
-    if (+amount > 0) {
+    if (amount && +amount > 0) {
       onSubmit(amount, token)
     }
   }
@@ -30,7 +30,7 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
   return (
     <UpgradeCardTemplate
       token={token}
-      amountToConvert={amount}
+      amountToConvert={amount || ""}
       onSubmit={submitUpgrade}
       max={balance}
     >

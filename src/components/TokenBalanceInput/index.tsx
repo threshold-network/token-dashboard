@@ -16,8 +16,8 @@ import { Body3 } from "../Typography"
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>
   max: number | string
-  amount: string | number
-  setAmount: (val: string | number) => void
+  amount?: string | number
+  setAmount: (val?: string | number) => void
   label?: string
 }
 
@@ -49,9 +49,10 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           <Icon boxSize="20px" as={icon} />
         </InputLeftElement>
         <NumberInput
+          placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
-          value={formatUnits(amount || "0")}
+          value={amount ? formatUnits(amount) : undefined}
           onValueChange={(values: NumberInputValues) =>
             _setAmount(values.value)
           }

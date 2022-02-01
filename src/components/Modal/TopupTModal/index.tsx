@@ -25,8 +25,8 @@ import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
 const TopupTModal: FC<
   BaseModalProps & { stake: StakeData; initialTopupAmount?: number }
 > = ({ stake, initialTopupAmount }) => {
-  const [amountTopUp, setAmountToTopup] = useState<string | number>(
-    initialTopupAmount || 0
+  const [amountTopUp, setAmountToTopup] = useState<string | number | undefined>(
+    initialTopupAmount
   )
 
   const { closeModal, openModal } = useModal()
@@ -84,13 +84,17 @@ const TopupTModal: FC<
           Cancel
         </Button>
         <Button
-          disabled={+amountTopUp == 0 || +amountTopUp > +maxAmount}
-          onClick={() =>
-            topup({
-              stakingProvider: stake.stakingProvider,
-              amount: amountTopUp,
-            })
+          disabled={
+            !amountTopUp || +amountTopUp == 0 || +amountTopUp > +maxAmount
           }
+          onClick={() => {
+            if (amountTopUp) {
+              topup({
+                stakingProvider: stake.stakingProvider,
+                amount: amountTopUp,
+              })
+            }
+          }}
         >
           Top Up
         </Button>
