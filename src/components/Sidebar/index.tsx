@@ -10,9 +10,12 @@ import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
 import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
+import useUpgradeHref from "../../hooks/useUpgradeHref"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
+
+  const upgradeHref = useUpgradeHref()
 
   const navItems: NavItemDetail[] = useMemo(
     () => [
@@ -26,7 +29,7 @@ const Sidebar = () => {
         text: "Upgrade",
         activeIcon: IoSwapHorizontalSharp,
         passiveIcon: IoSwapHorizontalSharp,
-        href: "/upgrade",
+        href: upgradeHref,
       },
       {
         text: "Staking",
@@ -35,7 +38,7 @@ const Sidebar = () => {
         href: "/staking",
       },
     ],
-    [pathname]
+    [pathname, upgradeHref]
   )
 
   return (
