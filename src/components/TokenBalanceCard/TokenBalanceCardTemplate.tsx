@@ -3,7 +3,7 @@ import { HStack, Icon, Stack } from "@chakra-ui/react"
 import Card from "../Card"
 import { Body3 } from "../Typography"
 import TokenBalance from "../TokenBalance"
-import AddToMetamaskButton from "../AddToMetamaskButton"
+// import AddToMetamaskButton from "../AddToMetamaskButton"
 import { Contract } from "@ethersproject/contracts"
 
 interface Props {
@@ -33,7 +33,7 @@ const TokenBalanceCardTemplate: FC<Props> = ({
           usdBalance={usdBalance}
           withUSDBalance
         />
-        <AddToMetamaskButton contract={contract} />
+        {/* <AddToMetamaskButton contract={contract} /> */}
       </Stack>
     </Card>
   )
