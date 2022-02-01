@@ -30,7 +30,7 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <Body1 color={useColorModeValue("gray.700", "white")}>
+            <Body1 color={useColorModeValue("gray.700", "white")} as="span">
               <H5 mb={4}>Before you continue</H5>
               <Body1>
                 Please take note about the Staking Process and requirements you
