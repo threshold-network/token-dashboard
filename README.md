@@ -68,9 +68,12 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The following procedure allows to deploy T token dashboard to production:
 
 1. Developer with write access to the repository creates a release branch:
-   `releases/mainnet/<version>`. Dependencies and project version needs to be
-   updated on the release branch. Release branch should never be merged to `main`
+   `releases/mainnet/<version>`. Release branch should never be merged to `main`
    and creating a PR with a release branch is not required.
+   Dependencies and project version needs to be updated on the release branch.
+   All `-dev`, `-ropsten` dependencies need to be updated to mainnet versions.
+   See [this commit](https://github.com/threshold-network/token-dashboard/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
+   for `v1.0.0` release as a good example.
 2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`
    under the directory named after the release branch. For example:
    `https://preview.dashboard.threshold.network/releases/mainnet/v1.0.0/index.html`.
