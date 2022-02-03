@@ -1,7 +1,6 @@
 import { Box, Stack } from "@chakra-ui/react"
 import StakingChecklistCard from "./StakingChecklistCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
-import RewardsCard from "./RewardsCard"
 import { useStakingState } from "../../hooks/useStakingState"
 import StakesTable from "./StakesTable"
 import { PageComponent } from "../../types"
@@ -14,10 +13,7 @@ const StakingPage: PageComponent = (props) => {
     <PageLayout {...props}>
       <Stack direction={{ base: "column", lg: "row" }} w="100%">
         <StakedPortfolioCard />
-        <Stack direction="column" w="100%">
-          <RewardsCard />
-          <StakingChecklistCard />
-        </Stack>
+        <StakingChecklistCard />
       </Stack>
       {stakes.length > 0 && (
         <Box mt={4} w="100%">
