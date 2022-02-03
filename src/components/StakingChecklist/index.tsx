@@ -59,13 +59,12 @@ export const PreSetupSteps: FC = () => {
           title: "PRE Operator address",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-              Make sure you add your PRE Node address{" "}
+              Learn how to add a PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
                 text="here"
                 withArrow
-              />{" "}
-              to gain rewards.
+              />
             </Body3>
           ),
         },
