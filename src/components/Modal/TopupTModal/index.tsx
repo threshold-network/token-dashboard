@@ -58,7 +58,7 @@ const TopupTModal: FC<
             <H5 mb={4}>You are about to top up your stake</H5>
             <Body1>
               By topping up your stake you will add a new deposit of tokens to
-              your initial stake.
+              your existing stake.
             </Body1>
           </InfoBox>
           <Stack spacing={6} mb={12}>

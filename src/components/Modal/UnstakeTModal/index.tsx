@@ -72,9 +72,10 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
           <Alert status="warning">
             <AlertIcon />
             <AlertDescription>
-              Take note! If you fully unstake you will not be able to use the
-              same Staking Provider Address for new stakes. This unstaked stake
-              can be toppped up anytime you want.
+              Take note! Even if you fully unstake you cannot use the same
+              Staking Provider address for new stakes. Even after fully
+              unstaking, the resulting empty stake must be topped up to add
+              funds.
             </AlertDescription>
           </Alert>
         </Stack>
