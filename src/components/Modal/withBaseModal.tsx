@@ -7,7 +7,12 @@ function withBaseModal<T extends BaseModalProps>(
 ) {
   return (props: T) => {
     return (
-      <Modal isOpen onClose={props.closeModal} size="lg">
+      <Modal
+        isOpen
+        onClose={props.closeModal}
+        size="lg"
+        closeOnOverlayClick={false}
+      >
         <ModalOverlay />
         <ModalContent>
           <WrappedModalContent {...props} />
