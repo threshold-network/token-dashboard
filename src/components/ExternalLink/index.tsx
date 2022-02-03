@@ -19,7 +19,7 @@ const ExternalLink: FC<Props & LinkProps> = ({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      color={useColorModeValue("brand.500", "brand.300")}
+      color={useColorModeValue("brand.500", "white")}
       textDecoration="underline"
       {...props}
     >

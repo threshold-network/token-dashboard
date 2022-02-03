@@ -21,7 +21,7 @@ const ViewInBlockExplorer: FC<
   return (
     <Link
       textDecoration="underline"
-      color={useColorModeValue("brand.500", "brand.300")}
+      color={useColorModeValue("brand.500", "white")}
       href={etherscanLink}
       _hover={{
         fontWeight: "bold",
