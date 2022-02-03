@@ -10,14 +10,14 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
+import { Body1, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import { ExternalHref, ModalType } from "../../../enums"
+import { ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
-import ExternalLink, { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../ExternalLink"
 
 const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { openModal } = useModal()
@@ -49,16 +49,6 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
             I am aware this is an alpha version and I have read the requirements
             for Threshold Staking.
           </Checkbox>
-          <Body3
-            align="center"
-            color={useColorModeValue("gray.500", "gray.300")}
-          >
-            Read more about the{" "}
-            <ExternalLink
-              href={ExternalHref.stakingContractLeanMore}
-              text="staking contract"
-            />
-          </Body3>
           <Divider />
         </Stack>
       </ModalBody>

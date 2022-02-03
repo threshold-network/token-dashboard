@@ -3,7 +3,7 @@ export enum ExternalHref {
   thresholdDiscord = "https://discord.gg/WXK9PC6SRF",
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
-  preNodeSetup = "",
-  preStakingProvider = "",
-  exchangeRateLearnMore = " ",
+  preNodeSetup = "https://interim-pre-application-docs.readthedocs.io/en/latest/",
+  preStakingProvider = "https://github.com/nucypher/validator-profiles",
+  exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
 }
