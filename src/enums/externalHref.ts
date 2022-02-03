@@ -4,6 +4,6 @@ export enum ExternalHref {
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
   preNodeSetup = "https://interim-pre-application-docs.readthedocs.io/en/latest/",
-  preStakingProvider = "https://github.com/nucypher/validator-profiles",
+  preStakingProvider = "https://interim-pre-application-docs.readthedocs.io/en/latest/node_operation/node_providers.html",
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
 }
