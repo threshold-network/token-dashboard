@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react"
+import { FC } from "react"
 import {
   Box,
   Button,
@@ -7,15 +7,15 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  ListItem,
   Stack,
+  UnorderedList,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react"
 import { BsChevronDown, BsChevronRight } from "react-icons/all"
 import { Body3 } from "../../Typography"
 import { useModal } from "../../../hooks/useModal"
-import { ModalType } from "../../../enums"
-import { useStakingState } from "../../../hooks/useStakingState"
 
 interface AdvancedParamsFormProps {
   stakingProvider: string
@@ -60,17 +60,11 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     stakingProviderInUse = false,
   } = props
 
-  const { openModal } = useModal()
+  const { closeModal } = useModal()
 
   const { isOpen, onToggle } = useDisclosure({
     defaultIsOpen: stakingProviderInUse,
   })
-
-  const { stakeAmount } = useStakingState()
-
-  const openTopupModal = useCallback(() => {
-    openModal(ModalType.TopupT, { initialTopupAmount: stakeAmount })
-  }, [stakeAmount])
 
   return (
     <Box>
@@ -97,18 +91,27 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
               text="If you are using a staking provider, this will be their provided address."
               errorText={
                 stakingProviderInUse ? (
-                  <Stack direction="row">
+                  <Stack>
                     <Body3 color="red.500">
-                      Provider is already in use. Did you mean to{" "}
+                      Provider address is already in use.
                     </Body3>
-                    <Button
-                      variant="link"
-                      colorScheme="brand"
-                      onClick={openTopupModal}
-                    >
-                      top up your stake
-                    </Button>
-                    <Body3 color="red.500"> ?</Body3>
+                    <UnorderedList pl={4} spacing={4}>
+                      <ListItem>
+                        For Legacy KEEP or NU operator address please go to the
+                        respective legacy dashboard to top up.
+                      </ListItem>
+                      <ListItem>
+                        For T stakes owned by this address,{" "}
+                        <Button
+                          fontSize="sm"
+                          variant="link"
+                          colorScheme="brand"
+                          onClick={closeModal}
+                        >
+                          top up on the dashboard.
+                        </Button>
+                      </ListItem>
+                    </UnorderedList>
                   </Stack>
                 ) : undefined
               }
