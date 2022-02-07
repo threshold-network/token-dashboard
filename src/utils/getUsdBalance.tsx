@@ -1,5 +1,6 @@
 import { FixedNumber } from "@ethersproject/bignumber"
 import { formatUnits } from "@ethersproject/units"
+import { BigNumber } from "ethers"
 import { formatFiatCurrencyAmount } from "./formatAmount"
 
 const getUsdBalance = (
@@ -7,9 +8,16 @@ const getUsdBalance = (
   usdConversion: number
 ): string => {
   return formatFiatCurrencyAmount(
-    FixedNumber.fromString(usdConversion.toString())
-      .mulUnsafe(FixedNumber.fromString(formatUnits(balance)))
-      .toString()
+    toUsdBalance(formatUnits(balance), usdConversion).toString()
+  )
+}
+
+export const toUsdBalance = (
+  balance: string | number,
+  usdConversion: number
+): FixedNumber => {
+  return FixedNumber.fromString(usdConversion.toString()).mulUnsafe(
+    FixedNumber.fromString(balance.toString())
   )
 }
 
