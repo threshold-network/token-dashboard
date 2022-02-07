@@ -14,22 +14,21 @@ const ExternalLink: FC<Props & LinkProps> = ({
   withArrow,
   ...props
 }) => {
+  const defaultColor = useColorModeValue("brand.500", "white")
+  const finalColor = props.color ? props.color : defaultColor
+
   return (
     <Link
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      color={useColorModeValue("brand.500", "white")}
+      color={finalColor}
       textDecoration="underline"
       {...props}
     >
       {text}{" "}
       {withArrow && (
-        <Icon
-          boxSize="12px"
-          as={FiArrowUpRight}
-          color={useColorModeValue("brand.500", "brand.300")}
-        />
+        <Icon boxSize="12px" as={FiArrowUpRight} color={finalColor} />
       )}
     </Link>
   )
