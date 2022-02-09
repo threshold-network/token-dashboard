@@ -6,7 +6,7 @@ import { EventEmitter } from "events"
 import { Token } from "../../../enums"
 import { useToken } from "../../../hooks/useToken"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
-import { useReduxToken } from "../../../hooks/useReduxToken"
+import { useTokenState } from "../../../hooks/useTokenState"
 
 jest.mock("@web3-react/core", () => ({
   ...(jest.requireActual("@web3-react/core") as {}),
@@ -21,8 +21,8 @@ jest.mock("../../../hooks/useTokenBalance", () => ({
   useTokenBalance: jest.fn(),
 }))
 
-jest.mock("../../../hooks/useReduxToken", () => ({
-  useReduxToken: jest.fn(),
+jest.mock("../../../hooks/useTokenState", () => ({
+  useTokenState: jest.fn(),
 }))
 
 describe("Test `useSubscribeToERC20TransferEvent` hook", () => {
@@ -67,10 +67,10 @@ describe("Test `useSubscribeToERC20TransferEvent` hook", () => {
     mockedContract.on.mockImplementation((eventName, callback) => {
       contractEventEmitter.addListener(eventName, callback)
     })
-    ;(useWeb3React as jest.Mock).mockReturnValue({ account })
+    ;(useWeb3React as jest.Mock).mockReturnValue({ account, active: true })
     ;(useToken as jest.Mock).mockReturnValue({ contract: mockedContract })
     ;(useTokenBalance as jest.Mock).mockReturnValue(currentTokenBalance)
-    ;(useReduxToken as jest.Mock).mockReturnValue({
+    ;(useTokenState as jest.Mock).mockReturnValue({
       setTokenBalance: mockedSetTokenBalance,
     })
   })

@@ -46,6 +46,9 @@ describe("Test `useSendTransaction` hook", () => {
   const userRejectedErrMsg =
     "MetaMask Tx Signature: User denied transaction signature."
 
+  const mockedOnSuccessCallback = jest.fn()
+  const mockedOnErroCallback = jest.fn()
+
   beforeEach(() => {
     ;(useWeb3React as jest.Mock).mockReturnValue({
       chainId: 1,
@@ -82,6 +85,21 @@ describe("Test `useSendTransaction` hook", () => {
       ModalType.TransactionIsPending,
       { transactionHash: txHash }
     )
+  })
+
+  test("should proceed the transaction correctly and call custom on success callback", async () => {
+    mockedContract[methodName].mockResolvedValue(mockedTx)
+
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useSendTransaction(mockedContract, methodName, mockedOnSuccessCallback)
+    )
+
+    expect(result.current.status).toEqual(TransactionStatus.Idle)
+
+    result.current.sendTransaction(from, value)
+    await waitForNextUpdate()
+
+    expect(mockedOnSuccessCallback).toHaveBeenCalledWith(mockedTx)
   })
 
   test("should do nothing if there is no signer", async () => {
@@ -130,6 +148,30 @@ describe("Test `useSendTransaction` hook", () => {
     expect(mockedOpenModalFn).not.toHaveBeenCalled()
   })
 
+  test("should call a custom error callback", async () => {
+    const error = new Error()
+    mockedContract[methodName].mockRejectedValue(error)
+
+    const { result, waitForNextUpdate } = renderHook(() =>
+      useSendTransaction(
+        mockedContract,
+        methodName,
+        mockedOnSuccessCallback,
+        mockedOnErroCallback
+      )
+    )
+
+    expect(result.current.status).toEqual(TransactionStatus.Idle)
+
+    result.current.sendTransaction(from, value)
+    await waitForNextUpdate()
+    expect(mockedOnSuccessCallback).not.toHaveBeenCalled()
+    expect(mockedOnErroCallback).toHaveBeenCalledWith(error)
+    expect(mockedOpenModalFn).not.toHaveBeenCalledWith(
+      ModalType.TransactionFailed
+    )
+  })
+
   test.each`
     errorMsg              | expectedStatus
     ${"Unexpected error"} | ${TransactionStatus.Failed}
@@ -156,7 +198,7 @@ describe("Test `useSendTransaction` hook", () => {
       expect(result.current.status).toEqual(expectedStatus)
       expect(mockedOpenModalFn).toHaveBeenCalledWith(
         ModalType.TransactionFailed,
-        { error, transactionHash: undefined }
+        { error, transactionHash: undefined, isExpandableError: true }
       )
     }
   )
