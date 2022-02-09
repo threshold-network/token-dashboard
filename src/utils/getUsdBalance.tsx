@@ -1,6 +1,5 @@
 import { FixedNumber } from "@ethersproject/bignumber"
 import { formatUnits } from "@ethersproject/units"
-import { BigNumber } from "ethers"
 import { formatFiatCurrencyAmount } from "./formatAmount"
 
 const getUsdBalance = (
