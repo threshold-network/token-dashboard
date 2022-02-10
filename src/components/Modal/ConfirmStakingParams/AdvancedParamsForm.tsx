@@ -29,6 +29,7 @@ interface AdvancedParamsFormProps {
   isValidStakingProvider: boolean
   isProviderUsedForKeep?: boolean
   isProviderUsedForT?: boolean
+  isProviderUsedForNu?: boolean
 }
 
 const HelperText = ({
@@ -60,12 +61,13 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     isValidStakingProvider,
     isProviderUsedForKeep = false,
     isProviderUsedForT = false,
+    isProviderUsedForNu = false,
   } = props
 
   const { closeModal } = useModal()
 
   const isProviderInUse = useMemo(
-    () => isProviderUsedForKeep || isProviderUsedForT,
+    () => isProviderUsedForKeep || isProviderUsedForT || isProviderUsedForNu,
     [isProviderUsedForKeep, isProviderUsedForT]
   )
 
@@ -113,13 +115,12 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
                       Provider address is already in use.
                     </Body3>
                     <UnorderedList pl={4} spacing={4}>
-                      {isProviderUsedForKeep && (
+                      {isProviderUsedForKeep || isProviderUsedForNu ? (
                         <ListItem>
                           For Legacy KEEP or NU operator address please go to
                           the respective legacy dashboard to top up.
                         </ListItem>
-                      )}
-                      {isProviderUsedForT && (
+                      ) : isProviderUsedForT ? (
                         <ListItem>
                           For T stakes owned by this address,{" "}
                           <Button
@@ -131,7 +132,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
                             top up on the dashboard.
                           </Button>
                         </ListItem>
-                      )}
+                      ) : null}
                     </UnorderedList>
                   </Stack>
                 ) : undefined

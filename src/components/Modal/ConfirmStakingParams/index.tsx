@@ -29,10 +29,11 @@ import { StakingContractLearnMore } from "../../ExternalLink"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & {
-    isProviderUsedForKeep: boolean
-    isProviderUsedForT: boolean
+    isProviderUsedForKeep?: boolean
+    isProviderUsedForT?: boolean
+    isProviderUsedForNu?: boolean
   }
-> = ({ isProviderUsedForKeep, isProviderUsedForT }) => {
+> = ({ isProviderUsedForKeep, isProviderUsedForT, isProviderUsedForNu }) => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
@@ -180,6 +181,7 @@ const ConfirmStakingParamsModal: FC<
               isValidStakingProvider,
               isProviderUsedForKeep,
               isProviderUsedForT,
+              isProviderUsedForNu,
             }}
           />
         </Stack>

@@ -35,9 +35,10 @@ export const useStakeTransaction = (
       error?.data?.message.includes(CommonStakingErrors.ProviderInUse) ||
       error?.message.includes(CommonStakingErrors.ProviderInUse)
     ) {
-      // send the user back to the first staking step, but with validated form fields
+      // if we get the provider in user error at this point it has to be a legacy Nu stake because
+      // we are doing pre-validation for Keep and T
       openModal(ModalType.ConfirmStakingParams, {
-        stakingProviderInUse: true,
+        isProviderUsedForNu: true,
       })
     } else {
       openModal(ModalType.TransactionFailed, {
