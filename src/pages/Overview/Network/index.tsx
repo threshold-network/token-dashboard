@@ -4,15 +4,15 @@ import TotalValueLocked from "./TotalValueLocked"
 import UpgradeBanner from "./UpgradeBanner"
 import WalletBalances from "./WalletBalances"
 import StakingOverview from "./StakingOverview"
-import { useFetchTvl } from "../../../hooks/useFetchTvl"
+// import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { PageComponent } from "../../../types"
 
 const Network: PageComponent = () => {
-  const [data, fetchtTvlData] = useFetchTvl()
+  // const [data, fetchtTvlData] = useFetchTvl()
 
-  useEffect(() => {
-    fetchtTvlData()
-  }, [fetchtTvlData])
+  // useEffect(() => {
+  //   fetchtTvlData()
+  // }, [fetchtTvlData])
 
   return (
     <VStack spacing={4} mt={4}>
@@ -23,7 +23,7 @@ const Network: PageComponent = () => {
         </Box>
         <Stack w={{ base: "100%", xl: "50%" }} spacing={4}>
           <StakingOverview />
-          <TotalValueLocked totalValueLocked={data.total} />
+          {/*<TotalValueLocked totalValueLocked={data.total} />*/}
         </Stack>
       </Stack>
     </VStack>

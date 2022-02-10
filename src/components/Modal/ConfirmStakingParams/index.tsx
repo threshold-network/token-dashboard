@@ -28,8 +28,11 @@ import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 
 const ConfirmStakingParamsModal: FC<
-  BaseModalProps & { stakingProviderInUse: boolean }
-> = ({ stakingProviderInUse }) => {
+  BaseModalProps & {
+    isProviderUsedForKeep: boolean
+    isProviderUsedForT: boolean
+  }
+> = ({ isProviderUsedForKeep, isProviderUsedForT }) => {
   const { closeModal, openModal } = useModal()
   const {
     t: { balance: maxAmount },
@@ -175,7 +178,8 @@ const ConfirmStakingParamsModal: FC<
               isValidAuthorizer,
               isValidBeneficiary,
               isValidStakingProvider,
-              stakingProviderInUse,
+              isProviderUsedForKeep,
+              isProviderUsedForT,
             }}
           />
         </Stack>

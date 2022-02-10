@@ -25,6 +25,7 @@ const useUnstakeTransaction = (
     if (
       error?.data?.message.includes(CommonUnStakingErrors.tooEarly) ||
       error?.message.includes(CommonUnStakingErrors.tooEarly)
+      // TODO catch wallet connect error here
     ) {
       openModal(ModalType.TransactionFailed, {
         error: new Error(

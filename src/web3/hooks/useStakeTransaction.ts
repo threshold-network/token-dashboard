@@ -7,6 +7,7 @@ import { useModal } from "../../hooks/useModal"
 import { useApproveTStaking } from "./useApproveTStaking"
 import { BigNumber } from "ethers"
 import { useTStakingAllowance } from "./useTStakingAllowance"
+import useCheckDuplicateProviderAddress from "./useCheckDuplicateProviderAddress"
 
 interface StakeRequest {
   amount: string | number
@@ -22,9 +23,12 @@ enum CommonStakingErrors {
 export const useStakeTransaction = (
   onSuccess: (tx: ContractTransaction) => void
 ) => {
-  const stakingContract = useTStakingContract()
+  const tStakingContract = useTStakingContract()
+
   const { openModal } = useModal()
   const { approve } = useApproveTStaking()
+
+  const checkIfProviderUsed = useCheckDuplicateProviderAddress()
 
   const onError = (error: any) => {
     if (
@@ -44,7 +48,7 @@ export const useStakeTransaction = (
   }
 
   const { sendTransaction, status } = useSendTransaction(
-    stakingContract!,
+    tStakingContract!,
     "stake",
     onSuccess,
     onError
@@ -59,13 +63,26 @@ export const useStakeTransaction = (
       beneficiary,
       authorizer,
     }: StakeRequest) => {
+      const { isProviderUsedForKeep, isProviderUsedForT } =
+        await checkIfProviderUsed(stakingProvider)
+
+      if (isProviderUsedForKeep || isProviderUsedForT) {
+        openModal(ModalType.ConfirmStakingParams, {
+          isProviderUsedForKeep,
+          isProviderUsedForT,
+        })
+        return
+      }
+
       const isApprovedForAmount = BigNumber.from(amount).lte(allowance)
+
       if (!isApprovedForAmount) {
         await approve(amount.toString())
       }
+
       await sendTransaction(stakingProvider, beneficiary, authorizer, amount)
     },
-    [sendTransaction, stakingContract?.address, allowance, approve]
+    [sendTransaction, tStakingContract?.address, allowance, approve]
   )
 
   return { stake, status }

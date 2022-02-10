@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useMemo } from "react"
 import {
   Box,
   Button,
@@ -27,7 +27,8 @@ interface AdvancedParamsFormProps {
   isValidAuthorizer: boolean
   isValidBeneficiary: boolean
   isValidStakingProvider: boolean
-  stakingProviderInUse?: boolean
+  isProviderUsedForKeep?: boolean
+  isProviderUsedForT?: boolean
 }
 
 const HelperText = ({
@@ -57,14 +58,26 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     isValidAuthorizer,
     isValidBeneficiary,
     isValidStakingProvider,
-    stakingProviderInUse = false,
+    isProviderUsedForKeep = false,
+    isProviderUsedForT = false,
   } = props
 
   const { closeModal } = useModal()
 
+  const isProviderInUse = useMemo(
+    () => isProviderUsedForKeep || isProviderUsedForT,
+    [isProviderUsedForKeep, isProviderUsedForT]
+  )
+
   const { isOpen, onToggle } = useDisclosure({
-    defaultIsOpen: stakingProviderInUse,
+    defaultIsOpen: isProviderInUse,
   })
+
+  useEffect(() => {
+    if (isProviderInUse) {
+      onToggle()
+    }
+  }, [isProviderInUse])
 
   return (
     <Box>
@@ -82,7 +95,11 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
           <FormControl>
             <FormLabel>Staking Provider Address</FormLabel>
             <Input
-              isInvalid={stakingProviderInUse || !isValidStakingProvider}
+              isInvalid={
+                isProviderUsedForKeep ||
+                isProviderUsedForT ||
+                !isValidStakingProvider
+              }
               errorBorderColor="red.300"
               value={stakingProvider}
               onChange={(e) => setStakingProvider(e.target.value)}
@@ -90,32 +107,40 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
             <HelperText
               text="If you are using a staking provider, this will be their provided address."
               errorText={
-                stakingProviderInUse ? (
+                isProviderInUse ? (
                   <Stack>
                     <Body3 color="red.500">
                       Provider address is already in use.
                     </Body3>
                     <UnorderedList pl={4} spacing={4}>
-                      <ListItem>
-                        For Legacy KEEP or NU operator address please go to the
-                        respective legacy dashboard to top up.
-                      </ListItem>
-                      <ListItem>
-                        For T stakes owned by this address,{" "}
-                        <Button
-                          fontSize="sm"
-                          variant="link"
-                          colorScheme="brand"
-                          onClick={closeModal}
-                        >
-                          top up on the dashboard.
-                        </Button>
-                      </ListItem>
+                      {isProviderUsedForKeep && (
+                        <ListItem>
+                          For Legacy KEEP or NU operator address please go to
+                          the respective legacy dashboard to top up.
+                        </ListItem>
+                      )}
+                      {isProviderUsedForT && (
+                        <ListItem>
+                          For T stakes owned by this address,{" "}
+                          <Button
+                            fontSize="sm"
+                            variant="link"
+                            colorScheme="brand"
+                            onClick={closeModal}
+                          >
+                            top up on the dashboard.
+                          </Button>
+                        </ListItem>
+                      )}
                     </UnorderedList>
                   </Stack>
                 ) : undefined
               }
-              isInvalid={!isValidStakingProvider || stakingProviderInUse}
+              isInvalid={
+                !isValidStakingProvider ||
+                isProviderUsedForKeep ||
+                isProviderUsedForT
+              }
             />
           </FormControl>
           <FormControl>
