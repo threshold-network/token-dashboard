@@ -97,11 +97,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
           <FormControl>
             <FormLabel>Staking Provider Address</FormLabel>
             <Input
-              isInvalid={
-                isProviderUsedForKeep ||
-                isProviderUsedForT ||
-                !isValidStakingProvider
-              }
+              isInvalid={isProviderInUse || !isValidStakingProvider}
               errorBorderColor="red.300"
               value={stakingProvider}
               onChange={(e) => setStakingProvider(e.target.value)}
@@ -137,11 +133,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
                   </Stack>
                 ) : undefined
               }
-              isInvalid={
-                !isValidStakingProvider ||
-                isProviderUsedForKeep ||
-                isProviderUsedForT
-              }
+              isInvalid={!isValidStakingProvider || isProviderInUse}
             />
           </FormControl>
           <FormControl>

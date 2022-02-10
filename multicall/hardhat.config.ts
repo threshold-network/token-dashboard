@@ -22,7 +22,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     development: {
-      url: "http://localhost:7545",
+      url: "http://localhost:8545",
       chainId: 1337,
       tags: ["local"],
     },
