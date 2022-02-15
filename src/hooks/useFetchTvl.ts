@@ -8,7 +8,8 @@ import {
   useKeepAssetPoolContract,
   useTStakingContract,
   useKeepTokenStakingContract,
-  useContract,
+  useNuStakingEscrowContract,
+  useNuWorkLockContract,
 } from "../web3/hooks"
 import { useETHData } from "./useETHData"
 import { useToken } from "./useToken"
@@ -45,25 +46,6 @@ const initialState = {
   ethInNuNetwork: "0",
 }
 
-// TODO: Get contract abi from the package and figure out how to use these
-// contracts on ropste and local network. This only works on mainnet.
-const ESCROW_ABI = [
-  {
-    inputs: [],
-    name: "currentPeriodSupply",
-    outputs: [{ internalType: "uint128", name: "", type: "uint128" }],
-    stateMutability: "view",
-    type: "function",
-  },
-]
-
-const ESCROW_ADDRESS = "0xbbD3C0C794F40c4f993B03F65343aCC6fcfCb2e2"
-const useNuStakingEscrowContract = () => {
-  return useContract(ESCROW_ADDRESS, ESCROW_ABI)
-}
-
-const WORK_LOCK_ADDRESS = "0xe9778E69a961e64d3cdBB34CF6778281d34667c2"
-
 export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
   const [rawData, setRawData] = useState<TVLRawData>(initialState)
   const {
@@ -82,6 +64,7 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
   const t = useToken(Token.T)
   const nu = useToken(Token.Nu)
   const nuStakingEscrow = useNuStakingEscrowContract()
+  const nuWorkLock = useNuWorkLockContract()
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()
   const keepAssetPool = useKeepAssetPoolContract()
@@ -125,7 +108,7 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
     {
       contract: multicall!,
       method: "getEthBalance",
-      args: [WORK_LOCK_ADDRESS],
+      args: [nuWorkLock?.address],
     },
   ])
 
@@ -140,17 +123,16 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
       keepStaking,
       tStaking,
       nuTotalSupply,
-      nuCurrenctPeriodSupply,
+      nuCurrentPeriodSupply,
       nuInEscrow,
       ethInNuNetwork,
     ] = chainData.map((amount: string) => formatUnits(amount.toString()))
 
+    const haltedRewards = FixedNumber.fromString(nuTotalSupply).subUnsafe(
+      FixedNumber.fromString(nuCurrentPeriodSupply)
+    )
     const stakedNU = FixedNumber.fromString(nuInEscrow)
-      .subUnsafe(
-        FixedNumber.fromString(nuTotalSupply).subUnsafe(
-          FixedNumber.fromString(nuCurrenctPeriodSupply)
-        )
-      )
+      .subUnsafe(haltedRewards)
       .toString()
 
     const data: TVLRawData = {
