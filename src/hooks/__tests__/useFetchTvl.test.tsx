@@ -8,6 +8,8 @@ import {
   useMulticall,
   useMulticallContract,
   useTStakingContract,
+  useNuStakingEscrowContract,
+  useNuWorkLockContract,
 } from "../../web3/hooks"
 import { useETHData } from "../useETHData"
 import { useFetchTvl } from "../useFetchTvl"
@@ -23,6 +25,8 @@ jest.mock("../../web3/hooks", () => ({
   useMulticall: jest.fn(),
   useMulticallContract: jest.fn(),
   useTStakingContract: jest.fn(),
+  useNuStakingEscrowContract: jest.fn(),
+  useNuWorkLockContract: jest.fn(),
 }))
 
 jest.mock("../useETHData", () => ({
@@ -55,6 +59,8 @@ describe("Test `useFetchTvl` hook", () => {
   const mockedTStakingContract = { address: "0x2" }
   const mockedMultiCallContract = {}
   const mockedKeepAssetPoolContract = {}
+  const mockedNuWorkLockContrarct = { address: "0x3" }
+  const mockedNuStakingEscrowContract = { address: "0x4" }
 
   const wrapper = ({ children }) => (
     <TokenContext.Provider
@@ -88,6 +94,12 @@ describe("Test `useFetchTvl` hook", () => {
     ;(useKeepTokenStakingContract as jest.Mock).mockReturnValue(
       mockedKeepTokenStakingContract
     )
+    ;(useNuStakingEscrowContract as jest.Mock).mockReturnValue(
+      mockedNuStakingEscrowContract
+    )
+    ;(useNuWorkLockContract as jest.Mock).mockReturnValue(
+      mockedNuWorkLockContrarct
+    )
   })
 
   test("should fetch tvl data correctly.", async () => {
@@ -97,6 +109,16 @@ describe("Test `useFetchTvl` hook", () => {
     const coveragePoolTvl = { raw: "300000000000000000000", format: "300.0" }
     const keepStaking = { raw: "500000000000000000000", format: "500.0" }
     const tStaking = { raw: "600000000000000000000", format: "600.0" }
+    const nuTotalSupply = { raw: "7000000000000000000000", format: "7000.0" }
+    const nuCurrentPeriodSupply = {
+      raw: "800000000000000000000",
+      format: "800.0",
+    }
+    const nuInStakingEscrow = {
+      raw: "6500000000000000000000",
+      format: "6500.0",
+    }
+    const ethInWorkLock = { raw: "1000000000000000000000", format: "1000.0" }
 
     const multicallRequestResult = [
       ethInKeepBonding.raw,
@@ -104,6 +126,10 @@ describe("Test `useFetchTvl` hook", () => {
       coveragePoolTvl.raw,
       keepStaking.raw,
       tStaking.raw,
+      nuTotalSupply.raw,
+      nuCurrentPeriodSupply.raw,
+      nuInStakingEscrow.raw,
+      ethInWorkLock.raw,
     ]
 
     multicallRequest.mockResolvedValue(multicallRequestResult)
@@ -112,12 +138,19 @@ describe("Test `useFetchTvl` hook", () => {
     const spyOnToUsdBalance = jest.spyOn(usdUtils, "toUsdBalance")
     const spyOnUseToken = jest.spyOn(useTokenModule, "useToken")
 
+    const haltedRewards =
+      Number(nuTotalSupply.format) - Number(nuCurrentPeriodSupply.format)
+    const stakedNU = Number(nuInStakingEscrow.format) - haltedRewards
+
     const _expectedResult = {
       ecdsa: ethInKeepBonding.format * mockedETHData.usdPrice,
       tbtc: tbtcTokenTotalSupply.format * tbtcContext.usdConversion,
       keepCoveragePool: coveragePoolTvl.format * keepContext.usdConversion,
       keepStaking: keepStaking.format * keepContext.usdConversion,
       tStaking: tStaking.format * tContext.usdConversion,
+      nu:
+        stakedNU * nuContext.usdConversion +
+        Number(ethInWorkLock.format) * mockedETHData.usdPrice,
     }
 
     // `FixedNumber` from `@ethersproject/bignumber` adds trailing zero so we
@@ -128,12 +161,14 @@ describe("Test `useFetchTvl` hook", () => {
       keepCoveragePool: `${_expectedResult.keepCoveragePool.toString()}.0`,
       keepStaking: `${_expectedResult.keepStaking.toString()}.0`,
       tStaking: `${_expectedResult.tStaking.toString()}.0`,
+      nu: `${_expectedResult.nu.toString()}.0`,
       total: `${
         _expectedResult.ecdsa +
         _expectedResult.tbtc +
         _expectedResult.keepCoveragePool +
         _expectedResult.keepStaking +
-        _expectedResult.tStaking
+        _expectedResult.tStaking +
+        _expectedResult.nu
       }.0`,
     }
 
@@ -147,6 +182,9 @@ describe("Test `useFetchTvl` hook", () => {
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.Keep)
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTC)
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.T)
+    expect(spyOnUseToken).toHaveBeenCalledWith(Token.Nu)
+    expect(useNuStakingEscrowContract).toHaveBeenCalled()
+    expect(useNuWorkLockContract).toHaveBeenCalled()
     expect(useKeepBondingContract).toHaveBeenCalled()
     expect(useMulticallContract).toHaveBeenCalled()
     expect(useKeepAssetPoolContract).toHaveBeenCalled()
@@ -173,6 +211,24 @@ describe("Test `useFetchTvl` hook", () => {
         method: "balanceOf",
         args: [mockedTStakingContract.address],
       },
+      {
+        contract: nuContext.contract,
+        method: "totalSupply",
+      },
+      {
+        contract: mockedNuStakingEscrowContract,
+        method: "currentPeriodSupply",
+      },
+      {
+        contract: nuContext.contract,
+        method: "balanceOf",
+        args: [mockedNuStakingEscrowContract.address],
+      },
+      {
+        contract: mockedMultiCallContract,
+        method: "getEthBalance",
+        args: [mockedNuWorkLockContrarct.address],
+      },
     ])
 
     result.current[1]()
@@ -183,35 +239,41 @@ describe("Test `useFetchTvl` hook", () => {
     expect(spyOnFormatUnits).toHaveBeenCalledTimes(
       multicallRequestResult.length
     )
-    // The `toUsdBalance` function was called 2x times because it was called
-    // first on mount for every value and then after fetching on-chain data.
-    expect(spyOnToUsdBalance).toHaveBeenCalledTimes(
-      multicallRequestResult.length * 2
-    )
+
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      6,
+      8,
       ethInKeepBonding.format,
       mockedETHData.usdPrice
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      7,
+      9,
       tbtcTokenTotalSupply.format,
       tbtcContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      8,
+      10,
       coveragePoolTvl.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      9,
+      11,
       keepStaking.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      10,
+      12,
       tStaking.format,
       tContext.usdConversion
+    )
+    expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
+      13,
+      `${stakedNU.toString()}.0`,
+      nuContext.usdConversion
+    )
+    expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
+      14,
+      ethInWorkLock.format,
+      mockedETHData.usdPrice
     )
 
     expect(result.current[0]).toEqual(expectedResult)
