@@ -1,5 +1,6 @@
-import React, { createContext, useEffect } from "react"
+import React, { createContext } from "react"
 import { Contract } from "@ethersproject/contracts"
+import { AddressZero } from "@ethersproject/constants"
 import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
 import { useNu } from "../web3/hooks/useNu"
@@ -49,7 +50,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   const fetchBalances = useTokensBalanceCall(
     [keep.contract!, nu.contract!, t.contract!],
-    account!
+    active ? account! : AddressZero
   )
 
   //

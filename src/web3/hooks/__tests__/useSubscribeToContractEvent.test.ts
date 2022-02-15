@@ -1,6 +1,12 @@
 import { act, renderHook } from "@testing-library/react-hooks"
+import { useWeb3React } from "@web3-react/core"
 import { useSubscribeToContractEvent } from "../useSubscribeToContractEvent"
 import { EventEmitter } from "events"
+
+jest.mock("@web3-react/core", () => ({
+  ...(jest.requireActual("@web3-react/core") as {}),
+  useWeb3React: jest.fn(),
+}))
 
 describe("Test `useSubscribeToContractEvent` hook", () => {
   const eventName = "Transfer"
@@ -27,6 +33,10 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
   }
 
   beforeEach(() => {
+    ;(useWeb3React as jest.Mock).mockReturnValue({
+      active: true,
+    })
+
     // Clear listeners
     contractEventEmitter.removeAllListeners()
     providerEventEmitter.removeAllListeners()
@@ -49,6 +59,23 @@ describe("Test `useSubscribeToContractEvent` hook", () => {
   test("should do nothing if a contract is not defined", () => {
     const { unmount } = renderHook(() =>
       useSubscribeToContractEvent(null, eventName, mockedCallback)
+    )
+
+    expect(mockedCallback).not.toHaveBeenCalled()
+    expect(mockedContract.on).not.toHaveBeenCalled()
+    expect(mockedContract.provider.once).not.toHaveBeenCalled()
+    unmount()
+    expect(mockedContract.off).not.toHaveBeenCalled()
+    expect(mockedContract.provider.off).not.toHaveBeenCalled()
+  })
+
+  test("should do nothing if a user is not connected to a wallet", () => {
+    ;(useWeb3React as jest.Mock).mockReturnValue({
+      active: false,
+    })
+
+    const { unmount } = renderHook(() =>
+      useSubscribeToContractEvent(mockedContract, eventName, mockedCallback)
     )
 
     expect(mockedCallback).not.toHaveBeenCalled()
