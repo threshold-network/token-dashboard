@@ -9,6 +9,6 @@ export const walletconnect = new WalletConnectConnector({
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
-  supportedChainIds: [Number(supportedChainId)],
+  supportedChainIds: [1, 3, 1337],
   qrcode: true,
 })
