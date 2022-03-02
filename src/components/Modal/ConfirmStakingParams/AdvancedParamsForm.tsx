@@ -66,10 +66,8 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
 
   const { closeModal } = useModal()
 
-  const isProviderInUse = useMemo(
-    () => isProviderUsedForKeep || isProviderUsedForT || isProviderUsedForNu,
-    [isProviderUsedForKeep, isProviderUsedForT]
-  )
+  const isProviderInUse =
+    isProviderUsedForKeep || isProviderUsedForT || isProviderUsedForNu
 
   const { isOpen, onToggle } = useDisclosure({
     defaultIsOpen: isProviderInUse,
@@ -79,7 +77,7 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
     if (isProviderInUse) {
       onToggle()
     }
-  }, [isProviderInUse])
+  }, [isProviderInUse, onToggle])
 
   return (
     <Box>

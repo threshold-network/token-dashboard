@@ -35,7 +35,7 @@ export const useStakeTransaction = (
       error?.data?.message.includes(CommonStakingErrors.ProviderInUse) ||
       error?.message.includes(CommonStakingErrors.ProviderInUse)
     ) {
-      // if we get the provider in user error at this point it has to be a legacy Nu stake because
+      // if we get the "provider in use" error at this point it has to be a legacy Nu stake because
       // we are doing pre-validation for Keep and T
       openModal(ModalType.ConfirmStakingParams, {
         isProviderUsedForNu: true,
