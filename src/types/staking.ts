@@ -40,6 +40,7 @@ export interface StakeData {
   nuInTStake: string
   keepInTStake: string
   tStake: string
+  totalInTStake: string
 }
 
 export interface ProviderStakedEvent {
@@ -54,7 +55,12 @@ export interface ProviderStakedEvent {
 export type ProviderStakedActionPayload = ProviderStakedEvent &
   Omit<
     StakeData,
-    "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
+    | "stakeType"
+    | "nuInTStake"
+    | "keepInTStake"
+    | "tStake"
+    | "amount"
+    | "totalInTStake"
   >
 
 export type UpdateStakeAmountActionPayload = {

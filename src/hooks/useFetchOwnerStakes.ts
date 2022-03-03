@@ -1,4 +1,5 @@
 import { useCallback } from "react"
+import { BigNumber } from "@ethersproject/bignumber"
 import { useTStakingContract, useMulticallContract } from "../web3/hooks"
 import {
   getMulticallContractCall,
@@ -58,11 +59,16 @@ export const useFetchOwnerStakes = () => {
       const data = decodeMulticallResult(result, multicalls)
 
       data.forEach((_, index) => {
+        const total = BigNumber.from(_.tStake)
+          .add(BigNumber.from(_.keepInTStake))
+          .add(BigNumber.from(_.nuInTStake))
+
         stakes[index] = {
           ...stakes[index],
           tStake: _.tStake.toString(),
           keepInTStake: _.keepInTStake.toString(),
           nuInTStake: _.nuInTStake.toString(),
+          totalInTStake: total.toString(),
         }
       })
 
@@ -70,6 +76,6 @@ export const useFetchOwnerStakes = () => {
 
       return stakes
     },
-    [tStakingContract, multicallContract]
+    [tStakingContract, multicallContract, dispatch]
   )
 }
