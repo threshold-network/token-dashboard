@@ -6,6 +6,7 @@ import { Divider } from "./Divider"
 import { Card } from "./Card"
 import { Progress } from "./Progress"
 import { InfoBox } from "./InfoBox"
+import { NotificationPill } from "./NotificationPill"
 
 const colors = {
   brand: {
@@ -78,6 +79,7 @@ const index = extendTheme({
     Divider,
     Progress,
     InfoBox,
+    NotificationPill,
   },
 })
 
