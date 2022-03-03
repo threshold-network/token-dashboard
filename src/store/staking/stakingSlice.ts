@@ -59,6 +59,7 @@ export const stakingSlice = createSlice({
       newStake.nuInTStake = stakeType === StakeType.NU ? _amount : "0"
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
+      newStake.totalInTStake = _amount
 
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
