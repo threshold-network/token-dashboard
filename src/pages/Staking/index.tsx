@@ -1,10 +1,10 @@
-import { Box, Stack } from "@chakra-ui/react"
+import { SimpleGrid, Stack } from "@chakra-ui/react"
 import StakingChecklistCard from "./StakingChecklistCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import { useStakingState } from "../../hooks/useStakingState"
-import StakesTable from "./StakesTable"
 import { PageComponent } from "../../types"
 import PageLayout from "../PageLayout"
+import StakeCard from "./StakeCard"
 
 const StakingPage: PageComponent = (props) => {
   const { stakes } = useStakingState()
@@ -16,9 +16,11 @@ const StakingPage: PageComponent = (props) => {
         <StakingChecklistCard />
       </Stack>
       {stakes.length > 0 && (
-        <Box mt={4} w="100%">
-          <StakesTable stakes={stakes} />
-        </Box>
+        <SimpleGrid columns={[1, null, null, 2]} spacing="4" w="100%" mt="4">
+          {stakes.map((stake) => (
+            <StakeCard key={stake.stakingProvider} stake={stake} />
+          ))}
+        </SimpleGrid>
       )}
     </PageLayout>
   )
