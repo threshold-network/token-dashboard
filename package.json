@@ -38,6 +38,7 @@
     "@web3-react/ledger-connector": "^6.1.9",
     "@web3-react/trezor-connector": "^6.1.9",
     "@web3-react/walletconnect-connector": "^6.2.4",
+    "@web3-react/walletlink-connector": "^6.2.13",
     "axios": "^0.24.0",
     "ethereum-blockies-base64": "^1.0.2",
     "ethereumjs-common": "^1.5.2",

@@ -4,6 +4,7 @@ import { useWeb3React } from "@web3-react/core"
 import injected from "../../../web3/connectors/injected"
 import { MetamaskStatusAlert, WalletConnectionModalBase } from "./components"
 import { ConnectionError } from "../../../enums"
+import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 
 const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
@@ -11,12 +12,14 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
 }) => {
   const { activate, error } = useWeb3React()
 
-  const metamaskNotInstalled = error?.message.includes(
+  const metamaskNotInstalled = doesErrorInclude(
+    error,
     ConnectionError.MetamaskNotInstalled
   )
 
-  const connectionRejected = error?.message.includes(
-    ConnectionError.RejectedConnection
+  const connectionRejected = doesErrorInclude(
+    error,
+    ConnectionError.RejectedMetamaskConnection
   )
 
   return (

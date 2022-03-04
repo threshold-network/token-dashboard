@@ -12,6 +12,9 @@ import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "../../Typography"
 import { WalletOption } from "../../../types"
+import coinbaseConnector from "../../../web3/connectors/coinbaseWallet"
+import ConnectCoinbase from "./ConnectCoinbase"
+import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
   const { activate, deactivate } = useWeb3React()
@@ -53,6 +56,16 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
     //     setWalletToConnect(WalletType.Trezor)
     //   },
     // },
+
+    {
+      id: WalletType.Coinbase,
+      title: "Coinbase Wallet",
+      icon: CoinbaseWallet,
+      onClick: () => {
+        activate(coinbaseConnector)
+        setWalletToConnect(WalletType.Coinbase)
+      },
+    },
   ]
 
   const [walletToConnect, setWalletToConnect] = useState<WalletType | null>(
@@ -85,6 +98,10 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       {/* {walletToConnect === WalletType.Trezor && ( */}
       {/*   <ConnectTrezor goBack={goBack} closeModal={closeModal} /> */}
       {/* )} */}
+
+      {walletToConnect === WalletType.Coinbase && (
+        <ConnectCoinbase goBack={goBack} closeModal={closeModal} />
+      )}
     </>
   )
 }
