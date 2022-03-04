@@ -46,6 +46,7 @@
     "ethers": "^5.4.7",
     "ethjs-util": "^0.1.6",
     "focus-visible": "^5.2.0",
+    "formik": "^2.2.9",
     "framer-motion": "^4",
     "numeral": "^2.0.6",
     "random-gradient": "^0.0.2",
