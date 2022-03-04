@@ -6,7 +6,6 @@ import {
   Button,
   useColorModeValue,
   useBoolean,
-  Box,
 } from "@chakra-ui/react"
 import { StakeData } from "../../../types/staking"
 import Card from "../../../components/Card"
@@ -19,9 +18,9 @@ import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import TokenBalanceInput from "../../../components/TokenBalanceInput"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { ModalType, StakeType, Token } from "../../../enums"
-import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { useModal } from "../../../hooks/useModal"
 import { Divider } from "../../../components/Divider"
+import { SimpleTokenAmountForm } from "../../../components/Forms"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -83,20 +82,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      <Box as="form" mt="7" mb="8" onSubmit={onSubmitForm}>
-        <TokenBalanceInput
-          label="Stake Amount"
-          placeholder="T amount"
-          amount={amount}
-          setAmount={setAmount}
-          max={tBalance}
-          icon={ThresholdCircleBrand}
-          mb={2}
-        />
-        <Button type="submit" w="100%" mt="6">
-          {submitButtonText}
-        </Button>
-      </Box>
+      <SimpleTokenAmountForm
+        onSubmitForm={onSubmitForm}
+        submitButtonText={submitButtonText}
+        maxTokenAmount={tBalance}
+      />
     </Card>
   )
 }
