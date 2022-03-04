@@ -45,6 +45,10 @@ jobs:
             @keep-network/tbtc \
             @keep-network/coverage-pools
 
+      - name: Run postinstall script
+        # `yarn upgrade` doesn't trigger the `postinstall` script.
+        run: yarn run postinstall
+
       - name: Build
         run: yarn build
         env:
@@ -77,6 +81,10 @@ jobs:
             @keep-network/keep-ecdsa@ropsten \
             @keep-network/tbtc@ropsten \
             @keep-network/coverage-pools@ropsten
+
+      - name: Run postinstall script
+        # `yarn upgrade` doesn't trigger the `postinstall` script.
+        run: yarn run postinstall
 
       - name: Build
         run: yarn build
