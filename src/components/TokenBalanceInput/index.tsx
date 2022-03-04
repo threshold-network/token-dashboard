@@ -1,17 +1,18 @@
 import { FC } from "react"
 import {
-  Box,
   Button,
   Icon,
   InputGroup,
   InputLeftElement,
   InputProps,
   InputRightElement,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import NumberInput, { NumberInputValues } from "../NumberInput"
-import { Body3 } from "../Typography"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>
@@ -19,6 +20,8 @@ export interface TokenBalanceInputProps extends InputProps {
   amount?: string | number
   setAmount: (val?: string | number) => void
   label?: string
+  hasError?: boolean
+  errorMsgText?: string
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -27,6 +30,8 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   amount,
   setAmount,
   label,
+  errorMsgText,
+  hasError = false,
   ...inputProps
 }) => {
   const setToMax = () => {
@@ -38,12 +43,8 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   }
 
   return (
-    <Box>
-      {label && (
-        <Body3 mb={2} fontWeight="bold">
-          {label}
-        </Body3>
-      )}
+    <FormControl isInvalid={hasError}>
+      {label && <FormLabel htmlFor={inputProps.name}>{label}</FormLabel>}
       <InputGroup size="md">
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />
@@ -57,6 +58,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
             _setAmount(values.value)
           }
           {...inputProps}
+          id={inputProps.name}
         />
         <InputRightElement width="4.5rem">
           <Button h="1.75rem" size="sm" onClick={setToMax}>
@@ -64,7 +66,8 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           </Button>
         </InputRightElement>
       </InputGroup>
-    </Box>
+      {hasError && <FormErrorMessage>{errorMsgText}</FormErrorMessage>}
+    </FormControl>
   )
 }
 
