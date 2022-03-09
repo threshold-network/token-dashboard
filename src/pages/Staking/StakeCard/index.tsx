@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Flex,
   Badge,
@@ -15,7 +15,6 @@ import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
 import BoxLabel from "../../../components/BoxLabel"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
-import TokenBalanceInput from "../../../components/TokenBalanceInput"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { ModalType, StakeType, Token } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
@@ -25,7 +24,6 @@ import { SimpleTokenAmountForm } from "../../../components/Forms"
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
-  const [amount, setAmount] = useState<string | number | undefined>(undefined)
   const { openModal } = useModal()
 
   const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
@@ -34,12 +32,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       ? `legacy ${StakeType[stake.stakeType]}`
       : "native"
 
-  const onSubmitForm = (event: any) => {
-    event.preventDefault()
+  const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      openModal(ModalType.TopupT, { stake, initialTopupAmount: amount })
+      openModal(ModalType.TopupT, { stake, initialTopupAmount: tokenAmount })
     } else {
-      openModal(ModalType.UnstakeT, { stake, initialTopupAmount: amount })
+      openModal(ModalType.UnstakeT, { stake, initialTopupAmount: tokenAmount })
     }
   }
 

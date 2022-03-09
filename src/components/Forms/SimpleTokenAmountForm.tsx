@@ -1,15 +1,17 @@
 import { FC } from "react"
-import { Form, withFormik, FormikProps, FormikErrors } from "formik"
-import { Button, Box } from "@chakra-ui/react"
+import { withFormik, FormikProps, FormikErrors } from "formik"
+import { Button } from "@chakra-ui/react"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
+import { Form } from "./Form"
+import { getErrorsObj, validateAmountInRange } from "../../utils/forms"
 
 type FormValues = {
   tokenAmount: string
 }
 
 type SimpleTokenAmountFormProps = {
-  onSubmitForm: (value: string) => void
+  onSubmitForm: (tokenAmount: string) => void
   submitButtonText: string
   maxTokenAmount: string | number
 }
@@ -18,7 +20,7 @@ const SimpleTokenAmountFormBase: FC<
   SimpleTokenAmountFormProps & FormikProps<FormValues>
 > = ({ submitButtonText, maxTokenAmount, ...formikProps }) => {
   return (
-    <Box as={Form} mt="7" mb="8">
+    <Form mt="7" mb="8" onSubmit={formikProps.handleSubmit}>
       <FormikTokenBalanceInput
         name="tokenAmount"
         label="Stake Amount"
@@ -30,7 +32,7 @@ const SimpleTokenAmountFormBase: FC<
       <Button type="submit" w="100%" mt="6">
         {submitButtonText}
       </Button>
-    </Box>
+    </Form>
   )
 }
 
@@ -39,14 +41,14 @@ export const SimpleTokenAmountForm = withFormik<
   FormValues
 >({
   mapPropsToValues: () => ({ tokenAmount: "" }),
-  validate: (values) => {
+  validate: (values, props) => {
     const errors: FormikErrors<FormValues> = {}
 
-    // TODO add validation
-    if (!values.tokenAmount) {
-      errors.tokenAmount = "Required"
-    }
-    return errors
+    errors.tokenAmount = validateAmountInRange(
+      values.tokenAmount,
+      props.maxTokenAmount.toString()
+    )
+    return getErrorsObj(errors)
   },
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values.tokenAmount)
