@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { WeiPerEther } from "@ethersproject/constants"
+import { WeiPerEther, AddressZero } from "@ethersproject/constants"
+import { isAddress, getAddress } from "@ethersproject/address"
 import { formatTokenAmount } from "./formatAmount"
 
 type ValidationMsg = string | ((amount: string) => string)
@@ -56,4 +57,14 @@ export const getErrorsObj = <T>(errors: { [key in keyof T]: string }) => {
   return (Object.keys(errors) as Array<keyof T>).every((name) => !errors[name])
     ? {}
     : errors
+}
+
+export const validateETHAddress = (address: string) => {
+  if (!address) {
+    return "Required."
+  } else if (!isAddress(address)) {
+    return "Invalid eth address."
+  } else if (getAddress(address) === AddressZero) {
+    return "Address is a zero address."
+  }
 }
