@@ -1,153 +1,70 @@
 import { FC } from "react"
-import {
-  Box,
-  Button,
-  Collapse,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
-  ListItem,
-  Stack,
-  UnorderedList,
-  useColorModeValue,
-  useDisclosure,
-} from "@chakra-ui/react"
-import { BsChevronDown, BsChevronRight } from "react-icons/all"
-import { Body3 } from "../../Typography"
-import { useModal } from "../../../hooks/useModal"
+import { FormikProps, FormikErrors, withFormik } from "formik"
+import { Form, FormikInput } from "../../Forms"
+import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 
-interface AdvancedParamsFormProps {
+interface FormValues {
   stakingProvider: string
-  setStakingProvider: (val: string) => void
   beneficiary: string
-  setBeneficiary: (val: string) => void
   authorizer: string
-  setAuthorizer: (val: string) => void
-  isValidAuthorizer: boolean
-  isValidBeneficiary: boolean
-  isValidStakingProvider: boolean
-  stakingProviderInUse?: boolean
 }
 
-const HelperText = ({
-  text,
-  isInvalid,
-  errorText,
-}: {
-  text: string
-  isInvalid: boolean
-  errorText?: string | JSX.Element
+type ComponentProps = {
+  formId: string
+}
+
+const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
+  formId,
 }) => {
   return (
-    <FormHelperText color={isInvalid ? "red.500" : "gray.500"}>
-      {isInvalid ? errorText || "Please enter a valid ETH address" : text}
-    </FormHelperText>
+    <Form id={formId}>
+      <FormikInput
+        name="stakingProvider"
+        label="Provider Address"
+        helperText="Enter a staking provider address."
+      />
+      <FormikInput
+        mt="6"
+        name="beneficiary"
+        label="Beneficiary Address"
+        helperText="This address will receive rewards."
+      />
+      <FormikInput
+        mt="6"
+        name="authorizer"
+        label="Authrozier Address"
+        helperText="This authorizer will authorize applications."
+      />
+    </Form>
   )
 }
 
-const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
-  const {
-    stakingProvider,
-    setStakingProvider,
-    beneficiary,
-    setBeneficiary,
-    authorizer,
-    setAuthorizer,
-    isValidAuthorizer,
-    isValidBeneficiary,
-    isValidStakingProvider,
-    stakingProviderInUse = false,
-  } = props
+type AdvancedParamsFormProps = {
+  initialAddress: string
+  onSubmitForm: (values: FormValues) => void
+} & ComponentProps
 
-  const { closeModal } = useModal()
+const AdvancedParamsForm = withFormik<AdvancedParamsFormProps, FormValues>({
+  mapPropsToValues: ({ initialAddress }) => ({
+    authorizer: initialAddress,
+    beneficiary: initialAddress,
+    stakingProvider: initialAddress,
+  }),
+  validate: (values, props) => {
+    const errors: FormikErrors<FormValues> = {}
 
-  const { isOpen, onToggle } = useDisclosure({
-    defaultIsOpen: stakingProviderInUse,
-  })
+    // TODO: check if a staking provider is already in use.
+    // https://github.com/threshold-network/token-dashboard/pull/88
+    errors.stakingProvider = validateETHAddress(values.stakingProvider)
+    errors.beneficiary = validateETHAddress(values.beneficiary)
+    errors.authorizer = validateETHAddress(values.authorizer)
 
-  return (
-    <Box>
-      <Button
-        variant="link"
-        color={useColorModeValue("brand.500", "white")}
-        onClick={onToggle}
-        mb={6}
-        rightIcon={isOpen ? <BsChevronDown /> : <BsChevronRight />}
-      >
-        Customize these addresses
-      </Button>
-      <Collapse in={isOpen} animateOpacity>
-        <Stack spacing={6} mb={6}>
-          <FormControl>
-            <FormLabel>Staking Provider Address</FormLabel>
-            <Input
-              isInvalid={stakingProviderInUse || !isValidStakingProvider}
-              errorBorderColor="red.300"
-              value={stakingProvider}
-              onChange={(e) => setStakingProvider(e.target.value)}
-            />
-            <HelperText
-              text="If you are using a staking provider, this will be their provided address."
-              errorText={
-                stakingProviderInUse ? (
-                  <Stack>
-                    <Body3 color="red.500">
-                      Provider address is already in use.
-                    </Body3>
-                    <UnorderedList pl={4} spacing={4}>
-                      <ListItem>
-                        For Legacy KEEP or NU operator address please go to the
-                        respective legacy dashboard to top up.
-                      </ListItem>
-                      <ListItem>
-                        For T stakes owned by this address,{" "}
-                        <Button
-                          fontSize="sm"
-                          variant="link"
-                          colorScheme="brand"
-                          onClick={closeModal}
-                        >
-                          top up on the dashboard.
-                        </Button>
-                      </ListItem>
-                    </UnorderedList>
-                  </Stack>
-                ) : undefined
-              }
-              isInvalid={!isValidStakingProvider || stakingProviderInUse}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Beneficiary Address</FormLabel>
-            <Input
-              isInvalid={!isValidBeneficiary}
-              errorBorderColor="red.300"
-              value={beneficiary}
-              onChange={(e) => setBeneficiary(e.target.value)}
-            />
-            <HelperText
-              text="This address will receive rewards"
-              isInvalid={!isValidBeneficiary}
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Authorizer Address</FormLabel>
-            <Input
-              isInvalid={!isValidAuthorizer}
-              errorBorderColor="red.300"
-              value={authorizer}
-              onChange={(e) => setAuthorizer(e.target.value)}
-            />
-            <HelperText
-              text="This address will authorize applications."
-              isInvalid={!isValidAuthorizer}
-            />
-          </FormControl>
-        </Stack>
-      </Collapse>
-    </Box>
-  )
-}
+    return getErrorsObj(errors)
+  },
+  handleSubmit: (values, { props }) => {
+    props.onSubmitForm(values)
+  },
+  displayName: "AdvancedStakingParamsForm",
+})(AdvancedParamsFormBase)
 
 export default AdvancedParamsForm
