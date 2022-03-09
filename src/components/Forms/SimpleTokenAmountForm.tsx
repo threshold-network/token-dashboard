@@ -1,8 +1,8 @@
 import { FC } from "react"
 import { withFormik, FormikProps, FormikErrors } from "formik"
-import { Button } from "@chakra-ui/react"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
+import SubmitTxButton from "../SubmitTxButton"
 import { Form } from "./Form"
 import { getErrorsObj, validateAmountInRange } from "../../utils/forms"
 
@@ -29,9 +29,12 @@ const SimpleTokenAmountFormBase: FC<
         mb={2}
         max={maxTokenAmount}
       />
-      <Button type="submit" w="100%" mt="6">
-        {submitButtonText}
-      </Button>
+      <SubmitTxButton
+        type="submit"
+        w="100%"
+        mt="6"
+        submitText={submitButtonText}
+      />
     </Form>
   )
 }
