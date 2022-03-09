@@ -17,8 +17,8 @@ const StakedPortfolioCard: FC = () => {
   const { openModal } = useModal()
   const tBalance = useTokenBalance(Token.T)
 
-  const openStakingModal = async (tokenAmount: string) => {
-    openModal(ModalType.StakingChecklist, { amount: tokenAmount })
+  const openStakingModal = async (stakeAmount: string) => {
+    openModal(ModalType.StakingChecklist, { stakeAmount })
   }
 
   const { stakedBalance } = useStakingState()

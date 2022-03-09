@@ -1,7 +1,6 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Button,
-  Checkbox,
   Divider,
   ModalBody,
   ModalCloseButton,
@@ -19,9 +18,11 @@ import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 
-const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
+const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
+  closeModal,
+  stakeAmount,
+}) => {
   const { openModal } = useModal()
-  const [alphaConsent, setAlphaConsent] = useState(false)
 
   return (
     <>
@@ -38,17 +39,9 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
               </Body1>
             </Body1>
           </InfoBox>
+          <Divider />
           <StakingChecklist />
-          <StakingContractLearnMore />
-          <Checkbox
-            checked={alphaConsent}
-            onChange={() => setAlphaConsent(!alphaConsent)}
-            spacing="1rem"
-            color={useColorModeValue("gray.500", "gray.300")}
-          >
-            I am aware this is an alpha version and I have read the requirements
-            for Threshold Staking.
-          </Checkbox>
+          <StakingContractLearnMore mt="4rem !important" />
           <Divider />
         </Stack>
       </ModalBody>
@@ -57,8 +50,9 @@ const StakingChecklistModal: FC<BaseModalProps> = ({ closeModal }) => {
           Cancel
         </Button>
         <Button
-          onClick={() => openModal(ModalType.ConfirmStakingParams)}
-          disabled={!alphaConsent}
+          onClick={() =>
+            openModal(ModalType.ConfirmStakingParams, { stakeAmount })
+          }
         >
           Stake
         </Button>
