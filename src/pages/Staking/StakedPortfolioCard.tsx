@@ -1,24 +1,24 @@
 import { FC } from "react"
+import { HStack, Stack, Divider } from "@chakra-ui/react"
 import Card from "../../components/Card"
 import { Body1, Body2, Label3 } from "../../components/Typography"
-import { useModal } from "../../hooks/useModal"
-import { ModalType } from "../../enums"
-import SubmitTxButton from "../../components/SubmitTxButton"
 import InfoBox from "../../components/InfoBox"
-import { useStakingState } from "../../hooks/useStakingState"
-import { formatTokenAmount } from "../../utils/formatAmount"
-import { HStack, Stack } from "@chakra-ui/react"
-import { useTokenState } from "../../hooks/useTokenState"
 import TokenBalance from "../../components/TokenBalance"
 import BoxLabel from "../../components/BoxLabel"
 import { StakingContractLearnMore } from "../../components/ExternalLink"
+import { SimpleTokenAmountForm } from "../../components/Forms"
+import { ModalType, Token } from "../../enums"
+import { useStakingState } from "../../hooks/useStakingState"
+import { useModal } from "../../hooks/useModal"
+import { useTokenBalance } from "../../hooks/useTokenBalance"
+import { formatTokenAmount } from "../../utils/formatAmount"
 
 const StakedPortfolioCard: FC = () => {
   const { openModal } = useModal()
-  const { t } = useTokenState()
+  const tBalance = useTokenBalance(Token.T)
 
-  const openStakingModal = async () => {
-    openModal(ModalType.StakingChecklist)
+  const openStakingModal = async (tokenAmount: string) => {
+    openModal(ModalType.StakingChecklist, { amount: tokenAmount })
   }
 
   const { stakedBalance } = useStakingState()
@@ -26,7 +26,7 @@ const StakedPortfolioCard: FC = () => {
   return (
     <Card h="fit-content">
       <Stack spacing={6}>
-        <Label3 mb={6} textDecoration="uppercase">
+        <Label3 mb={6} textTransform="uppercase">
           Staked Portfolio
         </Label3>
         <Body2 mb={2}>Staked Balance</Body2>
@@ -40,9 +40,14 @@ const StakedPortfolioCard: FC = () => {
         </InfoBox>
         <HStack justify="space-between" w="100%">
           <BoxLabel>Wallet</BoxLabel>
-          <Body1>{formatTokenAmount(t.balance)} T</Body1>
+          <Body1>{formatTokenAmount(tBalance)} T</Body1>
         </HStack>
-        <SubmitTxButton onSubmit={openStakingModal} submitText="Stake" />
+        <Divider />
+        <SimpleTokenAmountForm
+          onSubmitForm={openStakingModal}
+          submitButtonText="Stake"
+          maxTokenAmount={tBalance}
+        />
         <StakingContractLearnMore />
       </Stack>
     </Card>
