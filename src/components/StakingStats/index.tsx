@@ -19,7 +19,7 @@ const StakingStats: FC<StakingStatsProps> = ({
 }) => {
   const transactionInfo: TransactionInfo[] = [
     {
-      text: "Stake Amount",
+      text: "Staked Amount",
       // todo: Token might not be a string, so this should be updated once we decide on the interface
       value: (
         <TokenBalance
@@ -32,15 +32,15 @@ const StakingStats: FC<StakingStatsProps> = ({
       ),
     },
     {
-      text: "Operator",
+      text: "Provider Address",
       value: <Body3>{shortenAddress(stakingProvider)}</Body3>,
     },
     {
-      text: "Beneficiary",
+      text: "Beneficiary Address",
       value: <Body3>{shortenAddress(beneficiary)}</Body3>,
     },
     {
-      text: "Authorizer",
+      text: "Authorizer Address",
       value: <Body3>{shortenAddress(authorizer)}</Body3>,
     },
   ]
