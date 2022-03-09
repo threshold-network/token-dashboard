@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useRef } from "react"
 import {
   Button,
   Icon,
@@ -34,12 +34,14 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   hasError = false,
   ...inputProps
 }) => {
+  const valueRef = useRef<string>(amount as string)
+
   const setToMax = () => {
     _setAmount(formatUnits(max))
   }
 
   const _setAmount = (value: string | number) => {
-    setAmount(parseUnits(value ? value.toString() : "0").toString())
+    valueRef.current = parseUnits(value ? value.toString() : "0").toString()
   }
 
   return (
@@ -53,11 +55,14 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
-          value={amount ? formatUnits(amount) : undefined}
+          {...inputProps}
           onValueChange={(values: NumberInputValues) =>
             _setAmount(values.value)
           }
-          {...inputProps}
+          value={amount ? formatUnits(amount) : undefined}
+          onChange={() => {
+            setAmount(valueRef.current)
+          }}
           id={inputProps.name}
         />
         <InputRightElement width="4.5rem">
