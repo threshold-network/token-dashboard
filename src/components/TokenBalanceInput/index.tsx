@@ -38,6 +38,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
 
   const setToMax = () => {
     _setAmount(formatUnits(max))
+    setAmount(valueRef.current)
   }
 
   const _setAmount = (value: string | number) => {
