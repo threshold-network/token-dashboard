@@ -17,7 +17,7 @@ import { Body1, Body2, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
-import AdvancedParamsForm from "./AdvancedParamsForm"
+import AdvancedParamsForm, { FormValues } from "./AdvancedParamsForm"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
@@ -30,8 +30,7 @@ const ConfirmStakingParamsModal: FC<
 > = ({ stakeAmount }) => {
   const { closeModal, openModal } = useModal()
   const { account } = useWeb3React()
-  const { stakingProvider, beneficiary, authorizer, updateState } =
-    useStakingState()
+  const { updateState } = useStakingState()
 
   const { isOpen, onToggle } = useDisclosure()
 
@@ -46,11 +45,13 @@ const ConfirmStakingParamsModal: FC<
     stakingProvider,
     beneficiary,
     authorizer,
-  }: {
-    stakingProvider: string
-    beneficiary: string
-    authorizer: string
-  }) => stake({ stakingProvider, beneficiary, authorizer, amount: stakeAmount })
+  }: FormValues) => {
+    updateState("stakingProvider", stakingProvider)
+    updateState("beneficiary", beneficiary)
+    updateState("authorizer", authorizer)
+    updateState("stakeAmount", stakeAmount)
+    stake({ stakingProvider, beneficiary, authorizer, amount: stakeAmount })
+  }
 
   return (
     <>

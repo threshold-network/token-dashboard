@@ -3,7 +3,7 @@ import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 
-interface FormValues {
+export interface FormValues {
   stakingProvider: string
   beneficiary: string
   authorizer: string
