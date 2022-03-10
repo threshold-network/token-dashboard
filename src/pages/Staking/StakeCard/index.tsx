@@ -7,6 +7,7 @@ import {
   useColorModeValue,
   useBoolean,
 } from "@chakra-ui/react"
+import { BigNumber } from "@ethersproject/bignumber"
 import Card from "../../../components/Card"
 import { Body2, Label3 } from "../../../components/Typography"
 import NotificationPill from "../../../components/NotificationPill"
@@ -40,11 +41,18 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     }
   }
 
+  const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
+
   return (
-    <Card>
+    <Card borderColor={isInActiveStake ? "red.200" : undefined}>
       <Flex as="header" alignItems="center">
-        <Badge colorScheme="green" variant="subtle" size="small" mr="2">
-          active
+        <Badge
+          colorScheme={isInActiveStake ? "gray" : "green"}
+          variant="subtle"
+          size="small"
+          mr="2"
+        >
+          {isInActiveStake ? "inactive" : "active"}
         </Badge>
         <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
         <Label3 textTransform="uppercase" mr="auto">
