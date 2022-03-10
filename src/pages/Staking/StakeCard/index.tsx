@@ -7,7 +7,6 @@ import {
   useColorModeValue,
   useBoolean,
 } from "@chakra-ui/react"
-import { StakeData } from "../../../types/staking"
 import Card from "../../../components/Card"
 import { Body2, Label3 } from "../../../components/Typography"
 import NotificationPill from "../../../components/NotificationPill"
@@ -15,11 +14,12 @@ import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
 import BoxLabel from "../../../components/BoxLabel"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
-import { useTokenBalance } from "../../../hooks/useTokenBalance"
-import { ModalType, StakeType, Token } from "../../../enums"
-import { useModal } from "../../../hooks/useModal"
 import { Divider } from "../../../components/Divider"
 import { SimpleTokenAmountForm } from "../../../components/Forms"
+import { useTokenBalance } from "../../../hooks/useTokenBalance"
+import { useModal } from "../../../hooks/useModal"
+import { StakeData } from "../../../types/staking"
+import { ModalType, StakeType, Token } from "../../../enums"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -34,7 +34,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      openModal(ModalType.TopupT, { stake, initialTopupAmount: tokenAmount })
+      openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
     } else {
       openModal(ModalType.UnstakeT, { stake, initialTopupAmount: tokenAmount })
     }

@@ -1,15 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
-import { StakeType } from "../../enums"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
   ProviderStakedActionPayload,
   StakeData,
   UpdateStakeAmountActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
-import { BigNumber } from "ethers"
-import { fetchETHPriceUSD } from "../eth"
-import { BigNumberish } from "@ethersproject/bignumber"
+import { StakeType } from "../../enums"
 
 interface StakingState {
   stakingProvider: string
@@ -75,6 +73,10 @@ export const stakingSlice = createSlice({
         (stake) => stake.stakingProvider === stakingProvider
       )
 
+      if (stakeIdxToUpdate < 0) return
+
+      const stake = stakes[stakeIdxToUpdate]
+
       const originalStakeAmount = BigNumber.from(
         stakes[stakeIdxToUpdate].tStake
       )
@@ -90,6 +92,10 @@ export const stakingSlice = createSlice({
           .sub(amountUnstaked)
           .toString()
       }
+      stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(stake.tStake)
+        .add(BigNumber.from(stake.keepInTStake))
+        .add(BigNumber.from(stake.nuInTStake))
+        .toString()
 
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
