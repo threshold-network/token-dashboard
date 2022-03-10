@@ -36,7 +36,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     if (isStakeAction) {
       openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
     } else {
-      openModal(ModalType.UnstakeT, { stake, initialTopupAmount: tokenAmount })
+      openModal(ModalType.UnstakeT, { stake, amountToUnstake: tokenAmount })
     }
   }
 

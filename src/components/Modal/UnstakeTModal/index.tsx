@@ -1,36 +1,33 @@
-import { FC, useCallback, useState } from "react"
+import { FC, useCallback } from "react"
 import {
   Alert,
   AlertDescription,
   AlertIcon,
-  Box,
   Button,
+  Divider,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
-import withBaseModal from "../withBaseModal"
-import TokenBalanceInput from "../../TokenBalanceInput"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { useModal } from "../../../hooks/useModal"
-import { BaseModalProps } from "../../../types"
-import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
-import { ModalType } from "../../../enums"
-import { StakeData } from "../../../types/staking"
-import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
+import { Body1, H5 } from "../../Typography"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
+import StakingStats from "../../StakingStats"
+import { useModal } from "../../../hooks/useModal"
+import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
+import { BaseModalProps } from "../../../types"
+import { StakeData } from "../../../types/staking"
+import { ModalType } from "../../../enums"
+import withBaseModal from "../withBaseModal"
 
-const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
-  stake,
-}) => {
+const UnstakeTModal: FC<
+  BaseModalProps & { stake: StakeData; amountToUnstake: string }
+> = ({ stake, amountToUnstake }) => {
   const { closeModal, openModal } = useModal()
-  const [amountToUnstake, setAmountToUnstake] = useState<
-    string | number | undefined
-  >(undefined)
+
   const onSuccess = useCallback(
     (tx) =>
       openModal(ModalType.UnstakeSuccess, {
@@ -38,7 +35,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         stake,
         unstakeAmount: amountToUnstake,
       }),
-    [amountToUnstake, stake]
+    [amountToUnstake, stake, openModal]
   )
   const { unstake } = useUnstakeTransaction(onSuccess)
 
@@ -54,32 +51,25 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
               You can partially or totally unstake depending on your needs.
             </Body1>
           </InfoBox>
-          <Stack spacing={6} mb={6}>
-            <Box>
-              <TokenBalanceInput
-                label={`T Amount`}
-                amount={amountToUnstake}
-                setAmount={setAmountToUnstake}
-                max={stake.tStake}
-                icon={ThresholdCircleBrand}
-                mb={2}
-              />
-              <Body3>
-                {formatTokenAmount(stake.tStake)} T available to unstake
-              </Body3>
-            </Box>
-          </Stack>
+          <StakingStats
+            stakeAmount={amountToUnstake}
+            amountText="Unstake Amount"
+            stakingProvider={stake.stakingProvider}
+            beneficiary={stake.beneficiary}
+            authorizer={stake.authorizer}
+          />
           <Alert status="warning">
-            <AlertIcon />
-            <AlertDescription>
-              Take note! Even if you fully unstake you cannot use the same
-              Staking Provider address for new stakes. Even after fully
-              unstaking, the resulting empty stake must be topped up to add
-              funds.
+            <AlertIcon alignSelf="center" />
+
+            <AlertDescription color={useColorModeValue("gray.700", "gray.300")}>
+              Take note! If you fully unstake you will not be able to use the
+              same Operator Address for new stakes. This unstaked stake can be
+              toppped up anytime you want.
             </AlertDescription>
           </Alert>
         </Stack>
-        <StakingContractLearnMore />
+        <StakingContractLearnMore mt="10" />
+        <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
