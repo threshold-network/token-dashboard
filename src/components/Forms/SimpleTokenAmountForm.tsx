@@ -20,7 +20,7 @@ const SimpleTokenAmountFormBase: FC<
   SimpleTokenAmountFormProps & FormikProps<FormValues>
 > = ({ submitButtonText, maxTokenAmount, ...formikProps }) => {
   return (
-    <Form mt="7" mb="8" onSubmit={formikProps.handleSubmit}>
+    <Form onSubmit={formikProps.handleSubmit}>
       <FormikTokenBalanceInput
         name="tokenAmount"
         label="Stake Amount"
