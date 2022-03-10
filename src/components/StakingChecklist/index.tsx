@@ -52,6 +52,7 @@ export const PreSetupSteps: FC = () => {
                 text="a staking provider"
                 withArrow
               />
+              .
             </Body3>
           ),
         },
@@ -59,12 +60,13 @@ export const PreSetupSteps: FC = () => {
           title: "PRE Operator address",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-              Learn how to add a PRE Operator address{" "}
+              Make sure you add your PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
                 text="here"
                 withArrow
-              />
+              />{" "}
+              to gain rewards.
             </Body3>
           ),
         },
