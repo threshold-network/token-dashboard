@@ -1,9 +1,9 @@
 import { FC } from "react"
-import withBaseModal from "../withBaseModal"
-import { BaseModalProps } from "../../../types"
 import TransactionSuccessModal from "../TransactionSuccessModal"
 import StakingStats from "../../StakingStats"
+import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
+import withBaseModal from "../withBaseModal"
 
 interface UnstakeSuccessProps extends BaseModalProps {
   transactionHash: string
@@ -26,6 +26,7 @@ const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
         <StakingStats
           {...{
             stakeAmount: unstakeAmount,
+            amountText: "Unstaked amount",
             beneficiary,
             stakingProvider,
             authorizer,
