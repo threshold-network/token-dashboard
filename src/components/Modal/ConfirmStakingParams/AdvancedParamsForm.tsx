@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
@@ -41,6 +41,10 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 
 type AdvancedParamsFormProps = {
   initialAddress: string
+  innerRef: Ref<FormikProps<FormValues>>
+  checkIfProviderUsed: (
+    stakingProvider: string
+  ) => Promise<{ isProviderUsedForKeep: boolean; isProviderUsedForT: boolean }>
   onSubmitForm: (values: FormValues) => void
 } & ComponentProps
 
@@ -50,12 +54,26 @@ const AdvancedParamsForm = withFormik<AdvancedParamsFormProps, FormValues>({
     beneficiary: initialAddress,
     stakingProvider: initialAddress,
   }),
-  validate: (values, props) => {
+  validate: async (values, props) => {
+    const { checkIfProviderUsed } = props
     const errors: FormikErrors<FormValues> = {}
 
-    // TODO: check if a staking provider is already in use.
-    // https://github.com/threshold-network/token-dashboard/pull/88
     errors.stakingProvider = validateETHAddress(values.stakingProvider)
+    if (!errors.stakingProvider) {
+      let validationMsg: string | undefined = ""
+      try {
+        const { isProviderUsedForKeep, isProviderUsedForT } =
+          await checkIfProviderUsed(values.stakingProvider)
+        validationMsg =
+          isProviderUsedForKeep || isProviderUsedForT
+            ? "Provider address is already in use."
+            : undefined
+      } catch (error) {
+        console.error("`AdvancedParamsForm` validation error.", error)
+        validationMsg = (error as Error)?.message
+      }
+      errors.stakingProvider = validationMsg
+    }
     errors.beneficiary = validateETHAddress(values.beneficiary)
     errors.authorizer = validateETHAddress(values.authorizer)
 
