@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber"
-import { WeiPerEther, AddressZero } from "@ethersproject/constants"
-import { isAddress, getAddress } from "@ethersproject/address"
+import { WeiPerEther } from "@ethersproject/constants"
+import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 
 type ValidationMsg = string | ((amount: string) => string)
@@ -64,7 +64,7 @@ export const validateETHAddress = (address: string) => {
     return "Required."
   } else if (!isAddress(address)) {
     return "Invalid eth address."
-  } else if (getAddress(address) === AddressZero) {
+  } else if (isAddressZero(address)) {
     return "Address is a zero address."
   }
 }
