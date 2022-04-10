@@ -8,6 +8,8 @@ import {
   useKeepAssetPoolContract,
   useTStakingContract,
   useKeepTokenStakingContract,
+  useNuStakingEscrowContract,
+  useNuWorkLockContract,
 } from "../web3/hooks"
 import { useETHData } from "./useETHData"
 import { useToken } from "./useToken"
@@ -20,6 +22,8 @@ interface TVLRawData {
   keepCoveragePoolTVL: string
   keepStakingTVL: string
   tStakingTVL: string
+  stakedNU: string
+  ethInNuNetwork: string
   // TODO: add PRE and NU TVL
 }
 
@@ -38,6 +42,8 @@ const initialState = {
   keepCoveragePoolTVL: "0",
   keepStakingTVL: "0",
   tStakingTVL: "0",
+  stakedNU: "0",
+  ethInNuNetwork: "0",
 }
 
 export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
@@ -48,12 +54,17 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
     keepCoveragePoolTVL,
     keepStakingTVL,
     tStakingTVL,
+    stakedNU,
+    ethInNuNetwork,
   } = rawData
 
   const eth = useETHData()
   const keep = useToken(Token.Keep)
   const tbtc = useToken(Token.TBTC)
   const t = useToken(Token.T)
+  const nu = useToken(Token.Nu)
+  const nuStakingEscrow = useNuStakingEscrowContract()
+  const nuWorkLock = useNuWorkLockContract()
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()
   const keepAssetPool = useKeepAssetPoolContract()
@@ -81,6 +92,24 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
       method: "balanceOf",
       args: [tTokenStaking?.address],
     },
+    {
+      contract: nu.contract!,
+      method: "totalSupply",
+    },
+    {
+      contract: nuStakingEscrow!,
+      method: "currentPeriodSupply",
+    },
+    {
+      contract: nu.contract!,
+      method: "balanceOf",
+      args: [nuStakingEscrow?.address],
+    },
+    {
+      contract: multicall!,
+      method: "getEthBalance",
+      args: [nuWorkLock?.address],
+    },
   ])
 
   const fetchTVLData = useCallback(async () => {
@@ -93,7 +122,18 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
       coveragePoolTvl,
       keepStaking,
       tStaking,
+      nuTotalSupply,
+      nuCurrentPeriodSupply,
+      nuInEscrow,
+      ethInNuNetwork,
     ] = chainData.map((amount: string) => formatUnits(amount.toString()))
+
+    const haltedRewards = FixedNumber.fromString(nuTotalSupply).subUnsafe(
+      FixedNumber.fromString(nuCurrentPeriodSupply)
+    )
+    const stakedNU = FixedNumber.fromString(nuInEscrow)
+      .subUnsafe(haltedRewards)
+      .toString()
 
     const data: TVLRawData = {
       ecdsaTVL: ethInKeepBonding,
@@ -101,6 +141,8 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
       keepCoveragePoolTVL: coveragePoolTvl,
       keepStakingTVL: keepStaking,
       tStakingTVL: tStaking,
+      stakedNU,
+      ethInNuNetwork,
     }
     setRawData(data)
 
@@ -121,17 +163,23 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
 
     const tStaking = toUsdBalance(tStakingTVL, t.usdConversion)
 
+    const stakedNuInUSD = toUsdBalance(stakedNU, nu.usdConversion)
+    const ethInNu = toUsdBalance(ethInNuNetwork, eth.usdPrice)
+    const totalNu = stakedNuInUSD.addUnsafe(ethInNu)
+
     return {
       ecdsa: ecdsa.toString(),
       tbtc: tbtcUSD.toString(),
       keepCoveragePool: keepCoveragePool.toString(),
       keepStaking: keepStaking.toString(),
       tStaking: tStaking.toString(),
+      nu: totalNu.toString(),
       total: ecdsa
         .addUnsafe(tbtcUSD)
         .addUnsafe(keepCoveragePool)
         .addUnsafe(keepStaking)
         .addUnsafe(tStaking)
+        .addUnsafe(totalNu)
         .toString(),
     } as TVLData
   }, [
@@ -144,6 +192,9 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
     keep.usdConversion,
     tbtc.usdConversion,
     t.usdConversion,
+    stakedNU,
+    ethInNuNetwork,
+    nu.usdConversion,
   ])
 
   return [data, fetchTVLData]
