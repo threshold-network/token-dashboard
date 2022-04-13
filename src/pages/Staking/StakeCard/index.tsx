@@ -60,7 +60,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </Label3>
         <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
       </Flex>
-      <Body2 mt="12">Total Rewards</Body2>
+      {/* <Body2 mt="12">Total Rewards</Body2>
       <Flex mt="4" alignItems="center">
         <TokenBalance
           tokenAmount="2000340000000000000000"
@@ -72,7 +72,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           Claim
         </Button>
       </Flex>
-      <Divider />
+      <Divider /> */}
       <Body2 mt="6">Staked Balance</Body2>
       <InfoBox mt="3">
         <TokenBalance
