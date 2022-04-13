@@ -43,7 +43,7 @@ const useCheckDuplicateProviderAddress = (): ((
       const [{ owner }, [, createdAt]] = data
 
       const isProviderUsedForKeep = createdAt.gt(BigNumber.from(0))
-      const isProviderUsedForT = !isAddressZero(stakingProvider)
+      const isProviderUsedForT = !isAddressZero(owner)
 
       return { isProviderUsedForKeep, isProviderUsedForT }
     },
