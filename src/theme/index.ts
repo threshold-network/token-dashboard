@@ -8,6 +8,7 @@ import { Progress } from "./Progress"
 import { InfoBox } from "./InfoBox"
 import { NotificationPill } from "./NotificationPill"
 import { Tree } from "./Tree"
+import { Tabs } from "./Tabs"
 
 const colors = {
   brand: {
@@ -82,6 +83,7 @@ const index = extendTheme({
     InfoBox,
     NotificationPill,
     Tree,
+    Tabs,
   },
 })
 
