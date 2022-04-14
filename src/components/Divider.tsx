@@ -13,10 +13,23 @@ import { HTMLChakraProps } from "@chakra-ui/system"
 
 export const DividerIcon: FC<HTMLChakraProps<"span"> & IconProps> = ({
   as,
+  ...restProps
+}) => {
+  return <DividerCenterElement as={as} {...restProps} />
+}
+
+export const DividerCenterElement: FC<HTMLChakraProps<"div">> = ({
+  children,
+  as,
   ...propStyles
 }) => {
   const styles = useStyles()
-  return <Icon as={as} __css={{ ...styles.icon, ...propStyles }} />
+
+  return (
+    <Box as={as} __css={{ ...styles.icon, ...propStyles }}>
+      {children}
+    </Box>
+  )
 }
 
 export const Divider = ({
