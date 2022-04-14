@@ -40,6 +40,7 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
         setAmount={setAmount}
         max={balance}
         icon={tokenToIconMap[token]}
+        decimalScale={3}
       />
     </UpgradeCardTemplate>
   )
