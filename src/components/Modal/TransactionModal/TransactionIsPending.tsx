@@ -6,8 +6,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@chakra-ui/react"
-import { Body1, Body3 } from "@threshold-network/components"
-import Spinner from "../../Spinner"
+import { Body1, Body3, ThresholdSpinner } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
@@ -29,7 +28,7 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox py={12} variant="modal">
-          <Spinner />
+          <ThresholdSpinner />
           <Body1 align="center" mt={8}>
             {pendingText}
           </Body1>
