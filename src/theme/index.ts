@@ -7,6 +7,7 @@ import { Card } from "./Card"
 import { Progress } from "./Progress"
 import { InfoBox } from "./InfoBox"
 import { NotificationPill } from "./NotificationPill"
+import { Tree } from "./Tree"
 
 const colors = {
   brand: {
@@ -80,6 +81,7 @@ const index = extendTheme({
     Progress,
     InfoBox,
     NotificationPill,
+    Tree,
   },
 })
 
