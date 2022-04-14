@@ -1,6 +1,5 @@
 import { FC } from "react"
-import Card from "../../components/Card"
-import { Body1, Body2, Label3 } from "@threshold-network/components"
+import { Body1, Body2, Label3, Card } from "@threshold-network/components"
 import { useModal } from "../../hooks/useModal"
 import { ModalType } from "../../enums"
 import SubmitTxButton from "../../components/SubmitTxButton"

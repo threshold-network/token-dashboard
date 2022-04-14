@@ -1,7 +1,6 @@
 import { FC } from "react"
-import Card from "../../components/Card"
 import StakingChecklist from "../../components/StakingChecklist"
-import { Label3 } from "@threshold-network/components"
+import { Label3, Card } from "@threshold-network/components"
 
 const StakingChecklistCard: FC = () => {
   return (
