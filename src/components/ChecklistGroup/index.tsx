@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { List } from "@chakra-ui/react"
 import ChecklistItem, { ChecklistItemProps } from "../ChecklistItem"
-import BoxLabel from "../BoxLabel"
+import { BoxLabel } from "@threshold-network/components"
 
 interface ChecklistGroupProps {
   checklistItems: ChecklistItemProps[]
