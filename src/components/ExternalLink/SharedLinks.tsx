@@ -1,4 +1,4 @@
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 import { HStack, useColorModeValue } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"

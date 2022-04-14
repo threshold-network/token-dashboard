@@ -7,7 +7,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 import { BsCheckCircleFill } from "react-icons/all"
-import { Body2, Body3 } from "../Typography"
+import { Body2, Body3 } from "@threshold-network/components"
 
 export interface ChecklistItemProps {
   title: string | JSX.Element

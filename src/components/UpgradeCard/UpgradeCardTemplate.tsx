@@ -1,7 +1,7 @@
 import { FC, useMemo } from "react"
 import { Box, HStack, Stack, Text, useColorModeValue } from "@chakra-ui/react"
 import { BsArrowDownCircleFill } from "react-icons/all"
-import { Body3, H5 } from "../Typography"
+import { Body3, H5 } from "@threshold-network/components"
 import Card from "../Card"
 import { Divider, DividerIcon } from "../Divider"
 import SubmitTxButton from "../SubmitTxButton"

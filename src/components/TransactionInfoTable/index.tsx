@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { HStack, Stack } from "@chakra-ui/react"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 
 export interface TransactionInfo {
   text: string

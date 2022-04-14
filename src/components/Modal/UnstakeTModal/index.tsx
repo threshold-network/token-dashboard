@@ -11,7 +11,7 @@ import {
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
+import { Body1, Body3, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import TokenBalanceInput from "../../TokenBalanceInput"
 import { formatTokenAmount } from "../../../utils/formatAmount"

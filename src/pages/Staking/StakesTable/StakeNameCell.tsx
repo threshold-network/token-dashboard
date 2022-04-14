@@ -9,7 +9,7 @@ import {
 } from "@chakra-ui/react"
 import gradient from "random-gradient"
 import { StakeCellProps } from "../../../types/staking"
-import { Body2, Body3 } from "../../../components/Typography"
+import { Body2, Body3 } from "@threshold-network/components"
 
 const StakeNameCell: FC<StakeCellProps & { index: number }> = ({
   stake,

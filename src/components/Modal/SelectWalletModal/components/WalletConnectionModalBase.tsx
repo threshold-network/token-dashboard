@@ -12,7 +12,7 @@ import {
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
-import { Body2, H4 } from "../../../Typography"
+import { Body2, H4 } from "@threshold-network/components"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
