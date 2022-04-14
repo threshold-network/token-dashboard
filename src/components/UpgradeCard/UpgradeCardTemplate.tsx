@@ -1,8 +1,13 @@
 import { FC, useMemo } from "react"
 import { Box, HStack, Stack, Text, useColorModeValue } from "@chakra-ui/react"
 import { BsArrowDownCircleFill } from "react-icons/all"
-import { Body3, H5, Card } from "@threshold-network/components"
-import { Divider, DividerIcon } from "../Divider"
+import {
+  Body3,
+  H5,
+  Card,
+  LineDivider,
+  LineDividerIcon,
+} from "@threshold-network/components"
 import SubmitTxButton from "../SubmitTxButton"
 import UpgradeIconGroup from "../UpgradeIconGroup"
 import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
@@ -49,15 +54,15 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
       </Stack>
       <Box mt={10}>
         <Box>{children}</Box>
-        <Divider mt={9}>
-          <DividerIcon
+        <LineDivider mt={9}>
+          <LineDividerIcon
             left="30px"
             height="40px !important"
             width="40px !important"
             color="gray.600"
             as={BsArrowDownCircleFill}
           />
-        </Divider>
+        </LineDivider>
         <HStack mt={9}>
           <Body3 fontWeight="bold">T Amount</Body3>
           <Body3 ml={4} color={useColorModeValue("gray.500", "gray.300")}>
