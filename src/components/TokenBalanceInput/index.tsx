@@ -10,10 +10,15 @@ import {
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import NumberInput, { NumberInputValues } from "../NumberInput"
+import NumberInput, {
+  NumberInputValues,
+  NumberInputProps,
+} from "../NumberInput"
 import { Body3 } from "../Typography"
 
-export interface TokenBalanceInputProps extends InputProps {
+export interface TokenBalanceInputProps
+  extends InputProps,
+    Omit<NumberInputProps, "onValueChange"> {
   icon: ReturnType<typeof createIcon>
   max: number | string
   amount?: string | number

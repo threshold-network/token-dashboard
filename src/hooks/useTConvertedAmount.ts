@@ -4,12 +4,9 @@ import { formatUnits } from "@ethersproject/units"
 import numeral from "numeral"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 import { UpgredableToken } from "../types"
+import { vendingMachine } from "../constants"
 
-const WRAPPED_TOKEN_CONVERSION_PRECISION = 3
-const STANDARD_ERC20_DECIMALS = 18
-const FLOATING_POINT_DIVISOR = BigNumber.from(10).pow(
-  BigNumber.from(STANDARD_ERC20_DECIMALS - WRAPPED_TOKEN_CONVERSION_PRECISION)
-)
+const { FLOATING_POINT_DIVISOR } = vendingMachine
 
 export const useTConvertedAmount = (
   token: UpgredableToken,
