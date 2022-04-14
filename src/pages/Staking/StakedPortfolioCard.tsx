@@ -10,7 +10,7 @@ import { formatTokenAmount } from "../../utils/formatAmount"
 import { HStack, Stack } from "@chakra-ui/react"
 import { useTokenState } from "../../hooks/useTokenState"
 import TokenBalance from "../../components/TokenBalance"
-import BoxLabel from "../../components/BoxLabel"
+import { BoxLabel } from "@threshold-network/components"
 import { StakingContractLearnMore } from "../../components/ExternalLink"
 
 const StakedPortfolioCard: FC = () => {

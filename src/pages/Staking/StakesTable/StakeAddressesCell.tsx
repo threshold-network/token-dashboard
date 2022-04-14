@@ -1,9 +1,8 @@
 import { FC } from "react"
 import { Badge, HStack, Td, VStack } from "@chakra-ui/react"
 import { StakeCellProps } from "../../../types/staking"
-import { Body3 } from "@threshold-network/components"
+import { Body3, BoxLabel } from "@threshold-network/components"
 import shortenAddress from "../../../utils/shortenAddress"
-import BoxLabel from "../../../components/BoxLabel"
 
 const StakingAddressRow: FC<{
   address: string
