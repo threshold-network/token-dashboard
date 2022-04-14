@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
-import { Body1 } from "@threshold-network/components"
-import Spinner from "../../Spinner"
+import { Body1, ThresholdSpinner } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
@@ -19,7 +18,7 @@ const TransactionIsWaitingForConfirmation: FC<Props> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" paddingY="48px">
-          <Spinner />
+          <ThresholdSpinner />
           <Body1 align="center" mt={8}>
             {pendingText}
           </Body1>
