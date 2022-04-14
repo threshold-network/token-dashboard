@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 import ChecklistGroup from "../ChecklistGroup"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"

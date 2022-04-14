@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Body2, H2 } from "../../../components/Typography"
+import { Body2, H2 } from "@threshold-network/components"
 import InfoBox from "../../../components/InfoBox"
 
 const StatBox: FC<{ value: number | string; text: string }> = ({

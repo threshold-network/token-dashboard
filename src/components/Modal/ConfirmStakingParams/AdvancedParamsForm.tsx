@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { BsChevronDown, BsChevronRight } from "react-icons/all"
-import { Body3 } from "../../Typography"
+import { Body3 } from "@threshold-network/components"
 import { useModal } from "../../../hooks/useModal"
 
 interface AdvancedParamsFormProps {

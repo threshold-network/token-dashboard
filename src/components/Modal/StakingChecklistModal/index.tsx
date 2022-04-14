@@ -10,7 +10,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { Body1, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"

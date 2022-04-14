@@ -11,7 +11,7 @@ import {
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import NumberInput, { NumberInputValues } from "../NumberInput"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>

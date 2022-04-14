@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { HStack, Icon, Stack } from "@chakra-ui/react"
 import Card from "../Card"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 import TokenBalance from "../TokenBalance"
 // import AddToMetamaskButton from "../AddToMetamaskButton"
 import { Contract } from "@ethersproject/contracts"

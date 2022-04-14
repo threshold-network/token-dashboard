@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
-import { Body1 } from "../../Typography"
+import { Body1 } from "@threshold-network/components"
 import Spinner from "../../Spinner"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"

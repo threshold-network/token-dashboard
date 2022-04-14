@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { TextProps, useColorModeValue } from "@chakra-ui/react"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 
 const BoxLabel: FC<TextProps> = (props) => (
   <Body3

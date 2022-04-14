@@ -8,7 +8,7 @@ import {
   ModalHeader,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
+import { Body1, Body3, H5 } from "@threshold-network/components"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
 import UpgradeStats from "./UpgradeStats"
 import { Divider } from "../../Divider"

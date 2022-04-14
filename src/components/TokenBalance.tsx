@@ -9,7 +9,7 @@ import {
 import { formatUnits } from "@ethersproject/units"
 import numeral from "numeral"
 import { useWeb3React } from "@web3-react/core"
-import { Body1, Body3, H3, H5 } from "./Typography"
+import { Body1, Body3, H3, H5 } from "@threshold-network/components"
 import Icon from "./Icon"
 
 interface TokenBalanceProps {

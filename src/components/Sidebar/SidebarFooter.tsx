@@ -1,7 +1,7 @@
 import { Box, Divider, HStack, Icon, IconButton, Link } from "@chakra-ui/react"
 import { BsDiscord, BsGithub } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
-import { Body3 } from "../Typography"
+import { Body3 } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import { FC } from "react"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"

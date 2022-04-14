@@ -6,7 +6,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@chakra-ui/react"
-import { Body1, Body3 } from "../../Typography"
+import { Body1, Body3 } from "@threshold-network/components"
 import Spinner from "../../Spinner"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"

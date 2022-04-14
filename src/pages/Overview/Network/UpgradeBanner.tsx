@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react"
 import vortexLight from "../../../static/images/vortextLight.png"
 import vortexDark from "../../../static/images/vortexDark.png"
-import { Body2, H4 } from "../../../components/Typography"
+import { Body2, H4 } from "@threshold-network/components"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"

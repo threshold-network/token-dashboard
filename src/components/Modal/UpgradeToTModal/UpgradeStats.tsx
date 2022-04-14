@@ -1,6 +1,6 @@
 import { FC } from "react"
 import TokenBalance from "../../TokenBalance"
-import { Body3 } from "../../Typography"
+import { Body3 } from "@threshold-network/components"
 import { Token } from "../../../enums"
 import TransactionInfoTable, {
   TransactionInfo,

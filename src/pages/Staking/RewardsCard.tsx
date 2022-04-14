@@ -1,6 +1,6 @@
 import { FC } from "react"
 import Card from "../../components/Card"
-import { Body2, Body3, Label3 } from "../../components/Typography"
+import { Body2, Body3, Label3 } from "@threshold-network/components"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
 import InfoBox from "../../components/InfoBox"
 import TokenBalance from "../../components/TokenBalance"

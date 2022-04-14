@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import TransactionError from "../../../static/icons/TransactionError"
-import { Body3 } from "../../Typography"
+import { Body3 } from "@threshold-network/components"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"

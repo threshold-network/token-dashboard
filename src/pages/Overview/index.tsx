@@ -1,7 +1,7 @@
 import { Container, Image } from "@chakra-ui/react"
 import { Outlet } from "react-router-dom"
 import thresholdWordMark from "../../static/images/thresholdWordMark.svg"
-import { H1, H3 } from "../../components/Typography"
+import { H1, H3 } from "@threshold-network/components"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
