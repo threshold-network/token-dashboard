@@ -9,6 +9,7 @@ import {
   FormControl,
   FormLabel,
   FormErrorMessage,
+  FormHelperText,
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
@@ -22,6 +23,7 @@ export interface TokenBalanceInputProps extends InputProps {
   label?: string
   hasError?: boolean
   errorMsgText?: string
+  helperText?: String
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -31,6 +33,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   setAmount,
   label,
   errorMsgText,
+  helperText,
   hasError = false,
   ...inputProps
 }) => {
@@ -72,6 +75,11 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           </Button>
         </InputRightElement>
       </InputGroup>
+      {!hasError ? (
+        <FormHelperText>{helperText}</FormHelperText>
+      ) : (
+        <FormErrorMessage>{errorMsgText}</FormErrorMessage>
+      )}
       {hasError && <FormErrorMessage>{errorMsgText}</FormErrorMessage>}
     </FormControl>
   )
