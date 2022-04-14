@@ -7,7 +7,7 @@ export const Tree = {
         listStyle: "none",
       },
       item: {
-        m: 4,
+        my: 4,
         ul: {
           pl: 4,
         },
