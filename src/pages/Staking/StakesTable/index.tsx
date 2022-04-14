@@ -5,8 +5,7 @@ import { StakeData } from "../../../types/staking"
 import StakeBalanceCell from "./StakeAmountCell"
 import StakeNameCell from "./StakeNameCell"
 import StakeActionsCell from "./StakeActionsCell"
-import Card from "../../../components/Card"
-import { Label3 } from "@threshold-network/components"
+import { Label3, Card } from "@threshold-network/components"
 
 interface StakingTableProps {
   stakes: StakeData[]

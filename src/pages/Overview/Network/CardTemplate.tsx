@@ -1,6 +1,5 @@
 import { FC } from "react"
-import Card from "../../../components/Card"
-import { Label3 } from "@threshold-network/components"
+import { Label3, Card } from "@threshold-network/components"
 import { Divider } from "../../../components/Divider"
 import { BoxProps } from "@chakra-ui/react"
 
