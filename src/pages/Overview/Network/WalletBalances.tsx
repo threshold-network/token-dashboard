@@ -6,8 +6,10 @@ import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
 import CardTemplate from "./CardTemplate"
 import { Body2, Body3 } from "@threshold-network/components"
-import { Divider } from "../../../components/Divider"
-import { MultiSegmentProgress } from "@threshold-network/components"
+import {
+  MultiSegmentProgress,
+  LineDivider,
+} from "@threshold-network/components"
 import { useTokenState } from "../../../hooks/useTokenState"
 import TokenBalance from "../../../components/TokenBalance"
 import { BigNumber } from "ethers"
@@ -117,7 +119,7 @@ const WalletBalances: FC = () => {
         />
       </Stack>
 
-      <Divider borderColor="gray.300" />
+      <LineDivider borderColor="gray.300" />
 
       {/* Possible amount */}
       <Body2>Possible T amount</Body2>

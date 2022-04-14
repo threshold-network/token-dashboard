@@ -8,10 +8,9 @@ import {
   ModalHeader,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "@threshold-network/components"
+import { Body1, Body3, H5, LineDivider } from "@threshold-network/components"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
 import UpgradeStats from "./UpgradeStats"
-import { Divider } from "../../Divider"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
@@ -52,7 +51,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
         <HStack justifyContent="center" my={6}>
           <UpgradeIconGroup token={token} boxSize="48px" />
         </HStack>
-        <Divider />
+        <LineDivider />
         <UpgradeStats
           token={token}
           exchangeRate={exchangeRate}
@@ -71,7 +70,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
             text="vending machine contract."
           />
         </Body3>
-        <Divider />
+        <LineDivider />
       </ModalBody>
 
       <ModalFooter>

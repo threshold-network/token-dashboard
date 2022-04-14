@@ -12,8 +12,7 @@ import {
 } from "@chakra-ui/react"
 import Confetti from "react-confetti"
 import Threshold from "../../../static/icons/Ttoken"
-import { Body3, H5 } from "@threshold-network/components"
-import { Divider } from "../../Divider"
+import { Body3, H5, LineDivider } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useModal } from "../../../hooks/useModal"
@@ -74,7 +73,7 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
             transaction on Etherscan
           </Body3>
         )}
-        <Divider />
+        <LineDivider />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal}>Dismiss</Button>

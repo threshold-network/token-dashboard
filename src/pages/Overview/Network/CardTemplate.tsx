@@ -1,6 +1,5 @@
 import { FC } from "react"
-import { Label3, Card } from "@threshold-network/components"
-import { Divider } from "../../../components/Divider"
+import { Label3, Card, LineDivider } from "@threshold-network/components"
 import { BoxProps } from "@chakra-ui/react"
 
 const CardTemplate: FC<{ title: string | JSX.Element } & BoxProps> = ({
@@ -15,7 +14,7 @@ const CardTemplate: FC<{ title: string | JSX.Element } & BoxProps> = ({
       ) : (
         title
       )}
-      <Divider borderColor="gray.300" />
+      <LineDivider borderColor="gray.300" />
       {children}
     </Card>
   )
