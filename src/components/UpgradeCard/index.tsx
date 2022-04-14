@@ -6,6 +6,7 @@ import NuLight from "../../static/icons/NuLight"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
 import { Token } from "../../enums"
 import { UpgredableToken } from "../../types"
+import { vendingMachine as vendingMachineConstants } from "../../constants"
 
 export interface UpgradeCardProps {
   token: UpgredableToken
@@ -40,6 +41,9 @@ const UpgradeCard: FC<UpgradeCardProps> = ({ token, onSubmit }) => {
         setAmount={setAmount}
         max={balance}
         icon={tokenToIconMap[token]}
+        decimalScale={
+          vendingMachineConstants.WRAPPED_TOKEN_CONVERSION_PRECISION
+        }
       />
     </UpgradeCardTemplate>
   )
