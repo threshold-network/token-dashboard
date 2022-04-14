@@ -9,6 +9,7 @@ export enum ModalType {
   ConfirmStakingParams = "CONFIRM_STAKING_PARAMS",
   StakeSuccess = "STAKE_SUCCESS",
   UnstakeT = "UNSTAKE_T",
+  UnstakeTStep2 = "UNSTAKE_T_STEP_2",
   UnstakeSuccess = "UNSTAKE_SUCCESS",
   TopupT = "TOP_UP_T",
   TopupTSuccess = "TOP_UP_T_SUCCESS",
