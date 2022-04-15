@@ -21,6 +21,7 @@ const NumberInput: FC<
       allowLeadingZeros={false}
       thousandSeparator
       __css={css}
+      disabled={props.isDisabled}
       {...props}
     />
   )
