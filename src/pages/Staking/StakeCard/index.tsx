@@ -96,7 +96,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </>
       )}
 
-      <Flex mt="6" alignItems="center">
+      <Flex mt="6" mb="8" alignItems="center">
         <BoxLabel bg="brand.50" color="brand.700" mr="auto">
           Provider address
         </BoxLabel>
@@ -109,7 +109,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           maxTokenAmount={tBalance}
         />
       ) : (
-        <Button mt="8" onClick={onSubmitUnstakeBtn} isFullWidth>
+        <Button onClick={onSubmitUnstakeBtn} isFullWidth>
           {submitButtonText}
         </Button>
       )}
