@@ -1,11 +1,10 @@
-import { FC, useCallback } from "react"
+import { FC, useState } from "react"
 import {
   Button,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-  Stack,
   UnorderedList,
   ListItem,
   Tabs,
@@ -22,27 +21,46 @@ import { SimpleTokenAmountForm } from "../../Forms"
 import KeepCircleBrand from "../../../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../../..//static/icons/NuCircleBrand"
 import { useModal } from "../../../hooks/useModal"
-import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
-import { BaseModalProps } from "../../../types"
+import { BaseModalProps, UpgredableToken } from "../../../types"
 import { StakeData } from "../../../types/staking"
-import { ModalType } from "../../../enums"
+import { ModalType, Token, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 
-const UnstakeTModal: FC<
-  BaseModalProps & { stake: StakeData; amountToUnstake: string }
-> = ({ stake, amountToUnstake }) => {
-  const { closeModal, openModal } = useModal()
+const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
+  stake,
+  closeModal,
+}) => {
+  const { openModal } = useModal()
+  const [unstakeType, setUnstakeType] = useState(UnstakeType.NATIVE)
 
-  const onSuccess = useCallback(
-    (tx) =>
-      openModal(ModalType.UnstakeSuccess, {
-        transactionHash: tx.hash,
-        stake,
-        unstakeAmount: amountToUnstake,
-      }),
-    [amountToUnstake, stake, openModal]
-  )
-  const { unstake } = useUnstakeTransaction(onSuccess)
+  const onSubmitForm = (tokenAmount: string) => {
+    openModal(ModalType.UnstakeTStep2, {
+      stake,
+      amountToUnstake: tokenAmount,
+      unstakeType,
+    })
+  }
+
+  const onUnstakeAllBtn = () => {
+    openModal(ModalType.UnstakeTStep2, {
+      stake,
+      amountToUnstake: "0",
+      unstakeType: UnstakeType.ALL,
+    })
+  }
+
+  const hasNuStake = stake.nuInTStake !== "0"
+  const hasKeepStake = stake.keepInTStake !== "0"
+
+  const getLegacyTabTitle = (token: UpgredableToken) => {
+    return `Unstake legacy ${hasKeepStake && hasNuStake ? token : ""} stake`
+  }
+
+  const getUnstakeAllBtnHelperText = () => {
+    const suffix =
+      hasNuStake && hasKeepStake ? "KEEP + NU" : hasKeepStake ? "KEEP" : "NU"
+    return `Unstakes max of both native tokens and legacy tokens (${suffix} + T)`
+  }
 
   return (
     <>
@@ -70,32 +88,54 @@ const UnstakeTModal: FC<
         </InfoBox>
         <Tabs isFitted>
           <TabList mb="8">
-            <Tab>Unstake T</Tab>
-            <Tab>Unstake legacy stake</Tab>
+            <Tab onClick={() => setUnstakeType(UnstakeType.NATIVE)}>
+              Unstake T
+            </Tab>
+            {hasKeepStake && (
+              <Tab onClick={() => setUnstakeType(UnstakeType.LEGACY_KEEP)}>
+                {getLegacyTabTitle(Token.Keep)}
+              </Tab>
+            )}
+            {hasNuStake && (
+              <Tab onClick={() => setUnstakeType(UnstakeType.LEGACY_NU)}>
+                {getLegacyTabTitle(Token.Nu)}
+              </Tab>
+            )}
           </TabList>
           <TabPanels>
             <TabPanel>
               <SimpleTokenAmountForm
-                onSubmitForm={(tokenAmount) => {
-                  console.log("test")
-                }}
+                onSubmitForm={onSubmitForm}
                 label="Unstake amount"
                 submitButtonText="Unstake"
-                maxTokenAmount="100"
+                maxTokenAmount={stake.tStake}
               />
             </TabPanel>
-            <TabPanel>
-              <SimpleTokenAmountForm
-                onSubmitForm={(tokenAmount) => {
-                  console.log("test")
-                }}
-                label="Unstake amount"
-                submitButtonText="Unstake"
-                maxTokenAmount="100"
-                icon={KeepCircleBrand}
-                helperText="The legacy tokens can be only unstaked in full amount"
-              />
-            </TabPanel>
+            {hasKeepStake && (
+              <TabPanel>
+                <SimpleTokenAmountForm
+                  onSubmitForm={onSubmitForm}
+                  initialTokenAmount={stake.keepInTStake}
+                  label="Unstake amount"
+                  submitButtonText="Unstake"
+                  maxTokenAmount={stake.keepInTStake}
+                  icon={KeepCircleBrand}
+                  helperText="The legacy tokens can be only unstaked in full amount"
+                  isDisabled
+                />
+              </TabPanel>
+            )}
+            {hasNuStake && (
+              <TabPanel>
+                <SimpleTokenAmountForm
+                  onSubmitForm={onSubmitForm}
+                  label="Unstake amount"
+                  submitButtonText="Unstake"
+                  maxTokenAmount={stake.nuInTStake}
+                  icon={NuCircleBrand}
+                />
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
         <Divider>
@@ -103,11 +143,12 @@ const UnstakeTModal: FC<
             <Label3>OR</Label3>
           </DividerCenterElement>
         </Divider>
-        <Button variant="outline" isFullWidth>
+        <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
           Unstake all
         </Button>
+        <Body3 mt="2">{getUnstakeAllBtnHelperText()}</Body3>
         <StakingContractLearnMore mt="7" />
-        <Divider mb={0} />
+        <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
