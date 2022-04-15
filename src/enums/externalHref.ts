@@ -6,4 +6,7 @@ export enum ExternalHref {
   preNodeSetup = "https://interim-pre-application-docs.readthedocs.io/en/latest/",
   preStakingProvider = "https://interim-pre-application-docs.readthedocs.io/en/latest/node_operation/node_providers.html",
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
+  keepDapp = "https://dashboard.keep.network/",
+  // TODO: Add nu dapp link
+  nuDapp = "URL needed",
 }
