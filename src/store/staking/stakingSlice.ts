@@ -22,7 +22,7 @@ interface StakingState {
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
   return stakes.reduce(
     (balance, stake) =>
-      BigNumber.from(balance).add(BigNumber.from(stake.tStake)),
+      BigNumber.from(balance).add(BigNumber.from(stake.totalInTStake)),
     BigNumber.from(0)
   )
 }
