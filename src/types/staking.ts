@@ -1,5 +1,5 @@
 import { BigNumberish } from "@ethersproject/bignumber"
-import { StakeType } from "../enums"
+import { StakeType, UnstakeType } from "../enums"
 
 export type StakingStateKey =
   | "authorizer"
@@ -69,6 +69,12 @@ export type UpdateStakeAmountActionPayload = {
   increaseOrDecrease: "increase" | "decrease"
 }
 
+export type UnstakedActionPayload = Omit<
+  UpdateStakeAmountActionPayload,
+  "increaseOrDecrease"
+> & {
+  unstakeType: UnstakeType
+}
 export interface StakeCellProps {
   stake: StakeData
 }
