@@ -15,9 +15,11 @@ type SimpleTokenAmountFormProps = {
   onSubmitForm: (tokenAmount: string) => void
   submitButtonText: string
   maxTokenAmount: string | number
+  initialTokenAmount?: string
   label?: string
   helperText?: string
   icon?: typeof Icon
+  isDisabled?: boolean
 }
 
 const SimpleTokenAmountFormBase: FC<
@@ -28,6 +30,7 @@ const SimpleTokenAmountFormBase: FC<
   helperText,
   label = "Stake Amount",
   icon = ThresholdCircleBrand,
+  isDisabled = false,
   ...formikProps
 }) => {
   return (
@@ -40,6 +43,8 @@ const SimpleTokenAmountFormBase: FC<
         mb={2}
         max={maxTokenAmount}
         helperText={helperText}
+        isDisabled={isDisabled}
+        _disabled={{ bg: "gray.50", border: "none" }}
       />
       <SubmitTxButton
         type="submit"
@@ -55,7 +60,9 @@ export const SimpleTokenAmountForm = withFormik<
   SimpleTokenAmountFormProps,
   FormValues
 >({
-  mapPropsToValues: () => ({ tokenAmount: "" }),
+  mapPropsToValues: (props) => ({
+    tokenAmount: props.initialTokenAmount || "",
+  }),
   validate: (values, props) => {
     const errors: FormikErrors<FormValues> = {}
 
