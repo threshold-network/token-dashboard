@@ -49,7 +49,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   }
 
   return (
-    <FormControl isInvalid={hasError}>
+    <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
       {label && <FormLabel htmlFor={inputProps.name}>{label}</FormLabel>}
       <InputGroup size="md">
         <InputLeftElement>
@@ -69,18 +69,19 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           }}
           id={inputProps.name}
         />
-        <InputRightElement width="4.5rem">
-          <Button h="1.75rem" size="sm" onClick={setToMax}>
-            MAX
-          </Button>
-        </InputRightElement>
+        {!inputProps.isDisabled && (
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={setToMax}>
+              MAX
+            </Button>
+          </InputRightElement>
+        )}
       </InputGroup>
       {!hasError ? (
         <FormHelperText>{helperText}</FormHelperText>
       ) : (
         <FormErrorMessage>{errorMsgText}</FormErrorMessage>
       )}
-      {hasError && <FormErrorMessage>{errorMsgText}</FormErrorMessage>}
     </FormControl>
   )
 }
