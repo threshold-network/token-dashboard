@@ -1,4 +1,4 @@
-import { FC } from "react"
+import React, { FC } from "react"
 import {
   Box,
   Divider as ChakraDivider,
@@ -37,13 +37,14 @@ export const Divider = ({
   ...props
 }: Omit<DividerProps, "orientation">) => {
   const styles = useMultiStyleConfig("Divider", {})
+  const Wrapper = React.Children.count(children) === 0 ? React.Fragment : Box
 
   return (
-    <Box __css={styles.dividerWrapper}>
+    <Wrapper __css={styles.dividerWrapper}>
       <StylesProvider value={styles}>
         {children}
         <ChakraDivider {...props} />
       </StylesProvider>
-    </Box>
+    </Wrapper>
   )
 }
