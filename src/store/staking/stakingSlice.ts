@@ -4,10 +4,11 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
   ProviderStakedActionPayload,
   StakeData,
+  UnstakedActionPayload,
   UpdateStakeAmountActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
-import { StakeType } from "../../enums"
+import { StakeType, UnstakeType } from "../../enums"
 
 interface StakingState {
   stakingProvider: string
@@ -99,6 +100,44 @@ export const stakingSlice = createSlice({
 
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
+    unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
+      const { stakingProvider, amount, unstakeType } = action.payload
+
+      const stakes = state.stakes
+      const stakeIdxToUpdate = stakes.findIndex(
+        (stake) => stake.stakingProvider === stakingProvider
+      )
+
+      if (stakeIdxToUpdate < 0) return
+
+      if (unstakeType === UnstakeType.ALL) {
+        stakes[stakeIdxToUpdate].tStake = "0"
+        stakes[stakeIdxToUpdate].keepInTStake = "0"
+        stakes[stakeIdxToUpdate].nuInTStake = "0"
+      } else if (unstakeType === UnstakeType.LEGACY_KEEP) {
+        // The `TTokenStaking` allows only to unstake all KEEP tokens so we can
+        // set `keepInTStake` to `0`.
+        stakes[stakeIdxToUpdate].keepInTStake = "0"
+      } else if (
+        unstakeType === UnstakeType.LEGACY_NU ||
+        unstakeType === UnstakeType.NATIVE
+      ) {
+        const fieldName =
+          unstakeType === UnstakeType.LEGACY_NU ? "nuInTStake" : "tStake"
+        const originalNuStakeAmount = BigNumber.from(
+          stakes[stakeIdxToUpdate][fieldName]
+        )
+        stakes[stakeIdxToUpdate][fieldName] = originalNuStakeAmount
+          .sub(amount)
+          .toString()
+      }
+
+      const totalStaked = state.stakes[stakeIdxToUpdate].totalInTStake
+      state.stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(totalStaked)
+        .sub(amount)
+        .toString()
+      state.stakedBalance = calculateStakedBalance(state.stakes)
+    },
   },
 })
 
@@ -107,4 +146,5 @@ export const {
   setStakes,
   providerStaked,
   updateStakeAmountForProvider,
+  unstaked,
 } = stakingSlice.actions
