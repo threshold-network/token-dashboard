@@ -19,20 +19,22 @@ const StakingPage: PageComponent = (props) => {
 
   return (
     <PageLayout {...props}>
-      <Stack direction={{ base: "column", lg: "row" }} spacing="4">
-        <StakedPortfolioCard flex={{ base: 1, lg: 50 }} />
-        <Stack flex={{ base: 1, lg: 50 }} spacing={4}>
+      <SimpleGrid
+        columns={[1, null, null, 2]}
+        spacing="4"
+        w="100%"
+        mt="4"
+        alignItems="self-start"
+      >
+        <StakedPortfolioCard />
+        <Stack spacing={4}>
           <RewardsCard />
           <StakingTVLCard tvl={data.total} />
         </Stack>
-      </Stack>
-      {stakes.length > 0 && (
-        <SimpleGrid columns={[1, null, null, 2]} spacing="4" w="100%" mt="4">
-          {stakes.map((stake) => (
-            <StakeCard key={stake.stakingProvider} stake={stake} />
-          ))}
-        </SimpleGrid>
-      )}
+        {stakes.map((stake) => (
+          <StakeCard key={stake.stakingProvider} stake={stake} />
+        ))}
+      </SimpleGrid>
     </PageLayout>
   )
 }
