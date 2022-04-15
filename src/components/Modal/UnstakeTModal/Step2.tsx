@@ -20,24 +20,54 @@ import { useModal } from "../../../hooks/useModal"
 import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
-import { ModalType } from "../../../enums"
+import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 
 const UnstakeTModal: FC<
-  BaseModalProps & { stake: StakeData; amountToUnstake: string }
-> = ({ stake, amountToUnstake }) => {
-  const { closeModal, openModal } = useModal()
+  BaseModalProps & {
+    stake: StakeData
+    amountToUnstake: string
+    unstakeType: UnstakeType
+  }
+> = ({ stake, amountToUnstake, unstakeType, closeModal }) => {
+  const { openModal } = useModal()
+  const _amountToUnstake =
+    unstakeType === UnstakeType.ALL
+      ? stake.totalInTStake
+      : unstakeType === UnstakeType.LEGACY_KEEP
+      ? stake.keepInTStake
+      : amountToUnstake
 
   const onSuccess = useCallback(
     (tx) =>
       openModal(ModalType.UnstakeSuccess, {
         transactionHash: tx.hash,
         stake,
-        unstakeAmount: amountToUnstake,
+        unstakeAmount: _amountToUnstake,
+        unstakeType,
       }),
-    [amountToUnstake, stake, openModal]
+    [amountToUnstake, stake, openModal, unstakeType]
   )
-  const { unstake } = useUnstakeTransaction(onSuccess)
+  const { unstake } = useUnstakeTransaction(unstakeType, onSuccess)
+
+  const hasNuStake = stake.nuInTStake !== "0"
+  const hasKeepStake = stake.keepInTStake !== "0"
+
+  const getStatsAmountText = () => {
+    let suffix = ""
+    if (unstakeType === UnstakeType.ALL) {
+      const keep = hasKeepStake ? "KEEP + " : ""
+      const nu = hasNuStake ? "NU + " : ""
+      suffix = ` (${keep}${nu}T)`
+    } else if (
+      unstakeType === UnstakeType.LEGACY_KEEP ||
+      unstakeType === UnstakeType.LEGACY_NU
+    ) {
+      const token = hasKeepStake ? "KEEP" : "NU"
+      suffix = ` (${token} stake in T)`
+    }
+    return `Unstake Amount${suffix}`
+  }
 
   return (
     <>
@@ -52,8 +82,8 @@ const UnstakeTModal: FC<
             </Body1>
           </InfoBox>
           <StakingStats
-            stakeAmount={amountToUnstake}
-            amountText="Unstake Amount"
+            stakeAmount={_amountToUnstake}
+            amountText={getStatsAmountText()}
             stakingProvider={stake.stakingProvider}
             beneficiary={stake.beneficiary}
             authorizer={stake.authorizer}
@@ -76,18 +106,11 @@ const UnstakeTModal: FC<
           Cancel
         </Button>
         <Button
-          disabled={
-            !amountToUnstake ||
-            +amountToUnstake == 0 ||
-            +amountToUnstake > +stake.tStake
-          }
           onClick={() => {
-            if (amountToUnstake) {
-              unstake({
-                stakingProvider: stake.stakingProvider,
-                amount: amountToUnstake,
-              })
-            }
+            unstake({
+              stakingProvider: stake.stakingProvider,
+              amount: amountToUnstake,
+            })
           }}
         >
           Unstake
