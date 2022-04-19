@@ -10,9 +10,12 @@ export interface NumberInputValues {
   floatValue: number
 }
 
-const NumberInput: FC<
-  InputProps & { onValueChange: (values: NumberInputValues) => void }
-> = (props) => {
+export type NumberInputProps = InputProps & {
+  onValueChange: (values: NumberInputValues) => void
+  decimalScale?: number
+}
+
+const NumberInput: FC<NumberInputProps> = (props) => {
   const { field: css } = useMultiStyleConfig("Input", props)
 
   return (
@@ -20,6 +23,7 @@ const NumberInput: FC<
     <ChakraWrapper
       allowLeadingZeros={false}
       thousandSeparator
+      decimalScale={props.decimalScale}
       __css={css}
       disabled={props.isDisabled}
       {...props}

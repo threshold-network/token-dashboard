@@ -18,7 +18,7 @@ export const StakingDepositSteps: FC = () => {
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
               <ExternalLink
-                href={ExternalHref.preStakingProvider}
+                href={ExternalHref.preStakingProvidersList}
                 text="this"
                 withArrow
               />
@@ -48,7 +48,7 @@ export const PreSetupSteps: FC = () => {
               />
               , or contact{" "}
               <ExternalLink
-                href={ExternalHref.preStakingProvider}
+                href={ExternalHref.preStakingProvidersList}
                 text="a staking provider"
                 withArrow
               />
