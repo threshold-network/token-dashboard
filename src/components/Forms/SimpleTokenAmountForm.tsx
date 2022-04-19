@@ -1,11 +1,12 @@
 import { FC } from "react"
-import { Icon } from "@chakra-ui/react"
+import { Icon, Box } from "@chakra-ui/react"
 import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
 import SubmitTxButton from "../SubmitTxButton"
 import { Form } from "./Form"
 import { getErrorsObj, validateAmountInRange } from "../../utils/forms"
+import { formatTokenAmount } from "../../utils/formatAmount"
 
 type FormValues = {
   tokenAmount: string
@@ -20,6 +21,7 @@ type SimpleTokenAmountFormProps = {
   helperText?: string
   icon?: typeof Icon
   isDisabled?: boolean
+  shouldDisplayMaxAmountInLabel?: boolean
 }
 
 const SimpleTokenAmountFormBase: FC<
@@ -31,13 +33,25 @@ const SimpleTokenAmountFormBase: FC<
   label = "Stake Amount",
   icon = ThresholdCircleBrand,
   isDisabled = false,
+  shouldDisplayMaxAmountInLabel = false,
   ...formikProps
 }) => {
   return (
     <Form onSubmit={formikProps.handleSubmit}>
       <FormikTokenBalanceInput
         name="tokenAmount"
-        label={label}
+        label={
+          shouldDisplayMaxAmountInLabel ? (
+            <>
+              <Box as="span">{label} </Box>
+              <Box as="span" float="right">
+                {maxTokenAmount ? formatTokenAmount(maxTokenAmount) : "--"} T
+              </Box>
+            </>
+          ) : (
+            label
+          )
+        }
         placeholder="T amount"
         icon={icon}
         mb={2}
