@@ -20,7 +20,7 @@ export interface TokenBalanceInputProps extends InputProps {
   max: number | string
   amount?: string | number
   setAmount: (val?: string | number) => void
-  label?: string
+  label?: string | JSX.Element
   hasError?: boolean
   errorMsgText?: string
   helperText?: String

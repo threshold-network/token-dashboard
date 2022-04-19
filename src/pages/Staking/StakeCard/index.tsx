@@ -107,6 +107,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           onSubmitForm={onSubmitTopUpForm}
           submitButtonText={submitButtonText}
           maxTokenAmount={tBalance}
+          shouldDisplayMaxAmountInLabel
         />
       ) : (
         <Button onClick={onSubmitUnstakeBtn} isFullWidth>

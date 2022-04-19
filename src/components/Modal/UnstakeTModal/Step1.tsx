@@ -122,6 +122,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 label="Unstake amount"
                 submitButtonText="Unstake"
                 maxTokenAmount={stake.tStake}
+                shouldDisplayMaxAmountInLabel
               />
             </TabPanel>
             {hasKeepStake && (
@@ -146,6 +147,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                   submitButtonText="Unstake"
                   maxTokenAmount={stake.nuInTStake}
                   icon={NuCircleBrand}
+                  shouldDisplayMaxAmountInLabel
                 />
               </TabPanel>
             )}
