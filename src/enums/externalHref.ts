@@ -3,8 +3,8 @@ export enum ExternalHref {
   thresholdDiscord = "https://discord.gg/WXK9PC6SRF",
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
-  preNodeSetup = "https://interim-pre-application-docs.readthedocs.io/en/latest/",
-  preStakingProvider = "https://interim-pre-application-docs.readthedocs.io/en/latest/node_operation/node_providers.html",
+  preNodeSetup = "https://docs.nucypher.com/en/latest/pre_application/running_a_node.html#configure-and-run-a-pre-node",
+  preStakingProvidersList = "https://docs.nucypher.com/en/latest/pre_application/node_providers.html",
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
   keepDapp = "https://dashboard.keep.network/",
   // TODO: Add nu dapp link
