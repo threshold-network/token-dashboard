@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react"
+import { FC, ReactElement, Fragment } from "react"
 import {
   Flex,
   Badge,
@@ -23,7 +23,12 @@ import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
 import { ModalType, StakeType, Token } from "../../../enums"
-import { Tree, TreeItem, TreeNode } from "../../../components/Tree"
+import {
+  Tree,
+  TreeItem,
+  TreeNode,
+  TreeItemLineToNode,
+} from "../../../components/Tree"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -154,8 +159,9 @@ const Switcher: FC<{ onClick: () => void; isActive: boolean }> = ({
 const BalanceTree: FC<{ stake: StakeData }> = ({ stake }) => {
   return (
     <Tree>
-      <TreeNode>
+      <TreeNode isRoot>
         <BalanceTreeItem
+          isRoot
           label={
             <>
               Total Staked Balance{" "}
@@ -193,19 +199,22 @@ const BalanceTree: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-const BalanceTreeItem: FC<{ label: string | ReactElement; value: string }> = ({
-  label,
-  value,
-  children,
-}) => {
+const BalanceTreeItem: FC<{
+  label: string | ReactElement
+  value: string
+  isRoot?: boolean
+}> = ({ label, value, children, isRoot = false }) => {
+  const LineComponent = isRoot ? Fragment : TreeItemLineToNode
   return (
     <TreeItem>
-      <Body2 fontWeight="400" mt="6" mb="3">
+      <Body2 fontWeight="400" pt="6" pb="3">
         {label}
       </Body2>
-      <InfoBox m="0">
-        <TokenBalance tokenAmount={value} withSymbol tokenSymbol="T" />
-      </InfoBox>
+      <LineComponent>
+        <InfoBox m="0">
+          <TokenBalance tokenAmount={value} withSymbol tokenSymbol="T" />
+        </InfoBox>
+      </LineComponent>
       {children}
     </TreeItem>
   )
