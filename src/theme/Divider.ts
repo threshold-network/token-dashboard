@@ -9,6 +9,8 @@ export const Divider = {
     return {
       dividerWrapper: {
         position: "relative",
+      },
+      divider: {
         my: 6,
       },
       icon: {

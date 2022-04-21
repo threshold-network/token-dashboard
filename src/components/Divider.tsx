@@ -37,13 +37,15 @@ export const Divider = ({
   ...props
 }: Omit<DividerProps, "orientation">) => {
   const styles = useMultiStyleConfig("Divider", {})
-  const Wrapper = React.Children.count(children) === 0 ? React.Fragment : Box
+  const hasChildren = React.Children.count(children) > 0
+  const Wrapper = !hasChildren ? React.Fragment : Box
+  const wrapperProps = !hasChildren ? {} : { __css: styles.dividerWrapper }
 
   return (
-    <Wrapper __css={styles.dividerWrapper}>
+    <Wrapper {...wrapperProps}>
       <StylesProvider value={styles}>
         {children}
-        <ChakraDivider {...props} />
+        <ChakraDivider __css={styles.divider} {...props} />
       </StylesProvider>
     </Wrapper>
   )
