@@ -71,19 +71,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </Label3>
         <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
       </Flex>
-      {/* <Body2 mt="12">Total Rewards</Body2>
-      <Flex mt="4" alignItems="center">
-        <TokenBalance
-          tokenAmount="2000340000000000000000"
-          tokenSymbol="T"
-          withSymbol
-          isLarge
-        />
-        <Button size="sm" ml="auto" variant="outline" w="28">
-          Claim
-        </Button>
-      </Flex>
-      <Divider /> */}
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
       ) : (
