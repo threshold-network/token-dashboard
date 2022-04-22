@@ -30,7 +30,7 @@ const TokenAmountFormBase: FC<
   submitButtonText,
   maxTokenAmount,
   helperText,
-  label = "Stake Amount",
+  label = "Token Amount",
   icon = ThresholdCircleBrand,
   isDisabled = false,
   shouldDisplayMaxAmountInLabel = false,
