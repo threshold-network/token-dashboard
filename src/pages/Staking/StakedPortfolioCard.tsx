@@ -44,6 +44,7 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
       <Divider my="6" />
       <TokenAmountForm
         onSubmitForm={openStakingModal}
+        label="Stake Amount"
         submitButtonText="Stake"
         maxTokenAmount={tBalance}
       />

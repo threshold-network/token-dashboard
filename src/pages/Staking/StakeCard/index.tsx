@@ -97,6 +97,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       {isStakeAction ? (
         <TokenAmountForm
           onSubmitForm={onSubmitTopUpForm}
+          label="Stake Amount"
           submitButtonText={submitButtonText}
           maxTokenAmount={tBalance}
           shouldDisplayMaxAmountInLabel
