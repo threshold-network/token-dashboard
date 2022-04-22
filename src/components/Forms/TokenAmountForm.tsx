@@ -22,6 +22,7 @@ type TokenAmountFormProps = {
   icon?: typeof Icon
   isDisabled?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
+  token?: { decimals: number; symbol: string }
 }
 
 const TokenAmountFormBase: FC<
@@ -31,6 +32,7 @@ const TokenAmountFormBase: FC<
   maxTokenAmount,
   helperText,
   label = "Token Amount",
+  token = { decimals: 18, symbol: "T" },
   icon = ThresholdCircleBrand,
   isDisabled = false,
   shouldDisplayMaxAmountInLabel = false,
@@ -45,14 +47,17 @@ const TokenAmountFormBase: FC<
             <>
               <Box as="span">{label} </Box>
               <Box as="span" float="right">
-                {maxTokenAmount ? formatTokenAmount(maxTokenAmount) : "--"} T
+                {maxTokenAmount
+                  ? formatTokenAmount(maxTokenAmount, undefined, token.decimals)
+                  : "--"}{" "}
+                {token.symbol}
               </Box>
             </>
           ) : (
             label
           )
         }
-        placeholder="T amount"
+        placeholder={`${token.symbol} amount`}
         icon={icon}
         mb={2}
         max={maxTokenAmount}
