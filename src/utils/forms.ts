@@ -48,7 +48,7 @@ export const validateAmountInRange = (
       : options.lessThanValidationMsg
   } else if (valueInBN.lt(minValueInBN)) {
     return typeof options.greaterThanValidationMsg === "function"
-      ? options.greaterThanValidationMsg(maxValue)
+      ? options.greaterThanValidationMsg(minValue)
       : options.greaterThanValidationMsg
   }
 }
