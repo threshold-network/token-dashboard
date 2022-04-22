@@ -32,7 +32,7 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         mt="6"
         name="authorizer"
-        label="Authrozier Address"
+        label="Authorizer Address"
         helperText="This authorizer will authorize applications."
       />
     </Form>
