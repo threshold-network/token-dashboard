@@ -6,7 +6,7 @@ import InfoBox from "../../components/InfoBox"
 import TokenBalance from "../../components/TokenBalance"
 import BoxLabel from "../../components/BoxLabel"
 import { StakingContractLearnMore } from "../../components/ExternalLink"
-import { SimpleTokenAmountForm } from "../../components/Forms"
+import { TokenAmountForm } from "../../components/Forms"
 import { useStakingState } from "../../hooks/useStakingState"
 import { useModal } from "../../hooks/useModal"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
@@ -42,7 +42,7 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
         <Body1>{formatTokenAmount(tBalance)} T</Body1>
       </HStack>
       <Divider my="6" />
-      <SimpleTokenAmountForm
+      <TokenAmountForm
         onSubmitForm={openStakingModal}
         submitButtonText="Stake"
         maxTokenAmount={tBalance}

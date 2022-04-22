@@ -12,7 +12,7 @@ type FormValues = {
   tokenAmount: string
 }
 
-type SimpleTokenAmountFormProps = {
+type TokenAmountFormProps = {
   onSubmitForm: (tokenAmount: string) => void
   submitButtonText: string
   maxTokenAmount: string | number
@@ -24,8 +24,8 @@ type SimpleTokenAmountFormProps = {
   shouldDisplayMaxAmountInLabel?: boolean
 }
 
-const SimpleTokenAmountFormBase: FC<
-  SimpleTokenAmountFormProps & FormikProps<FormValues>
+const TokenAmountFormBase: FC<
+  TokenAmountFormProps & FormikProps<FormValues>
 > = ({
   submitButtonText,
   maxTokenAmount,
@@ -70,10 +70,7 @@ const SimpleTokenAmountFormBase: FC<
   )
 }
 
-export const SimpleTokenAmountForm = withFormik<
-  SimpleTokenAmountFormProps,
-  FormValues
->({
+export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
   mapPropsToValues: (props) => ({
     tokenAmount: props.initialTokenAmount || "",
   }),
@@ -89,5 +86,5 @@ export const SimpleTokenAmountForm = withFormik<
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values.tokenAmount)
   },
-  displayName: "SimpleTokenAmountForm",
-})(SimpleTokenAmountFormBase)
+  displayName: "TokenAmountForm",
+})(TokenAmountFormBase)
