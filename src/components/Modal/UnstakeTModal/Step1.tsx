@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useState, useMemo } from "react"
 import {
   Button,
   ModalBody,
@@ -57,11 +57,11 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
     return `Unstake legacy ${hasKeepStake && hasNuStake ? token : ""} stake`
   }
 
-  const getUnstakeAllBtnHelperText = () => {
+  const unstakeAllBtnHelperText = useMemo(() => {
     const suffix =
       hasNuStake && hasKeepStake ? "KEEP + NU" : hasKeepStake ? "KEEP" : "NU"
     return `Unstakes max of both native tokens and legacy tokens (${suffix} + T)`
-  }
+  }, [hasNuStake, hasKeepStake])
 
   return (
     <>
@@ -163,7 +163,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
             <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
               Unstake all
             </Button>
-            <Body3 mt="2">{getUnstakeAllBtnHelperText()}</Body3>
+            <Body3 mt="2">{unstakeAllBtnHelperText}</Body3>
           </>
         )}
         <StakingContractLearnMore mt="7" />
