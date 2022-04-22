@@ -17,7 +17,7 @@ import { Divider, DividerCenterElement } from "../../Divider"
 import { Body3, H5, Label3 } from "../../Typography"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
-import { SimpleTokenAmountForm } from "../../Forms"
+import { TokenAmountForm } from "../../Forms"
 import KeepCircleBrand from "../../../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../../..//static/icons/NuCircleBrand"
 import { useModal } from "../../../hooks/useModal"
@@ -117,7 +117,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
           </TabList>
           <TabPanels>
             <TabPanel>
-              <SimpleTokenAmountForm
+              <TokenAmountForm
                 onSubmitForm={onSubmitForm}
                 label="Unstake amount"
                 submitButtonText="Unstake"
@@ -127,7 +127,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
             </TabPanel>
             {hasKeepStake && (
               <TabPanel>
-                <SimpleTokenAmountForm
+                <TokenAmountForm
                   onSubmitForm={onSubmitForm}
                   initialTokenAmount={stake.keepInTStake}
                   label="Unstake amount"
@@ -141,7 +141,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
             )}
             {hasNuStake && (
               <TabPanel>
-                <SimpleTokenAmountForm
+                <TokenAmountForm
                   onSubmitForm={onSubmitForm}
                   label="Unstake amount"
                   submitButtonText="Unstake"

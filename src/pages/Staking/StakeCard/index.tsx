@@ -18,7 +18,7 @@ import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
 import BoxLabel from "../../../components/BoxLabel"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
-import { SimpleTokenAmountForm } from "../../../components/Forms"
+import { TokenAmountForm } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
@@ -95,7 +95,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
       {isStakeAction ? (
-        <SimpleTokenAmountForm
+        <TokenAmountForm
           onSubmitForm={onSubmitTopUpForm}
           submitButtonText={submitButtonText}
           maxTokenAmount={tBalance}
