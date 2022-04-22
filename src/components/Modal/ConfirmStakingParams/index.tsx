@@ -85,13 +85,7 @@ const ConfirmStakingParamsModal: FC<
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5 mb={4}>
-            You are about to make a deposit into the T Staking Contract
-          </H5>
-          <Body1>
-            Staking uses an ApproveAndCall function which requires one
-            confirmation transaction.
-          </Body1>
+          <H5>You are about to make a deposit into the T Staking Contract.</H5>
         </InfoBox>
         <StakingStats
           {...{
