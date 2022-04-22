@@ -7,6 +7,5 @@ export enum ExternalHref {
   preStakingProvidersList = "https://docs.nucypher.com/en/latest/pre_application/node_providers.html",
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
   keepDapp = "https://dashboard.keep.network/",
-  // TODO: Add nu dapp link
-  nuDapp = "URL needed",
+  nuDapp = "https://stake.nucypher.network/manage",
 }
