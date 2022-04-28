@@ -1,6 +1,6 @@
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector"
 import { getEnvVariable } from "../../utils/getEnvVariable"
-import { EnvVariable } from "../../enums"
+import { ChainID, EnvVariable } from "../../enums"
 
 const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
@@ -9,6 +9,11 @@ export const walletconnect = new WalletConnectConnector({
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
-  supportedChainIds: [1, 3, 1337],
+  chainId: Number(supportedChainId),
+  supportedChainIds: [
+    ChainID.Ethereum.valueOf(),
+    ChainID.Ropsten.valueOf(),
+    ChainID.Localhost.valueOf(),
+  ],
   qrcode: true,
 })
