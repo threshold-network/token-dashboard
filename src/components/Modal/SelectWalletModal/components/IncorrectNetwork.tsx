@@ -10,7 +10,7 @@ import chainIdToNetworkName from "../../../../utils/chainIdToNetworkName"
 import { getEnvVariable } from "../../../../utils/getEnvVariable"
 import { EnvVariable } from "../../../../enums"
 
-const AccountSuccessAlert: FC = () => {
+const IncorrectNetworkAlert: FC = () => {
   return (
     <Alert status="error">
       <AlertIcon />
@@ -25,4 +25,4 @@ const AccountSuccessAlert: FC = () => {
   )
 }
 
-export default AccountSuccessAlert
+export default IncorrectNetworkAlert
