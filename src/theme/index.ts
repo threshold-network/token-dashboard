@@ -6,6 +6,7 @@ import { Divider } from "./Divider"
 import { Card } from "./Card"
 import { Progress } from "./Progress"
 import { InfoBox } from "./InfoBox"
+import { fonts } from "./fonts"
 
 const colors = {
   brand: {
@@ -57,6 +58,7 @@ const colors = {
 }
 
 const index = extendTheme({
+  fonts,
   colors,
   components: {
     Alert,
