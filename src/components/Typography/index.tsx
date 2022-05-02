@@ -7,69 +7,66 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 
-export const Headline: FC<HeadingProps> = (props) => {
+export const H1: FC<HeadingProps> = (props) => {
   return (
     <Heading
-      fontSize="7xl"
-      color={useColorModeValue("gray.700", "gray.300")}
-      {...props}
-    />
-  )
-}
-
-export const H1: FC<TextProps> = (props) => {
-  return (
-    <Text
       as="h1"
-      fontSize="60px"
-      lineHeight="64px"
-      fontWeight="bold"
+      fontWeight="700"
+      fontSize={{ base: "48px", md: "60px" }}
+      lineHeight={{ base: "52px", md: "64px" }}
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
   )
 }
 
-export const H2: FC<TextProps> = (props) => {
+export const H2: FC<HeadingProps> = (props) => {
   return (
-    <Text
+    <Heading
       as="h2"
-      fontSize="48px"
-      lineHeight="48px"
+      fontWeight="600"
+      fontSize={{ base: "40px", md: "48px" }}
+      lineHeight={{ base: "46px", md: "52px" }}
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
   )
 }
 
-export const H3: FC<TextProps> = (props) => {
+export const H3: FC<HeadingProps> = (props) => {
   return (
-    <Text
+    <Heading
       as="h3"
-      fontSize="36px"
-      lineHeight="40px"
+      fontWeight="600"
+      fontSize={{
+        base: "32px",
+        md: "36px",
+      }}
+      lineHeight={{ base: "38px", md: "40px" }}
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
   )
 }
 
-export const H4: FC<TextProps> = (props) => {
+export const H4: FC<HeadingProps> = (props) => {
   return (
-    <Text
+    <Heading
       as="h4"
-      fontSize="30px"
-      lineHeight="38px"
+      fontWeight="500"
+      fontSize={{ base: "28px", md: "30px" }}
+      lineHeight={{ base: "34px", md: "38px" }}
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
   )
 }
 
-export const H5: FC<TextProps> = (props) => {
+export const H5: FC<HeadingProps> = (props) => {
   return (
-    <Text
+    <Heading
       as="h5"
+      fontWeight="500"
       fontSize="24px"
       lineHeight="32px"
       color={useColorModeValue("gray.700", "gray.300")}
@@ -82,6 +79,7 @@ export const Body1: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
+      fontWeight="400"
       fontSize="18px"
       lineHeight="28px"
       color={useColorModeValue("gray.700", "gray.300")}
@@ -94,6 +92,7 @@ export const Body2: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
+      fontWeight="400"
       fontSize="16px"
       lineHeight="24px"
       color={useColorModeValue("gray.700", "gray.300")}
@@ -106,6 +105,7 @@ export const Body3: FC<TextProps> = (props) => {
   return (
     <Text
       as="p"
+      fontWeight="400"
       fontSize="14px"
       lineHeight="20px"
       color={useColorModeValue("gray.700", "gray.300")}
@@ -117,10 +117,11 @@ export const Body3: FC<TextProps> = (props) => {
 export const Label1: FC<TextProps> = (props) => {
   return (
     <Text
-      fontWeight={600}
+      fontWeight="600"
       fontSize="20px"
       lineHeight="28px"
       letterSpacing="0.1em"
+      textTransform="uppercase"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -130,10 +131,11 @@ export const Label1: FC<TextProps> = (props) => {
 export const Label2: FC<TextProps> = (props) => {
   return (
     <Text
-      fontWeight={600}
+      fontWeight="600"
       fontSize="16px"
       lineHeight="24px"
       letterSpacing="0.075em"
+      textTransform="uppercase"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
@@ -143,10 +145,11 @@ export const Label2: FC<TextProps> = (props) => {
 export const Label3: FC<TextProps> = (props) => {
   return (
     <Text
-      fontWeight={600}
+      fontWeight="600"
       fontSize="14px"
       lineHeight="20px"
-      letterSpacing="0.05em"
+      letterSpacing="0.075em"
+      textTransform="uppercase"
       color={useColorModeValue("gray.700", "gray.300")}
       {...props}
     />
