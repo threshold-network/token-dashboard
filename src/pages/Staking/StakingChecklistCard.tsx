@@ -6,9 +6,7 @@ import { Label3 } from "../../components/Typography"
 const StakingChecklistCard: FC = () => {
   return (
     <Card>
-      <Label3 mb={6} textDecoration="uppercase">
-        Checklist before staking
-      </Label3>
+      <Label3 mb={6}>Checklist before staking</Label3>
       <StakingChecklist />
     </Card>
   )

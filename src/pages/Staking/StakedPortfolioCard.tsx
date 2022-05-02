@@ -26,9 +26,7 @@ const StakedPortfolioCard: FC = () => {
   return (
     <Card h="fit-content">
       <Stack spacing={6}>
-        <Label3 mb={6} textDecoration="uppercase">
-          Staked Portfolio
-        </Label3>
+        <Label3 mb={6}>Staked Portfolio</Label3>
         <Body2 mb={2}>Staked Balance</Body2>
         <InfoBox>
           <TokenBalance
