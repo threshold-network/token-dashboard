@@ -15,9 +15,7 @@ interface StakingTableProps {
 const StakesTable: FC<StakingTableProps> = ({ stakes }) => {
   return (
     <Card>
-      <Label3 mb={6} textDecoration="uppercase">
-        Stakes
-      </Label3>
+      <Label3 mb={6}>Stakes</Label3>
       <Table variant="simple">
         <Thead>
           <Tr>
