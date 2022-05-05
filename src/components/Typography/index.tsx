@@ -147,7 +147,7 @@ export const Label3: FC<TextProps> = (props) => {
     <Text
       fontWeight="600"
       fontSize="14px"
-      lineHeight="20px"
+      lineHeight="16px"
       letterSpacing="0.075em"
       textTransform="uppercase"
       color={useColorModeValue("gray.700", "gray.300")}
