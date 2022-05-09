@@ -22,7 +22,7 @@ import { TokenAmountForm } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
-import { ModalType, StakeType, Token } from "../../../enums"
+import { ModalType, StakeType, Token, UnstakeType } from "../../../enums"
 import {
   Tree,
   TreeItem,
@@ -50,6 +50,21 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitUnstakeBtn = () => {
     openModal(ModalType.UnstakeT, { stake })
+  }
+
+  const onSubmitForm = (tokenAmount: string | number) => {
+    if (isStakeAction) {
+      onSubmitTopUpForm(tokenAmount)
+    } else {
+      // We display the unstake form for stakes that only contains T liquid
+      // stake in the `StakeCard` directly. So we can go straight to the step 2
+      // of the unstaking flow and force the unstake type to `native`.
+      openModal(ModalType.UnstakeTStep2, {
+        stake,
+        amountToUnstake: tokenAmount,
+        unstakeType: UnstakeType.NATIVE,
+      })
+    }
   }
 
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -94,12 +109,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction ? (
+      {isStakeAction || !hasLegacyStakes ? (
         <TokenAmountForm
-          onSubmitForm={onSubmitTopUpForm}
-          label="Stake Amount"
+          onSubmitForm={onSubmitForm}
+          label="Unstake Amount"
           submitButtonText={submitButtonText}
-          maxTokenAmount={tBalance}
+          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
         />
       ) : (
