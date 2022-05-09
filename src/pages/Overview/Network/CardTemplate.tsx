@@ -11,11 +11,7 @@ const CardTemplate: FC<{ title: string | JSX.Element } & BoxProps> = ({
 }) => {
   return (
     <Card h="100%" w="100%" {...boxProps}>
-      {typeof title === "string" ? (
-        <Label3 textDecoration="uppercase">{title}</Label3>
-      ) : (
-        title
-      )}
+      {typeof title === "string" ? <Label3>{title}</Label3> : title}
       <Divider borderColor="gray.300" />
       {children}
     </Card>

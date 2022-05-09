@@ -31,8 +31,8 @@ const useUnstakeTransaction = (
 
   const onError = (error: any) => {
     if (
-      error?.data?.message.includes(CommonUnStakingErrors.tooEarly) ||
-      error?.message.includes(CommonUnStakingErrors.tooEarly)
+      error?.data?.message?.includes(CommonUnStakingErrors.tooEarly) ||
+      error?.message?.includes(CommonUnStakingErrors.tooEarly)
     ) {
       openModal(ModalType.TransactionFailed, {
         error: new Error(

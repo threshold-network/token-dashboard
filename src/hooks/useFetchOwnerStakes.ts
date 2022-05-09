@@ -19,8 +19,9 @@ export const useFetchOwnerStakes = () => {
   const dispatch = useDispatch()
 
   return useCallback(
-    async (address: string): Promise<StakeData[]> => {
-      if (!tStakingContract || !multicallContract) {
+    async (address?: string): Promise<StakeData[]> => {
+      if (!tStakingContract || !multicallContract || !address) {
+        dispatch(setStakes([]))
         return []
       }
 
