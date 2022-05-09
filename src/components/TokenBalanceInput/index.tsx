@@ -14,11 +14,12 @@ import {
   BodySm,
   NumberFormatInput,
   NumberFormatInputValues,
+  NumberFormatInputProps,
 } from "@threshold-network/components"
 
 export interface TokenBalanceInputProps
   extends InputProps,
-    Omit<NumberInputProps, "onValueChange"> {
+    Omit<NumberFormatInputProps, "onValueChange"> {
   icon: ReturnType<typeof createIcon>
   max: number | string
   amount?: string | number
