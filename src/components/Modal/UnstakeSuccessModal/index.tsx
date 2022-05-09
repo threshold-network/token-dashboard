@@ -58,7 +58,7 @@ const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
             <InfoBox variant="modal">
               <H5>
                 Make sure you go to the legacy dashboard and undelegate your
-                tokens - {unstakeTypeToLegacyDappLink[UnstakeType.ALL]}.
+                tokens - {unstakeTypeToLegacyDappLink[unstakeType]}.
               </H5>
             </InfoBox>
           )}
