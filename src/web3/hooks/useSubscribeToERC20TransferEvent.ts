@@ -17,14 +17,19 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
 
   const balanceUpdater = useCallback(
     (from, to, amount) => {
-      console.log(`Received ${token}.Transfer event`, {
-        from,
-        to,
-        amount: amount.toString(),
-      })
+      const isToAddress = isSameETHAddress(to, account!)
+      const isFromAddress = isSameETHAddress(from, account!)
+
+      if (isToAddress || isFromAddress) {
+        console.log(`Received ${token}.Transfer event`, {
+          from,
+          to,
+          amount: amount.toString(),
+        })
+      }
 
       // transfer in - increase token balance
-      if (isSameETHAddress(to, account!)) {
+      if (isToAddress) {
         setTokenBalance(
           token,
           BigNumber.from(currentTokenBalance)
@@ -33,7 +38,7 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
         )
 
         // transfer out - decrease token balance
-      } else if (isSameETHAddress(from, account!)) {
+      } else if (isFromAddress) {
         setTokenBalance(
           token,
           BigNumber.from(currentTokenBalance)

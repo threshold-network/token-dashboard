@@ -9,13 +9,11 @@ import {
   H3,
   H4,
   H5,
-  Headline,
 } from "../components/Typography"
 
 const Template: Story = () => {
   return (
     <Box>
-      <Headline>Here is a Headline</Headline>
       <H1>Here is H1</H1>
       <H2>Here is H2</H2>
       <H3>Here is H3</H3>

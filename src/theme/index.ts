@@ -9,6 +9,7 @@ import { InfoBox } from "./InfoBox"
 import { NotificationPill } from "./NotificationPill"
 import { Tree } from "./Tree"
 import { Tabs } from "./Tabs"
+import { fonts } from "./fonts"
 
 const colors = {
   brand: {
@@ -72,6 +73,7 @@ const colors = {
 }
 
 const index = extendTheme({
+  fonts,
   colors,
   components: {
     Alert,
