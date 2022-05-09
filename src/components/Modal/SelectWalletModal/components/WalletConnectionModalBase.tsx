@@ -57,7 +57,7 @@ const WalletConnectionModalBase: FC<Props> = ({
         </Stack>
         <Box my={6}>{children}</Box>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter display="flex" justifyContent="space-between">
         <Button
           variant="outline"
           leftIcon={<BiLeftArrowAlt />}
@@ -66,7 +66,7 @@ const WalletConnectionModalBase: FC<Props> = ({
           Change Wallet
         </Button>
 
-        {tryAgain && (
+        {tryAgain && !active && (
           <Button ml={4} onClick={tryAgain}>
             Try again
           </Button>

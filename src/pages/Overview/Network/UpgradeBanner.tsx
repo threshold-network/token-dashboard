@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import vortexLight from "../../../static/images/vortextLight.png"
 import vortexDark from "../../../static/images/vortexDark.png"
-import { BodyMd, H4, Card } from "@threshold-network/components"
+import { H4, Card } from "@threshold-network/components"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"
@@ -42,7 +42,8 @@ const UpgradeBanner: FC = () => {
         <Image
           src={useColorModeValue(vortexLight, vortexDark)}
           width={{ base: "140px" }}
-          m="auto"
+          m={{ base: "auto" }}
+          mr={{ xl: "10" }}
         />
         <Stack
           direction={{ base: "column", xl: "row" }}
@@ -50,18 +51,10 @@ const UpgradeBanner: FC = () => {
           w={{ base: "auto", lg: "100%" }}
           spacing={6}
         >
-          {isMobile ? (
-            <>
-              <BodyMd>{heroText1}</BodyMd>
-              <BodyMd>{heroText2}</BodyMd>
-            </>
-          ) : (
-            <Stack maxW="450px" justify="center">
-              <H4>{heroText1}</H4>
-              <H4 noOfLines={2}>{heroText2}</H4>
-            </Stack>
-          )}
-
+          <Stack justify="center">
+            <H4>{heroText1}</H4>
+            <H4>{heroText2}</H4>
+          </Stack>
           <Button
             as={RouterLink}
             to={upgradeHref}

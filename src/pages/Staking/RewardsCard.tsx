@@ -9,7 +9,7 @@ const RewardsCard: FC = () => {
     <Card>
       <Stack spacing={4}>
         <Box>
-          <LabelSm textDecoration="uppercase">Rewards</LabelSm>
+          <LabelSm>Rewards</LabelSm>
           <BodyMd mb={2}>Total Rewards</BodyMd>
           <InfoBox>
             <TokenBalance tokenAmount={0} withSymbol tokenSymbol="T" isLarge />
