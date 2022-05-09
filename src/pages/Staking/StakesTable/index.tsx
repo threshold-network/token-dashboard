@@ -5,7 +5,7 @@ import { StakeData } from "../../../types/staking"
 import StakeBalanceCell from "./StakeAmountCell"
 import StakeNameCell from "./StakeNameCell"
 import StakeActionsCell from "./StakeActionsCell"
-import { Label3, Card } from "@threshold-network/components"
+import { LabelSm, Card } from "@threshold-network/components"
 
 interface StakingTableProps {
   stakes: StakeData[]
@@ -14,9 +14,9 @@ interface StakingTableProps {
 const StakesTable: FC<StakingTableProps> = ({ stakes }) => {
   return (
     <Card>
-      <Label3 mb={6} textDecoration="uppercase">
+      <LabelSm mb={6} textDecoration="uppercase">
         Stakes
-      </Label3>
+      </LabelSm>
       <Table variant="simple">
         <Thead>
           <Tr>

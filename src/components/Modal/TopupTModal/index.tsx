@@ -8,7 +8,7 @@ import {
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "@threshold-network/components"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import TokenBalanceInput from "../../TokenBalanceInput"
 import { formatTokenAmount } from "../../../utils/formatAmount"
@@ -56,10 +56,10 @@ const TopupTModal: FC<
         <Stack spacing={6}>
           <InfoBox variant="modal">
             <H5 mb={4}>You are about to top up your stake</H5>
-            <Body1>
+            <BodyLg>
               By topping up your stake you will add a new deposit of tokens to
               your existing stake.
-            </Body1>
+            </BodyLg>
           </InfoBox>
           <Stack spacing={6} mb={12}>
             <Box>
@@ -71,9 +71,9 @@ const TopupTModal: FC<
                 icon={ThresholdCircleBrand}
                 mb={2}
               />
-              <Body3>
+              <BodySm>
                 {formatTokenAmount(maxAmount)} T available to top up.
-              </Body3>
+              </BodySm>
             </Box>
           </Stack>
         </Stack>

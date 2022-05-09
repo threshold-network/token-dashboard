@@ -10,7 +10,7 @@ import {
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, Body3 } from "@threshold-network/components"
+import { BodyLg, BodySm } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { PreSetupSteps } from "../../StakingChecklist"
@@ -47,18 +47,18 @@ const StakingChecklistModal: FC<
             />
           </InfoBox>
           <Alert status="warning">
-            <Body1>Complete Step 2 to start earning Rewards</Body1>
+            <BodyLg>Complete Step 2 to start earning Rewards</BodyLg>
           </Alert>
           <PreSetupSteps />
           {transactionHash && (
-            <Body3 mt="4rem" align="center">
+            <BodySm mt="4rem" align="center">
               <ViewInBlockExplorer
                 text="View"
                 id={transactionHash}
                 type={ExplorerDataType.TRANSACTION}
               />{" "}
               transaction on Etherscan
-            </Body3>
+            </BodySm>
           )}
         </Stack>
       </ModalBody>

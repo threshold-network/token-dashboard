@@ -11,7 +11,7 @@ import {
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "@threshold-network/components"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import TokenBalanceInput from "../../TokenBalanceInput"
 import { formatTokenAmount } from "../../../utils/formatAmount"
@@ -50,9 +50,9 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         <Stack spacing={6}>
           <InfoBox variant="modal">
             <H5 mb={4}>You are about to unstake your tokens</H5>
-            <Body1>
+            <BodyLg>
               You can partially or totally unstake depending on your needs.
-            </Body1>
+            </BodyLg>
           </InfoBox>
           <Stack spacing={6} mb={6}>
             <Box>
@@ -64,9 +64,9 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 icon={ThresholdCircleBrand}
                 mb={2}
               />
-              <Body3>
+              <BodySm>
                 {formatTokenAmount(stake.tStake)} T available to unstake
-              </Body3>
+              </BodySm>
             </Box>
           </Stack>
           <Alert status="warning">

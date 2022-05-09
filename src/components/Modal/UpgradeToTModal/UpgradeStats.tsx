@@ -1,6 +1,6 @@
 import { FC } from "react"
 import TokenBalance from "../../TokenBalance"
-import { Body3 } from "@threshold-network/components"
+import { BodySm } from "@threshold-network/components"
 import { Token } from "../../../enums"
 import TransactionInfoTable, {
   TransactionInfo,
@@ -47,7 +47,7 @@ const UpgradeStats: FC<TransactionStatsProps> = ({
     },
     {
       text: "Exchange Rate",
-      value: <Body3>{`1 ${token} = ${exchangeRate} T`}</Body3>,
+      value: <BodySm>{`1 ${token} = ${exchangeRate} T`}</BodySm>,
     },
   ]
 

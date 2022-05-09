@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react"
 import Confetti from "react-confetti"
 import Threshold from "../../../static/icons/Ttoken"
-import { Body3, H5, LineDivider } from "@threshold-network/components"
+import { BodySm, H5, LineDivider } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useModal } from "../../../hooks/useModal"
@@ -64,14 +64,14 @@ const StakingSuccessModal: FC<SuccessModalProps> = ({
         </InfoBox>
         {body}
         {transactionHash && (
-          <Body3 mt="4rem" align="center">
+          <BodySm mt="4rem" align="center">
             <ViewInBlockExplorer
               text="View"
               id={transactionHash}
               type={ExplorerDataType.TRANSACTION}
             />{" "}
             transaction on Etherscan
-          </Body3>
+          </BodySm>
         )}
         <LineDivider />
       </ModalBody>
