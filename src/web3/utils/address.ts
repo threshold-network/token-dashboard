@@ -1,8 +1,10 @@
 import {
   isAddress as ethersIsAddress,
-  getAddress,
+  getAddress as ethersGetAddress,
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
+
+export const getAddress = (address: string) => ethersGetAddress(address)
 
 export const isAddress = (address: string): boolean => ethersIsAddress(address)
 
