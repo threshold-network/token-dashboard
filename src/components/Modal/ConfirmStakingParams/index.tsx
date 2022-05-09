@@ -9,7 +9,7 @@ import {
   ModalHeader,
   Stack,
 } from "@chakra-ui/react"
-import { Body1, Body2, Body3, H5 } from "@threshold-network/components"
+import { BodyLg, BodyMd, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import TokenBalanceInput from "../../TokenBalanceInput"
 import { formatTokenAmount } from "../../../utils/formatAmount"
@@ -137,10 +137,10 @@ const ConfirmStakingParamsModal: FC<
           <H5 mb={4}>
             You are about to make a deposit into the T Staking Contract
           </H5>
-          <Body1>
+          <BodyLg>
             Staking is a two step action which requires approve and confirm
             transactions.
-          </Body1>
+          </BodyLg>
         </InfoBox>
         <Stack spacing={6} mb={6}>
           <Box>
@@ -152,18 +152,18 @@ const ConfirmStakingParamsModal: FC<
               icon={ThresholdCircleBrand}
               mb={2}
             />
-            <Body3
+            <BodySm
               color={inputErrorMessage.length > 0 ? "red.500" : "gray.500"}
             >
               {inputErrorMessage.length > 0
                 ? inputErrorMessage
                 : `${formatTokenAmount(maxAmount)} T available to stake.`}
-            </Body3>
+            </BodySm>
           </Box>
-          <Body2>
+          <BodyMd>
             Provider, Beneficiary, and Authorizer are currently set to:{" "}
             {account}
-          </Body2>
+          </BodyMd>
           <AdvancedParamsForm
             {...{
               stakingProvider,

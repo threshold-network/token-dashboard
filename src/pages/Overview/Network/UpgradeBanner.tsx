@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react"
 import vortexLight from "../../../static/images/vortextLight.png"
 import vortexDark from "../../../static/images/vortexDark.png"
-import { Body2, H4, Card } from "@threshold-network/components"
+import { BodyMd, H4, Card } from "@threshold-network/components"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 import { Link as RouterLink } from "react-router-dom"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"
@@ -52,8 +52,8 @@ const UpgradeBanner: FC = () => {
         >
           {isMobile ? (
             <>
-              <Body2>{heroText1}</Body2>
-              <Body2>{heroText2}</Body2>
+              <BodyMd>{heroText1}</BodyMd>
+              <BodyMd>{heroText2}</BodyMd>
             </>
           ) : (
             <Stack maxW="450px" justify="center">

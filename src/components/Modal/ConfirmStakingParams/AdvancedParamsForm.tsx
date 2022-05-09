@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { BsChevronDown, BsChevronRight } from "react-icons/all"
-import { Body3 } from "@threshold-network/components"
+import { BodySm } from "@threshold-network/components"
 import { useModal } from "../../../hooks/useModal"
 
 interface AdvancedParamsFormProps {
@@ -92,9 +92,9 @@ const AdvancedParamsForm: FC<AdvancedParamsFormProps> = (props) => {
               errorText={
                 stakingProviderInUse ? (
                   <Stack>
-                    <Body3 color="red.500">
+                    <BodySm color="red.500">
                       Provider address is already in use.
-                    </Body3>
+                    </BodySm>
                     <UnorderedList pl={4} spacing={4}>
                       <ListItem>
                         For Legacy KEEP or NU operator address please go to the

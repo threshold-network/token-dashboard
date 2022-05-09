@@ -12,7 +12,7 @@ import {
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
-import { Body2, H4 } from "@threshold-network/components"
+import { BodyMd, H4 } from "@threshold-network/components"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
@@ -47,12 +47,12 @@ const WalletConnectionModalBase: FC<Props> = ({
             <H4>{title}</H4>
           </HStack>
           {subTitle && (
-            <Body2
+            <BodyMd
               align="center"
               color={useColorModeValue("gray.500", "white")}
             >
               {subTitle}
-            </Body2>
+            </BodyMd>
           )}
         </Stack>
         <Box my={6}>{children}</Box>

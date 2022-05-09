@@ -14,7 +14,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import TransactionError from "../../../static/icons/TransactionError"
-import { Body3 } from "@threshold-network/components"
+import { BodySm } from "@threshold-network/components"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
@@ -70,8 +70,8 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
               <AlertTitle display="flex">
                 {isExpandableError ? (
                   <HStack>
-                    <Body3>{errorTitle}</Body3>
-                    <Body3
+                    <BodySm>{errorTitle}</BodySm>
+                    <BodySm
                       onClick={onToggle}
                       ml={4}
                       textDecoration="underline"
@@ -79,7 +79,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                       minW="80px"
                     >
                       Show {isOpen ? "Less" : "More"}
-                    </Body3>
+                    </BodySm>
                   </HStack>
                 ) : (
                   errorTitle
@@ -88,7 +88,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             </HStack>
             {isOpen && (
               <AlertDescription maxWidth="100%">
-                <Body3 mb={8}>{error?.stack?.toString()}</Body3>
+                <BodySm mb={8}>{error?.stack?.toString()}</BodySm>
                 <ExternalLink
                   href={ExternalHref.thresholdDiscord}
                   text="Get help on discord"
@@ -106,14 +106,14 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
           )}
         </Box>
         {transactionHash && (
-          <Body3>
+          <BodySm>
             <ViewInBlockExplorer
               id={transactionHash}
               type={ExplorerDataType.TRANSACTION}
               text="View"
             />
             transaction on Etherscan
-          </Body3>
+          </BodySm>
         )}
       </ModalBody>
       <ModalFooter>

@@ -10,7 +10,11 @@ import {
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import { Body3, NumberInput, Type } from "@threshold-network/components"
+import {
+  BodySm,
+  NumberFormatInput,
+  NumberFormatInputValues,
+} from "@threshold-network/components"
 
 export interface TokenBalanceInputProps extends InputProps {
   icon: ReturnType<typeof createIcon>
@@ -39,20 +43,20 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   return (
     <Box>
       {label && (
-        <Body3 mb={2} fontWeight="bold">
+        <BodySm mb={2} fontWeight="bold">
           {label}
-        </Body3>
+        </BodySm>
       )}
       <InputGroup size="md">
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />
         </InputLeftElement>
-        <NumberInput
+        <NumberFormatInput
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
           value={amount ? formatUnits(amount) : undefined}
-          onValueChange={(values: Type.NumberInputValues) =>
+          onValueChange={(values: NumberFormatInputValues) =>
             _setAmount(values.value)
           }
           {...inputProps}

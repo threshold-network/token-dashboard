@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Label3, Card, LineDivider } from "@threshold-network/components"
+import { LabelSm, Card, LineDivider } from "@threshold-network/components"
 import { BoxProps } from "@chakra-ui/react"
 
 const CardTemplate: FC<{ title: string | JSX.Element } & BoxProps> = ({
@@ -10,7 +10,7 @@ const CardTemplate: FC<{ title: string | JSX.Element } & BoxProps> = ({
   return (
     <Card h="100%" w="100%" {...boxProps}>
       {typeof title === "string" ? (
-        <Label3 textDecoration="uppercase">{title}</Label3>
+        <LabelSm textDecoration="uppercase">{title}</LabelSm>
       ) : (
         title
       )}

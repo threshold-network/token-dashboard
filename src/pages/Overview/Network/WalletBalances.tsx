@@ -5,7 +5,7 @@ import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
 import CardTemplate from "./CardTemplate"
-import { Body2, Body3 } from "@threshold-network/components"
+import { BodyMd, BodySm } from "@threshold-network/components"
 import {
   MultiSegmentProgress,
   LineDivider,
@@ -38,9 +38,9 @@ const BalanceStat: FC<{
         iconSize="24px"
       />
       {conversionRate && (
-        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+        <BodySm color={useColorModeValue("gray.500", "gray.300")}>
           1 {text} = {conversionRate} T
-        </Body3>
+        </BodySm>
       )}
     </HStack>
   )
@@ -94,7 +94,7 @@ const WalletBalances: FC = () => {
   return (
     <CardTemplate title="WALLET">
       {/* title */}
-      <Body2 mb={2}>Liquid Tokens</Body2>
+      <BodyMd mb={2}>Liquid Tokens</BodyMd>
 
       {/* colored asset bar */}
       <MultiSegmentProgress values={progressBarValues} />
@@ -122,7 +122,7 @@ const WalletBalances: FC = () => {
       <LineDivider borderColor="gray.300" />
 
       {/* Possible amount */}
-      <Body2>Possible T amount</Body2>
+      <BodyMd>Possible T amount</BodyMd>
       <InfoBox mt={4} direction="row" p={4}>
         <TokenBalance
           tokenAmount={conversionToTAmount}
@@ -144,9 +144,9 @@ const WalletBalances: FC = () => {
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
         />
-        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+        <BodySm color={useColorModeValue("gray.500", "gray.300")}>
           about Exchange Rate
-        </Body3>
+        </BodySm>
       </HStack>
     </CardTemplate>
   )

@@ -6,12 +6,13 @@ import {
   ModalHeader,
   ModalFooter,
 } from "@chakra-ui/react"
-import { Body1, Body3, ThresholdSpinner } from "@threshold-network/components"
+import { BodyLg, BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
+import { ThresholdSpinner } from "../../ThresholdSpinner/ThresholdSpinner"
 
 interface TransactionIsPendingProps extends BaseModalProps {
   pendingText?: string
@@ -29,20 +30,20 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
       <ModalBody>
         <InfoBox py={12} variant="modal">
           <ThresholdSpinner />
-          <Body1 align="center" mt={8}>
+          <BodyLg align="center" mt={8}>
             {pendingText}
-          </Body1>
+          </BodyLg>
         </InfoBox>
       </ModalBody>
       <ModalFooter justifyContent="center">
-        <Body3>
+        <BodySm>
           <ViewInBlockExplorer
             text="View"
             id={transactionHash}
             type={ExplorerDataType.TRANSACTION}
           />{" "}
           transaction on Etherscan
-        </Body3>
+        </BodySm>
       </ModalFooter>
     </>
   )

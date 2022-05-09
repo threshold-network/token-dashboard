@@ -1,4 +1,4 @@
-import { Body3 } from "@threshold-network/components"
+import { BodySm } from "@threshold-network/components"
 import { HStack, useColorModeValue } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"
@@ -15,9 +15,9 @@ export const StakingContractLearnMore = () => {
           type={ExplorerDataType.ADDRESS}
           text="Read More"
         />
-        <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+        <BodySm color={useColorModeValue("gray.500", "gray.300")}>
           about the Staking Contract
-        </Body3>
+        </BodySm>
       </HStack>
     )
   }

@@ -1,6 +1,6 @@
 import { FC } from "react"
 import TokenBalance from "../TokenBalance"
-import { Body3 } from "@threshold-network/components"
+import { BodySm } from "@threshold-network/components"
 import TransactionInfoTable, { TransactionInfo } from "../TransactionInfoTable"
 import shortenAddress from "../../utils/shortenAddress"
 
@@ -33,15 +33,15 @@ const StakingStats: FC<StakingStatsProps> = ({
     },
     {
       text: "Operator",
-      value: <Body3>{shortenAddress(stakingProvider)}</Body3>,
+      value: <BodySm>{shortenAddress(stakingProvider)}</BodySm>,
     },
     {
       text: "Beneficiary",
-      value: <Body3>{shortenAddress(beneficiary)}</Body3>,
+      value: <BodySm>{shortenAddress(beneficiary)}</BodySm>,
     },
     {
       text: "Authorizer",
-      value: <Body3>{shortenAddress(authorizer)}</Body3>,
+      value: <BodySm>{shortenAddress(authorizer)}</BodySm>,
     },
   ]
 
