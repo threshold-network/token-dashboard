@@ -9,6 +9,7 @@ import {
   UpdateStateActionPayload,
 } from "../../types/staking"
 import { StakeType, UnstakeType } from "../../enums"
+import { calculateStakingBonusReward } from "../../utils/stakingBonus"
 
 interface StakingState {
   stakingProvider: string
@@ -17,6 +18,8 @@ interface StakingState {
   stakeAmount: string
   stakes: StakeData[]
   stakedBalance: BigNumberish
+  totalRewardsBalance: string
+  totalBonusBalance: string
 }
 
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
@@ -25,6 +28,25 @@ const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
       BigNumber.from(balance).add(BigNumber.from(stake.totalInTStake)),
     BigNumber.from(0)
   )
+}
+
+const calculateTotalBonusBalance = (stakes: StakeData[]): string => {
+  const totalEligibleStakeAmount = stakes
+    .reduce(
+      (balance, stake) =>
+        balance.add(
+          BigNumber.from(stake.bonusEligibility.eligibleStakeAmount || "0")
+        ),
+      BigNumber.from(0)
+    )
+    .toString()
+
+  return calculateStakingBonusReward(totalEligibleStakeAmount)
+}
+
+const calculateTotalRewardsBalance = (stakingState: StakingState) => {
+  // Currently, the total rewards balance is equal to bonus balance.
+  return stakingState.totalBonusBalance
 }
 
 export const stakingSlice = createSlice({
@@ -36,6 +58,8 @@ export const stakingSlice = createSlice({
     stakeAmount: "0",
     stakes: [],
     stakedBalance: 0,
+    totalRewardsBalance: "0",
+    totalBonusBalance: "0",
   } as StakingState,
   reducers: {
     updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
@@ -45,6 +69,8 @@ export const stakingSlice = createSlice({
     setStakes: (state, action) => {
       state.stakes = action.payload
       state.stakedBalance = calculateStakedBalance(action.payload)
+      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     providerStaked: (
       state,
@@ -62,6 +88,8 @@ export const stakingSlice = createSlice({
 
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
+      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     updateStakeAmountForProvider: (
       state,
@@ -99,6 +127,8 @@ export const stakingSlice = createSlice({
         .toString()
 
       state.stakedBalance = calculateStakedBalance(state.stakes)
+      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
       const { stakingProvider, amount, unstakeType } = action.payload
@@ -137,6 +167,8 @@ export const stakingSlice = createSlice({
         .sub(amount)
         .toString()
       state.stakedBalance = calculateStakedBalance(state.stakes)
+      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
   },
 })

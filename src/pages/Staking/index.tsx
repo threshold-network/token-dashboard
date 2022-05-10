@@ -16,7 +16,7 @@ const StakingPage: PageComponent = (props) => {
   useEffect(() => {
     fetchtTvlData()
   }, [fetchtTvlData])
-  const { stakes } = useStakingState()
+  const { stakes, totalBonusBalance, totalRewardsBalance } = useStakingState()
 
   return (
     <PageLayout {...props}>
@@ -30,7 +30,10 @@ const StakingPage: PageComponent = (props) => {
       >
         <StakedPortfolioCard />
         <Stack spacing={4}>
-          <RewardsCard />
+          <RewardsCard
+            totalBonusBalance={totalBonusBalance}
+            totalRewardsBalance={totalRewardsBalance}
+          />
           <StakingTVLCard tvl={data.total} />
         </Stack>
         {stakes.map((stake) => (

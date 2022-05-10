@@ -20,6 +20,8 @@ export interface UseStakingState {
   (): {
     stakedBalance: BigNumberish
     stakes: StakeData[]
+    totalRewardsBalance: string
+    totalBonusBalance: string
     stakeAmount: string | number
     stakingProvider: string
     beneficiary: string
@@ -37,6 +39,7 @@ export interface BonusEligibility {
   // Only total staked amount before May 15th(May 15 2022 23:59:59) is taking
   // into account.
   eligibleStakeAmount: string
+  reward: string
 }
 
 export interface StakeData {
