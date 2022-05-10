@@ -8,4 +8,5 @@ export enum ExternalHref {
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
   keepDapp = "https://dashboard.keep.network/",
   nuDapp = "https://stake.nucypher.network/manage",
+  stakingBonusDocs = "https://forum.threshold.network/t/interim-era-incentive-schemes-1-one-off-migration-stake-bonus-2-ongoing-stable-yield/297",
 }
