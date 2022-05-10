@@ -5,6 +5,7 @@ import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
 import StakeCard from "./StakeCard"
 import RewardsCard from "./RewardsCard"
+import { StakingBonusBanner } from "../../components/StakingBonus"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
@@ -19,6 +20,7 @@ const StakingPage: PageComponent = (props) => {
 
   return (
     <PageLayout {...props}>
+      <StakingBonusBanner />
       <SimpleGrid
         columns={[1, null, null, 2]}
         spacing="4"
