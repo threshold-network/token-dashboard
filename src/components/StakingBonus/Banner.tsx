@@ -2,9 +2,12 @@ import { Button, CloseButton, Stack, useDisclosure } from "@chakra-ui/react"
 import Card from "../Card"
 import { H4 } from "../Typography"
 import { BonusTitle } from "./Title"
+import { useModal } from "../../hooks/useModal"
+import { ModalType } from "../../enums"
 
 export const StakingBonusBanner = () => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
+  const { openModal } = useModal()
 
   return (
     <Card w="100%" display={isOpen ? "block" : "none"} position="relative">
@@ -24,6 +27,7 @@ export const StakingBonusBanner = () => {
           Starting May the 15th you can get your Staking Bonus!
         </H4>
         <Button
+          onClick={() => openModal(ModalType.StakingBonus)}
           w={{ base: "100%", xl: "auto" }}
           marginY="auto"
           mt={{ base: 12, xl: "auto" }}
