@@ -10,8 +10,13 @@ import {
 import { useField } from "formik"
 
 export const FormikInput: FC<
-  FormControlProps & { name: string; label: string; helperText: string }
-> = ({ name, label, helperText, ...restProps }) => {
+  FormControlProps & {
+    name: string
+    label: string
+    helperText?: string
+    placeholder?: string
+  }
+> = ({ name, label, helperText, placeholder, ...restProps }) => {
   const [field, meta] = useField(name)
 
   const isError = Boolean(meta.touched && meta.error)
@@ -23,6 +28,7 @@ export const FormikInput: FC<
         id={name}
         isInvalid={isError}
         errorBorderColor="red.300"
+        placeholder={placeholder}
         {...field}
         value={meta.value}
       />
