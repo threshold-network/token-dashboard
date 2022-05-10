@@ -8,6 +8,7 @@ import {
   useBoolean,
   Tooltip,
   Icon,
+  FlexProps,
 } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -36,11 +37,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const { openModal } = useModal()
 
   const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
-
-  const stakeType =
-    stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
-      ? `legacy ${StakeType[stake.stakeType]}`
-      : "native"
 
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
@@ -71,7 +67,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   return (
     <Card borderColor={isInActiveStake ? "red.200" : undefined}>
-      <Flex as="header" alignItems="center">
+      <StakeCardHeader>
         <Badge
           colorScheme={isInActiveStake ? "gray" : "green"}
           variant="subtle"
@@ -80,12 +76,9 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         >
           {isInActiveStake ? "inactive" : "active"}
         </Badge>
-        <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
-        <Label3 textTransform="uppercase" mr="auto">
-          stake - {stakeType}
-        </Label3>
+        <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
-      </Flex>
+      </StakeCardHeader>
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
       ) : (
@@ -123,6 +116,44 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </Button>
       )}
     </Card>
+  )
+}
+
+export const StakeCardHeader: FC = ({ children }) => {
+  return (
+    <Flex as="header" alignItems="center">
+      {children}
+    </Flex>
+  )
+}
+
+export const StakeCardHeaderTitle: FC<{ stake: StakeData }> = ({ stake }) => {
+  const stakeType =
+    stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
+      ? `legacy ${StakeType[stake.stakeType]}`
+      : "native"
+  return (
+    <>
+      <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
+      <Label3 textTransform="uppercase" mr="auto">
+        stake - {stakeType}
+      </Label3>
+    </>
+  )
+}
+
+export const StakeCardProviderAddress: FC<
+  {
+    stakingProvider: string
+  } & FlexProps
+> = ({ stakingProvider, ...restProps }) => {
+  return (
+    <Flex mt="6" mb="8" alignItems="center" {...restProps}>
+      <BoxLabel bg="brand.50" color="brand.700" mr="auto">
+        Provider address
+      </BoxLabel>
+      <CopyAddressToClipboard address={stakingProvider} />
+    </Flex>
   )
 }
 
