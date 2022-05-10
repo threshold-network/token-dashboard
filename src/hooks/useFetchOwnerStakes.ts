@@ -1,20 +1,28 @@
 import { useCallback } from "react"
 import { BigNumber } from "@ethersproject/bignumber"
-import { useTStakingContract, useMulticallContract } from "../web3/hooks"
+import {
+  useTStakingContract,
+  T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+  useMulticallContract,
+} from "../web3/hooks"
 import {
   getMulticallContractCall,
   getContractPastEvents,
   decodeMulticallResult,
+  getAddress,
 } from "../web3/utils"
 import { StakeType } from "../enums"
 import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
+import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
 
   const multicallContract = useMulticallContract()
+
+  const checkBonusEligibility = useCheckBonusEligibility()
 
   const dispatch = useDispatch()
 
@@ -27,17 +35,27 @@ export const useFetchOwnerStakes = () => {
 
       const stakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Staked",
-        fromBlock: 0, // TODO: get contract deployment block.
+        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         filterParams: [undefined, address],
       })
+
+      const stakingProviders = stakedEvents.map(
+        (_) => _.args?.stakingProvider as string
+      )
+
+      const stakingProviderEligibilityChecks = await checkBonusEligibility(
+        stakingProviders
+      )
 
       const stakes = stakedEvents.map((_) => {
         const amount = _.args?.amount.toString()
         const stakeType = _.args?.stakeType as StakeType
+        const stakingProvider = getAddress(_.args?.stakingProvider as string)
+
         return {
           stakeType,
           owner: _.args?.owner as string,
-          stakingProvider: _.args?.stakingProvider as string,
+          stakingProvider,
           beneficiary: _.args?.beneficiary as string,
           authorizer: _.args?.authorizer as string,
           blockNumber: _.blockNumber,
@@ -46,6 +64,7 @@ export const useFetchOwnerStakes = () => {
           nuInTStake: stakeType === StakeType.NU ? amount : "0",
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
+          bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
         } as StakeData
       })
 
