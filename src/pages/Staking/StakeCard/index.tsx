@@ -105,7 +105,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       {isStakeAction || !hasLegacyStakes ? (
         <TokenAmountForm
           onSubmitForm={onSubmitForm}
-          label="Unstake Amount"
+          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
