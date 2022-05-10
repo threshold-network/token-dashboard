@@ -1,112 +1,93 @@
 import { FC } from "react"
 import {
+  chakra,
   Button,
+  Icon,
   List,
-  ListIcon,
   ListItem,
+  Box,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-  Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { MdCheckCircle } from "react-icons/all"
-import Confetti from "react-confetti"
+import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
-import { H5, Body1, Body2, Body3 } from "../../Typography"
+import { H5, Body1, Body3 } from "../../Typography"
 import { Divider } from "../../Divider"
 import { StakingBonusReadMore } from "../../ExternalLink"
-import BoxLabel from "../../BoxLabel"
 import { BaseModalProps } from "../../../types"
-import { BonusEligibility } from "../../../types/staking"
-import { formatTokenAmount } from "../../../utils/formatAmount"
+import { StakeData } from "../../../types/staking"
+import ChecklistGroup from "../../ChecklistGroup"
+import { EligibilityCard } from "./EligibilityCard"
 
 export const EligibilityConfirmation: FC<
-  BaseModalProps & { bonusEligibility: BonusEligibility }
-> = ({ closeModal, bonusEligibility }) => {
-  // TODO: Calculate the bonus.
-  const reward = bonusEligibility.eligibleStakeAmount || "0"
+  BaseModalProps & { stakes: StakeData[] }
+> = ({ closeModal, stakes }) => {
+  const isEligible = stakes.every(
+    (stake) =>
+      stake.bonusEligibility.hasActiveStake &&
+      stake.bonusEligibility.hasPREConfigured &&
+      !stake.bonusEligibility.hasUnstakeAfterBonusDeadline
+  )
+
+  const title = isEligible
+    ? "You are eligible"
+    : "Some of your stakes are not eligible yet. Make sure you meet the criteria and check again!"
+
   return (
     <>
       <ModalHeader>Staking Bonus</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <Confetti
-          width={440}
-          height={250}
-          confettiSource={{ x: 200, y: 40, h: 100, w: 100 }}
-          numberOfPieces={50}
-        />
         <InfoBox variant="modal">
-          <H5>You are eligible for {formatTokenAmount(reward)}</H5>
+          <H5>
+            <Icon
+              as={isEligible ? MdCheckCircle : MdRemoveCircle}
+              color={isEligible ? "green.500" : "red.500"}
+            />
+            &nbsp;{title}
+          </H5>
           <Body1 mt="4">
-            In order for any stake to get a Staking Bonus it needs to meet two
-            requirements.
+            To receive a Staking Bonus any stake needs to meet two requirements.
           </Body1>
-          <Body1 mt="8">The Staking Bonus is 2.5% of your stake.</Body1>
+          <Body1 mt="2">The Staking Bonus is 2.5% of your stake.</Body1>
         </InfoBox>
         <Divider />
-        <List pl="8" pr="4">
-          <ListItem>
-            <BoxLabel w="fit-content" mb={4}>
-              Requirement 1 - Active stake
-            </BoxLabel>
-            <List>
-              <ListItem>
-                <Stack direction="row">
-                  <ListIcon
-                    marginInlineEnd="unset"
-                    as={MdCheckCircle}
-                    mt="2px"
-                    height="24px"
-                    width="24px"
-                    color="green.500"
-                  />
-                  <Body2
-                    as="div"
-                    color={useColorModeValue("gray.700", "white")}
-                  >
-                    Have an active stake before May the 15th
-                    <Body3>
-                      Your Staking Bonus will be added to your Staking Rewards.
-                      You can withdraw them starting July 15th. The Staking
-                      Bonus can be accumulated along the Staking Rewards.
-                    </Body3>
-                  </Body2>
-                </Stack>
-              </ListItem>
-            </List>
-          </ListItem>
-          <ListItem mt="5">
-            <BoxLabel w="fit-content" mb={4}>
-              Requirement 2 - PRE Set up and working
-            </BoxLabel>
-            <List>
-              <ListItem>
-                <Stack direction="row">
-                  <ListIcon
-                    marginInlineEnd="unset"
-                    as={MdCheckCircle}
-                    mt="2px"
-                    height="24px"
-                    width="24px"
-                    color="green.500"
-                  />
-                  <Body2
-                    as="div"
-                    color={useColorModeValue("gray.700", "white")}
-                  >
-                    PRE Node configured and working
-                    <Body3>
-                      You need a configured and working PRE node in order to get
-                      your Staking Bonus.
-                    </Body3>
-                  </Body2>
-                </Stack>
-              </ListItem>
-            </List>
-          </ListItem>
+        <Box ml="4">
+          <ChecklistGroup
+            title="Requirement 1 - Active stake"
+            checklistItems={[
+              {
+                title: "Have an active stake before June the 1st",
+                subTitle: (
+                  <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+                    Your Staking Bonus will be added to your Staking Rewards.
+                    You can withdraw them starting{" "}
+                    <chakra.strong color="brand.500">July 15th.</chakra.strong>{" "}
+                    The Staking Bonus can be accumulated along the Staking
+                    Rewards.
+                  </Body3>
+                ),
+              },
+            ]}
+          />
+          <Box mt="4">
+            <ChecklistGroup
+              title="Requirement 2 - PRE Set up and working"
+              checklistItems={[
+                {
+                  title: "PRE Node configured and working",
+                  subTitle:
+                    "You need a configured and working PRE node in order to get your Staking Bonus",
+                },
+              ]}
+            />
+          </Box>
+        </Box>
+        <List mt="12" spacing="4">
+          {stakes.map(renderEligibilityCheck)}
         </List>
         <StakingBonusReadMore />
         <Divider mb="0" mt="4" />
@@ -119,3 +100,9 @@ export const EligibilityConfirmation: FC<
     </>
   )
 }
+
+const renderEligibilityCheck = (stake: StakeData) => (
+  <ListItem key={stake.stakingProvider}>
+    <EligibilityCard stake={stake} />
+  </ListItem>
+)
