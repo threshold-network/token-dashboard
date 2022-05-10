@@ -30,6 +30,7 @@ import {
   TreeNode,
   TreeItemLineToNode,
 } from "../../../components/Tree"
+import { Divider } from "../../../components/Divider"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -79,6 +80,16 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
       </StakeCardHeader>
+      <Body2 mt="10" mb="4">
+        Staking Bonus
+      </Body2>
+      <TokenBalance
+        tokenAmount={stake.bonusEligibility.reward}
+        withSymbol
+        tokenSymbol="T"
+        isLarge
+      />
+      <Divider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
       ) : (
