@@ -7,25 +7,17 @@ import {
   useTStakingContract,
 } from "../web3/hooks"
 import { getAddress, getContractPastEvents } from "../web3/utils"
+import { BonusEligibility } from "../types/staking"
 
-interface BonusEligibility {
-  [address: string]: {
-    hasPREConfigured: boolean
-    hasActiveStake: boolean
-    // No unstaking after the May 15th "snapshot" and until July 15th (not even
-    // partial amounts).
-    hasUnstakeAfterBonusDeadline: boolean
-    // Only total staked amount before May 15th(May 15 2022 23:59:59) is taking
-    // into account.
-    eligableStakeAmount: string
-  }
+interface BonusEligibilityResult {
+  [address: string]: BonusEligibility
 }
 
 const BONUS_DEADLINE_TIMESTAMP = 1652659199 // May 15 2022 23:59:59 GMT
 
 export const useCheckBonusEligibility = (): ((
   stakingProviders: string[]
-) => Promise<BonusEligibility>) => {
+) => Promise<BonusEligibilityResult>) => {
   const preContract = usePREContract()
   const tStakingContract = useTStakingContract()
 
@@ -40,9 +32,27 @@ export const useCheckBonusEligibility = (): ((
         return {}
       }
       const provider = preContract.provider
+
       const operatorConfirmedEvents = await getContractPastEvents(preContract, {
         eventName: "OperatorConfirmed",
         fromBlock: PRE_DEPLOYMENT_BLOCK,
+        filterParams: [stakingProviders],
+      })
+      const stakedEvents = await getContractPastEvents(tStakingContract, {
+        eventName: "Staked",
+        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        filterParams: [null, null, stakingProviders],
+      })
+
+      const toppedUpEvents = await getContractPastEvents(tStakingContract, {
+        eventName: "ToppedUp",
+        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        filterParams: [stakingProviders],
+      })
+
+      const unstakedEvents = await getContractPastEvents(tStakingContract, {
+        eventName: "Unstaked",
+        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         filterParams: [stakingProviders],
       })
 
@@ -50,23 +60,6 @@ export const useCheckBonusEligibility = (): ((
         operatorConfirmedEvents,
         provider
       )
-      const stakedEvents = await getContractPastEvents(preContract, {
-        eventName: "Staked",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        filterParams: [null, null, stakingProviders],
-      })
-
-      const toppedUpEvents = await getContractPastEvents(preContract, {
-        eventName: "ToppedUp",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        filterParams: [stakingProviders],
-      })
-
-      const unstakedEvents = await getContractPastEvents(preContract, {
-        eventName: "Unstaked",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        filterParams: [stakingProviders],
-      })
 
       const stakingProviderToStakedAmount =
         await getStakingProviderToStakedInfo(stakedEvents, provider)
@@ -81,7 +74,7 @@ export const useCheckBonusEligibility = (): ((
         provider
       )
 
-      const stakingProvidersInfo: BonusEligibility = {}
+      const stakingProvidersInfo: BonusEligibilityResult = {}
       for (const stakingProvider of stakingProviders) {
         const stakingProviderAddress = getAddress(stakingProvider)
 
@@ -104,7 +97,7 @@ export const useCheckBonusEligibility = (): ((
         const unstakeAmount =
           stakingProviderToUnstakedEvent[stakingProviderAddress]?.amount || "0"
 
-        const eligableStakeAmount = BigNumber.from(stakedAmount)
+        const eligibleStakeAmount = BigNumber.from(stakedAmount)
           .add(topUpAmount)
           .sub(unstakeAmount)
           .toString()
@@ -113,15 +106,15 @@ export const useCheckBonusEligibility = (): ((
           hasPREConfigured,
           hasActiveStake,
           hasUnstakeAfterBonusDeadline,
-          eligableStakeAmount: hasUnstakeAfterBonusDeadline
+          eligibleStakeAmount: hasUnstakeAfterBonusDeadline
             ? "0"
-            : eligableStakeAmount,
+            : eligibleStakeAmount,
         }
       }
 
-      return {}
+      return stakingProvidersInfo
     },
-    [preContract]
+    [preContract, tStakingContract]
   )
 }
 

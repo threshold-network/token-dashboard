@@ -26,7 +26,7 @@ export const EligibilityConfirmation: FC<
   BaseModalProps & { bonusEligibility: BonusEligibility }
 > = ({ closeModal, bonusEligibility }) => {
   // TODO: Calculate the bonus.
-  const reward = bonusEligibility.eligableStakeAmount || "0"
+  const reward = bonusEligibility.eligibleStakeAmount || "0"
   return (
     <>
       <ModalHeader>Staking Bonus</ModalHeader>
@@ -39,7 +39,7 @@ export const EligibilityConfirmation: FC<
           numberOfPieces={50}
         />
         <InfoBox variant="modal">
-          <H5>You are eligable for {formatTokenAmount(reward)}</H5>
+          <H5>You are eligible for {formatTokenAmount(reward)}</H5>
           <Body1 mt="4">
             In order for any stake to get a Staking Bonus it needs to meet two
             requirements.
