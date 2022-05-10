@@ -8,12 +8,12 @@ import {
 } from "../web3/hooks"
 import { getAddress, getContractPastEvents } from "../web3/utils"
 import { BonusEligibility } from "../types/staking"
+import { calculateStakingBonusReward } from "../utils/stakingBonus"
+import { stakingBonus } from "../constants"
 
 interface BonusEligibilityResult {
   [address: string]: BonusEligibility
 }
-
-const BONUS_DEADLINE_TIMESTAMP = 1652659199 // May 15 2022 23:59:59 GMT
 
 export const useCheckBonusEligibility = (): ((
   stakingProviders: string[]
@@ -80,11 +80,11 @@ export const useCheckBonusEligibility = (): ((
 
         const hasPREConfigured =
           stakingProviderToPREConfig[stakingProviderAddress]
-            ?.operatorConfirmedAt <= BONUS_DEADLINE_TIMESTAMP
+            ?.operatorConfirmedAt <= stakingBonus.BONUS_DEADLINE_TIMESTAMP
 
         const hasActiveStake =
           stakingProviderToStakedAmount[stakingProviderAddress]?.stakedAt <=
-          BONUS_DEADLINE_TIMESTAMP
+          stakingBonus.BONUS_DEADLINE_TIMESTAMP
 
         const hasUnstakeAfterBonusDeadline =
           stakingProviderToUnstakedEvent[stakingProviderAddress]
@@ -97,18 +97,19 @@ export const useCheckBonusEligibility = (): ((
         const unstakeAmount =
           stakingProviderToUnstakedEvent[stakingProviderAddress]?.amount || "0"
 
-        const eligibleStakeAmount = BigNumber.from(stakedAmount)
-          .add(topUpAmount)
-          .sub(unstakeAmount)
-          .toString()
+        const eligibleStakeAmount = hasUnstakeAfterBonusDeadline
+          ? "0"
+          : BigNumber.from(stakedAmount)
+              .add(topUpAmount)
+              .sub(unstakeAmount)
+              .toString()
 
         stakingProvidersInfo[stakingProviderAddress] = {
           hasPREConfigured,
           hasActiveStake,
           hasUnstakeAfterBonusDeadline,
-          eligibleStakeAmount: hasUnstakeAfterBonusDeadline
-            ? "0"
-            : eligibleStakeAmount,
+          eligibleStakeAmount,
+          reward: calculateStakingBonusReward(eligibleStakeAmount),
         }
       }
 
@@ -193,7 +194,7 @@ const getStakingProviderToTopUps = async (
     const accummulatedAmount =
       stakingProviderToAmount[stakingProvider].amount || constants.Zero
 
-    if (block.timestamp > BONUS_DEADLINE_TIMESTAMP) {
+    if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
       // Break the loop if an event emitted after May 15th. Returned
       // events are in ascending order.
       return stakingProviderToAmount
@@ -229,7 +230,7 @@ const getStakingProviderToUnstake = async (
     const accummulatedAmount =
       stakingProviderToUnstake[stakingProvider]?.amount || constants.Zero
     const newAmount = BigNumber.from(accummulatedAmount).add(event.args?.amount)
-    if (block.timestamp > BONUS_DEADLINE_TIMESTAMP) {
+    if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
       // Break the loop if an event emitted after May 15th. Returned
       // events are in ascending order.
       stakingProviderToUnstake[stakingProvider] = {
