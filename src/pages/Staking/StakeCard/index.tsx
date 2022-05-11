@@ -1,6 +1,7 @@
 import { FC, ReactElement, Fragment } from "react"
 import {
   Flex,
+  Box,
   Badge,
   ButtonGroup,
   Button,
@@ -31,6 +32,7 @@ import {
   TreeItemLineToNode,
 } from "../../../components/Tree"
 import { Divider } from "../../../components/Divider"
+import { isAddressZero } from "../../../web3/utils"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -138,16 +140,19 @@ export const StakeCardHeader: FC = ({ children }) => {
   )
 }
 
-export const StakeCardHeaderTitle: FC<{ stake: StakeData }> = ({ stake }) => {
-  const stakeType =
-    stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
-      ? `legacy ${StakeType[stake.stakeType]}`
-      : "native"
+export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
+  stake,
+}) => {
+  const stakeType = !stake
+    ? ""
+    : stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
+    ? ` - legacy ${StakeType[stake.stakeType]}`
+    : " - native"
   return (
     <>
       <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
       <Label3 textTransform="uppercase" mr="auto">
-        stake - {stakeType}
+        stake{stakeType}
       </Label3>
     </>
   )
@@ -158,12 +163,20 @@ export const StakeCardProviderAddress: FC<
     stakingProvider: string
   } & FlexProps
 > = ({ stakingProvider, ...restProps }) => {
+  const isNotAddressZero = !isAddressZero(stakingProvider)
+
   return (
     <Flex mt="6" mb="8" alignItems="center" {...restProps}>
       <BoxLabel bg="brand.50" color="brand.700" mr="auto">
         Provider address
       </BoxLabel>
-      <CopyAddressToClipboard address={stakingProvider} />
+      {isNotAddressZero ? (
+        <CopyAddressToClipboard address={stakingProvider} />
+      ) : (
+        <Box as="span" color="brand.500">
+          none set
+        </Box>
+      )}
     </Flex>
   )
 }

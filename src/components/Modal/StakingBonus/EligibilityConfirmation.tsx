@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   chakra,
   Button,
@@ -20,21 +21,31 @@ import { StakingBonusReadMore } from "../../ExternalLink"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import ChecklistGroup from "../../ChecklistGroup"
-import { EligibilityCard } from "./EligibilityCard"
+import { EligibilityCard, EmptyEligibilityCard } from "./EligibilityCard"
 
 export const EligibilityConfirmation: FC<
   BaseModalProps & { stakes: StakeData[] }
 > = ({ closeModal, stakes }) => {
-  const isEligible = stakes.every(
-    (stake) =>
-      stake.bonusEligibility.hasActiveStake &&
-      stake.bonusEligibility.hasPREConfigured &&
-      !stake.bonusEligibility.hasUnstakeAfterBonusDeadline
-  )
+  const navigate = useNavigate()
+
+  const hasStakes = stakes.length > 0
+  const isEligible =
+    hasStakes &&
+    stakes.every(
+      (stake) =>
+        stake.bonusEligibility.hasActiveStake &&
+        stake.bonusEligibility.hasPREConfigured &&
+        !stake.bonusEligibility.hasUnstakeAfterBonusDeadline
+    )
 
   const title = isEligible
     ? "You are eligible"
     : "Some of your stakes are not eligible yet. Make sure you meet the criteria and check again!"
+
+  const onStartStaking = () => {
+    navigate("/staking")
+    closeModal()
+  }
 
   return (
     <>
@@ -87,7 +98,11 @@ export const EligibilityConfirmation: FC<
           </Box>
         </Box>
         <List mt="12" spacing="4">
-          {stakes.map(renderEligibilityCheck)}
+          {hasStakes ? (
+            stakes.map(renderEligibilityCheck)
+          ) : (
+            <EmptyEligibilityCard onClickStartStakingBtn={onStartStaking} />
+          )}
         </List>
         <StakingBonusReadMore />
         <Divider mb="0" mt="4" />
