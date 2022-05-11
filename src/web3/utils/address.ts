@@ -17,3 +17,5 @@ export const isSameETHAddress = (
 
 export const isAddressZero = (address: string): boolean =>
   isSameETHAddress(address, AddressZero)
+
+export { AddressZero }
