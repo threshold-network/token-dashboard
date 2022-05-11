@@ -192,7 +192,7 @@ const getStakingProviderToTopUps = async (
     const stakingProvider = getAddress(event.args?.stakingProvider)
     const block = await provider.getBlock(event.blockHash)
     const accummulatedAmount =
-      stakingProviderToAmount[stakingProvider].amount || constants.Zero
+      stakingProviderToAmount[stakingProvider]?.amount || constants.Zero
 
     if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
       // Break the loop if an event emitted after May 15th. Returned
