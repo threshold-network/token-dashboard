@@ -1,34 +1,28 @@
-import { FC, useCallback, useState } from "react"
+import { FC, useCallback } from "react"
 import {
-  Box,
   Button,
+  Divider,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
-import withBaseModal from "../withBaseModal"
-import TokenBalanceInput from "../../TokenBalanceInput"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { useModal } from "../../../hooks/useModal"
-import { BaseModalProps } from "../../../types"
-import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
-import { ModalType } from "../../../enums"
-import { StakeData } from "../../../types/staking"
-import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
-import { useTokenState } from "../../../hooks/useTokenState"
-import InfoBox from "../../InfoBox"
+import { Body1, H5 } from "../../Typography"
 import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
+import InfoBox from "../../InfoBox"
+import StakingStats from "../../StakingStats"
+import { useModal } from "../../../hooks/useModal"
+import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
+import { BaseModalProps } from "../../../types"
+import { StakeData } from "../../../types/staking"
+import { ModalType } from "../../../enums"
+import withBaseModal from "../withBaseModal"
 
 const TopupTModal: FC<
-  BaseModalProps & { stake: StakeData; initialTopupAmount?: number }
-> = ({ stake, initialTopupAmount }) => {
-  const [amountTopUp, setAmountToTopup] = useState<string | number | undefined>(
-    initialTopupAmount
-  )
-
+  BaseModalProps & { stake: StakeData; amountTopUp: string }
+> = ({ stake, amountTopUp }) => {
   const { closeModal, openModal } = useModal()
 
   const onSuccess = useCallback(
@@ -44,10 +38,6 @@ const TopupTModal: FC<
 
   const { topup } = useTopupTransaction(onSuccess)
 
-  const {
-    t: { balance: maxAmount },
-  } = useTokenState()
-
   return (
     <>
       <ModalHeader>Topping up Stake</ModalHeader>
@@ -55,45 +45,35 @@ const TopupTModal: FC<
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <H5 mb={4}>You are about to top up your stake</H5>
+            <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
+              You are about to top up your stake
+            </H5>
             <Body1>
               By topping up your stake you will add a new deposit of tokens to
-              your existing stake.
+              your initial stake.
             </Body1>
           </InfoBox>
-          <Stack spacing={6} mb={12}>
-            <Box>
-              <TokenBalanceInput
-                label={`T Amount`}
-                amount={amountTopUp}
-                setAmount={setAmountToTopup}
-                max={maxAmount}
-                icon={ThresholdCircleBrand}
-                mb={2}
-              />
-              <Body3>
-                {formatTokenAmount(maxAmount)} T available to top up.
-              </Body3>
-            </Box>
-          </Stack>
+          <StakingStats
+            stakeAmount={amountTopUp}
+            amountText="Top-up Amount"
+            stakingProvider={stake.stakingProvider}
+            beneficiary={stake.beneficiary}
+            authorizer={stake.authorizer}
+          />
+          <StakingContractLearnMore mt="2.5rem !important" />
+          <Divider />
         </Stack>
-        <StakingContractLearnMore />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
         <Button
-          disabled={
-            !amountTopUp || +amountTopUp == 0 || +amountTopUp > +maxAmount
-          }
           onClick={() => {
-            if (amountTopUp) {
-              topup({
-                stakingProvider: stake.stakingProvider,
-                amount: amountTopUp,
-              })
-            }
+            topup({
+              stakingProvider: stake.stakingProvider,
+              amount: amountTopUp,
+            })
           }}
         >
           Top Up
