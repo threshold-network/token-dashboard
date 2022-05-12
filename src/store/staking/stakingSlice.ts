@@ -1,15 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
-import { StakeType } from "../../enums"
+import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
   ProviderStakedActionPayload,
   StakeData,
+  UnstakedActionPayload,
   UpdateStakeAmountActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
-import { BigNumber } from "ethers"
-import { fetchETHPriceUSD } from "../eth"
-import { BigNumberish } from "@ethersproject/bignumber"
+import { StakeType, UnstakeType } from "../../enums"
 
 interface StakingState {
   stakingProvider: string
@@ -23,7 +22,7 @@ interface StakingState {
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
   return stakes.reduce(
     (balance, stake) =>
-      BigNumber.from(balance).add(BigNumber.from(stake.tStake)),
+      BigNumber.from(balance).add(BigNumber.from(stake.totalInTStake)),
     BigNumber.from(0)
   )
 }
@@ -59,6 +58,7 @@ export const stakingSlice = createSlice({
       newStake.nuInTStake = stakeType === StakeType.NU ? _amount : "0"
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
+      newStake.totalInTStake = _amount
 
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
@@ -73,6 +73,10 @@ export const stakingSlice = createSlice({
       const stakeIdxToUpdate = stakes.findIndex(
         (stake) => stake.stakingProvider === stakingProvider
       )
+
+      if (stakeIdxToUpdate < 0) return
+
+      const stake = stakes[stakeIdxToUpdate]
 
       const originalStakeAmount = BigNumber.from(
         stakes[stakeIdxToUpdate].tStake
@@ -89,7 +93,49 @@ export const stakingSlice = createSlice({
           .sub(amountUnstaked)
           .toString()
       }
+      stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(stake.tStake)
+        .add(BigNumber.from(stake.keepInTStake))
+        .add(BigNumber.from(stake.nuInTStake))
+        .toString()
 
+      state.stakedBalance = calculateStakedBalance(state.stakes)
+    },
+    unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
+      const { stakingProvider, amount, unstakeType } = action.payload
+
+      const stakes = state.stakes
+      const stakeIdxToUpdate = stakes.findIndex(
+        (stake) => stake.stakingProvider === stakingProvider
+      )
+
+      if (stakeIdxToUpdate < 0) return
+
+      if (unstakeType === UnstakeType.ALL) {
+        stakes[stakeIdxToUpdate].tStake = "0"
+        stakes[stakeIdxToUpdate].keepInTStake = "0"
+        stakes[stakeIdxToUpdate].nuInTStake = "0"
+      } else if (unstakeType === UnstakeType.LEGACY_KEEP) {
+        // The `TTokenStaking` allows only to unstake all KEEP tokens so we can
+        // set `keepInTStake` to `0`.
+        stakes[stakeIdxToUpdate].keepInTStake = "0"
+      } else if (
+        unstakeType === UnstakeType.LEGACY_NU ||
+        unstakeType === UnstakeType.NATIVE
+      ) {
+        const fieldName =
+          unstakeType === UnstakeType.LEGACY_NU ? "nuInTStake" : "tStake"
+        const originalNuStakeAmount = BigNumber.from(
+          stakes[stakeIdxToUpdate][fieldName]
+        )
+        stakes[stakeIdxToUpdate][fieldName] = originalNuStakeAmount
+          .sub(amount)
+          .toString()
+      }
+
+      const totalStaked = state.stakes[stakeIdxToUpdate].totalInTStake
+      state.stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(totalStaked)
+        .sub(amount)
+        .toString()
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
   },
@@ -100,4 +146,5 @@ export const {
   setStakes,
   providerStaked,
   updateStakeAmountForProvider,
+  unstaked,
 } = stakingSlice.actions

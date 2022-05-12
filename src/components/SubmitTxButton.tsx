@@ -5,7 +5,7 @@ import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../hooks/useModal"
 
 interface Props extends ButtonProps {
-  onSubmit: () => void
+  onSubmit?: () => void
   submitText?: string
 }
 
@@ -31,6 +31,7 @@ const SubmitTxButton: FC<Props> = ({
       isFullWidth
       onClick={() => openModal(ModalType.SelectWallet)}
       {...buttonProps}
+      type="button"
     >
       Connect Wallet
     </Button>

@@ -12,7 +12,7 @@ export const StakingDepositSteps: FC = () => {
       checklistItems={[
         {
           title:
-            "Node address (Provider), Beneficiary, and Authorizer addresses",
+            "Provider Node address (Operator), Beneficiary, and Authorizer addresses",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
@@ -52,6 +52,7 @@ export const PreSetupSteps: FC = () => {
                 text="a staking provider"
                 withArrow
               />
+              .
             </Body3>
           ),
         },
@@ -59,12 +60,13 @@ export const PreSetupSteps: FC = () => {
           title: "PRE Operator address",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-              Learn how to add a PRE Operator address{" "}
+              Make sure you add your PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
                 text="here"
                 withArrow
-              />
+              />{" "}
+              to gain rewards.
             </Body3>
           ),
         },

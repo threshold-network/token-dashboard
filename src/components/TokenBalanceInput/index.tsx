@@ -1,12 +1,15 @@
-import { FC } from "react"
+import { FC, useRef } from "react"
 import {
-  Box,
   Button,
   Icon,
   InputGroup,
   InputLeftElement,
   InputProps,
   InputRightElement,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  FormHelperText,
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
@@ -14,7 +17,6 @@ import NumberInput, {
   NumberInputValues,
   NumberInputProps,
 } from "../NumberInput"
-import { Body3 } from "../Typography"
 
 export interface TokenBalanceInputProps
   extends InputProps,
@@ -23,7 +25,10 @@ export interface TokenBalanceInputProps
   max: number | string
   amount?: string | number
   setAmount: (val?: string | number) => void
-  label?: string
+  label?: string | JSX.Element
+  hasError?: boolean
+  errorMsgText?: string
+  helperText?: String
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -32,23 +37,25 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   amount,
   setAmount,
   label,
+  errorMsgText,
+  helperText,
+  hasError = false,
   ...inputProps
 }) => {
+  const valueRef = useRef<string>(amount as string)
+
   const setToMax = () => {
     _setAmount(formatUnits(max))
+    setAmount(valueRef.current)
   }
 
   const _setAmount = (value: string | number) => {
-    setAmount(parseUnits(value ? value.toString() : "0").toString())
+    valueRef.current = parseUnits(value ? value.toString() : "0").toString()
   }
 
   return (
-    <Box>
-      {label && (
-        <Body3 mb={2} fontWeight="bold">
-          {label}
-        </Body3>
-      )}
+    <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
+      {label && <FormLabel htmlFor={inputProps.name}>{label}</FormLabel>}
       <InputGroup size="md">
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />
@@ -57,19 +64,30 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
-          value={amount ? formatUnits(amount) : undefined}
+          {...inputProps}
           onValueChange={(values: NumberInputValues) =>
             _setAmount(values.value)
           }
-          {...inputProps}
+          value={amount ? formatUnits(amount) : undefined}
+          onChange={() => {
+            setAmount(valueRef.current)
+          }}
+          id={inputProps.name}
         />
-        <InputRightElement width="4.5rem">
-          <Button h="1.75rem" size="sm" onClick={setToMax}>
-            MAX
-          </Button>
-        </InputRightElement>
+        {!inputProps.isDisabled && (
+          <InputRightElement width="4.5rem">
+            <Button h="1.75rem" size="sm" onClick={setToMax}>
+              MAX
+            </Button>
+          </InputRightElement>
+        )}
       </InputGroup>
-    </Box>
+      {!hasError ? (
+        <FormHelperText>{helperText}</FormHelperText>
+      ) : (
+        <FormErrorMessage>{errorMsgText}</FormErrorMessage>
+      )}
+    </FormControl>
   )
 }
 

@@ -6,6 +6,9 @@ import { Divider } from "./Divider"
 import { Card } from "./Card"
 import { Progress } from "./Progress"
 import { InfoBox } from "./InfoBox"
+import { NotificationPill } from "./NotificationPill"
+import { Tree } from "./Tree"
+import { Tabs } from "./Tabs"
 import { fonts } from "./fonts"
 
 const colors = {
@@ -17,7 +20,7 @@ const colors = {
     // 400
     500: "#7D00FF", // main Threshold brand color
     550: "#7C47EE", // main Threshold brand color - DARK MODE
-    // 600
+    600: "#BD30FF",
     700: "#4E2E99",
     800: "#3B257A",
     900: "#1C0758",
@@ -55,6 +58,18 @@ const colors = {
     800: "#731D1D",
     900: "#4C1316",
   },
+  green: {
+    50: "#F0FFF4",
+    100: "#C6F6D5",
+    200: "#9AE6B4",
+    300: "#68D391",
+    400: "#48BB78",
+    500: "#38A169",
+    600: "#25855A",
+    700: "#276749",
+    800: "#22543D",
+    900: "#1C4532",
+  },
 }
 
 const index = extendTheme({
@@ -68,6 +83,9 @@ const index = extendTheme({
     Divider,
     Progress,
     InfoBox,
+    NotificationPill,
+    Tree,
+    Tabs,
   },
 })
 

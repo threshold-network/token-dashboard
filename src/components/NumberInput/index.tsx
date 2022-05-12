@@ -18,14 +18,17 @@ export type NumberInputProps = InputProps & {
 const NumberInput: FC<NumberInputProps> = (props) => {
   const { field: css } = useMultiStyleConfig("Input", props)
 
+  const { decimalScale, isDisabled, ...restProps } = props
+
   return (
     // @ts-ignore
     <ChakraWrapper
       allowLeadingZeros={false}
       thousandSeparator
-      decimalScale={props.decimalScale}
+      decimalScale={decimalScale}
       __css={css}
-      {...props}
+      disabled={isDisabled}
+      {...restProps}
     />
   )
 }
