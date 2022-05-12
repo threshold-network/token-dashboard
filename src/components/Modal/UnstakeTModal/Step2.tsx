@@ -93,8 +93,8 @@ const UnstakeTModal: FC<
 
             <AlertDescription color={useColorModeValue("gray.700", "gray.300")}>
               Take note! If you fully unstake you will not be able to use the
-              same Operator Address for new stakes. This unstaked stake can be
-              toppped up anytime you want.
+              same Staking Provider Address for new stakes. This unstaked stake
+              can be topped up anytime you want.
             </AlertDescription>
           </Alert>
         </Stack>
