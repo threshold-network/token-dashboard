@@ -11,5 +11,5 @@ export const calculateStakingBonusReward = (eligibleStakeAmount: string) =>
     // Remove `.` to return an integer.
     .split(".")[0]
 
-export const isBeforeBonusDeadline = (date: Date = new Date()) =>
+export const isBeforeOrEqualBonusDeadline = (date: Date = new Date()) =>
   dateToUnixTimestamp(date) <= stakingBonusConstants.BONUS_DEADLINE_TIMESTAMP

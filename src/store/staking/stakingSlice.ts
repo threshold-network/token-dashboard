@@ -11,7 +11,7 @@ import {
 import { StakeType, UnstakeType } from "../../enums"
 import {
   calculateStakingBonusReward,
-  isBeforeBonusDeadline,
+  isBeforeOrEqualBonusDeadline,
 } from "../../utils/stakingBonus"
 
 interface StakingState {
@@ -89,11 +89,11 @@ export const stakingSlice = createSlice({
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
 
-      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
+      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
       newStake.bonusEligibility = {
-        eligibleStakeAmount: _isBeforeBonusDeadline ? _amount : "0",
+        eligibleStakeAmount: _isBeforeOrEqualBonusDeadline ? _amount : "0",
         hasPREConfigured: false,
-        hasActiveStake: _isBeforeBonusDeadline,
+        hasActiveStake: _isBeforeOrEqualBonusDeadline,
         hasUnstakeAfterBonusDeadline: false,
         reward: calculateStakingBonusReward(_amount),
       }
@@ -139,8 +139,8 @@ export const stakingSlice = createSlice({
         .add(BigNumber.from(stake.nuInTStake))
         .toString()
 
-      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
-      const eligibleStakeAmount = _isBeforeBonusDeadline
+      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
+      const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
         ? totalInTStake
         : state.stakes[stakeIdxToUpdate].bonusEligibility.eligibleStakeAmount
       state.stakes[stakeIdxToUpdate].bonusEligibility = {
@@ -191,15 +191,15 @@ export const stakingSlice = createSlice({
         .toString()
       state.stakes[stakeIdxToUpdate].totalInTStake = newTotalStakedAmount
 
-      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
-      const eligibleStakeAmount = _isBeforeBonusDeadline
+      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
+      const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
         ? newTotalStakedAmount
         : "0"
       state.stakes[stakeIdxToUpdate].bonusEligibility = {
         ...state.stakes[stakeIdxToUpdate].bonusEligibility,
         eligibleStakeAmount,
-        hasActiveStake: _isBeforeBonusDeadline,
-        hasUnstakeAfterBonusDeadline: !_isBeforeBonusDeadline,
+        hasActiveStake: _isBeforeOrEqualBonusDeadline,
+        hasUnstakeAfterBonusDeadline: !_isBeforeOrEqualBonusDeadline,
         reward: calculateStakingBonusReward(eligibleStakeAmount),
       }
       state.stakedBalance = calculateStakedBalance(state.stakes)
