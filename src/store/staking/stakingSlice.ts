@@ -9,7 +9,10 @@ import {
   UpdateStateActionPayload,
 } from "../../types/staking"
 import { StakeType, UnstakeType } from "../../enums"
-import { calculateStakingBonusReward } from "../../utils/stakingBonus"
+import {
+  calculateStakingBonusReward,
+  isBeforeBonusDeadline,
+} from "../../utils/stakingBonus"
 
 interface StakingState {
   stakingProvider: string
@@ -86,6 +89,15 @@ export const stakingSlice = createSlice({
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
 
+      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
+      newStake.bonusEligibility = {
+        eligibleStakeAmount: _isBeforeBonusDeadline ? _amount : "0",
+        hasPREConfigured: false,
+        hasActiveStake: _isBeforeBonusDeadline,
+        hasUnstakeAfterBonusDeadline: false,
+        reward: calculateStakingBonusReward(_amount),
+      }
+
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
       state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
@@ -121,10 +133,21 @@ export const stakingSlice = createSlice({
           .sub(amountUnstaked)
           .toString()
       }
-      stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(stake.tStake)
+
+      const totalInTStake = BigNumber.from(stake.tStake)
         .add(BigNumber.from(stake.keepInTStake))
         .add(BigNumber.from(stake.nuInTStake))
         .toString()
+
+      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
+      const eligibleStakeAmount = _isBeforeBonusDeadline
+        ? totalInTStake
+        : state.stakes[stakeIdxToUpdate].bonusEligibility.eligibleStakeAmount
+      state.stakes[stakeIdxToUpdate].bonusEligibility = {
+        ...state.stakes[stakeIdxToUpdate].bonusEligibility,
+        eligibleStakeAmount,
+        reward: calculateStakingBonusReward(eligibleStakeAmount),
+      }
 
       state.stakedBalance = calculateStakedBalance(state.stakes)
       state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
@@ -163,9 +186,22 @@ export const stakingSlice = createSlice({
       }
 
       const totalStaked = state.stakes[stakeIdxToUpdate].totalInTStake
-      state.stakes[stakeIdxToUpdate].totalInTStake = BigNumber.from(totalStaked)
+      const newTotalStakedAmount = BigNumber.from(totalStaked)
         .sub(amount)
         .toString()
+      state.stakes[stakeIdxToUpdate].totalInTStake = newTotalStakedAmount
+
+      const _isBeforeBonusDeadline = isBeforeBonusDeadline()
+      const eligibleStakeAmount = _isBeforeBonusDeadline
+        ? newTotalStakedAmount
+        : "0"
+      state.stakes[stakeIdxToUpdate].bonusEligibility = {
+        ...state.stakes[stakeIdxToUpdate].bonusEligibility,
+        eligibleStakeAmount,
+        hasActiveStake: _isBeforeBonusDeadline,
+        hasUnstakeAfterBonusDeadline: !_isBeforeBonusDeadline,
+        reward: calculateStakingBonusReward(eligibleStakeAmount),
+      }
       state.stakedBalance = calculateStakedBalance(state.stakes)
       state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
       state.totalRewardsBalance = calculateTotalRewardsBalance(state)
