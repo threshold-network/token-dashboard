@@ -94,10 +94,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         />
         {!stake.bonusEligibility.hasPREConfigured && (
           <>
-            <Badge colorScheme={"red"} variant="solid" size="medium" ml="3">
+            <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
               missing PRE
             </Badge>
-            <Badge colorScheme={"red"} variant="solid" size="medium" ml="3">
+            <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
               low PRE funds
             </Badge>
           </>
