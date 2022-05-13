@@ -20,12 +20,26 @@ export interface UseStakingState {
   (): {
     stakedBalance: BigNumberish
     stakes: StakeData[]
+    totalRewardsBalance: string
+    totalBonusBalance: string
     stakeAmount: string | number
     stakingProvider: string
     beneficiary: string
     authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateState
   }
+}
+
+export interface BonusEligibility {
+  hasPREConfigured: boolean
+  hasActiveStake: boolean
+  // No unstaking after the May 15th "snapshot" and until July 15th (not even
+  // partial amounts).
+  hasUnstakeAfterBonusDeadline: boolean
+  // Only total staked amount before May 15th(May 15 2022 23:59:59) is taking
+  // into account.
+  eligibleStakeAmount: string
+  reward: string
 }
 
 export interface StakeData {
@@ -41,6 +55,7 @@ export interface StakeData {
   keepInTStake: string
   tStake: string
   totalInTStake: string
+  bonusEligibility: BonusEligibility
 }
 
 export interface ProviderStakedEvent {
@@ -61,6 +76,7 @@ export type ProviderStakedActionPayload = ProviderStakedEvent &
     | "tStake"
     | "amount"
     | "totalInTStake"
+    | "bonusEligibility"
   >
 
 export type UpdateStakeAmountActionPayload = {

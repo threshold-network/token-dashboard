@@ -5,6 +5,7 @@ import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
 import StakeCard from "./StakeCard"
 import RewardsCard from "./RewardsCard"
+import { StakingBonusBanner } from "../../components/StakingBonus"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
@@ -15,10 +16,11 @@ const StakingPage: PageComponent = (props) => {
   useEffect(() => {
     fetchtTvlData()
   }, [fetchtTvlData])
-  const { stakes } = useStakingState()
+  const { stakes, totalBonusBalance, totalRewardsBalance } = useStakingState()
 
   return (
     <PageLayout {...props}>
+      <StakingBonusBanner />
       <SimpleGrid
         columns={[1, null, null, 2]}
         spacing="4"
@@ -28,7 +30,10 @@ const StakingPage: PageComponent = (props) => {
       >
         <StakedPortfolioCard />
         <Stack spacing={4}>
-          <RewardsCard />
+          <RewardsCard
+            totalBonusBalance={totalBonusBalance}
+            totalRewardsBalance={totalRewardsBalance}
+          />
           <StakingTVLCard tvl={data.total} />
         </Stack>
         {stakes.map((stake) => (
