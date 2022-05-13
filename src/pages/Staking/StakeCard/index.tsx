@@ -85,12 +85,24 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       <Body2 mt="10" mb="4">
         Staking Bonus
       </Body2>
-      <TokenBalance
-        tokenAmount={stake.bonusEligibility.reward}
-        withSymbol
-        tokenSymbol="T"
-        isLarge
-      />
+      <Flex alignItems={"end"}>
+        <TokenBalance
+          tokenAmount={stake.bonusEligibility.reward}
+          withSymbol
+          tokenSymbol="T"
+          isLarge
+        />
+        {!stake.bonusEligibility.hasPREConfigured && (
+          <>
+            <Badge colorScheme={"red"} variant="solid" size="medium" ml="3">
+              missing PRE
+            </Badge>
+            <Badge colorScheme={"red"} variant="solid" size="medium" ml="3">
+              low PRE funds
+            </Badge>
+          </>
+        )}
+      </Flex>
       <Divider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
