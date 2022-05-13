@@ -1,6 +1,7 @@
 import { FC, ReactElement, Fragment } from "react"
 import {
   Flex,
+  Box,
   Badge,
   ButtonGroup,
   Button,
@@ -8,6 +9,7 @@ import {
   useBoolean,
   Tooltip,
   Icon,
+  FlexProps,
 } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
 import { BigNumber } from "@ethersproject/bignumber"
@@ -29,6 +31,8 @@ import {
   TreeNode,
   TreeItemLineToNode,
 } from "../../../components/Tree"
+import { Divider } from "../../../components/Divider"
+import { isAddressZero } from "../../../web3/utils"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -36,11 +40,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const { openModal } = useModal()
 
   const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
-
-  const stakeType =
-    stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
-      ? `legacy ${StakeType[stake.stakeType]}`
-      : "native"
 
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
@@ -71,7 +70,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   return (
     <Card borderColor={isInActiveStake ? "red.200" : undefined}>
-      <Flex as="header" alignItems="center">
+      <StakeCardHeader>
         <Badge
           colorScheme={isInActiveStake ? "gray" : "green"}
           variant="subtle"
@@ -80,12 +79,19 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         >
           {isInActiveStake ? "inactive" : "active"}
         </Badge>
-        <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
-        <Label3 textTransform="uppercase" mr="auto">
-          stake - {stakeType}
-        </Label3>
+        <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
-      </Flex>
+      </StakeCardHeader>
+      <Body2 mt="10" mb="4">
+        Staking Bonus
+      </Body2>
+      <TokenBalance
+        tokenAmount={stake.bonusEligibility.reward}
+        withSymbol
+        tokenSymbol="T"
+        isLarge
+      />
+      <Divider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
       ) : (
@@ -112,7 +118,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       {isStakeAction || !hasLegacyStakes ? (
         <TokenAmountForm
           onSubmitForm={onSubmitForm}
-          label="Unstake Amount"
+          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
@@ -123,6 +129,55 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </Button>
       )}
     </Card>
+  )
+}
+
+export const StakeCardHeader: FC = ({ children }) => {
+  return (
+    <Flex as="header" alignItems="center">
+      {children}
+    </Flex>
+  )
+}
+
+export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
+  stake,
+}) => {
+  const stakeType = !stake
+    ? ""
+    : stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
+    ? ` - legacy ${StakeType[stake.stakeType]}`
+    : " - native"
+  return (
+    <>
+      <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
+      <Label3 textTransform="uppercase" mr="auto">
+        stake{stakeType}
+      </Label3>
+    </>
+  )
+}
+
+export const StakeCardProviderAddress: FC<
+  {
+    stakingProvider: string
+  } & FlexProps
+> = ({ stakingProvider, ...restProps }) => {
+  const isNotAddressZero = !isAddressZero(stakingProvider)
+
+  return (
+    <Flex mt="6" mb="8" alignItems="center" {...restProps}>
+      <BoxLabel bg="brand.50" color="brand.700" mr="auto">
+        Provider address
+      </BoxLabel>
+      {isNotAddressZero ? (
+        <CopyAddressToClipboard address={stakingProvider} />
+      ) : (
+        <Box as="span" color="brand.500">
+          none set
+        </Box>
+      )}
+    </Flex>
   )
 }
 
