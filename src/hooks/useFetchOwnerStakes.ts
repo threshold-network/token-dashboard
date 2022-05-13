@@ -4,6 +4,7 @@ import {
   useTStakingContract,
   T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
   useMulticallContract,
+  usePREContract,
 } from "../web3/hooks"
 import {
   getMulticallContractCall,
@@ -19,6 +20,8 @@ import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
+
+  const simplePREApplicationContract = usePREContract()
 
   const multicallContract = useMulticallContract()
 
@@ -67,6 +70,30 @@ export const useFetchOwnerStakes = () => {
           bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
         } as StakeData
       })
+
+      const stakingProviderInfoMulticalls = stakes.map((_) => {
+        return {
+          contract: simplePREApplicationContract,
+          method: "stakingProviderInfo",
+          args: [_.stakingProvider],
+        }
+      })
+
+      const stakingProviderInfoMulticallRequests =
+        // @ts-ignore
+        stakingProviderInfoMulticalls.map(getMulticallContractCall)
+
+      const [, stakingProviderInfoResults] = await multicallContract?.aggregate(
+        stakingProviderInfoMulticallRequests
+      )
+
+      const data2 = decodeMulticallResult(
+        stakingProviderInfoResults,
+        // @ts-ignore
+        stakingProviderInfoMulticalls
+      )
+
+      console.log("data2", data2)
 
       const multicalls = stakes.map((_) => ({
         contract: tStakingContract,
