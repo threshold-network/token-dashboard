@@ -94,7 +94,13 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
 
   return (
-    <Card borderColor={isInActiveStake ? "red.200" : undefined}>
+    <Card
+      borderColor={
+        isInActiveStake || !isPRESet || shouldDisplayLowPREFunds
+          ? "red.200"
+          : undefined
+      }
+    >
       <StakeCardHeader>
         <Badge
           colorScheme={isInActiveStake ? "gray" : "green"}
