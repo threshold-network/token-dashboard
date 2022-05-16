@@ -1,21 +1,13 @@
 import { useCallback } from "react"
-import { BigNumber, BigNumberish, Event, providers, constants } from "ethers"
 import {
-  PRE_DEPLOYMENT_BLOCK,
-  T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
   useMulticallContract,
   usePREContract,
   useTStakingContract,
 } from "../web3/hooks"
-import {
-  decodeMulticallResult,
-  getAddress,
-  getContractPastEvents,
-  getMulticallContractCall,
-} from "../web3/utils"
-import { BonusEligibility, StakingProviderInfoData } from "../types/staking"
-import { calculateStakingBonusReward } from "../utils/stakingBonus"
-import { stakingBonus } from "../constants"
+import { decodeMulticallResult, getMulticallContractCall } from "../web3/utils"
+import { StakingProviderInfoData } from "../types/staking"
+import { useCheckEthBalanceForAccounts } from "./useCheckEthBalanceForAccounts"
+import { isZeroAddress } from "ethereumjs-util"
 
 export const useStakingProviderInfo = (): ((
   stakingProviders: string[]
@@ -23,6 +15,7 @@ export const useStakingProviderInfo = (): ((
   const preContract = usePREContract()
   const tStakingContract = useTStakingContract()
   const multicallContract = useMulticallContract()
+  const checkAccountsBalances = useCheckEthBalanceForAccounts()
 
   return useCallback(
     async (stakingProviders) => {
@@ -30,7 +23,8 @@ export const useStakingProviderInfo = (): ((
         !stakingProviders ||
         stakingProviders.length === 0 ||
         !preContract ||
-        !tStakingContract
+        !tStakingContract ||
+        !multicallContract
       ) {
         return {} as StakingProviderInfoData
       }
@@ -52,10 +46,16 @@ export const useStakingProviderInfo = (): ((
         stakingProviderInfoMulticallRequests
       )
 
-      return decodeMulticallResult(
+      const stakingProvidersInfoDataRaw = decodeMulticallResult(
         stakingProviderInfoResults,
         stakingProviderInfoMulticalls
-      ).reduce(
+      )
+
+      const accountsBalances = await checkAccountsBalances(
+        stakingProvidersInfoDataRaw.map((data) => data.operator)
+      )
+
+      return stakingProvidersInfoDataRaw.reduce(
         (
           finalData: StakingProviderInfoData,
           _,
@@ -65,6 +65,9 @@ export const useStakingProviderInfo = (): ((
             operator: _.operator,
             operatorConfirmed: _.operatorConfirmed,
             operatorStartTimestamp: _.operatorStartTimestamp.toString(),
+            operatorEthBalance: isZeroAddress(_.operator)
+              ? "0"
+              : accountsBalances[_.operator],
           }
           return finalData
         },

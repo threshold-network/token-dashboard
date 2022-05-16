@@ -46,6 +46,7 @@ export interface StakingProviderInfo {
   operator: string
   operatorConfirmed: boolean
   operatorStartTimestamp: string
+  operatorEthBalance: string
 }
 
 export interface StakingProviderInfoData {
