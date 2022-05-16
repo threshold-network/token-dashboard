@@ -33,6 +33,7 @@ import {
 } from "../../../components/Tree"
 import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
+import { LOW_FUNDS_THRESHOLD_IN_ETH } from "../../../constants/preContract"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -42,6 +43,16 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
 
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+
+  const isPRESet =
+    !isAddressZero(stake.stakingProviderInfo.operator) &&
+    stake.stakingProviderInfo.operatorConfirmed
+
+  const shouldDisplayLowPREFunds =
+    !isAddressZero(stake.stakingProviderInfo.operator) &&
+    BigNumber.from(stake.stakingProviderInfo.operatorEthBalance).lt(
+      LOW_FUNDS_THRESHOLD_IN_ETH
+    )
 
   const onSubmitTopUpForm = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
@@ -92,15 +103,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           tokenSymbol="T"
           isLarge
         />
-        {!stake.stakingProviderInfo.operatorConfirmed && (
-          <>
-            <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
-              missing PRE
-            </Badge>
-            <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
-              low PRE funds
-            </Badge>
-          </>
+        {!isPRESet && (
+          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+            missing PRE
+          </Badge>
+        )}
+        {shouldDisplayLowPREFunds && (
+          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+            low PRE funds
+          </Badge>
         )}
       </Flex>
       <Divider mb="0" />
