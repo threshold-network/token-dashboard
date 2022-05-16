@@ -24,7 +24,7 @@ export const StakingBonusBanner = () => {
       >
         <BonusTitle />
         <H4 textAlign={{ base: "center", xl: "unset" }}>
-          Starting June the 1st you can get your Staking Bonus!
+          Starting June 1st you can get your Staking Bonus!
         </H4>
         <Button
           onClick={() => openModal(ModalType.StakingBonus)}

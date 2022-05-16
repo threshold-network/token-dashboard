@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
 import {
-  chakra,
   Button,
   Icon,
   List,
@@ -63,7 +62,7 @@ export const EligibilityConfirmation: FC<
           <Body1 mt="4">
             To receive a Staking Bonus any stake needs to meet two requirements.
           </Body1>
-          <Body1 mt="2">The Staking Bonus is 2.5% of your stake.</Body1>
+          <Body1 mt="2">The Staking Bonus is 3% of your stake.</Body1>
         </InfoBox>
         <Divider />
         <Box ml="4">
@@ -71,12 +70,17 @@ export const EligibilityConfirmation: FC<
             title="Requirement 1 - Active stake"
             checklistItems={[
               {
-                title: "Have an active stake before June the 1st",
+                title: "Have an active stake before June 1st",
                 subTitle: (
                   <Body3 color={useColorModeValue("gray.500", "gray.300")}>
                     Your Staking Bonus will be added to your Staking Rewards.
                     You can withdraw them starting{" "}
-                    <chakra.strong color="brand.500">July 15th.</chakra.strong>{" "}
+                    <Body3
+                      as="span"
+                      color={useColorModeValue("brand.500", "brand.550")}
+                    >
+                      July 15th.
+                    </Body3>{" "}
                     The Staking Bonus can be accumulated along the Staking
                     Rewards.
                   </Body3>
