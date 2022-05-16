@@ -21,6 +21,7 @@ type TokenAmountFormProps = {
   helperText?: string
   icon?: typeof Icon
   isDisabled?: boolean
+  validateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
   token?: { decimals: number; symbol: string }
 }
@@ -35,6 +36,7 @@ const TokenAmountFormBase: FC<
   token = { decimals: 18, symbol: "T" },
   icon = ThresholdCircleBrand,
   isDisabled = false,
+  validateForm = true,
   shouldDisplayMaxAmountInLabel = false,
   ...formikProps
 }) => {
@@ -80,6 +82,7 @@ export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
     tokenAmount: props.initialTokenAmount || "",
   }),
   validate: (values, props) => {
+    if (!props.validateForm) return {}
     const errors: FormikErrors<FormValues> = {}
 
     errors.tokenAmount = validateAmountInRange(

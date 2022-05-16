@@ -24,7 +24,13 @@ import { TokenAmountForm } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
-import { ModalType, StakeType, Token, UnstakeType } from "../../../enums"
+import {
+  ExternalHref,
+  ModalType,
+  StakeType,
+  Token,
+  UnstakeType,
+} from "../../../enums"
 import {
   Tree,
   TreeItem,
@@ -40,8 +46,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
 
-  const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
-
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
   const isPRESet =
@@ -54,6 +58,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       LOW_FUNDS_THRESHOLD_IN_ETH
     )
 
+  const submitButtonText = !isStakeAction
+    ? "Unstake"
+    : isPRESet
+    ? "Top-up"
+    : "Set PRE"
+
   const onSubmitTopUpForm = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
   }
@@ -64,7 +74,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      onSubmitTopUpForm(tokenAmount)
+      if (isPRESet) {
+        onSubmitTopUpForm(tokenAmount)
+      } else {
+        window.open(ExternalHref.preNodeSetup, "_blank")
+      }
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -145,6 +159,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
+          isDisabled={!isPRESet}
+          validateForm={isPRESet}
         />
       ) : (
         <Button onClick={onSubmitUnstakeBtn} isFullWidth>
