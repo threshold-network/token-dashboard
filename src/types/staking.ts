@@ -33,10 +33,10 @@ export interface UseStakingState {
 export interface BonusEligibility {
   hasPREConfigured: boolean
   hasActiveStake: boolean
-  // No unstaking after the May 15th "snapshot" and until July 15th (not even
-  // partial amounts).
+  // No unstaking after the bonus deadline and until mid-July (not even partial
+  // amounts).
   hasUnstakeAfterBonusDeadline: boolean
-  // Only total staked amount before May 15th(May 15 2022 23:59:59) is taking
+  // Only total staked amount before bonus deadline is taking
   // into account.
   eligibleStakeAmount: string
   reward: string

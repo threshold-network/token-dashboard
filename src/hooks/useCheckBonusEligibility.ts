@@ -195,8 +195,8 @@ const getStakingProviderToTopUps = async (
       stakingProviderToAmount[stakingProvider]?.amount || constants.Zero
 
     if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
-      // Break the loop if an event emitted after May 15th. Returned
-      // events are in ascending order.
+      // Break the loop if an event is emitted after the bonus deadline.
+      // Returned events are in ascending order.
       return stakingProviderToAmount
     }
     stakingProviderToAmount[stakingProvider] = {
@@ -222,8 +222,9 @@ const getStakingProviderToUnstake = async (
     const stakingProvider = getAddress(event.args?.stakingProvider)
     const stakingProviderInfo = stakingProviderToUnstake[stakingProvider]
     if (stakingProviderInfo?.hasUnstakeAfterBonusDeadline) {
-      // If at least one "Unstaked" event occurred after May 15, this provider
-      // is not eligible for bonus so we can skip it from further calculations.
+      // If at least one `Unstaked` event occurred after bonus deadline, this
+      // provider is not eligible for bonus so we can skip it from further
+      // calculations.
       continue
     }
     const block = await provider.getBlock(event.blockHash)
@@ -231,8 +232,6 @@ const getStakingProviderToUnstake = async (
       stakingProviderToUnstake[stakingProvider]?.amount || constants.Zero
     const newAmount = BigNumber.from(accummulatedAmount).add(event.args?.amount)
     if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
-      // Break the loop if an event emitted after May 15th. Returned
-      // events are in ascending order.
       stakingProviderToUnstake[stakingProvider] = {
         amount: newAmount,
         hasUnstakeAfterBonusDeadline: true,
