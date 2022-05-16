@@ -4,6 +4,7 @@ import {
   useTStakingContract,
   T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
   useMulticallContract,
+  usePREContract,
 } from "../web3/hooks"
 import {
   getMulticallContractCall,
@@ -16,19 +17,29 @@ import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
 import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
+import { useFetchPreConfigData } from "./useFetchPreConfigData"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
+
+  const simplePREApplicationContract = usePREContract()
 
   const multicallContract = useMulticallContract()
 
   const checkBonusEligibility = useCheckBonusEligibility()
 
+  const fetchPreConfigData = useFetchPreConfigData()
+
   const dispatch = useDispatch()
 
   return useCallback(
     async (address?: string): Promise<StakeData[]> => {
-      if (!tStakingContract || !multicallContract || !address) {
+      if (
+        !tStakingContract ||
+        !simplePREApplicationContract ||
+        !multicallContract ||
+        !address
+      ) {
         dispatch(setStakes([]))
         return []
       }
@@ -49,6 +60,8 @@ export const useFetchOwnerStakes = () => {
         stakingProviders
       )
 
+      const preConfigData = await fetchPreConfigData(stakingProviders)
+
       const stakes = stakedEvents.map((_) => {
         const amount = _.args?.amount.toString()
         const stakeType = _.args?.stakeType as StakeType
@@ -67,6 +80,7 @@ export const useFetchOwnerStakes = () => {
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
           bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
+          preConfig: preConfigData[stakingProvider],
         } as StakeData
       })
 

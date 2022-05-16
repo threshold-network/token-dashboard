@@ -26,7 +26,7 @@ export const Badge = {
     solid: (props: any) => {
       return {
         color: "white",
-        backgroundColor: getColorFromProps(props, 500, "black"),
+        backgroundColor: props.bg || getColorFromProps(props, 500, "black"),
       }
     },
     outline: (props: any) => {
@@ -48,7 +48,7 @@ export const Badge = {
       )(props.theme)
 
       return {
-        backgroundColor: mode(lightModeBg, darkModeBg)(props),
+        backgroundColor: props.bg || mode(lightModeBg, darkModeBg)(props),
         color: mode(lightModeColor, darkModeColor)(props),
       }
     },
