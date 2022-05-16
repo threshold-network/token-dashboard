@@ -92,7 +92,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           tokenSymbol="T"
           isLarge
         />
-        {!stake.bonusEligibility.hasPREConfigured && (
+        {!stake.stakingProviderInfo.operatorConfirmed && (
           <>
             <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
               missing PRE
