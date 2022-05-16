@@ -99,7 +99,7 @@ export const stakingSlice = createSlice({
         reward: calculateStakingBonusReward(_amount),
       }
 
-      newStake.stakingProviderInfo = {
+      newStake.preConfig = {
         operator: AddressZero,
         operatorConfirmed: false,
         operatorStartTimestamp: "0",
