@@ -13,7 +13,7 @@ import {
   getAddress,
 } from "../web3/utils"
 import { StakeType } from "../enums"
-import { StakeData } from "../types/staking"
+import { StakeData, StakingProviderInfoData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
 import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
@@ -31,7 +31,12 @@ export const useFetchOwnerStakes = () => {
 
   return useCallback(
     async (address?: string): Promise<StakeData[]> => {
-      if (!tStakingContract || !multicallContract || !address) {
+      if (
+        !tStakingContract ||
+        !simplePREApplicationContract ||
+        !multicallContract ||
+        !address
+      ) {
         dispatch(setStakes([]))
         return []
       }
@@ -80,20 +85,30 @@ export const useFetchOwnerStakes = () => {
       })
 
       const stakingProviderInfoMulticallRequests =
-        // @ts-ignore
         stakingProviderInfoMulticalls.map(getMulticallContractCall)
 
       const [, stakingProviderInfoResults] = await multicallContract?.aggregate(
         stakingProviderInfoMulticallRequests
       )
 
-      const data2 = decodeMulticallResult(
+      const stakingProviderInfoData = decodeMulticallResult(
         stakingProviderInfoResults,
-        // @ts-ignore
         stakingProviderInfoMulticalls
+      ).reduce(
+        (
+          finalData: StakingProviderInfoData,
+          _,
+          idx
+        ): StakingProviderInfoData => {
+          finalData[stakes[idx].stakingProvider] = {
+            operator: _.operator,
+            operatorConfirmed: _.operatorConfirmed,
+            operatorStartTimestamp: _.operatorStartTimestamp.toString(),
+          }
+          return finalData
+        },
+        {}
       )
-
-      console.log("data2", data2)
 
       const multicalls = stakes.map((_) => ({
         contract: tStakingContract,
@@ -116,6 +131,8 @@ export const useFetchOwnerStakes = () => {
           keepInTStake: _.keepInTStake.toString(),
           nuInTStake: _.nuInTStake.toString(),
           totalInTStake: total.toString(),
+          stakingProviderInfo:
+            stakingProviderInfoData[stakes[index].stakingProvider],
         }
       })
 
