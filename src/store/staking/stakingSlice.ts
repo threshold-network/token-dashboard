@@ -10,6 +10,7 @@ import {
 } from "../../types/staking"
 import { StakeType, UnstakeType } from "../../enums"
 import { calculateStakingBonusReward } from "../../utils/stakingBonus"
+import { AddressZero } from "../../web3/utils"
 
 interface StakingState {
   stakingProvider: string
@@ -85,6 +86,11 @@ export const stakingSlice = createSlice({
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
+      newStake.stakingProviderInfo = {
+        operator: AddressZero,
+        operatorConfirmed: false,
+        operatorStartTimestamp: "0",
+      }
 
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
