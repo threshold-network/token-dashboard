@@ -18,8 +18,7 @@ const PRE_ADDRESSESS = {
   // package using `yarn link @threshold-network/solidity-contracts` you can
   // find the contract address at
   // `node_modules/@threshold-network/solidity-contracts/artifacts/SimplePREApplication.json`.
-  [ChainID.Localhost.valueOf().toString()]:
-    "0xb114527fe014e73838D3fC2BAf64AB5DC709ebcf", //AddressZero,
+  [ChainID.Localhost.valueOf().toString()]: AddressZero,
 } as Record<string, string>
 
 export const usePREContract = () => {
