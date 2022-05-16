@@ -5,13 +5,13 @@ import {
   useTStakingContract,
 } from "../web3/hooks"
 import { decodeMulticallResult, getMulticallContractCall } from "../web3/utils"
-import { StakingProviderInfoData } from "../types/staking"
+import { PreConfigData } from "../types/staking"
 import { useCheckEthBalanceForAccounts } from "./useCheckEthBalanceForAccounts"
 import { isZeroAddress } from "ethereumjs-util"
 
-export const useStakingProviderInfo = (): ((
+export const useFetchPreConfigData = (): ((
   stakingProviders: string[]
-) => Promise<StakingProviderInfoData>) => {
+) => Promise<PreConfigData>) => {
   const preContract = usePREContract()
   const tStakingContract = useTStakingContract()
   const multicallContract = useMulticallContract()
@@ -26,10 +26,10 @@ export const useStakingProviderInfo = (): ((
         !tStakingContract ||
         !multicallContract
       ) {
-        return {} as StakingProviderInfoData
+        return {} as PreConfigData
       }
 
-      const stakingProviderInfoMulticalls = stakingProviders.map(
+      const preConfigDataMulticalls = stakingProviders.map(
         (stakingProvider) => {
           return {
             contract: preContract,
@@ -39,28 +39,25 @@ export const useStakingProviderInfo = (): ((
         }
       )
 
-      const stakingProviderInfoMulticallRequests =
-        stakingProviderInfoMulticalls.map(getMulticallContractCall)
-
-      const [, stakingProviderInfoResults] = await multicallContract?.aggregate(
-        stakingProviderInfoMulticallRequests
+      const preConfigDataMulticallRequests = preConfigDataMulticalls.map(
+        getMulticallContractCall
       )
 
-      const stakingProvidersInfoDataRaw = decodeMulticallResult(
-        stakingProviderInfoResults,
-        stakingProviderInfoMulticalls
+      const [, preConfigDataResults] = await multicallContract?.aggregate(
+        preConfigDataMulticallRequests
+      )
+
+      const preConfigDataRaw = decodeMulticallResult(
+        preConfigDataResults,
+        preConfigDataMulticalls
       )
 
       const accountsBalances = await checkAccountsBalances(
-        stakingProvidersInfoDataRaw.map((data) => data.operator)
+        preConfigDataRaw.map((data) => data.operator)
       )
 
-      return stakingProvidersInfoDataRaw.reduce(
-        (
-          finalData: StakingProviderInfoData,
-          _,
-          idx
-        ): StakingProviderInfoData => {
+      return preConfigDataRaw.reduce(
+        (finalData: PreConfigData, _, idx): PreConfigData => {
           finalData[stakingProviders[idx]] = {
             operator: _.operator,
             operatorConfirmed: _.operatorConfirmed,

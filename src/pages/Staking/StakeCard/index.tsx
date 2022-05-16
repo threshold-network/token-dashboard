@@ -49,12 +49,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
   const isPRESet =
-    !isAddressZero(stake.stakingProviderInfo.operator) &&
-    stake.stakingProviderInfo.operatorConfirmed
+    !isAddressZero(stake.preConfig.operator) &&
+    stake.preConfig.operatorConfirmed
 
   const shouldDisplayLowPREFunds =
-    !isAddressZero(stake.stakingProviderInfo.operator) &&
-    BigNumber.from(stake.stakingProviderInfo.operatorEthBalance).lt(
+    !isAddressZero(stake.preConfig.operator) &&
+    BigNumber.from(stake.preConfig.operatorEthBalance).lt(
       LOW_FUNDS_THRESHOLD_IN_WEI
     )
 

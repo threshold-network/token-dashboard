@@ -17,7 +17,7 @@ import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
 import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
-import { useStakingProviderInfo } from "./useStakingProviderInfo"
+import { useFetchPreConfigData } from "./useFetchPreConfigData"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
@@ -28,7 +28,7 @@ export const useFetchOwnerStakes = () => {
 
   const checkBonusEligibility = useCheckBonusEligibility()
 
-  const getStakingProviderInfo = useStakingProviderInfo()
+  const fetchPreConfigData = useFetchPreConfigData()
 
   const dispatch = useDispatch()
 
@@ -60,9 +60,7 @@ export const useFetchOwnerStakes = () => {
         stakingProviders
       )
 
-      const stakingProviderInfoData = await getStakingProviderInfo(
-        stakingProviders
-      )
+      const preConfigData = await fetchPreConfigData(stakingProviders)
 
       const stakes = stakedEvents.map((_) => {
         const amount = _.args?.amount.toString()
@@ -82,7 +80,7 @@ export const useFetchOwnerStakes = () => {
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
           bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
-          stakingProviderInfo: stakingProviderInfoData[stakingProvider],
+          preConfig: preConfigData[stakingProvider],
         } as StakeData
       })
 
