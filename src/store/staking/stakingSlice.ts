@@ -13,6 +13,7 @@ import {
   calculateStakingBonusReward,
   isBeforeOrEqualBonusDeadline,
 } from "../../utils/stakingBonus"
+import { AddressZero } from "../../web3/utils"
 
 interface StakingState {
   stakingProvider: string
@@ -96,6 +97,13 @@ export const stakingSlice = createSlice({
         hasActiveStake: _isBeforeOrEqualBonusDeadline,
         hasUnstakeAfterBonusDeadline: false,
         reward: calculateStakingBonusReward(_amount),
+      }
+
+      newStake.preConfig = {
+        operator: AddressZero,
+        isOperatorConfirmed: false,
+        operatorStartTimestamp: "0",
+        operatorEthBalance: "0",
       }
 
       state.stakes = [newStake, ...state.stakes]

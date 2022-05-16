@@ -24,7 +24,13 @@ import { TokenAmountForm } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
-import { ModalType, StakeType, Token, UnstakeType } from "../../../enums"
+import {
+  ExternalHref,
+  ModalType,
+  StakeType,
+  Token,
+  UnstakeType,
+} from "../../../enums"
 import {
   Tree,
   TreeItem,
@@ -33,15 +39,30 @@ import {
 } from "../../../components/Tree"
 import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
+import { pre as preConstants } from "../../../constants"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
 
-  const submitButtonText = isStakeAction ? "Top-up" : "Unstake"
-
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+
+  const isPRESet =
+    !isAddressZero(stake.preConfig.operator) &&
+    stake.preConfig.isOperatorConfirmed
+
+  const shouldDisplayLowPREFunds =
+    !isAddressZero(stake.preConfig.operator) &&
+    BigNumber.from(stake.preConfig.operatorEthBalance).lt(
+      preConstants.LOW_FUNDS_THRESHOLD_IN_WEI
+    )
+
+  const submitButtonText = !isStakeAction
+    ? "Unstake"
+    : isPRESet
+    ? "Top-up"
+    : "Set PRE"
 
   const onSubmitTopUpForm = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
@@ -53,7 +74,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      onSubmitTopUpForm(tokenAmount)
+      if (isPRESet) {
+        onSubmitTopUpForm(tokenAmount)
+      } else {
+        window.open(ExternalHref.preNodeSetup, "_blank")
+      }
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -69,7 +94,13 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
 
   return (
-    <Card borderColor={isInActiveStake ? "red.200" : undefined}>
+    <Card
+      borderColor={
+        isInActiveStake || !isPRESet || shouldDisplayLowPREFunds
+          ? "red.200"
+          : undefined
+      }
+    >
       <StakeCardHeader>
         <Badge
           colorScheme={isInActiveStake ? "gray" : "green"}
@@ -85,12 +116,24 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       <Body2 mt="10" mb="4">
         Staking Bonus
       </Body2>
-      <TokenBalance
-        tokenAmount={stake.bonusEligibility.reward}
-        withSymbol
-        tokenSymbol="T"
-        isLarge
-      />
+      <Flex alignItems={"end"}>
+        <TokenBalance
+          tokenAmount={stake.bonusEligibility.reward}
+          withSymbol
+          tokenSymbol="T"
+          isLarge
+        />
+        {!isPRESet && (
+          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+            missing PRE
+          </Badge>
+        )}
+        {shouldDisplayLowPREFunds && (
+          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+            low PRE funds
+          </Badge>
+        )}
+      </Flex>
       <Divider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
@@ -122,6 +165,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
+          isDisabled={!isPRESet}
+          shouldValidateForm={isPRESet}
         />
       ) : (
         <Button onClick={onSubmitUnstakeBtn} isFullWidth>

@@ -42,6 +42,17 @@ export interface BonusEligibility {
   reward: string
 }
 
+export interface PreConfig {
+  operator: string
+  isOperatorConfirmed: boolean
+  operatorStartTimestamp: string
+  operatorEthBalance: string
+}
+
+export interface PreConfigData {
+  [stakingProvider: string]: PreConfig
+}
+
 export interface StakeData {
   stakeType: StakeType
   owner: string
@@ -56,6 +67,7 @@ export interface StakeData {
   tStake: string
   totalInTStake: string
   bonusEligibility: BonusEligibility
+  preConfig: PreConfig
 }
 
 export interface ProviderStakedEvent {
@@ -77,6 +89,7 @@ export type ProviderStakedActionPayload = ProviderStakedEvent &
     | "amount"
     | "totalInTStake"
     | "bonusEligibility"
+    | "preConfig"
   >
 
 export type UpdateStakeAmountActionPayload = {
