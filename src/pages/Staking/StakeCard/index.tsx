@@ -39,7 +39,7 @@ import {
 } from "../../../components/Tree"
 import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
-import { LOW_FUNDS_THRESHOLD_IN_WEI } from "../../../constants/pre"
+import { pre as preConstants } from "../../../constants"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -55,7 +55,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const shouldDisplayLowPREFunds =
     !isAddressZero(stake.preConfig.operator) &&
     BigNumber.from(stake.preConfig.operatorEthBalance).lt(
-      LOW_FUNDS_THRESHOLD_IN_WEI
+      preConstants.LOW_FUNDS_THRESHOLD_IN_WEI
     )
 
   const submitButtonText = !isStakeAction
