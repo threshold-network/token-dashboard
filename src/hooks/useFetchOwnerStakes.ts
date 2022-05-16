@@ -13,10 +13,11 @@ import {
   getAddress,
 } from "../web3/utils"
 import { StakeType } from "../enums"
-import { StakeData, StakingProviderInfoData } from "../types/staking"
+import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
 import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
+import { useStakingProviderInfo } from "./useStakingProviderInfo"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
@@ -26,6 +27,8 @@ export const useFetchOwnerStakes = () => {
   const multicallContract = useMulticallContract()
 
   const checkBonusEligibility = useCheckBonusEligibility()
+
+  const getStakingProviderInfo = useStakingProviderInfo()
 
   const dispatch = useDispatch()
 
@@ -55,6 +58,10 @@ export const useFetchOwnerStakes = () => {
         stakingProviders
       )
 
+      const stakingProviderInfoData = await getStakingProviderInfo(
+        stakingProviders
+      )
+
       const stakes = stakedEvents.map((_) => {
         const amount = _.args?.amount.toString()
         const stakeType = _.args?.stakeType as StakeType
@@ -73,42 +80,9 @@ export const useFetchOwnerStakes = () => {
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
           bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
+          stakingProviderInfo: stakingProviderInfoData[stakingProvider],
         } as StakeData
       })
-
-      const stakingProviderInfoMulticalls = stakes.map((_) => {
-        return {
-          contract: simplePREApplicationContract,
-          method: "stakingProviderInfo",
-          args: [_.stakingProvider],
-        }
-      })
-
-      const stakingProviderInfoMulticallRequests =
-        stakingProviderInfoMulticalls.map(getMulticallContractCall)
-
-      const [, stakingProviderInfoResults] = await multicallContract?.aggregate(
-        stakingProviderInfoMulticallRequests
-      )
-
-      const stakingProviderInfoData = decodeMulticallResult(
-        stakingProviderInfoResults,
-        stakingProviderInfoMulticalls
-      ).reduce(
-        (
-          finalData: StakingProviderInfoData,
-          _,
-          idx
-        ): StakingProviderInfoData => {
-          finalData[stakes[idx].stakingProvider] = {
-            operator: _.operator,
-            operatorConfirmed: _.operatorConfirmed,
-            operatorStartTimestamp: _.operatorStartTimestamp.toString(),
-          }
-          return finalData
-        },
-        {}
-      )
 
       const multicalls = stakes.map((_) => ({
         contract: tStakingContract,
@@ -131,8 +105,6 @@ export const useFetchOwnerStakes = () => {
           keepInTStake: _.keepInTStake.toString(),
           nuInTStake: _.nuInTStake.toString(),
           totalInTStake: total.toString(),
-          stakingProviderInfo:
-            stakingProviderInfoData[stakes[index].stakingProvider],
         }
       })
 
