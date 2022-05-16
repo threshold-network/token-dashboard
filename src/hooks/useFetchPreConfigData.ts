@@ -54,7 +54,7 @@ export const useFetchPreConfigData = (): ((
         (finalData: PreConfigData, _, idx): PreConfigData => {
           finalData[stakingProviders[idx]] = {
             operator: _.operator,
-            operatorConfirmed: _.operatorConfirmed,
+            isOperatorConfirmed: _.operatorConfirmed,
             operatorStartTimestamp: _.operatorStartTimestamp.toString(),
             operatorEthBalance: isZeroAddress(_.operator)
               ? "0"

@@ -44,7 +44,7 @@ export interface BonusEligibility {
 
 export interface PreConfig {
   operator: string
-  operatorConfirmed: boolean
+  isOperatorConfirmed: boolean
   operatorStartTimestamp: string
   operatorEthBalance: string
 }
