@@ -110,7 +110,7 @@ const RequirementList: FC<{ conditions: boolean[] }> = ({ conditions }) => {
             as={conditions[0] ? MdCheckCircle : MdRemoveCircle}
             color={conditions[0] ? "green.500" : "red.500"}
           />
-          Have an active stake before June the 1st
+          Have an active stake before June 1st
         </ListItem>
         <ListItem>
           <ListIcon
