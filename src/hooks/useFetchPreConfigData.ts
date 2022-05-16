@@ -65,6 +65,6 @@ export const useFetchPreConfigData = (): ((
         {}
       )
     },
-    [preContract, multicallContract]
+    [preContract, multicallContract, checkAccountsBalances]
   )
 }
