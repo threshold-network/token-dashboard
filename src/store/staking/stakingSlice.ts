@@ -101,7 +101,7 @@ export const stakingSlice = createSlice({
 
       newStake.preConfig = {
         operator: AddressZero,
-        operatorConfirmed: false,
+        isOperatorConfirmed: false,
         operatorStartTimestamp: "0",
         operatorEthBalance: "0",
       }

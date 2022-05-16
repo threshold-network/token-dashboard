@@ -50,7 +50,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const isPRESet =
     !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.operatorConfirmed
+    stake.preConfig.isOperatorConfirmed
 
   const shouldDisplayLowPREFunds =
     !isAddressZero(stake.preConfig.operator) &&
