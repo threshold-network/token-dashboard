@@ -30,6 +30,8 @@ const StakingStats: FC<StakingStatsProps> = ({
           tokenSymbol="T"
           as="p"
           fontSize="sm"
+          lineHeight="unset"
+          fontWeight="400"
         />
       ),
     },

@@ -19,6 +19,15 @@ jobs:
           node-version: "16"
           cache: "yarn"
 
+      # This step forces Git to download dependencies using `https://` protocol,
+      # even if `yarn.json` refers to some package via `git://`. Using `git://`
+      # is no longer supported by GH. One of the dashboard dependencies by
+      # default uses `git://` and we needed to manually remove it every time
+      # it re-appeared in the lock file. Now even if it does re-appear, the
+      # `yarn install --frozen-lockfile` will not fail.
+      - name: Configure git to don't use unauthenticated protocol
+        run: git config --global url."https://".insteadOf git://
+
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 

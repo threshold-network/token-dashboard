@@ -44,11 +44,13 @@ export const useFetchOwnerStakes = () => {
         return []
       }
 
-      const stakedEvents = await getContractPastEvents(tStakingContract, {
-        eventName: "Staked",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        filterParams: [undefined, address],
-      })
+      const stakedEvents = (
+        await getContractPastEvents(tStakingContract, {
+          eventName: "Staked",
+          fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+          filterParams: [undefined, address],
+        })
+      ).reverse()
 
       const stakingProviders = stakedEvents.map(
         (_) => _.args?.stakingProvider as string
