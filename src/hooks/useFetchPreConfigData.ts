@@ -1,9 +1,5 @@
 import { useCallback } from "react"
-import {
-  useMulticallContract,
-  usePREContract,
-  useTStakingContract,
-} from "../web3/hooks"
+import { useMulticallContract, usePREContract } from "../web3/hooks"
 import { decodeMulticallResult, getMulticallContractCall } from "../web3/utils"
 import { PreConfigData } from "../types/staking"
 import { useCheckEthBalanceForAccounts } from "./useCheckEthBalanceForAccounts"
@@ -13,7 +9,6 @@ export const useFetchPreConfigData = (): ((
   stakingProviders: string[]
 ) => Promise<PreConfigData>) => {
   const preContract = usePREContract()
-  const tStakingContract = useTStakingContract()
   const multicallContract = useMulticallContract()
   const checkAccountsBalances = useCheckEthBalanceForAccounts()
 
@@ -23,7 +18,6 @@ export const useFetchPreConfigData = (): ((
         !stakingProviders ||
         stakingProviders.length === 0 ||
         !preContract ||
-        !tStakingContract ||
         !multicallContract
       ) {
         return {} as PreConfigData
@@ -71,6 +65,6 @@ export const useFetchPreConfigData = (): ((
         {}
       )
     },
-    [preContract, tStakingContract, multicallContract]
+    [preContract, multicallContract]
   )
 }
