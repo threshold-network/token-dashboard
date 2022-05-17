@@ -1,4 +1,10 @@
-import { Button, CloseButton, Stack, useDisclosure } from "@chakra-ui/react"
+import {
+  Button,
+  CloseButton,
+  Stack,
+  useDisclosure,
+  Box,
+} from "@chakra-ui/react"
 import Card from "../Card"
 import { H4 } from "../Typography"
 import { BonusTitle } from "./Title"
@@ -10,7 +16,12 @@ export const StakingBonusBanner = () => {
   const { openModal } = useModal()
 
   return (
-    <Card w="100%" display={isOpen ? "block" : "none"} position="relative">
+    <Card
+      w="100%"
+      display={isOpen ? "block" : "none"}
+      position="relative"
+      px="16"
+    >
       <CloseButton
         position="absolute"
         right="14px"
@@ -19,18 +30,20 @@ export const StakingBonusBanner = () => {
       />
       <Stack
         alignItems="center"
-        spacing={6}
+        spacing={{ base: "8", xl: "16" }}
         direction={{ base: "column", xl: "row" }}
+        bg="inherit"
       >
         <BonusTitle />
         <H4 textAlign={{ base: "center", xl: "unset" }}>
-          Starting June the 1st you can get your Staking Bonus!
+          Starting June 1st you can
+          <Box as="p">get your Staking Bonus!</Box>
         </H4>
         <Button
           onClick={() => openModal(ModalType.StakingBonus)}
           w={{ base: "100%", xl: "auto" }}
-          marginY="auto"
           mt={{ base: 12, xl: "auto" }}
+          marginInlineStart={{ base: "8", xl: "auto !important" }}
           px={{ base: 4, md: 12 }}
         >
           Check eligibility
