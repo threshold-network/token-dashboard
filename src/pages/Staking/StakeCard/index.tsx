@@ -1,4 +1,4 @@
-import { FC, ReactElement, Fragment } from "react"
+import { FC, ReactElement, Fragment, useRef, useCallback } from "react"
 import {
   Flex,
   Box,
@@ -12,6 +12,7 @@ import {
   FlexProps,
 } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
+import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
 import Card from "../../../components/Card"
 import { Body2, Label3 } from "../../../components/Typography"
@@ -20,7 +21,7 @@ import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
 import BoxLabel from "../../../components/BoxLabel"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
-import { TokenAmountForm } from "../../../components/Forms"
+import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
@@ -42,6 +43,7 @@ import { isAddressZero } from "../../../web3/utils"
 import { pre as preConstants } from "../../../constants"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
+  const formRef = useRef<FormikProps<FormValues>>(null)
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
@@ -64,6 +66,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     : isPRESet
     ? "Top-up"
     : "Set PRE"
+
+  const onChangeAction = useCallback(() => {
+    formRef.current?.resetForm()
+    setFlag.toggle()
+  }, [setFlag.toggle])
 
   const onSubmitTopUpForm = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
@@ -112,7 +119,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           {isInActiveStake ? "inactive" : "active"}
         </Badge>
         <StakeCardHeaderTitle stake={stake} />
-        <Switcher onClick={setFlag.toggle} isActive={isStakeAction} />
+        <Switcher onClick={onChangeAction} isActive={isStakeAction} />
       </StakeCardHeader>
       <Body2 mt="10" mb="4">
         Staking Bonus
@@ -161,6 +168,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       </Flex>
       {isStakeAction || !hasLegacyStakes ? (
         <TokenAmountForm
+          innerRef={formRef}
           onSubmitForm={onSubmitForm}
           label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
           submitButtonText={submitButtonText}
