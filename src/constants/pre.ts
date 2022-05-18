@@ -1,1 +1,3 @@
-export const LOW_FUNDS_THRESHOLD_IN_WEI = "10000000000000000" // 0.01 ETH
+import { parseEther } from "ethers/lib/utils"
+
+export const LOW_FUNDS_THRESHOLD_IN_WEI = parseEther("0.01")

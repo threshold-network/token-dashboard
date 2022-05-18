@@ -54,6 +54,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const shouldDisplayLowPREFunds =
     !isAddressZero(stake.preConfig.operator) &&
+    !stake.preConfig.isOperatorConfirmed &&
     BigNumber.from(stake.preConfig.operatorEthBalance).lt(
       preConstants.LOW_FUNDS_THRESHOLD_IN_WEI
     )
