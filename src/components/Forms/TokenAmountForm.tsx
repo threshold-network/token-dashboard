@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, Ref } from "react"
 import { Icon, Box } from "@chakra-ui/react"
 import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
@@ -8,7 +8,7 @@ import { Form } from "./Form"
 import { getErrorsObj, validateAmountInRange } from "../../utils/forms"
 import { formatTokenAmount } from "../../utils/formatAmount"
 
-type FormValues = {
+export type FormValues = {
   tokenAmount: string
 }
 
@@ -24,6 +24,7 @@ type TokenAmountFormProps = {
   shouldValidateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
   token?: { decimals: number; symbol: string }
+  innerRef?: Ref<FormikProps<FormValues>>
 }
 
 const TokenAmountFormBase: FC<
