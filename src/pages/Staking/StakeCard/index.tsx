@@ -40,6 +40,7 @@ import {
 import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
 import { pre as preConstants } from "../../../constants"
+import { parseEther } from "ethers/lib/utils"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
@@ -56,7 +57,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     !isAddressZero(stake.preConfig.operator) &&
     !stake.preConfig.isOperatorConfirmed &&
     BigNumber.from(stake.preConfig.operatorEthBalance).lt(
-      preConstants.LOW_FUNDS_THRESHOLD_IN_WEI
+      parseEther(preConstants.LOW_FUNDS_THRESHOLD_IN_ETH)
     )
 
   const submitButtonText = !isStakeAction
