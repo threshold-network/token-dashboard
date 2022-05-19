@@ -46,7 +46,6 @@ export interface PreConfig {
   operator: string
   isOperatorConfirmed: boolean
   operatorStartTimestamp: string
-  operatorEthBalance: string
 }
 
 export interface PreConfigData {

@@ -40,7 +40,6 @@ import {
 } from "../../../components/Tree"
 import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
-import { pre as preConstants } from "../../../constants"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -53,13 +52,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isPRESet =
     !isAddressZero(stake.preConfig.operator) &&
     stake.preConfig.isOperatorConfirmed
-
-  const shouldDisplayLowPREFunds =
-    !isAddressZero(stake.preConfig.operator) &&
-    !stake.preConfig.isOperatorConfirmed &&
-    BigNumber.from(stake.preConfig.operatorEthBalance).lt(
-      preConstants.LOW_FUNDS_THRESHOLD_IN_WEI
-    )
 
   const submitButtonText = !isStakeAction
     ? "Unstake"
@@ -102,13 +94,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
 
   return (
-    <Card
-      borderColor={
-        isInActiveStake || !isPRESet || shouldDisplayLowPREFunds
-          ? "red.200"
-          : undefined
-      }
-    >
+    <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader>
         <Badge
           colorScheme={isInActiveStake ? "gray" : "green"}
@@ -134,11 +120,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         {!isPRESet && (
           <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
             missing PRE
-          </Badge>
-        )}
-        {shouldDisplayLowPREFunds && (
-          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
-            low PRE funds
           </Badge>
         )}
       </Flex>
