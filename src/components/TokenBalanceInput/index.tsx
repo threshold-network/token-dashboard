@@ -64,7 +64,6 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   }
 
   const _setAmount = (value: string | number) => {
-    console.log("onValueChanged called", value, amount)
     valueRef.current = value
       ? parseUnits(value.toString()).toString()
       : undefined
