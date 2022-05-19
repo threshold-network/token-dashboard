@@ -103,7 +103,6 @@ export const stakingSlice = createSlice({
         operator: AddressZero,
         isOperatorConfirmed: false,
         operatorStartTimestamp: "0",
-        operatorEthBalance: "0",
       }
 
       state.stakes = [newStake, ...state.stakes]
@@ -146,6 +145,8 @@ export const stakingSlice = createSlice({
         .add(BigNumber.from(stake.keepInTStake))
         .add(BigNumber.from(stake.nuInTStake))
         .toString()
+
+      stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
 
       const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
       const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline

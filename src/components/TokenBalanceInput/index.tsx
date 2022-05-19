@@ -1,4 +1,4 @@
-import { FC, useRef } from "react"
+import { FC, useEffect, useRef } from "react"
 import {
   Button,
   Icon,
@@ -42,7 +42,21 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   hasError = false,
   ...inputProps
 }) => {
-  const valueRef = useRef<string>(amount as string)
+  const inputRef = useRef<HTMLInputElement>()
+  const valueRef = useRef<string | number | undefined>(amount)
+
+  useEffect(() => {
+    if (amount === "" && inputRef.current) {
+      const setValue = Object.getOwnPropertyDescriptor(
+        window.HTMLInputElement.prototype,
+        "value"
+      )?.set
+      setValue!.call(inputRef.current, "")
+      const event = new Event("change", { bubbles: true })
+      inputRef.current.dispatchEvent(event)
+      valueRef.current = undefined
+    }
+  })
 
   const setToMax = () => {
     _setAmount(formatUnits(max))
@@ -50,7 +64,9 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   }
 
   const _setAmount = (value: string | number) => {
-    valueRef.current = parseUnits(value ? value.toString() : "0").toString()
+    valueRef.current = value
+      ? parseUnits(value.toString()).toString()
+      : undefined
   }
 
   return (
@@ -61,6 +77,8 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           <Icon boxSize="20px" as={icon} />
         </InputLeftElement>
         <NumberInput
+          // @ts-ignore
+          ref={inputRef}
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
