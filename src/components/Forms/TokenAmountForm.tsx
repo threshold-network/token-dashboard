@@ -97,3 +97,7 @@ export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
   },
   displayName: "TokenAmountForm",
 })(TokenAmountFormBase)
+
+TokenAmountForm.defaultProps = {
+  shouldValidateForm: true,
+}
