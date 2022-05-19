@@ -146,6 +146,8 @@ export const stakingSlice = createSlice({
         .add(BigNumber.from(stake.nuInTStake))
         .toString()
 
+      stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
+
       const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
       const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
         ? totalInTStake
