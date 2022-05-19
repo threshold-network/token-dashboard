@@ -103,7 +103,6 @@ export const stakingSlice = createSlice({
         operator: AddressZero,
         isOperatorConfirmed: false,
         operatorStartTimestamp: "0",
-        operatorEthBalance: "0",
       }
 
       state.stakes = [newStake, ...state.stakes]

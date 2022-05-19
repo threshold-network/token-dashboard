@@ -3,7 +3,6 @@ import { useMulticallContract, usePREContract } from "../web3/hooks"
 import { decodeMulticallResult, getMulticallContractCall } from "../web3/utils"
 import { PreConfigData } from "../types/staking"
 import { useCheckEthBalanceForAccounts } from "./useCheckEthBalanceForAccounts"
-import { isZeroAddress } from "ethereumjs-util"
 
 export const useFetchPreConfigData = (): ((
   stakingProviders: string[]
@@ -46,19 +45,12 @@ export const useFetchPreConfigData = (): ((
         preConfigDataMulticalls
       )
 
-      const accountsBalances = await checkAccountsBalances(
-        preConfigDataRaw.map((data) => data.operator)
-      )
-
       return preConfigDataRaw.reduce(
         (finalData: PreConfigData, _, idx): PreConfigData => {
           finalData[stakingProviders[idx]] = {
             operator: _.operator,
             isOperatorConfirmed: _.operatorConfirmed,
             operatorStartTimestamp: _.operatorStartTimestamp.toString(),
-            operatorEthBalance: isZeroAddress(_.operator)
-              ? "0"
-              : accountsBalances[_.operator],
           }
           return finalData
         },
