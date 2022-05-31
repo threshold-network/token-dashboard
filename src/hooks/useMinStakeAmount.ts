@@ -18,7 +18,7 @@ export const useMinStakeAmount = () => {
         console.error("Could not fetch the min stake amount: ", error)
       }
     }
-    if (minStakeAmount === "0") fetchMinStakeAmount()
+    if (minStakeAmount === "0" && tStakingContract) fetchMinStakeAmount()
   }, [tStakingContract, dispatch, minStakeAmount])
 
   return minStakeAmount
