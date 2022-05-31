@@ -5,7 +5,11 @@ import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
 import SubmitTxButton from "../SubmitTxButton"
 import { Form } from "./Form"
-import { getErrorsObj, validateAmountInRange } from "../../utils/forms"
+import {
+  DEFAULT_MIN_VALUE,
+  getErrorsObj,
+  validateAmountInRange,
+} from "../../utils/forms"
 import { formatTokenAmount } from "../../utils/formatAmount"
 
 export type FormValues = {
@@ -25,6 +29,8 @@ type TokenAmountFormProps = {
   shouldDisplayMaxAmountInLabel?: boolean
   token?: { decimals: number; symbol: string }
   innerRef?: Ref<FormikProps<FormValues>>
+  placeholder?: string
+  minTokenAmount?: string | number
 }
 
 const TokenAmountFormBase: FC<
@@ -39,6 +45,7 @@ const TokenAmountFormBase: FC<
   isDisabled = false,
   shouldValidateForm = true,
   shouldDisplayMaxAmountInLabel = false,
+  placeholder,
   ...formikProps
 }) => {
   return (
@@ -60,7 +67,7 @@ const TokenAmountFormBase: FC<
             label
           )
         }
-        placeholder={`${token.symbol} amount`}
+        placeholder={placeholder || `${token.symbol} amount`}
         icon={icon}
         mb={2}
         max={maxTokenAmount}
@@ -88,7 +95,8 @@ export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
 
     errors.tokenAmount = validateAmountInRange(
       values.tokenAmount,
-      props.maxTokenAmount.toString()
+      props.maxTokenAmount.toString(),
+      props.minTokenAmount ? props.minTokenAmount.toString() : DEFAULT_MIN_VALUE
     )
     return getErrorsObj(errors)
   },
@@ -100,4 +108,5 @@ export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
 
 TokenAmountForm.defaultProps = {
   shouldValidateForm: true,
+  minTokenAmount: DEFAULT_MIN_VALUE,
 }
