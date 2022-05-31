@@ -42,8 +42,7 @@ const ProviderListItem: FC<ProviderItem> = ({ name, email, link }) => (
       color="gray.700"
       ml="auto !important"
       text="Learn more"
-      // @ts-ignore
-      link={link as ExternalHref}
+      href={link}
       withArrow
     />
   </ListItem>
