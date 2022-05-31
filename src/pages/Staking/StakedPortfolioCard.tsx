@@ -12,10 +12,12 @@ import { useModal } from "../../hooks/useModal"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
 import { ModalType, Token } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
+import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"
 
 const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
   const { openModal } = useModal()
   const tBalance = useTokenBalance(Token.T)
+  const minStakeAmount = useMinStakeAmount()
 
   const openStakingModal = async (stakeAmount: string) => {
     openModal(ModalType.StakingChecklist, { stakeAmount })
@@ -47,6 +49,12 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
         label="Stake Amount"
         submitButtonText="Stake"
         maxTokenAmount={tBalance}
+        placeholder={`Minimum stake ${
+          minStakeAmount === "0"
+            ? "loading..."
+            : `${formatTokenAmount(minStakeAmount)} T`
+        }`}
+        minTokenAmount={minStakeAmount}
       />
       <StakingContractLearnMore mt="3" />
     </Card>
