@@ -7,6 +7,7 @@ export enum ExternalHref {
   preStakingProvidersList = "https://docs.nucypher.com/en/latest/pre_application/node_providers.html",
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
   keepDapp = "https://dashboard.keep.network/",
+  keepDappAuthPage = "https://dashboard.keep.network/applications/threshold",
   nuDapp = "https://stake.nucypher.network/manage",
   stakingBonusDocs = "https://forum.threshold.network/t/interim-era-incentive-schemes-1-one-off-migration-stake-bonus-2-ongoing-stable-yield/297",
   stakedUs = "https://staked.us/",
