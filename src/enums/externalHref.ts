@@ -9,4 +9,13 @@ export enum ExternalHref {
   keepDapp = "https://dashboard.keep.network/",
   nuDapp = "https://stake.nucypher.network/manage",
   stakingBonusDocs = "https://forum.threshold.network/t/interim-era-incentive-schemes-1-one-off-migration-stake-bonus-2-ongoing-stable-yield/297",
+  stakedUs = "https://staked.us/",
+  bisonTrails = "https://bisontrails.co/",
+  blackDaemon = "https://blockdaemon.com/",
+  boar = "https://boar.network/",
+  figment = "https://www.figment.io/",
+  lowFeeValidation = "https://lowfeevalidation.com/",
+  ankr = "https://www.ankr.com/",
+  p2pValidator = "https://p2p.org/",
+  infStones = "https://infstones.com/",
 }
