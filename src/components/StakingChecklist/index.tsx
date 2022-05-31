@@ -49,7 +49,7 @@ export const LegacyStakesDepositSteps: FC = () => {
               Authorize your Keep Network legacy stake{" "}
               <ExternalLink
                 text="here"
-                href={ExternalHref.keepDapp}
+                href={ExternalHref.keepDappAuthPage}
                 withArrow
               />
             </Body2>
