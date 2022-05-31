@@ -42,7 +42,7 @@ const stakingActions = [
   {
     sectionName: "Unstaking",
     items: [
-      "Unstaking can be total or partial. For a total unstake you will not be able to use the same Operator Address for new stakes. This unstaked stake becomes an inactive stake and can be topped up anytime you want.",
+      "Unstaking can be total or partial. For a total unstake you will not be able to use the same Staking Provider Address for new stakes. This unstaked stake becomes an inactive stake and can be topped up anytime you want.",
     ],
   },
 ]
