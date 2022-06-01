@@ -1,7 +1,7 @@
 import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
 import HowItWorksPage from "./HowItWorks"
-import TBTCBridge from "./TbtcBridge"
+import TBTCBridge from "./Bridge"
 
 const MainTBTCPage: PageComponent = (props) => {
   return <PageLayout {...props} />
