@@ -11,6 +11,8 @@ import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
 import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 import useUpgradeHref from "../../hooks/useUpgradeHref"
+import { tBTCFill } from "../../static/icons/tBTCFill"
+import { tBTCOutline } from "../../static/icons/tBTCOutline"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
@@ -36,6 +38,12 @@ const Sidebar = () => {
         activeIcon: IoBarChartSharp,
         passiveIcon: IoChartOutlineSharp,
         href: "/staking",
+      },
+      {
+        text: "tBTC",
+        activeIcon: tBTCFill,
+        passiveIcon: tBTCOutline,
+        href: "/tBTC",
       },
     ],
     [pathname, upgradeHref]
