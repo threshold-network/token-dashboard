@@ -27,6 +27,7 @@ export interface UseStakingState {
     beneficiary: string
     authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateState
+    minStakeAmount: string
   }
 }
 

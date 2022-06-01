@@ -24,6 +24,7 @@ interface StakingState {
   stakedBalance: BigNumberish
   totalRewardsBalance: string
   totalBonusBalance: string
+  minStakeAmount: string
 }
 
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
@@ -64,6 +65,7 @@ export const stakingSlice = createSlice({
     stakedBalance: 0,
     totalRewardsBalance: "0",
     totalBonusBalance: "0",
+    minStakeAmount: "0",
   } as StakingState,
   reducers: {
     updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
@@ -215,6 +217,12 @@ export const stakingSlice = createSlice({
       state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
       state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
+    setMinStake: (
+      state: StakingState,
+      action: PayloadAction<{ amount: string }>
+    ) => {
+      state.minStakeAmount = action.payload.amount
+    },
   },
 })
 
@@ -224,4 +232,5 @@ export const {
   providerStaked,
   updateStakeAmountForProvider,
   unstaked,
+  setMinStake,
 } = stakingSlice.actions
