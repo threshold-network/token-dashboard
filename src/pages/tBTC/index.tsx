@@ -1,15 +1,7 @@
 import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
-
-const TBTCPage: PageComponent = (props) => {
-  return <PageLayout {...props}>tbtc page!</PageLayout>
-}
-
-TBTCPage.route = {
-  path: "",
-  index: false,
-  title: "TBTC",
-}
+import HowItWorksPage from "./HowItWorks"
+import TBTCBridge from "./TbtcBridge"
 
 const MainTBTCPage: PageComponent = (props) => {
   return <PageLayout {...props} />
@@ -18,7 +10,7 @@ const MainTBTCPage: PageComponent = (props) => {
 MainTBTCPage.route = {
   path: "tBTC",
   index: true,
-  pages: [TBTCPage],
+  pages: [TBTCBridge, HowItWorksPage],
   title: "TBTC",
 }
 
