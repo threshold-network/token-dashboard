@@ -10,13 +10,15 @@ export const AboutAddressesCard: FC<ComponentProps<typeof Card>> = (props) => {
       <Label3>about the Addresses you need to provide</Label3>
       <List mt="5" spacing="6">
         {aboutAddresses.map((action) => (
-          <ListItem>
+          <ListItem key={action.sectionName}>
             <BoxLabel w="fit-content" mb="5">
               {action.sectionName}
             </BoxLabel>
             <List spacing="4">
-              {action.items.map((item) => (
-                <ListItem>{item}</ListItem>
+              {action.items.map((item, index) => (
+                <ListItem key={`${action.sectionName}-${index}`}>
+                  {item}
+                </ListItem>
               ))}
             </List>
           </ListItem>
