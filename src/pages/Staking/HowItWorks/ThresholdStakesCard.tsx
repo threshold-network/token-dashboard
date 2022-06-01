@@ -25,7 +25,7 @@ export const ThresholdStakesCard: FC<
         supports two types of stakes:
       </Body2>
       <UnorderedList mt="5">
-        <ListItem>Legacy Stakes (NuCypher and KeepNetwork stakes)</ListItem>
+        <ListItem>Legacy Stakes (NuCypher and Keep Network stakes)</ListItem>
         <ListItem>New T Stakes</ListItem>
       </UnorderedList>
     </Card>
