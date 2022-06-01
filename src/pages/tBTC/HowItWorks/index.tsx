@@ -1,8 +1,8 @@
 import { Grid } from "@chakra-ui/react"
-import { AboutAddressesCard } from "./AboutAddressesCard"
+import { ContractsCard } from "./ContractsCard"
 import { DecentralizedSolution } from "./DecentralizedSolution"
 import { DepositAddressCard } from "./DepositAddressCard"
-import { ProvidersCard } from "./ProvidersCard"
+import { AuditsCard } from "./AuditsCard"
 import { BridgeCrossingCard } from "./BridgeCrossingCard"
 import { TbtcBridgeCard } from "./TbtcBridgeCard"
 import { PageComponent } from "../../../types"
@@ -10,6 +10,7 @@ import { PageComponent } from "../../../types"
 const HowItWorksPage: PageComponent = (props) => {
   return (
     <Grid
+      maxW="1040px"
       gridAutoColumns="minmax(0, 1fr)"
       gridAutoFlow="column"
       gridTemplate={{
@@ -18,15 +19,15 @@ const HowItWorksPage: PageComponent = (props) => {
           "decentralized-solution"
           "deposit-address"
           "bridge-crossing"
-          "addresses"
-          "providers"
+          "contracts"
+          "audits"
         `,
         xl: `
-            "t-stakes                   deposit-address"
+            "tbtc-bridge                deposit-address"
             "decentralized-solution     deposit-address"
             "decentralized-solution     bridge-crossing"
-            "addresses                  bridge-crossing"
-            "addresses                  providers"
+            "contracts                  bridge-crossing"
+            "contracts                  audits"
           `,
       }}
       gridGap="4"
@@ -35,8 +36,8 @@ const HowItWorksPage: PageComponent = (props) => {
       <DepositAddressCard gridArea="deposit-address" />
       <DecentralizedSolution gridArea="decentralized-solution" />
       <BridgeCrossingCard gridArea="bridge-crossing" />
-      <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
-      <ProvidersCard gridArea="providers" />
+      <ContractsCard gridArea="contracts" alignSelf="flex-start" />
+      <AuditsCard gridArea="audits" />
     </Grid>
   )
 }

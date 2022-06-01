@@ -7,7 +7,7 @@ import BoxLabel from "../../../components/BoxLabel"
 export const BridgeCrossingCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card gridArea="bridge-crossing">
-      <Label3>Bridge Crossing</Label3>
+      <Label3 mb={5}>Bridge Crossing</Label3>
       <Stack spacing={5}>
         <BoxLabel w="fit-content">Sweeping</BoxLabel>
         <Body2>

@@ -8,7 +8,9 @@ export const TbtcBridgeCard: FC<ComponentProps<typeof Card>> = ({
 }) => {
   return (
     <Card {...props}>
-      <Label3 textTransform="none">tBTC BRIDGE</Label3>
+      <Label3 mb={5} textTransform="none">
+        tBTC BRIDGE
+      </Label3>
       <Stack spacing={5}>
         <Body2>
           The second generation of tBTC is a truly decentralized bridge between
