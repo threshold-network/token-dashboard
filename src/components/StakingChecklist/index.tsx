@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { Body3 } from "../Typography"
+import { Body2, Body3 } from "../Typography"
 import ChecklistGroup from "../ChecklistGroup"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
@@ -23,6 +23,36 @@ export const StakingDepositSteps: FC = () => {
                 withArrow
               />
             </Body3>
+          ),
+        },
+      ]}
+    />
+  )
+}
+
+export const LegacyStakesDepositSteps: FC = () => {
+  return (
+    <ChecklistGroup
+      title="Step 1 - T Staking Contract Authorization"
+      checklistItems={[
+        {
+          title: (
+            <Body2>
+              Authorize your NuCypher legacy stake{" "}
+              <ExternalLink text="here" href={ExternalHref.nuDapp} withArrow />
+            </Body2>
+          ),
+        },
+        {
+          title: (
+            <Body2>
+              Authorize your Keep Network legacy stake{" "}
+              <ExternalLink
+                text="here"
+                href={ExternalHref.keepDappAuthPage}
+                withArrow
+              />
+            </Body2>
           ),
         },
       ]}
