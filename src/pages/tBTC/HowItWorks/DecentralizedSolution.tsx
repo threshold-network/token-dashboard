@@ -10,8 +10,8 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
 }) => {
   return (
     <Card {...props}>
-      <Label3>A Decentralized Solution</Label3>
-      <Body2 mt="5" mb="5">
+      <Label3 mb="5">A Decentralized Solution</Label3>
+      <Body2 mb="5">
         tBTC v2 replaces centralized intermediaries with a randomly selected
         group of operators running nodes on the Threshold Network.
       </Body2>
@@ -25,7 +25,7 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
                 deposited Bitcoin through{" "}
                 <ExternalLink
                   text="threshold cryptography"
-                  href={ExternalHref.nuDapp}
+                  href="NEED_URL"
                   withArrow
                 />
               </Body2>
