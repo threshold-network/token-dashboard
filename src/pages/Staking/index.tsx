@@ -9,6 +9,7 @@ import { StakingBonusBanner } from "../../components/StakingBonus"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
+import HowItWorksPage from "./HowItWorks"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -45,9 +46,20 @@ const StakingPage: PageComponent = (props) => {
 }
 
 StakingPage.route = {
-  path: "staking",
+  path: "",
   index: false,
   title: "Staking",
 }
 
-export default StakingPage
+const MainStakingPage: PageComponent = (props) => {
+  return <PageLayout {...props} />
+}
+
+MainStakingPage.route = {
+  path: "staking",
+  index: true,
+  pages: [StakingPage, HowItWorksPage],
+  title: "Staking",
+}
+
+export default MainStakingPage
