@@ -9,7 +9,7 @@ type ValidationOptions = {
   lessThanValidationMsg: ValidationMsg
   requiredMsg: string
 }
-const DEFAULT_MIN_VALUE = WeiPerEther.toString()
+export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
 const defaultLessThanMsg: ValidationMsg = (minAmount) => {
   return `The value should be less than or equal ${formatTokenAmount(
