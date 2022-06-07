@@ -6,3 +6,10 @@ export enum StakeType {
   KEEP,
   T,
 }
+
+export enum UnstakeType {
+  NATIVE,
+  LEGACY_KEEP,
+  LEGACY_NU,
+  ALL,
+}

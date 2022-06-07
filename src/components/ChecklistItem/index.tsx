@@ -6,7 +6,7 @@ import {
   ListItem,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BsCheckCircleFill } from "react-icons/all"
+import { BsFillArrowRightCircleFill as Icon } from "react-icons/all"
 import { Body2, Body3 } from "../Typography"
 
 export interface ChecklistItemProps {
@@ -20,10 +20,10 @@ const ChecklistItem: FC<ChecklistItemProps> = ({ title, subTitle }) => {
       <Stack direction="row">
         <ListIcon
           mt="2px"
-          height="22px"
-          width="22px"
-          as={BsCheckCircleFill}
-          color="green.500"
+          height="24px"
+          width="24px"
+          as={Icon}
+          color="brand.500"
         />
         <Box>
           {typeof title === "string" ? (

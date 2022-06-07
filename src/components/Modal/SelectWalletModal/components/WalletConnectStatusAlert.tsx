@@ -16,7 +16,7 @@ const WalletConnectStatusAlert: FC<{
     return <WalletRejectedAlert />
   }
 
-  if (!networkOK) {
+  if (active && !networkOK) {
     return <IncorrectNetwork />
   }
 

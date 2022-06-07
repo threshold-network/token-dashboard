@@ -11,11 +11,22 @@ export const Badge = {
     fontSize: "md",
     colorScheme: "brand",
   },
+  sizes: {
+    small: {
+      fontWeight: 500,
+    },
+    medium: {
+      fontWeight: 600,
+    },
+    large: {
+      fontWeight: 600,
+    },
+  },
   variants: {
     solid: (props: any) => {
       return {
         color: "white",
-        backgroundColor: getColorFromProps(props, 500, "black"),
+        backgroundColor: props.bg || getColorFromProps(props, 500, "black"),
       }
     },
     outline: (props: any) => {
@@ -28,7 +39,7 @@ export const Badge = {
       }
     },
     subtle: (props: any) => {
-      const lightModeColor = getColorFromProps(props, 800, "black")
+      const lightModeColor = getColorFromProps(props, 500, "black")
       const darkModeColor = getColorFromProps(props, 200, "white")
       const lightModeBg = getColorFromProps(props, 100, "gray.100")
       const darkModeBg = transparentize(
@@ -37,7 +48,7 @@ export const Badge = {
       )(props.theme)
 
       return {
-        backgroundColor: mode(lightModeBg, darkModeBg)(props),
+        backgroundColor: props.bg || mode(lightModeBg, darkModeBg)(props),
         color: mode(lightModeColor, darkModeColor)(props),
       }
     },

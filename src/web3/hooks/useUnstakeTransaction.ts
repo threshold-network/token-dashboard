@@ -2,9 +2,9 @@ import { useCallback } from "react"
 import { ContractTransaction } from "@ethersproject/contracts"
 import { useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
-import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import doesErrorInclude from "../utils/doesErrorInclude"
+import { ModalType, UnstakeType } from "../../enums"
 
 interface UnstakeRequest {
   amount: string | number
@@ -15,7 +15,15 @@ enum CommonUnStakingErrors {
   tooEarly = "unstake earlier than 24h",
 }
 
+const unstakeTypeToContractFunctionName: Record<UnstakeType, string> = {
+  [UnstakeType.NATIVE]: "unstakeT",
+  [UnstakeType.LEGACY_KEEP]: "unstakeKeep",
+  [UnstakeType.LEGACY_NU]: "unstakeNu",
+  [UnstakeType.ALL]: "unstakeAll",
+}
+
 const useUnstakeTransaction = (
+  type: UnstakeType,
   onSuccess: (tx: ContractTransaction) => void
 ) => {
   const { openModal } = useModal()
@@ -39,16 +47,21 @@ const useUnstakeTransaction = (
 
   const { sendTransaction, status } = useSendTransaction(
     stakingContract!,
-    "unstakeT",
+    unstakeTypeToContractFunctionName[type],
     onSuccess,
     onError
   )
 
   const unstake = useCallback(
     async ({ amount, stakingProvider }: UnstakeRequest) => {
-      await sendTransaction(stakingProvider, amount)
+      const args =
+        type === UnstakeType.NATIVE || type == UnstakeType.LEGACY_NU
+          ? [stakingProvider, amount]
+          : [stakingProvider]
+
+      await sendTransaction(...args)
     },
-    [sendTransaction, stakingContract?.address]
+    [sendTransaction, type]
   )
 
   return { unstake, status }
