@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { Body3 } from "../Typography"
+import { Body2, Body3 } from "../Typography"
 import ChecklistGroup from "../ChecklistGroup"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
@@ -12,17 +12,47 @@ export const StakingDepositSteps: FC = () => {
       checklistItems={[
         {
           title:
-            "Node address (Provider), Beneficiary, and Authorizer addresses",
+            "Provider Node address (Operator), Beneficiary, and Authorizer addresses",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
               <ExternalLink
-                href={ExternalHref.preStakingProvider}
+                href={ExternalHref.preStakingProvidersList}
                 text="this"
                 withArrow
               />
             </Body3>
+          ),
+        },
+      ]}
+    />
+  )
+}
+
+export const LegacyStakesDepositSteps: FC = () => {
+  return (
+    <ChecklistGroup
+      title="Step 1 - T Staking Contract Authorization"
+      checklistItems={[
+        {
+          title: (
+            <Body2>
+              Authorize your NuCypher legacy stake{" "}
+              <ExternalLink text="here" href={ExternalHref.nuDapp} withArrow />
+            </Body2>
+          ),
+        },
+        {
+          title: (
+            <Body2>
+              Authorize your Keep Network legacy stake{" "}
+              <ExternalLink
+                text="here"
+                href={ExternalHref.keepDappAuthPage}
+                withArrow
+              />
+            </Body2>
           ),
         },
       ]}
@@ -48,10 +78,11 @@ export const PreSetupSteps: FC = () => {
               />
               , or contact{" "}
               <ExternalLink
-                href={ExternalHref.preStakingProvider}
+                href={ExternalHref.preStakingProvidersList}
                 text="a staking provider"
                 withArrow
               />
+              .
             </Body3>
           ),
         },
@@ -59,12 +90,13 @@ export const PreSetupSteps: FC = () => {
           title: "PRE Operator address",
           subTitle: (
             <Body3 color={useColorModeValue("gray.500", "gray.300")}>
-              Learn how to add a PRE Operator address{" "}
+              Make sure you add your PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
                 text="here"
                 withArrow
-              />
+              />{" "}
+              to gain rewards.
             </Body3>
           ),
         },

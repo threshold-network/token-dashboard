@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "0.1.0",
+  "version": "1.2.0-pre",
   "private": true,
   "dependencies": {
     "@0x/subproviders": "^6.6.1",
@@ -11,10 +11,11 @@
     "@ethersproject/address": "^5.5.0",
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/hardware-wallets": "^5.5.0",
-    "@keep-network/coverage-pools": ">1.1.0-dev <1.1.0-ropsten",
-    "@keep-network/keep-core": ">1.8.0-dev <1.8.0-pre",
-    "@keep-network/keep-ecdsa": ">1.9.0-dev <1.9.0-ropsten",
-    "@keep-network/tbtc": ">1.1.2-dev <1.1.2-pre",
+    "@fontsource/inter": "^4.5.10",
+    "@keep-network/coverage-pools": "^1.1.0-ropsten.12",
+    "@keep-network/keep-core": "^1.8.0-ropsten.16",
+    "@keep-network/keep-ecdsa": "^1.9.0-ropsten.1",
+    "@keep-network/tbtc": "^1.1.2-ropsten.15",
     "@ledgerhq/hw-app-eth": "^6.9.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^6.7.0",
@@ -23,7 +24,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@threshold-network/solidity-contracts": ">1.1.0-dev <1.1.0-ropsten",
+    "@threshold-network/solidity-contracts": "^1.1.0-ropsten.0",
     "@types/ethjs-util": "^0.1.0",
     "@types/jest": "^27.0.1",
     "@types/ledgerhq__hw-transport-u2f": "^4.21.2",
@@ -47,6 +48,7 @@
     "ethers": "^5.4.7",
     "ethjs-util": "^0.1.6",
     "focus-visible": "^5.2.0",
+    "formik": "^2.2.9",
     "framer-motion": "^4",
     "numeral": "^2.0.6",
     "random-gradient": "^0.0.2",
@@ -79,7 +81,9 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --exit-zero-on-changes",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "gen:theme-typings": "chakra-cli tokens ./src/theme/index.ts",
+    "postinstall": "npm run gen:theme-typings"
   },
   "browserslist": {
     "production": [
@@ -96,9 +100,11 @@
   "resolutions": {
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.9",
+    "@types/react": "17.0.30"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "0.0.0-pr-20211126153854",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@snek-at/storybook-addon-chakra-ui": "^1.0.0-beta.1",
     "@storybook/addon-actions": "^6.3.8",

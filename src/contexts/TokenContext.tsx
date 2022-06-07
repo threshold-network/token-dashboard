@@ -96,12 +96,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   // fetch user stakes when they connect their wallet
   React.useEffect(() => {
-    const fn = async () => {
-      if (account) {
-        await fetchOwnerStakes(account)
-      }
-    }
-    fn()
+    fetchOwnerStakes(account!)
   }, [fetchOwnerStakes, account])
 
   return (

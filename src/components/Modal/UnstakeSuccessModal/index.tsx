@@ -1,20 +1,50 @@
 import { FC } from "react"
-import withBaseModal from "../withBaseModal"
-import { BaseModalProps } from "../../../types"
 import TransactionSuccessModal from "../TransactionSuccessModal"
 import StakingStats from "../../StakingStats"
+import InfoBox from "../../InfoBox"
+import { H5 } from "../../Typography"
+import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
+import withBaseModal from "../withBaseModal"
+import { UnstakeType, ExternalHref } from "../../../enums"
+import ExternalLink from "../../ExternalLink"
 
 interface UnstakeSuccessProps extends BaseModalProps {
   transactionHash: string
   stake: StakeData
   unstakeAmount: string | number
+  unstakeType: UnstakeType
+}
+
+type UnstakeTypeWithoutNative =
+  | UnstakeType.LEGACY_KEEP
+  | UnstakeType.LEGACY_NU
+  | UnstakeType.ALL
+
+const unstakeTypeToLegacyDappLink: Record<
+  UnstakeTypeWithoutNative,
+  JSX.Element
+> = {
+  [UnstakeType.LEGACY_KEEP]: (
+    <ExternalLink text="here" href={ExternalHref.keepDapp} />
+  ),
+  [UnstakeType.LEGACY_NU]: (
+    <ExternalLink text="here" href={ExternalHref.nuDapp} />
+  ),
+  [UnstakeType.ALL]: (
+    <>
+      <ExternalLink text="KEEP dapp" href={ExternalHref.keepDapp} />
+      {" or "}
+      <ExternalLink text="NU dapp" href={ExternalHref.nuDapp} />
+    </>
+  ),
 }
 
 const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
   transactionHash,
   stake,
   unstakeAmount,
+  unstakeType,
 }) => {
   const { beneficiary, stakingProvider, authorizer } = stake
 
@@ -23,14 +53,25 @@ const UnstakingSuccessModal: FC<UnstakeSuccessProps> = ({
       subTitle="Your unstake was successful!"
       transactionHash={transactionHash}
       body={
-        <StakingStats
-          {...{
-            stakeAmount: unstakeAmount,
-            beneficiary,
-            stakingProvider,
-            authorizer,
-          }}
-        />
+        <>
+          {unstakeType !== UnstakeType.NATIVE && (
+            <InfoBox variant="modal">
+              <H5>
+                Make sure you go to the legacy dashboard and undelegate your
+                tokens - {unstakeTypeToLegacyDappLink[unstakeType]}.
+              </H5>
+            </InfoBox>
+          )}
+          <StakingStats
+            {...{
+              stakeAmount: unstakeAmount,
+              amountText: "Unstaked amount",
+              beneficiary,
+              stakingProvider,
+              authorizer,
+            }}
+          />
+        </>
       }
     />
   )

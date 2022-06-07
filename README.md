@@ -57,6 +57,19 @@ yarn upgrade @threshold-network/solidity-contracts@ropsten \
   @keep-network/coverage-pools@ropsten
 ```
 
+**NOTE:** The `token-dashboard` package contains an indirect dependency to
+`@summa-tx/relay-sol@2.0.2` package, which downloads one of its sub-dependencies
+via unathenticated `git://` protocol. That protocol is no longer supported by
+GitHub. This means that in certain situations installation of the package or
+update of its dependencies using Yarn may result in `The unauthenticated git protocol on port 9418 is no longer supported` error.
+
+As a workaround, we advise changing Git configuration to use `https://` protocol
+instead of `git://` by executing:
+
+```
+git config --global url."https://".insteadOf git://
+```
+
 ## Run T dapp
 
 `yarn start`
