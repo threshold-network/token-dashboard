@@ -1,5 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { Box, List, ListItem, HStack } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 import Card from "../../../components/Card"
 import { Body1, Body3, Label3 } from "../../../components/Typography"
 import BoxLabel from "../../../components/BoxLabel"
@@ -38,12 +39,15 @@ const ProviderListItem: FC<ProviderItem> = ({ name, email, link }) => (
       <Body3>{email}</Body3>
     </Box>
     <ExternalLink
+      fontSize="14px"
+      lineHeight="20px"
       fontWeight="600"
       color="gray.700"
       ml="auto !important"
       text="Learn more"
       href={link}
       withArrow
+      icon={<ExternalLinkIcon ml="2.5" w="14px" h="14px" />}
     />
   </ListItem>
 )
