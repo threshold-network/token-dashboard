@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, ReactElement } from "react"
 import { Icon, Link, LinkProps, useColorModeValue } from "@chakra-ui/react"
 import { FiArrowUpRight } from "react-icons/all"
 
@@ -6,12 +6,14 @@ interface Props {
   href: string
   text: string
   withArrow?: boolean
+  icon?: ReactElement
 }
 
 const ExternalLink: FC<Props & LinkProps> = ({
   text,
   href,
   withArrow,
+  icon,
   ...props
 }) => {
   const defaultColor = useColorModeValue("brand.500", "white")
@@ -27,9 +29,10 @@ const ExternalLink: FC<Props & LinkProps> = ({
       {...props}
     >
       {text}{" "}
-      {withArrow && (
+      {withArrow && !icon && (
         <Icon boxSize="12px" as={FiArrowUpRight} color={finalColor} />
       )}
+      {icon && icon}
     </Link>
   )
 }
