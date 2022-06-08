@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "0.1.0",
+  "version": "1.2.0-pre",
   "private": true,
   "dependencies": {
     "@0x/subproviders": "^6.6.1",
@@ -48,6 +48,7 @@
     "ethers": "^5.4.7",
     "ethjs-util": "^0.1.6",
     "focus-visible": "^5.2.0",
+    "formik": "^2.2.9",
     "framer-motion": "^4",
     "numeral": "^2.0.6",
     "random-gradient": "^0.0.2",
@@ -80,7 +81,9 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --exit-zero-on-changes",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "gen:theme-typings": "chakra-cli tokens ./src/theme/index.ts",
+    "postinstall": "npm run gen:theme-typings"
   },
   "browserslist": {
     "production": [
@@ -100,6 +103,7 @@
     "react-error-overlay": "6.0.9"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "^1.9.0",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@snek-at/storybook-addon-chakra-ui": "^1.0.0-beta.1",
     "@storybook/addon-actions": "^6.3.8",

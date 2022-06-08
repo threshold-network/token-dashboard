@@ -4,13 +4,15 @@ import {
   AlertDescription,
   AlertIcon,
   Button,
+  Divider,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, BodySm } from "@threshold-network/components"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { PreSetupSteps } from "../../StakingChecklist"
@@ -36,22 +38,22 @@ const StakingChecklistModal: FC<
             <AlertIcon />
             <AlertDescription>Your deposit was successful!</AlertDescription>
           </Alert>
+          <StakingStats
+            {...{
+              stakeAmount,
+              beneficiary,
+              stakingProvider,
+              authorizer,
+            }}
+          />
           <InfoBox variant="modal">
-            <StakingStats
-              {...{
-                stakeAmount,
-                beneficiary,
-                stakingProvider,
-                authorizer,
-              }}
-            />
+            <H5 color={useColorModeValue("gray.800", "white")}>
+              Go through Step 2 to make sure you get Rewards
+            </H5>
           </InfoBox>
-          <Alert status="warning">
-            <BodyLg>Complete Step 2 to start earning Rewards</BodyLg>
-          </Alert>
           <PreSetupSteps />
           {transactionHash && (
-            <BodySm mt="4rem" align="center">
+            <BodySm mt="2.5rem !important" align="center">
               <ViewInBlockExplorer
                 text="View"
                 id={transactionHash}
@@ -60,6 +62,7 @@ const StakingChecklistModal: FC<
               transaction on Etherscan
             </BodySm>
           )}
+          <Divider />
         </Stack>
       </ModalBody>
       <ModalFooter>

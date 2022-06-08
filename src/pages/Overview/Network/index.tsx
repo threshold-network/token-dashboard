@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Box, Stack, VStack } from "@chakra-ui/react"
 import TotalValueLocked from "./TotalValueLocked"
-import UpgradeBanner from "./UpgradeBanner"
+import { StakingBonusBanner } from "../../../components/StakingBonus"
 import WalletBalances from "./WalletBalances"
 import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
@@ -16,7 +16,7 @@ const Network: PageComponent = () => {
 
   return (
     <VStack spacing={4} mt={4}>
-      <UpgradeBanner />
+      <StakingBonusBanner />
       <Stack direction={{ base: "column", xl: "row" }} w="100%">
         <Box w={{ base: "100%", xl: "50%" }}>
           <WalletBalances />

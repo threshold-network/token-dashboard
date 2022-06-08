@@ -3,6 +3,10 @@
 .idea
 .eslintcache
 
+# IDEs
+.vscode/
+.idea/
+
 # Generated
 build/
 dist/
