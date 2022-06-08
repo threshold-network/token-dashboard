@@ -1,5 +1,5 @@
 import { BigNumberish } from "@ethersproject/bignumber"
-import { StakeType } from "../enums"
+import { StakeType, UnstakeType } from "../enums"
 
 export type StakingStateKey =
   | "authorizer"
@@ -20,12 +20,37 @@ export interface UseStakingState {
   (): {
     stakedBalance: BigNumberish
     stakes: StakeData[]
+    totalRewardsBalance: string
+    totalBonusBalance: string
     stakeAmount: string | number
     stakingProvider: string
     beneficiary: string
     authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateState
+    minStakeAmount: string
   }
+}
+
+export interface BonusEligibility {
+  hasPREConfigured: boolean
+  hasActiveStake: boolean
+  // No unstaking after the bonus deadline and until mid-July (not even partial
+  // amounts).
+  hasUnstakeAfterBonusDeadline: boolean
+  // Only total staked amount before bonus deadline is taking
+  // into account.
+  eligibleStakeAmount: string
+  reward: string
+}
+
+export interface PreConfig {
+  operator: string
+  isOperatorConfirmed: boolean
+  operatorStartTimestamp: string
+}
+
+export interface PreConfigData {
+  [stakingProvider: string]: PreConfig
 }
 
 export interface StakeData {
@@ -40,6 +65,9 @@ export interface StakeData {
   nuInTStake: string
   keepInTStake: string
   tStake: string
+  totalInTStake: string
+  bonusEligibility: BonusEligibility
+  preConfig: PreConfig
 }
 
 export interface ProviderStakedEvent {
@@ -54,7 +82,14 @@ export interface ProviderStakedEvent {
 export type ProviderStakedActionPayload = ProviderStakedEvent &
   Omit<
     StakeData,
-    "stakeType" | "nuInTStake" | "keepInTStake" | "tStake" | "amount"
+    | "stakeType"
+    | "nuInTStake"
+    | "keepInTStake"
+    | "tStake"
+    | "amount"
+    | "totalInTStake"
+    | "bonusEligibility"
+    | "preConfig"
   >
 
 export type UpdateStakeAmountActionPayload = {
@@ -63,6 +98,12 @@ export type UpdateStakeAmountActionPayload = {
   increaseOrDecrease: "increase" | "decrease"
 }
 
+export type UnstakedActionPayload = Omit<
+  UpdateStakeAmountActionPayload,
+  "increaseOrDecrease"
+> & {
+  unstakeType: UnstakeType
+}
 export interface StakeCellProps {
   stake: StakeData
 }

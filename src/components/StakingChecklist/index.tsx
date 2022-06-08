@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { BodySm } from "@threshold-network/components"
-import { ChecklistGroup } from "@threshold-network/components"
+import { BodyMd, BodySm, ChecklistGroup } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 
@@ -11,9 +10,9 @@ export const StakingDepositSteps: FC = () => {
       title="Step 1 - Staking Deposit"
       checklistItems={[
         {
-          itemId: "step1__0",
+          itemId: "staking_deposit__0",
           itemTitle:
-            "Node address (Provider), Beneficiary, and Authorizer addresses",
+            "Provider Node address (Operator), Beneficiary, and Authorizer addresses",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
@@ -31,13 +30,45 @@ export const StakingDepositSteps: FC = () => {
   )
 }
 
+export const LegacyStakesDepositSteps: FC = () => {
+  return (
+    <ChecklistGroup
+      title="Step 1 - T Staking Contract Authorization"
+      checklistItems={[
+        {
+          itemId: "t_staking_contract_auth__0",
+          itemTitle: (
+            <BodyMd>
+              Authorize your NuCypher legacy stake{" "}
+              <ExternalLink text="here" href={ExternalHref.nuDapp} withArrow />
+            </BodyMd>
+          ),
+        },
+        {
+          itemId: "t_staking_contract_auth__1",
+          itemTitle: (
+            <BodyMd>
+              Authorize your Keep Network legacy stake{" "}
+              <ExternalLink
+                text="here"
+                href={ExternalHref.keepDappAuthPage}
+                withArrow
+              />
+            </BodyMd>
+          ),
+        },
+      ]}
+    />
+  )
+}
+
 export const PreSetupSteps: FC = () => {
   return (
     <ChecklistGroup
       title="Step 2 - PRE Setup"
       checklistItems={[
         {
-          itemId: "step2__0",
+          itemId: "run_a_pre_node__0",
           itemTitle: "Run a PRE Node",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
@@ -54,20 +85,22 @@ export const PreSetupSteps: FC = () => {
                 text="a staking provider"
                 withArrow
               />
+              .
             </BodySm>
           ),
         },
         {
-          itemId: "step2__1",
+          itemId: "run_a_pre_node__1",
           itemTitle: "PRE Operator address",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-              Learn how to add a PRE Operator address{" "}
+              Make sure you add your PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
                 text="here"
                 withArrow
-              />
+              />{" "}
+              to gain rewards.
             </BodySm>
           ),
         },

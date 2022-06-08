@@ -26,7 +26,7 @@ const StakingOverview: FC = () => {
       <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/staking">
         Go to Staking
       </Button>
-      <StakingContractLearnMore />
+      <StakingContractLearnMore mt="4" />
     </CardTemplate>
   )
 }

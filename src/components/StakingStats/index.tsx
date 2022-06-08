@@ -6,6 +6,7 @@ import shortenAddress from "../../utils/shortenAddress"
 
 interface StakingStatsProps {
   stakeAmount: string | number
+  amountText?: string
   stakingProvider: string
   beneficiary: string
   authorizer: string
@@ -16,10 +17,11 @@ const StakingStats: FC<StakingStatsProps> = ({
   stakingProvider,
   beneficiary,
   authorizer,
+  amountText = "Staked Amount",
 }) => {
   const transactionInfo: TransactionInfo[] = [
     {
-      text: "Stake Amount",
+      text: amountText,
       // todo: Token might not be a string, so this should be updated once we decide on the interface
       value: (
         <TokenBalance
@@ -28,19 +30,21 @@ const StakingStats: FC<StakingStatsProps> = ({
           tokenSymbol="T"
           as="p"
           fontSize="sm"
+          lineHeight="unset"
+          fontWeight="400"
         />
       ),
     },
     {
-      text: "Operator",
+      text: "Provider Address",
       value: <BodySm>{shortenAddress(stakingProvider)}</BodySm>,
     },
     {
-      text: "Beneficiary",
+      text: "Beneficiary Address",
       value: <BodySm>{shortenAddress(beneficiary)}</BodySm>,
     },
     {
-      text: "Authorizer",
+      text: "Authorizer Address",
       value: <BodySm>{shortenAddress(authorizer)}</BodySm>,
     },
   ]

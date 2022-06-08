@@ -14,9 +14,13 @@ import StakingSuccessModal from "../components/Modal/StakingSuccessModal"
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
-import UnstakeTModal from "../components/Modal/UnstakeTModal"
+import {
+  UnstakeTStep1 as UnstakeTModalStep1,
+  UnstakeTStep2 as UnstakeTModalStep2,
+} from "../components/Modal/UnstakeTModal"
 import TopupTModal from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
+import StakingBonusModal from "../components/Modal/StakingBonus"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -29,10 +33,12 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.ConfirmStakingParams]: ConfirmStakingParams,
   [ModalType.StakeSuccess]: StakingSuccessModal,
   [ModalType.UnstakeSuccess]: UnstakingSuccessModal,
-  [ModalType.UnstakeT]: UnstakeTModal,
+  [ModalType.UnstakeT]: UnstakeTModalStep1,
+  [ModalType.UnstakeTStep2]: UnstakeTModalStep2,
   [ModalType.StakingChecklist]: StakingChecklistModal,
   [ModalType.TopupT]: TopupTModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
+  [ModalType.StakingBonus]: StakingBonusModal,
 }
 
 export interface BaseModalProps {

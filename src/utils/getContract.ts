@@ -2,7 +2,7 @@ import { getAddress } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 import { Contract } from "@ethersproject/contracts"
 import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
-import { LedgerSigner } from "@ethersproject/hardware-wallets"
+import { isAddressZero } from "../web3/utils"
 
 // account is not optional
 export function getSigner(
@@ -26,7 +26,7 @@ export function getContract(
   library: Web3Provider,
   account?: string
 ): Contract {
-  if (!getAddress(address) || address === AddressZero) {
+  if (!getAddress(address) || isAddressZero(address)) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
 
