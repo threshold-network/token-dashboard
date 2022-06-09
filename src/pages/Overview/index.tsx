@@ -11,8 +11,8 @@ const Overview: PageComponent = () => {
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
-      <Image src={thresholdWordMark} />
-      <H1>Overview</H1>
+      <Image src={thresholdWordMark} mb={4} />
+      <H1 mb={12}>Overview</H1>
       <Outlet />
     </Container>
   )
