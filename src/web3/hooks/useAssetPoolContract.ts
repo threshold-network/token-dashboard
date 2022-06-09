@@ -1,5 +1,5 @@
 import { useContract } from "./useContract"
-import { default as AssetPool } from "@keep-network/coverage-pools/artifacts/KeepAssetPool.json"
+import AssetPool from "@keep-network/coverage-pools/artifacts/AssetPool.json"
 
 export const useKeepAssetPoolContract = () => {
   return useContract(AssetPool.address, AssetPool.abi)
