@@ -54,7 +54,7 @@ const renderProviderListItem = (provider: ProviderItem) => (
 
 const providers = [
   {
-    name: "Staked",
+    name: "OperatorStaked",
     email: "togilvie@staked.us",
     link: ExternalHref.stakedUs,
   },
