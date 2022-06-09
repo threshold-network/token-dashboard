@@ -1,14 +1,13 @@
 import { FC } from "react"
-import Card from "../../components/Card"
-import { H1, Label3 } from "../../components/Typography"
+import { H1, LabelSm, Card } from "@threshold-network/component"
 import { formatFiatCurrencyAmount } from "../../utils/formatAmount"
 
 const StakingTVLCard: FC<{ tvl: string }> = ({ tvl }) => {
   return (
     <Card>
-      <Label3 mb={8} textTransform="uppercase">
+      <LabelSm mb={8} textTransform="uppercase">
         staking tvl
-      </Label3>
+      </LabelSm>
       <H1 textAlign="center">{formatFiatCurrencyAmount(tvl)}</H1>
     </Card>
   )

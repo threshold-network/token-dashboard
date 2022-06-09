@@ -13,8 +13,13 @@ import {
   TabList,
   Tab,
 } from "@chakra-ui/react"
-import { Divider, DividerCenterElement } from "../../Divider"
-import { Body3, H5, Label3 } from "../../Typography"
+import {
+  BodySm,
+  H5,
+  LabelSm,
+  LineDivider,
+  LineDividerCenterElement,
+} from "@threshold-network/component"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 import { TokenAmountForm } from "../../Forms"
@@ -76,27 +81,27 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
           </H5>
           {hasLegacyStake ? (
             <>
-              <Body3>Unstaking a Legacy Stake can be done:</Body3>
+              <BodySm>Unstaking a Legacy Stake can be done:</BodySm>
               <UnorderedList>
                 <ListItem mt="4">
-                  <Body3>
+                  <BodySm>
                     Partial by unstaking your legacy tokens and your T tokens in
                     separate transactions. Legacy tokens staked can be unstaked
                     only in full amount.
-                  </Body3>
+                  </BodySm>
                 </ListItem>
                 <ListItem mt="4">
-                  <Body3>
+                  <BodySm>
                     Total by unstaking the whole amount of T and legacy tokens
                     staked, in one transaction.
-                  </Body3>
+                  </BodySm>
                 </ListItem>
               </UnorderedList>
             </>
           ) : (
-            <Body3>
+            <BodySm>
               You can partially or totally unstake depending on your needs.
-            </Body3>
+            </BodySm>
           )}
         </InfoBox>
         <Tabs isFitted>
@@ -155,19 +160,19 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
         </Tabs>
         {hasLegacyStake && (
           <>
-            <Divider>
-              <DividerCenterElement>
-                <Label3>OR</Label3>
-              </DividerCenterElement>
-            </Divider>
+            <LineDivider>
+              <LineDividerCenterElement>
+                <LabelSm>OR</LabelSm>
+              </LineDividerCenterElement>
+            </LineDivider>
             <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
               Unstake all
             </Button>
-            <Body3 mt="2">{unstakeAllBtnHelperText}</Body3>
+            <BodySm mt="2">{unstakeAllBtnHelperText}</BodySm>
           </>
         )}
         <StakingContractLearnMore mt="7" />
-        <Divider mt="4" />
+        <LineDivider mt="4" />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>

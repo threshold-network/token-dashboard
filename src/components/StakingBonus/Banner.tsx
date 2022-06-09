@@ -5,8 +5,7 @@ import {
   useDisclosure,
   Box,
 } from "@chakra-ui/react"
-import Card from "../Card"
-import { H4 } from "../Typography"
+import { Card, H4 } from "@threshold-network/components"
 import { BonusTitle } from "./Title"
 import { useModal } from "../../hooks/useModal"
 import { ModalType } from "../../enums"

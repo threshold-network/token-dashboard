@@ -1,15 +1,19 @@
 import { FC, ComponentProps } from "react"
 import { Box, List, ListItem, HStack } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Body1, Body3, Label3 } from "../../../components/Typography"
-import BoxLabel from "../../../components/BoxLabel"
+import {
+  BodyLg,
+  BodySm,
+  LabelSm,
+  BoxLabel,
+  Card,
+} from "@threshold-network/components"
 import ExternalLink from "../../../components/ExternalLink"
 import { ExternalHref } from "../../../enums"
 
 export const ProvidersCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card {...props}>
-      <Label3>threshold and pre staking providers</Label3>
+      <LabelSm>threshold and pre staking providers</LabelSm>
       <List mt="6" spacing="4">
         {providers.map(renderProviderListItem)}
       </List>
@@ -34,8 +38,8 @@ const ProviderListItem: FC<ProviderItem> = ({ name, email, link }) => (
   <ListItem as={HStack} spacing="4" bg="gray.50" p="4" borderRadius="2">
     <Box bg="brand.500" borderRadius="8px" w="48px" height="48px" />
     <Box>
-      <Body1>{name}</Body1>
-      <Body3>{email}</Body3>
+      <BodyLg>{name}</BodyLg>
+      <BodySm>{email}</BodySm>
     </Box>
     <ExternalLink
       fontWeight="600"
