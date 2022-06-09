@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Badge, Box, Button, Flex, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { BodyMd, BodySm, LabelSm, Card } from "../../components/Typography"
+import { BodyMd, BodySm, LabelSm, Card } from "@threshold-network/components"
 import InfoBox from "../../components/InfoBox"
 import TokenBalance from "../../components/TokenBalance"
 

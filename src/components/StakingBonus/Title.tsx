@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Box, BoxProps, useColorModeValue } from "@chakra-ui/react"
-import { H5 } from "../Typography"
+import { H5 } from "@threshold-network/components"
 import { ReactComponent as BonusSwoosh } from "../../static/images/BonusSwoosh.svg"
 
 export const BonusTitle = () => {

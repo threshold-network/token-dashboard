@@ -1,13 +1,11 @@
 import { FC, ComponentProps } from "react"
 import { List, ListItem } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Label3 } from "../../../components/Typography"
-import BoxLabel from "../../../components/BoxLabel"
+import { LabelSm, BoxLabel, Card } from "@threshold-network/components"
 
 export const AboutAddressesCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card {...props}>
-      <Label3>about the Addresses you need to provide</Label3>
+      <LabelSm>about the Addresses you need to provide</LabelSm>
       <List mt="5" spacing="6">
         {aboutAddresses.map((action) => (
           <ListItem key={action.sectionName}>

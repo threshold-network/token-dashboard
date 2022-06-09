@@ -1,13 +1,13 @@
 import { FC, ComponentProps } from "react"
 import { useColorModeValue } from "@chakra-ui/react"
-import { BodySm } from "../Typography"
+import { BodySm } from "@threshold-network/component"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTStakingContract } from "../../web3/hooks"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "."
 
-type StakingContractLearnMoreProps = ComponentProps<typeof Body3>
+type StakingContractLearnMoreProps = ComponentProps<typeof BodySm>
 
 export const StakingContractLearnMore: FC<StakingContractLearnMoreProps> = (
   props
@@ -31,7 +31,7 @@ export const StakingContractLearnMore: FC<StakingContractLearnMoreProps> = (
   return null
 }
 
-type StakingBonusReadMoreProps = ComponentProps<typeof Body3>
+type StakingBonusReadMoreProps = ComponentProps<typeof BodySm>
 
 export const StakingBonusReadMore: FC<StakingBonusReadMoreProps> = (props) => {
   return (
