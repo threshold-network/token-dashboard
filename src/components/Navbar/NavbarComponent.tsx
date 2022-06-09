@@ -89,7 +89,7 @@ const renderPageTitle = (PageComponent: PageComponent) => {
 
 const PageTitle: FC<{ title: string }> = ({ title }) => {
   return (
-    <H5 ml={"2.75rem"} display={{ base: "none", md: "block" }}>
+    <H5 ml={12} display={{ base: "none", md: "block" }}>
       {title}
     </H5>
   )

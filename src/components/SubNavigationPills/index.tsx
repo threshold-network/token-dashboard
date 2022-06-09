@@ -21,8 +21,9 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
         w="100%"
         borderBottom="1px solid"
         borderColor="gray.100"
-        px={10}
         py={6}
+        pr={10}
+        pl={{ base: 8, md: 16 }}
         as="nav"
       >
         <HStack
