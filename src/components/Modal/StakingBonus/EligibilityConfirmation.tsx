@@ -74,8 +74,9 @@ export const EligibilityConfirmation: FC<
             title="Requirement 1 - Active stake"
             checklistItems={[
               {
-                title: "Have an active stake before June 1st",
-                subTitle: (
+                itemId: "eligibility-confirmation__active-stake__0",
+                itemTitle: "Have an active stake before June 1st",
+                itemSubTitle: (
                   <BodySm color={useColorModeValue("gray.500", "gray.300")}>
                     Your Staking Bonus will be added to your Staking Rewards.
                     You can withdraw them starting{" "}
@@ -97,8 +98,9 @@ export const EligibilityConfirmation: FC<
               title="Requirement 2 - PRE Set up and working"
               checklistItems={[
                 {
-                  title: "PRE Node configured and working",
-                  subTitle:
+                  itemId: "eligibility-confirmation__pre_set_up__0",
+                  itemTitle: "PRE Node configured and working",
+                  itemSubTitle:
                     "You need a configured and working PRE node in order to get your Staking Bonus",
                 },
               ]}
