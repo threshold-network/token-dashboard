@@ -59,11 +59,13 @@ const NavPill: FC<RouteProps> = ({ path, title }) => {
       </Link>
       {isActive && (
         <Divider
+          opacity="1"
           borderColor="brand.500"
           border="2px solid"
           top="47px"
           position="absolute"
           left={0}
+          borderRadius="8px"
         />
       )}
     </Stack>
