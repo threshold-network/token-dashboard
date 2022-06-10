@@ -19,7 +19,7 @@ import {
   LabelSm,
   LineDivider,
   LineDividerCenterElement,
-} from "@threshold-network/component"
+} from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 import { TokenAmountForm } from "../../Forms"

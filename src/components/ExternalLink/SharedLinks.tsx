@@ -1,6 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { useColorModeValue } from "@chakra-ui/react"
-import { BodySm } from "@threshold-network/component"
+import { BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTStakingContract } from "../../web3/hooks"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"
