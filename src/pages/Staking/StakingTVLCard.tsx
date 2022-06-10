@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { H1, LabelSm, Card } from "@threshold-network/component"
+import { H1, LabelSm, Card } from "@threshold-network/components"
 import { formatFiatCurrencyAmount } from "../../utils/formatAmount"
 
 const StakingTVLCard: FC<{ tvl: string }> = ({ tvl }) => {
