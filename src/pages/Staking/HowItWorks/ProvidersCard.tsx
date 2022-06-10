@@ -46,8 +46,7 @@ const ProviderListItem: FC<ProviderItem> = ({ name, email, link }) => (
       ml="auto !important"
       text="Learn more"
       href={link}
-      withArrow
-      icon={<ExternalLinkIcon ml="2.5" w="14px" h="14px" />}
+      icon={<ExternalLinkIcon ml="2" w="14px" h="14px" />}
     />
   </ListItem>
 )
