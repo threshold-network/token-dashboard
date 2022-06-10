@@ -4,14 +4,14 @@ import { Body1, Body3 } from "../Typography"
 import ExternalLink from "../ExternalLink"
 import { ExternalHref } from "../../enums"
 
-interface ProviderItem extends ListItemProps {
+interface LinkDetailsListItemProps extends ListItemProps {
   title: string
   subTitle?: string
   href: ExternalHref
   cta?: string
 }
 
-const LinkDetailsListItem: FC<ProviderItem> = ({
+const LinkDetailsListItem: FC<LinkDetailsListItemProps> = ({
   title,
   subTitle,
   href,
