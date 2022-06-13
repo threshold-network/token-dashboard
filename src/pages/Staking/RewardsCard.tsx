@@ -33,7 +33,7 @@ const RewardsCard: FC<{
       </InfoBox>
 
       <Button mt="4" colorScheme="gray" disabled={true} isFullWidth>
-        See all Rewards
+        See All Rewards
       </Button>
       <Body3
         mt="2"

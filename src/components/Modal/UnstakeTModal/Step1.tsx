@@ -161,7 +161,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
               </DividerCenterElement>
             </Divider>
             <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
-              Unstake all
+              Unstake All
             </Button>
             <Body3 mt="2">{unstakeAllBtnHelperText}</Body3>
           </>
