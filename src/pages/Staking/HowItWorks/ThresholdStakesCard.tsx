@@ -1,5 +1,5 @@
 import { FC, ComponentProps } from "react"
-import { UnorderedList, ListItem } from "@chakra-ui/react"
+import { UnorderedList, ListItem, useColorModeValue } from "@chakra-ui/react"
 import { BodyMd, LabelSm, Card } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
@@ -7,6 +7,9 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 export const ThresholdStakesCard: FC<
   ComponentProps<typeof Card> & { tStakingContractAddress: string }
 > = ({ tStakingContractAddress, ...props }) => {
+  const bulletColor = useColorModeValue("gray.700", "gray.300")
+  const bulletColorStyle = { "::marker": { color: bulletColor } }
+
   return (
     <Card {...props}>
       <LabelSm>threshold stakes</LabelSm>
@@ -20,12 +23,16 @@ export const ThresholdStakesCard: FC<
           id={tStakingContractAddress}
           type={ExplorerDataType.ADDRESS}
           text="Threshold Staking Contract"
-        />
+        />{" "}
         supports two types of stakes:
       </BodyMd>
-      <UnorderedList mt="5">
-        <ListItem>Legacy Stakes (NuCypher and Keep Network stakes)</ListItem>
-        <ListItem>New T Stakes</ListItem>
+      <UnorderedList mt="5" pl="2.5">
+        <ListItem sx={bulletColorStyle}>
+          <BodyMd>Legacy Stakes (NuCypher and Keep Network stakes)</BodyMd>
+        </ListItem>
+        <ListItem sx={bulletColorStyle}>
+          <BodyMd>New T Stakes</BodyMd>
+        </ListItem>
       </UnorderedList>
     </Card>
   )
