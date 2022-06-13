@@ -13,11 +13,14 @@ import {
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
+import { Zero } from "@ethersproject/constants"
+import { BigNumber } from "@ethersproject/bignumber"
 import {
   NumberFormatInput,
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "@threshold-network/components"
+import { web3 as web3Constants } from "../../constants"
 
 export interface TokenBalanceInputProps
   extends InputProps,
@@ -60,7 +63,20 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   })
 
   const setToMax = () => {
-    _setAmount(formatUnits(max))
+    let remainder = Zero
+    const { decimalScale } = inputProps
+    if (
+      decimalScale &&
+      decimalScale > 0 &&
+      decimalScale < web3Constants.STANDARD_ERC20_DECIMALS
+    ) {
+      remainder = BigNumber.from(max).mod(
+        BigNumber.from(10).pow(
+          web3Constants.STANDARD_ERC20_DECIMALS - decimalScale
+        )
+      )
+    }
+    _setAmount(formatUnits(BigNumber.from(max).sub(remainder)))
     setAmount(valueRef.current)
   }
 
