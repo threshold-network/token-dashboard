@@ -24,7 +24,7 @@ export const ThresholdStakesCard: FC<
           id={tStakingContractAddress}
           type={ExplorerDataType.ADDRESS}
           text="Threshold Staking Contract"
-        />
+        />{" "}
         supports two types of stakes:
       </Body2>
       <UnorderedList mt="5" pl="2.5">
