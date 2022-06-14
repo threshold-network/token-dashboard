@@ -12,13 +12,15 @@ export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
     <Card {...props}>
       <HStack>
         <Button
-          variant={mintAction === TbtcMintAction.mint ? "solid" : "ghost"}
+          isFullWidth
+          variant={mintAction === TbtcMintAction.mint ? "outline" : "ghost"}
           onClick={() => setMintAction(TbtcMintAction.mint)}
         >
           Mint
         </Button>
         <Button
-          variant={mintAction === TbtcMintAction.unmint ? "solid" : "ghost"}
+          isFullWidth
+          variant={mintAction === TbtcMintAction.unmint ? "outline" : "ghost"}
           onClick={() => setMintAction(TbtcMintAction.unmint)}
         >
           Unmint
