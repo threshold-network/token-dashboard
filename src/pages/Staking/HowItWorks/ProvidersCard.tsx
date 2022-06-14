@@ -3,8 +3,8 @@ import { List } from "@chakra-ui/react"
 import Card from "../../../components/Card"
 import { Label3 } from "../../../components/Typography"
 import BoxLabel from "../../../components/BoxLabel"
-import { ExternalHref } from "../../../enums"
 import LinkDetailsListItem from "../../../components/LinkDetailsListItem"
+import { ExternalHref } from "../../../enums"
 
 export const ProvidersCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
