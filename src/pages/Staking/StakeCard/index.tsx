@@ -185,7 +185,6 @@ export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
     : " - native"
   return (
     <>
-      {/* @ts-ignore */}
       <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
       <Label3 textTransform="uppercase" mr="auto">
         stake{stakeType}
