@@ -5,6 +5,7 @@ import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
 import { stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
+import { tbtcSlice } from "./tbtc"
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     transaction: transactionSlice.reducer,
     staking: stakingSlice.reducer,
     eth: ethSlice.reducer,
+    tbtc: tbtcSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
