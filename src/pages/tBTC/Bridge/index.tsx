@@ -1,13 +1,11 @@
 import { useState } from "react"
 import { Grid } from "@chakra-ui/react"
 import { PageComponent } from "../../../types"
-import { SweepTimer } from "./SweepTimer"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
-import { TbtcFeeCalculator } from "./TbtcFeeCalculator"
 import { MintUnmintNav } from "./MintUnmintNav"
 import { MintingCard } from "./MintingCard"
-import { MintingTimelineCard } from "./MintingTimelineCard"
 import { UnmintingCard } from "./UnmintingCard"
+import { TransactionHistory } from "./TransactionHistory"
 
 const TBTCBridge: PageComponent = (props) => {
   const [selectedAction, setSelectedAction] = useState<"MINT" | "UNMINT">(
@@ -21,32 +19,26 @@ const TBTCBridge: PageComponent = (props) => {
       gridAutoFlow="column"
       gridTemplate={{
         base: `
-          "mint-nav"
-          "mint-card"
-          "sweep-timer"
-          "tbtc-balance"
-          "fee-calculator"
-          "mint-timeline"
-        `,
+            "tbtc-balance           mint-nav      mint-nav      mint-nav"
+            "tbtc-balance           mint-card     mint-card     mint-card"
+            "transaction-history    mint-card     mint-card     mint-card"
+          `,
         xl: `
-            "sweep-timer      mint-nav      mint-nav      mint-timeline"
-            "sweep-timer      mint-card     mint-card     mint-timeline"
-            "tbtc-balance     mint-card     mint-card     mint-timeline"
-            "fee-calculator   mint-card     mint-card     mint-timeline"
+            "tbtc-balance           mint-nav      mint-nav      mint-nav"
+            "tbtc-balance           mint-card     mint-card     mint-card"
+            "transaction-history    mint-card     mint-card     mint-card"
           `,
       }}
       gridGap="4"
     >
-      <SweepTimer gridArea="sweep-timer" />
       <TbtcBalanceCard gridArea="tbtc-balance" />
-      <TbtcFeeCalculator gridArea="fee-calculator" />
       <MintUnmintNav
         {...{ selectedAction, setSelectedAction }}
         gridArea="mint-nav"
       />
+      <TransactionHistory gridArea="transaction-history" />
       {selectedAction === "MINT" && <MintingCard gridArea="mint-card" />}
       {selectedAction === "UNMINT" && <UnmintingCard gridArea="mint-card" />}
-      <MintingTimelineCard gridArea="mint-timeline" />
     </Grid>
   )
 }
