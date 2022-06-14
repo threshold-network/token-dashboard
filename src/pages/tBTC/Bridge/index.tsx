@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Grid } from "@chakra-ui/react"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
@@ -6,11 +5,11 @@ import { MintUnmintNav } from "./MintUnmintNav"
 import { MintingCard } from "./MintingCard"
 import { UnmintingCard } from "./UnmintingCard"
 import { TransactionHistory } from "./TransactionHistory"
+import { useTbtcState } from "../../../hooks/useTbtcState"
+import { TbtcMintAction } from "../../../types/tbtc"
 
 const TBTCBridge: PageComponent = (props) => {
-  const [selectedAction, setSelectedAction] = useState<"MINT" | "UNMINT">(
-    "MINT"
-  )
+  const { mintAction } = useTbtcState()
 
   return (
     <Grid
@@ -32,13 +31,14 @@ const TBTCBridge: PageComponent = (props) => {
       gridGap="4"
     >
       <TbtcBalanceCard gridArea="tbtc-balance" />
-      <MintUnmintNav
-        {...{ selectedAction, setSelectedAction }}
-        gridArea="mint-nav"
-      />
+      <MintUnmintNav gridArea="mint-nav" />
       <TransactionHistory gridArea="transaction-history" />
-      {selectedAction === "MINT" && <MintingCard gridArea="mint-card" />}
-      {selectedAction === "UNMINT" && <UnmintingCard gridArea="mint-card" />}
+      {mintAction === TbtcMintAction.mint && (
+        <MintingCard gridArea="mint-card" />
+      )}
+      {mintAction === TbtcMintAction.unmint && (
+        <UnmintingCard gridArea="mint-card" />
+      )}
     </Grid>
   )
 }
