@@ -1,27 +1,27 @@
 import { ComponentProps, FC } from "react"
 import Card from "../../../components/Card"
 import { Button, HStack } from "@chakra-ui/react"
-import { TbtcMintAction } from "../../../types/tbtc"
+import { TbtcMintingType } from "../../../types/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 
 export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
   ...props
 }) => {
-  const { mintAction, setMintAction } = useTbtcState()
+  const { mintingType, updateState } = useTbtcState()
   return (
     <Card {...props}>
       <HStack>
         <Button
           isFullWidth
-          variant={mintAction === TbtcMintAction.mint ? "outline" : "ghost"}
-          onClick={() => setMintAction(TbtcMintAction.mint)}
+          variant={mintingType === TbtcMintingType.mint ? "outline" : "ghost"}
+          onClick={() => updateState("mintingType", TbtcMintingType.mint)}
         >
           Mint
         </Button>
         <Button
           isFullWidth
-          variant={mintAction === TbtcMintAction.unmint ? "outline" : "ghost"}
-          onClick={() => setMintAction(TbtcMintAction.unmint)}
+          variant={mintingType === TbtcMintingType.unmint ? "outline" : "ghost"}
+          onClick={() => updateState("mintingType", TbtcMintingType.unmint)}
         >
           Unmint
         </Button>

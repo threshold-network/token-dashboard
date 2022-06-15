@@ -6,10 +6,10 @@ import { MintingCard } from "./MintingCard"
 import { UnmintingCard } from "./UnmintingCard"
 import { TransactionHistory } from "./TransactionHistory"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { TbtcMintAction } from "../../../types/tbtc"
+import { TbtcMintingType } from "../../../types/tbtc"
 
 const TBTCBridge: PageComponent = (props) => {
-  const { mintAction } = useTbtcState()
+  const { mintingType } = useTbtcState()
 
   return (
     <Grid
@@ -33,10 +33,10 @@ const TBTCBridge: PageComponent = (props) => {
       <TbtcBalanceCard gridArea="tbtc-balance" />
       <MintUnmintNav gridArea="mint-nav" />
       <TransactionHistory gridArea="transaction-history" />
-      {mintAction === TbtcMintAction.mint && (
+      {mintingType === TbtcMintingType.mint && (
         <MintingCard gridArea="mint-card" />
       )}
-      {mintAction === TbtcMintAction.unmint && (
+      {mintingType === TbtcMintingType.unmint && (
         <UnmintingCard gridArea="mint-card" />
       )}
     </Grid>

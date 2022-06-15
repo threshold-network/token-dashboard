@@ -1,4 +1,8 @@
-export enum TbtcMintAction {
+import { UpdateStateActionPayload } from "./state"
+
+export type TbtcStateKey = "mintingStep" | "mintingType"
+
+export enum TbtcMintingType {
   mint = "MINT",
   unmint = "UNMINT",
 }
@@ -17,16 +21,14 @@ export const MintingSteps: MintingStep[] = [
   MintingStep.MintingSuccess,
 ]
 
-export interface SetMintAction {
-  payload: { mintAction: TbtcMintAction }
+export interface UpdateTbtcState {
+  payload: UpdateStateActionPayload<TbtcStateKey>
 }
 
 export interface UseTbtcState {
   (): {
-    advanceMintingStep: () => void
-    rewindMintingStep: () => void
     mintingStep: MintingStep
-    mintAction: TbtcMintAction
-    setMintAction: (action: TbtcMintAction) => SetMintAction
+    mintingType: TbtcMintingType
+    updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
   }
 }
