@@ -1,25 +1,17 @@
 import { useDispatch, useSelector } from "react-redux"
-import {
-  advanceMintingStep as advanceMintingStepAction,
-  rewindMintingStep as rewindMintingStepAction,
-  setMintAction as setMintActionAction,
-} from "../store/tbtc"
 import { RootState } from "../store"
-import { TbtcMintAction, UseTbtcState } from "../types/tbtc"
+import { TbtcStateKey, UseTbtcState } from "../types/tbtc"
+import { updateState as updateStateAction } from "../store/tbtc"
 
 export const useTbtcState: UseTbtcState = () => {
   const tbtcState = useSelector((state: RootState) => state.tbtc)
   const dispatch = useDispatch()
 
-  const setMintAction = (mintAction: TbtcMintAction) =>
-    dispatch(setMintActionAction({ mintAction }))
-  const advanceMintingStep = () => dispatch(advanceMintingStepAction())
-  const rewindMintingStep = () => dispatch(rewindMintingStepAction())
+  const updateState = (key: TbtcStateKey, value: any) =>
+    dispatch(updateStateAction({ key, value }))
 
   return {
     ...tbtcState,
-    setMintAction,
-    advanceMintingStep,
-    rewindMintingStep,
+    updateState,
   }
 }

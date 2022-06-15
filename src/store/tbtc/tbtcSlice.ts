@@ -1,43 +1,33 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
-import { MintingStep, MintingSteps, TbtcMintAction } from "../../types/tbtc"
+import {
+  MintingStep,
+  MintingSteps,
+  TbtcMintingType,
+  TbtcStateKey,
+} from "../../types/tbtc"
+import { UpdateStateActionPayload } from "../../types/state"
 
 interface TbtcState {
-  mintAction: TbtcMintAction
+  mintingType: TbtcMintingType
   mintingStep: MintingStep
-  mintingStepIdx: number
 }
 
 export const tbtcSlice = createSlice({
   name: "tbtc",
   initialState: {
-    mintAction: TbtcMintAction.mint,
+    mintingType: TbtcMintingType.mint,
     mintingStep: MintingSteps[0],
-    mintingStepIdx: 0,
   } as TbtcState,
   reducers: {
-    advanceMintingStep: (state: TbtcState) => {
-      if (state.mintingStepIdx < MintingSteps.length - 1) {
-        const newStepIdx = state.mintingStepIdx + 1
-        state.mintingStepIdx = newStepIdx
-        state.mintingStep = MintingSteps[newStepIdx]
-      }
-    },
-    rewindMintingStep: (state: TbtcState) => {
-      if (state.mintingStepIdx > 0) {
-        const newStepIdx = state.mintingStepIdx - 1
-        state.mintingStepIdx = newStepIdx
-        state.mintingStep = MintingSteps[newStepIdx]
-      }
-    },
-    setMintAction: (
-      state: TbtcState,
-      action: PayloadAction<{ mintAction: TbtcMintAction }>
+    updateState: (
+      state,
+      action: PayloadAction<UpdateStateActionPayload<TbtcStateKey>>
     ) => {
-      state.mintAction = action.payload.mintAction
+      // @ts-ignore
+      state[action.payload.key] = action.payload.value
     },
   },
 })
 
-export const { setMintAction, rewindMintingStep, advanceMintingStep } =
-  tbtcSlice.actions
+export const { updateState } = tbtcSlice.actions

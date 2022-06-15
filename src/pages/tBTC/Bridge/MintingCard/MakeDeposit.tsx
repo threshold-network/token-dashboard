@@ -1,15 +1,13 @@
 import { FC } from "react"
-import { Box, Button } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
+import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
 
 export const MakeDeposit: FC = () => {
-  const { advanceMintingStep, rewindMintingStep } = useTbtcState()
-
+  const {} = useTbtcState()
   return (
     <Box>
-      Make Deposit
-      <Button onClick={advanceMintingStep}>forward</Button>
-      <Button onClick={rewindMintingStep}>back</Button>
+      <TbtcMintingCardTitle />
     </Box>
   )
 }
