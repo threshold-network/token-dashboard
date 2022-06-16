@@ -1,6 +1,6 @@
 import { FC, Ref, useRef } from "react"
-import { FormikProps, FormikErrors, withFormik } from "formik"
-import { Button, Stack } from "@chakra-ui/react"
+import { FormikErrors, FormikProps, withFormik } from "formik"
+import { Box, Button } from "@chakra-ui/react"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
@@ -25,13 +25,18 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
 }) => {
   return (
-    <Form id={formId}>
+    <Form id={formId} mb={6}>
       <FormikInput
         name="ethAddress"
         label="ETH address"
-        // helperText="Address where you’ll receive your tBTC"
+        tooltip="ETH address is prepopulated with your wallet address. This is the address where you’ll receive your tBTC."
+        mb={6}
       />
-      <FormikInput name="btcRecoveryAddress" label="BTC Recovery Address" />
+      <FormikInput
+        name="btcRecoveryAddress"
+        label="BTC Recovery Address"
+        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. The funds can be claimed."
+      />
     </Form>
   )
 }
@@ -67,10 +72,10 @@ export const ProvideData: FC = () => {
   }
 
   return (
-    <Stack spacing={8}>
+    <Box>
       <TbtcMintingCardTitle />
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
-      <Body2 color="gray.500">
+      <Body2 color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you an unique
         BTC deposit address. There is no minting limit
       </Body2>
@@ -80,9 +85,9 @@ export const ProvideData: FC = () => {
         initialAddress="ABC"
         onSubmitForm={onSubmit}
       />
-      <Button type="submit" form="tbtc-minting-data-form">
+      <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
         Generate Deposit Address
       </Button>
-    </Stack>
+    </Box>
   )
 }
