@@ -1,17 +1,17 @@
 import { FC } from "react"
 import { Stack } from "@chakra-ui/react"
-import { Body2 } from "../../../../components/Typography"
+import { Body1 } from "../../../../components/Typography"
 
 export const TbtcMintingCardSubTitle: FC<{
   stepText: string
   subTitle: string
 }> = ({ stepText, subTitle }) => {
   return (
-    <Stack direction="row">
-      <Body2 fontWeight="bold" color="brand.700">
+    <Stack direction="row" mb={2}>
+      <Body1 fontWeight="bold" color="brand.500">
         {stepText}
-      </Body2>{" "}
-      - <Body2>{subTitle}</Body2>
+      </Body1>{" "}
+      <Body1>- {subTitle}</Body1>
     </Stack>
   )
 }
