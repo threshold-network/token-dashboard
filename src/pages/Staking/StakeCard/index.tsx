@@ -53,12 +53,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     !isAddressZero(stake.preConfig.operator) &&
     stake.preConfig.isOperatorConfirmed
 
-  const submitButtonText = !isStakeAction
-    ? "Unstake"
-    : isPRESet
-    ? "Top-up"
-    : "Set PRE"
-
+  const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
   const onChangeAction = useCallback(() => {
     formRef.current?.resetForm()
     setFlag.toggle()
@@ -74,11 +69,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      if (isPRESet) {
-        onSubmitTopUpForm(tokenAmount)
-      } else {
-        window.open(ExternalHref.preNodeSetup, "_blank")
-      }
+      onSubmitTopUpForm(tokenAmount)
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -155,12 +146,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
-          isDisabled={isStakeAction && !isPRESet}
-          shouldValidateForm={!isStakeAction || isPRESet}
         />
       ) : (
         <Button onClick={onSubmitUnstakeBtn} isFullWidth>
           {submitButtonText}
+        </Button>
+      )}
+      {!isPRESet && (
+        <Button as="a" mt="4" href={ExternalHref.preNodeSetup} isFullWidth>
+          Set PRE
         </Button>
       )}
     </Card>
