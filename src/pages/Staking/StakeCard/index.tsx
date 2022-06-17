@@ -69,7 +69,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitUnstakeOrTopupBtn = () => {
     if (isStakeAction) {
-      openModal(ModalType.TopupLegacyStake)
+      openModal(ModalType.TopupLegacyStake, { stake })
     } else {
       openModal(ModalType.UnstakeT, { stake })
     }
