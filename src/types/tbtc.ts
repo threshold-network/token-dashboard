@@ -1,6 +1,11 @@
 import { UpdateStateActionPayload } from "./state"
 
-export type TbtcStateKey = "mintingStep" | "mintingType"
+export type TbtcStateKey =
+  | "mintingStep"
+  | "mintingType"
+  | "btcRecoveryAddress"
+  | "ethAddress"
+  | "btcDepositAddress"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -29,6 +34,9 @@ export interface UseTbtcState {
   (): {
     mintingStep: MintingStep
     mintingType: TbtcMintingType
+    btcDepositAddress: string
+    btcRecoveryAddress: string
+    ethAddress: string
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
   }
 }

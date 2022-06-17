@@ -11,6 +11,7 @@ import {
   validateBTCAddress,
   validateETHAddress,
 } from "../../../../utils/forms"
+import { MintingStep } from "../../../../types/tbtc"
 
 export interface FormValues {
   ethAddress: string
@@ -42,15 +43,15 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }
 
 type MintingProcessFormProps = {
-  initialAddress: string
+  initialEthAddress: string
   innerRef: Ref<FormikProps<FormValues>>
   onSubmitForm: (values: FormValues) => void
 } & ComponentProps
 
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
-  mapPropsToValues: ({ initialAddress }) => ({
-    ethAddress: initialAddress,
-    btcRecoveryAddress: "",
+  mapPropsToValues: ({ initialEthAddress }) => ({
+    ethAddress: initialEthAddress,
+    btcRecoveryAddress: "17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
   }),
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
@@ -65,10 +66,17 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 })(MintingProcessFormBase)
 
 export const ProvideData: FC = () => {
-  const {} = useTbtcState()
+  const { updateState } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
-  const onSubmit = (values: any) => {
-    console.log("values", values)
+  const onSubmit = (values: FormValues) => {
+    updateState("btcRecoveryAddress", values.btcRecoveryAddress)
+    updateState("ethAddress", values.ethAddress)
+    // TODO: Generate this address
+    updateState(
+      "btcDepositAddress",
+      "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+    )
+    updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (
@@ -82,7 +90,7 @@ export const ProvideData: FC = () => {
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialAddress="ABC"
+        initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
         onSubmitForm={onSubmit}
       />
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
