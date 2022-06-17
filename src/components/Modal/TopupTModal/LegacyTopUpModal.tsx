@@ -22,21 +22,42 @@ import {
 import { Body3, H5 } from "../../Typography"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
-import { ExternalHref, Token } from "../../../enums"
+import {
+  ExternalHref,
+  ModalType,
+  StakeType,
+  Token,
+  TopUpType,
+} from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import { TokenAmountForm } from "../../Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { StakingContractLearnMore } from "../../ExternalLink"
+import { useModal } from "../../../hooks/useModal"
+import { StakeData } from "../../../types/staking"
 
-const LegacyTopUpModal: FC<BaseModalProps> = ({ closeModal }) => {
+const stakeTypeToDaapHref: Record<StakeType.KEEP | StakeType.NU, ExternalHref> =
+  {
+    [StakeType.KEEP]: ExternalHref.keepDapp,
+    [StakeType.NU]: ExternalHref.nuDapp,
+  }
+
+const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
+  closeModal,
+  stake,
+}) => {
   const tBalance = useTokenBalance(Token.T)
+  const { openModal } = useModal()
   // TODO find a solution to style bullets with chakra theme.
   const bulletColor = useColorModeValue("gray.700", "gray.300")
   const bulletColorStyle = { "::marker": { color: bulletColor } }
 
-  const onSubmitForm = () => {
-    // TODO: open the Top up summary modal.
-    console.log("on submit form")
+  const onSubmitForm = (tokenAmount: string | number) => {
+    openModal(ModalType.TopupT, {
+      stake,
+      amountTopUp: tokenAmount,
+      topUpType: TopUpType.NATIVE,
+    })
   }
 
   return (
@@ -68,7 +89,8 @@ const LegacyTopUpModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Tabs isFitted>
           <TabList mb="8">
             <Tab>Top-up T</Tab>
-            <Tab>Top-up legacy stake</Tab>
+
+            {stake.stakeType !== StakeType.T && <Tab>Top-up legacy stake</Tab>}
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -80,28 +102,29 @@ const LegacyTopUpModal: FC<BaseModalProps> = ({ closeModal }) => {
                 shouldDisplayMaxAmountInLabel
               />
             </TabPanel>
-
-            <TabPanel>
-              <Button
-                as={Link}
-                isExternal
-                href={ExternalHref.keepDapp}
-                isFullWidth
-                mb="3"
-              >
-                Top-up on the Legacy Dashboard
-              </Button>
-              <Alert status="warning">
-                <AlertIcon alignSelf="center" />
-                <AlertDescription
-                  color={useColorModeValue("gray.700", "gray.300")}
+            {stake.stakeType !== StakeType.T && (
+              <TabPanel>
+                <Button
+                  as={Link}
+                  isExternal
+                  href={stakeTypeToDaapHref[stake.stakeType]}
+                  isFullWidth
+                  mb="3"
                 >
-                  After you topped-up in the legacy dashboad you will need to
-                  confirm your top-up in the Threshold Dashboard. This action
-                  will require one transaction.
-                </AlertDescription>
-              </Alert>
-            </TabPanel>
+                  Top-up on the Legacy Dashboard
+                </Button>
+                <Alert status="warning">
+                  <AlertIcon alignSelf="center" />
+                  <AlertDescription
+                    color={useColorModeValue("gray.700", "gray.300")}
+                  >
+                    After you topped-up in the legacy dashboad you will need to
+                    confirm your top-up in the Threshold Dashboard. This action
+                    will require one transaction.
+                  </AlertDescription>
+                </Alert>
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
         <StakingContractLearnMore mt="1.25rem !important" />
