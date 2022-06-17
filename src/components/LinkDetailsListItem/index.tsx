@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Box, HStack, ListItem, ListItemProps } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Body1, Body3 } from "../Typography"
+import { BodyLg, BodySm } from "@threshold-network/components"
 import ExternalLink from "../ExternalLink"
 import { ExternalHref } from "../../enums"
 
@@ -23,8 +23,8 @@ const LinkDetailsListItem: FC<LinkDetailsListItemProps> = ({
     <HStack>
       <Box bg="brand.500" borderRadius="8px" w="48px" height="48px" />
       <Box>
-        <Body1>{title}</Body1>
-        <Body3>{subTitle}</Body3>
+        <BodyLg>{title}</BodyLg>
+        <BodySm>{subTitle}</BodySm>
       </Box>
       <ExternalLink
         fontSize="14px"

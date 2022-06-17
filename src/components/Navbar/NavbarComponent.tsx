@@ -16,7 +16,7 @@ import NetworkButton from "./NetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
-import { H5 } from "../Typography"
+import { H5 } from "@threshold-network/components"
 import { pages } from "../../pages"
 import { PageComponent } from "../../types"
 

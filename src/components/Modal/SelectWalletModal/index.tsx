@@ -10,7 +10,7 @@ import withBaseModal from "../withBaseModal"
 import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
-import { H5 } from "../../Typography"
+import { H5 } from "@threshold-network/components"
 import { WalletOption } from "../../../types"
 
 const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
