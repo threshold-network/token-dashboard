@@ -5,10 +5,10 @@ import {
   ProviderStakedActionPayload,
   StakeData,
   UnstakedActionPayload,
-  UpdateStakeAmountActionPayload,
+  ToppedUpActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
-import { StakeType, UnstakeType } from "../../enums"
+import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import {
   calculateStakingBonusReward,
   isBeforeOrEqualBonusDeadline,
@@ -112,40 +112,35 @@ export const stakingSlice = createSlice({
       state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
       state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
-    updateStakeAmountForProvider: (
-      state,
-      action: PayloadAction<UpdateStakeAmountActionPayload>
+    toppedUp: (
+      state: StakingState,
+      action: PayloadAction<ToppedUpActionPayload>
     ) => {
-      const { stakingProvider, amount, increaseOrDecrease } = action.payload
+      const { stakingProvider, amount, topUpType } = action.payload
 
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
-        (stake) => stake.stakingProvider === stakingProvider
+        (stake: StakeData) => stake.stakingProvider === stakingProvider
       )
 
       if (stakeIdxToUpdate < 0) return
 
       const stake = stakes[stakeIdxToUpdate]
+      const fieldName =
+        topUpType === TopUpType.NATIVE
+          ? "tStake"
+          : topUpType === TopUpType.LEGACY_KEEP
+          ? "keepInTStake"
+          : "nuInTStake"
 
-      const originalStakeAmount = BigNumber.from(
-        stakes[stakeIdxToUpdate].tStake
+      stakes[stakeIdxToUpdate][fieldName] = BigNumber.from(
+        stakes[stakeIdxToUpdate][fieldName]
       )
+        .add(amount)
+        .toString()
 
-      const amountUnstaked = BigNumber.from(amount)
-
-      if (increaseOrDecrease === "increase") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .add(amountUnstaked)
-          .toString()
-      } else if (increaseOrDecrease === "decrease") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .sub(amountUnstaked)
-          .toString()
-      }
-
-      const totalInTStake = BigNumber.from(stake.tStake)
-        .add(BigNumber.from(stake.keepInTStake))
-        .add(BigNumber.from(stake.nuInTStake))
+      const totalInTStake = BigNumber.from(stake.totalInTStake)
+        .add(amount)
         .toString()
 
       stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
@@ -230,7 +225,7 @@ export const {
   updateState,
   setStakes,
   providerStaked,
-  updateStakeAmountForProvider,
+  toppedUp,
   unstaked,
   setMinStake,
 } = stakingSlice.actions
