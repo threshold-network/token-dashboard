@@ -19,6 +19,7 @@ import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import { ModalType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
+import LegacyTopUpModal from "./LegacyTopUpModal"
 
 const TopupTModal: FC<
   BaseModalProps & { stake: StakeData; amountTopUp: string }
@@ -84,3 +85,4 @@ const TopupTModal: FC<
 }
 
 export default withBaseModal(TopupTModal)
+export { LegacyTopUpModal }

@@ -18,7 +18,7 @@ import {
   UnstakeTStep1 as UnstakeTModalStep1,
   UnstakeTStep2 as UnstakeTModalStep2,
 } from "../components/Modal/UnstakeTModal"
-import TopupTModal from "../components/Modal/TopupTModal"
+import TopupTModal, { LegacyTopUpModal } from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 import StakingBonusModal from "../components/Modal/StakingBonus"
 
@@ -37,6 +37,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UnstakeTStep2]: UnstakeTModalStep2,
   [ModalType.StakingChecklist]: StakingChecklistModal,
   [ModalType.TopupT]: TopupTModal,
+  [ModalType.TopupLegacyStake]: LegacyTopUpModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.StakingBonus]: StakingBonusModal,
 }
