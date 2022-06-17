@@ -12,7 +12,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { BodyLg, H5 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 import StakingStats from "../../StakingStats"
@@ -77,9 +77,9 @@ const UnstakeTModal: FC<
         <Stack spacing={6}>
           <InfoBox variant="modal">
             <H5 mb={4}>You are about to unstake your tokens</H5>
-            <Body1>
+            <BodyLg>
               You can partially or totally unstake depending on your needs.
-            </Body1>
+            </BodyLg>
           </InfoBox>
           <StakingStats
             stakeAmount={_amountToUnstake}

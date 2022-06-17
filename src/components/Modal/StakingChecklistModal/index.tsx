@@ -9,7 +9,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { BodyLg, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
@@ -31,13 +31,13 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
-            <Body1 color={useColorModeValue("gray.700", "white")} as="span">
+            <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
               <H5 mb={4}>Before you continue</H5>
-              <Body1>
+              <BodyLg>
                 Please take note about the Staking Process and requirements you
                 need to meet so you can gain rewards.
-              </Body1>
-            </Body1>
+              </BodyLg>
+            </BodyLg>
           </InfoBox>
           <Divider />
           <StakingChecklist />

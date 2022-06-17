@@ -2,7 +2,7 @@ import type {
   SystemStyleFunction,
   SystemStyleObject,
 } from "@chakra-ui/theme-tools"
-import { getColorFromProps } from "./utils"
+import { ThemeUtils } from "@threshold-network/components"
 
 const baseStyle: SystemStyleObject = {
   borderRadius: "100%",
@@ -42,8 +42,8 @@ const variantSolid: SystemStyleFunction = (props) => {
 }
 
 const variantGradient: SystemStyleFunction = (props) => {
-  const from = getColorFromProps(props, 600)
-  const to = getColorFromProps(props, 500)
+  const from = ThemeUtils.getColorFromProps(props, 600)
+  const to = ThemeUtils.getColorFromProps(props, 500)
 
   return {
     bg: `linear-gradient(120.19deg, ${from} 3.32%, ${to} 95.02%)`,

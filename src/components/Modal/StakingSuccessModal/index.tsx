@@ -12,7 +12,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { PreSetupSteps } from "../../StakingChecklist"
@@ -53,14 +53,14 @@ const StakingChecklistModal: FC<
           </InfoBox>
           <PreSetupSteps />
           {transactionHash && (
-            <Body3 mt="2.5rem !important" align="center">
+            <BodySm mt="2.5rem !important" align="center">
               <ViewInBlockExplorer
                 text="View"
                 id={transactionHash}
                 type={ExplorerDataType.TRANSACTION}
               />{" "}
               transaction on Etherscan
-            </Body3>
+            </BodySm>
           )}
           <Divider />
         </Stack>

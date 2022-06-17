@@ -14,12 +14,16 @@ import {
 } from "@chakra-ui/react"
 import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
-import { H5, Body1, Body3 } from "../../Typography"
-import { Divider } from "../../Divider"
+import {
+  H5,
+  BodyLg,
+  BodySm,
+  LineDivider,
+  ChecklistGroup,
+} from "@threshold-network/components"
 import { StakingBonusReadMore } from "../../ExternalLink"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
-import ChecklistGroup from "../../ChecklistGroup"
 import { EligibilityCard, EmptyEligibilityCard } from "./EligibilityCard"
 
 export const EligibilityConfirmation: FC<
@@ -59,31 +63,32 @@ export const EligibilityConfirmation: FC<
             />
             &nbsp;{title}
           </H5>
-          <Body1 mt="4">
+          <BodyLg mt="4">
             To receive a Staking Bonus any stake needs to meet two requirements.
-          </Body1>
-          <Body1 mt="2">The Staking Bonus is 3% of your stake.</Body1>
+          </BodyLg>
+          <BodyLg mt="2">The Staking Bonus is 3% of your stake.</BodyLg>
         </InfoBox>
-        <Divider />
+        <LineDivider />
         <Box ml="4">
           <ChecklistGroup
             title="Requirement 1 - Active stake"
             checklistItems={[
               {
-                title: "Have an active stake before June 1st",
-                subTitle: (
-                  <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+                itemId: "eligibility-confirmation__active-stake__0",
+                itemTitle: "Have an active stake before June 1st",
+                itemSubTitle: (
+                  <BodySm color={useColorModeValue("gray.500", "gray.300")}>
                     Your Staking Bonus will be added to your Staking Rewards.
                     You can withdraw them starting{" "}
-                    <Body3
+                    <BodySm
                       as="span"
                       color={useColorModeValue("brand.500", "brand.550")}
                     >
                       July 15th.
-                    </Body3>{" "}
+                    </BodySm>{" "}
                     The Staking Bonus can be accumulated along the Staking
                     Rewards.
-                  </Body3>
+                  </BodySm>
                 ),
               },
             ]}
@@ -93,8 +98,9 @@ export const EligibilityConfirmation: FC<
               title="Requirement 2 - PRE Set up and working"
               checklistItems={[
                 {
-                  title: "PRE Node configured and working",
-                  subTitle:
+                  itemId: "eligibility-confirmation__pre_set_up__0",
+                  itemTitle: "PRE Node configured and working",
+                  itemSubTitle:
                     "You need a configured and working PRE node in order to get your Staking Bonus",
                 },
               ]}
@@ -109,7 +115,7 @@ export const EligibilityConfirmation: FC<
           )}
         </List>
         <StakingBonusReadMore />
-        <Divider mb="0" mt="4" />
+        <LineDivider mb="0" mt="4" />
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
