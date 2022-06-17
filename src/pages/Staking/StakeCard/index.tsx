@@ -30,6 +30,7 @@ import {
   ModalType,
   StakeType,
   Token,
+  TopUpType,
   UnstakeType,
 } from "../../../enums"
 import {
@@ -59,8 +60,11 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     setFlag.toggle()
   }, [setFlag.toggle])
 
-  const onSubmitTopUp = (tokenAmount: string | number) => {
-    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
+  const onSubmitTopUp = (
+    tokenAmount: string | number,
+    topUpType: TopUpType
+  ) => {
+    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount, topUpType })
   }
 
   const onSubmitUnstakeOrTopupBtn = () => {
@@ -73,7 +77,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      onSubmitTopUp(tokenAmount)
+      onSubmitTopUp(tokenAmount, TopUpType.NATIVE)
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -157,7 +161,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <Button
           onClick={() =>
             onSubmitTopUp(
-              canTopUpNu ? stake.possibleNuTopUpInT : stake.possibleKeepTopUpInT
+              canTopUpNu
+                ? stake.possibleNuTopUpInT
+                : stake.possibleKeepTopUpInT,
+              canTopUpNu ? TopUpType.LEGACY_NU : TopUpType.LEGACY_KEEP
             )
           }
           isFullWidth
