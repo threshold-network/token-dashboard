@@ -17,13 +17,17 @@ import { useModal } from "../../../hooks/useModal"
 import { useTopupTransaction } from "../../../web3/hooks/useTopupTransaction"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
-import { ModalType } from "../../../enums"
+import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import LegacyTopUpModal from "./LegacyTopUpModal"
 
 const TopupTModal: FC<
-  BaseModalProps & { stake: StakeData; amountTopUp: string }
-> = ({ stake, amountTopUp }) => {
+  BaseModalProps & {
+    stake: StakeData
+    amountTopUp: string
+    topUpType: TopUpType
+  }
+> = ({ stake, amountTopUp, topUpType }) => {
   const { closeModal, openModal } = useModal()
 
   const onSuccess = useCallback(
@@ -37,7 +41,7 @@ const TopupTModal: FC<
     [amountTopUp, stake]
   )
 
-  const { topup } = useTopupTransaction(onSuccess)
+  const { topup } = useTopupTransaction(topUpType, onSuccess)
 
   return (
     <>
