@@ -11,6 +11,9 @@ import { UpdateStateActionPayload } from "../../types/state"
 interface TbtcState {
   mintingType: TbtcMintingType
   mintingStep: MintingStep
+  ethAddress: string
+  btcRecoveryAddress: string
+  btcDepositAddress: string
 }
 
 export const tbtcSlice = createSlice({
