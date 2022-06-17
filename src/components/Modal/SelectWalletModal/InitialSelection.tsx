@@ -8,7 +8,7 @@ import {
   VStack,
 } from "@chakra-ui/react"
 import { BiRightArrowAlt } from "react-icons/all"
-import { H4 } from "../../Typography"
+import { H4 } from "@threshold-network/components"
 import { WalletOption } from "../../../types"
 
 const InitialWalletSelection: FC<{

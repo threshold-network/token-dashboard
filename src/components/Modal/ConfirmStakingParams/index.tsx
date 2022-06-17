@@ -12,9 +12,9 @@ import {
   Collapse,
   Flex,
 } from "@chakra-ui/react"
+import { BodyLg, BodyMd, BodySm, H5 } from "@threshold-network/components"
 import { BsChevronDown, BsChevronUp } from "react-icons/all"
 import { FormikProps } from "formik"
-import { Body1, Body2, Body3, H5 } from "../../Typography"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
@@ -95,13 +95,13 @@ const ConfirmStakingParamsModal: FC<
             authorizer: account as string,
           }}
         />
-        <Body3 color="gray.500" mt="10">
+        <BodySm color="gray.500" mt="10">
           Provider, Beneficiary, and Authorizer addresses are currently set to
           your wallet address.
-        </Body3>
-        <Body2 textAlign="center" mt="4" mb="6">
+        </BodySm>
+        <BodyMd textAlign="center" mt="4" mb="6">
           {account}
-        </Body2>
+        </BodyMd>
         <Flex direction="column">
           <Button
             variant="link"

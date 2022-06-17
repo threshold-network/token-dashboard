@@ -2,14 +2,13 @@ import { FC } from "react"
 import { List, ListItem, ListIcon, Button } from "@chakra-ui/react"
 import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
-import Card from "../../Card"
 import {
   StakeCardHeader,
   StakeCardHeaderTitle,
   StakeCardProviderAddress,
 } from "../../../pages/Staking/StakeCard"
 import TokenBalance from "../../TokenBalance"
-import { Body2, H3 } from "../../Typography"
+import { BodyMd, H3, Card } from "@threshold-network/components"
 import ExternalLink from "../../ExternalLink"
 import { dateToUnixTimestamp } from "../../../utils/date"
 import { AddressZero } from "../../../web3/utils"
@@ -43,7 +42,7 @@ export const EligibilityCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeader>
           <StakeCardHeaderTitle stake={stake} />
         </StakeCardHeader>
-        <Body2 my="4">Staking Bonus</Body2>
+        <BodyMd my="4">Staking Bonus</BodyMd>
         <TokenBalance
           tokenAmount={stake.bonusEligibility.reward}
           withSymbol
@@ -87,7 +86,7 @@ export const EmptyEligibilityCard: FC<{
         <StakeCardHeader>
           <StakeCardHeaderTitle stake={null} />
         </StakeCardHeader>
-        <Body2 my="4">Staking Bonus</Body2>
+        <BodyMd my="4">Staking Bonus</BodyMd>
         <H3>You have no stake yet</H3>
         <StakeCardProviderAddress stakingProvider={AddressZero} mb="6" mt="4" />
         <RequirementList conditions={[false, false]} />

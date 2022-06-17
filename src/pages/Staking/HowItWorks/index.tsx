@@ -29,6 +29,7 @@ const HowItWorksPage: PageComponent = (props) => {
             "legacy-stakes   new-t-stakes"
             "legacy-stakes   staking-actions"
             "addresses       staking-actions"
+            "addresses       staking-actions"
             "addresses       providers"
           `,
       }}
