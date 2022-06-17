@@ -1,10 +1,14 @@
 import { ComponentProps, FC } from "react"
 import { HStack, Stack, Divider } from "@chakra-ui/react"
-import Card from "../../components/Card"
-import { Body1, Body2, Label3 } from "../../components/Typography"
+import {
+  BodyLg,
+  BodyMd,
+  LabelSm,
+  Card,
+  BoxLabel,
+} from "@threshold-network/components"
 import InfoBox from "../../components/InfoBox"
 import TokenBalance from "../../components/TokenBalance"
-import BoxLabel from "../../components/BoxLabel"
 import { StakingContractLearnMore } from "../../components/ExternalLink"
 import { TokenAmountForm } from "../../components/Forms"
 import { useStakingState } from "../../hooks/useStakingState"
@@ -27,10 +31,10 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
 
   return (
     <Card h="fit-content" {...props}>
-      <Label3 mb={6} textTransform="uppercase">
+      <LabelSm mb={6} textTransform="uppercase">
         Staked Portfolio
-      </Label3>
-      <Body2 mb={2}>Staked Balance</Body2>
+      </LabelSm>
+      <BodyMd mb={2}>Staked Balance</BodyMd>
       <InfoBox>
         <TokenBalance
           tokenAmount={stakedBalance.toString()}
@@ -41,7 +45,7 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
       </InfoBox>
       <HStack mt="8" justify="space-between" w="100%">
         <BoxLabel>Wallet</BoxLabel>
-        <Body1>{formatTokenAmount(tBalance)} T</Body1>
+        <BodyLg>{formatTokenAmount(tBalance)} T</BodyLg>
       </HStack>
       <Divider my="6" />
       <TokenAmountForm

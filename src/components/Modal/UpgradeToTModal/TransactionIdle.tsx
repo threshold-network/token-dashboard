@@ -8,10 +8,9 @@ import {
   ModalHeader,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, Body3, H5 } from "../../Typography"
+import { BodyLg, BodySm, H5, LineDivider } from "@threshold-network/components"
 import UpgradeIconGroup from "../../UpgradeIconGroup"
 import UpgradeStats from "./UpgradeStats"
-import { Divider } from "../../Divider"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
@@ -44,22 +43,22 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
       <ModalBody>
         <InfoBox variant="modal">
           <H5>You are about to upgrade {token} to T.</H5>
-          <Body1 mt="1rem">
+          <BodyLg mt="1rem">
             The upgrade uses an ApproveAndCall function which requires one
             confirmation transaction
-          </Body1>
+          </BodyLg>
         </InfoBox>
         <HStack justifyContent="center" my={6}>
           <UpgradeIconGroup token={token} boxSize="48px" />
         </HStack>
-        <Divider />
+        <LineDivider />
         <UpgradeStats
           token={token}
           exchangeRate={exchangeRate}
           receivedAmount={receivedAmount}
           upgradedAmount={upgradedAmount}
         />
-        <Body3
+        <BodySm
           align="center"
           color={useColorModeValue("gray.500", "gray.300")}
           mt="2rem"
@@ -70,8 +69,8 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
             type={ExplorerDataType.ADDRESS}
             text="vending machine contract."
           />
-        </Body3>
-        <Divider />
+        </BodySm>
+        <LineDivider />
       </ModalBody>
 
       <ModalFooter>

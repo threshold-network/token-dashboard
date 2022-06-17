@@ -1,15 +1,13 @@
 import { FC, ComponentProps } from "react"
 import { List } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Label3 } from "../../../components/Typography"
-import BoxLabel from "../../../components/BoxLabel"
-import { ExternalHref } from "../../../enums"
+import { LabelSm, BoxLabel, Card } from "@threshold-network/components"
 import LinkDetailsListItem from "../../../components/LinkDetailsListItem"
+import { ExternalHref } from "../../../enums"
 
 export const ProvidersCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card {...props}>
-      <Label3>threshold and pre staking providers</Label3>
+      <LabelSm>threshold and pre staking providers</LabelSm>
       <List mt="6" spacing="4">
         {providers.map(renderProviderListItem)}
       </List>
