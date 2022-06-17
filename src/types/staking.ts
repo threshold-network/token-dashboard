@@ -68,6 +68,8 @@ export interface StakeData {
   totalInTStake: string
   bonusEligibility: BonusEligibility
   preConfig: PreConfig
+  possibleKeepTopUpInT: string
+  possibleNuTopUpInT: string
 }
 
 export interface ProviderStakedEvent {
@@ -90,6 +92,8 @@ export type ProviderStakedActionPayload = ProviderStakedEvent &
     | "totalInTStake"
     | "bonusEligibility"
     | "preConfig"
+    | "possibleKeepTopUpInT"
+    | "possibleNuTopUpInT"
   >
 
 export type UpdateStakeAmountActionPayload = {
