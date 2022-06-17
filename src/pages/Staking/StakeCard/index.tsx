@@ -148,7 +148,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction && !hasLegacyStakes && !canTopUpKepp && !canTopUpNu ? (
+      {isStakeAction &&
+      stake.stakeType === StakeType.T &&
+      !canTopUpKepp &&
+      !canTopUpNu ? (
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
