@@ -91,6 +91,8 @@ export const stakingSlice = createSlice({
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
+      newStake.possibleKeepTopUpInT = "0"
+      newStake.possibleNuTopUpInT = "0"
 
       const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
       newStake.bonusEligibility = {
@@ -126,6 +128,13 @@ export const stakingSlice = createSlice({
       if (stakeIdxToUpdate < 0) return
 
       const stake = stakes[stakeIdxToUpdate]
+
+      if (topUpType === TopUpType.LEGACY_KEEP) {
+        stakes[stakeIdxToUpdate].possibleKeepTopUpInT = "0"
+      } else if (topUpType === TopUpType.LEGACY_NU) {
+        stakes[stakeIdxToUpdate].possibleNuTopUpInT = "0"
+      }
+
       const fieldName =
         topUpType === TopUpType.NATIVE
           ? "tStake"
