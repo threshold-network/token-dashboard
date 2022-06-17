@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Button,
   ListItem,
@@ -22,7 +22,7 @@ import {
 import { Body3, H5 } from "../../Typography"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
-import { ExternalHref, Token, TopUpType } from "../../../enums"
+import { ExternalHref, Token } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import { TokenAmountForm } from "../../Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
@@ -30,7 +30,6 @@ import { StakingContractLearnMore } from "../../ExternalLink"
 
 const LegacyTopUpModal: FC<BaseModalProps> = ({ closeModal }) => {
   const tBalance = useTokenBalance(Token.T)
-  const [topUpType, setTopUpType] = useState(TopUpType.NATIVE)
   // TODO find a solution to style bullets with chakra theme.
   const bulletColor = useColorModeValue("gray.700", "gray.300")
   const bulletColorStyle = { "::marker": { color: bulletColor } }
@@ -68,10 +67,8 @@ const LegacyTopUpModal: FC<BaseModalProps> = ({ closeModal }) => {
         </InfoBox>
         <Tabs isFitted>
           <TabList mb="8">
-            <Tab onClick={() => setTopUpType(TopUpType.NATIVE)}>Top-up T</Tab>
-            <Tab onClick={() => setTopUpType(TopUpType.LEGACY)}>
-              Top-up legacy stake
-            </Tab>
+            <Tab>Top-up T</Tab>
+            <Tab>Top-up legacy stake</Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
