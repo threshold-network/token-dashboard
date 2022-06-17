@@ -59,17 +59,21 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     setFlag.toggle()
   }, [setFlag.toggle])
 
-  const onSubmitTopUpForm = (tokenAmount: string | number) => {
+  const onSubmitTopUp = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
   }
 
-  const onSubmitUnstakeBtn = () => {
-    openModal(ModalType.UnstakeT, { stake })
+  const onSubmitUnstakeOrTopupBtn = () => {
+    if (isStakeAction) {
+      openModal(ModalType.TopupLegacyStake)
+    } else {
+      openModal(ModalType.UnstakeT, { stake })
+    }
   }
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      onSubmitTopUpForm(tokenAmount)
+      onSubmitTopUp(tokenAmount)
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -83,6 +87,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   }
 
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
+  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
 
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
@@ -138,7 +144,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction || !hasLegacyStakes ? (
+      {isStakeAction && !hasLegacyStakes && !canTopUpKepp && !canTopUpNu ? (
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
@@ -147,8 +153,19 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
         />
+      ) : canTopUpNu || canTopUpKepp ? (
+        <Button
+          onClick={() =>
+            onSubmitTopUp(
+              canTopUpNu ? stake.possibleNuTopUpInT : stake.possibleKeepTopUpInT
+            )
+          }
+          isFullWidth
+        >
+          Confirm Legacy Top-up
+        </Button>
       ) : (
-        <Button onClick={onSubmitUnstakeBtn} isFullWidth>
+        <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
           {submitButtonText}
         </Button>
       )}
