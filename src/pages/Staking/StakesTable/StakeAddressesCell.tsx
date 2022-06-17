@@ -1,9 +1,8 @@
 import { FC } from "react"
 import { Badge, HStack, Td, VStack } from "@chakra-ui/react"
 import { StakeCellProps } from "../../../types/staking"
-import { Body3 } from "../../../components/Typography"
+import { BodySm, BoxLabel } from "@threshold-network/components"
 import shortenAddress from "../../../utils/shortenAddress"
-import BoxLabel from "../../../components/BoxLabel"
 
 const StakingAddressRow: FC<{
   address: string
@@ -12,7 +11,7 @@ const StakingAddressRow: FC<{
   return (
     <HStack justify="space-between" w="100%">
       <BoxLabel>{text}</BoxLabel>
-      <Body3>{shortenAddress(address)}</Body3>
+      <BodySm>{shortenAddress(address)}</BodySm>
     </HStack>
   )
 }
@@ -22,7 +21,7 @@ const PreAddress: FC<{ address?: string }> = ({ address }) => {
     <HStack justify="space-between" w="100%">
       <BoxLabel>PRE</BoxLabel>
       {address ? (
-        <Body3>{shortenAddress(address)}</Body3>
+        <BodySm>{shortenAddress(address)}</BodySm>
       ) : (
         <Badge variant="subtle" size="sm" colorScheme="red">
           MISSING
