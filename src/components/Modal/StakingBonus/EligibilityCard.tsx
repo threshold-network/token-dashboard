@@ -70,7 +70,7 @@ export const EligibilityCard: FC<{ stake: StakeData }> = ({ stake }) => {
       )}
       {canTopUpStakeToGetBonus && (
         <Button mt="4" isFullWidth>
-          Top-up stake
+          Top-up Stake
         </Button>
       )}
     </>

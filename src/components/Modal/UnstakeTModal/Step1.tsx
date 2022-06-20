@@ -166,7 +166,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
               </LineDividerCenterElement>
             </LineDivider>
             <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
-              Unstake all
+              Unstake All
             </Button>
             <BodySm mt="2">{unstakeAllBtnHelperText}</BodySm>
           </>

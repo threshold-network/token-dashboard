@@ -68,7 +68,7 @@ const WalletConnectionModalBase: FC<Props> = ({
 
         {tryAgain && !active && (
           <Button ml={4} onClick={tryAgain}>
-            Try again
+            Try Again
           </Button>
         )}
 
