@@ -21,6 +21,7 @@ import {
 import TopupTModal from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 import StakingBonusModal from "../components/Modal/StakingBonus"
+import { ClaimingRewards } from "../components/Modal/ClaimingRewards"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -39,6 +40,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupT]: TopupTModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.StakingBonus]: StakingBonusModal,
+  [ModalType.ClaimingRewards]: ClaimingRewards,
 }
 
 export interface BaseModalProps {
