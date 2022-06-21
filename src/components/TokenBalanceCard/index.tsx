@@ -7,7 +7,7 @@ import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
 
 export interface TokenBalanceCardProps {
-  token: Exclude<Token, Token.TBTC>
+  token: Exclude<Token, Token.TBTC | Token.TBTCV2>
 }
 
 const tokenToIconMap = {
