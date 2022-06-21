@@ -2,7 +2,6 @@ import { FC, ReactElement, Fragment, useRef, useCallback } from "react"
 import {
   Flex,
   Box,
-  Badge,
   ButtonGroup,
   Button,
   useColorModeValue,
@@ -20,6 +19,8 @@ import {
   BoxLabel,
   Card,
   LineDivider,
+  HStack,
+  Badge,
 } from "@threshold-network/components"
 import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
@@ -110,21 +111,31 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={onChangeAction} isActive={isStakeAction} />
       </StakeCardHeader>
-      <BodyMd mt="10" mb="4">
-        Staking Bonus
-      </BodyMd>
-      <Flex alignItems={"end"}>
+      <HStack mt="10" mb="4">
+        <BodyMd>Total Rewards</BodyMd>
+        <Badge variant="magic" mt="1rem !important" ml="auto !important">
+          staking bonus
+        </Badge>
+      </HStack>
+      <Flex alignItems="end" justifyContent="space-between">
         <TokenBalance
-          tokenAmount={stake.bonusEligibility.reward}
+          // TODO: display a reward for a given stake.
+          tokenAmount={"1000000000000000000000"}
           withSymbol
           tokenSymbol="T"
           isLarge
         />
-        {!isPRESet && (
+        <TokenBalance
+          tokenAmount={stake.bonusEligibility.reward}
+          withSymbol
+          tokenSymbol="T"
+        />
+        {/* TODO: Where should we display this badge? */}
+        {/* {!isPRESet && (
           <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
             missing PRE
           </Badge>
-        )}
+        )} */}
       </Flex>
       <LineDivider mb="0" />
       {hasLegacyStakes ? (
