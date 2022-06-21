@@ -12,6 +12,7 @@ import { TokenState } from "../types"
 import { useTBTCTokenContract } from "../web3/hooks"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
+import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
 
 interface TokenContextState extends TokenState {
   contract: Contract | null
@@ -24,6 +25,7 @@ export const TokenContext = createContext<{
   [Token.Nu]: {} as TokenContextState,
   [Token.T]: {} as TokenContextState,
   [Token.TBTC]: {} as TokenContextState,
+  [Token.TBTCV2]: {} as TokenContextState,
 })
 
 // Context that handles data fetching when a user connects their wallet or
@@ -33,6 +35,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const nu = useNu()
   const t = useT()
   const tbtc = useTBTCTokenContract()
+  const tbtcv2 = useTBTCv2TokenContract()
   const nuConversion = useVendingMachineRatio(Token.Nu)
   const keepConversion = useVendingMachineRatio(Token.Keep)
   const { active, chainId, account } = useWeb3React()
@@ -46,6 +49,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     nu: nuData,
     t: tData,
     tbtc: tbtcData,
+    tbtcv2: tbtcv2Data,
   } = useTokenState()
 
   const fetchBalances = useTokensBalanceCall(
@@ -117,6 +121,10 @@ export const TokenContextProvider: React.FC = ({ children }) => {
         [Token.TBTC]: {
           ...tbtc,
           ...tbtcData,
+        },
+        [Token.TBTCV2]: {
+          ...tbtcv2,
+          ...tbtcv2Data,
         },
       }}
     >
