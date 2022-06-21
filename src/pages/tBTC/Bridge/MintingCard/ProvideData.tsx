@@ -1,10 +1,10 @@
 import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Box, Button } from "@chakra-ui/react"
+import { BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
-import { Body2 } from "../../../../components/Typography"
 import { Form, FormikInput } from "../../../../components/Forms"
 import {
   getErrorsObj,
@@ -83,10 +83,10 @@ export const ProvideData: FC = () => {
     <Box>
       <TbtcMintingCardTitle />
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
-      <Body2 color="gray.500" mb={12}>
+      <BodyMd color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you an unique
         BTC deposit address. There is no minting limit
-      </Body2>
+      </BodyMd>
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"

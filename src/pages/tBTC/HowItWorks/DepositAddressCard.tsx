@@ -1,8 +1,11 @@
 import { FC, ComponentProps } from "react"
 import { Stack } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Body2, Label3 } from "../../../components/Typography"
-import ChecklistGroup from "../../../components/ChecklistGroup"
+import {
+  BodyMd,
+  LabelSm,
+  Card,
+  ChecklistGroup,
+} from "@threshold-network/components"
 import ExternalLink from "../../../components/ExternalLink"
 import { ExternalHref } from "../../../enums"
 
@@ -12,20 +15,21 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
   return (
     <Card {...props}>
       <Stack spacing={5}>
-        <Label3>Bitcoin Deposit Address</Label3>
-        <Body2>
+        <LabelSm>Bitcoin Deposit Address</LabelSm>
+        <BodyMd>
           In order to deposit you need to provide protocol the following
           addresses:
-        </Body2>
+        </BodyMd>
         <ChecklistGroup
           title="ETH address"
           checklistItems={[
             {
-              title: (
-                <Body2>
+              itemId: "eth-address",
+              itemTitle: (
+                <BodyMd>
                   As a user you need to provide an ETH address where your tBTC
                   (ERC20) will be sent after minting inititation.
-                </Body2>
+                </BodyMd>
               ),
             },
           ]}
@@ -34,21 +38,22 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
           title="Recovery BTC address"
           checklistItems={[
             {
-              title: (
-                <Body2>
+              itemId: "btc-recovery-address",
+              itemTitle: (
+                <BodyMd>
                   You are required to provide a BTC address where the protocol
                   will sent your BTC assets automatically after 30 days if
                   anything wrong happens.
-                </Body2>
+                </BodyMd>
               ),
             },
           ]}
         />
-        <Body2>
+        <BodyMd>
           Based on these two addresses the protocol will create using a P2SWH a
           unique BTC deposit address for each user.{" "}
           <ExternalLink text="Read more" href={ExternalHref.nuDapp} withArrow />
-        </Body2>
+        </BodyMd>
       </Stack>
     </Card>
   )

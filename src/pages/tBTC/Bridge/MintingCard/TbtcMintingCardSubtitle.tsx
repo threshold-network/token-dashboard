@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Stack } from "@chakra-ui/react"
-import { Body1 } from "../../../../components/Typography"
+import { BodyLg } from "@threshold-network/components"
 
 export const TbtcMintingCardSubTitle: FC<{
   stepText: string
@@ -8,10 +8,10 @@ export const TbtcMintingCardSubTitle: FC<{
 }> = ({ stepText, subTitle }) => {
   return (
     <Stack direction="row" mb={2}>
-      <Body1 fontWeight="bold" color="brand.500">
+      <BodyLg fontWeight="bold" color="brand.500">
         {stepText}
-      </Body1>{" "}
-      <Body1>- {subTitle}</Body1>
+      </BodyLg>{" "}
+      <BodyLg>- {subTitle}</BodyLg>
     </Stack>
   )
 }

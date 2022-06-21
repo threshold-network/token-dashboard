@@ -1,13 +1,12 @@
 import { FC, ComponentProps } from "react"
 import { List } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Label3 } from "../../../components/Typography"
+import { LabelSm, Card } from "@threshold-network/components"
 import LinkDetailsListItem from "../../../components/LinkDetailsListItem"
 
 export const AuditsCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card {...props}>
-      <Label3 mb={5}>Audit Reports</Label3>
+      <LabelSm mb={5}>Audit Reports</LabelSm>
       <List mt="5" spacing="6">
         {contracts.map((contract) => (
           <LinkDetailsListItem {...contract} />
