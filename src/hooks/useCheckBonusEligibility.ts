@@ -97,12 +97,13 @@ export const useCheckBonusEligibility = (): ((
         const unstakeAmount =
           stakingProviderToUnstakedEvent[stakingProviderAddress]?.amount || "0"
 
-        const eligibleStakeAmount = hasUnstakeAfterBonusDeadline
-          ? "0"
-          : BigNumber.from(stakedAmount)
-              .add(topUpAmount)
-              .sub(unstakeAmount)
-              .toString()
+        const eligibleStakeAmount =
+          !hasUnstakeAfterBonusDeadline && hasActiveStake
+            ? BigNumber.from(stakedAmount)
+                .add(topUpAmount)
+                .sub(unstakeAmount)
+                .toString()
+            : "0"
 
         stakingProvidersInfo[stakingProviderAddress] = {
           hasPREConfigured,
