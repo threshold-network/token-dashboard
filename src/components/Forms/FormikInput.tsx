@@ -9,8 +9,8 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import { useField } from "formik"
+import { BodySm } from "@threshold-network/components"
 import TooltipIcon from "../TooltipIcon"
-import { Body3 } from "../Typography"
 
 export const FormikInput: FC<
   FormControlProps & {
@@ -44,9 +44,9 @@ export const FormikInput: FC<
           {tooltip && <TooltipIcon marginTop="4px" label={tooltip} />}
         </Stack>
         {secondaryLabel && (
-          <Body3 color="gray.700" m={0}>
+          <BodySm color="gray.700" m={0}>
             {secondaryLabel}
-          </Body3>
+          </BodySm>
         )}
       </Stack>
       <Input

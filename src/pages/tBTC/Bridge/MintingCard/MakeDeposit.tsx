@@ -1,9 +1,9 @@
 import { FC } from "react"
 import { Box, Button, Image, HStack, Stack, Tag } from "@chakra-ui/react"
+import { BodyMd } from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
 import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
-import { Body2 } from "../../../../components/Typography"
 import InfoBox from "../../../../components/InfoBox"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import CopyToClipboard from "../../../../components/CopyToClipboard"
@@ -20,7 +20,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
         {text}
       </Tag>
       <HStack>
-        <Body2 color="brand.500">{shortenAddress(address)}</Body2>
+        <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
         <CopyToClipboard textToCopy={address} />
       </HStack>
     </HStack>
@@ -41,17 +41,17 @@ export const MakeDeposit: FC = () => {
         stepText="Step 2"
         subTitle="Make your BTC deposit"
       />
-      <Body2 color="gray.500" mb={6}>
+      <BodyMd color="gray.500" mb={6}>
         Use this generated address to send any amount of BTC you want to mint as
         tBTC.
-      </Body2>
-      <Body2 color="gray.500" mb={6}>
+      </BodyMd>
+      <BodyMd color="gray.500" mb={6}>
         This address is an unique generated address based on the data you
         provided.
-      </Body2>
+      </BodyMd>
       <InfoBox>
         <HStack>
-          <Body2 color="gray.700">BTC Deposit Address</Body2>
+          <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
           <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
 
@@ -67,12 +67,12 @@ export const MakeDeposit: FC = () => {
         />
 
         <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <Body2 color="brand.500">{btcDepositAddress}</Body2>
+          <BodyMd color="brand.500">{btcDepositAddress}</BodyMd>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
       </InfoBox>
       <Stack spacing={4} mb={8}>
-        <Body2>Provided Addresses Recap</Body2>
+        <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow text="BTC Recovery Address" address={btcRecoveryAddress} />
       </Stack>

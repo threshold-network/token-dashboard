@@ -1,7 +1,6 @@
-import { FC, ComponentProps } from "react"
-import Card from "../Card"
-import { Label3 } from "../Typography"
+import { FC } from "react"
+import { LabelSm } from "@threshold-network/components"
 
 export const SweepTimer: FC = () => {
-  return <Label3 mb="5">Next Bridge Crossing</Label3>
+  return <LabelSm mb="5">Next Bridge Crossing</LabelSm>
 }

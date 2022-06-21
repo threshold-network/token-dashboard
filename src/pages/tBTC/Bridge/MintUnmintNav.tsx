@@ -1,6 +1,6 @@
 import { ComponentProps, FC } from "react"
-import Card from "../../../components/Card"
 import { Button, HStack } from "@chakra-ui/react"
+import { Card } from "@threshold-network/components"
 import { TbtcMintingType } from "../../../types/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 

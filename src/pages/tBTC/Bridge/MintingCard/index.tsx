@@ -1,5 +1,5 @@
 import { ComponentProps, FC } from "react"
-import Card from "../../../../components/Card"
+import { Card } from "@threshold-network/components"
 import { MintingTimeline } from "./MintingTimeline"
 import { Box, StackDivider, Stack } from "@chakra-ui/react"
 import { MintingFlowRouter } from "./MintingFlowRouter"
