@@ -1,6 +1,18 @@
 import { FC, useEffect } from "react"
-import { Box, Button, HStack, Image, Stack, Tag } from "@chakra-ui/react"
-import { BodyMd } from "@threshold-network/components"
+import {
+  BodyMd,
+  BodySm,
+  Box,
+  BoxLabel,
+  Button,
+  ChecklistGroup,
+  Flex,
+  HStack,
+  Image,
+  Stack,
+  Tag,
+  useMediaQuery,
+} from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
 import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
@@ -12,6 +24,9 @@ import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { ModalType } from "../../../../enums"
 import { useModal } from "../../../../hooks/useModal"
+import { Divider, useColorModeValue } from "@chakra-ui/react"
+import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -19,9 +34,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }) => {
   return (
     <HStack justify="space-between">
-      <Tag size="md" variant="subtle" colorScheme="brand">
-        {text}
-      </Tag>
+      <BoxLabel colorScheme="brand">{text}</BoxLabel>
       <HStack>
         <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
         <CopyToClipboard textToCopy={address} />
@@ -31,8 +44,12 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
+  const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)")
+  const { updateState } = useTbtcState()
+
   const handleSubmit = () => {
-    console.log("yo")
+    console.log("USER SENT THE BTC")
+    updateState("mintingStep", MintingStep.InitiateMinting)
   }
 
   const {
@@ -82,7 +99,11 @@ export const MakeDeposit: FC = () => {
         />
 
         <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <BodyMd color="brand.500">{shortenAddress(btcDepositAddress)}</BodyMd>
+          <BodySm color="brand.500">
+            {isLargerThan1280
+              ? btcDepositAddress
+              : shortenAddress(btcDepositAddress)}
+          </BodySm>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
       </InfoBox>
@@ -91,9 +112,37 @@ export const MakeDeposit: FC = () => {
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow text="BTC Recovery Address" address={btcRecoveryAddress} />
       </Stack>
-      <Button onClick={handleSubmit} form="tbtc-minting-data-form" isFullWidth>
+      <Divider mt={4} mb={6} />
+      <ChecklistGroup
+        mb={6}
+        checklistItems={[
+          {
+            itemId: "staking_deposit__0",
+            itemTitle: "",
+            itemSubTitle: (
+              <BodySm color={useColorModeValue("gray.500", "gray.300")}>
+                Send the funds and come back to this dApp. You do not need to
+                wait for the BTC transaction to be mined
+              </BodySm>
+            ),
+          },
+        ]}
+      />
+      <Button
+        onClick={handleSubmit}
+        form="tbtc-minting-data-form"
+        isFullWidth
+        mb={6}
+      >
         I sent the BTC
       </Button>
+      <Flex justifyContent="center">
+        <ViewInBlockExplorer
+          id="NEED BRIDGE CONTRACT ADDRESS"
+          type={ExplorerDataType.ADDRESS}
+          text="Bridge Contract"
+        />
+      </Flex>
     </Box>
   )
 }
