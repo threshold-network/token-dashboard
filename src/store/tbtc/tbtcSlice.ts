@@ -14,6 +14,7 @@ interface TbtcState {
   ethAddress: string
   btcRecoveryAddress: string
   btcDepositAddress: string
+  hasDeclinedJSONFile: boolean
 }
 
 export const tbtcSlice = createSlice({
@@ -21,6 +22,7 @@ export const tbtcSlice = createSlice({
   initialState: {
     mintingType: TbtcMintingType.mint,
     mintingStep: MintingSteps[0],
+    hasDeclinedJSONFile: false,
   } as TbtcState,
   reducers: {
     updateState: (

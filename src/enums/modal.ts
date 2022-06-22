@@ -14,4 +14,5 @@ export enum ModalType {
   TopupT = "TOP_UP_T",
   TopupTSuccess = "TOP_UP_T_SUCCESS",
   StakingBonus = "STAKING_BONUS",
+  TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
 }
