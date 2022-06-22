@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { Box, Button, HStack, Image, Stack, Tag } from "@chakra-ui/react"
 import { BodyMd } from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
@@ -10,6 +10,8 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
+import { ModalType } from "../../../../enums"
+import { useModal } from "../../../../hooks/useModal"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -33,7 +35,19 @@ export const MakeDeposit: FC = () => {
     console.log("yo")
   }
 
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
+  const {
+    btcDepositAddress,
+    ethAddress,
+    btcRecoveryAddress,
+    hasDeclinedJSONFile,
+  } = useTbtcState()
+  const { openModal } = useModal()
+
+  useEffect(() => {
+    if (!hasDeclinedJSONFile) {
+      openModal(ModalType.TbtcRecoveryJson)
+    }
+  }, [hasDeclinedJSONFile])
 
   return (
     <Box>

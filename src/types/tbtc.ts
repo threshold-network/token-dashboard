@@ -6,6 +6,7 @@ export type TbtcStateKey =
   | "btcRecoveryAddress"
   | "ethAddress"
   | "btcDepositAddress"
+  | "hasDeclinedJSONFile"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -37,6 +38,7 @@ export interface UseTbtcState {
     btcDepositAddress: string
     btcRecoveryAddress: string
     ethAddress: string
+    hasDeclinedJSONFile: boolean
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
   }
 }
