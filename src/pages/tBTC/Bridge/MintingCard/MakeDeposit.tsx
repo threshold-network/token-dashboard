@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Box, Button, Image, HStack, Stack, Tag } from "@chakra-ui/react"
+import { Box, Button, HStack, Image, Stack, Tag } from "@chakra-ui/react"
 import { BodyMd } from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
 import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
@@ -9,6 +9,7 @@ import TooltipIcon from "../../../../components/TooltipIcon"
 import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
+import { MintingStep } from "../../../../types/tbtc"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -36,7 +37,7 @@ export const MakeDeposit: FC = () => {
 
   return (
     <Box>
-      <TbtcMintingCardTitle />
+      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
@@ -67,7 +68,7 @@ export const MakeDeposit: FC = () => {
         />
 
         <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <BodyMd color="brand.500">{btcDepositAddress}</BodyMd>
+          <BodyMd color="brand.500">{shortenAddress(btcDepositAddress)}</BodyMd>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
       </InfoBox>

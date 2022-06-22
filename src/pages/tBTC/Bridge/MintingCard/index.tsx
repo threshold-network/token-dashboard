@@ -7,11 +7,11 @@ import { MintingFlowRouter } from "./MintingFlowRouter"
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   return (
     <Card {...props}>
-      <Stack direction="row" divider={<StackDivider />} h="100%">
-        <Box w={2 / 3}>
+      <Stack direction="row" divider={<StackDivider />} h="100%" spacing={8}>
+        <Box maxW="66%" width="100%">
           <MintingFlowRouter />
         </Box>
-        <Box w={1 / 3}>
+        <Box maxW="33%" minW={"216px"} w="100%">
           <MintingTimeline />
         </Box>
       </Stack>
