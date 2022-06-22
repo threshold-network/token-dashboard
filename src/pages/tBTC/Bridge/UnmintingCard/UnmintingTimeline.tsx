@@ -1,6 +1,6 @@
 import { FC } from "react"
-import { TbtcTimeline } from "../../../../components/TBTCTimeline"
+import { Box } from "@chakra-ui/react"
 
 export const UnnmintingTimeline: FC = ({ ...props }) => {
-  return <TbtcTimeline />
+  return <Box />
 }
