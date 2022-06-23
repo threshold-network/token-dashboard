@@ -7,6 +7,12 @@ export type TbtcStateKey =
   | "ethAddress"
   | "btcDepositAddress"
   | "hasDeclinedJSONFile"
+  | "tBTCMintAmount"
+  | "isLoadingTbtcMintAmount"
+  | "ethGasCost"
+  | "thresholdNetworkFee"
+  | "bitcoinMinerFee"
+  | "isLoadingBitcoinMinerFee"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -40,5 +46,13 @@ export interface UseTbtcState {
     ethAddress: string
     hasDeclinedJSONFile: boolean
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
+
+    // TODO: These may be incorrect types
+    tBTCMintAmount: number
+    isLoadingTbtcMintAmount: boolean
+    ethGasCost: number
+    thresholdNetworkFee: number
+    bitcoinMinerFee: number
+    isLoadingBitcoinMinerFee: boolean
   }
 }

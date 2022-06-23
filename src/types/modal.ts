@@ -22,6 +22,7 @@ import TopupTModal from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 import StakingBonusModal from "../components/Modal/StakingBonus"
 import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
+import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -41,6 +42,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.StakingBonus]: StakingBonusModal,
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
+  [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
 }
 
 export interface BaseModalProps {
