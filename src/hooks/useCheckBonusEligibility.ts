@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { BigNumber, BigNumberish, Event, providers, constants } from "ethers"
+import { BigNumber, BigNumberish, Event, constants } from "ethers"
 import {
   PRE_DEPLOYMENT_BLOCK,
   T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
@@ -31,7 +31,6 @@ export const useCheckBonusEligibility = (): ((
       ) {
         return {}
       }
-      const provider = preContract.provider
 
       const operatorConfirmedEvents = await getContractPastEvents(preContract, {
         eventName: "OperatorConfirmed",
@@ -56,23 +55,17 @@ export const useCheckBonusEligibility = (): ((
         filterParams: [stakingProviders],
       })
 
-      const stakingProviderToPREConfig = await getStakingProviderToPREConfig(
-        operatorConfirmedEvents,
-        provider
+      const stakingProviderToPREConfig = getStakingProviderToPREConfig(
+        operatorConfirmedEvents
       )
 
       const stakingProviderToStakedAmount =
-        await getStakingProviderToStakedInfo(stakedEvents, provider)
+        getStakingProviderToStakedInfo(stakedEvents)
 
-      const stakingProviderToTopUps = await getStakingProviderToTopUps(
-        toppedUpEvents,
-        provider
-      )
+      const stakingProviderToTopUps = getStakingProviderToTopUps(toppedUpEvents)
 
-      const stakingProviderToUnstakedEvent = await getStakingProviderToUnstake(
-        unstakedEvents,
-        provider
-      )
+      const stakingProviderToUnstakedEvent =
+        getStakingProviderToUnstake(unstakedEvents)
 
       const stakingProvidersInfo: BonusEligibilityResult = {}
       for (const stakingProvider of stakingProviders) {
@@ -80,11 +73,12 @@ export const useCheckBonusEligibility = (): ((
 
         const hasPREConfigured =
           stakingProviderToPREConfig[stakingProviderAddress]
-            ?.operatorConfirmedAt <= stakingBonus.BONUS_DEADLINE_TIMESTAMP
+            ?.operatorConfirmedAtBlock <=
+          stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER
 
         const hasActiveStake =
-          stakingProviderToStakedAmount[stakingProviderAddress]?.stakedAt <=
-          stakingBonus.BONUS_DEADLINE_TIMESTAMP
+          stakingProviderToStakedAmount[stakingProviderAddress]
+            ?.stakedAtBlock <= stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER
 
         const hasUnstakeAfterBonusDeadline =
           stakingProviderToUnstakedEvent[stakingProviderAddress]
@@ -123,26 +117,22 @@ export const useCheckBonusEligibility = (): ((
 interface StakingProviderToStakedInfo {
   [address: string]: {
     amount: BigNumberish
-    stakedAt: number
     stakedAtBlock: number
     transactionHash: string
   }
 }
 
-const getStakingProviderToStakedInfo = async (
-  events: Event[],
-  provider: providers.Provider
-): Promise<StakingProviderToStakedInfo> => {
+const getStakingProviderToStakedInfo = (
+  events: Event[]
+): StakingProviderToStakedInfo => {
   const stakingProviderToStakedAmount: StakingProviderToStakedInfo = {}
 
   for (const stakedEvent of events) {
     const stakingProvider = getAddress(stakedEvent.args?.stakingProvider)
-    const block = await provider.getBlock(stakedEvent.blockHash)
 
     stakingProviderToStakedAmount[stakingProvider] = {
       amount: stakedEvent.args?.amount as BigNumberish,
-      stakedAt: block.timestamp,
-      stakedAtBlock: block.number,
+      stakedAtBlock: stakedEvent.blockNumber,
       transactionHash: stakedEvent.transactionHash,
     }
   }
@@ -152,25 +142,21 @@ const getStakingProviderToStakedInfo = async (
 interface StakingProviderToPREConfig {
   [address: string]: {
     operator: string
-    operatorConfirmedAt: number
     operatorConfirmedAtBlock: number
     transactionHash: string
   }
 }
 
-const getStakingProviderToPREConfig = async (
-  events: Event[],
-  provider: providers.Provider
-): Promise<StakingProviderToPREConfig> => {
+const getStakingProviderToPREConfig = (
+  events: Event[]
+): StakingProviderToPREConfig => {
   const stakingProviderToPREConfig: StakingProviderToPREConfig = {}
   for (const event of events) {
     const stakingProvider = getAddress(event.args?.stakingProvider)
-    const block = await provider.getBlock(event.blockHash)
 
     stakingProviderToPREConfig[stakingProvider] = {
       operator: event.args?.operator,
-      operatorConfirmedAt: block.timestamp,
-      operatorConfirmedAtBlock: block.number,
+      operatorConfirmedAtBlock: event.blockNumber,
       transactionHash: event.transactionHash,
     }
   }
@@ -184,18 +170,16 @@ interface StakingProviderToTopUps {
   }
 }
 
-const getStakingProviderToTopUps = async (
-  events: Event[],
-  provider: providers.Provider
-): Promise<StakingProviderToTopUps> => {
+const getStakingProviderToTopUps = (
+  events: Event[]
+): StakingProviderToTopUps => {
   const stakingProviderToAmount: StakingProviderToTopUps = {}
   for (const event of events) {
     const stakingProvider = getAddress(event.args?.stakingProvider)
-    const block = await provider.getBlock(event.blockHash)
     const accummulatedAmount =
       stakingProviderToAmount[stakingProvider]?.amount || constants.Zero
 
-    if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
+    if (event.blockNumber > stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER) {
       // Break the loop if an event is emitted after the bonus deadline.
       // Returned events are in ascending order.
       return stakingProviderToAmount
@@ -214,10 +198,9 @@ interface StakingProviderToUnstake {
     hasUnstakeAfterBonusDeadline: boolean
   }
 }
-const getStakingProviderToUnstake = async (
-  events: Event[],
-  provider: providers.Provider
-): Promise<StakingProviderToUnstake> => {
+const getStakingProviderToUnstake = (
+  events: Event[]
+): StakingProviderToUnstake => {
   const stakingProviderToUnstake: StakingProviderToUnstake = {}
   for (const event of events) {
     const stakingProvider = getAddress(event.args?.stakingProvider)
@@ -228,11 +211,10 @@ const getStakingProviderToUnstake = async (
       // calculations.
       continue
     }
-    const block = await provider.getBlock(event.blockHash)
     const accummulatedAmount =
       stakingProviderToUnstake[stakingProvider]?.amount || constants.Zero
     const newAmount = BigNumber.from(accummulatedAmount).add(event.args?.amount)
-    if (block.timestamp > stakingBonus.BONUS_DEADLINE_TIMESTAMP) {
+    if (event.blockNumber > stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER) {
       stakingProviderToUnstake[stakingProvider] = {
         amount: newAmount,
         hasUnstakeAfterBonusDeadline: true,

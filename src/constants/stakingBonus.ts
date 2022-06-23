@@ -1,2 +1,3 @@
 export const STAKING_BONUS_MULTIPLIER = "0.03" // 3%
 export const BONUS_DEADLINE_TIMESTAMP = 1654041599 // May 31 2022 23:59:59 GMT
+export const BONUS_DEADLINE_BLOCK_NUMBER = 14881676 // https:etherscan.io/block/14881676
