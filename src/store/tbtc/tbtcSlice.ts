@@ -15,6 +15,14 @@ interface TbtcState {
   btcRecoveryAddress: string
   btcDepositAddress: string
   hasDeclinedJSONFile: boolean
+
+  // TODO: These may be incorrect types
+  tBTCMintAmount: number
+  isLoadingTbtcMintAmount: boolean
+  ethGasCost: number
+  thresholdNetworkFee: number
+  bitcoinMinerFee: number
+  isLoadingBitcoinMinerFee: boolean
 }
 
 export const tbtcSlice = createSlice({

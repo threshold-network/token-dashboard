@@ -1,0 +1,81 @@
+import { FC, useEffect } from "react"
+import {
+  BodyLg,
+  BodySm,
+  Button,
+  H5,
+  ModalBody,
+  ModalCloseButton,
+  ModalFooter,
+  ModalHeader,
+} from "@threshold-network/components"
+import InfoBox from "../../InfoBox"
+import { BaseModalProps } from "../../../types"
+import withBaseModal from "../withBaseModal"
+import ViewInBlockExplorer from "../../ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { useTbtcState } from "../../../hooks/useTbtcState"
+import { Skeleton } from "@chakra-ui/react"
+import TransactionDetailsTable from "../../../pages/tBTC/Bridge/MintingCard/TransactionDetailsTable"
+
+const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
+  const { updateState, tBTCMintAmount, isLoadingTbtcMintAmount } =
+    useTbtcState()
+
+  const initiateMintTransaction = () => {
+    closeModal()
+  }
+
+  // TODO: this is just to mock the loading state for the UI
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      updateState("tBTCMintAmount", 1.2)
+      updateState("bitcoinMinerFee", 0.001)
+      updateState("isLoadingTbtcMintAmount", false)
+      updateState("isLoadingBitcoinMinerFee", false)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <>
+      <ModalHeader>Initiate minting tBTC</ModalHeader>
+      <ModalCloseButton />
+      <ModalBody>
+        <InfoBox variant="modal" mb="6">
+          <H5 mb={4}>
+            You will initiate the minting of{" "}
+            <Skeleton
+              isLoaded={!isLoadingTbtcMintAmount}
+              w={isLoadingTbtcMintAmount ? "105px" : undefined}
+              display="inline-block"
+            >
+              {tBTCMintAmount}
+            </Skeleton>{" "}
+            tBTC
+          </H5>
+          <BodyLg>
+            Minting tBTC is a process that requires two transactions.
+          </BodyLg>
+        </InfoBox>
+        <TransactionDetailsTable />
+        <BodySm textAlign="center">
+          Read more about the&nbsp;
+          <ViewInBlockExplorer
+            id="NEED BRIDGE CONTRACT ADDRESS"
+            type={ExplorerDataType.ADDRESS}
+            text="bridge contract."
+          />
+        </BodySm>
+      </ModalBody>
+      <ModalFooter>
+        <Button onClick={closeModal} variant="outline" mr={2}>
+          Cancel
+        </Button>
+        <Button onClick={initiateMintTransaction}>Start minting</Button>
+      </ModalFooter>
+    </>
+  )
+}
+
+export default withBaseModal(TbtcMintingConfirmationModal)
