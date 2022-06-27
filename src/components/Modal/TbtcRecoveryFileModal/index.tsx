@@ -18,14 +18,12 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 
-const TbtcRecoveryFileModalModal: FC<BaseModalProps> = ({ closeModal }) => {
+const TbtcRecoveryFileModalModal: FC<
+  // TODO: complete the download callback interface
+  BaseModalProps & { handleDownloadClick: any; handleDoubleReject: () => void }
+> = ({ closeModal, handleDownloadClick, handleDoubleReject }) => {
   const [isOnConfirmStep, setIsOnConfirmStep] = useState(false)
   const { updateState } = useTbtcState()
-
-  const handleDownloadClick = () => {
-    console.log("Downloaded!")
-    closeModal()
-  }
 
   const titleText = isOnConfirmStep
     ? "Are you sure you do not want to download the .JSON file?"
@@ -50,7 +48,6 @@ const TbtcRecoveryFileModalModal: FC<BaseModalProps> = ({ closeModal }) => {
   return (
     <>
       <ModalHeader>Recovery JSON file</ModalHeader>
-      <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
           <H5 mb={4}>{titleText}</H5>
@@ -68,14 +65,7 @@ const TbtcRecoveryFileModalModal: FC<BaseModalProps> = ({ closeModal }) => {
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
-          <Button
-            onClick={() => {
-              updateState("hasDeclinedJSONFile", true)
-              closeModal()
-            }}
-            variant="outline"
-            mr={2}
-          >
+          <Button onClick={handleDoubleReject} variant="outline" mr={2}>
             Dismiss anyway
           </Button>
         ) : (

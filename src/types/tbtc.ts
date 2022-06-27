@@ -6,7 +6,6 @@ export type TbtcStateKey =
   | "btcRecoveryAddress"
   | "ethAddress"
   | "btcDepositAddress"
-  | "hasDeclinedJSONFile"
   | "tBTCMintAmount"
   | "isLoadingTbtcMintAmount"
   | "ethGasCost"
@@ -44,7 +43,6 @@ export interface UseTbtcState {
     btcDepositAddress: string
     btcRecoveryAddress: string
     ethAddress: string
-    hasDeclinedJSONFile: boolean
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
 
     // TODO: These may be incorrect types

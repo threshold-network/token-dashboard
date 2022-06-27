@@ -22,8 +22,7 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
-import { ModalType } from "../../../../enums"
-import { useModal } from "../../../../hooks/useModal"
+
 import { Divider, useColorModeValue } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
@@ -34,7 +33,11 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }) => {
   return (
     <HStack justify="space-between">
-      <BoxLabel colorScheme="brand">{text}</BoxLabel>
+      <BoxLabel
+      // colorScheme="brand"
+      >
+        {text}
+      </BoxLabel>
       <HStack>
         <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
         <CopyToClipboard textToCopy={address} />
@@ -48,23 +51,10 @@ export const MakeDeposit: FC = () => {
   const { updateState } = useTbtcState()
 
   const handleSubmit = () => {
-    console.log("USER SENT THE BTC")
     updateState("mintingStep", MintingStep.InitiateMinting)
   }
 
-  const {
-    btcDepositAddress,
-    ethAddress,
-    btcRecoveryAddress,
-    hasDeclinedJSONFile,
-  } = useTbtcState()
-  const { openModal } = useModal()
-
-  useEffect(() => {
-    if (!hasDeclinedJSONFile) {
-      openModal(ModalType.TbtcRecoveryJson)
-    }
-  }, [hasDeclinedJSONFile])
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
     <Box>

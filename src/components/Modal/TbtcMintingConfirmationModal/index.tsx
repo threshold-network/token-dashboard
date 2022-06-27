@@ -17,12 +17,23 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/MintingCard/TransactionDetailsTable"
+import { MintingStep } from "../../../types/tbtc"
+import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { updateState, tBTCMintAmount, isLoadingTbtcMintAmount } =
     useTbtcState()
 
+  const { mint } = useTbtcMintTransaction((tx) => {
+    updateState("mintingStep", MintingStep.MintingSuccess)
+  })
+
   const initiateMintTransaction = () => {
+    // TODO: implement this
+    // mint({})
+
+    // TODO: this is a shortcut for now. We need to implement this properly
+    updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }
 

@@ -1,12 +1,12 @@
 import { FC } from "react"
-import { Badge, Box } from "@chakra-ui/react"
-import { LabelSm, LabelXs } from "@threshold-network/components"
+import { Box } from "@chakra-ui/react"
+import { LabelSm } from "@threshold-network/components"
 import TimelineItem from "../TimelineItem"
 import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.png"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 
-export const MintingTimeline: FC = ({ ...props }) => {
+export const MintingTimeline: FC = () => {
   const { mintingStep } = useTbtcState()
   return (
     <Box>
@@ -31,24 +31,24 @@ export const MintingTimeline: FC = ({ ...props }) => {
           mintingStep === MintingStep.MintingSuccess
         }
         stepText="Step 2"
-        helperLabelText=""
+        helperLabelText="ACTION ON BITCOIN NETWORK"
         title="Make a BTC deposit"
         description="Send any amount of BTC to this unique BTC Deposit Address. The amount you send is the amount will be minted as tBTC."
         imageSrc={tbtcMintingStep1}
       />
       <TimelineItem
-        isActive={mintingStep === MintingStep.InitiateMinting}
-        // never render the complete state for this step
+        isActive={
+          mintingStep === MintingStep.InitiateMinting ||
+          mintingStep === MintingStep.MintingSuccess
+        }
+        // we never render the complete state for this step
         isComplete={false}
         stepText="Step 3"
-        helperLabelText=""
+        helperLabelText="ACTION ON ETHEREUM NETWORK"
         title="Initiate minting"
         description="Minting tBTC does not require you to wait for the Bitcoin confirmation. Sign an Ethereum transaction in your wallet and your tBTC will arrive within the next bridge crossing."
         imageSrc={tbtcMintingStep1}
       />
-      <Badge colorScheme="brand" variant="subtle">
-        <LabelXs>Action on bitcoin network</LabelXs>
-      </Badge>
     </Box>
   )
 }

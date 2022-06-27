@@ -21,7 +21,7 @@ export const InitiateMinting: FC = () => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
   const confirmDespotAndMint = () => {
-    // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the transaction modal
+    // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
 
     updateState("ethGasCost", 50)
     updateState("thresholdNetworkFee", 0.0001)

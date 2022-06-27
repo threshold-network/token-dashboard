@@ -13,6 +13,8 @@ import {
 import { MintingStep } from "../../../../types/tbtc"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
 
 export interface FormValues {
   ethAddress: string
@@ -67,17 +69,48 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 })(MintingProcessFormBase)
 
 export const ProvideData: FC = () => {
-  const { updateState } = useTbtcState()
+  const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
-  const onSubmit = (values: FormValues) => {
-    updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-    updateState("ethAddress", values.ethAddress)
+  const { openModal, closeModal } = useModal()
 
-    // TODO: Generate this address
-    updateState(
-      "btcDepositAddress",
-      "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
-    )
+  const handleJsonDownload = () => {
+    // TODO: implement this
+    closeModal()
+    updateState("mintingStep", MintingStep.Deposit)
+  }
+
+  const handleDoubleReject = () => {
+    updateState("mintingStep", MintingStep.Deposit)
+    closeModal()
+  }
+
+  const onSubmit = (values: FormValues) => {
+    // check if the user has changed the eth or btc address from the previous attempt
+    if (
+      ethAddress !== values.ethAddress ||
+      btcRecoveryAddress !== values.btcRecoveryAddress
+    ) {
+      // if so...
+
+      // update state,
+      updateState("btcRecoveryAddress", values.btcRecoveryAddress)
+      updateState("ethAddress", values.ethAddress)
+
+      // create a new deposit address,
+      // TODO: Generate this address
+      updateState(
+        "btcDepositAddress",
+        "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+      )
+
+      // if the user has NOT declined the json file, ask the user if they want to accept the new file
+      openModal(ModalType.TbtcRecoveryJson, {
+        handleDownloadClick: handleJsonDownload,
+        handleDoubleReject,
+      })
+    }
+
+    // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
     updateState("mintingStep", MintingStep.Deposit)
   }
 
