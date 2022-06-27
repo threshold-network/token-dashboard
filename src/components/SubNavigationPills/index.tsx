@@ -21,8 +21,9 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
         w="100%"
         borderBottom="1px solid"
         borderColor="gray.100"
-        px={10}
         py={6}
+        pr={10}
+        pl={{ base: 8, md: 16 }}
         as="nav"
       >
         <HStack
@@ -58,11 +59,13 @@ const NavPill: FC<RouteProps> = ({ path, title }) => {
       </Link>
       {isActive && (
         <Divider
+          opacity="1"
           borderColor="brand.500"
           border="2px solid"
           top="47px"
           position="absolute"
           left={0}
+          borderRadius="8px"
         />
       )}
     </Stack>
