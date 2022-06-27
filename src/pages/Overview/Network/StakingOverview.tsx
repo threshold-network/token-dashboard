@@ -2,7 +2,7 @@ import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import { Button } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
-import { Body2 } from "../../../components/Typography"
+import { BodyMd } from "@threshold-network/components"
 import { useTokenState } from "../../../hooks/useTokenState"
 import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
@@ -15,7 +15,7 @@ const StakingOverview: FC = () => {
 
   return (
     <CardTemplate title="STAKING" height="fit-content">
-      <Body2 mb={2}>Staked Balance</Body2>
+      <BodyMd mb={2}>Staked Balance</BodyMd>
       <InfoBox mt={4}>
         <TokenBalance
           icon={t.icon}
