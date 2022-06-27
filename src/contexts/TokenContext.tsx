@@ -53,7 +53,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   } = useTokenState()
 
   const fetchBalances = useTokensBalanceCall(
-    [keep.contract!, nu.contract!, t.contract!],
+    [keep.contract!, nu.contract!, t.contract!, tbtcv2.contract!],
     active ? account! : AddressZero
   )
 
@@ -82,11 +82,14 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   React.useEffect(() => {
     if (active) {
-      fetchBalances().then(([keepBalance, nuBalance, tBalance]) => {
-        setTokenBalance(Token.Keep, keepBalance.toString())
-        setTokenBalance(Token.Nu, nuBalance.toString())
-        setTokenBalance(Token.T, tBalance.toString())
-      })
+      fetchBalances().then(
+        ([keepBalance, nuBalance, tBalance, tbtcv2Balance]) => {
+          setTokenBalance(Token.Keep, keepBalance.toString())
+          setTokenBalance(Token.Nu, nuBalance.toString())
+          setTokenBalance(Token.T, tBalance.toString())
+          setTokenBalance(Token.TBTCV2, tbtcv2Balance.toString())
+        }
+      )
     } else {
       // set all token balances to 0 if the user disconnects the wallet
       for (const token in Token) {
