@@ -34,12 +34,7 @@ import TransactionDetailsTable from "./TransactionDetailsTable"
 export const MintingSuccess: FC = () => {
   const { updateState } = useTbtcState()
 
-  const {
-    btcDepositAddress,
-    ethAddress,
-    btcRecoveryAddress,
-    hasDeclinedJSONFile,
-  } = useTbtcState()
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
     <Box>
