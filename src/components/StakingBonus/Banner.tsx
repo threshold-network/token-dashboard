@@ -45,7 +45,7 @@ export const StakingBonusBanner = () => {
           marginInlineStart={{ base: "8", xl: "auto !important" }}
           px={{ base: 4, md: 12 }}
         >
-          Check eligibility
+          Check Eligibility
         </Button>
       </Stack>
     </Card>
