@@ -10,27 +10,44 @@ import { getAddress, getContractPastEvents } from "../web3/utils"
 import { BonusEligibility } from "../types/staking"
 import { calculateStakingBonusReward } from "../utils/stakingBonus"
 import { stakingBonus } from "../constants"
+import {
+  useMerkleDropContract,
+  DEPLOYMENT_BLOCK,
+} from "../web3/hooks/useMerkleDropContract"
 
 interface BonusEligibilityResult {
   [address: string]: BonusEligibility
 }
 
-export const useCheckBonusEligibility = (): ((
-  stakingProviders: string[]
-) => Promise<BonusEligibilityResult>) => {
+export const useCheckBonusEligibility = (): ((stakingProviderToBeneficiary: {
+  [stakingProvider: string]: string
+}) => Promise<BonusEligibilityResult>) => {
   const preContract = usePREContract()
   const tStakingContract = useTStakingContract()
+  const merkleDropContract = useMerkleDropContract()
 
   return useCallback(
-    async (stakingProviders) => {
+    async (stakingProviderToBeneficiary) => {
+      const stakingProviders = Object.keys(stakingProviderToBeneficiary)
+      const beneficiaries = Object.values(stakingProviderToBeneficiary)
       if (
         !stakingProviders ||
         stakingProviders.length === 0 ||
         !preContract ||
+        !merkleDropContract ||
         !tStakingContract
       ) {
         return {}
       }
+      const claimedRewardsForBeneficiary = new Set(
+        (
+          await getContractPastEvents(merkleDropContract, {
+            eventName: "Claimed",
+            fromBlock: DEPLOYMENT_BLOCK,
+            filterParams: [beneficiaries],
+          })
+        ).map((_) => getAddress(_.args?.account as string))
+      )
 
       const operatorConfirmedEvents = await getContractPastEvents(preContract, {
         eventName: "OperatorConfirmed",
@@ -105,12 +122,15 @@ export const useCheckBonusEligibility = (): ((
           hasUnstakeAfterBonusDeadline,
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
+          isRewardClaimed: claimedRewardsForBeneficiary.has(
+            stakingProviderToBeneficiary[stakingProviderAddress]
+          ),
         }
       }
 
       return stakingProvidersInfo
     },
-    [preContract, tStakingContract]
+    [preContract, tStakingContract, merkleDropContract]
   )
 }
 
