@@ -15,15 +15,16 @@ import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
 import { Zero } from "@ethersproject/constants"
 import { BigNumber } from "@ethersproject/bignumber"
-import NumberInput, {
-  NumberInputValues,
-  NumberInputProps,
-} from "../NumberInput"
+import {
+  NumberFormatInput,
+  NumberFormatInputValues,
+  NumberFormatInputProps,
+} from "@threshold-network/components"
 import { web3 as web3Constants } from "../../constants"
 
 export interface TokenBalanceInputProps
   extends InputProps,
-    Omit<NumberInputProps, "onValueChange"> {
+    Omit<NumberFormatInputProps, "onValueChange"> {
   icon: ReturnType<typeof createIcon>
   max: number | string
   amount?: string | number
@@ -92,14 +93,14 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />
         </InputLeftElement>
-        <NumberInput
+        <NumberFormatInput
           // @ts-ignore
           ref={inputRef}
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
           {...inputProps}
-          onValueChange={(values: NumberInputValues) =>
+          onValueChange={(values: NumberFormatInputValues) =>
             _setAmount(values.value)
           }
           value={amount ? formatUnits(amount) : undefined}
