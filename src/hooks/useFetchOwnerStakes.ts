@@ -52,12 +52,19 @@ export const useFetchOwnerStakes = () => {
         })
       ).reverse()
 
-      const stakingProviders = stakedEvents.map(
-        (_) => _.args?.stakingProvider as string
+      const stakingProviderToBeneficiary = stakedEvents.reduce(
+        (reducer, event): { [stakingProvider: string]: string } => {
+          reducer[event.args?.stakingProvider as string] = event.args
+            ?.beneficiary as string
+          return reducer
+        },
+        {} as { [stakingProvider: string]: string }
       )
 
+      const stakingProviders = Object.keys(stakingProviderToBeneficiary)
+
       const stakingProviderEligibilityChecks = await checkBonusEligibility(
-        stakingProviders
+        stakingProviderToBeneficiary
       )
 
       const preConfigData = await fetchPreConfigData(stakingProviders)
