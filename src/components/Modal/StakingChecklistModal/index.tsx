@@ -17,37 +17,6 @@ import { ModalType } from "../../../enums"
 import StakingChecklist from "../../StakingChecklist"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
-import { FormikProps, withFormik } from "formik"
-import { Form, FormikInput } from "../../Forms"
-import { FormValues } from "../ConfirmStakingParams/AdvancedParamsForm"
-
-const AdvancedParamsFormBase = withFormik({
-  handleSubmit: () => {},
-})(() => {
-  return (
-    <Form id="yo yo">
-      <FormikInput
-        tooltip="here is some bullshit"
-        secondaryLabel="here is some bullshit"
-        name="stakingProvider"
-        label="Provider Address"
-        helperText="Enter a staking provider address."
-      />
-      <FormikInput
-        mt="6"
-        name="beneficiary"
-        label="Beneficiary Address"
-        helperText="This address will receive rewards."
-      />
-      <FormikInput
-        mt="6"
-        name="authorizer"
-        label="Authorizer Address"
-        helperText="This address will authorize applications."
-      />
-    </Form>
-  )
-})
 
 const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
   closeModal,
@@ -71,7 +40,6 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
             </BodyLg>
           </InfoBox>
           <Divider />
-          <AdvancedParamsFormBase />
           <StakingChecklist />
           <StakingContractLearnMore mt="4rem !important" />
           <Divider />
