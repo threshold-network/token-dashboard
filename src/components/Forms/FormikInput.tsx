@@ -7,6 +7,7 @@ import {
   FormHelperText,
   FormErrorMessage,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import { useField } from "formik"
 import TooltipIcon from "../TooltipIcon"
@@ -34,17 +35,24 @@ export const FormikInput: FC<
 
   const isError = Boolean(meta.touched && meta.error)
 
+  const secondaryLabelColor = useColorModeValue("gray.700", "white")
+
   return (
     <FormControl isInvalid={isError} {...restProps}>
-      <Stack direction="row" mb={2} justifyContent="space-between">
-        <Stack direction="row">
+      <Stack
+        direction="row"
+        mb={2}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Stack direction="row" alignItems="center">
           <FormLabel m={0} htmlFor={name}>
             {label}
           </FormLabel>
-          {tooltip && <TooltipIcon marginTop="4px" label={tooltip} />}
+          {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
-          <Body3 color="gray.700" m={0}>
+          <Body3 color={secondaryLabelColor} m={0}>
             {secondaryLabel}
           </Body3>
         )}
