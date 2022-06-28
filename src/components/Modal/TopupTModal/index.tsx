@@ -9,7 +9,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Body1, H5 } from "../../Typography"
+import { BodyLg, H5 } from "@threshold-network/components"
 import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
 import InfoBox from "../../InfoBox"
 import StakingStats from "../../StakingStats"
@@ -48,10 +48,10 @@ const TopupTModal: FC<
             <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
               You are about to top up your stake
             </H5>
-            <Body1>
+            <BodyLg>
               By topping up your stake you will add a new deposit of tokens to
               your initial stake.
-            </Body1>
+            </BodyLg>
           </InfoBox>
           <StakingStats
             stakeAmount={amountTopUp}

@@ -1,0 +1,1 @@
+export const STANDARD_ERC20_DECIMALS = 18
