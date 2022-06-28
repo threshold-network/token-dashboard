@@ -16,7 +16,7 @@ import NetworkButton from "./NetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
-import { H5 } from "../Typography"
+import { H5 } from "@threshold-network/components"
 import { pages } from "../../pages"
 import { PageComponent } from "../../types"
 
@@ -89,7 +89,7 @@ const renderPageTitle = (PageComponent: PageComponent) => {
 
 const PageTitle: FC<{ title: string }> = ({ title }) => {
   return (
-    <H5 ml={"2.75rem"} display={{ base: "none", md: "block" }}>
+    <H5 ml={12} display={{ base: "none", md: "block" }}>
       {title}
     </H5>
   )

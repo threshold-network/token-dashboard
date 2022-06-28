@@ -14,12 +14,16 @@ import {
 import { InfoIcon } from "@chakra-ui/icons"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
-import Card from "../../../components/Card"
-import { Body2, Label3 } from "../../../components/Typography"
+import {
+  BodyMd,
+  LabelSm,
+  BoxLabel,
+  Card,
+  LineDivider,
+} from "@threshold-network/components"
 import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
-import BoxLabel from "../../../components/BoxLabel"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
@@ -38,7 +42,6 @@ import {
   TreeNode,
   TreeItemLineToNode,
 } from "../../../components/Tree"
-import { Divider } from "../../../components/Divider"
 import { isAddressZero } from "../../../web3/utils"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
@@ -107,9 +110,9 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={onChangeAction} isActive={isStakeAction} />
       </StakeCardHeader>
-      <Body2 mt="10" mb="4">
+      <BodyMd mt="10" mb="4">
         Staking Bonus
-      </Body2>
+      </BodyMd>
       <Flex alignItems={"end"}>
         <TokenBalance
           tokenAmount={stake.bonusEligibility.reward}
@@ -123,14 +126,14 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           </Badge>
         )}
       </Flex>
-      <Divider mb="0" />
+      <LineDivider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
       ) : (
         <>
-          <Body2 mt="6" mb="3">
+          <BodyMd mt="6" mb="3">
             Staked Balance
-          </Body2>
+          </BodyMd>
           <InfoBox m="0">
             <TokenBalance
               tokenAmount={stake.totalInTStake}
@@ -185,11 +188,10 @@ export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
     : " - native"
   return (
     <>
-      {/* @ts-ignore */}
       <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
-      <Label3 textTransform="uppercase" mr="auto">
+      <LabelSm textTransform="uppercase" mr="auto">
         stake{stakeType}
-      </Label3>
+      </LabelSm>
     </>
   )
 }
@@ -301,9 +303,9 @@ const BalanceTreeItem: FC<{
   const LineComponent = isRoot ? Fragment : TreeItemLineToNode
   return (
     <TreeItem>
-      <Body2 fontWeight="400" pt="6" pb="3">
+      <BodyMd fontWeight="400" pt="6" pb="3">
         {label}
-      </Body2>
+      </BodyMd>
       <LineComponent>
         <InfoBox m="0">
           <TokenBalance tokenAmount={value} withSymbol tokenSymbol="T" />
