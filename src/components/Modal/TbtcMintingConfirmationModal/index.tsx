@@ -21,8 +21,12 @@ import { MintingStep } from "../../../types/tbtc"
 import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
-  const { updateState, tBTCMintAmount, isLoadingTbtcMintAmount } =
-    useTbtcState()
+  const {
+    updateState,
+    tBTCMintAmount,
+    isLoadingTbtcMintAmount,
+    isLoadingBitcoinMinerFee,
+  } = useTbtcState()
 
   const { mint } = useTbtcMintTransaction((tx) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -83,7 +87,12 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button onClick={initiateMintTransaction}>Start minting</Button>
+        <Button
+          disabled={isLoadingTbtcMintAmount || isLoadingBitcoinMinerFee}
+          onClick={initiateMintTransaction}
+        >
+          Start minting
+        </Button>
       </ModalFooter>
     </>
   )

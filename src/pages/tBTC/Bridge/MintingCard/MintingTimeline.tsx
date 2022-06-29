@@ -1,10 +1,10 @@
 import { FC } from "react"
-import { Box } from "@chakra-ui/react"
-import { LabelSm } from "@threshold-network/components"
+import { LabelSm, Box, Divider } from "@threshold-network/components"
 import TimelineItem from "../TimelineItem"
 import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.png"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
+import { SweepTimer } from "./SweepTimer"
 
 export const MintingTimeline: FC = () => {
   const { mintingStep } = useTbtcState()
@@ -49,6 +49,8 @@ export const MintingTimeline: FC = () => {
         description="Minting tBTC does not require you to wait for the Bitcoin confirmation. Sign an Ethereum transaction in your wallet and your tBTC will arrive within the next bridge crossing."
         imageSrc={tbtcMintingStep1}
       />
+      <Divider />
+      <SweepTimer />
     </Box>
   )
 }

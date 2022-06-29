@@ -15,6 +15,8 @@ interface TbtcState {
   btcRecoveryAddress: string
   btcDepositAddress: string
 
+  nextBridgeCrossing?: Date
+
   // TODO: These may be incorrect types
   tBTCMintAmount: number
   isLoadingTbtcMintAmount: boolean
