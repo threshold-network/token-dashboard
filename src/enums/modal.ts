@@ -16,4 +16,5 @@ export enum ModalType {
   StakingBonus = "STAKING_BONUS",
   TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
   TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
+  UseDesktop = "USE_DESKTOP",
 }
