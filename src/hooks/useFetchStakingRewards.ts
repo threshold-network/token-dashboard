@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import { createSelector } from "@reduxjs/toolkit"
 import { useSelector, useDispatch } from "react-redux"
 import {
   useMerkleDropContract,
@@ -10,15 +9,11 @@ import { getContractPastEvents, getAddress } from "../web3/utils"
 import { RewardsJSONData } from "../types"
 import { RootState } from "../store"
 import { setInterimRewards } from "../store/rewards"
+import { selectStakingProviders } from "../store/staking"
 
 interface StakingRewards {
   [stakingProvider: string]: string
 }
-
-const selectStakingProviders = createSelector(
-  (state: RootState) => state.staking.stakes,
-  (stakes) => stakes.map((_) => _.stakingProvider)
-)
 
 export const useFetchStakingRewards = () => {
   const merkleDropContract = useMerkleDropContract()
