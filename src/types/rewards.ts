@@ -15,4 +15,5 @@ export interface BonusEligibility {
   eligibleStakeAmount: string
   reward: string
   isRewardClaimed: boolean
+  isEligible: boolean
 }

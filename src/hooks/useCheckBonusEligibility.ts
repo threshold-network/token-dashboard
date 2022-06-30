@@ -41,7 +41,7 @@ export const useCheckBonusEligibility = () => {
         !preContract ||
         !tStakingContract ||
         !merkleDropContract ||
-        (hasFetched && isFetching)
+        (hasFetched && !isFetching)
       ) {
         return
       }
@@ -130,6 +130,8 @@ export const useCheckBonusEligibility = () => {
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
           isRewardClaimed: claimedRewards.has(stakingProviderAddress),
+          isEligible:
+            hasActiveStake && hasUnstakeAfterBonusDeadline && hasPREConfigured,
         }
       }
       dispatch(setStakingBonus(stakingProvidersInfo))
