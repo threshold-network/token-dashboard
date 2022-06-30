@@ -21,7 +21,9 @@ import {
   LineDivider,
   HStack,
   Badge,
+  BodyLg,
 } from "@threshold-network/components"
+import { useSelector } from "react-redux"
 import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
@@ -44,6 +46,9 @@ import {
   TreeItemLineToNode,
 } from "../../../components/Tree"
 import { isAddressZero } from "../../../web3/utils"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { selectRewardsByStakingProvider } from "../../../store/rewards"
+import { RootState } from "../../../store"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -97,6 +102,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
 
+  const { total, bonus } = useSelector((state: RootState) =>
+    selectRewardsByStakingProvider(state, stake.stakingProvider)
+  )
+
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader>
@@ -113,23 +122,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       </StakeCardHeader>
       <HStack mt="10" mb="4">
         <BodyMd>Total Rewards</BodyMd>
-        <Badge variant="magic" mt="1rem !important" ml="auto !important">
-          staking bonus
-        </Badge>
+        {bonus !== "0" && (
+          <Badge variant="magic" mt="1rem !important" ml="auto !important">
+            staking bonus
+          </Badge>
+        )}
       </HStack>
       <Flex alignItems="end" justifyContent="space-between">
-        <TokenBalance
-          // TODO: display a reward for a given stake.
-          tokenAmount={"1000000000000000000000"}
-          withSymbol
-          tokenSymbol="T"
-          isLarge
-        />
-        <TokenBalance
-          tokenAmount={stake.bonusEligibility.reward}
-          withSymbol
-          tokenSymbol="T"
-        />
+        <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
+        {bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>}
         {/* TODO: Where should we display this badge? */}
         {/* {!isPRESet && (
           <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
