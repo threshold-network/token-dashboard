@@ -19,9 +19,10 @@ const TokenBalanceCardTemplate: FC<Props> = ({
   tokenBalance,
   usdBalance,
   contract,
+  ...restProps
 }) => {
   return (
-    <Card>
+    <Card {...restProps}>
       <Stack>
         <HStack>
           <Icon boxSize="16px" as={icon} />

@@ -7,12 +7,10 @@ export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = (
   ...restProps
 ) => {
   return (
-    <Card>
-      <TokenBalanceCard
-        token={Token.TBTCV2}
-        title={"TBTC Balance"}
-        {...restProps}
-      />
-    </Card>
+    <TokenBalanceCard
+      token={Token.TBTCV2}
+      title={"TBTC Balance"}
+      {...restProps}
+    />
   )
 }
