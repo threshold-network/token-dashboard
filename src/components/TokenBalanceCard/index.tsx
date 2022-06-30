@@ -22,6 +22,7 @@ const tokenToIconMap = {
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
   token,
   title = token,
+  ...restProps
 }) => {
   const { balance, usdBalance, contract } = useToken(token)
 
@@ -32,6 +33,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
       tokenBalance={balance}
       usdBalance={usdBalance}
       contract={contract}
+      {...restProps}
     />
   )
 }
