@@ -3,9 +3,9 @@ import TokenBalanceCard from "../../../components/TokenBalanceCard"
 import { Token } from "../../../enums"
 import { Card } from "@threshold-network/components"
 
-export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = (
+export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = ({
   ...restProps
-) => {
+}) => {
   return (
     <TokenBalanceCard
       token={Token.TBTCV2}
