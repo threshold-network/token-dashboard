@@ -1,4 +1,4 @@
-import { useCallback } from "react"
+import { useEffect } from "react"
 import { BigNumber, BigNumberish, Event, constants } from "ethers"
 import {
   PRE_DEPLOYMENT_BLOCK,
@@ -7,44 +7,51 @@ import {
   useTStakingContract,
 } from "../web3/hooks"
 import { getAddress, getContractPastEvents } from "../web3/utils"
-import { BonusEligibility } from "../types/staking"
+import { BonusEligibility } from "../types"
 import { calculateStakingBonusReward } from "../utils/stakingBonus"
 import { stakingBonus } from "../constants"
 import {
   useMerkleDropContract,
   DEPLOYMENT_BLOCK,
 } from "../web3/hooks/useMerkleDropContract"
+import { selectStakingProviders } from "../store/staking"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../store"
+import { setStakingBonus } from "../store/rewards"
 
 interface BonusEligibilityResult {
   [address: string]: BonusEligibility
 }
 
-export const useCheckBonusEligibility = (): ((stakingProviderToBeneficiary: {
-  [stakingProvider: string]: string
-}) => Promise<BonusEligibilityResult>) => {
+export const useCheckBonusEligibility = () => {
+  const stakingProviders = useSelector(selectStakingProviders)
+  const { hasFetched, isFetching } = useSelector(
+    (state: RootState) => state.rewards.stakingBonus
+  )
+  const dispatch = useDispatch()
   const preContract = usePREContract()
-  const tStakingContract = useTStakingContract()
   const merkleDropContract = useMerkleDropContract()
+  const tStakingContract = useTStakingContract()
 
-  return useCallback(
-    async (stakingProviderToBeneficiary) => {
-      const stakingProviders = Object.keys(stakingProviderToBeneficiary)
-      const beneficiaries = Object.values(stakingProviderToBeneficiary)
+  useEffect(() => {
+    const fetch = async () => {
       if (
         !stakingProviders ||
         stakingProviders.length === 0 ||
         !preContract ||
+        !tStakingContract ||
         !merkleDropContract ||
-        !tStakingContract
+        (hasFetched && isFetching)
       ) {
-        return {}
+        return
       }
-      const claimedRewardsForBeneficiary = new Set(
+
+      const claimedRewards = new Set(
         (
           await getContractPastEvents(merkleDropContract, {
             eventName: "Claimed",
             fromBlock: DEPLOYMENT_BLOCK,
-            filterParams: [beneficiaries],
+            filterParams: [stakingProviders],
           })
         ).map((_) => getAddress(_.args?.account as string))
       )
@@ -122,16 +129,20 @@ export const useCheckBonusEligibility = (): ((stakingProviderToBeneficiary: {
           hasUnstakeAfterBonusDeadline,
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
-          isRewardClaimed: claimedRewardsForBeneficiary.has(
-            stakingProviderToBeneficiary[stakingProviderAddress]
-          ),
+          isRewardClaimed: claimedRewards.has(stakingProviderAddress),
         }
       }
-
-      return stakingProvidersInfo
-    },
-    [preContract, tStakingContract, merkleDropContract]
-  )
+      dispatch(setStakingBonus(stakingProvidersInfo))
+    }
+    fetch()
+  }, [
+    stakingProviders,
+    tStakingContract,
+    merkleDropContract,
+    dispatch,
+    hasFetched,
+    isFetching,
+  ])
 }
 
 interface StakingProviderToStakedInfo {

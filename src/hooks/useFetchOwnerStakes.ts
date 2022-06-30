@@ -16,7 +16,6 @@ import { StakeType } from "../enums"
 import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
-import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
 import { useFetchPreConfigData } from "./useFetchPreConfigData"
 
 export const useFetchOwnerStakes = () => {
@@ -25,8 +24,6 @@ export const useFetchOwnerStakes = () => {
   const simplePREApplicationContract = usePREContract()
 
   const multicallContract = useMulticallContract()
-
-  const checkBonusEligibility = useCheckBonusEligibility()
 
   const fetchPreConfigData = useFetchPreConfigData()
 
@@ -63,10 +60,6 @@ export const useFetchOwnerStakes = () => {
 
       const stakingProviders = Object.keys(stakingProviderToBeneficiary)
 
-      const stakingProviderEligibilityChecks = await checkBonusEligibility(
-        stakingProviderToBeneficiary
-      )
-
       const preConfigData = await fetchPreConfigData(stakingProviders)
 
       const stakes = stakedEvents.map((_) => {
@@ -86,7 +79,6 @@ export const useFetchOwnerStakes = () => {
           nuInTStake: stakeType === StakeType.NU ? amount : "0",
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
-          bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
           preConfig: preConfigData[stakingProvider],
         } as StakeData
       })
@@ -119,6 +111,6 @@ export const useFetchOwnerStakes = () => {
 
       return stakes
     },
-    [tStakingContract, multicallContract, dispatch]
+    [tStakingContract, multicallContract, fetchPreConfigData, dispatch]
   )
 }
