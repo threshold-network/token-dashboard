@@ -1,29 +1,30 @@
 import { ComponentProps, FC } from "react"
-import { Card } from "@threshold-network/components"
-import { Button, HStack } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
+import { Card, FilterTabs } from "@threshold-network/components"
+import { TbtcMintingType } from "../../../types/tbtc"
+import { useTbtcState } from "../../../hooks/useTbtcState"
 
-export const MintUnmintNav: FC<
-  ComponentProps<typeof Card> & {
-    selectedAction: "MINT" | "UNMINT"
-    setSelectedAction: (action: "MINT" | "UNMINT") => void
-  }
-> = ({ selectedAction, setSelectedAction, ...props }) => {
+export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
+  ...props
+}) => {
+  const { mintingType, updateState } = useTbtcState()
+
   return (
-    <Card {...props}>
-      <HStack>
-        <Button
-          variant={selectedAction === "MINT" ? "solid" : "ghost"}
-          onClick={() => setSelectedAction("MINT")}
-        >
-          Mint
-        </Button>
-        <Button
-          variant={selectedAction === "UNMINT" ? "solid" : "ghost"}
-          onClick={() => setSelectedAction("UNMINT")}
-        >
-          Unmint
-        </Button>
-      </HStack>
-    </Card>
+    <Box {...props}>
+      <FilterTabs
+        selectedTabId={mintingType}
+        onTabClick={(tabId) => updateState("mintingType", tabId)}
+        tabs={[
+          {
+            title: "Mint",
+            tabId: TbtcMintingType.mint,
+          },
+          {
+            title: "Unmint",
+            tabId: TbtcMintingType.unmint,
+          },
+        ]}
+      />
+    </Box>
   )
 }
