@@ -3147,10 +3147,10 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2@0.1.1-dev.107":
-  version "0.1.1-dev.107"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-0.1.1-dev.107.tgz#6b9ca0ae3551b2d5436d0185f78ccc7e75fda87d"
-  integrity sha512-O8TGaloG30fTDwvZMGk2HlFDNb8KAECI00OM0cxjjIg1m8N6Qv+yiLzLCsMceUKMmOAsC6MPp/ZGio9kpEdGVw==
+"@keep-network/tbtc-v2@0.1.1-dev.109":
+  version "0.1.1-dev.109"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-0.1.1-dev.109.tgz#b35b9c16378792491935bcbecf875d9af44a81d0"
+  integrity sha512-y9mnDgbF67g3wKIxY5jeMGS4CJNEWuoTtGjATGzF7MWQebFINleajvTgsMXC6SWhfBI3cNtpjTMfz1JT67JdLQ==
   dependencies:
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
     "@keep-network/ecdsa" development
