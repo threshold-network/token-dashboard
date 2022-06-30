@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useSelector } from "react-redux"
 import { List, ListItem, ListIcon, Button } from "@chakra-ui/react"
 import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
@@ -13,21 +14,30 @@ import ExternalLink from "../../ExternalLink"
 import { dateToUnixTimestamp } from "../../../utils/date"
 import { AddressZero } from "../../../web3/utils"
 import { ExternalHref } from "../../../enums"
-import { StakeData } from "../../../types/staking"
+import { BonusEligibility, StakeData } from "../../../types"
 import { stakingBonus } from "../../../constants"
+import { selectStakeByStakingProvider } from "../../../store/staking"
+import { RootState } from "../../../store"
 
-export const EligibilityCard: FC<{ stake: StakeData }> = ({ stake }) => {
+export const EligibilityCard: FC<{
+  stakingProvider: string
+  bonusEligibility: BonusEligibility
+}> = ({ stakingProvider, bonusEligibility }) => {
+  const stake = useSelector((state: RootState) =>
+    selectStakeByStakingProvider(state, stakingProvider)
+  ) as StakeData
+
   const isFirstRequirementMet =
-    stake.bonusEligibility.eligibleStakeAmount !== "0" &&
-    stake.bonusEligibility.hasActiveStake &&
-    !stake.bonusEligibility.hasUnstakeAfterBonusDeadline
+    bonusEligibility.eligibleStakeAmount !== "0" &&
+    bonusEligibility.hasActiveStake &&
+    !bonusEligibility.hasUnstakeAfterBonusDeadline
 
-  const isSecondRequirementMet = stake.bonusEligibility.hasPREConfigured
+  const isSecondRequirementMet = bonusEligibility.hasPREConfigured
 
   const canTopUpStakeToGetBonus =
-    stake.bonusEligibility.eligibleStakeAmount === "0" &&
-    stake.bonusEligibility.hasActiveStake &&
-    !stake.bonusEligibility.hasUnstakeAfterBonusDeadline &&
+    bonusEligibility.eligibleStakeAmount === "0" &&
+    bonusEligibility.hasActiveStake &&
+    !bonusEligibility.hasUnstakeAfterBonusDeadline &&
     dateToUnixTimestamp() < stakingBonus.BONUS_DEADLINE_TIMESTAMP
 
   return (
@@ -44,13 +54,13 @@ export const EligibilityCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </StakeCardHeader>
         <BodyMd my="4">Staking Bonus</BodyMd>
         <TokenBalance
-          tokenAmount={stake.bonusEligibility.reward}
+          tokenAmount={bonusEligibility.reward}
           withSymbol
           tokenSymbol="T"
           isLarge
         />
         <StakeCardProviderAddress
-          stakingProvider={stake.stakingProvider}
+          stakingProvider={stakingProvider}
           mb="6"
           mt="4"
         />
