@@ -1,5 +1,5 @@
 import { ComponentProps, FC } from "react"
-import Card from "../../../components/Card"
+import { Card } from "@threshold-network/components"
 import { Button, HStack } from "@chakra-ui/react"
 
 export const MintUnmintNav: FC<
