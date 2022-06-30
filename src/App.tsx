@@ -34,6 +34,8 @@ import { useSubscribeToStakedEvent } from "./hooks/useSubscribeToStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
 import { pages } from "./pages"
+import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
+import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -43,6 +45,9 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToStakedEvent()
   useSubscribeToUnstakedEvent()
   useSubscribeToToppedUpEvent()
+  // TODO: Find the best place to run these hooks.
+  useCheckBonusEligibility()
+  useFetchStakingRewards()
 
   return <></>
 }
