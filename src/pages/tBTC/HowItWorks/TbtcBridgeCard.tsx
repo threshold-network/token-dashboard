@@ -1,6 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { Stack } from "@chakra-ui/react"
-import { Card, BodyMd, LabelSm } from "@threshold-network/components"
+import { BodyMd, LabelSm, Card } from "@threshold-network/components"
 
 export const TbtcBridgeCard: FC<ComponentProps<typeof Card>> = ({
   ...props

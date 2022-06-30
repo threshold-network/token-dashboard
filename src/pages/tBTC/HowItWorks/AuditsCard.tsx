@@ -1,6 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { List } from "@chakra-ui/react"
-import { Card, LabelSm } from "@threshold-network/components"
+import { LabelSm, Card } from "@threshold-network/components"
 import LinkDetailsListItem from "../../../components/LinkDetailsListItem"
 
 export const AuditsCard: FC<ComponentProps<typeof Card>> = (props) => {

@@ -1,12 +1,11 @@
 import { FC, ComponentProps } from "react"
 import {
-  Card,
   BodyMd,
   LabelSm,
+  Card,
   ChecklistGroup,
 } from "@threshold-network/components"
 import ExternalLink from "../../../components/ExternalLink"
-import { ExternalHref } from "../../../enums"
 
 export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
   ...props
@@ -22,7 +21,7 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
         title="How this works"
         checklistItems={[
           {
-            itemId: "tbtcv2_how_it_works_0",
+            itemId: "threshold-cryptography",
             itemTitle: (
               <BodyMd>
                 The group of independent operators works together to secure your
@@ -36,7 +35,7 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
             ),
           },
           {
-            itemId: "tbtcv2_how_it_works_1",
+            itemId: "threshold-majority",
             itemTitle: (
               <BodyMd>
                 tBTC v2 requires a threshold majority(51/100) of these operators
@@ -45,7 +44,7 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
             ),
           },
           {
-            itemId: "tbtcv2_how_it_works_2",
+            itemId: "threshold-rotation",
             itemTitle: (
               <BodyMd>
                 By rotating the selection of operators weekly, tBTC v2 protects

@@ -1,9 +1,9 @@
 import { FC, ComponentProps } from "react"
 import { Stack } from "@chakra-ui/react"
 import {
-  Card,
   BodyMd,
   LabelSm,
+  Card,
   ChecklistGroup,
 } from "@threshold-network/components"
 import ExternalLink from "../../../components/ExternalLink"
@@ -24,7 +24,7 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
           title="ETH address"
           checklistItems={[
             {
-              itemId: "tbtcv2_hot_it_works_eth_address_0",
+              itemId: "eth-address",
               itemTitle: (
                 <BodyMd>
                   As a user you need to provide an ETH address where your tBTC
@@ -38,7 +38,7 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
           title="Recovery BTC address"
           checklistItems={[
             {
-              itemId: "tbtcv2_hot_it_works_recovery_btc_address_0",
+              itemId: "btc-recovery-address",
               itemTitle: (
                 <BodyMd>
                   You are required to provide a BTC address where the protocol
