@@ -80,7 +80,9 @@ const calculateTotalBonusBalance = (
   return Object.values(stakingBonusRewards)
     .reduce(
       (totalBalance, bonus) =>
-        totalBalance.add(bonus.isRewardClaimed ? "0" : bonus.reward),
+        totalBalance.add(
+          !bonus.isRewardClaimed && bonus.isEligible ? bonus.reward : "0"
+        ),
       Zero
     )
     .toString()
@@ -95,10 +97,9 @@ const calculateTotalInterimRewardsBalance = (
 }
 
 const calculateTotalRewardsBalance = (rewardsState: RewardsState) => {
-  return BigNumber.from(rewardsState.stakingBonus.totalRewardsBalance)
-    .sub(rewardsState.interim.totalRewardsBalance)
-    .abs()
-    .toString()
+  // The interim rewards already include the staking bonus so there is no need
+  // to add the staking bonus here.
+  return rewardsState.interim.totalRewardsBalance
 }
 
 export const { setInterimRewards, setStakingBonus } = rewardsSlice.actions
