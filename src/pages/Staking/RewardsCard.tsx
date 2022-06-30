@@ -2,19 +2,20 @@ import { FC } from "react"
 import { Button } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import {
-  Box,
   BodyMd,
-  BodySm,
+  BodyLg,
+  H5,
   LabelSm,
   Card,
-  Divider,
   HStack,
   Badge,
 } from "@threshold-network/components"
 import InfoBox from "../../components/InfoBox"
-import TokenBalance from "../../components/TokenBalance"
 import { useModal } from "../../hooks/useModal"
 import { ModalType } from "../../enums"
+import { formatTokenAmount } from "../../utils/formatAmount"
+import { useCountdown } from "../../hooks/useCountdown"
+import { BigNumber } from "ethers"
 
 const RewardsCard: FC<{
   totalRewardsBalance: string
@@ -22,44 +23,45 @@ const RewardsCard: FC<{
 }> = ({ totalRewardsBalance, totalBonusBalance }) => {
   const { active } = useWeb3React()
   const { openModal } = useModal()
+  const { days, hours, minutes, seconds } = useCountdown(1657843200)
+  const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
 
   return (
     <Card>
       <LabelSm textTransform="uppercase">Rewards</LabelSm>
       <HStack mt="6">
         <BodyMd>Total Rewards</BodyMd>
-        <Badge variant="magic" ml="auto !important">
-          staking bonus
-        </Badge>
+        {hasBonusRewards ? (
+          <Badge variant="magic" ml="auto !important">
+            staking bonus
+          </Badge>
+        ) : (
+          <BodyMd ml="auto !important">
+            Next rewards emission:{" "}
+            <BodyMd
+              as="span"
+              color="brand.500"
+            >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
+          </BodyMd>
+        )}
       </HStack>
-      <InfoBox mt="2" direction="row" p="4" alignItems="center">
+      <InfoBox mt="2" direction="row" p="0" alignItems="center">
         {active ? (
           <>
-            <TokenBalance
-              tokenAmount={totalRewardsBalance}
-              withSymbol
-              tokenSymbol="T"
-              isLarge
-            />
-            <Box
-              display="flex"
-              flex="0.3"
-              my="-10"
-              py="5"
-              borderLeft="1px solid"
-              borderColor="gray.300"
-              marginLeft="auto !important"
+            <H5
+              flex="2"
+              p="4"
+              borderRight={hasBonusRewards ? "1px solid" : undefined}
+              borderColor={hasBonusRewards ? "gray.300" : undefined}
             >
-              <Box ml="auto">
-                {/* TODO: rebuild TokenBalance component to pass style props to the main wrapper to avoid multiple div wrappers */}
-                <TokenBalance
-                  ml="auto"
-                  tokenAmount={totalBonusBalance}
-                  withSymbol
-                  tokenSymbol="T"
-                />
-              </Box>
-            </Box>
+              {formatTokenAmount(totalRewardsBalance)}
+              <BodyLg as="span"> T</BodyLg>
+            </H5>
+            {hasBonusRewards && (
+              <BodyLg flex="1" p="4" textAlign="right">
+                {formatTokenAmount(totalBonusBalance)} T
+              </BodyLg>
+            )}
           </>
         ) : (
           <BodyMd>
@@ -76,6 +78,7 @@ const RewardsCard: FC<{
         disabled={!active}
         isFullWidth
         onClick={() =>
+          // TODO: open claim all modal and pass correct props.
           openModal(ModalType.ClaimingRewards, {
             totalRewardsBalance: "0",
             rewards: [
