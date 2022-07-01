@@ -17,13 +17,16 @@ import { formatTokenAmount } from "../../utils/formatAmount"
 import { useCountdown } from "../../hooks/useCountdown"
 import { BigNumber } from "ethers"
 
+const FIRST_DROP_TIMESTAMP = 1657843200
+
 const RewardsCard: FC<{
   totalRewardsBalance: string
   totalBonusBalance: string
 }> = ({ totalRewardsBalance, totalBonusBalance }) => {
   const { active } = useWeb3React()
   const { openModal } = useModal()
-  const { days, hours, minutes, seconds } = useCountdown(1657843200)
+  // TODO: Get dates of the next rewards distributions.
+  const { days, hours, minutes, seconds } = useCountdown(FIRST_DROP_TIMESTAMP)
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
 
   return (
