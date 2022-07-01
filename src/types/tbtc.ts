@@ -21,9 +21,14 @@ export enum TbtcMintingType {
 
 export enum MintingStep {
   ProvideData = "PROVIDE_DATA",
-  Deposit = "Deposit",
+  Deposit = "DEPOSIT",
   InitiateMinting = "INITIATE_MINTING",
   MintingSuccess = "MINTING_SUCCESS",
+}
+
+export enum UnmintingStep {
+  ProvideData = "PROVIDE_DATA",
+  Success = "SUCCESS",
 }
 
 export const MintingSteps: MintingStep[] = [
@@ -33,6 +38,11 @@ export const MintingSteps: MintingStep[] = [
   MintingStep.MintingSuccess,
 ]
 
+export const UnmintingSteps: UnmintingStep[] = [
+  UnmintingStep.ProvideData,
+  UnmintingStep.Success,
+]
+
 export interface UpdateTbtcState {
   payload: UpdateStateActionPayload<TbtcStateKey>
 }
@@ -40,7 +50,10 @@ export interface UpdateTbtcState {
 export interface UseTbtcState {
   (): {
     mintingStep: MintingStep
+    unmintingStep: UnmintingStep
     mintingType: TbtcMintingType
+    btcWithdrawAddress: string
+    unmintAmount: string
     btcDepositAddress: string
     btcRecoveryAddress: string
     ethAddress: string

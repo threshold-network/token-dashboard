@@ -16,7 +16,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
-import TransactionDetailsTable from "../../../pages/tBTC/Bridge/MintingCard/TransactionDetailsTable"
+import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
 import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 
@@ -35,6 +35,11 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const initiateMintTransaction = () => {
     // TODO: implement this
     // mint({})
+
+    // 1. reveal deposit to the bridge
+
+    // 2. the sweep will mint automatically
+    // 3. minting will happen behind the scenes
 
     // TODO: this is a shortcut for now. We need to implement this properly
     updateState("mintingStep", MintingStep.MintingSuccess)

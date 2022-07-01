@@ -14,8 +14,8 @@ import {
   useMediaQuery,
 } from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
-import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
-import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import InfoBox from "../../../../components/InfoBox"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import CopyToClipboard from "../../../../components/CopyToClipboard"
