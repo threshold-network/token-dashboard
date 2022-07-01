@@ -62,6 +62,11 @@ export const rewardsSlice = createSlice({
           ...state.stakingBonus.rewards[stakingProvider],
           isRewardClaimed: true,
         }
+
+      state.stakingBonus.totalRewardsBalance = calculateTotalBonusBalance(
+        state.stakingBonus.rewards
+      )
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     setStakingBonus: (
       state: RewardsState,
