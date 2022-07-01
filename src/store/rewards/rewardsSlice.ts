@@ -54,6 +54,15 @@ export const rewardsSlice = createSlice({
       )
       state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
+    interimRewardsClaimed: (state: RewardsState) => {
+      state.interim.rewards = {}
+      state.interim.rewards.totalRewardsBalance = "0"
+      for (const stakingProvider of Object.keys(state.stakingBonus.rewards))
+        state.stakingBonus.rewards[stakingProvider] = {
+          ...state.stakingBonus.rewards[stakingProvider],
+          isRewardClaimed: true,
+        }
+    },
     setStakingBonus: (
       state: RewardsState,
       action: PayloadAction<{ [stakingProvider: string]: BonusEligibility }>
@@ -97,4 +106,5 @@ const calculateTotalRewardsBalance = (rewardsState: RewardsState) => {
   return rewardsState.interim.totalRewardsBalance
 }
 
-export const { setInterimRewards, setStakingBonus } = rewardsSlice.actions
+export const { setInterimRewards, setStakingBonus, interimRewardsClaimed } =
+  rewardsSlice.actions

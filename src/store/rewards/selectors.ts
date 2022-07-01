@@ -12,7 +12,9 @@ export const selectTotalBonusBalance = (state: RootState) =>
 
 const selectBonusRewards = (state: RootState) =>
   state.rewards.stakingBonus.rewards
-const selectInterimRewards = (state: RootState) => state.rewards.interim.rewards
+
+export const selectInterimRewards = (state: RootState) =>
+  state.rewards.interim.rewards
 
 export const selectRewardsByStakingProvider = createSelector(
   [
