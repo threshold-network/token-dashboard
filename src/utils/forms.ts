@@ -1,5 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { WeiPerEther } from "@ethersproject/constants"
+import {
+  Network,
+  validate as isValidBtcAddress,
+} from "bitcoin-address-validation"
 import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 
@@ -66,5 +70,16 @@ export const validateETHAddress = (address: string) => {
     return "Invalid eth address."
   } else if (isAddressZero(address)) {
     return "Address is a zero address."
+  }
+}
+
+export const validateBTCAddress = (
+  address: string,
+  network: Network = Network.mainnet
+) => {
+  if (!address) {
+    return "Required."
+  } else if (!isValidBtcAddress(address, network)) {
+    return "Invalid btc address."
   }
 }

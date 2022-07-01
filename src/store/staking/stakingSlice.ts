@@ -4,9 +4,9 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
   ProviderStakedActionPayload,
   StakeData,
+  StakingStateKey,
   UnstakedActionPayload,
   UpdateStakeAmountActionPayload,
-  UpdateStateActionPayload,
 } from "../../types/staking"
 import { StakeType, UnstakeType } from "../../enums"
 import {
@@ -14,6 +14,7 @@ import {
   isBeforeOrEqualBonusDeadline,
 } from "../../utils/stakingBonus"
 import { AddressZero } from "../../web3/utils"
+import { UpdateStateActionPayload } from "../../types/state"
 
 interface StakingState {
   stakingProvider: string
@@ -68,7 +69,10 @@ export const stakingSlice = createSlice({
     minStakeAmount: "0",
   } as StakingState,
   reducers: {
-    updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
+    updateState: (
+      state,
+      action: PayloadAction<UpdateStateActionPayload<StakingStateKey>>
+    ) => {
       // @ts-ignore
       state[action.payload.key] = action.payload.value
     },

@@ -60,6 +60,12 @@ export const tokenSlice = createSlice({
       usdConversion: 0,
       usdBalance: "0",
     },
+    [Token.TBTCV2]: {
+      loading: false,
+      balance: 0,
+      usdConversion: 0,
+      usdBalance: "0",
+    },
   } as Record<Token, TokenState>,
   reducers: {
     setTokenLoading: (
