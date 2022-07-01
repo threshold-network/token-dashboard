@@ -59,3 +59,5 @@ const ClaimingRewardsBase: FC<
 }
 
 export const ClaimingRewards = withBaseModal(ClaimingRewardsBase)
+
+export * from "./SuccessModal"
