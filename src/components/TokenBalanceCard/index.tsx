@@ -10,6 +10,8 @@ import { tBTCFillBlack } from "../../static/icons/tBTCFillBlack"
 export interface TokenBalanceCardProps {
   token: Exclude<Token, Token.TBTC>
   title?: string
+  tokenSymbol?: string
+  withSymbol?: boolean
 }
 
 const tokenToIconMap = {
@@ -22,6 +24,8 @@ const tokenToIconMap = {
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
   token,
   title = token,
+  tokenSymbol,
+  withSymbol = false,
   ...restProps
 }) => {
   const { balance, usdBalance, contract } = useToken(token)
@@ -33,6 +37,8 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
       tokenBalance={balance}
       usdBalance={usdBalance}
       contract={contract}
+      tokenSymbol={tokenSymbol}
+      withSymbol={withSymbol}
       {...restProps}
     />
   )
