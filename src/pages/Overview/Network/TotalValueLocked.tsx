@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Flex } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
-import { H1 } from "../../../components/Typography"
+import { H1 } from "@threshold-network/components"
 import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
 
 const TotalValueLocked: FC<{ totalValueLocked: number | string }> = ({
