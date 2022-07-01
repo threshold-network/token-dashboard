@@ -56,7 +56,7 @@ export const rewardsSlice = createSlice({
     },
     interimRewardsClaimed: (state: RewardsState) => {
       state.interim.rewards = {}
-      state.interim.rewards.totalRewardsBalance = "0"
+      state.interim.totalRewardsBalance = "0"
       for (const stakingProvider of Object.keys(state.stakingBonus.rewards))
         state.stakingBonus.rewards[stakingProvider] = {
           ...state.stakingBonus.rewards[stakingProvider],
