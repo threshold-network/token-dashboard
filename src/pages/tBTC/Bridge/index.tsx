@@ -24,6 +24,7 @@ const TBTCBridge: PageComponent = (props) => {
       closeModal()
     }
   }, [isSmallerThan1280])
+
   return (
     <Grid
       maxW="1040px"

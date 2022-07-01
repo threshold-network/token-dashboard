@@ -8,9 +8,9 @@ import {
   Flex,
 } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
-import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
+import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"

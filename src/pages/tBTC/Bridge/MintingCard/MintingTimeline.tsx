@@ -1,10 +1,10 @@
 import { FC } from "react"
 import { LabelSm, Box, Divider } from "@threshold-network/components"
-import TimelineItem from "../TimelineItem"
+import TimelineItem from "../components/TimelineItem"
 import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.png"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
-import { SweepTimer } from "./SweepTimer"
+import { SweepTimer } from "../components/SweepTimer"
 
 export const MintingTimeline: FC = () => {
   const { mintingStep } = useTbtcState()

@@ -2,8 +2,8 @@ import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Box, Button, Flex, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
-import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
+import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
+import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
 import { Form, FormikInput } from "../../../../components/Forms"
 import {
   getErrorsObj,
@@ -75,11 +75,6 @@ export const ProvideData: FC = () => {
 
   const handleJsonDownload = () => {
     // TODO: implement this
-
-    // 1. to generate the JSON file we need to grab a special BTC address from chain
-
-    // the bridge creates a
-
     closeModal()
     updateState("mintingStep", MintingStep.Deposit)
   }

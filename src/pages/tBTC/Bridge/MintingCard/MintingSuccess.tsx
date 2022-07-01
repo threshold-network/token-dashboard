@@ -15,8 +15,8 @@ import {
   useMediaQuery,
 } from "@threshold-network/components"
 import btcQrTmp from "./BTC_QA_TMP.png"
-import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
-import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import InfoBox from "../../../../components/InfoBox"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import CopyToClipboard from "../../../../components/CopyToClipboard"
@@ -29,7 +29,7 @@ import { Divider, Table, Td, Tr, useColorModeValue } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import tbtcSuccess from "../../../../static/images/tbtc-success.png"
-import TransactionDetailsTable from "./TransactionDetailsTable"
+import TransactionDetailsTable from "../components/TransactionDetailsTable"
 
 export const MintingSuccess: FC = () => {
   const { updateState } = useTbtcState()
