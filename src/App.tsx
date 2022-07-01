@@ -45,9 +45,6 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToStakedEvent()
   useSubscribeToUnstakedEvent()
   useSubscribeToToppedUpEvent()
-  // TODO: Find the best place to run these hooks.
-  useCheckBonusEligibility()
-  useFetchStakingRewards()
 
   return <></>
 }
@@ -99,6 +96,9 @@ const AppBody = () => {
   useEffect(() => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
+
+  useCheckBonusEligibility()
+  useFetchStakingRewards()
 
   return <Routing />
 }
