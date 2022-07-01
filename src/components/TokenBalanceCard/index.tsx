@@ -5,7 +5,7 @@ import KeepCircleBrand from "../../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../../static/icons/NuCircleBrand"
 import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
-import { tBTCFill } from "../../static/icons/tBTCFill"
+import { tBTCFillBlack } from "../../static/icons/tBTCFillBlack"
 
 export interface TokenBalanceCardProps {
   token: Exclude<Token, Token.TBTC>
@@ -16,7 +16,7 @@ const tokenToIconMap = {
   [Token.Keep]: KeepCircleBrand,
   [Token.Nu]: NuCircleBrand,
   [Token.T]: T,
-  [Token.TBTCV2]: tBTCFill,
+  [Token.TBTCV2]: tBTCFillBlack,
 }
 
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({

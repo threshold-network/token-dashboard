@@ -11,7 +11,7 @@ export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
 }) => {
   const { mintingType, updateState } = useTbtcState()
   return (
-    <Stack direction="row" mb={8}>
+    <Stack direction="row" mb={8} align={"center"}>
       {previousStep && (
         <Icon
           cursor="pointer"
@@ -21,7 +21,7 @@ export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
         />
       )}
       <Icon boxSize="32px" as={tBTCFillBlack} />
-      <LabelSm textTransform="uppercase" pt="4px">
+      <LabelSm textTransform="uppercase">
         {mintingType === TbtcMintingType.mint && "TBTC - Minting Process"}
         {mintingType === TbtcMintingType.unmint && "TBTC - Unminting Process"}
       </LabelSm>
