@@ -28,6 +28,7 @@ const RewardsCard: FC<{
   // TODO: Get dates of the next rewards distributions.
   const { days, hours, minutes, seconds } = useCountdown(FIRST_DROP_TIMESTAMP)
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
+  const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
 
   return (
     <Card>
@@ -78,7 +79,7 @@ const RewardsCard: FC<{
         mt="4"
         variant="outline"
         size="lg"
-        disabled={!active}
+        disabled={!active || !hasRewards}
         isFullWidth
         onClick={() =>
           openModal(ModalType.ClaimingRewards, {
