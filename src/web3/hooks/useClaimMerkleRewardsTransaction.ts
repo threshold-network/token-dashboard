@@ -1,0 +1,45 @@
+import { useCallback } from "react"
+import { ContractTransaction } from "@ethersproject/contracts"
+import { useMerkleDropContract } from "./useMerkleDropContract"
+import rewardsData from "../../merkle-drop/rewards.json"
+import { useSendTransaction } from "./useSendTransaction"
+import { RewardsJSONData } from "../../types"
+
+export const useClaimMerkleRewardsTransaction = (
+  onSuccess?: (tx: ContractTransaction) => void
+) => {
+  const merkleDropContract = useMerkleDropContract()
+  const { sendTransaction, status } = useSendTransaction(
+    merkleDropContract!,
+    "batchClaim",
+    onSuccess
+  )
+
+  const claim = useCallback(
+    (stakingProviders: string[]) => {
+      if (!stakingProviders || stakingProviders.length === 0) {
+        throw new Error("Staking providers ")
+      }
+      const availableRewardsToClaim = []
+
+      for (const stakingProvider of stakingProviders) {
+        if (!rewardsData.claims.hasOwnProperty(stakingProvider)) continue
+
+        const { amount, proof } = (rewardsData as RewardsJSONData).claims[
+          stakingProvider
+        ]
+        availableRewardsToClaim.push([stakingProvider, amount, proof])
+      }
+
+      if (availableRewardsToClaim.length === 0) {
+        throw new Error("No rewards to claim")
+      }
+
+      const { merkleRoot } = rewardsData
+      sendTransaction(merkleRoot, availableRewardsToClaim)
+    },
+    [merkleDropContract]
+  )
+
+  return { claim, status }
+}
