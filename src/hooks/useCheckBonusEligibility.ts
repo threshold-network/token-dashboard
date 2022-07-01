@@ -130,8 +130,9 @@ export const useCheckBonusEligibility = () => {
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
           isRewardClaimed: claimedRewards.has(stakingProviderAddress),
-          isEligible:
-            hasActiveStake && hasUnstakeAfterBonusDeadline && hasPREConfigured,
+          isEligible: Boolean(
+            hasActiveStake && !hasUnstakeAfterBonusDeadline && hasPREConfigured
+          ),
         }
       }
       dispatch(setStakingBonus(stakingProvidersInfo))
