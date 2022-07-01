@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import {
   BodyLg,
   H5,
@@ -10,25 +10,58 @@ import {
   ModalHeader,
   Stack,
   useColorModeValue,
+  HStack,
+  BodySm,
+  List,
+  ListItem,
 } from "@threshold-network/components"
+import { useDispatch, useSelector } from "react-redux"
 import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import { useClaimMerkleRewardsTransaction } from "../../../web3/hooks"
+import {
+  interimRewardsClaimed,
+  selectAccumuletedRewardsPerBeneficiary,
+  selectInterimRewards,
+} from "../../../store/rewards"
+import shortenAddress from "../../../utils/shortenAddress"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
 
 const ClaimingRewardsBase: FC<
   BaseModalProps & {
     totalRewardsAmount: string
-    rewards: { beneficiary: string; rewardsAmount: string }[]
   }
-> = ({ closeModal, totalRewardsAmount, rewards }) => {
+> = ({ closeModal, totalRewardsAmount }) => {
+  const dispatch = useDispatch()
+  const { openModal } = useModal()
+  const beneficiaryRewards = useSelector(selectAccumuletedRewardsPerBeneficiary)
+  const rewards = useSelector(selectInterimRewards)
+
+  const onClaimSuccess = useCallback(
+    (tx) => {
+      dispatch(interimRewardsClaimed())
+      openModal(ModalType.ClaimingRewardsSuccess, {
+        transactionHash: tx.hash,
+        totalRewardsAmount,
+        beneficiaries: Object.keys(beneficiaryRewards),
+      })
+    },
+    [dispatch, totalRewardsAmount, openModal, beneficiaryRewards]
+  )
+
+  const { claim } = useClaimMerkleRewardsTransaction(onClaimSuccess)
+
   return (
     <>
       <ModalHeader>Claiming Rewards</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
-          <InfoBox variant="modal">
+          <InfoBox mt="0" variant="modal">
             <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
               You are about to claim your rewards.
             </H5>
@@ -37,7 +70,22 @@ const ClaimingRewardsBase: FC<
               accrued across all your stakes.
             </BodyLg>
           </InfoBox>
-          {/* TODO render summary based on the `rewards` prop */}
+          <List spacing="0.5rem">
+            {Object.entries(beneficiaryRewards).map(
+              ([beneficiary, rewardAmount]) => (
+                <ListItem justify="space-between" key={beneficiary}>
+                  <HStack justify="space-between">
+                    <BodySm>Beneficiary Address</BodySm>
+                    <BodySm>{shortenAddress(beneficiary)}</BodySm>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <BodySm>Reward Amount</BodySm>
+                    <BodySm>{formatTokenAmount(rewardAmount)} T</BodySm>
+                  </HStack>
+                </ListItem>
+              )
+            )}
+          </List>
           <StakingContractLearnMore mt="2.5rem !important" />
           <Divider />
         </Stack>
@@ -48,7 +96,7 @@ const ClaimingRewardsBase: FC<
         </Button>
         <Button
           onClick={() => {
-            console.log("claim tx")
+            claim(Object.keys(rewards))
           }}
         >
           Claim All
