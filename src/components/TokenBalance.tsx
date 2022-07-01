@@ -70,7 +70,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
             ))}
         </Stack>
         {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
-          <BodySm ml={1} color={useColorModeValue("gray.500", "gray.300")}>
+          <BodySm color={useColorModeValue("gray.500", "gray.300")}>
             {usdBalance}
           </BodySm>
         )}
