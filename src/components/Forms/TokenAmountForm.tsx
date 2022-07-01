@@ -69,7 +69,6 @@ const TokenAmountFormBase: FC<
         }
         placeholder={placeholder || `${token.symbol} amount`}
         icon={icon}
-        mb={2}
         max={maxTokenAmount}
         helperText={helperText}
         isDisabled={isDisabled}

@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Body2, H2 } from "../../../components/Typography"
+import { BodyMd, H2 } from "@threshold-network/components"
 import InfoBox from "../../../components/InfoBox"
 
 const StatBox: FC<{ value: number | string; text: string }> = ({
@@ -9,7 +9,7 @@ const StatBox: FC<{ value: number | string; text: string }> = ({
   return (
     <InfoBox>
       <H2 textAlign="center">{value}</H2>
-      <Body2 textAlign="center">{text}</Body2>
+      <BodyMd textAlign="center">{text}</BodyMd>
     </InfoBox>
   )
 }

@@ -13,14 +13,18 @@ import {
 } from "@chakra-ui/react"
 import { createIcon } from "@chakra-ui/icons"
 import { formatUnits, parseUnits } from "@ethersproject/units"
-import NumberInput, {
-  NumberInputValues,
-  NumberInputProps,
-} from "../NumberInput"
+import { Zero } from "@ethersproject/constants"
+import { BigNumber } from "@ethersproject/bignumber"
+import {
+  NumberFormatInput,
+  NumberFormatInputValues,
+  NumberFormatInputProps,
+} from "@threshold-network/components"
+import { web3 as web3Constants } from "../../constants"
 
 export interface TokenBalanceInputProps
   extends InputProps,
-    Omit<NumberInputProps, "onValueChange"> {
+    Omit<NumberFormatInputProps, "onValueChange"> {
   icon: ReturnType<typeof createIcon>
   max: number | string
   amount?: string | number
@@ -59,7 +63,20 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   })
 
   const setToMax = () => {
-    _setAmount(formatUnits(max))
+    let remainder = Zero
+    const { decimalScale } = inputProps
+    if (
+      decimalScale &&
+      decimalScale > 0 &&
+      decimalScale < web3Constants.STANDARD_ERC20_DECIMALS
+    ) {
+      remainder = BigNumber.from(max).mod(
+        BigNumber.from(10).pow(
+          web3Constants.STANDARD_ERC20_DECIMALS - decimalScale
+        )
+      )
+    }
+    _setAmount(formatUnits(BigNumber.from(max).sub(remainder)))
     setAmount(valueRef.current)
   }
 
@@ -76,14 +93,14 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />
         </InputLeftElement>
-        <NumberInput
+        <NumberFormatInput
           // @ts-ignore
           ref={inputRef}
           placeholder="Enter an amount"
           paddingLeft="2.5rem"
           paddingRight="4.5rem"
           {...inputProps}
-          onValueChange={(values: NumberInputValues) =>
+          onValueChange={(values: NumberFormatInputValues) =>
             _setAmount(values.value)
           }
           value={amount ? formatUnits(amount) : undefined}

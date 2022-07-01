@@ -1,7 +1,7 @@
 import { Box, Divider, HStack, Icon, IconButton, Link } from "@chakra-ui/react"
 import { BsDiscord, BsGithub } from "react-icons/all"
 import { useSidebar } from "../../hooks/useSidebar"
-import { Body3 } from "../Typography"
+import { BodySm } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import { FC } from "react"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
@@ -52,9 +52,9 @@ const SidebarFooter = () => {
               icon={BsDiscord}
             />
           </HStack>
-          <Body3 color="gray.300" textAlign="center">
+          <BodySm color="gray.300" textAlign="center">
             &copy; {new Date().getFullYear()} Threshold Network
-          </Body3>
+          </BodySm>
         </Box>
       ) : (
         <>
