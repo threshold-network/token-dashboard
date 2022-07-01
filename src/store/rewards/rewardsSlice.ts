@@ -1,8 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { Zero } from "@ethersproject/constants"
-import { BigNumber } from "@ethersproject/bignumber"
-import { BonusEligibility } from "../../types"
+import {
+  BonusEligibility,
+  InterimRewards,
+  StakingBonusRewards,
+} from "../../types"
 
 interface BasicRewardsState<T> {
   isFetching: boolean
@@ -10,14 +13,6 @@ interface BasicRewardsState<T> {
   error: string
   rewards: T
   totalRewardsBalance: string
-}
-
-interface InterimRewards {
-  [stakingProvider: string]: string
-}
-
-interface StakingBonusRewards {
-  [stakingProvider: string]: BonusEligibility
 }
 
 interface RewardsState {

@@ -17,3 +17,11 @@ export interface BonusEligibility {
   isRewardClaimed: boolean
   isEligible: boolean
 }
+
+export interface InterimRewards {
+  [stakingProvider: string]: string
+}
+
+export interface StakingBonusRewards {
+  [stakingProvider: string]: BonusEligibility
+}
