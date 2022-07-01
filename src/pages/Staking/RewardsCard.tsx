@@ -78,15 +78,8 @@ const RewardsCard: FC<{
         disabled={!active}
         isFullWidth
         onClick={() =>
-          // TODO: open claim all modal and pass correct props.
           openModal(ModalType.ClaimingRewards, {
-            totalRewardsBalance: "0",
-            rewards: [
-              {
-                beneficiary: "0x670a0D9b1f5759c5B1021fa5BDb9619c5cA3E3af",
-                rewardsAmount: "1000000000000000000000",
-              },
-            ],
+            totalRewardsAmount: totalRewardsBalance,
           })
         }
       >
