@@ -8,10 +8,10 @@ import {
   FormErrorMessage,
   Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
+  BodySm,
+} from "@threshold-network/components"
 import { useField } from "formik"
 import TooltipIcon from "../TooltipIcon"
-import { Body3 } from "../Typography"
 
 export const FormikInput: FC<
   FormControlProps & {
@@ -52,9 +52,9 @@ export const FormikInput: FC<
           {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
-          <Body3 color={secondaryLabelColor} m={0}>
+          <BodySm as="label" color={secondaryLabelColor} m={0}>
             {secondaryLabel}
-          </Body3>
+          </BodySm>
         )}
       </Stack>
       <Input
