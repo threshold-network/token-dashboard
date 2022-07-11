@@ -16,8 +16,7 @@ import { ModalType } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
 import { useCountdown } from "../../hooks/useCountdown"
 import { BigNumber } from "ethers"
-
-const FIRST_DROP_TIMESTAMP = 1657843200
+import { useNextRewardsDropDate } from "../../hooks/useNextRewardsDropDate"
 
 const RewardsCard: FC<{
   totalRewardsBalance: string
@@ -25,8 +24,10 @@ const RewardsCard: FC<{
 }> = ({ totalRewardsBalance, totalBonusBalance }) => {
   const { active } = useWeb3React()
   const { openModal } = useModal()
-  // TODO: Get dates of the next rewards distributions.
-  const { days, hours, minutes, seconds } = useCountdown(FIRST_DROP_TIMESTAMP)
+
+  const dropTimestamp = useNextRewardsDropDate()
+  const { days, hours, minutes, seconds } = useCountdown(dropTimestamp)
+
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
 
