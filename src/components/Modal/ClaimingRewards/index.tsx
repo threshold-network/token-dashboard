@@ -73,7 +73,7 @@ const ClaimingRewardsBase: FC<
           <List spacing="0.5rem">
             {Object.entries(beneficiaryRewards).map(
               ([beneficiary, rewardAmount]) => (
-                <ListItem justify="space-between" key={beneficiary}>
+                <ListItem key={beneficiary}>
                   <HStack justify="space-between">
                     <BodySm>Beneficiary Address</BodySm>
                     <BodySm>{shortenAddress(beneficiary)}</BodySm>
