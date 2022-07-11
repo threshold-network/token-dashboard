@@ -8,7 +8,8 @@ export const DEPLOYMENT_BLOCK = supportedChainId === "1" ? 0 : 0
 
 const CONTRACT_ADDRESSESS = {
   // TODO: Set mainnet address
-  [ChainID.Ethereum.valueOf().toString()]: AddressZero,
+  [ChainID.Ethereum.valueOf().toString()]:
+    "0xcE14F142f16cb0f360b8EB021A780ed3EC04516c",
   // TODO: Set ropsten address
   [ChainID.Ropsten.valueOf().toString()]: AddressZero,
   // TODO: Set local address- how to resolve it in local network?
