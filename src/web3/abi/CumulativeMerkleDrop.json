@@ -1,16 +1,13 @@
 [
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "token_",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "token_", "type": "address" },
       {
         "internalType": "address",
         "name": "rewardsHolder_",
         "type": "address"
-      }
+      },
+      { "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
@@ -21,7 +18,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "account",
+        "name": "stakingProvider",
         "type": "address"
       },
       {
@@ -29,6 +26,18 @@
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "beneficiary",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "merkleRoot",
+        "type": "bytes32"
       }
     ],
     "name": "Claimed",
@@ -102,19 +111,16 @@
         "components": [
           {
             "internalType": "address",
-            "name": "account",
+            "name": "stakingProvider",
             "type": "address"
           },
           {
-            "internalType": "uint256",
-            "name": "amount",
-            "type": "uint256"
+            "internalType": "address",
+            "name": "beneficiary",
+            "type": "address"
           },
-          {
-            "internalType": "bytes32[]",
-            "name": "proof",
-            "type": "bytes32[]"
-          }
+          { "internalType": "uint256", "name": "amount", "type": "uint256" },
+          { "internalType": "bytes32[]", "name": "proof", "type": "bytes32[]" }
         ],
         "internalType": "struct CumulativeMerkleDrop.Claim[]",
         "name": "Claims",
@@ -130,9 +136,10 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "account",
+        "name": "stakingProvider",
         "type": "address"
       },
+      { "internalType": "address", "name": "beneficiary", "type": "address" },
       {
         "internalType": "uint256",
         "name": "cumulativeAmount",
@@ -155,47 +162,23 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "cumulativeClaimed",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "merkleRoot",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -209,23 +192,13 @@
   {
     "inputs": [],
     "name": "rewardsHolder",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "merkleRoot_",
-        "type": "bytes32"
-      }
+      { "internalType": "bytes32", "name": "merkleRoot_", "type": "bytes32" }
     ],
     "name": "setMerkleRoot",
     "outputs": [],
@@ -234,11 +207,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "rewardsHolder_",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "rewardsHolder_", "type": "address" }
     ],
     "name": "setRewardsHolder",
     "outputs": [],
@@ -248,23 +217,13 @@
   {
     "inputs": [],
     "name": "token",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "newOwner", "type": "address" }
     ],
     "name": "transferOwnership",
     "outputs": [],
@@ -278,25 +237,11 @@
         "name": "merkleProof",
         "type": "bytes32[]"
       },
-      {
-        "internalType": "bytes32",
-        "name": "root",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "leaf",
-        "type": "bytes32"
-      }
+      { "internalType": "bytes32", "name": "root", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "leaf", "type": "bytes32" }
     ],
     "name": "verify",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "pure",
     "type": "function"
   }
