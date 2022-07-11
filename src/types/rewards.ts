@@ -1,7 +1,13 @@
 export interface RewardsJSONData {
-  tokenTotal: string
+  totalAmount: string
   merkleRoot: string
-  claims: { [stakingProvider: string]: { amount: string; proof: string[] } }
+  claims: {
+    [stakingProvider: string]: {
+      amount: string
+      proof: string[]
+      beneficiary: string
+    }
+  }
 }
 
 export interface BonusEligibility {

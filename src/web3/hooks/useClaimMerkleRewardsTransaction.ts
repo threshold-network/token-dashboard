@@ -25,10 +25,14 @@ export const useClaimMerkleRewardsTransaction = (
       for (const stakingProvider of stakingProviders) {
         if (!rewardsData.claims.hasOwnProperty(stakingProvider)) continue
 
-        const { amount, proof } = (rewardsData as RewardsJSONData).claims[
-          stakingProvider
-        ]
-        availableRewardsToClaim.push([stakingProvider, amount, proof])
+        const { amount, beneficiary, proof } = (rewardsData as RewardsJSONData)
+          .claims[stakingProvider]
+        availableRewardsToClaim.push([
+          stakingProvider,
+          beneficiary,
+          amount,
+          proof,
+        ])
       }
 
       if (availableRewardsToClaim.length === 0) {
