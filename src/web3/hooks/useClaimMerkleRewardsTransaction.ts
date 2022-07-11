@@ -18,7 +18,7 @@ export const useClaimMerkleRewardsTransaction = (
   const claim = useCallback(
     (stakingProviders: string[]) => {
       if (!stakingProviders || stakingProviders.length === 0) {
-        throw new Error("Staking providers ")
+        throw new Error("Staking providers not found.")
       }
       const availableRewardsToClaim = []
 
@@ -36,7 +36,7 @@ export const useClaimMerkleRewardsTransaction = (
       }
 
       if (availableRewardsToClaim.length === 0) {
-        throw new Error("No rewards to claim")
+        throw new Error("No rewards to claim.")
       }
 
       const { merkleRoot } = rewardsData
