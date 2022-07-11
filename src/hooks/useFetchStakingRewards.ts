@@ -38,19 +38,11 @@ export const useFetchStakingRewards = () => {
           await getContractPastEvents(merkleDropContract, {
             eventName: "Claimed",
             fromBlock: DEPLOYMENT_BLOCK,
-            // TODO: We will probably need to pass addresses of the staking
-            // providers because we are going to generate the merkle tree per
-            // staking provider please see:
-            // https://github.com/threshold-network/merkle-distribution/issues/12
             filterParams: [stakingProviders],
           })
         )
-          // TODO: We should take into account events that are related only to
-          // the current merkle root. If an event exists with a current merkle
-          // root for a given address it means that rewards have already been
-          // claimed. Depends on:
-          // https://github.com/threshold-network/merkle-distribution/issues/11
-          .map((_) => getAddress(_.args?.account as string))
+          .filter((_) => _.args?.merkleRoot === rewardsData.merkleRoot)
+          .map((_) => getAddress(_.args?.stakingProvider as string))
       )
 
       const stakingRewards: StakingRewards = {}

@@ -53,7 +53,7 @@ export const useCheckBonusEligibility = () => {
             fromBlock: DEPLOYMENT_BLOCK,
             filterParams: [stakingProviders],
           })
-        ).map((_) => getAddress(_.args?.account as string))
+        ).map((_) => getAddress(_.args?.stakingProvider as string))
       )
 
       const operatorConfirmedEvents = await getContractPastEvents(preContract, {
