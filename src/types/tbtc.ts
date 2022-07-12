@@ -1,4 +1,5 @@
 import { UpdateStateActionPayload } from "./state"
+import { TbtcState } from "../store/tbtc"
 
 export type TbtcStateKey =
   | "mintingStep"
@@ -48,25 +49,8 @@ export interface UpdateTbtcState {
 }
 
 export interface UseTbtcState {
-  (): {
-    mintingStep: MintingStep
-    unmintingStep: UnmintingStep
-    mintingType: TbtcMintingType
-    btcWithdrawAddress: string
-    unmintAmount: string
-    btcDepositAddress: string
-    btcRecoveryAddress: string
-    ethAddress: string
+  (): TbtcState & {
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
-    nextBridgeCrossing?: Date
-
-    // TODO: These may be incorrect types
-    tBTCMintAmount: number
-    isLoadingTbtcMintAmount: boolean
-    ethGasCost: number
-    thresholdNetworkFee: number
-    bitcoinMinerFee: number
-    isLoadingBitcoinMinerFee: boolean
   }
 }
 

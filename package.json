@@ -7,7 +7,7 @@
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
     "@emotion/react": "^11",
-    "@emotion/styled": "^11",
+    "@emotion/styled": "11.6.0",
     "@ethersproject/address": "^5.5.0",
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/hardware-wallets": "^5.5.0",
@@ -16,7 +16,6 @@
     "@keep-network/keep-core": ">1.8.0-dev <1.8.0-pre",
     "@keep-network/keep-ecdsa": ">1.9.0-dev <1.9.0-ropsten",
     "@keep-network/tbtc": ">1.1.2-dev <1.1.2-pre",
-    "@keep-network/tbtc-v2": "0.1.1-dev.109",
     "@ledgerhq/hw-app-eth": "^6.9.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^6.7.0",
@@ -25,7 +24,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@threshold-network/components": "^1.0.0-dev.5",
+    "@threshold-network/components": "file:components-1657661407.tgz",
     "@threshold-network/solidity-contracts": ">1.1.0-dev <1.1.0-ropsten",
     "@types/ethjs-util": "^0.1.0",
     "@types/jest": "^27.0.1",
@@ -104,7 +103,11 @@
   "resolutions": {
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.9",
+    "@emotion/utils": "^1.1.0",
+    "@emotion/sheet": "^1.1.0",
+    "@types/react": "17.0.30",
+    "prettier": "2.5.1"
   },
   "devDependencies": {
     "@chakra-ui/cli": "^1.9.0",

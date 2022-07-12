@@ -2,8 +2,8 @@ import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Box, Button, Flex, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "./TbtcMintingCardTitle"
-import { TbtcMintingCardSubTitle } from "./TbtcMintingCardSubtitle"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { Form, FormikInput } from "../../../../components/Forms"
 import {
   getErrorsObj,
