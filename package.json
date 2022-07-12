@@ -24,7 +24,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
-    "@threshold-network/components": "file:components-1657661407.tgz",
+    "@threshold-network/components": "^1.0.0-dev.5",
     "@threshold-network/solidity-contracts": ">1.1.0-dev <1.1.0-ropsten",
     "@types/ethjs-util": "^0.1.0",
     "@types/jest": "^27.0.1",
