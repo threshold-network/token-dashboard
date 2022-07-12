@@ -2,11 +2,6 @@ import { FC } from "react"
 import { List, ListItem, ListIcon, Button } from "@chakra-ui/react"
 import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
-import {
-  StakeCardHeader,
-  StakeCardHeaderTitle,
-  StakeCardProviderAddress,
-} from "../../../pages/Staking/StakeCard"
 import TokenBalance from "../../TokenBalance"
 import { BodyMd, H3, Card } from "@threshold-network/components"
 import ExternalLink from "../../ExternalLink"
@@ -15,6 +10,9 @@ import { AddressZero } from "../../../web3/utils"
 import { ExternalHref } from "../../../enums"
 import { StakeData } from "../../../types/staking"
 import { stakingBonus } from "../../../constants"
+import { StakeCardHeaderTitle } from "../../../pages/Staking/StakeCard/HeaderTitle"
+import { StakeCardHeader } from "../../../pages/Staking/StakeCard/Header"
+import { StakeCardProviderAddress } from "../../../pages/Staking/StakeCard/ProviderAddress"
 
 export const EligibilityCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isFirstRequirementMet =
