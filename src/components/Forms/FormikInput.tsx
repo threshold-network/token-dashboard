@@ -52,7 +52,7 @@ export const FormikInput: FC<
           {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
-          <BodySm as="label" color={secondaryLabelColor} m={0}>
+          <BodySm as="label" htmlFor={name} color={secondaryLabelColor} m={0}>
             {secondaryLabel}
           </BodySm>
         )}
