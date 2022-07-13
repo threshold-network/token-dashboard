@@ -52,6 +52,7 @@ export const FormikInput: FC<
           {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
+          // @ts-ignore - htmlFor is not a valid prop for BodySm but we're setting to label here
           <BodySm as="label" htmlFor={name} color={secondaryLabelColor} m={0}>
             {secondaryLabel}
           </BodySm>
