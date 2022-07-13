@@ -22,7 +22,7 @@ const ClaimRewardsSuccessModalBase: FC<ClaimRewardsSuccessProps> = ({
       subTitle="Your claim was successful!"
       transactionHash={transactionHash}
       body={
-        <List spacing="0.5rem">
+        <List spacing="2">
           <ListItem>
             <HStack justify="space-between">
               <BodySm>Claimed Amount</BodySm>
