@@ -9,10 +9,6 @@ import {
   UpdateStateActionPayload,
 } from "../../types/staking"
 import { StakeType, UnstakeType } from "../../enums"
-import {
-  calculateStakingBonusReward,
-  isBeforeOrEqualBonusDeadline,
-} from "../../utils/stakingBonus"
 import { AddressZero } from "../../web3/utils"
 
 interface StakingState {
@@ -67,16 +63,6 @@ export const stakingSlice = createSlice({
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
 
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      // newStake.bonusEligibility = {
-      //   eligibleStakeAmount: _isBeforeOrEqualBonusDeadline ? _amount : "0",
-      //   hasPREConfigured: false,
-      //   hasActiveStake: _isBeforeOrEqualBonusDeadline,
-      //   hasUnstakeAfterBonusDeadline: false,
-      //   reward: calculateStakingBonusReward(_amount),
-      //   isRewardClaimed: false,
-      // }
-
       newStake.preConfig = {
         operator: AddressZero,
         isOperatorConfirmed: false,
@@ -124,16 +110,6 @@ export const stakingSlice = createSlice({
 
       stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
 
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      // const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
-      //   ? totalInTStake
-      //   : state.stakes[stakeIdxToUpdate].bonusEligibility.eligibleStakeAmount
-      // state.stakes[stakeIdxToUpdate].bonusEligibility = {
-      //   ...state.stakes[stakeIdxToUpdate].bonusEligibility,
-      //   eligibleStakeAmount,
-      //   reward: calculateStakingBonusReward(eligibleStakeAmount),
-      // }
-
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
     unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
@@ -174,17 +150,6 @@ export const stakingSlice = createSlice({
         .toString()
       state.stakes[stakeIdxToUpdate].totalInTStake = newTotalStakedAmount
 
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
-        ? newTotalStakedAmount
-        : "0"
-      // state.stakes[stakeIdxToUpdate].bonusEligibility = {
-      //   ...state.stakes[stakeIdxToUpdate].bonusEligibility,
-      //   eligibleStakeAmount,
-      //   hasActiveStake: _isBeforeOrEqualBonusDeadline,
-      //   hasUnstakeAfterBonusDeadline: !_isBeforeOrEqualBonusDeadline,
-      //   reward: calculateStakingBonusReward(eligibleStakeAmount),
-      // }
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
     setMinStake: (
