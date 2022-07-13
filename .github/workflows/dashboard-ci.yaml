@@ -62,7 +62,7 @@ jobs:
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
-            @keep-network/coverage-pools
+            @keep-network/coverage-pools@1.0.1-ropsten.0
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -107,7 +107,7 @@ jobs:
             @keep-network/keep-core@ropsten \
             @keep-network/keep-ecdsa@ropsten \
             @keep-network/tbtc@ropsten \
-            @keep-network/coverage-pools@ropsten
+            @keep-network/coverage-pools@1.0.1-ropsten.0
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
