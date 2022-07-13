@@ -6,6 +6,8 @@ import {
   InterimRewards,
   StakingBonusRewards,
 } from "../../types"
+import { getAddress } from "../../web3/utils"
+import { isBetweenBonusDealineAndBonusDistribution } from "../../utils/stakingBonus"
 
 interface BasicRewardsState<T> {
   isFetching: boolean
@@ -80,6 +82,25 @@ export const rewardsSlice = createSlice({
       )
       state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
+    unstaked: (state: RewardsState, action: PayloadAction<string>) => {
+      const stakingProvider = getAddress(action.payload)
+      if (
+        !state.stakingBonus.rewards.hasOwnProperty(stakingProvider) &&
+        !isBetweenBonusDealineAndBonusDistribution()
+      ) {
+        return
+      }
+
+      state.stakingBonus.rewards[stakingProvider] = {
+        ...state.stakingBonus.rewards[stakingProvider],
+        isEligible: false,
+        hasUnstakeAfterBonusDeadline: true,
+      }
+      state.stakingBonus.totalRewardsBalance = calculateTotalBonusBalance(
+        state.stakingBonus.rewards
+      )
+      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
+    },
   },
 })
 
@@ -111,5 +132,9 @@ const calculateTotalRewardsBalance = (rewardsState: RewardsState) => {
   return rewardsState.interim.totalRewardsBalance
 }
 
-export const { setInterimRewards, setStakingBonus, interimRewardsClaimed } =
-  rewardsSlice.actions
+export const {
+  setInterimRewards,
+  setStakingBonus,
+  interimRewardsClaimed,
+  unstaked,
+} = rewardsSlice.actions
