@@ -50,7 +50,7 @@ const RewardsCard: FC<{
           </BodyMd>
         )}
       </HStack>
-      <InfoBox mt="2" direction="row" p="0" alignItems="center">
+      <InfoBox mt="2" direction="row" p={active ? 0 : 4} alignItems="center">
         {active ? (
           <>
             <H5
