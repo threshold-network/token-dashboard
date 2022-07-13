@@ -20,8 +20,16 @@ const useCountdown = (targetDateInUnix: number) => {
 
     return () => clearInterval(interval)
   }, [targetDateInUnix])
-
-  return dateAs(diff)
+  const { days, hours, minutes, seconds } = dateAs(diff)
+  return {
+    days: addLeadingZero(days),
+    hours: addLeadingZero(hours),
+    minutes: addLeadingZero(minutes),
+    seconds: addLeadingZero(seconds),
+  }
 }
+
+const addLeadingZero = (relativeTime: number) =>
+  relativeTime >= 0 && relativeTime <= 9 ? `0${relativeTime}` : relativeTime
 
 export { useCountdown }
