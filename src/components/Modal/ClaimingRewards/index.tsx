@@ -23,7 +23,7 @@ import withBaseModal from "../withBaseModal"
 import { useClaimMerkleRewardsTransaction } from "../../../web3/hooks"
 import {
   interimRewardsClaimed,
-  selectAccumuletedRewardsPerBeneficiary,
+  selectAccumulatedRewardsPerBeneficiary,
   selectInterimRewards,
 } from "../../../store/rewards"
 import shortenAddress from "../../../utils/shortenAddress"
@@ -38,7 +38,7 @@ const ClaimingRewardsBase: FC<
 > = ({ closeModal, totalRewardsAmount }) => {
   const dispatch = useDispatch()
   const { openModal } = useModal()
-  const beneficiaryRewards = useSelector(selectAccumuletedRewardsPerBeneficiary)
+  const beneficiaryRewards = useSelector(selectAccumulatedRewardsPerBeneficiary)
   const rewards = useSelector(selectInterimRewards)
 
   const onClaimSuccess = useCallback(

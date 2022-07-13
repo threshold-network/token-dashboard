@@ -45,7 +45,7 @@ export const selectRewardsByStakingProvider = createSelector(
   }
 )
 
-export const selectAccumuletedRewardsPerBeneficiary = createSelector(
+export const selectAccumulatedRewardsPerBeneficiary = createSelector(
   [selectInterimRewards, selectStakes],
   (rewards, stakes) => {
     const beneficiaryRewards: { [beneficiary: string]: string } = {}
