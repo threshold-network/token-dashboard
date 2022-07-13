@@ -130,13 +130,13 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       </HStack>
       <Flex alignItems="end" justifyContent="space-between">
         <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
-        {bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>}
-        {/* TODO: Where should we display this badge? */}
-        {/* {!isPRESet && (
-          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+        {!isPRESet ? (
+          <Badge colorScheme="red" variant="solid" size="medium" ml="3">
             missing PRE
           </Badge>
-        )} */}
+        ) : (
+          bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>
+        )}
       </Flex>
       <LineDivider mb="0" />
       {hasLegacyStakes ? (
