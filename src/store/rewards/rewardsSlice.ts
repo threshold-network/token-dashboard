@@ -26,7 +26,6 @@ interface RewardsState {
 export const rewardsSlice = createSlice({
   name: "rewards",
   initialState: {
-    // TODO: move the bonus eleigibility from the staking reducer to rewards.
     stakingBonus: {
       isFetching: false,
       hasFetched: false,
