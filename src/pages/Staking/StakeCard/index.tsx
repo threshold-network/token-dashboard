@@ -160,7 +160,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
         />
-      ) : canTopUpNu || canTopUpKepp ? (
+      ) : (canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>
             onSubmitTopUp(
