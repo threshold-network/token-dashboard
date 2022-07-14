@@ -18,7 +18,7 @@ import {
   UnstakeTStep1 as UnstakeTModalStep1,
   UnstakeTStep2 as UnstakeTModalStep2,
 } from "../components/Modal/UnstakeTModal"
-import TopupTModal, { LegacyTopUpModal } from "../components/Modal/TopupTModal"
+import { LegacyTopUpModal, TopupTModal } from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 import StakingBonusModal from "../components/Modal/StakingBonus"
 
