@@ -5,13 +5,20 @@ import { useTStakingContract } from "./useTStakingContract"
 import { useApproveTStaking } from "./useApproveTStaking"
 import { BigNumber } from "ethers"
 import { useTStakingAllowance } from "./useTStakingAllowance"
+import { TopUpType } from "../../enums"
 
 interface TopupRequest {
   amount: string | number
   stakingProvider: string
 }
+const topUpTypeToContractFunctionName: Record<TopUpType, string> = {
+  [TopUpType.NATIVE]: "topUp",
+  [TopUpType.LEGACY_KEEP]: "topUpKeep",
+  [TopUpType.LEGACY_NU]: "topUpNu",
+}
 
 export const useTopupTransaction = (
+  type: TopUpType,
   onSuccess: (tx: ContractTransaction) => void
 ) => {
   const stakingContract = useTStakingContract()
@@ -19,7 +26,7 @@ export const useTopupTransaction = (
 
   const { sendTransaction, status } = useSendTransaction(
     stakingContract!,
-    "topUp",
+    topUpTypeToContractFunctionName[type],
     onSuccess
   )
 
@@ -28,13 +35,17 @@ export const useTopupTransaction = (
   const topup = useCallback(
     async ({ amount, stakingProvider }: TopupRequest) => {
       const isApprovedForAmount = BigNumber.from(amount).lte(allowance)
-      if (!isApprovedForAmount) {
+      if (type === TopUpType.NATIVE && !isApprovedForAmount) {
         await approve(amount.toString())
       }
+      const args =
+        type === TopUpType.NATIVE
+          ? [stakingProvider, amount]
+          : [stakingProvider]
 
-      await sendTransaction(stakingProvider, amount)
+      await sendTransaction(...args)
     },
-    [sendTransaction, stakingContract?.address, allowance, approve]
+    [sendTransaction, allowance, approve, type]
   )
 
   return { topup, status }
