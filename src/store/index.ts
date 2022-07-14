@@ -22,7 +22,7 @@ const store = configureStore({
         ignoredActions: [
           "modal/openModal",
           "staking/unstaked",
-          "staking/updateStakeAmountForProvider",
+          "staking/toppepUp",
         ],
         // Ignore these field paths in all actions
         ignoredPaths: [
