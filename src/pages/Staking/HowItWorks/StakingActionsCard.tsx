@@ -1,13 +1,11 @@
 import { FC, ComponentProps } from "react"
 import { List, ListItem } from "@chakra-ui/react"
-import Card from "../../../components/Card"
-import { Label3, Body2 } from "../../../components/Typography"
-import BoxLabel from "../../../components/BoxLabel"
+import { LabelSm, BodyMd, BoxLabel, Card } from "@threshold-network/components"
 
 export const StakingActionsCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
     <Card gridArea="staking-actions" {...props}>
-      <Label3>staking actions</Label3>
+      <LabelSm>staking actions</LabelSm>
       <List mt="5" spacing="5">
         {stakingActions.map((action) => (
           <ListItem key={action.sectionName}>
@@ -17,7 +15,7 @@ export const StakingActionsCard: FC<ComponentProps<typeof Card>> = (props) => {
             <List spacing="4">
               {action.items.map((item, index) => (
                 <ListItem key={`${action.sectionName}-${index}}`}>
-                  <Body2>{item}</Body2>
+                  <BodyMd>{item}</BodyMd>
                 </ListItem>
               ))}
             </List>

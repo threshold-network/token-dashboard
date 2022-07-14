@@ -52,6 +52,8 @@ COV_POOLS_PATH="$PWD/../coverage-pools"
 TBTC_PATH="$PWD/../tbtc/"
 TBTC_SOL_PATH="$TBTC_PATH/solidity"
 
+COMPONENTS_LIB_PATH="$PWD/../components/"
+
 function start_dashboard {
     cd "$DASHBOARD_PATH"
     printf "${LOG_START}Installing T Token Dashboard...${LOG_END}"
@@ -81,7 +83,7 @@ fi
 
 printf "${LOG_START}Migrating contracts for keep-core...${LOG_END}"
 cd "$KEEP_CORE_PATH"
-./scripts/install.sh --network local --contracts-only
+./scripts/install.sh --network local --skip-client-build
 cd "$KEEP_CORE_SOL_PATH"
 yarn link
 
@@ -114,5 +116,11 @@ printf "${LOG_START}Deploying contracts for threshold solidity contracts...${LOG
 yarn deploy --network development --reset
 ./scripts/prepare-artifacts.sh --network development
 yarn link
+
+cd $COMPONENTS_LIB_PATH
+printf "${LOG_START}Installing local components package...${LOG_START}"
+yarn
+cd "$DASHBOARD_PATH"
+yarn add-components-lib
 
 start_dashboard

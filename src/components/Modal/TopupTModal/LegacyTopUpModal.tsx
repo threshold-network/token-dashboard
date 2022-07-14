@@ -18,8 +18,9 @@ import {
   AlertIcon,
   Link,
   Divider,
-} from "@chakra-ui/react"
-import { Body3, H5 } from "../../Typography"
+  H5,
+  BodySm,
+} from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import {
@@ -69,20 +70,20 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
           <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
             This is a Legacy Stake
           </H5>
-          <Body3 mb="6">Topping up a Legacy Stake can be done:</Body3>
+          <BodySm mb="6">Topping up a Legacy Stake can be done:</BodySm>
           <UnorderedList spacing="6">
             <ListItem sx={bulletColorStyle}>
-              <Body3>
+              <BodySm>
                 You can top-up your legacy stake with liquid T tokens in this
                 modal
-              </Body3>
+              </BodySm>
             </ListItem>
             <ListItem sx={bulletColorStyle}>
-              <Body3>
+              <BodySm>
                 You can top-up your legacy stake with legacy tokens in the
                 legacy dashboard. After you do the top-up you will be required
                 to confirm your legacy top-up in the Threshold dashboard
-              </Body3>
+              </BodySm>
             </ListItem>
           </UnorderedList>
         </InfoBox>
