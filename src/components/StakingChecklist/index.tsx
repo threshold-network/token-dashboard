@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { Body2, Body3 } from "../Typography"
-import ChecklistGroup from "../ChecklistGroup"
+import { BodyMd, BodySm, ChecklistGroup } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 
@@ -11,10 +10,11 @@ export const StakingDepositSteps: FC = () => {
       title="Step 1 - Staking Deposit"
       checklistItems={[
         {
-          title:
+          itemId: "staking_deposit__0",
+          itemTitle:
             "Provider Node address (Operator), Beneficiary, and Authorizer addresses",
-          subTitle: (
-            <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          itemSubTitle: (
+            <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
               <ExternalLink
@@ -22,7 +22,7 @@ export const StakingDepositSteps: FC = () => {
                 text="this"
                 withArrow
               />
-            </Body3>
+            </BodySm>
           ),
         },
       ]}
@@ -36,23 +36,25 @@ export const LegacyStakesDepositSteps: FC = () => {
       title="Step 1 - T Staking Contract Authorization"
       checklistItems={[
         {
-          title: (
-            <Body2>
+          itemId: "t_staking_contract_auth__0",
+          itemTitle: (
+            <BodyMd>
               Authorize your NuCypher legacy stake{" "}
               <ExternalLink text="here" href={ExternalHref.nuDapp} withArrow />
-            </Body2>
+            </BodyMd>
           ),
         },
         {
-          title: (
-            <Body2>
+          itemId: "t_staking_contract_auth__1",
+          itemTitle: (
+            <BodyMd>
               Authorize your Keep Network legacy stake{" "}
               <ExternalLink
                 text="here"
                 href={ExternalHref.keepDappAuthPage}
                 withArrow
               />
-            </Body2>
+            </BodyMd>
           ),
         },
       ]}
@@ -66,9 +68,10 @@ export const PreSetupSteps: FC = () => {
       title="Step 2 - PRE Setup"
       checklistItems={[
         {
-          title: "Run a PRE Node",
-          subTitle: (
-            <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          itemId: "run_a_pre_node__0",
+          itemTitle: "Run a PRE Node",
+          itemSubTitle: (
+            <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               You will need to run a PRE node to get rewards. If you don’t have
               one, learn how to do it here{" "}
               <ExternalLink
@@ -83,13 +86,14 @@ export const PreSetupSteps: FC = () => {
                 withArrow
               />
               .
-            </Body3>
+            </BodySm>
           ),
         },
         {
-          title: "PRE Operator address",
-          subTitle: (
-            <Body3 color={useColorModeValue("gray.500", "gray.300")}>
+          itemId: "run_a_pre_node__1",
+          itemTitle: "PRE Operator address",
+          itemSubTitle: (
+            <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               Make sure you add your PRE Operator address{" "}
               <ExternalLink
                 href={ExternalHref.preNodeSetup}
@@ -97,7 +101,7 @@ export const PreSetupSteps: FC = () => {
                 withArrow
               />{" "}
               to gain rewards.
-            </Body3>
+            </BodySm>
           ),
         },
       ]}

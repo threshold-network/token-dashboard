@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@chakra-ui/react"
 import { CopyIcon } from "@chakra-ui/icons"
-import { Body2 } from "../Typography"
+import { BodyMd } from "@threshold-network/components"
 import shortenAddress from "../../utils/shortenAddress"
 
 type CopyToClipboardProps = {
@@ -44,7 +44,7 @@ const CopyToClipboard: FC<CopyToClipboardProps> = ({
 }
 
 type CopyAddressToClipboardProps = Omit<
-  ComponentProps<typeof Body2>,
+  ComponentProps<typeof BodyMd>,
   "children"
 > & {
   address: string
@@ -57,9 +57,9 @@ export const CopyAddressToClipboard: FC<CopyAddressToClipboardProps> = ({
   const addressColor = useColorModeValue("brand.500", "brand.550")
   return (
     <CopyToClipboard textToCopy={address}>
-      <Body2 color={addressColor} {...restProps}>
+      <BodyMd color={addressColor} {...restProps}>
         {shortenAddress(address)}
-      </Body2>
+      </BodyMd>
     </CopyToClipboard>
   )
 }

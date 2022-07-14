@@ -7,6 +7,7 @@ import { useModal } from "../../hooks/useModal"
 import { useApproveTStaking } from "./useApproveTStaking"
 import { BigNumber } from "ethers"
 import { useTStakingAllowance } from "./useTStakingAllowance"
+import doesErrorInclude from "../utils/doesErrorInclude"
 
 interface StakeRequest {
   amount: string | number
@@ -27,10 +28,7 @@ export const useStakeTransaction = (
   const { approve } = useApproveTStaking()
 
   const onError = (error: any) => {
-    if (
-      error?.data?.message.includes(CommonStakingErrors.ProviderInUse) ||
-      error?.message.includes(CommonStakingErrors.ProviderInUse)
-    ) {
+    if (doesErrorInclude(error, CommonStakingErrors.ProviderInUse)) {
       // send the user back to the first staking step, but with validated form fields
       openModal(ModalType.ConfirmStakingParams, {
         stakingProviderInUse: true,

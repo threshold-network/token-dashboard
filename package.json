@@ -24,6 +24,7 @@
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "@threshold-network/components": "^1.0.0-dev.0",
     "@threshold-network/solidity-contracts": ">1.1.0-dev <1.1.0-ropsten",
     "@types/ethjs-util": "^0.1.0",
     "@types/jest": "^27.0.1",
@@ -39,6 +40,7 @@
     "@web3-react/ledger-connector": "^6.1.9",
     "@web3-react/trezor-connector": "^6.1.9",
     "@web3-react/walletconnect-connector": "^6.2.4",
+    "@web3-react/walletlink-connector": "^6.2.13",
     "axios": "^0.24.0",
     "ethereum-blockies-base64": "^1.0.2",
     "ethereumjs-common": "^1.5.2",
@@ -82,7 +84,8 @@
     "chromatic": "npx chromatic --exit-zero-on-changes",
     "cypress:open": "cypress open",
     "gen:theme-typings": "chakra-cli tokens ./src/theme/index.ts",
-    "postinstall": "npm run gen:theme-typings"
+    "postinstall": "npm run gen:theme-typings",
+    "add-components-lib": ". ./scripts/rebuild_components_package.sh"
   },
   "browserslist": {
     "production": [
@@ -99,10 +102,11 @@
   "resolutions": {
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.9",
+    "@types/react": "17.0.30"
   },
   "devDependencies": {
-    "@chakra-ui/cli": "^1.9.0",
+    "@chakra-ui/cli": "0.0.0-pr-20211126153854",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@snek-at/storybook-addon-chakra-ui": "^1.0.0-beta.1",
     "@storybook/addon-actions": "^6.3.8",
