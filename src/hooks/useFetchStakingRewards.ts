@@ -10,6 +10,8 @@ import { RewardsJSONData } from "../types"
 import { RootState } from "../store"
 import { setInterimRewards } from "../store/rewards"
 import { selectStakingProviders } from "../store/staking"
+import { BigNumber } from "ethers"
+import { Zero } from "@ethersproject/constants"
 
 interface StakingRewards {
   [stakingProvider: string]: string
@@ -33,14 +35,31 @@ export const useFetchStakingRewards = () => {
         return
       }
 
-      const claimedRewards = new Set(
+      const claimedEvents = await getContractPastEvents(merkleDropContract, {
+        eventName: "Claimed",
+        fromBlock: DEPLOYMENT_BLOCK,
+        filterParams: [stakingProviders],
+      })
+
+      const claimedAmountToStakingProvider = claimedEvents.reduce(
         (
-          await getContractPastEvents(merkleDropContract, {
-            eventName: "Claimed",
-            fromBlock: DEPLOYMENT_BLOCK,
-            filterParams: [stakingProviders],
-          })
-        )
+          reducer: { [stakingProvider: string]: string },
+          event
+        ): { [stakingProvider: string]: string } => {
+          const stakingProvider = getAddress(
+            event.args?.stakingProvider as string
+          )
+          const prevAmount = BigNumber.from(reducer[stakingProvider] || Zero)
+          reducer[stakingProvider] = prevAmount
+            .add(event.args?.amount as string)
+            .toString()
+          return reducer
+        },
+        {}
+      )
+
+      const claimedRewardsInCurrentMerkleRoot = new Set(
+        claimedEvents
           .filter((_) => _.args?.merkleRoot === rewardsData.merkleRoot)
           .map((_) => getAddress(_.args?.stakingProvider as string))
       )
@@ -49,7 +68,7 @@ export const useFetchStakingRewards = () => {
       for (const stakingProvider of stakingProviders) {
         if (
           !rewardsData.claims.hasOwnProperty(stakingProvider) ||
-          claimedRewards.has(stakingProvider)
+          claimedRewardsInCurrentMerkleRoot.has(stakingProvider)
         ) {
           // If the JSON file doesn't contain proofs for a given staking
           // provider it means this staking provider has no rewards- we can skip
@@ -62,7 +81,9 @@ export const useFetchStakingRewards = () => {
         const { amount } = (rewardsData as RewardsJSONData).claims[
           stakingProvider
         ]
-        stakingRewards[stakingProvider] = amount
+        stakingRewards[stakingProvider] = BigNumber.from(amount)
+          .sub(claimedAmountToStakingProvider[stakingProvider] || Zero)
+          .toString()
       }
 
       dispatch(setInterimRewards(stakingRewards))
