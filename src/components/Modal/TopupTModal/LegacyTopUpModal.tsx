@@ -37,7 +37,7 @@ import { StakingContractLearnMore } from "../../ExternalLink"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
 
-const stakeTypeToDaapHref: Record<StakeType.KEEP | StakeType.NU, ExternalHref> =
+const stakeTypeToDappHref: Record<StakeType.KEEP | StakeType.NU, ExternalHref> =
   {
     [StakeType.KEEP]: ExternalHref.keepDapp,
     [StakeType.NU]: ExternalHref.nuDapp,
@@ -108,7 +108,7 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 <Button
                   as={Link}
                   isExternal
-                  href={stakeTypeToDaapHref[stake.stakeType]}
+                  href={stakeTypeToDappHref[stake.stakeType]}
                   isFullWidth
                   mb="3"
                 >
