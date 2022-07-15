@@ -7,9 +7,9 @@ import { AddressZero } from "../utils"
 export const DEPLOYMENT_BLOCK = supportedChainId === "1" ? 0 : 0
 
 const CONTRACT_ADDRESSESS = {
-  // TODO: Set mainnet address
+  // https://etherscan.io/address/0xea7ca290c7811d1cc2e79f8d706bd05d8280bd37
   [ChainID.Ethereum.valueOf().toString()]:
-    "0xcE14F142f16cb0f360b8EB021A780ed3EC04516c",
+    "0xeA7CA290c7811d1cC2e79f8d706bD05d8280BD37",
   // https://ropsten.etherscan.io/address/0x835d2F36450c7d20cCE3b3F31aBa6BF2Ac31c6f3
   [ChainID.Ropsten.valueOf().toString()]:
     "0x835d2F36450c7d20cCE3b3F31aBa6BF2Ac31c6f3",
