@@ -3,6 +3,7 @@ import { ContractTransaction } from "@ethersproject/contracts"
 import { useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
 import { useModal } from "../../hooks/useModal"
+import doesErrorInclude from "../utils/doesErrorInclude"
 import { ModalType, UnstakeType } from "../../enums"
 
 interface UnstakeRequest {
@@ -30,10 +31,7 @@ const useUnstakeTransaction = (
   const stakingContract = useTStakingContract()
 
   const onError = (error: any) => {
-    if (
-      error?.data?.message?.includes(CommonUnStakingErrors.tooEarly) ||
-      error?.message?.includes(CommonUnStakingErrors.tooEarly)
-    ) {
+    if (doesErrorInclude(error, CommonUnStakingErrors.tooEarly)) {
       openModal(ModalType.TransactionFailed, {
         error: new Error(
           "Your stake is locked for 24 hours after deposit. Please check back after if you would like to unstake"
