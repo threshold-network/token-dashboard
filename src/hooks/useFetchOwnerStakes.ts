@@ -13,12 +13,12 @@ import {
   decodeMulticallResult,
   getAddress,
   isSameETHAddress,
+  isAddress,
 } from "../web3/utils"
 import { StakeType, Token } from "../enums"
 import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useDispatch } from "react-redux"
-import { useCheckBonusEligibility } from "./useCheckBonusEligibility"
 import { useFetchPreConfigData } from "./useFetchPreConfigData"
 import { useTConvertedAmount } from "./useTConvertedAmount"
 import { useNuStakingEscrowContract } from "../web3/hooks/useNuStakingEscrowContract"
@@ -32,8 +32,6 @@ export const useFetchOwnerStakes = () => {
   const simplePREApplicationContract = usePREContract()
 
   const multicallContract = useMulticallContract()
-
-  const checkBonusEligibility = useCheckBonusEligibility()
 
   const fetchPreConfigData = useFetchPreConfigData()
 
@@ -64,13 +62,16 @@ export const useFetchOwnerStakes = () => {
         })
       ).reverse()
 
-      const stakingProviders = stakedEvents.map(
-        (_) => _.args?.stakingProvider as string
+      const stakingProviderToBeneficiary = stakedEvents.reduce(
+        (reducer, event): { [stakingProvider: string]: string } => {
+          reducer[event.args?.stakingProvider as string] = event.args
+            ?.beneficiary as string
+          return reducer
+        },
+        {} as { [stakingProvider: string]: string }
       )
 
-      const stakingProviderEligibilityChecks = await checkBonusEligibility(
-        stakingProviders
-      )
+      const stakingProviders = Object.keys(stakingProviderToBeneficiary)
 
       const preConfigData = await fetchPreConfigData(stakingProviders)
 
@@ -114,7 +115,6 @@ export const useFetchOwnerStakes = () => {
           nuInTStake: stakeType === StakeType.NU ? amount : "0",
           keepInTStake: stakeType === StakeType.KEEP ? amount : "0",
           tStake: stakeType === StakeType.T ? amount : "0",
-          bonusEligibility: stakingProviderEligibilityChecks[stakingProvider],
           preConfig: preConfigData[stakingProvider],
         } as StakeData
       })
@@ -143,14 +143,14 @@ export const useFetchOwnerStakes = () => {
 
         const stakingProvider = stakes[index].stakingProvider
         const nuInTStake = stakes[index].nuInTStake.toString()
-        const possibleNuTopUpInT = isSameETHAddress(
-          stakingProvider,
-          nuStakingProvider
-        )
-          ? BigNumber.from(convertNuToT(nuStake))
-              .sub(BigNumber.from(nuInTStake))
-              .toString()
-          : "0"
+
+        const possibleNuTopUpInT =
+          isAddress(nuStakingProvider) &&
+          isSameETHAddress(stakingProvider, nuStakingProvider)
+            ? BigNumber.from(convertNuToT(nuStake))
+                .sub(BigNumber.from(nuInTStake))
+                .toString()
+            : "0"
 
         stakes[index] = {
           ...stakes[index],
@@ -173,6 +173,7 @@ export const useFetchOwnerStakes = () => {
       dispatch,
       convertKeepToT,
       convertNuToT,
+      fetchPreConfigData,
     ]
   )
 }
