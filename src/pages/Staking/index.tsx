@@ -10,6 +10,11 @@ import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
 import HowItWorksPage from "./HowItWorks"
+import { useSelector } from "react-redux"
+import {
+  selectTotalBonusBalance,
+  selectTotalRewardsBalance,
+} from "../../store/rewards"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -17,7 +22,9 @@ const StakingPage: PageComponent = (props) => {
   useEffect(() => {
     fetchtTvlData()
   }, [fetchtTvlData])
-  const { stakes, totalBonusBalance, totalRewardsBalance } = useStakingState()
+  const { stakes } = useStakingState()
+  const totalRewardsBalance = useSelector(selectTotalRewardsBalance)
+  const totalBonusBalance = useSelector(selectTotalBonusBalance)
 
   return (
     <PageLayout {...props}>

@@ -1,28 +1,73 @@
 import { FC } from "react"
-import { Badge, Box, Button, Flex, useColorModeValue } from "@chakra-ui/react"
+import { Button } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
-import { BodyMd, BodySm, LabelSm, Card } from "@threshold-network/components"
+import {
+  BodyMd,
+  BodyLg,
+  H5,
+  LabelSm,
+  Card,
+  HStack,
+  Badge,
+} from "@threshold-network/components"
 import InfoBox from "../../components/InfoBox"
-import TokenBalance from "../../components/TokenBalance"
+import { useModal } from "../../hooks/useModal"
+import { ModalType } from "../../enums"
+import { formatTokenAmount } from "../../utils/formatAmount"
+import { useCountdown } from "../../hooks/useCountdown"
+import { BigNumber } from "ethers"
+import { useNextRewardsDropDate } from "../../hooks/useNextRewardsDropDate"
 
 const RewardsCard: FC<{
   totalRewardsBalance: string
   totalBonusBalance: string
 }> = ({ totalRewardsBalance, totalBonusBalance }) => {
   const { active } = useWeb3React()
+  const { openModal } = useModal()
+
+  const dropTimestamp = useNextRewardsDropDate()
+  const { days, hours, minutes, seconds } = useCountdown(dropTimestamp)
+
+  const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
+  const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
 
   return (
     <Card>
       <LabelSm textTransform="uppercase">Rewards</LabelSm>
-      <BodyMd mt="6">Total Staking Bonus</BodyMd>
-      <InfoBox mt="2" bg={active ? "brand.50" : undefined}>
+      <HStack mt="6">
+        <BodyMd>Total Rewards</BodyMd>
+        {hasBonusRewards ? (
+          <Badge variant="magic" ml="auto !important">
+            staking bonus
+          </Badge>
+        ) : (
+          <BodyMd ml="auto !important">
+            Next rewards emission:{" "}
+            <BodyMd
+              as="span"
+              color="brand.500"
+            >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
+          </BodyMd>
+        )}
+      </HStack>
+      <InfoBox mt="2" direction="row" p={active ? 0 : 4} alignItems="center">
         {active ? (
-          <TokenBalance
-            tokenAmount={totalBonusBalance}
-            withSymbol
-            tokenSymbol="T"
-            isLarge
-          />
+          <>
+            <H5
+              flex="2"
+              p="4"
+              borderRight={hasBonusRewards ? "1px solid" : undefined}
+              borderColor={hasBonusRewards ? "gray.300" : undefined}
+            >
+              {formatTokenAmount(totalRewardsBalance)}
+              <BodyLg as="span"> T</BodyLg>
+            </H5>
+            {hasBonusRewards && (
+              <BodyLg flex="1" p="4" textAlign="right">
+                {formatTokenAmount(totalBonusBalance)} T
+              </BodyLg>
+            )}
+          </>
         ) : (
           <BodyMd>
             Rewards are released at the end of each month and can be claimed
@@ -31,16 +76,20 @@ const RewardsCard: FC<{
         )}
       </InfoBox>
 
-      <Button mt="4" colorScheme="gray" disabled={true} isFullWidth>
-        See All Rewards
-      </Button>
-      <BodySm
-        mt="2"
-        textAlign="center"
-        color={useColorModeValue("gray.500", "gray.300")}
+      <Button
+        mt="4"
+        variant="outline"
+        size="lg"
+        disabled={!active || !hasRewards}
+        isFullWidth
+        onClick={() =>
+          openModal(ModalType.ClaimingRewards, {
+            totalRewardsAmount: totalRewardsBalance,
+          })
+        }
       >
-        Rewards are released at the end of each month
-      </BodySm>
+        Claim All
+      </Button>
     </Card>
   )
 }

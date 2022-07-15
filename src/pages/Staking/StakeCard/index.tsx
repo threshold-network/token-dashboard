@@ -2,7 +2,6 @@ import { FC, ReactElement, Fragment, useRef, useCallback } from "react"
 import {
   Flex,
   Box,
-  Badge,
   ButtonGroup,
   Button,
   useColorModeValue,
@@ -20,7 +19,11 @@ import {
   BoxLabel,
   Card,
   LineDivider,
+  HStack,
+  Badge,
+  BodyLg,
 } from "@threshold-network/components"
+import { useSelector } from "react-redux"
 import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
@@ -44,6 +47,9 @@ import {
   TreeItemLineToNode,
 } from "../../../components/Tree"
 import { isAddressZero } from "../../../web3/utils"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { selectRewardsByStakingProvider } from "../../../store/rewards"
+import { RootState } from "../../../store"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -97,6 +103,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
 
+  const { total, bonus } = useSelector((state: RootState) =>
+    selectRewardsByStakingProvider(state, stake.stakingProvider)
+  )
+
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader>
@@ -111,20 +121,22 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={onChangeAction} isActive={isStakeAction} />
       </StakeCardHeader>
-      <BodyMd mt="10" mb="4">
-        Staking Bonus
-      </BodyMd>
-      <Flex alignItems={"end"}>
-        <TokenBalance
-          tokenAmount={stake.bonusEligibility.reward}
-          withSymbol
-          tokenSymbol="T"
-          isLarge
-        />
-        {!isPRESet && (
-          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+      <HStack mt="10" mb="4">
+        <BodyMd>Total Rewards</BodyMd>
+        {bonus !== "0" && (
+          <Badge variant="magic" mt="1rem !important" ml="auto !important">
+            staking bonus
+          </Badge>
+        )}
+      </HStack>
+      <Flex alignItems="end" justifyContent="space-between">
+        <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
+        {!isPRESet ? (
+          <Badge colorScheme="red" variant="solid" size="medium" ml="3">
             missing PRE
           </Badge>
+        ) : (
+          bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>
         )}
       </Flex>
       <LineDivider mb="0" />
@@ -151,19 +163,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction &&
-      stake.stakeType === StakeType.T &&
-      !canTopUpKepp &&
-      !canTopUpNu ? (
-        <TokenAmountForm
-          innerRef={formRef}
-          onSubmitForm={onSubmitForm}
-          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
-          submitButtonText={submitButtonText}
-          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
-          shouldDisplayMaxAmountInLabel
-        />
-      ) : (canTopUpNu || canTopUpKepp) && isStakeAction ? (
+      {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>
             onSubmitTopUp(
@@ -177,6 +177,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         >
           Confirm Legacy Top-up
         </Button>
+      ) : stake.stakeType === StakeType.T ? (
+        <TokenAmountForm
+          innerRef={formRef}
+          onSubmitForm={onSubmitForm}
+          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
+          submitButtonText={submitButtonText}
+          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
+          shouldDisplayMaxAmountInLabel
+        />
       ) : (
         <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
           {submitButtonText}

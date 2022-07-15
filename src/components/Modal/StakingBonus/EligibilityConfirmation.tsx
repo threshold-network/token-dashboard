@@ -22,23 +22,24 @@ import {
   ChecklistGroup,
 } from "@threshold-network/components"
 import { StakingBonusReadMore } from "../../ExternalLink"
-import { BaseModalProps } from "../../../types"
-import { StakeData } from "../../../types/staking"
+import { BaseModalProps, BonusEligibility } from "../../../types"
 import { EligibilityCard, EmptyEligibilityCard } from "./EligibilityCard"
 
 export const EligibilityConfirmation: FC<
-  BaseModalProps & { stakes: StakeData[] }
-> = ({ closeModal, stakes }) => {
+  BaseModalProps & {
+    rewards: { [stakingProvider: string]: BonusEligibility }
+  }
+> = ({ closeModal, rewards }) => {
   const navigate = useNavigate()
 
-  const hasStakes = stakes.length > 0
+  const hasStakes = Object.values(rewards).length > 0
   const isEligible =
     hasStakes &&
-    stakes.every(
-      (stake) =>
-        stake.bonusEligibility.hasActiveStake &&
-        stake.bonusEligibility.hasPREConfigured &&
-        !stake.bonusEligibility.hasUnstakeAfterBonusDeadline
+    Object.values(rewards).every(
+      (_) =>
+        _.hasActiveStake &&
+        _.hasPREConfigured &&
+        !_.hasUnstakeAfterBonusDeadline
     )
 
   const title = isEligible
@@ -109,7 +110,7 @@ export const EligibilityConfirmation: FC<
         </Box>
         <List mt="12" spacing="4">
           {hasStakes ? (
-            stakes.map(renderEligibilityCheck)
+            Object.entries(rewards).map(renderEligibilityEntries)
           ) : (
             <EmptyEligibilityCard onClickStartStakingBtn={onStartStaking} />
           )}
@@ -126,8 +127,19 @@ export const EligibilityConfirmation: FC<
   )
 }
 
-const renderEligibilityCheck = (stake: StakeData) => (
-  <ListItem key={stake.stakingProvider}>
-    <EligibilityCard stake={stake} />
+const renderEligibilityEntries = ([stakingProvider, bonusEligibility]: [
+  string,
+  BonusEligibility
+]) => renderEligibilityCheck(stakingProvider, bonusEligibility)
+
+const renderEligibilityCheck = (
+  stakingProvider: string,
+  bonusEligibility: BonusEligibility
+) => (
+  <ListItem key={stakingProvider}>
+    <EligibilityCard
+      stakingProvider={stakingProvider}
+      bonusEligibility={bonusEligibility}
+    />
   </ListItem>
 )
