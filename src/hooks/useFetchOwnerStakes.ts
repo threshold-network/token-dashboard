@@ -13,6 +13,7 @@ import {
   decodeMulticallResult,
   getAddress,
   isSameETHAddress,
+  isAddress,
 } from "../web3/utils"
 import { StakeType, Token } from "../enums"
 import { StakeData } from "../types/staking"
@@ -142,14 +143,14 @@ export const useFetchOwnerStakes = () => {
 
         const stakingProvider = stakes[index].stakingProvider
         const nuInTStake = stakes[index].nuInTStake.toString()
-        const possibleNuTopUpInT = isSameETHAddress(
-          stakingProvider,
-          nuStakingProvider
-        )
-          ? BigNumber.from(convertNuToT(nuStake))
-              .sub(BigNumber.from(nuInTStake))
-              .toString()
-          : "0"
+
+        const possibleNuTopUpInT =
+          isAddress(nuStakingProvider) &&
+          isSameETHAddress(stakingProvider, nuStakingProvider)
+            ? BigNumber.from(convertNuToT(nuStake))
+                .sub(BigNumber.from(nuInTStake))
+                .toString()
+            : "0"
 
         stakes[index] = {
           ...stakes[index],
