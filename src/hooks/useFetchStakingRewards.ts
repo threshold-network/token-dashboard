@@ -81,9 +81,15 @@ export const useFetchStakingRewards = () => {
         const { amount } = (rewardsData as RewardsJSONData).claims[
           stakingProvider
         ]
-        stakingRewards[stakingProvider] = BigNumber.from(amount)
-          .sub(claimedAmountToStakingProvider[stakingProvider] || Zero)
-          .toString()
+        const claimableAmount = BigNumber.from(amount).sub(
+          claimedAmountToStakingProvider[stakingProvider] || Zero
+        )
+
+        if (claimableAmount.lte(Zero)) {
+          continue
+        }
+
+        stakingRewards[stakingProvider] = claimableAmount.toString()
       }
 
       dispatch(setInterimRewards(stakingRewards))
