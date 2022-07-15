@@ -37,6 +37,7 @@ import {
   ModalType,
   StakeType,
   Token,
+  TopUpType,
   UnstakeType,
 } from "../../../enums"
 import {
@@ -62,32 +63,30 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     !isAddressZero(stake.preConfig.operator) &&
     stake.preConfig.isOperatorConfirmed
 
-  const submitButtonText = !isStakeAction
-    ? "Unstake"
-    : isPRESet
-    ? "Top-up"
-    : "Set PRE"
-
+  const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
   const onChangeAction = useCallback(() => {
     formRef.current?.resetForm()
     setFlag.toggle()
   }, [setFlag.toggle])
 
-  const onSubmitTopUpForm = (tokenAmount: string | number) => {
-    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
+  const onSubmitTopUp = (
+    tokenAmount: string | number,
+    topUpType: TopUpType
+  ) => {
+    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount, topUpType })
   }
 
-  const onSubmitUnstakeBtn = () => {
-    openModal(ModalType.UnstakeT, { stake })
+  const onSubmitUnstakeOrTopupBtn = () => {
+    if (isStakeAction) {
+      openModal(ModalType.TopupLegacyStake, { stake })
+    } else {
+      openModal(ModalType.UnstakeT, { stake })
+    }
   }
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      if (isPRESet) {
-        onSubmitTopUpForm(tokenAmount)
-      } else {
-        window.open(ExternalHref.preNodeSetup, "_blank")
-      }
+      onSubmitTopUp(tokenAmount, TopUpType.NATIVE)
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -101,6 +100,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   }
 
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
+  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
 
   const { total, bonus } = useSelector((state: RootState) =>
     selectRewardsByStakingProvider(state, stake.stakingProvider)
@@ -162,7 +163,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction || !hasLegacyStakes ? (
+      {isStakeAction &&
+      stake.stakeType === StakeType.T &&
+      !canTopUpKepp &&
+      !canTopUpNu ? (
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
@@ -170,12 +174,29 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
-          isDisabled={isStakeAction && !isPRESet}
-          shouldValidateForm={!isStakeAction || isPRESet}
         />
+      ) : (canTopUpNu || canTopUpKepp) && isStakeAction ? (
+        <Button
+          onClick={() =>
+            onSubmitTopUp(
+              canTopUpNu
+                ? stake.possibleNuTopUpInT
+                : stake.possibleKeepTopUpInT,
+              canTopUpNu ? TopUpType.LEGACY_NU : TopUpType.LEGACY_KEEP
+            )
+          }
+          isFullWidth
+        >
+          Confirm Legacy Top-up
+        </Button>
       ) : (
-        <Button onClick={onSubmitUnstakeBtn} isFullWidth>
+        <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
           {submitButtonText}
+        </Button>
+      )}
+      {!isPRESet && (
+        <Button as="a" mt="4" href={ExternalHref.preNodeSetup} isFullWidth>
+          Set PRE
         </Button>
       )}
     </Card>

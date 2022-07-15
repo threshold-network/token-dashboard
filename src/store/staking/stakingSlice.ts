@@ -5,10 +5,10 @@ import {
   ProviderStakedActionPayload,
   StakeData,
   UnstakedActionPayload,
-  UpdateStakeAmountActionPayload,
+  ToppedUpActionPayload,
   UpdateStateActionPayload,
 } from "../../types/staking"
-import { StakeType, UnstakeType } from "../../enums"
+import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
 
 interface StakingState {
@@ -62,6 +62,8 @@ export const stakingSlice = createSlice({
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
+      newStake.possibleKeepTopUpInT = "0"
+      newStake.possibleNuTopUpInT = "0"
 
       newStake.preConfig = {
         operator: AddressZero,
@@ -72,40 +74,42 @@ export const stakingSlice = createSlice({
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
-    updateStakeAmountForProvider: (
-      state,
-      action: PayloadAction<UpdateStakeAmountActionPayload>
+    toppedUp: (
+      state: StakingState,
+      action: PayloadAction<ToppedUpActionPayload>
     ) => {
-      const { stakingProvider, amount, increaseOrDecrease } = action.payload
+      const { stakingProvider, amount, topUpType } = action.payload
 
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
-        (stake) => stake.stakingProvider === stakingProvider
+        (stake: StakeData) => stake.stakingProvider === stakingProvider
       )
 
       if (stakeIdxToUpdate < 0) return
 
       const stake = stakes[stakeIdxToUpdate]
 
-      const originalStakeAmount = BigNumber.from(
-        stakes[stakeIdxToUpdate].tStake
-      )
-
-      const amountUnstaked = BigNumber.from(amount)
-
-      if (increaseOrDecrease === "increase") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .add(amountUnstaked)
-          .toString()
-      } else if (increaseOrDecrease === "decrease") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .sub(amountUnstaked)
-          .toString()
+      if (topUpType === TopUpType.LEGACY_KEEP) {
+        stakes[stakeIdxToUpdate].possibleKeepTopUpInT = "0"
+      } else if (topUpType === TopUpType.LEGACY_NU) {
+        stakes[stakeIdxToUpdate].possibleNuTopUpInT = "0"
       }
 
-      const totalInTStake = BigNumber.from(stake.tStake)
-        .add(BigNumber.from(stake.keepInTStake))
-        .add(BigNumber.from(stake.nuInTStake))
+      const fieldName =
+        topUpType === TopUpType.NATIVE
+          ? "tStake"
+          : topUpType === TopUpType.LEGACY_KEEP
+          ? "keepInTStake"
+          : "nuInTStake"
+
+      stakes[stakeIdxToUpdate][fieldName] = BigNumber.from(
+        stakes[stakeIdxToUpdate][fieldName]
+      )
+        .add(amount)
+        .toString()
+
+      const totalInTStake = BigNumber.from(stake.totalInTStake)
+        .add(amount)
         .toString()
 
       stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
@@ -165,7 +169,7 @@ export const {
   updateState,
   setStakes,
   providerStaked,
-  updateStakeAmountForProvider,
+  toppedUp,
   unstaked,
   setMinStake,
 } = stakingSlice.actions
