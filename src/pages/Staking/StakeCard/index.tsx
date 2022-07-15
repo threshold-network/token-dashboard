@@ -163,19 +163,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction &&
-      stake.stakeType === StakeType.T &&
-      !canTopUpKepp &&
-      !canTopUpNu ? (
-        <TokenAmountForm
-          innerRef={formRef}
-          onSubmitForm={onSubmitForm}
-          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
-          submitButtonText={submitButtonText}
-          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
-          shouldDisplayMaxAmountInLabel
-        />
-      ) : (canTopUpNu || canTopUpKepp) && isStakeAction ? (
+      {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>
             onSubmitTopUp(
@@ -189,6 +177,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         >
           Confirm Legacy Top-up
         </Button>
+      ) : stake.stakeType === StakeType.T ? (
+        <TokenAmountForm
+          innerRef={formRef}
+          onSubmitForm={onSubmitForm}
+          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
+          submitButtonText={submitButtonText}
+          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
+          shouldDisplayMaxAmountInLabel
+        />
       ) : (
         <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
           {submitButtonText}
