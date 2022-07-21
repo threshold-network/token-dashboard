@@ -4833,7 +4833,7 @@
   resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.0.tgz#d1569a3988110d10258da5d61028417763172953"
   integrity sha512-QxCP3eQ03jkuyQFOsIE/QYm0OsqTBfvRkThbHRW9jkNHY2v0oKSIZxXyLYhMklZvCn0Eak6qnhQhnXEcdtQq+Q==
 
-"@threshold-network/solidity-contracts@development":
+"@threshold-network/solidity-contracts@>1.2.0-dev <1.2.0-goerli":
   version "1.2.0-dev.17"
   resolved "https://registry.yarnpkg.com/@threshold-network/solidity-contracts/-/solidity-contracts-1.2.0-dev.17.tgz#c12157f199bb1ef95ca3748654286abb08ed8f7b"
   integrity sha512-YJE4fgwjBha+61iVo4TiUN/F5eND835U8rWxHy1uBU4e/CZGG99Vv1n33NMDvTNHw6pi2HKLKYqWSyc01/5/PA==
