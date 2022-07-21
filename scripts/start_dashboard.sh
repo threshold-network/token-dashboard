@@ -83,7 +83,7 @@ fi
 
 printf "${LOG_START}Migrating contracts for keep-core...${LOG_END}"
 cd "$KEEP_CORE_PATH"
-./scripts/install.sh --network local --skip-client-build
+./scripts/install_keep_core_v1.sh --network local --contracts-only
 cd "$KEEP_CORE_SOL_PATH"
 yarn link
 
