@@ -72,9 +72,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 3
-          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
+          CHAIN_ID: 5
+          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
@@ -100,14 +100,14 @@ jobs:
       - name: Configure git to don't use unauthenticated protocol
         run: git config --global url."https://".insteadOf git://
 
-      - name: Resolve latest ropsten contracts
+      - name: Resolve latest goerli contracts
         run: |
           yarn upgrade \
-            @threshold-network/solidity-contracts@ropsten \
-            @keep-network/keep-core@ropsten \
-            @keep-network/keep-ecdsa@ropsten \
-            @keep-network/tbtc@ropsten \
-            @keep-network/coverage-pools@ropsten
+            @threshold-network/solidity-contracts@goerli \
+            @keep-network/keep-core@goerli \
+            @keep-network/keep-ecdsa@goerli \
+            @keep-network/tbtc@goerli \
+            @keep-network/coverage-pools@goerli
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -117,9 +117,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 3
-          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
+          CHAIN_ID: 5
+          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
 
       # A pull_request event is a PR; deploy to preview testnet bucket.
       - name: Deploy PR preview to GCP
