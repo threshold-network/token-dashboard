@@ -37,16 +37,16 @@ To make sure the changes made in local depository of `components` lib are implem
 
 `yarn add-components-lib`
 
-# Run T dapp against the Ropsten network
+# Run T dapp against the Görli network
 
 ## Update the `.env` file:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=3
+REACT_APP_SUPPORTED_CHAIN_ID=5
 REACT_APP_ETH_HOSTNAME_HTTP=<your http ETH hostname- eg. Infura>
 REACT_APP_ETH_HOSTNAME_WS=<your ws ETH hostname- eg. Infura>
 // We can skip this env variable- the dapp uses the correct address
-// of Multicall contract for Ropsten under the hood.
+// of Multicall contract for Görli under the hood.
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ```
 
@@ -54,14 +54,14 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 `yarn`
 
-## Install Ropsten contracts
+## Install Görli contracts
 
 ```
-yarn upgrade @threshold-network/solidity-contracts@ropsten \
-  @keep-network/keep-core@ropsten \
-  @keep-network/keep-ecdsa@ropsten \
-  @keep-network/tbtc@ropsten \
-  @keep-network/coverage-pools@ropsten
+yarn upgrade @threshold-network/solidity-contracts@goerli \
+  @keep-network/keep-core@goerli \
+  @keep-network/keep-ecdsa@goerli \
+  @keep-network/tbtc@goerli \
+  @keep-network/coverage-pools@goerli
 ```
 
 **NOTE:** The `token-dashboard` package contains an indirect dependency to
@@ -91,7 +91,7 @@ The following procedure allows to deploy T token dashboard to production:
    `releases/mainnet/<version>`. Release branch should never be merged to `main`
    and creating a PR with a release branch is not required.
    Dependencies and project version needs to be updated on the release branch.
-   All `-dev`, `-ropsten` dependencies need to be updated to mainnet versions.
+   All `-dev`, `-goerli` dependencies need to be updated to mainnet versions.
    See [this commit](https://github.com/threshold-network/token-dashboard/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
    for `v1.0.0` release as a good example.
 2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`
