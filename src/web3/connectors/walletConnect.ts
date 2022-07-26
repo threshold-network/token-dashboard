@@ -12,7 +12,7 @@ export const walletconnect = new WalletConnectConnector({
   chainId: Number(supportedChainId),
   supportedChainIds: [
     ChainID.Ethereum.valueOf(),
-    ChainID.Ropsten.valueOf(),
+    ChainID.Goerli.valueOf(),
     ChainID.Localhost.valueOf(),
   ],
   qrcode: true,
