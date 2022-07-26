@@ -100,11 +100,14 @@ jobs:
       - name: Configure git to don't use unauthenticated protocol
         run: git config --global url."https://".insteadOf git://
 
+      # We provide explicit version of the `keep-core` package, because using
+      # `goerli` tag results in `expected manifest` error - probably caused by
+      # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
       - name: Resolve latest goerli contracts
         run: |
           yarn upgrade \
             @threshold-network/solidity-contracts@goerli \
-            @keep-network/keep-core@goerli \
+            @keep-network/keep-core@1.8.1-goerli.0 \
             @keep-network/keep-ecdsa@goerli \
             @keep-network/tbtc@goerli \
             @keep-network/coverage-pools@goerli
