@@ -58,13 +58,17 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 ```
 yarn upgrade @threshold-network/solidity-contracts@goerli \
-  @keep-network/keep-core@goerli \
+  @keep-network/keep-core@1.8.1-goerli.0 \
   @keep-network/keep-ecdsa@goerli \
   @keep-network/tbtc@goerli \
   @keep-network/coverage-pools@goerli
 ```
 
-**NOTE:** The `token-dashboard` package contains an indirect dependency to
+**NOTE 1:** We provide explicit version of the `keep-core` package, because
+using `goerli` tag results in `expected manifest` error - probably caused by bug
+in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+
+**NOTE 2:** The `token-dashboard` package contains an indirect dependency to
 `@summa-tx/relay-sol@2.0.2` package, which downloads one of its sub-dependencies
 via unathenticated `git://` protocol. That protocol is no longer supported by
 GitHub. This means that in certain situations installation of the package or
