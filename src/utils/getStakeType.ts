@@ -1,7 +1,7 @@
 import { StakeData } from "../types"
 import { StakeType } from "../enums"
 
-export const generateStakeName = (stake?: StakeData): string => {
+export const getStakeType = (stake?: StakeData | null): string => {
   return !stake
     ? ""
     : stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
