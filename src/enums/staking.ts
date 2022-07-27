@@ -13,3 +13,9 @@ export enum UnstakeType {
   LEGACY_NU,
   ALL,
 }
+
+export enum TopUpType {
+  NATIVE,
+  LEGACY_KEEP,
+  LEGACY_NU,
+}

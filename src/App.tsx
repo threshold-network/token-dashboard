@@ -7,6 +7,7 @@ import { FC, useEffect, Fragment } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
+import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
 import {
   BrowserRouter as Router,
   Routes,
@@ -18,7 +19,7 @@ import { BigNumberish } from "@ethersproject/bignumber"
 import { Event } from "@ethersproject/contracts"
 import { TokenContextProvider } from "./contexts/TokenContext"
 import theme from "./theme"
-import reduxStore from "./store"
+import reduxStore, { resetStoreAction } from "./store"
 import ModalRoot from "./components/Modal"
 import Sidebar from "./components/Sidebar"
 import Navbar from "./components/Navbar"
@@ -34,6 +35,9 @@ import { useSubscribeToStakedEvent } from "./hooks/useSubscribeToStakedEvent"
 import { useSubscribeToUnstakedEvent } from "./hooks/useSubscribeToUnstakedEvent"
 import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent"
 import { pages } from "./pages"
+import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
+import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
+import { isSameETHAddress } from "./web3/utils"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -90,10 +94,35 @@ const useSubscribeToVendingMachineContractEvents = () => {
 
 const AppBody = () => {
   const dispatch = useDispatch()
+  const { connector, account } = useWeb3React()
+
+  useEffect(() => {
+    const updateHandler = (update: ConnectorUpdate) => {
+      if (
+        !update.account ||
+        !isSameETHAddress(update.account, account as string)
+      )
+        dispatch(resetStoreAction())
+    }
+
+    const deactivateHandler = () => {
+      dispatch(resetStoreAction())
+    }
+
+    connector?.on(ConnectorEvent.Update, updateHandler)
+    connector?.on(ConnectorEvent.Deactivate, deactivateHandler)
+    return () => {
+      connector?.removeListener(ConnectorEvent.Update, updateHandler)
+      connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
+    }
+  }, [connector, dispatch, account])
 
   useEffect(() => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
+
+  useCheckBonusEligibility()
+  useFetchStakingRewards()
 
   return <Routing />
 }
