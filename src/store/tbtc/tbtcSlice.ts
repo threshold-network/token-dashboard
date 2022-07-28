@@ -5,12 +5,16 @@ import {
   MintingSteps,
   TbtcMintingType,
   TbtcStateKey,
+  UnmintingStep,
 } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
 
 interface TbtcState {
   mintingType: TbtcMintingType
   mintingStep: MintingStep
+  unmintingStep: UnmintingStep
+  btcWithdrawAddress: string
+  unmintAmount: string
   ethAddress: string
   btcRecoveryAddress: string
   btcDepositAddress: string
