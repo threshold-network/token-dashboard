@@ -7,9 +7,10 @@ import {
   FormHelperText,
   FormErrorMessage,
   Stack,
-} from "@chakra-ui/react"
+  useColorModeValue,
+  BodySm,
+} from "@threshold-network/components"
 import { useField } from "formik"
-import { BodySm } from "@threshold-network/components"
 import TooltipIcon from "../TooltipIcon"
 
 export const FormikInput: FC<
@@ -34,17 +35,25 @@ export const FormikInput: FC<
 
   const isError = Boolean(meta.touched && meta.error)
 
+  const secondaryLabelColor = useColorModeValue("gray.700", "white")
+
   return (
     <FormControl isInvalid={isError} {...restProps}>
-      <Stack direction="row" mb={2} justifyContent="space-between">
-        <Stack direction="row">
+      <Stack
+        direction="row"
+        mb={2}
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Stack direction="row" alignItems="center">
           <FormLabel m={0} htmlFor={name}>
             {label}
           </FormLabel>
-          {tooltip && <TooltipIcon marginTop="4px" label={tooltip} />}
+          {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
-          <BodySm color="gray.700" m={0}>
+          // @ts-ignore - htmlFor is not a valid prop for BodySm but we're setting to label here
+          <BodySm as="label" htmlFor={name} color={secondaryLabelColor} m={0}>
             {secondaryLabel}
           </BodySm>
         )}
