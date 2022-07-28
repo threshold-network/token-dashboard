@@ -7,6 +7,7 @@ import {
   WalletConnectStatusAlert,
 } from "./components"
 import { ConnectionError } from "../../../enums"
+import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 
 const ConnectWalletConnect: FC<{
   goBack: () => void
@@ -14,8 +15,9 @@ const ConnectWalletConnect: FC<{
 }> = ({ goBack, closeModal }) => {
   const { error, activate, active, account } = useWeb3React()
 
-  const connectionRejected = error?.message.includes(
-    ConnectionError.RejectedConnection
+  const connectionRejected = doesErrorInclude(
+    error,
+    ConnectionError.RejectedMetamaskConnection
   )
 
   return (

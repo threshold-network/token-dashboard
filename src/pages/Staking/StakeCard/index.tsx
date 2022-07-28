@@ -2,7 +2,6 @@ import { FC, ReactElement, Fragment, useRef, useCallback } from "react"
 import {
   Flex,
   Box,
-  Badge,
   ButtonGroup,
   Button,
   useColorModeValue,
@@ -20,7 +19,11 @@ import {
   BoxLabel,
   Card,
   LineDivider,
+  HStack,
+  Badge,
+  BodyLg,
 } from "@threshold-network/components"
+import { useSelector } from "react-redux"
 import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
@@ -34,6 +37,7 @@ import {
   ModalType,
   StakeType,
   Token,
+  TopUpType,
   UnstakeType,
 } from "../../../enums"
 import {
@@ -43,6 +47,9 @@ import {
   TreeItemLineToNode,
 } from "../../../components/Tree"
 import { isAddressZero } from "../../../web3/utils"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { selectRewardsByStakingProvider } from "../../../store/rewards"
+import { RootState } from "../../../store"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -56,32 +63,30 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     !isAddressZero(stake.preConfig.operator) &&
     stake.preConfig.isOperatorConfirmed
 
-  const submitButtonText = !isStakeAction
-    ? "Unstake"
-    : isPRESet
-    ? "Top-up"
-    : "Set PRE"
-
+  const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
   const onChangeAction = useCallback(() => {
     formRef.current?.resetForm()
     setFlag.toggle()
   }, [setFlag.toggle])
 
-  const onSubmitTopUpForm = (tokenAmount: string | number) => {
-    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount })
+  const onSubmitTopUp = (
+    tokenAmount: string | number,
+    topUpType: TopUpType
+  ) => {
+    openModal(ModalType.TopupT, { stake, amountTopUp: tokenAmount, topUpType })
   }
 
-  const onSubmitUnstakeBtn = () => {
-    openModal(ModalType.UnstakeT, { stake })
+  const onSubmitUnstakeOrTopupBtn = () => {
+    if (isStakeAction) {
+      openModal(ModalType.TopupLegacyStake, { stake })
+    } else {
+      openModal(ModalType.UnstakeT, { stake })
+    }
   }
 
   const onSubmitForm = (tokenAmount: string | number) => {
     if (isStakeAction) {
-      if (isPRESet) {
-        onSubmitTopUpForm(tokenAmount)
-      } else {
-        window.open(ExternalHref.preNodeSetup, "_blank")
-      }
+      onSubmitTopUp(tokenAmount, TopUpType.NATIVE)
     } else {
       // We display the unstake form for stakes that only contains T liquid
       // stake in the `StakeCard` directly. So we can go straight to the step 2
@@ -95,6 +100,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   }
 
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
+  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
+
+  const { total, bonus } = useSelector((state: RootState) =>
+    selectRewardsByStakingProvider(state, stake.stakingProvider)
+  )
 
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
@@ -110,20 +121,22 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <StakeCardHeaderTitle stake={stake} />
         <Switcher onClick={onChangeAction} isActive={isStakeAction} />
       </StakeCardHeader>
-      <BodyMd mt="10" mb="4">
-        Staking Bonus
-      </BodyMd>
-      <Flex alignItems={"end"}>
-        <TokenBalance
-          tokenAmount={stake.bonusEligibility.reward}
-          withSymbol
-          tokenSymbol="T"
-          isLarge
-        />
-        {!isPRESet && (
-          <Badge bg={"red.400"} variant="solid" size="medium" ml="3">
+      <HStack mt="10" mb="4">
+        <BodyMd>Total Rewards</BodyMd>
+        {bonus !== "0" && (
+          <Badge variant="magic" mt="1rem !important" ml="auto !important">
+            staking bonus
+          </Badge>
+        )}
+      </HStack>
+      <Flex alignItems="end" justifyContent="space-between">
+        <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
+        {!isPRESet ? (
+          <Badge colorScheme="red" variant="solid" size="medium" ml="3">
             missing PRE
           </Badge>
+        ) : (
+          bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>
         )}
       </Flex>
       <LineDivider mb="0" />
@@ -150,7 +163,21 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </BoxLabel>
         <CopyAddressToClipboard address={stake.stakingProvider} />
       </Flex>
-      {isStakeAction || !hasLegacyStakes ? (
+      {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
+        <Button
+          onClick={() =>
+            onSubmitTopUp(
+              canTopUpNu
+                ? stake.possibleNuTopUpInT
+                : stake.possibleKeepTopUpInT,
+              canTopUpNu ? TopUpType.LEGACY_NU : TopUpType.LEGACY_KEEP
+            )
+          }
+          isFullWidth
+        >
+          Confirm Legacy Top-up
+        </Button>
+      ) : stake.stakeType === StakeType.T ? (
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
@@ -158,12 +185,15 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
-          isDisabled={isStakeAction && !isPRESet}
-          shouldValidateForm={!isStakeAction || isPRESet}
         />
       ) : (
-        <Button onClick={onSubmitUnstakeBtn} isFullWidth>
+        <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
           {submitButtonText}
+        </Button>
+      )}
+      {!isPRESet && (
+        <Button as="a" mt="4" href={ExternalHref.preNodeSetup} isFullWidth>
+          Set PRE
         </Button>
       )}
     </Card>

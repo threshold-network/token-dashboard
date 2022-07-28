@@ -18,9 +18,13 @@ import {
   UnstakeTStep1 as UnstakeTModalStep1,
   UnstakeTStep2 as UnstakeTModalStep2,
 } from "../components/Modal/UnstakeTModal"
-import TopupTModal from "../components/Modal/TopupTModal"
+import { LegacyTopUpModal, TopupTModal } from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
 import StakingBonusModal from "../components/Modal/StakingBonus"
+import {
+  ClaimingRewards,
+  ClaimRewardsSuccessModal,
+} from "../components/Modal/ClaimingRewards"
 import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
@@ -40,8 +44,11 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UnstakeTStep2]: UnstakeTModalStep2,
   [ModalType.StakingChecklist]: StakingChecklistModal,
   [ModalType.TopupT]: TopupTModal,
+  [ModalType.TopupLegacyStake]: LegacyTopUpModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.StakingBonus]: StakingBonusModal,
+  [ModalType.ClaimingRewards]: ClaimingRewards,
+  [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.UseDesktop]: UseDesktopModal,

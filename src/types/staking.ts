@@ -1,5 +1,5 @@
 import { BigNumberish } from "@ethersproject/bignumber"
-import { StakeType, UnstakeType } from "../enums"
+import { StakeType, TopUpType, UnstakeType } from "../enums"
 import { UpdateStateActionPayload } from "./state"
 
 export type StakingStateKey =
@@ -16,8 +16,6 @@ export interface UseStakingState {
   (): {
     stakedBalance: BigNumberish
     stakes: StakeData[]
-    totalRewardsBalance: string
-    totalBonusBalance: string
     stakeAmount: string | number
     stakingProvider: string
     beneficiary: string
@@ -25,18 +23,6 @@ export interface UseStakingState {
     updateState: (key: StakingStateKey, value: any) => UpdateStakingState
     minStakeAmount: string
   }
-}
-
-export interface BonusEligibility {
-  hasPREConfigured: boolean
-  hasActiveStake: boolean
-  // No unstaking after the bonus deadline and until mid-July (not even partial
-  // amounts).
-  hasUnstakeAfterBonusDeadline: boolean
-  // Only total staked amount before bonus deadline is taking
-  // into account.
-  eligibleStakeAmount: string
-  reward: string
 }
 
 export interface PreConfig {
@@ -62,8 +48,9 @@ export interface StakeData {
   keepInTStake: string
   tStake: string
   totalInTStake: string
-  bonusEligibility: BonusEligibility
   preConfig: PreConfig
+  possibleKeepTopUpInT: string
+  possibleNuTopUpInT: string
 }
 
 export interface ProviderStakedEvent {
@@ -84,22 +71,24 @@ export type ProviderStakedActionPayload = ProviderStakedEvent &
     | "tStake"
     | "amount"
     | "totalInTStake"
-    | "bonusEligibility"
     | "preConfig"
+    | "possibleKeepTopUpInT"
+    | "possibleNuTopUpInT"
   >
 
 export type UpdateStakeAmountActionPayload = {
   stakingProvider: string
   amount: string | number
-  increaseOrDecrease: "increase" | "decrease"
 }
 
-export type UnstakedActionPayload = Omit<
-  UpdateStakeAmountActionPayload,
-  "increaseOrDecrease"
-> & {
+export type UnstakedActionPayload = UpdateStakeAmountActionPayload & {
   unstakeType: UnstakeType
 }
+
+export type ToppedUpActionPayload = UpdateStakeAmountActionPayload & {
+  topUpType: TopUpType
+}
+
 export interface StakeCellProps {
   stake: StakeData
 }

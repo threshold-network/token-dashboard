@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux"
 import { Event, Contract } from "@ethersproject/contracts"
 import { unstaked } from "../store/staking"
+import * as rewardsActions from "../store/rewards"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
 import { UnstakeType } from "../enums"
 
@@ -68,6 +69,7 @@ export const useSubscribeToUnstakedEvent = () => {
           unstakeType,
         })
       )
+      dispatch(rewardsActions.unstaked(stakingProvider))
     }
   )
 }

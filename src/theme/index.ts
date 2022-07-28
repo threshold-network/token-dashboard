@@ -3,6 +3,7 @@ import { InfoBox } from "./InfoBox"
 import { NotificationPill } from "./NotificationPill"
 import { Tree } from "./Tree"
 import { Tabs } from "./Tabs"
+import { Badge } from "./Badge"
 
 import { defaultTheme } from "@threshold-network/components"
 
@@ -14,6 +15,7 @@ const index = extendTheme({
     NotificationPill,
     Tree,
     Tabs,
+    Badge,
   },
 })
 

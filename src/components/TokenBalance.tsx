@@ -64,9 +64,9 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
           {withSymbol &&
             tokenSymbol &&
             (isLarge ? (
-              <BodyLg alignSelf="center">{tokenSymbol}</BodyLg>
+              <BodyLg alignSelf="flex-end">{tokenSymbol}</BodyLg>
             ) : (
-              <BodySm alignSelf="center">{tokenSymbol}</BodySm>
+              <BodySm alignSelf="flex-end">{tokenSymbol}</BodySm>
             ))}
         </Stack>
         {withUSDBalance && usdBalance && shouldRenderTokenAmount && (

@@ -6,13 +6,9 @@ import {
   StakeData,
   StakingStateKey,
   UnstakedActionPayload,
-  UpdateStakeAmountActionPayload,
+  ToppedUpActionPayload,
 } from "../../types/staking"
-import { StakeType, UnstakeType } from "../../enums"
-import {
-  calculateStakingBonusReward,
-  isBeforeOrEqualBonusDeadline,
-} from "../../utils/stakingBonus"
+import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
 import { UpdateStateActionPayload } from "../../types/state"
 
@@ -23,8 +19,6 @@ interface StakingState {
   stakeAmount: string
   stakes: StakeData[]
   stakedBalance: BigNumberish
-  totalRewardsBalance: string
-  totalBonusBalance: string
   minStakeAmount: string
 }
 
@@ -36,25 +30,6 @@ const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
   )
 }
 
-const calculateTotalBonusBalance = (stakes: StakeData[]): string => {
-  const totalEligibleStakeAmount = stakes
-    .reduce(
-      (balance, stake) =>
-        balance.add(
-          BigNumber.from(stake.bonusEligibility.eligibleStakeAmount || "0")
-        ),
-      BigNumber.from(0)
-    )
-    .toString()
-
-  return calculateStakingBonusReward(totalEligibleStakeAmount)
-}
-
-const calculateTotalRewardsBalance = (stakingState: StakingState) => {
-  // Currently, the total rewards balance is equal to bonus balance.
-  return stakingState.totalBonusBalance
-}
-
 export const stakingSlice = createSlice({
   name: "staking",
   initialState: {
@@ -64,8 +39,6 @@ export const stakingSlice = createSlice({
     stakeAmount: "0",
     stakes: [],
     stakedBalance: 0,
-    totalRewardsBalance: "0",
-    totalBonusBalance: "0",
     minStakeAmount: "0",
   } as StakingState,
   reducers: {
@@ -79,8 +52,6 @@ export const stakingSlice = createSlice({
     setStakes: (state, action) => {
       state.stakes = action.payload
       state.stakedBalance = calculateStakedBalance(action.payload)
-      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
-      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     providerStaked: (
       state,
@@ -95,15 +66,8 @@ export const stakingSlice = createSlice({
       newStake.keepInTStake = stakeType === StakeType.KEEP ? _amount : "0"
       newStake.tStake = stakeType === StakeType.T ? _amount : "0"
       newStake.totalInTStake = _amount
-
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      newStake.bonusEligibility = {
-        eligibleStakeAmount: _isBeforeOrEqualBonusDeadline ? _amount : "0",
-        hasPREConfigured: false,
-        hasActiveStake: _isBeforeOrEqualBonusDeadline,
-        hasUnstakeAfterBonusDeadline: false,
-        reward: calculateStakingBonusReward(_amount),
-      }
+      newStake.possibleKeepTopUpInT = "0"
+      newStake.possibleNuTopUpInT = "0"
 
       newStake.preConfig = {
         operator: AddressZero,
@@ -113,60 +77,48 @@ export const stakingSlice = createSlice({
 
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
-      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
-      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
-    updateStakeAmountForProvider: (
-      state,
-      action: PayloadAction<UpdateStakeAmountActionPayload>
+    toppedUp: (
+      state: StakingState,
+      action: PayloadAction<ToppedUpActionPayload>
     ) => {
-      const { stakingProvider, amount, increaseOrDecrease } = action.payload
+      const { stakingProvider, amount, topUpType } = action.payload
 
       const stakes = state.stakes
       const stakeIdxToUpdate = stakes.findIndex(
-        (stake) => stake.stakingProvider === stakingProvider
+        (stake: StakeData) => stake.stakingProvider === stakingProvider
       )
 
       if (stakeIdxToUpdate < 0) return
 
       const stake = stakes[stakeIdxToUpdate]
 
-      const originalStakeAmount = BigNumber.from(
-        stakes[stakeIdxToUpdate].tStake
-      )
-
-      const amountUnstaked = BigNumber.from(amount)
-
-      if (increaseOrDecrease === "increase") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .add(amountUnstaked)
-          .toString()
-      } else if (increaseOrDecrease === "decrease") {
-        stakes[stakeIdxToUpdate].tStake = originalStakeAmount
-          .sub(amountUnstaked)
-          .toString()
+      if (topUpType === TopUpType.LEGACY_KEEP) {
+        stakes[stakeIdxToUpdate].possibleKeepTopUpInT = "0"
+      } else if (topUpType === TopUpType.LEGACY_NU) {
+        stakes[stakeIdxToUpdate].possibleNuTopUpInT = "0"
       }
 
-      const totalInTStake = BigNumber.from(stake.tStake)
-        .add(BigNumber.from(stake.keepInTStake))
-        .add(BigNumber.from(stake.nuInTStake))
+      const fieldName =
+        topUpType === TopUpType.NATIVE
+          ? "tStake"
+          : topUpType === TopUpType.LEGACY_KEEP
+          ? "keepInTStake"
+          : "nuInTStake"
+
+      stakes[stakeIdxToUpdate][fieldName] = BigNumber.from(
+        stakes[stakeIdxToUpdate][fieldName]
+      )
+        .add(amount)
+        .toString()
+
+      const totalInTStake = BigNumber.from(stake.totalInTStake)
+        .add(amount)
         .toString()
 
       stakes[stakeIdxToUpdate].totalInTStake = totalInTStake
 
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
-        ? totalInTStake
-        : state.stakes[stakeIdxToUpdate].bonusEligibility.eligibleStakeAmount
-      state.stakes[stakeIdxToUpdate].bonusEligibility = {
-        ...state.stakes[stakeIdxToUpdate].bonusEligibility,
-        eligibleStakeAmount,
-        reward: calculateStakingBonusReward(eligibleStakeAmount),
-      }
-
       state.stakedBalance = calculateStakedBalance(state.stakes)
-      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
-      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     unstaked: (state, action: PayloadAction<UnstakedActionPayload>) => {
       const { stakingProvider, amount, unstakeType } = action.payload
@@ -206,20 +158,7 @@ export const stakingSlice = createSlice({
         .toString()
       state.stakes[stakeIdxToUpdate].totalInTStake = newTotalStakedAmount
 
-      const _isBeforeOrEqualBonusDeadline = isBeforeOrEqualBonusDeadline()
-      const eligibleStakeAmount = _isBeforeOrEqualBonusDeadline
-        ? newTotalStakedAmount
-        : "0"
-      state.stakes[stakeIdxToUpdate].bonusEligibility = {
-        ...state.stakes[stakeIdxToUpdate].bonusEligibility,
-        eligibleStakeAmount,
-        hasActiveStake: _isBeforeOrEqualBonusDeadline,
-        hasUnstakeAfterBonusDeadline: !_isBeforeOrEqualBonusDeadline,
-        reward: calculateStakingBonusReward(eligibleStakeAmount),
-      }
       state.stakedBalance = calculateStakedBalance(state.stakes)
-      state.totalBonusBalance = calculateTotalBonusBalance(state.stakes)
-      state.totalRewardsBalance = calculateTotalRewardsBalance(state)
     },
     setMinStake: (
       state: StakingState,
@@ -234,7 +173,7 @@ export const {
   updateState,
   setStakes,
   providerStaked,
-  updateStakeAmountForProvider,
+  toppedUp,
   unstaked,
   setMinStake,
 } = stakingSlice.actions
