@@ -1,7 +1,8 @@
 import { NavItemDetail } from "./NavItem"
 import {
-  IoBarChartSharp,
   IoHomeSharp,
+  IoLockClosedOutline,
+  IoLockClosedSharp,
   IoSwapHorizontalSharp,
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
@@ -9,7 +10,6 @@ import { useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
-import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 import useUpgradeHref from "../../hooks/useUpgradeHref"
 
 const Sidebar = () => {
@@ -33,8 +33,8 @@ const Sidebar = () => {
       },
       {
         text: "Staking",
-        activeIcon: IoBarChartSharp,
-        passiveIcon: IoChartOutlineSharp,
+        activeIcon: IoLockClosedSharp,
+        passiveIcon: IoLockClosedOutline,
         href: "/staking",
       },
     ],
