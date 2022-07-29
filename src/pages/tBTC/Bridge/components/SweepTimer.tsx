@@ -31,7 +31,6 @@ export const SweepTimer: FC = () => {
       <LabelSm>Next Bridge Crossing</LabelSm>
 
       <Skeleton isLoaded={!!nextBridgeCrossingInUnix}>
-        <p>{nextBridgeCrossingInUnix}</p>
         <H4 color="brand.500" fontWeight={800}>
           {hours} : {minutes} : {seconds}
         </H4>
