@@ -12,7 +12,7 @@ export type TbtcStateKey =
   | "thresholdNetworkFee"
   | "bitcoinMinerFee"
   | "isLoadingBitcoinMinerFee"
-  | "nextBridgeCrossing"
+  | "nextBridgeCrossingInUnix"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -58,7 +58,7 @@ export interface UseTbtcState {
     btcRecoveryAddress: string
     ethAddress: string
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
-    nextBridgeCrossing?: Date
+    nextBridgeCrossingInUnix?: number
 
     // TODO: These may be incorrect types
     tBTCMintAmount: number
