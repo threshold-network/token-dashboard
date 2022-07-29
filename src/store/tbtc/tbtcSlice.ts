@@ -19,7 +19,7 @@ interface TbtcState {
   btcRecoveryAddress: string
   btcDepositAddress: string
 
-  nextBridgeCrossing?: Date
+  nextBridgeCrossingInUnix?: number
 
   // TODO: These may be incorrect types
   tBTCMintAmount: number
