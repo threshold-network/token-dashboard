@@ -1,21 +1,9 @@
-import { FC, ReactElement, Fragment, useRef, useCallback } from "react"
-import {
-  Flex,
-  Box,
-  ButtonGroup,
-  Button,
-  useColorModeValue,
-  useBoolean,
-  Tooltip,
-  Icon,
-  FlexProps,
-} from "@chakra-ui/react"
-import { InfoIcon } from "@chakra-ui/icons"
+import { FC, useRef, useCallback } from "react"
+import { Flex, Button, useBoolean } from "@chakra-ui/react"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
 import {
   BodyMd,
-  LabelSm,
   BoxLabel,
   Card,
   LineDivider,
@@ -24,7 +12,6 @@ import {
   BodyLg,
 } from "@threshold-network/components"
 import { useSelector } from "react-redux"
-import NotificationPill from "../../../components/NotificationPill"
 import TokenBalance from "../../../components/TokenBalance"
 import InfoBox from "../../../components/InfoBox"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
@@ -40,13 +27,11 @@ import {
   TopUpType,
   UnstakeType,
 } from "../../../enums"
-import {
-  Tree,
-  TreeItem,
-  TreeNode,
-  TreeItemLineToNode,
-} from "../../../components/Tree"
 import { isAddressZero } from "../../../web3/utils"
+import { StakeCardHeaderTitle } from "./HeaderTitle"
+import { Switcher } from "./Switcher"
+import { BalanceTree } from "./BalanceTree"
+import { StakeCardHeader } from "./Header"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
@@ -197,152 +182,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         </Button>
       )}
     </Card>
-  )
-}
-
-export const StakeCardHeader: FC = ({ children }) => {
-  return (
-    <Flex as="header" alignItems="center">
-      {children}
-    </Flex>
-  )
-}
-
-export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
-  stake,
-}) => {
-  const stakeType = !stake
-    ? ""
-    : stake.stakeType === StakeType.NU || stake.stakeType === StakeType.KEEP
-    ? ` - legacy ${StakeType[stake.stakeType]}`
-    : " - native"
-  return (
-    <>
-      <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
-      <LabelSm textTransform="uppercase" mr="auto">
-        stake{stakeType}
-      </LabelSm>
-    </>
-  )
-}
-
-export const StakeCardProviderAddress: FC<
-  {
-    stakingProvider: string
-  } & FlexProps
-> = ({ stakingProvider, ...restProps }) => {
-  const isNotAddressZero = !isAddressZero(stakingProvider)
-
-  return (
-    <Flex mt="6" mb="8" alignItems="center" {...restProps}>
-      <BoxLabel bg="brand.50" color="brand.700" mr="auto">
-        Provider address
-      </BoxLabel>
-      {isNotAddressZero ? (
-        <CopyAddressToClipboard address={stakingProvider} />
-      ) : (
-        <Box as="span" color="brand.500">
-          none set
-        </Box>
-      )}
-    </Flex>
-  )
-}
-
-const Switcher: FC<{ onClick: () => void; isActive: boolean }> = ({
-  onClick,
-  isActive,
-}) => {
-  const bgColor = useColorModeValue("gray.50", "gray.700")
-  const activeButtonColor = useColorModeValue("white", "gray.700")
-
-  return (
-    <ButtonGroup
-      backgroundColor={bgColor}
-      borderRadius="6px"
-      p={1}
-      spacing="3"
-      size="xs"
-    >
-      <Button
-        variant={isActive ? "outline" : "ghost"}
-        bg={isActive ? activeButtonColor : undefined}
-        onClick={onClick}
-      >
-        Stake
-      </Button>
-      <Button
-        variant={!isActive ? "outline" : "ghost"}
-        bg={!isActive ? activeButtonColor : undefined}
-        onClick={onClick}
-      >
-        Unstake
-      </Button>
-    </ButtonGroup>
-  )
-}
-
-const BalanceTree: FC<{ stake: StakeData }> = ({ stake }) => {
-  return (
-    <Tree>
-      <TreeNode isRoot>
-        <BalanceTreeItem
-          isRoot
-          label={
-            <>
-              Total Staked Balance{" "}
-              <Tooltip
-                label="Staked Balance for Legacy Stakes are cumulated KEEP, NU and T staked tokens displayed in T."
-                fontSize="md"
-                bg="white"
-                color="gray.700"
-                textAlign="center"
-                p="2"
-                offset={[150, 10]}
-                hasArrow
-              >
-                <Icon as={InfoIcon} />
-              </Tooltip>
-            </>
-          }
-          value={stake.totalInTStake}
-        >
-          <TreeNode>
-            <BalanceTreeItem label="Native Stake" value={stake.tStake} />
-            {stake.keepInTStake !== "0" && (
-              <BalanceTreeItem
-                label="KEEP Stake in T"
-                value={stake.keepInTStake}
-              />
-            )}
-            {stake.nuInTStake !== "0" && (
-              <BalanceTreeItem label="NU Stake in T" value={stake.nuInTStake} />
-            )}
-          </TreeNode>
-        </BalanceTreeItem>
-      </TreeNode>
-    </Tree>
-  )
-}
-
-const BalanceTreeItem: FC<{
-  label: string | ReactElement
-  value: string
-  isRoot?: boolean
-}> = ({ label, value, children, isRoot = false }) => {
-  const LineComponent = isRoot ? Fragment : TreeItemLineToNode
-  return (
-    <TreeItem>
-      <BodyMd fontWeight="400" pt="6" pb="3">
-        {label}
-      </BodyMd>
-      <LineComponent>
-        <InfoBox m="0">
-          <TokenBalance tokenAmount={value} withSymbol tokenSymbol="T" />
-        </InfoBox>
-      </LineComponent>
-      {children}
-    </TreeItem>
   )
 }
 
