@@ -129,7 +129,7 @@ const MinMidMaxRadioGroup: FC<{
       <Stack>
         <MinMidMaxRadio
           isActive={value === MinMidMaxValue.Min}
-          value="Min"
+          value={MinMidMaxValue.Min}
           setValue={() => {
             _onRadioClick(MinMidMaxValue.Min)
           }}
@@ -142,7 +142,7 @@ const MinMidMaxRadioGroup: FC<{
         />
         <MinMidMaxRadio
           isActive={value === MinMidMaxValue.Mid}
-          value="Mid"
+          value={MinMidMaxValue.Mid}
           setValue={() => {
             _onRadioClick(MinMidMaxValue.Mid)
           }}
@@ -155,7 +155,7 @@ const MinMidMaxRadioGroup: FC<{
         />
         <MinMidMaxRadio
           isActive={value === MinMidMaxValue.Max}
-          value="Max"
+          value={MinMidMaxValue.Max}
           setValue={() => {
             _onRadioClick(MinMidMaxValue.Max)
           }}
