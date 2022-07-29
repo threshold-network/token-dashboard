@@ -110,7 +110,7 @@ const MinMidMaxRadio: FC<MinMidMaxRadioProps> = ({
   )
 }
 
-export const MinMidMaxRadioGroup: FC<{
+const MinMidMaxRadioGroup: FC<{
   onRadioClick: (value: MinMidMaxValue) => any
 }> = ({ onRadioClick }) => {
   const [value, setValue] = useState<MinMidMaxValue | undefined>(undefined)
@@ -170,3 +170,5 @@ export const MinMidMaxRadioGroup: FC<{
     </RadioGroup>
   )
 }
+
+export default MinMidMaxRadioGroup
