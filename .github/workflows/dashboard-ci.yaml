@@ -147,9 +147,13 @@ jobs:
               body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
             })
 
-      # A push event is triggered on main branch merge; deploy to testnet bucket.
+      # A push event is triggered on main branch merge; deploy to testnet
+      # bucket. Also triggered by manual dispatch from `main` branch.
       - name: Deploy to GCP bucket
-        if: github.event_name == 'push'
+        if: |
+          github.event_name == 'push'
+          || (github.event_name == 'workflow_dispatch'
+          && github.ref == 'refs/heads/main')
         uses: thesis/gcp-storage-bucket-action@v3.1.0
         with:
           service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
