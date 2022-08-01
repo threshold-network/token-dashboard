@@ -72,9 +72,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 3
-          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
+          CHAIN_ID: 5
+          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
@@ -100,14 +100,17 @@ jobs:
       - name: Configure git to don't use unauthenticated protocol
         run: git config --global url."https://".insteadOf git://
 
-      - name: Resolve latest ropsten contracts
+      # We provide explicit version of the `keep-core` package, because using
+      # `goerli` tag results in `expected manifest` error - probably caused by
+      # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+      - name: Resolve latest goerli contracts
         run: |
           yarn upgrade \
-            @threshold-network/solidity-contracts@ropsten \
-            @keep-network/keep-core@ropsten \
-            @keep-network/keep-ecdsa@ropsten \
-            @keep-network/tbtc@ropsten \
-            @keep-network/coverage-pools@ropsten
+            @threshold-network/solidity-contracts@goerli \
+            @keep-network/keep-core@1.8.1-goerli.0 \
+            @keep-network/keep-ecdsa@goerli \
+            @keep-network/tbtc@goerli \
+            @keep-network/coverage-pools@goerli
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -117,9 +120,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 3
-          ETH_HOSTNAME_HTTP: ${{ secrets.ROPSTEN_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.ROPSTEN_ETH_HOSTNAME_WS }}
+          CHAIN_ID: 5
+          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
 
       # A pull_request event is a PR; deploy to preview testnet bucket.
       - name: Deploy PR preview to GCP
@@ -144,9 +147,13 @@ jobs:
               body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
             })
 
-      # A push event is triggered on main branch merge; deploy to testnet bucket.
+      # A push event is triggered on main branch merge; deploy to testnet
+      # bucket. Also triggered by manual dispatch from `main` branch.
       - name: Deploy to GCP bucket
-        if: github.event_name == 'push'
+        if: |
+          github.event_name == 'push'
+          || (github.event_name == 'workflow_dispatch'
+          && github.ref == 'refs/heads/main')
         uses: thesis/gcp-storage-bucket-action@v3.1.0
         with:
           service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
