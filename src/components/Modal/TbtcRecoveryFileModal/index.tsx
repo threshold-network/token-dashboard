@@ -17,11 +17,16 @@ import withBaseModal from "../withBaseModal"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 
 const TbtcRecoveryFileModalModal: FC<
   // TODO: complete the download callback interface
-  BaseModalProps & { handleDownloadClick: any; handleDoubleReject: () => void }
-> = ({ closeModal, handleDownloadClick, handleDoubleReject }) => {
+  BaseModalProps & {
+    jsonData: DepositScriptParameters
+    handleDownloadClick: any
+    handleDoubleReject: () => void
+  }
+> = ({ closeModal, jsonData, handleDownloadClick, handleDoubleReject }) => {
   const [isOnConfirmStep, setIsOnConfirmStep] = useState(false)
   const { updateState } = useTbtcState()
 
@@ -77,7 +82,7 @@ const TbtcRecoveryFileModalModal: FC<
             Cancel
           </Button>
         )}
-        <Button onClick={handleDownloadClick}>Download</Button>
+        <Button onClick={() => handleDownloadClick(jsonData)}>Download</Button>
       </ModalFooter>
     </>
   )
