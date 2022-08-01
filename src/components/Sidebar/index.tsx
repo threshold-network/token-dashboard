@@ -5,7 +5,7 @@ import {
   IoSwapHorizontalSharp,
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
-import { useMemo } from "react"
+import { useContext, useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
@@ -13,14 +13,18 @@ import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 import useUpgradeHref from "../../hooks/useUpgradeHref"
 import { tBTCFill } from "../../static/icons/tBTCFill"
 import { tBTCOutline } from "../../static/icons/tBTCOutline"
+import { FeatureFlagsContext } from "../../contexts/FeatureFlagContext"
+import { FeatureFlag } from "../../feature-flags/featureFlags"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
 
   const upgradeHref = useUpgradeHref()
 
-  const navItems: NavItemDetail[] = useMemo(
-    () => [
+  const featureFlagsContext = useContext(FeatureFlagsContext)
+
+  const navItems: NavItemDetail[] = useMemo(() => {
+    const navItems = [
       {
         text: "Overview",
         activeIcon: IoHomeSharp,
@@ -39,15 +43,19 @@ const Sidebar = () => {
         passiveIcon: IoChartOutlineSharp,
         href: "/staking",
       },
-      {
+    ]
+
+    if (featureFlagsContext[FeatureFlag.TBTCV2].isActive) {
+      navItems.push({
         text: "tBTC",
         activeIcon: tBTCFill,
         passiveIcon: tBTCOutline,
         href: "/tBTC",
-      },
-    ],
-    [pathname, upgradeHref]
-  )
+      } as NavItemDetail)
+    }
+
+    return navItems
+  }, [pathname, upgradeHref])
 
   return (
     <>

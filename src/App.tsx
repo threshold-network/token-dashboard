@@ -3,7 +3,7 @@ import "@fontsource/inter/700.css"
 import "@fontsource/inter/600.css"
 import "@fontsource/inter/500.css"
 import "@fontsource/inter/400.css"
-import { FC, useEffect, Fragment } from "react"
+import { FC, useEffect, Fragment, useContext } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
@@ -38,6 +38,11 @@ import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
+import {
+  FeatureFlagsContext,
+  FeatureFlagsContextProvider,
+} from "./contexts/FeatureFlagContext"
+import { FeatureFlag } from "./feature-flags/featureFlags"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -146,11 +151,21 @@ const Layout = () => {
 }
 
 const Routing = () => {
+  const featureFlagsContext = useContext(FeatureFlagsContext)
+
   return (
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map(renderPageComponent)}
+        {pages.map((page) => {
+          if (
+            !featureFlagsContext[FeatureFlag.TBTCV2].isActive &&
+            page.route.title === "TBTC"
+          ) {
+            return null
+          }
+          return renderPageComponent(page)
+        })}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
@@ -182,11 +197,13 @@ const App: FC = () => {
       <Web3ReactProvider getLibrary={getLibrary}>
         <ReduxProvider store={reduxStore}>
           <ChakraProvider theme={theme}>
-            <TokenContextProvider>
-              <Web3EventHandlerComponent />
-              <ModalRoot />
-              <AppBody />
-            </TokenContextProvider>
+            <FeatureFlagsContextProvider>
+              <TokenContextProvider>
+                <Web3EventHandlerComponent />
+                <ModalRoot />
+                <AppBody />
+              </TokenContextProvider>
+            </FeatureFlagsContextProvider>
           </ChakraProvider>
         </ReduxProvider>
       </Web3ReactProvider>
