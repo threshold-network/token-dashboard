@@ -15,9 +15,9 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+// import { TBTC } from "@keep-network/tbtc-v2.ts"
+// import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { downloadFile } from "../../../../web3/utils"
 
 export interface FormValues {
@@ -77,7 +77,8 @@ export const ProvideData: FC = () => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal, closeModal } = useModal()
 
-  const handleJsonDownload = (data: DepositScriptParameters) => {
+  // TODO: [TBTC-V2] Change type of data to DepositScriptParameters
+  const handleJsonDownload = (data: any) => {
     downloadFile(
       JSON.stringify(data),
       "deposit-script-parameters.json",
