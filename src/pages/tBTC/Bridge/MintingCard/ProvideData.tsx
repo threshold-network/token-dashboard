@@ -15,6 +15,8 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import { TBTC } from "@keep-network/tbtc-v2.ts"
+import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
 
 export interface FormValues {
   ethAddress: string
@@ -89,13 +91,28 @@ export const ProvideData: FC = () => {
     closeModal()
   }
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = async (values: FormValues) => {
     // check if the user has changed the eth or btc address from the previous attempt
     if (
       ethAddress !== values.ethAddress ||
       btcRecoveryAddress !== values.btcRecoveryAddress
     ) {
       // if so...
+      const depositScriptParameters = createDepositScriptParameters(
+        values.ethAddress,
+        values.btcRecoveryAddress
+      )
+
+      // const depositAddress = await TBTC.calculateDepositAddress(
+      //   depositScriptParameters,
+      //   "testnet",
+      //   true
+      // )
+
+      const depositAddress =
+        "14934b98637ca318a4d6e7ca6ffd1690b8e77df6377508f9f0c90d000395237576a9148" +
+        "db50eb52063ea9d98b3eac91489a90f738986f68763ac6776a91428e081f285138ccbe3" +
+        "89c1eb8985716230129f89880460bcea61b175ac68"
 
       // update state,
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
@@ -103,10 +120,7 @@ export const ProvideData: FC = () => {
 
       // create a new deposit address,
       // TODO: Generate this address
-      updateState(
-        "btcDepositAddress",
-        "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
-      )
+      updateState("btcDepositAddress", depositAddress)
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       openModal(ModalType.TbtcRecoveryJson, {
