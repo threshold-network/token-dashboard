@@ -16,8 +16,8 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
-// import { TBTC } from "@keep-network/tbtc-v2.ts"
-// import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { TBTC } from "@keep-network/tbtc-v2.ts"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { downloadFile } from "../../../../web3/utils"
 
 export interface FormValues {
@@ -77,8 +77,7 @@ export const ProvideData: FC = () => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal, closeModal } = useModal()
 
-  // TODO: [TBTC-V2] Change type of data to DepositScriptParameters
-  const handleJsonDownload = (data: any) => {
+  const handleJsonDownload = (data: DepositScriptParameters) => {
     downloadFile(
       JSON.stringify(data),
       "deposit-script-parameters.json",
@@ -122,7 +121,6 @@ export const ProvideData: FC = () => {
       updateState("ethAddress", values.ethAddress)
 
       // create a new deposit address,
-      // TODO: Generate this address
       updateState("btcDepositAddress", depositAddress)
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file

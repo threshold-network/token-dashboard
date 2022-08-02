@@ -1,7 +1,7 @@
-// import {
-//   calculateDepositRefundLocktime,
-//   DepositScriptParameters,
-// } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import {
+  calculateDepositRefundLocktime,
+  DepositScriptParameters,
+} from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import {
@@ -14,9 +14,7 @@ import { unprefixedAndUncheckedAddress } from "../web3/utils"
 export const createDepositScriptParameters = (
   ethAddress: string,
   btcRecoveryAddress: string
-  // TODO: [TBTC-V2] Change return type of this function to
-  // DepositScriptParameters
-): any => {
+): DepositScriptParameters => {
   // TODO: check network
   if (isValidBtcAddress(btcRecoveryAddress, Network.testnet)) {
     throw new Error(
@@ -30,12 +28,10 @@ export const createDepositScriptParameters = (
   )
   const walletPublicKey =
     "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
-  // const refundLocktime = calculateDepositRefundLocktime(1641650400)
-  const refundLocktime = "e0250162"
+  const refundLocktime = calculateDepositRefundLocktime(1641650400)
   const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
-  // TODO: [TBTC-V2] Change type of this variable to DepositScriptParameters
-  const depositScriptParameters: any = {
+  const depositScriptParameters: DepositScriptParameters = {
     depositor: {
       identifierHex,
     },
