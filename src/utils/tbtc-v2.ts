@@ -28,7 +28,7 @@ export const createDepositScriptParameters = (
   )
   const walletPublicKey =
     "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
-  const refundLocktime = calculateDepositRefundLocktime(1641650400)
+  const refundLocktime = calculateDepositRefundLocktime(currentTimestamp)
   const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
   const depositScriptParameters: DepositScriptParameters = {
