@@ -55,6 +55,8 @@ jobs:
       - name: Configure git to don't use unauthenticated protocol
         run: git config --global url."https://".insteadOf git://
 
+      # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
+      # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
       - name: Resolve latest contracts
         run: |
           yarn upgrade \
@@ -80,9 +82,10 @@ jobs:
       # - name: Test
       #   run: yarn test
 
-  build-and-deploy-testnet:
+  build-and-deploy-testnet-preview:
     name: Deploy to testnet
     needs: build-and-test
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -103,6 +106,78 @@ jobs:
       # We provide explicit version of the `keep-core` package, because using
       # `goerli` tag results in `expected manifest` error - probably caused by
       # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+      # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
+      # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
+      - name: Resolve latest goerli contracts
+        run: |
+          yarn upgrade \
+            @threshold-network/solidity-contracts@dapp-development-goerli \
+            @keep-network/keep-core@1.8.1-goerli.0 \
+            @keep-network/keep-ecdsa@goerli \
+            @keep-network/tbtc@goerli \
+            @keep-network/coverage-pools@goerli
+
+      - name: Run postinstall script
+        # `yarn upgrade` doesn't trigger the `postinstall` script.
+        run: yarn run postinstall
+
+      - name: Build
+        run: yarn build
+        env:
+          PUBLIC_URL: /${{ github.head_ref }}
+          CHAIN_ID: 5
+          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+
+      - name: Deploy PR preview to GCP
+        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        with:
+          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
+          bucket-name: preview.dashboard.test.threshold.network
+          bucket-path: ${{ github.head_ref }}
+          build-folder: build
+
+      - name: Post preview URL to PR
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
+            })
+
+  build-and-deploy-testnet:
+    name: Deploy to testnet
+    needs: build-and-test
+    if: |
+      github.event_name == 'push'
+        || (github.event_name == 'workflow_dispatch'
+        && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: "yarn"
+
+      # We need this step because the `@keep-network/tbtc` which we update in
+      # next step has a dependency to `@summa-tx/relay-sol@2.0.2` package, which
+      # downloads one of its sub-dependencies via unathenticated `git://`
+      # protocol. That protocol is no longer supported. Thanks to this step
+      # `https://` is used instead of `git://`.
+      - name: Configure git to don't use unauthenticated protocol
+        run: git config --global url."https://".insteadOf git://
+
+      # We provide explicit version of the `keep-core` package, because using
+      # `goerli` tag results in `expected manifest` error - probably caused by
+      # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+      # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
+      # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
       - name: Resolve latest goerli contracts
         run: |
           yarn upgrade \
@@ -124,36 +199,7 @@ jobs:
           ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
 
-      # A pull_request event is a PR; deploy to preview testnet bucket.
-      - name: Deploy PR preview to GCP
-        if: github.event_name == 'pull_request'
-        uses: thesis/gcp-storage-bucket-action@v3.1.0
-        with:
-          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
-          bucket-name: preview.dashboard.test.threshold.network
-          bucket-path: ${{ github.head_ref }}
-          build-folder: build
-
-      - name: Post preview URL to PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
-            })
-
-      # A push event is triggered on main branch merge; deploy to testnet
-      # bucket. Also triggered by manual dispatch from `main` branch.
       - name: Deploy to GCP bucket
-        if: |
-          github.event_name == 'push'
-          || (github.event_name == 'workflow_dispatch'
-          && github.ref == 'refs/heads/main')
         uses: thesis/gcp-storage-bucket-action@v3.1.0
         with:
           service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
