@@ -9,12 +9,12 @@ import {
   Card,
   HStack,
   Badge,
+  Countdown,
 } from "@threshold-network/components"
 import InfoBox from "../../components/InfoBox"
 import { useModal } from "../../hooks/useModal"
 import { ModalType } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
-import { useCountdown } from "../../hooks/useCountdown"
 import { BigNumber } from "ethers"
 import { useNextRewardsDropDate } from "../../hooks/useNextRewardsDropDate"
 
@@ -26,7 +26,6 @@ const RewardsCard: FC<{
   const { openModal } = useModal()
 
   const dropTimestamp = useNextRewardsDropDate()
-  const { days, hours, minutes, seconds } = useCountdown(dropTimestamp)
 
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
@@ -43,10 +42,16 @@ const RewardsCard: FC<{
         ) : (
           <BodyMd ml="auto !important">
             Next rewards emission:{" "}
-            <BodyMd
-              as="span"
-              color="brand.500"
-            >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
+            <Countdown targetDateInUnix={dropTimestamp}>
+              {(days, hours, minutes, seconds) => {
+                return (
+                  <BodyMd
+                    as="span"
+                    color="brand.500"
+                  >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
+                )
+              }}
+            </Countdown>
           </BodyMd>
         )}
       </HStack>
