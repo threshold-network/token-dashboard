@@ -18,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # This step forces Git to download dependencies using `https://` protocol,
@@ -44,7 +44,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # We need this step because the `@keep-network/tbtc` which we update in
@@ -62,7 +62,9 @@ jobs:
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
-            @keep-network/coverage-pools
+            @keep-network/coverage-pools \
+            @keep-network/tbtc-v2 \
+            @keep-network/tbtc-v2.ts
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -110,7 +112,9 @@ jobs:
             @keep-network/keep-core@1.8.1-goerli.0 \
             @keep-network/keep-ecdsa@goerli \
             @keep-network/tbtc@goerli \
-            @keep-network/coverage-pools@goerli
+            @keep-network/coverage-pools@goerli \
+            @keep-network/tbtc-v2@goerli \
+            @keep-network/tbtc-v2.ts
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
