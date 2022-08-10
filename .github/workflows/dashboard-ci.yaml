@@ -113,7 +113,7 @@ jobs:
             @keep-network/keep-ecdsa@goerli \
             @keep-network/tbtc@goerli \
             @keep-network/coverage-pools@goerli \
-            @keep-network/tbtc-v2@goearli \
+            @keep-network/tbtc-v2@goerli \
             @keep-network/tbtc-v2.ts@goerli
 
       - name: Run postinstall script
