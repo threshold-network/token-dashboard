@@ -114,7 +114,7 @@ jobs:
             @keep-network/tbtc@goerli \
             @keep-network/coverage-pools@goerli \
             @keep-network/tbtc-v2@goerli \
-            @keep-network/tbtc-v2.ts@goerli
+            @keep-network/tbtc-v2.ts
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
