@@ -6,9 +6,13 @@ import {
   AlertIcon,
   Badge,
   BodyXs,
+  BoxProps,
+  Button,
   Card,
   Checkbox,
   FilterTabs,
+  Grid,
+  GridItem,
   H5,
   HStack,
   LabelSm,
@@ -16,6 +20,7 @@ import {
   VStack,
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
+import { FC } from "react"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { TokenAmountForm } from "../../../components/Forms"
@@ -26,69 +31,159 @@ import { RootState } from "../../../store"
 import { PageComponent } from "../../../types"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { isSameETHAddress } from "../../../web3/utils"
+import { AppAuthDataProps } from "../StakeCard"
 import { StakeCardHeaderTitle } from "../StakeCard/HeaderTitle"
 
-const CardCheckbox = ({ ...restProps }) => {
+export interface ApplicationCardCheckboxProps extends BoxProps {
+  appAuthData: AppAuthDataProps
+}
+
+const ApplicationCardCheckbox: FC<ApplicationCardCheckboxProps> = ({
+  appAuthData,
+  ...restProps
+}) => {
   const tBalance = useTokenBalance(Token.T)
   const minStakeAmount = useMinStakeAmount()
 
+  const collapsed = !appAuthData.isAuthRequired
+
+  if (collapsed) {
+    return (
+      <Card {...restProps}>
+        <VStack alignItems={"flex-start"} gridArea="app-info">
+          <HStack>
+            <LabelSm>{appAuthData.label} App - 100%</LabelSm>
+            <InfoIcon />
+            <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
+              Authorization not required
+            </Badge>
+          </HStack>
+          <HStack>
+            <Badge
+              variant={"solid"}
+              borderRadius={5}
+              px={2}
+              py={2}
+              backgroundColor={"brand.50"}
+              color={"brand.700"}
+              textTransform={"none"}
+              fontSize="sm"
+            >
+              <HStack>
+                <InfoIcon w={3} h={3} color={"brand.700"} />
+                <BodyXs>APR &#183; 10%</BodyXs>
+              </HStack>
+            </Badge>
+            <Badge
+              variant={"solid"}
+              borderRadius={5}
+              px={2}
+              py={2}
+              backgroundColor={"brand.50"}
+              color={"brand.700"}
+              textTransform={"none"}
+              fontSize="sm"
+            >
+              <HStack>
+                <InfoIcon w={3} h={3} color={"brand.700"} />
+                <BodyXs>
+                  {"Shlashing "} &#183; {"<1%"}
+                </BodyXs>
+              </HStack>
+            </Badge>
+          </HStack>
+        </VStack>
+      </Card>
+    )
+  }
+
   return (
     <Card {...restProps}>
-      <HStack alignItems={"flex-start"} justifyContent="space-between">
-        <Checkbox />
-        <VStack width="90%" alignItems={"stretch"}>
-          <HStack justifyContent={"space-between"} mb={10}>
-            <VStack alignItems={"flex-start"}>
-              <LabelSm>TBTC App - 100%</LabelSm>
-              <HStack>
-                <Badge
-                  variant={"solid"}
-                  borderRadius={5}
-                  px={2}
-                  py={2}
-                  backgroundColor={"brand.50"}
-                  color={"brand.700"}
-                  textTransform={"none"}
-                  fontSize="sm"
-                >
-                  <HStack>
-                    <InfoIcon w={3} h={3} color={"brand.700"} />
-                    <BodyXs>APR &#183; 10%</BodyXs>
-                  </HStack>
-                </Badge>
-                <Badge
-                  variant={"solid"}
-                  borderRadius={5}
-                  px={2}
-                  py={2}
-                  backgroundColor={"brand.50"}
-                  color={"brand.700"}
-                  textTransform={"none"}
-                  fontSize="sm"
-                >
-                  <HStack>
-                    <InfoIcon w={3} h={3} color={"brand.700"} />
-                    <BodyXs>
-                      {"Shlashing "} &#183; {"<1%"}
-                    </BodyXs>
-                  </HStack>
-                </Badge>
-              </HStack>
-            </VStack>
-            <FilterTabs
-              variant="inline"
-              tabs={[
-                { title: "Increase", tabId: "1" },
-                { title: "Decrease", tabId: "2" },
-              ]}
-            />
+      <Grid
+        gridTemplateAreas={{
+          base: `
+            "checkbox             checkbox"
+            "app-info             app-info"
+            "filter-tabs          filter-tabs"
+            "token-amount-form    token-amount-form"
+          `,
+          sm: `
+              "checkbox        app-info"
+              "checkbox        filter-tabs"
+              "checkbox        token-amount-form"
+            `,
+          md: `
+              "checkbox        app-info           filter-tabs      "
+              "checkbox        token-amount-form  token-amount-form"
+              "checkbox        token-amount-form  token-amount-form"
+            `,
+        }}
+        gridTemplateColumns={"1fr 8fr"}
+        gap="3"
+        p={0}
+      >
+        <Checkbox
+          gridArea="checkbox"
+          alignSelf={"flex-start"}
+          justifySelf={"center"}
+        />
+        <VStack alignItems={"flex-start"} gridArea="app-info">
+          <HStack>
+            <LabelSm>{appAuthData.label} App - 100%</LabelSm>
+            <InfoIcon />
           </HStack>
+          <HStack>
+            <Badge
+              variant={"solid"}
+              borderRadius={5}
+              px={2}
+              py={2}
+              backgroundColor={"brand.50"}
+              color={"brand.700"}
+              textTransform={"none"}
+              fontSize="sm"
+            >
+              <HStack>
+                <InfoIcon w={3} h={3} color={"brand.700"} />
+                <BodyXs>APR &#183; 10%</BodyXs>
+              </HStack>
+            </Badge>
+            <Badge
+              variant={"solid"}
+              borderRadius={5}
+              px={2}
+              py={2}
+              backgroundColor={"brand.50"}
+              color={"brand.700"}
+              textTransform={"none"}
+              fontSize="sm"
+            >
+              <HStack>
+                <InfoIcon w={3} h={3} color={"brand.700"} />
+                <BodyXs>
+                  {"Shlashing "} &#183; {"<1%"}
+                </BodyXs>
+              </HStack>
+            </Badge>
+          </HStack>
+        </VStack>
+        <FilterTabs
+          gridArea="filter-tabs"
+          variant="inline"
+          alignItems="center"
+          gap={0}
+          tabs={[
+            { title: "Increase", tabId: "1" },
+            { title: "Decrease", tabId: "2" },
+          ]}
+        />
+        <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
             onSubmitForm={() => {
               console.log("form submitted")
             }}
             label="Amount"
-            submitButtonText="Authorize TBTC"
+            submitButtonText={`Authorize ${appAuthData.label}`}
             maxTokenAmount={tBalance}
             placeholder={`Minimum stake ${
               minStakeAmount === "0"
@@ -96,10 +191,10 @@ const CardCheckbox = ({ ...restProps }) => {
                 : `${formatTokenAmount(minStakeAmount)} T`
             }`}
             minTokenAmount={minStakeAmount}
-            helperText="Minimum 40,000 T for TBTC"
+            helperText={`Minimum 40,000 T for ${appAuthData.label}`}
           />
-        </VStack>
-      </HStack>
+        </GridItem>
+      </Grid>
     </Card>
   )
 }
@@ -116,6 +211,32 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const isInActiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
+
+  // TODO: This will probably be fetched from contracts
+  const appsAuthData = {
+    tbtc: {
+      label: "tBTC",
+      isAuthorized: true,
+      percentage: 40,
+      isAuthRequired: true,
+    },
+    randomBeacon: {
+      label: "Random Beacon",
+      isAuthorized: false,
+      percentage: 0,
+      isAuthRequired: true,
+    },
+    pre: {
+      label: "PRE",
+      isAuthorized: false,
+      percentage: 0,
+      isAuthRequired: false,
+    },
+  }
+
+  const onAuthorizeApps = () => {
+    console.log("Authorize Apps!!")
+  }
 
   return stake ? (
     <Card>
@@ -147,7 +268,12 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           apps. You can change this amount at any time.
         </AlertDescription>
       </AlertBox>
-      <CardCheckbox mt={5} />
+      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.tbtc} />
+      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.randomBeacon} />
+      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.pre} />
+      <Button variant="outline" width="100%" mt={5} onClick={onAuthorizeApps}>
+        Authorize selected apps
+      </Button>
     </Card>
   ) : (
     <H5>Please connect your wallet</H5>
