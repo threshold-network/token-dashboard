@@ -255,11 +255,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         </HStack>
       </HStack>
       <LineDivider />
-      <AlertBox
-        status="magic"
-        alignItems={"flex-start"}
-        backgroundColor="brand.100"
-      >
+      <AlertBox status="magic" alignItems={"flex-start"}>
         <AlertIcon color="brand.500" />
 
         <AlertDescription color={"gray.700"}>
