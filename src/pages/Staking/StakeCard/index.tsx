@@ -49,6 +49,7 @@ import { StakeCardHeader } from "./Header"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
+import { useNavigate } from "react-router-dom"
 
 export interface AuthorizationAppDataProps extends StackProps {
   label: string
@@ -105,6 +106,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
+  const navigate = useNavigate()
 
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
@@ -119,7 +121,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   }, [setFlag.toggle])
 
   const onAuthorizeClick = () => {
-    console.log("Authorize clicked!")
+    navigate(`/staking/authorize/${stake.authorizer}`)
   }
 
   const onSubmitTopUp = (

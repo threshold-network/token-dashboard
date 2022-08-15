@@ -15,6 +15,7 @@ import {
   selectTotalBonusBalance,
   selectTotalRewardsBalance,
 } from "../../store/rewards"
+import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -65,7 +66,7 @@ const MainStakingPage: PageComponent = (props) => {
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage],
+  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
   title: "Staking",
 }
 
