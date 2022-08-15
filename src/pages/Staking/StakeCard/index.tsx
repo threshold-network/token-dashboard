@@ -51,20 +51,24 @@ import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
 import { useNavigate } from "react-router-dom"
 
-export interface AuthorizationAppDataProps extends StackProps {
+export interface AppAuthDataProps {
   label: string
   isAuthorized: boolean
   percentage: number
+  isAuthRequired: boolean
+}
+
+export interface AuthorizeApplicationRowProps extends StackProps {
+  appAuthData: AppAuthDataProps
   onAuthorizeClick: () => void
 }
 
-const AuthorizeApplicationRow: FC<AuthorizationAppDataProps> = ({
-  label,
-  isAuthorized,
-  percentage,
+const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
+  appAuthData,
   onAuthorizeClick,
   ...restProps
 }) => {
+  const { label, isAuthorized, percentage } = appAuthData
   return (
     <HStack justify={"space-between"} {...restProps}>
       <Badge
@@ -78,7 +82,7 @@ const AuthorizeApplicationRow: FC<AuthorizationAppDataProps> = ({
       >
         <HStack>
           {isAuthorized && <CheckCircleIcon w={5} h={5} color={"green.500"} />}
-          <BodySm>{label}</BodySm>
+          <BodySm>{label} App</BodySm>
         </HStack>
       </Badge>
       {isAuthorized ? (
@@ -159,14 +163,25 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
   const areNodesMissing = true
 
-  const appAuthData = {
+  // TODO: This will probably be fetched from contracts
+  const appsAuthData = {
     tbtc: {
+      label: "tBTC",
       isAuthorized: true,
       percentage: 40,
+      isAuthRequired: true,
     },
     randomBeacon: {
+      label: "Random Beacon",
       isAuthorized: false,
       percentage: 0,
+      isAuthRequired: true,
+    },
+    pre: {
+      label: "PRE",
+      isAuthorized: false,
+      percentage: 0,
+      isAuthRequired: false,
     },
   }
 
@@ -225,17 +240,13 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           </Alert>
         )}
         <AuthorizeApplicationRow
-          label={"tBTC App"}
-          isAuthorized={appAuthData.tbtc.isAuthorized}
-          percentage={appAuthData.tbtc.percentage}
           mb={"3"}
           onAuthorizeClick={onAuthorizeClick}
+          appAuthData={appsAuthData.tbtc}
         />
         <AuthorizeApplicationRow
-          label={"Random Beacon App"}
-          isAuthorized={appAuthData.randomBeacon.isAuthorized}
-          percentage={appAuthData.randomBeacon.percentage}
           onAuthorizeClick={onAuthorizeClick}
+          appAuthData={appsAuthData.randomBeacon}
         />
         <Button mt="5" width="100%">
           Configure Apps
