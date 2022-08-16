@@ -239,38 +239,50 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   }
 
   return stake ? (
-    <Card>
-      <HStack justify={"space-between"}>
-        <H5>Authorize Applications</H5>
-        <HStack>
-          <Badge
-            colorScheme={isInActiveStake ? "gray" : "green"}
-            variant="subtle"
-            size="small"
-            mr="2"
-          >
-            {isInActiveStake ? "inactive" : "active"}
-          </Badge>
-          <StakeCardHeaderTitle stake={stake} />
+    <>
+      <FilterTabs
+        tabs={[
+          { title: "Stake Overview", tabId: "1" },
+          { title: "Authorize Application", tabId: "2" },
+        ]}
+        selectedTabId={"2"}
+        mb={"5"}
+        size={"lg"}
+      ></FilterTabs>
+      <Card>
+        <HStack justify={"space-between"}>
+          <H5>Authorize Applications</H5>
+          <HStack>
+            <Badge
+              colorScheme={isInActiveStake ? "gray" : "green"}
+              variant="subtle"
+              size="small"
+              mr="2"
+            >
+              {isInActiveStake ? "inactive" : "active"}
+            </Badge>
+            <StakeCardHeaderTitle stake={stake} />
+          </HStack>
         </HStack>
-      </HStack>
-      <LineDivider />
-      <AlertBox status="magic" alignItems={"flex-start"}>
-        <AlertIcon color="brand.500" />
-
-        <AlertDescription color={"gray.700"}>
-          In order to earn rewards, please authorize Threshold apps to use your
-          stake. Note that you can authorize 100% of your stake for all of the
-          apps. You can change this amount at any time.
-        </AlertDescription>
-      </AlertBox>
-      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.tbtc} />
-      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.randomBeacon} />
-      <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.pre} />
-      <Button variant="outline" width="100%" mt={5} onClick={onAuthorizeApps}>
-        Authorize selected apps
-      </Button>
-    </Card>
+        <LineDivider />
+        <AlertBox status="magic" alignItems={"flex-start"}>
+          <AlertDescription color={"gray.700"}>
+            In order to earn rewards, please authorize Threshold apps to use
+            your stake. Note that you can authorize 100% of your stake for all
+            of the apps. You can change this amount at any time.
+          </AlertDescription>
+        </AlertBox>
+        <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.tbtc} />
+        <ApplicationCardCheckbox
+          mt={5}
+          appAuthData={appsAuthData.randomBeacon}
+        />
+        <ApplicationCardCheckbox mt={5} appAuthData={appsAuthData.pre} />
+        <Button variant="outline" width="100%" mt={5} onClick={onAuthorizeApps}>
+          Authorize selected apps
+        </Button>
+      </Card>
+    </>
   ) : (
     <H5>Please connect your wallet</H5>
   )
