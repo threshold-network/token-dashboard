@@ -50,13 +50,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
 import { useNavigate } from "react-router-dom"
-
-export interface AppAuthDataProps {
-  label: string
-  isAuthorized: boolean
-  percentage: number
-  isAuthRequired: boolean
-}
+import { AppAuthDataProps } from "../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
   appAuthData: AppAuthDataProps
