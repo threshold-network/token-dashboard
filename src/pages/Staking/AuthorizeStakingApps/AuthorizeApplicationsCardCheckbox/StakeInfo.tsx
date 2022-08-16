@@ -2,6 +2,7 @@ import { InfoIcon } from "@chakra-ui/icons"
 import { VStack, HStack, Badge, StackProps } from "@chakra-ui/react"
 import { LabelSm, BodyXs } from "@threshold-network/components"
 import { FC } from "react"
+import { formatPercentage } from "../../../../utils/percentage"
 
 export interface StakeInfoProps extends StackProps {
   label: string
@@ -23,7 +24,7 @@ export const StakeInfo: FC<StakeInfoProps> = ({
     <VStack alignItems={"flex-start"} {...restProps}>
       <HStack>
         <LabelSm>
-          {label} App - {percentageAuthorized}%
+          {label} App - {formatPercentage(percentageAuthorized, 0, true)}%
         </LabelSm>
         <InfoIcon />
         {!isAuthorizationRequired && (
@@ -45,7 +46,9 @@ export const StakeInfo: FC<StakeInfoProps> = ({
         >
           <HStack>
             <InfoIcon w={3} h={3} color={"brand.700"} />
-            <BodyXs>APR &#183; {aprPercentage}%</BodyXs>
+            <BodyXs>
+              APR &#183; {formatPercentage(aprPercentage, 0, true)}
+            </BodyXs>
           </HStack>
         </Badge>
         <Badge
@@ -61,7 +64,8 @@ export const StakeInfo: FC<StakeInfoProps> = ({
           <HStack>
             <InfoIcon w={3} h={3} color={"brand.700"} />
             <BodyXs>
-              {"Slashing "} &#183; {`<${slashingPercentage}%`}
+              {"Slashing "} &#183;{" "}
+              {`${formatPercentage(slashingPercentage, 0, true)}`}
             </BodyXs>
           </HStack>
         </Badge>
