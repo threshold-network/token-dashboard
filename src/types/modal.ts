@@ -25,6 +25,7 @@ import {
   ClaimingRewards,
   ClaimRewardsSuccessModal,
 } from "../components/Modal/ClaimingRewards"
+import NewAppsToAuthorizeModal from "../components/Modal/NewAppsToAuthorizeModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -46,6 +47,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingBonus]: StakingBonusModal,
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
+  [ModalType.NewAppsToAuthorize]: NewAppsToAuthorizeModal,
 }
 
 export interface BaseModalProps {
