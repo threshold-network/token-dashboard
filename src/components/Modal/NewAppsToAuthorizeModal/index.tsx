@@ -1,17 +1,29 @@
-import { FC } from "react"
+import { FC, useState } from "react"
+import InfoBox from "../../InfoBox"
 import {
+  BodyLg,
+  Card,
+  H5,
   Button,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-} from "@chakra-ui/react"
-import InfoBox from "../../InfoBox"
-import { BodyLg, H5 } from "@threshold-network/components"
+  Radio,
+  RadioGroup,
+  Stack,
+  LabelMd,
+} from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import { useStakingState } from "../../../hooks/useStakingState"
+import { getStakeType } from "../../../utils/getStakeType"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
+  const { stakes } = useStakingState()
+
+  const [selectedStake, setSelectedStake] = useState("")
+
   return (
     <>
       <ModalHeader>New Apps Available</ModalHeader>
@@ -27,6 +39,23 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
             any time.
           </BodyLg>
         </InfoBox>
+        <BodyLg my={6}>Choose a stake to continue:</BodyLg>
+        <RadioGroup
+          onChange={(stakingProvider) => setSelectedStake(stakingProvider)}
+          value={selectedStake}
+        >
+          <Stack>
+            {stakes.map((stake, i) => (
+              <Card boxShadow="none">
+                <Radio value="1" size="lg">
+                  <LabelMd ml={4}>
+                    STAKE {i + 1} - {getStakeType(stake)}
+                  </LabelMd>
+                </Radio>
+              </Card>
+            ))}
+          </Stack>
+        </RadioGroup>
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
