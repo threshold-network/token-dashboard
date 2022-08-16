@@ -1,4 +1,5 @@
-import { FC, useState } from "react"
+import { FC, useCallback, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import InfoBox from "../../InfoBox"
 import {
   BodyLg,
@@ -22,7 +23,16 @@ import { getStakeType } from "../../../utils/getStakeType"
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
 
-  const [selectedStake, setSelectedStake] = useState("")
+  const [selectedAuthorizeAddress, setSelectedAuthorizeAddress] = useState("")
+
+  const navigate = useNavigate()
+
+  const routeToStake = useCallback(() => {
+    if (selectedAuthorizeAddress.length > 0) {
+      navigate(`/authorize/${selectedAuthorizeAddress}`)
+      closeModal()
+    }
+  }, [selectedAuthorizeAddress, closeModal, navigate])
 
   return (
     <>
@@ -41,13 +51,13 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         </InfoBox>
         <BodyLg my={6}>Choose a stake to continue:</BodyLg>
         <RadioGroup
-          onChange={(stakingProvider) => setSelectedStake(stakingProvider)}
-          value={selectedStake}
+          onChange={setSelectedAuthorizeAddress}
+          value={selectedAuthorizeAddress}
         >
           <Stack>
             {stakes.map((stake, i) => (
               <Card boxShadow="none">
-                <Radio value="1" size="lg">
+                <Radio value={stake.authorizer} size="lg">
                   <LabelMd ml={4}>
                     STAKE {i + 1} - {getStakeType(stake)}
                   </LabelMd>
@@ -60,6 +70,9 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
+        </Button>
+        <Button onClick={routeToStake} variant="outline" mr={2}>
+          Continue
         </Button>
       </ModalFooter>
     </>
