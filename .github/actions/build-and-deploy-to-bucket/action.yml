@@ -110,6 +110,9 @@ runs:
       shell: bash
       run: yarn build
       env:
+        # `head_ref` variable property is only available when the event that
+        # triggers a workflow run is either pull_request or pull_request_target.
+        # For `workflow_dispatch` and `push`, the `PUBLIC_URL` will resoleve to `/`.`
         PUBLIC_URL: /${{ github.head_ref }}
         CHAIN_ID: ${{ env.NETWORK_ID }}
         ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
