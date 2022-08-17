@@ -1,20 +1,8 @@
 import { FC, useRef, useCallback } from "react"
-import { Flex, Button, useBoolean } from "@chakra-ui/react"
+import { Button, useBoolean } from "@chakra-ui/react"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
-import {
-  BodyMd,
-  BoxLabel,
-  Card,
-  LineDivider,
-  HStack,
-  Badge,
-  BodyLg,
-} from "@threshold-network/components"
-import { useSelector } from "react-redux"
-import TokenBalance from "../../../components/TokenBalance"
-import InfoBox from "../../../components/InfoBox"
-import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
+import { Card, LineDivider } from "@threshold-network/components"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
@@ -28,18 +16,17 @@ import {
   UnstakeType,
 } from "../../../enums"
 import { isAddressZero } from "../../../web3/utils"
-import { BalanceTree } from "./BalanceTree"
-import StakingApplications from "./StakingApplications"
+import StakeApplications from "./StakeApplications"
 import StakeCardHeader from "./Header"
 import StakeRewards from "./StakeRewards"
+import StakeBalance from "./StakeBalance"
+import StakeAddressInfo from "./StakeAddressInfo"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-
-  const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
   const isPRESet =
     !isAddressZero(stake.preConfig.operator) &&
@@ -96,31 +83,10 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       />
       <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
-      <StakingApplications stake={stake} />
+      <StakeApplications stake={stake} />
       <LineDivider mb="0" />
-      {hasLegacyStakes ? (
-        <BalanceTree stake={stake} />
-      ) : (
-        <>
-          <BodyMd mt="6" mb="3">
-            Total Staked Balance
-          </BodyMd>
-          <InfoBox m="0">
-            <TokenBalance
-              tokenAmount={stake.totalInTStake}
-              withSymbol
-              tokenSymbol="T"
-            />
-          </InfoBox>
-        </>
-      )}
-
-      <Flex mt="6" mb="8" alignItems="center">
-        <BoxLabel bg="brand.50" color="brand.700" mr="auto">
-          Provider address
-        </BoxLabel>
-        <CopyAddressToClipboard address={stake.stakingProvider} />
-      </Flex>
+      <StakeBalance stake={stake} />
+      <StakeAddressInfo stake={stake} />
       {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>

@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom"
 import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 
-const StakingApplications: FC<{ stake: StakeData }> = ({ stake }) => {
+const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   const navigate = useNavigate()
   const onAuthorizeClick = () => {
     navigate(`/staking/authorize/${stake.authorizer}`)
@@ -76,4 +76,4 @@ const StakingApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-export default StakingApplications
+export default StakeApplications
