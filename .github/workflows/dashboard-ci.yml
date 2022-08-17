@@ -104,13 +104,13 @@ jobs:
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
           environment: goerli
-          ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           useUpstreamBuilds: true
           dependentPackagesTag: goerli
-          preview: true
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           bucketName: preview.dashboard.test.threshold.network
+          preview: true
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
   # CI flow, which gets triggered manually after changes in the contracts,
@@ -135,13 +135,13 @@ jobs:
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
           environment: goerli
-          ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           useUpstreamBuilds: true
           upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
-          preview: false
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           bucketName: dashboard.test.threshold.network
+          preview: false
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
   # triggering is not related to the changes in the contracts / client code, we
@@ -159,10 +159,10 @@ jobs:
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
           environment: goerli
-          ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           useUpstreamBuilds: false
           dependentPackagesTag: goerli
-          preview: false
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           bucketName: dashboard.test.threshold.network
+          preview: false

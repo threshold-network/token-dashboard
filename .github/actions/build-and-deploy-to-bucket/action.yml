@@ -1,5 +1,5 @@
-name: Deploy to testnet bucket
-description: "Build and deploy to testnet bucket"
+name: Deploy to a GCP Bucket
+description: "Builds and deploys to a Google Cloud Storage Bucket"
 inputs:
   # Currently wthe action only supports `environment` = `goerli`.
   environment:
@@ -8,14 +8,11 @@ inputs:
       Will be used to deterine environment variables and decide which legacy
       packages should be used for building.
     required: true
-  ethHostnameHttp:
-    description: The http ETH hostname
+  ethUrlHttp:
+    description: The HTTP ETH API URL
     required: true
-  ethHostnameWs:
-    description: The ws ETH hostname
-    required: true
-  gcpServiceKey:
-    description: JSON key for Google Cloud Platform service account
+  ethUrlWS:
+    description: The WebSocket ETH API URL
     required: true
   useUpstreamBuilds:
     description: True if the upstream builds should be used
@@ -30,13 +27,16 @@ inputs:
       `keep-network` packages with contracts (required if
       `useUpstreamBuilds==false`). For example `dappdevgoerli`.
     required: false
+  gcpServiceKey:
+    description: JSON key for Google Cloud Platform service account
+    required: true
+  bucketName:
+    description: The name of the bucket where code wil be deployed.
+    required: true
   preview:
     description: True if the code should be pushed to the preview bucket
     required: true
     default: "false"
-  bucketName:
-    description: The name of the bucket where code wil be deployed.
-    required: true
 
 runs:
   using: "composite"
@@ -112,8 +112,8 @@ runs:
       env:
         PUBLIC_URL: /${{ github.head_ref }}
         CHAIN_ID: ${{ env.NETWORK_ID }}
-        ETH_HOSTNAME_HTTP: ${{ inputs.ethHostnameHttp }}
-        ETH_HOSTNAME_WS: ${{ inputs.ethHostnameWs }}
+        ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
+        ETH_HOSTNAME_WS: ${{ inputs.ethUrlWS }}
 
     - name: Deploy to GCP
       uses: thesis/gcp-storage-bucket-action@v3.1.0
