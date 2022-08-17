@@ -106,7 +106,6 @@ jobs:
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpProject: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
           useUpstreamBuilds: true
           dependentPackagesTag: goerli
           preview: true
@@ -136,7 +135,6 @@ jobs:
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpProject: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
           useUpstreamBuilds: true
           upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
           preview: false
@@ -159,7 +157,6 @@ jobs:
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpProject: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
           useUpstreamBuilds: false
           dependentPackagesTag: goerli
           preview: false
