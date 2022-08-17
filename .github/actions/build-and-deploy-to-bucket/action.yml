@@ -25,7 +25,7 @@ inputs:
     description: >
       Tag which should be used to pull latest non-legacy `threshold-network` and
       `keep-network` packages with contracts (required if
-      `useUpstreamBuilds==false`). For example `dappdevgoerli`.
+      `useUpstreamBuilds==false`). For example `dapp-dev-goerli`.
     required: false
   gcpServiceKey:
     description: JSON key for Google Cloud Platform service account.
@@ -125,7 +125,7 @@ runs:
         bucket-name: ${{ inputs.gcpBucketName }}
         bucket-path: ${{ github.head_ref }}
         build-folder: build
-        set-website: true
+        set-website: ${{ inputs.preview == 'false' }}
         home-page-path: index.html
         error-page-path: index.html
 
