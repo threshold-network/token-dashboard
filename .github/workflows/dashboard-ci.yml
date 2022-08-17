@@ -108,7 +108,7 @@ jobs:
           useUpstreamBuilds: true
           dependentPackagesTag: goerli
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          bucketName: preview.dashboard.test.threshold.network
+          gcpBucketName: preview.dashboard.test.threshold.network
           preview: true
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
@@ -139,7 +139,7 @@ jobs:
           useUpstreamBuilds: true
           upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          bucketName: dashboard.test.threshold.network
+          gcpBucketName: dashboard.test.threshold.network
           preview: false
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
@@ -163,5 +163,5 @@ jobs:
           useUpstreamBuilds: false
           dependentPackagesTag: goerli
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          bucketName: dashboard.test.threshold.network
+          gcpBucketName: dashboard.test.threshold.network
           preview: false
