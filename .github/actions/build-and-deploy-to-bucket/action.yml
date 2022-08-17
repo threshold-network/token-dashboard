@@ -10,9 +10,6 @@ inputs:
   gcpServiceKey:
     description: JSON key for Google Cloud Platform service account
     required: true
-  gcpProject:
-    description: Google Cloud Platform project
-    required: true
   useUpstreamBuilds:
     description: True if the upstream builds should be used
     required: true
@@ -89,12 +86,18 @@ runs:
       # `yarn upgrade` doesn't trigger the `postinstall` script.
       run: yarn run postinstall
 
+    - name: Load environment variables
+      uses: keep-network/ci/actions/load-env-variables@v2
+      with:
+        environment: goerli
+
     - name: Build
+      if: inputs.preview == 'true'
       shell: bash
       run: yarn build
       env:
         PUBLIC_URL: /${{ github.head_ref }}
-        CHAIN_ID: "5"
+        CHAIN_ID: ${{ env.NETWORK_ID }}
         ETH_HOSTNAME_HTTP: ${{ inputs.ethHostnameHttp }}
         ETH_HOSTNAME_WS: ${{ inputs.ethHostnameWs }}
 
@@ -103,7 +106,7 @@ runs:
       uses: thesis/gcp-storage-bucket-action@v3.1.0
       with:
         service-key: ${{ inputs.gcpServiceKey }}
-        project: ${{ inputs.gcpProject }}
+        project: ${{ env.GOOGLE_PROJECT_ID }}
         bucket-name: preview.dashboard.test.threshold.network
         bucket-path: ${{ github.head_ref }}
         build-folder: build
@@ -125,7 +128,7 @@ runs:
       uses: thesis/gcp-storage-bucket-action@v3.1.0
       with:
         service-key: ${{ inputs.gcpServiceKey }}
-        project: ${{ inputs.gcpProject }}
+        project: ${{ env.GOOGLE_PROJECT_ID }}
         bucket-name: dashboard.test.threshold.network
         build-folder: build
         set-website: true
