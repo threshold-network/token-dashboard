@@ -1,18 +1,5 @@
 import { FC, useRef, useCallback } from "react"
-import {
-  Flex,
-  Button,
-  useBoolean,
-  Box,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Link,
-  Progress,
-  ProgressLabel,
-  StackProps,
-} from "@chakra-ui/react"
-import { CheckCircleIcon } from "@chakra-ui/icons"
+import { Flex, Button, useBoolean } from "@chakra-ui/react"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
 import {
@@ -23,7 +10,6 @@ import {
   HStack,
   Badge,
   BodyLg,
-  BodySm,
 } from "@threshold-network/components"
 import { useSelector } from "react-redux"
 import TokenBalance from "../../../components/TokenBalance"
@@ -49,62 +35,13 @@ import { StakeCardHeader } from "./Header"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
-import { useNavigate } from "react-router-dom"
-import { AppAuthDataProps } from "../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
-
-export interface AuthorizeApplicationRowProps extends StackProps {
-  appAuthData: AppAuthDataProps
-  onAuthorizeClick: () => void
-}
-
-const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
-  appAuthData,
-  onAuthorizeClick,
-  ...restProps
-}) => {
-  const { label, isAuthorized, percentage } = appAuthData
-  return (
-    <HStack justify={"space-between"} {...restProps}>
-      <Badge
-        variant={"solid"}
-        borderRadius={5}
-        px={2}
-        py={2}
-        backgroundColor={"gray.50"}
-        color={"gray.700"}
-        textTransform={"none"}
-      >
-        <HStack>
-          {isAuthorized && <CheckCircleIcon w={5} h={5} color={"green.500"} />}
-          <BodySm>{label} App</BodySm>
-        </HStack>
-      </Badge>
-      {isAuthorized ? (
-        <HStack width={"40%"}>
-          <Progress
-            value={percentage}
-            size="lg"
-            width="90%"
-            colorScheme="brand"
-            borderRadius={50}
-          ></Progress>
-          <BodySm>{percentage}%</BodySm>
-        </HStack>
-      ) : (
-        <Button size="sm" variant="outline" onClick={onAuthorizeClick}>
-          Authorize Application
-        </Button>
-      )}
-    </HStack>
-  )
-}
+import StakingApplications from "./StakingApplications"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-  const navigate = useNavigate()
 
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
 
@@ -117,10 +54,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     formRef.current?.resetForm()
     setFlag.toggle()
   }, [setFlag.toggle])
-
-  const onAuthorizeClick = () => {
-    navigate(`/staking/authorize/${stake.authorizer}`)
-  }
 
   const onSubmitTopUp = (
     tokenAmount: string | number,
@@ -155,29 +88,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
-  const areNodesMissing = true
-
-  // TODO: This will probably be fetched from contracts
-  const appsAuthData = {
-    tbtc: {
-      label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
-      isAuthRequired: true,
-    },
-    randomBeacon: {
-      label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: true,
-    },
-    pre: {
-      label: "PRE",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: false,
-    },
-  }
 
   const { total, bonus } = useSelector((state: RootState) =>
     selectRewardsByStakingProvider(state, stake.stakingProvider)
@@ -216,36 +126,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         )}
       </Flex>
       <LineDivider />
-      <Box>
-        <BodyMd>Applications</BodyMd>
-        {areNodesMissing && (
-          <Alert status="error" my={4} px={2} py={1}>
-            <AlertIcon />
-            <AlertDescription>
-              Missing Nodes.{" "}
-              <Link
-                href={"/overview"}
-                target="_blank"
-                textDecoration={"underline"}
-              >
-                More info
-              </Link>
-            </AlertDescription>
-          </Alert>
-        )}
-        <AuthorizeApplicationRow
-          mb={"3"}
-          onAuthorizeClick={onAuthorizeClick}
-          appAuthData={appsAuthData.tbtc}
-        />
-        <AuthorizeApplicationRow
-          onAuthorizeClick={onAuthorizeClick}
-          appAuthData={appsAuthData.randomBeacon}
-        />
-        <Button mt="5" width="100%">
-          Configure Apps
-        </Button>
-      </Box>
+      <StakingApplications stake={stake} />
       <LineDivider mb="0" />
       {hasLegacyStakes ? (
         <BalanceTree stake={stake} />
