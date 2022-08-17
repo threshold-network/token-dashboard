@@ -139,5 +139,5 @@ runs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Preview uploaded to ${{ inputs.bucketName }}/${{ github.head_ref }}/index.html.'
+            body: 'Preview uploaded to https://${{ inputs.bucketName }}/${{ github.head_ref }}/index.html.'
           })
