@@ -16,30 +16,30 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
 }) => {
   const { label, isAuthorized, percentage } = appAuthData
   return (
-    <HStack justify={"space-between"} {...restProps}>
+    <HStack justify="space-between" {...restProps}>
       <Badge
-        variant={"solid"}
+        variant="solid"
         borderRadius={5}
         px={2}
         py={2}
-        backgroundColor={"gray.50"}
-        color={"gray.700"}
-        textTransform={"none"}
+        backgroundColor="gray.50"
+        color="gray.700"
+        textTransform="none"
       >
         <HStack>
-          {isAuthorized && <CheckCircleIcon w={5} h={5} color={"green.500"} />}
+          {isAuthorized && <CheckCircleIcon w={4} h={4} color="green.500" />}
           <BodySm>{label} App</BodySm>
         </HStack>
       </Badge>
       {isAuthorized ? (
-        <HStack width={"40%"}>
+        <HStack width="40%">
           <Progress
             value={percentage}
             size="lg"
             width="90%"
             colorScheme="brand"
             borderRadius={50}
-          ></Progress>
+          />
           <BodySm>{percentage}%</BodySm>
         </HStack>
       ) : (
