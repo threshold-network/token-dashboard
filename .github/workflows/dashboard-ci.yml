@@ -110,6 +110,7 @@ jobs:
           useUpstreamBuilds: true
           dependentPackagesTag: goerli
           preview: true
+          bucketName: preview.dashboard.test.threshold.network
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
   # CI flow, which gets triggered manually after changes in the contracts,
@@ -140,6 +141,7 @@ jobs:
           useUpstreamBuilds: true
           upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
           preview: false
+          bucketName: dashboard.test.threshold.network
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
   # triggering is not related to the changes in the contracts / client code, we
@@ -163,3 +165,4 @@ jobs:
           useUpstreamBuilds: false
           dependentPackagesTag: goerli
           preview: false
+          bucketName: dashboard.test.threshold.network
