@@ -226,29 +226,6 @@ export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
   )
 }
 
-export const StakeCardProviderAddress: FC<
-  {
-    stakingProvider: string
-  } & FlexProps
-> = ({ stakingProvider, ...restProps }) => {
-  const isNotAddressZero = !isAddressZero(stakingProvider)
-
-  return (
-    <Flex mt="6" mb="8" alignItems="center" {...restProps}>
-      <BoxLabel bg="brand.50" color="brand.700" mr="auto">
-        Provider address
-      </BoxLabel>
-      {isNotAddressZero ? (
-        <CopyAddressToClipboard address={stakingProvider} />
-      ) : (
-        <Box as="span" color="brand.500">
-          none set
-        </Box>
-      )}
-    </Flex>
-  )
-}
-
 const Switcher: FC<{ onClick: () => void; isActive: boolean }> = ({
   onClick,
   isActive,
