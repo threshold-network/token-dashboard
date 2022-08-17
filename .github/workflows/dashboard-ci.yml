@@ -103,6 +103,7 @@ jobs:
 
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
+          environment: goerli
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
@@ -132,6 +133,7 @@ jobs:
 
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
+          environment: goerli
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
@@ -154,6 +156,7 @@ jobs:
 
       - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
+          environment: goerli
           ethHostnameHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethHostnameWs: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
