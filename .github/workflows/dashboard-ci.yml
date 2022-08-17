@@ -105,7 +105,7 @@ jobs:
           environment: goerli
           ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          useUpstreamBuilds: true
+          useUpstreamBuilds: false
           dependentPackagesTag: goerli
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           gcpBucketName: preview.dashboard.test.threshold.network
