@@ -1,6 +1,13 @@
 name: Deploy to testnet bucket
 description: "Build and deploy to testnet bucket"
 inputs:
+  # Currently wthe action only supports `environment` = `goerli`.
+  environment:
+    description: >
+      The environment on which the action should be used. For example `goerli`.
+      Will be used to deterine environment variables and decide which legacy
+      packages should be used for building.
+    required: true
   ethHostnameHttp:
     description: The http ETH hostname
     required: true
@@ -18,7 +25,10 @@ inputs:
     description: Upstream builds (required if `useUpstreamBuilds==true`)
     required: false
   dependentPackagesTag:
-    description: Tag which should be used to pull packages with contracts (required if `useUpstreamBuilds==false`). For example `goerli`.
+    description: >
+      Tag which should be used to pull latest non-legacy `threshold-network` and
+      `keep-network` packages with contracts (required if
+      `useUpstreamBuilds==false`). For example `dappdevgoerli`.
     required: false
   preview:
     description: True if the code should be pushed to the preview bucket
@@ -65,21 +75,22 @@ runs:
           echo "::set-output name=threshold-contracts-version::${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}"
         fi
 
-    # We provide explicit version of the `keep-core` package, because using
-    # `goerli` tag results in `expected manifest` error - probably caused by
-    # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+    # Currently we only support `environment` = `goerli`. We provide explicit
+    # version of the `keep-core` package, because using `goerli` tag results in
+    # `expected manifest` error - probably caused by bug in Yarn:
+    # https://github.com/yarnpkg/yarn/issues/4731. 
 
     # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
     # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
-    - name: Resolve latest goerli contracts
+    - name: Resolve contracts
       shell: bash
       run: |
         yarn upgrade \
           @threshold-network/solidity-contracts@${{ steps.set-packages-versions.outputs.threshold-contracts-version }} \
           @keep-network/keep-core@1.8.1-goerli.0 \
-          @keep-network/keep-ecdsa@goerli \
-          @keep-network/tbtc@goerli \
-          @keep-network/coverage-pools@goerli
+          @keep-network/keep-ecdsa@${{ inputs.environment }} \
+          @keep-network/tbtc@${{ inputs.environment }} \
+          @keep-network/coverage-pools@${{ inputs.environment }}
 
     - name: Run postinstall script
       shell: bash
@@ -89,7 +100,7 @@ runs:
     - name: Load environment variables
       uses: keep-network/ci/actions/load-env-variables@v2
       with:
-        environment: goerli
+        environment: ${{ inputs.environment }} 
 
     - name: Build
       if: inputs.preview == 'true'
