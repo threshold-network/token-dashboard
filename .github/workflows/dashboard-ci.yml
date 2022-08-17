@@ -92,7 +92,7 @@ jobs:
       # - name: Test
       #   run: yarn test
 
-  # The code will be published to `https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.`
+  # The code will be published to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.
   build-and-deploy-testnet-preview:
     name: Deploy preview to testnet
     needs: build-and-test
@@ -118,7 +118,7 @@ jobs:
   # pods is needed, we configure the job to use the protected `testnet`
   # environment. Thanks to this, the job won't start until somebody approves it
   # in GH Actions.
-  # The code will be published to `https://dashboard.test.threshold.network/index.html.`
+  # The code will be published to https://dashboard.test.threshold.network/index.html.
   build-and-deploy-testnet-on-dispatch:
     name: Deploy to testnet
     needs: build-and-test
@@ -147,7 +147,7 @@ jobs:
   # triggering is not related to the changes in the contracts / client code, we
   # don't need to rotate the pods and hence don't need to wait with the
   # execution of workflow for the manual approval.
-  # The code will be published to `https://dashboard.test.threshold.network/index.html.`
+  # The code will be published to https://dashboard.test.threshold.network/index.html.
   build-and-deploy-testnet-on-push:
     name: Deploy to testnet
     needs: build-and-test
