@@ -1,7 +1,7 @@
 name: Deploy to a GCP Bucket
 description: "Builds and deploys to a Google Cloud Storage Bucket"
 inputs:
-  # Currently wthe action only supports `environment` = `goerli`.
+  # Currently the action only supports `environment` = `goerli`.
   environment:
     description: >
       The environment on which the action should be used. For example `goerli`.
@@ -30,7 +30,7 @@ inputs:
   gcpServiceKey:
     description: JSON key for Google Cloud Platform service account.
     required: true
-  bucketName:
+  gcpBucketName:
     description: The name of the bucket where code wil be deployed.
     required: true
   preview:
@@ -112,7 +112,7 @@ runs:
       env:
         # `head_ref` variable property is only available when the event that
         # triggers a workflow run is either pull_request or pull_request_target.
-        # For `workflow_dispatch` and `push`, the `PUBLIC_URL` will resoleve to `/`.`
+        # For `workflow_dispatch` and `push`, the `PUBLIC_URL` will resolve to `/`.`
         PUBLIC_URL: /${{ github.head_ref }}
         CHAIN_ID: ${{ env.NETWORK_ID }}
         ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
@@ -123,7 +123,7 @@ runs:
       with:
         service-key: ${{ inputs.gcpServiceKey }}
         project: ${{ env.GOOGLE_PROJECT_ID }}
-        bucket-name: ${{ inputs.bucketName }}
+        bucket-name: ${{ inputs.gcpBucketName }}
         bucket-path: ${{ github.head_ref }}
         build-folder: build
         set-website: true
@@ -139,5 +139,5 @@ runs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Preview uploaded to https://${{ inputs.bucketName }}/${{ github.head_ref }}/index.html.'
+            body: 'Preview uploaded to https://${{ inputs.gcpBucketName }}/${{ github.head_ref }}/index.html.'
           })
