@@ -106,7 +106,6 @@ runs:
         environment: ${{ inputs.environment }}
 
     - name: Build
-      if: inputs.preview == 'true'
       shell: bash
       run: yarn build
       env:
