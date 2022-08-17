@@ -2,7 +2,7 @@ import { FC } from "react"
 import { Box, Flex, FlexProps } from "@chakra-ui/react"
 import { isAddressZero } from "../../../web3/utils"
 import { BoxLabel } from "@threshold-network/components"
-import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
+import { CopyAddressToClipboard } from "../../CopyToClipboard"
 
 export const StakeCardProviderAddress: FC<
   {

@@ -12,7 +12,7 @@ import { ExternalHref } from "../../../enums"
 import { BonusEligibility, StakeData } from "../../../types"
 import { stakingBonus } from "../../../constants"
 import { StakeCardHeaderTitle } from "../../../pages/Staking/StakeCard/Header/HeaderTitle"
-import { StakeCardProviderAddress } from "../../../pages/Staking/StakeCard/ProviderAddress"
+import { StakeCardProviderAddress } from "./ProviderAddress"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { RootState } from "../../../store"
 
