@@ -9,17 +9,17 @@ inputs:
       packages should be used for building.
     required: true
   ethUrlHttp:
-    description: The HTTP ETH API URL
+    description: The HTTP ETH API URL.
     required: true
   ethUrlWS:
-    description: The WebSocket ETH API URL
+    description: The WebSocket ETH API URL.
     required: true
   useUpstreamBuilds:
-    description: True if the upstream builds should be used
+    description: True if the upstream builds should be used.
     required: true
     default: "false"
   upstreamBuilds:
-    description: Upstream builds (required if `useUpstreamBuilds==true`)
+    description: Upstream builds (required if `useUpstreamBuilds==true`).
     required: false
   dependentPackagesTag:
     description: >
@@ -28,13 +28,13 @@ inputs:
       `useUpstreamBuilds==false`). For example `dappdevgoerli`.
     required: false
   gcpServiceKey:
-    description: JSON key for Google Cloud Platform service account
+    description: JSON key for Google Cloud Platform service account.
     required: true
   bucketName:
     description: The name of the bucket where code wil be deployed.
     required: true
   preview:
-    description: True if the code should be pushed to the preview bucket
+    description: True if the code should be pushed to the preview bucket.
     required: true
     default: "false"
 
@@ -81,7 +81,7 @@ runs:
     # Currently we only support `environment` = `goerli`. We provide explicit
     # version of the `keep-core` package, because using `goerli` tag results in
     # `expected manifest` error - probably caused by bug in Yarn:
-    # https://github.com/yarnpkg/yarn/issues/4731. 
+    # https://github.com/yarnpkg/yarn/issues/4731.
 
     # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
     # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
@@ -103,7 +103,7 @@ runs:
     - name: Load environment variables
       uses: keep-network/ci/actions/load-env-variables@v2
       with:
-        environment: ${{ inputs.environment }} 
+        environment: ${{ inputs.environment }}
 
     - name: Build
       if: inputs.preview == 'true'
