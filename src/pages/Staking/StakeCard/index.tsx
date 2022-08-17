@@ -29,11 +29,9 @@ import {
 } from "../../../enums"
 import { isAddressZero } from "../../../web3/utils"
 import { BalanceTree } from "./BalanceTree"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { selectRewardsByStakingProvider } from "../../../store/rewards"
-import { RootState } from "../../../store"
 import StakingApplications from "./StakingApplications"
 import StakeCardHeader from "./Header"
+import StakeRewards from "./StakeRewards"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -88,10 +86,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
 
-  const { total, bonus } = useSelector((state: RootState) =>
-    selectRewardsByStakingProvider(state, stake.stakingProvider)
-  )
-
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader
@@ -100,24 +94,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         onSwitcherClick={onSwitcherClick}
         isActive={isStakeAction}
       />
-      <HStack mt="10" mb="4">
-        <BodyMd>Total Rewards</BodyMd>
-        {bonus !== "0" && (
-          <Badge variant="magic" mt="1rem !important" ml="auto !important">
-            staking bonus
-          </Badge>
-        )}
-      </HStack>
-      <Flex alignItems="end" justifyContent="space-between">
-        <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
-        {!isPRESet ? (
-          <Badge colorScheme="red" variant="solid" size="medium" ml="3">
-            missing PRE
-          </Badge>
-        ) : (
-          bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>
-        )}
-      </Flex>
+      <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
       <StakingApplications stake={stake} />
       <LineDivider mb="0" />
