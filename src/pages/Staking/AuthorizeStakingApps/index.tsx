@@ -1,35 +1,19 @@
-import { InfoIcon } from "@chakra-ui/icons"
 import {
-  Alert,
   AlertBox,
   AlertDescription,
-  AlertIcon,
   Badge,
-  BodyXs,
-  BoxProps,
   Button,
   Card,
-  Checkbox,
   FilterTabs,
-  Grid,
-  GridItem,
   H5,
   HStack,
-  LabelSm,
   LineDivider,
-  VStack,
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
-import { FC } from "react"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
-import { TokenAmountForm } from "../../../components/Forms"
-import { Token } from "../../../enums"
-import { useMinStakeAmount } from "../../../hooks/useMinStakeAmount"
-import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { RootState } from "../../../store"
 import { PageComponent } from "../../../types"
-import { formatTokenAmount } from "../../../utils/formatAmount"
 import { isSameETHAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox from "./AuthorizeApplicationsCardCheckbox"
@@ -80,10 +64,10 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           { title: "Stake Overview", tabId: "1" },
           { title: "Authorize Application", tabId: "2" },
         ]}
-        selectedTabId={"2"}
-        mb={"5"}
-        size={"lg"}
-      ></FilterTabs>
+        selectedTabId="2"
+        mb="5"
+        size="lg"
+      />
       <Card>
         <HStack justify={"space-between"}>
           <H5>Authorize Applications</H5>
@@ -100,7 +84,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           </HStack>
         </HStack>
         <LineDivider />
-        <AlertBox status="magic" alignItems={"flex-start"}>
+        <AlertBox status="magic" alignItems="flex-start">
           <AlertDescription color={"gray.700"}>
             In order to earn rewards, please authorize Threshold apps to use
             your stake. Note that you can authorize 100% of your stake for all

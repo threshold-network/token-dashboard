@@ -51,6 +51,7 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
           <AlertDescription>
             Missing Nodes.{" "}
             <Link
+              // TODO: Do not forget to update this link
               href={"/overview"}
               target="_blank"
               textDecoration={"underline"}
