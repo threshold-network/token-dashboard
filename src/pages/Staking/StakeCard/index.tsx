@@ -28,14 +28,12 @@ import {
   UnstakeType,
 } from "../../../enums"
 import { isAddressZero } from "../../../web3/utils"
-import { StakeCardHeaderTitle } from "./HeaderTitle"
-import { Switcher } from "./Switcher"
 import { BalanceTree } from "./BalanceTree"
-import { StakeCardHeader } from "./Header"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import { RootState } from "../../../store"
 import StakingApplications from "./StakingApplications"
+import StakeCardHeader from "./Header"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -50,7 +48,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     stake.preConfig.isOperatorConfirmed
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
-  const onChangeAction = useCallback(() => {
+
+  const onSwitcherClick = useCallback(() => {
     formRef.current?.resetForm()
     setFlag.toggle()
   }, [setFlag.toggle])
@@ -95,18 +94,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   return (
     <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
-      <StakeCardHeader>
-        <Badge
-          colorScheme={isInActiveStake ? "gray" : "green"}
-          variant="subtle"
-          size="small"
-          mr="2"
-        >
-          {isInActiveStake ? "inactive" : "active"}
-        </Badge>
-        <StakeCardHeaderTitle stake={stake} />
-        <Switcher onClick={onChangeAction} isActive={isStakeAction} />
-      </StakeCardHeader>
+      <StakeCardHeader
+        isInActiveStake={isInActiveStake}
+        stake={stake}
+        onSwitcherClick={onSwitcherClick}
+        isActive={isStakeAction}
+      />
       <HStack mt="10" mb="4">
         <BodyMd>Total Rewards</BodyMd>
         {bonus !== "0" && (

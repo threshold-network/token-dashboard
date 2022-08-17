@@ -31,7 +31,7 @@ import { RootState } from "../../../store"
 import { PageComponent } from "../../../types"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { isSameETHAddress } from "../../../web3/utils"
-import { StakeCardHeaderTitle } from "../StakeCard/HeaderTitle"
+import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox from "./AuthorizeApplicationsCardCheckbox"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {

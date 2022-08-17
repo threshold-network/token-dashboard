@@ -1,8 +1,8 @@
 import { FC } from "react"
-import { StakeData } from "../../../types/staking"
-import NotificationPill from "../../../components/NotificationPill"
+import { StakeData } from "../../../../types/staking"
+import NotificationPill from "../../../../components/NotificationPill"
 import { LabelSm } from "@threshold-network/components"
-import { getStakeType } from "../../../utils/getStakeType"
+import { getStakeType } from "../../../../utils/getStakeType"
 
 export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
   stake,

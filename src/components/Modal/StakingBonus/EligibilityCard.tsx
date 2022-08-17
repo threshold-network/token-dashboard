@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { useSelector } from "react-redux"
-import { List, ListItem, ListIcon, Button } from "@chakra-ui/react"
+import { List, ListItem, ListIcon, Button, Flex } from "@chakra-ui/react"
 import { MdCheckCircle, MdRemoveCircle } from "react-icons/all"
 import InfoBox from "../../InfoBox"
 import TokenBalance from "../../TokenBalance"
@@ -11,8 +11,7 @@ import { AddressZero } from "../../../web3/utils"
 import { ExternalHref } from "../../../enums"
 import { BonusEligibility, StakeData } from "../../../types"
 import { stakingBonus } from "../../../constants"
-import { StakeCardHeaderTitle } from "../../../pages/Staking/StakeCard/HeaderTitle"
-import { StakeCardHeader } from "../../../pages/Staking/StakeCard/Header"
+import { StakeCardHeaderTitle } from "../../../pages/Staking/StakeCard/Header/HeaderTitle"
 import { StakeCardProviderAddress } from "../../../pages/Staking/StakeCard/ProviderAddress"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { RootState } from "../../../store"
@@ -47,9 +46,9 @@ export const EligibilityCard: FC<{
             : undefined
         }
       >
-        <StakeCardHeader>
+        <Flex as="header" alignItems="center">
           <StakeCardHeaderTitle stake={stake} />
-        </StakeCardHeader>
+        </Flex>
         <BodyMd my="4">Staking Bonus</BodyMd>
         <TokenBalance
           tokenAmount={bonusEligibility.reward}
@@ -91,9 +90,9 @@ export const EmptyEligibilityCard: FC<{
   return (
     <>
       <Card borderColor={"red.200"}>
-        <StakeCardHeader>
+        <Flex as="header" alignItems="center">
           <StakeCardHeaderTitle stake={null} />
-        </StakeCardHeader>
+        </Flex>
         <BodyMd my="4">Staking Bonus</BodyMd>
         <H3>You have no stake yet</H3>
         <StakeCardProviderAddress stakingProvider={AddressZero} mb="6" mt="4" />
