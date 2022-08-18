@@ -1,8 +1,9 @@
 import { InfoIcon } from "@chakra-ui/icons"
-import { VStack, HStack, Badge, StackProps } from "@chakra-ui/react"
-import { LabelSm, BodyXs } from "@threshold-network/components"
+import { VStack, HStack, Badge, StackProps, Icon } from "@chakra-ui/react"
+import { LabelSm, BodyXs, BoxLabel } from "@threshold-network/components"
 import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
+import { IoAlertCircle } from "react-icons/all"
 
 export interface StakeInfoProps extends StackProps {
   label: string
@@ -34,41 +35,27 @@ export const StakeInfo: FC<StakeInfoProps> = ({
         )}
       </HStack>
       <HStack>
-        <Badge
-          variant={"solid"}
-          borderRadius={5}
-          px={2}
-          py={2}
-          backgroundColor={"brand.50"}
-          color={"brand.700"}
-          textTransform={"none"}
-          fontSize="sm"
+        <BoxLabel
+          icon={<Icon as={IoAlertCircle} />}
+          size="sm"
+          // TODO: can remove the ignore once https://github.com/threshold-network/components/pull/16 is merged
+          // @ts-ignore
+          status="primary"
+          variant="solid"
         >
-          <HStack>
-            <InfoIcon w={3} h={3} color={"brand.700"} />
-            <BodyXs>
-              APR &#183; {formatPercentage(aprPercentage, 0, true)}
-            </BodyXs>
-          </HStack>
-        </Badge>
-        <Badge
-          variant={"solid"}
-          borderRadius={5}
-          px={2}
-          py={2}
-          backgroundColor={"brand.50"}
-          color={"brand.700"}
-          textTransform={"none"}
-          fontSize="sm"
+          APR &#183; {formatPercentage(aprPercentage, 0, true)}
+        </BoxLabel>
+        <BoxLabel
+          icon={<Icon as={IoAlertCircle} />}
+          size="sm"
+          // TODO: can remove the ignore once https://github.com/threshold-network/components/pull/16 is merged
+          // @ts-ignore
+          status="primary"
+          variant="solid"
         >
-          <HStack>
-            <InfoIcon w={3} h={3} color={"brand.700"} />
-            <BodyXs>
-              {"Slashing "} &#183;{" "}
-              {`${formatPercentage(slashingPercentage, 0, true)}`}
-            </BodyXs>
-          </HStack>
-        </Badge>
+          {"Slashing "} &#183;{" "}
+          {`${formatPercentage(slashingPercentage, 0, true)}`}
+        </BoxLabel>
       </HStack>
     </VStack>
   )

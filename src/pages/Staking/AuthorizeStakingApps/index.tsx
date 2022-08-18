@@ -16,7 +16,10 @@ import { RootState } from "../../../store"
 import { PageComponent } from "../../../types"
 import { isSameETHAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
-import AuthorizeApplicationsCardCheckbox from "./AuthorizeApplicationsCardCheckbox"
+import AuthorizeApplicationsCardCheckbox, {
+  AppAuthDataProps,
+} from "./AuthorizeApplicationsCardCheckbox"
+import { useState } from "react"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { authorizerAddress } = useParams()
@@ -54,7 +57,18 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   }
 
   const onAuthorizeApps = () => {
-    console.log("Authorize Apps!!")
+    console.log("Authorize Apps!!", selectedApps)
+  }
+
+  const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
+
+  const onCheckboxClick = (app: AppAuthDataProps, isChecked: boolean) => {
+    console.log("nadling click ", app, isChecked)
+    if (isChecked) {
+      setSelectedApps([...selectedApps, app])
+    } else {
+      setSelectedApps(selectedApps.filter(({ label }) => label !== app.label))
+    }
   }
 
   return stake ? (
@@ -94,16 +108,30 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.tbtc}
+          onCheckboxClick={onCheckboxClick}
+          isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.randomBeacon}
+          onCheckboxClick={onCheckboxClick}
+          isSelected={selectedApps
+            .map((app) => app.label)
+            .includes("Random Beacon")}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.pre}
+          onCheckboxClick={onCheckboxClick}
+          isSelected={selectedApps.map((app) => app.label).includes("PRE")}
         />
-        <Button variant="outline" width="100%" mt={5} onClick={onAuthorizeApps}>
+        <Button
+          disabled={selectedApps.length === 0}
+          variant="outline"
+          width="100%"
+          mt={5}
+          onClick={onAuthorizeApps}
+        >
           Authorize selected apps
         </Button>
       </Card>
