@@ -25,7 +25,7 @@ export const StakeInfo: FC<StakeInfoProps> = ({
     <VStack alignItems={"flex-start"} {...restProps}>
       <HStack>
         <LabelSm>
-          {label} App - {formatPercentage(percentageAuthorized, 0, true)}%
+          {label} App - {formatPercentage(percentageAuthorized, 0, true)}
         </LabelSm>
         <InfoIcon />
         {!isAuthorizationRequired && (
