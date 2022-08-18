@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom"
 import InfoBox from "../../InfoBox"
 import {
   BodyLg,
+  Button,
   Card,
   H5,
-  Button,
+  LabelMd,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -13,7 +14,6 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  LabelMd,
 } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
@@ -59,7 +59,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
               <Card boxShadow="none">
                 <Radio value={stake.authorizer} size="lg">
                   <LabelMd ml={4}>
-                    STAKE {i + 1} - {getStakeType(stake)}
+                    STAKE {i + 1} {getStakeType(stake)}
                   </LabelMd>
                 </Radio>
               </Card>
@@ -71,7 +71,11 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button onClick={routeToStake} variant="outline" mr={2}>
+        <Button
+          onClick={routeToStake}
+          mr={2}
+          disabled={selectedAuthorizeAddress === ""}
+        >
           Continue
         </Button>
       </ModalFooter>
