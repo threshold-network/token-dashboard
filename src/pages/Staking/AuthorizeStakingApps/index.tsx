@@ -63,7 +63,6 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
 
   const onCheckboxClick = (app: AppAuthDataProps, isChecked: boolean) => {
-    console.log("nadling click ", app, isChecked)
     if (isChecked) {
       setSelectedApps([...selectedApps, app])
     } else {
