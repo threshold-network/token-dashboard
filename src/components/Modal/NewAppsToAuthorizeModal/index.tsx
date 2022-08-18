@@ -56,7 +56,14 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         >
           <Stack>
             {stakes.map((stake, i) => (
-              <Card boxShadow="none">
+              <Card
+                boxShadow="none"
+                borderColor={
+                  stake.authorizer === selectedAuthorizeAddress
+                    ? "brand.500"
+                    : undefined
+                }
+              >
                 <Radio value={stake.authorizer} size="lg">
                   <LabelMd ml={4}>
                     STAKE {i + 1} {getStakeType(stake)}
