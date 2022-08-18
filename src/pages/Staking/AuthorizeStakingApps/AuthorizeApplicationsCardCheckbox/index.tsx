@@ -43,7 +43,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
 
   if (collapsed) {
     return (
-      <Card {...restProps}>
+      <Card {...restProps} boxShadow="none">
         <StakeInfo
           label={appAuthData.label}
           percentageAuthorized={100}
@@ -55,7 +55,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   }
 
   return (
-    <Card {...restProps}>
+    <Card {...restProps} boxShadow="none">
       <Grid
         gridTemplateAreas={{
           base: `
@@ -83,6 +83,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           gridArea="checkbox"
           alignSelf={"flex-start"}
           justifySelf={"center"}
+          size="lg"
         />
         <StakeInfo
           gridArea="app-info"
