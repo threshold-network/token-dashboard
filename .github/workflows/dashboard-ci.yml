@@ -102,6 +102,7 @@ jobs:
       useUpstreamBuilds: false
       dependentPackagesTag: goerli
       gcpBucketName: preview.dashboard.test.threshold.network
+      gcpBucketPath: ${{ github.head_ref }}
       preview: true
     secrets:
       ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}

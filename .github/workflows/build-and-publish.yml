@@ -32,8 +32,16 @@ on:
         required: false
         type: string
       gcpBucketName:
-        description: The name of the bucket where code wil be deployed.
+        description: The name of the bucket where the code will be deployed.
         required: true
+        type: string
+      gcpBucketPath:
+        description: >
+          The path where in the bucket the code will be deployed. When you don't to
+          put the code in the bucket's subfolder, set `.`. Otherwise provide the
+          path, without leading `./` (for example `subfolder_1/subfolder_2`).
+        required: false
+        default: .
         type: string
       preview:
         description: True if the code should be pushed to the preview bucket.
