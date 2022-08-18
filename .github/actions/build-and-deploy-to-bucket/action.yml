@@ -117,13 +117,29 @@ runs:
         ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
         ETH_HOSTNAME_WS: ${{ inputs.ethUrlWS }}
 
+    # We need this step to set correct value of `bucket-path` in the
+    # `cp-storage-bucket-action`. We can't use `${{ github.head_ref }}` directly
+    # there, because then when `head_ref` is empty, the parameter `bucket-path`
+    # is not forwarded to the runner and empty value is assigned to the
+    # `bucket-path` input instead of the default value (`.`). This results in
+    # incorrect passing of docker arguments and setting wrong bucket address.
+    - name: Configure `bucket-path`
+      shell: bash
+      id: set-bucket-path
+      run: |
+        if [ ${{ github.head_ref }} == '' ]; then
+          echo "::set-output name=bucket-path::."
+        else
+          echo "::set-output name=bucket-path::${{ github.head_ref }}"
+        fi
+
     - name: Deploy to GCP
       uses: thesis/gcp-storage-bucket-action@v3.1.0
       with:
         service-key: ${{ inputs.gcpServiceKey }}
         project: ${{ env.GOOGLE_PROJECT_ID }}
         bucket-name: ${{ inputs.gcpBucketName }}
-        bucket-path: ${{ github.head_ref }}
+        bucket-path: ${{ steps.set-bucket-path.outputs.bucket-path }}
         build-folder: build
         set-website: ${{ inputs.preview == 'false' }}
         home-page-path: index.html
