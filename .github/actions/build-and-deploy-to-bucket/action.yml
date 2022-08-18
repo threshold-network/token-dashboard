@@ -31,8 +31,15 @@ inputs:
     description: JSON key for Google Cloud Platform service account.
     required: true
   gcpBucketName:
-    description: The name of the bucket where code wil be deployed.
+    description: The name of the bucket where the code will be deployed.
     required: true
+  gcpBucketPath:
+    description: >
+      The path where in the bucket the code will be deployed. When you don't to
+      put the code in the bucket's subfolder, set `.`. Otherwise provide the
+      path, without leading `./` (for example `subfolder_1/subfolder_2`).
+    required: false
+    default: .
   preview:
     description: True if the code should be pushed to the preview bucket.
     required: true
@@ -106,32 +113,24 @@ runs:
         environment: ${{ inputs.environment }}
 
     - name: Build
+      if: inputs.gcpBucketPath == '.'
       shell: bash
       run: yarn build
       env:
-        # `head_ref` variable property is only available when the event that
-        # triggers a workflow run is either pull_request or pull_request_target.
-        # For `workflow_dispatch` and `push`, the `PUBLIC_URL` will resolve to `/`.`
-        PUBLIC_URL: /${{ github.head_ref }}
+        PUBLIC_URL: /
         CHAIN_ID: ${{ env.NETWORK_ID }}
         ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
         ETH_HOSTNAME_WS: ${{ inputs.ethUrlWS }}
 
-    # We need this step to set correct value of `bucket-path` in the
-    # `cp-storage-bucket-action`. We can't use `${{ github.head_ref }}` directly
-    # there, because then when `head_ref` is empty, the parameter `bucket-path`
-    # is not forwarded to the runner and empty value is assigned to the
-    # `bucket-path` input instead of the default value (`.`). This results in
-    # incorrect passing of docker arguments and setting wrong bucket address.
-    - name: Configure `bucket-path`
+    - name: Build
+      if: inputs.gcpBucketPath != '.'
       shell: bash
-      id: set-bucket-path
-      run: |
-        if [ ${{ github.head_ref }} == '' ]; then
-          echo "::set-output name=bucket-path::."
-        else
-          echo "::set-output name=bucket-path::${{ github.head_ref }}"
-        fi
+      run: yarn build
+      env:
+        PUBLIC_URL: /${{ inputs.gcpBucketPath }}
+        CHAIN_ID: ${{ env.NETWORK_ID }}
+        ETH_HOSTNAME_HTTP: ${{ inputs.ethUrlHttp }}
+        ETH_HOSTNAME_WS: ${{ inputs.ethUrlWS }}
 
     - name: Deploy to GCP
       uses: thesis/gcp-storage-bucket-action@v3.1.0
@@ -139,7 +138,7 @@ runs:
         service-key: ${{ inputs.gcpServiceKey }}
         project: ${{ env.GOOGLE_PROJECT_ID }}
         bucket-name: ${{ inputs.gcpBucketName }}
-        bucket-path: ${{ steps.set-bucket-path.outputs.bucket-path }}
+        bucket-path: ${{ inputs.gcpBucketPath }}
         build-folder: build
         set-website: ${{ inputs.preview == 'false' }}
         home-page-path: index.html

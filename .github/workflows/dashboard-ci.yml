@@ -109,6 +109,7 @@ jobs:
           dependentPackagesTag: goerli
           gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
           gcpBucketName: preview.dashboard.test.threshold.network
+          gcpBucketPath: ${{ github.head_ref }}
           preview: true
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
