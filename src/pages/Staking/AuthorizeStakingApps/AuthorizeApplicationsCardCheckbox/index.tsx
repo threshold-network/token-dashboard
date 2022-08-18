@@ -1,20 +1,6 @@
-import { InfoIcon } from "@chakra-ui/icons"
-import {
-  BoxProps,
-  VStack,
-  HStack,
-  Badge,
-  Grid,
-  Checkbox,
-  GridItem,
-} from "@chakra-ui/react"
-import {
-  Card,
-  LabelSm,
-  BodyXs,
-  FilterTabs,
-} from "@threshold-network/components"
-import { FC } from "react"
+import { BoxProps, Grid, Checkbox, GridItem } from "@chakra-ui/react"
+import { Card, FilterTabs } from "@threshold-network/components"
+import { FC, useState } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
 import { Token } from "../../../../enums"
 import { useMinStakeAmount } from "../../../../hooks/useMinStakeAmount"
@@ -34,11 +20,13 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
 }
 
 export const AuthorizeApplicationsCardCheckbox: FC<
-  AuthorizeApplicationsCardCheckboxProps
-> = ({ appAuthData, ...restProps }) => {
+  AuthorizeApplicationsCardCheckboxProps & {
+    onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
+    isSelected: boolean
+  }
+> = ({ appAuthData, onCheckboxClick, isSelected, ...restProps }) => {
   const tBalance = useTokenBalance(Token.T)
   const minStakeAmount = useMinStakeAmount()
-
   const collapsed = !appAuthData.isAuthRequired
 
   if (collapsed) {
@@ -55,7 +43,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   }
 
   return (
-    <Card {...restProps} boxShadow="none">
+    <Card
+      {...restProps}
+      boxShadow="none"
+      borderColor={isSelected ? "brand.500" : undefined}
+    >
       <Grid
         gridTemplateAreas={{
           base: `
@@ -75,15 +67,19 @@ export const AuthorizeApplicationsCardCheckbox: FC<
               "checkbox        token-amount-form  token-amount-form"
             `,
         }}
-        gridTemplateColumns={"1fr 8fr"}
+        gridTemplateColumns={"1fr 18fr"}
         gap="3"
         p={0}
       >
         <Checkbox
+          isChecked={isSelected}
           gridArea="checkbox"
           alignSelf={"flex-start"}
           justifySelf={"center"}
           size="lg"
+          onChange={(e) => {
+            onCheckboxClick(appAuthData, e.target.checked)
+          }}
         />
         <StakeInfo
           gridArea="app-info"
@@ -98,6 +94,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           variant="inline"
           alignItems="center"
           gap={0}
+          size="sm"
           tabs={[
             { title: "Increase", tabId: "1" },
             { title: "Decrease", tabId: "2" },
