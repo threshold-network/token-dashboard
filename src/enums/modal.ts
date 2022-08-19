@@ -17,4 +17,5 @@ export enum ModalType {
   StakingBonus = "STAKING_BONUS",
   ClaimingRewards = "CLAIMING_REWARDS",
   ClaimingRewardsSuccess = "CLAIMING_REWARDS_SUCCESS",
+  DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
 }
