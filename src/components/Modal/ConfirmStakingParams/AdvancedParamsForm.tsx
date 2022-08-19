@@ -22,7 +22,7 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }) => {
   const { authorizer } = values
   const { account } = useWeb3React()
-  console.log("values", values)
+
   return (
     <Form id={formId}>
       <FormikInput
