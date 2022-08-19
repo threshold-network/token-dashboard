@@ -7,13 +7,10 @@ import {
   ModalFooter,
   ModalHeader,
   Divider,
-  useDisclosure,
-  useColorModeValue,
-  Collapse,
-  Flex,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react"
 import { BodyLg, BodyMd, BodySm, H5 } from "@threshold-network/components"
-import { BsChevronDown, BsChevronUp } from "react-icons/all"
 import { FormikProps } from "formik"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
@@ -34,7 +31,6 @@ const ConfirmStakingParamsModal: FC<
   const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
   const { account } = useWeb3React()
   const { updateState } = useStakingState()
-  const { isOpen, onToggle, onOpen } = useDisclosure()
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
 
   useEffect(() => {
@@ -45,17 +41,9 @@ const ConfirmStakingParamsModal: FC<
       if (errors) {
         formRef.current.setErrors(errors)
         formRef.current.setTouched({ stakingProvider: true })
-        onOpen()
       }
     }
     forceFormValidation()
-  })
-
-  useEffect(() => {
-    // Force the form to be displayed if it is invalid.
-    if (!formRef.current?.isValid && !isOpen) {
-      onOpen()
-    }
   })
 
   const onSubmit = ({
@@ -97,27 +85,15 @@ const ConfirmStakingParamsModal: FC<
         <BodyMd textAlign="center" mt="4" mb="6">
           {account}
         </BodyMd>
-        <Flex direction="column">
-          <Button
-            variant="link"
-            color={useColorModeValue("brand.500", "white")}
-            onClick={onToggle}
-            mb={3}
-            alignSelf="flex-end"
-            rightIcon={isOpen ? <BsChevronUp /> : <BsChevronDown />}
-          >
-            Customize these addresses
-          </Button>
-        </Flex>
-        <Collapse in={isOpen} animateOpacity>
-          <AdvancedParamsForm
-            innerRef={formRef}
-            formId="advanced-staking-params-form"
-            initialAddress={account as string}
-            onSubmitForm={onSubmit}
-            checkIfProviderUsed={checkIfProviderUsed}
-          />
-        </Collapse>
+
+        <AdvancedParamsForm
+          innerRef={formRef}
+          formId="advanced-staking-params-form"
+          initialAddress={account as string}
+          onSubmitForm={onSubmit}
+          checkIfProviderUsed={checkIfProviderUsed}
+        />
+
         <StakingContractLearnMore textAlign="center" mt="8" />
         <Divider mt="4" />
       </ModalBody>

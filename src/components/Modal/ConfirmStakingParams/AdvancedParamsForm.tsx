@@ -2,6 +2,9 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
+import { Alert, AlertIcon } from "@chakra-ui/react"
+import { useWeb3React } from "@web3-react/core"
+import { BodyXs } from "@threshold-network/components"
 
 export interface FormValues {
   stakingProvider: string
@@ -15,7 +18,11 @@ type ComponentProps = {
 
 const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
+  values,
 }) => {
+  const { authorizer } = values
+  const { account } = useWeb3React()
+  console.log("values", values)
   return (
     <Form id={formId}>
       <FormikInput
@@ -35,6 +42,15 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         label="Authorizer Address"
         helperText="This address will authorize applications."
       />
+      {authorizer !== account && (
+        <Alert status="warning" mt={6}>
+          <AlertIcon />
+          <BodyXs>
+            Authorizer address is different than your wallet address. We
+            recommend you to use the same address as your wallet address.
+          </BodyXs>
+        </Alert>
+      )}
     </Form>
   )
 }
