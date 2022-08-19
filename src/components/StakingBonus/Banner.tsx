@@ -47,9 +47,6 @@ export const StakingBonusBanner = () => {
         >
           Check Eligibility
         </Button>
-        <Button onClick={() => openModal(ModalType.DeauthorizeApplication)}>
-          modal
-        </Button>
       </Stack>
     </Card>
   )
