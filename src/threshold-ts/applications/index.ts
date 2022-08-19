@@ -1,4 +1,5 @@
 import { BigNumber, Contract, ContractInterface } from "ethers"
+import { getContract } from "../utils"
 import { IStaking } from "../staking"
 
 /**
@@ -70,7 +71,7 @@ export class Application implements IApplication {
     config: { address: string; abi: ContractInterface }
   ) {
     const { address, abi } = config
-    this._application = new Contract(address, abi)
+    this._application = getContract(address, abi)
     this._staking = staking
   }
   async authorizedStake(stakingProvider: string): Promise<BigNumber> {
