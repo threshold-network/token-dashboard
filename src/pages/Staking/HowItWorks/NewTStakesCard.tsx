@@ -1,6 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { BodyMd, LabelSm, Card } from "@threshold-network/components"
-import StakingChecklist from "../../../components/StakingChecklist"
+import StakingTimeline from "../../../components/StakingTimeline"
 
 export const NewTStakesCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
@@ -10,7 +10,7 @@ export const NewTStakesCard: FC<ComponentProps<typeof Card>> = (props) => {
         Before you start staking on Threshold Network, make sure you are aware
         of the following requirements:
       </BodyMd>
-      <StakingChecklist />
+      <StakingTimeline />
     </Card>
   )
 }

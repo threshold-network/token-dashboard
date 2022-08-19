@@ -2,6 +2,7 @@ import { FC } from "react"
 import {
   Button,
   Divider,
+  Flex,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -9,12 +10,12 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, H5 } from "@threshold-network/components"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import { ModalType } from "../../../enums"
-import StakingChecklist from "../../StakingChecklist"
+import StakingTimeline from "../../StakingTimeline"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 
@@ -26,21 +27,24 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
 
   return (
     <>
-      <ModalHeader>Stake Tokens</ModalHeader>
+      <ModalHeader display="flex" alignItems="baseline">
+        <H5 mr={2}>Stake Tokens</H5>
+        <BodySm>(Step 1)</BodySm>
+      </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
             <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-              <H5 mb={4}>Before you continue</H5>
+              <H5 mb={4}>Staking in Threshold requires running a node</H5>
               <BodyLg>
-                Please take note about the Staking Process and requirements you
-                need to meet so you can gain rewards.
+                Please review the staking timeline below for a handy overview of
+                the staking requirements.
               </BodyLg>
             </BodyLg>
           </InfoBox>
           <Divider />
-          <StakingChecklist />
+          <StakingTimeline />
           <StakingContractLearnMore mt="4rem !important" />
           <Divider />
         </Stack>
@@ -54,7 +58,7 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
             openModal(ModalType.ConfirmStakingParams, { stakeAmount })
           }
         >
-          Stake
+          Continue
         </Button>
       </ModalFooter>
     </>

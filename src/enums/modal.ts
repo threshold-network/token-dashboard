@@ -16,4 +16,5 @@ export enum ModalType {
   TopupTSuccess = "TOP_UP_T_SUCCESS",
   ClaimingRewards = "CLAIMING_REWARDS",
   ClaimingRewardsSuccess = "CLAIMING_REWARDS_SUCCESS",
+  SubmitStake = "SUBMIT_STAKE",
 }

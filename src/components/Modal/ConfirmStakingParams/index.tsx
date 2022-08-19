@@ -20,7 +20,6 @@ import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import AdvancedParamsForm, { FormValues } from "./AdvancedParamsForm"
 import { useStakingState } from "../../../hooks/useStakingState"
-import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
@@ -35,15 +34,7 @@ const ConfirmStakingParamsModal: FC<
   const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
   const { account } = useWeb3React()
   const { updateState } = useStakingState()
-
   const { isOpen, onToggle, onOpen } = useDisclosure()
-
-  // stake transaction, opens success modal on success callback
-  const { stake } = useStakeTransaction((tx) =>
-    openModal(ModalType.StakeSuccess, {
-      transactionHash: tx.hash,
-    })
-  )
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
 
   useEffect(() => {
@@ -76,16 +67,20 @@ const ConfirmStakingParamsModal: FC<
     updateState("beneficiary", beneficiary)
     updateState("authorizer", authorizer)
     updateState("stakeAmount", stakeAmount)
-    stake({ stakingProvider, beneficiary, authorizer, amount: stakeAmount })
+    openModal(ModalType.SubmitStake)
   }
 
   return (
     <>
-      <ModalHeader>Stake Tokens</ModalHeader>
+      <ModalHeader display="flex" alignItems="baseline">
+        <H5 mr={2}>Stake Tokens</H5>
+        <BodySm>(Step 1)</BodySm>
+      </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
           <H5>You are about to make a deposit into the T Staking Contract.</H5>
+          <BodyLg>Staking requires 2 transactions.</BodyLg>
         </InfoBox>
         <StakingStats
           {...{
@@ -123,7 +118,6 @@ const ConfirmStakingParamsModal: FC<
             checkIfProviderUsed={checkIfProviderUsed}
           />
         </Collapse>
-
         <StakingContractLearnMore textAlign="center" mt="8" />
         <Divider mt="4" />
       </ModalBody>
@@ -132,7 +126,7 @@ const ConfirmStakingParamsModal: FC<
           Cancel
         </Button>
         <Button type="submit" form="advanced-staking-params-form">
-          Stake
+          Continue
         </Button>
       </ModalFooter>
     </>

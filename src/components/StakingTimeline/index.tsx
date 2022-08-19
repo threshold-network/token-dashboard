@@ -1,6 +1,13 @@
 import { FC } from "react"
-import { Box, Stack, useColorModeValue } from "@chakra-ui/react"
-import { BodyMd, BodySm, ChecklistGroup } from "@threshold-network/components"
+import { Link, Stack, useColorModeValue } from "@chakra-ui/react"
+import {
+  BodyMd,
+  BodySm,
+  BoxLabel,
+  ChecklistGroup,
+  FlowStep,
+  FlowStepStatus,
+} from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 
@@ -109,17 +116,45 @@ export const PreSetupSteps: FC = () => {
   )
 }
 
-const StakingChecklist: FC = () => {
+const StakingTimeline: FC = () => {
+  const STAKING_PROVIDER_URL = "someURL"
+
   return (
-    <Stack>
-      <Box mb={6}>
-        <StakingDepositSteps />
-      </Box>
-      <Box>
-        <PreSetupSteps />
-      </Box>
+    <Stack spacing={6}>
+      <BoxLabel>Staking Timeline</BoxLabel>
+      <FlowStep
+        size="sm"
+        title="Stake Tokens"
+        preTitle="Step 1"
+        status={FlowStepStatus.active}
+      >
+        Enter the Provider, Beneficiary, and Authorizer addresses. These will be
+        automatically set to your wallet address. If you want to use a Staking
+        Provider, here is{" "}
+        <Link color="brand.500" href={STAKING_PROVIDER_URL}>
+          a list
+        </Link>
+        .
+      </FlowStep>
+      <FlowStep
+        size="sm"
+        title="Authorize Apps"
+        preTitle="Step 2"
+        status={FlowStepStatus.inactive}
+      >
+        You can authorize 100% of your stake for each app. This amount can be
+        changed at any time.
+      </FlowStep>
+      <FlowStep
+        size="sm"
+        title="Set up node"
+        preTitle="Step 3"
+        status={FlowStepStatus.inactive}
+      >
+        Set up and run a node for any of the applications authorized.
+      </FlowStep>
     </Stack>
   )
 }
 
-export default StakingChecklist
+export default StakingTimeline

@@ -24,6 +24,7 @@ import {
   ClaimingRewards,
   ClaimRewardsSuccessModal,
 } from "../components/Modal/ClaimingRewards"
+import SubmitStakeModal from "../components/Modal/SubmitStake"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -44,6 +45,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
+  [ModalType.SubmitStake]: SubmitStakeModal,
 }
 
 export interface BaseModalProps {

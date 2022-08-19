@@ -88,17 +88,17 @@ export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
   mapPropsToValues: (props) => ({
     tokenAmount: props.initialTokenAmount || "",
   }),
-  validate: (values, props) => {
-    if (!props.shouldValidateForm) return {}
-    const errors: FormikErrors<FormValues> = {}
-
-    errors.tokenAmount = validateAmountInRange(
-      values.tokenAmount,
-      props.maxTokenAmount.toString(),
-      props.minTokenAmount ? props.minTokenAmount.toString() : DEFAULT_MIN_VALUE
-    )
-    return getErrorsObj(errors)
-  },
+  // validate: (values, props) => {
+  //   if (!props.shouldValidateForm) return {}
+  //   const errors: FormikErrors<FormValues> = {}
+  //
+  //   errors.tokenAmount = validateAmountInRange(
+  //     values.tokenAmount,
+  //     props.maxTokenAmount.toString(),
+  //     props.minTokenAmount ? props.minTokenAmount.toString() : DEFAULT_MIN_VALUE
+  //   )
+  //   return getErrorsObj(errors)
+  // },
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values.tokenAmount)
   },
