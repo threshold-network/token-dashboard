@@ -163,8 +163,6 @@ export const useFetchOwnerStakes = () => {
         }
       })
 
-      console.log("fetched the stakes ", stakes)
-
       dispatch(setStakes(stakes))
 
       return stakes
