@@ -1,9 +1,9 @@
 import React, { FC, useMemo } from "react"
 import { Image, ImageProps } from "@threshold-network/components"
-import randomBeaconIncrease from "../../../static/images/randomBeaconIncrease.svg"
-import randomBeaconDecrease from "../../../static/images/randomBeaconDecrease.svg"
-import tbtcIncrease from "../../../static/images/tbtcIncrease.svg"
-import tbtcDecrease from "../../../static/images/tbtcDecrease.svg"
+import randomBeaconIncrease from "../../static/images/RandomBeaconIncrease.png"
+import randomBeaconDecrease from "../../static/images/RandomBeaconDecrease.png"
+import tbtcIncrease from "../../static/images/TbtcIncrease.png"
+import tbtcDecrease from "../../static/images/TbtcDecrease.png"
 
 // TODO: this can move to somewhere better and combine with any other staking app
 //  enums that have been created in other MAS branches
