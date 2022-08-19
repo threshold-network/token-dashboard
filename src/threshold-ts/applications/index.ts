@@ -1,5 +1,5 @@
 import { BigNumber, Contract, ContractInterface } from "ethers"
-import { getContract } from "../utils"
+import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 
 /**
@@ -74,28 +74,50 @@ export class Application implements IApplication {
     this._application = getContract(address, abi)
     this._staking = staking
   }
+
   async authorizedStake(stakingProvider: string): Promise<BigNumber> {
     return await this._staking.authorizedStake(
       stakingProvider,
       this._application.address
     )
   }
-  minimumAuthorization(): Promise<BigNumber> {
-    throw new Error("Method not implemented.")
+
+  async minimumAuthorization(): Promise<BigNumber> {
+    return await this._application.minimumAuthorization()
   }
-  pendingAuthorizationDecrease(stakingProvider: string): Promise<BigNumber> {
-    throw new Error("Method not implemented.")
-  }
-  remainingAuthorizationDecreaseDelay(
+
+  async pendingAuthorizationDecrease(
     stakingProvider: string
   ): Promise<BigNumber> {
-    throw new Error("Method not implemented.")
+    return await this._application.pendingAuthorizationDecrease(stakingProvider)
   }
-  authorizationDecreaseDelay(): Promise<BigNumber> {
-    throw new Error("Method not implemented.")
+
+  async remainingAuthorizationDecreaseDelay(
+    stakingProvider: string
+  ): Promise<BigNumber> {
+    return await this._application.remainingAuthorizationDecreaseDelay(
+      stakingProvider
+    )
   }
-  isEligibleForRewards(stakingProvider: string): Promise<boolean> {
-    throw new Error("Method not implemented.")
+
+  async authorizationDecreaseDelay(): Promise<BigNumber> {
+    const { authorizationDecreaseDelay } =
+      await this._application.authorizationParameters()
+    return authorizationDecreaseDelay
+  }
+
+  async isEligibleForRewards(stakingProvider: string): Promise<boolean> {
+    const operator = await this._application.stakingProviderToOperator(
+      stakingProvider
+    )
+
+    if (isAddress(operator) && isAddressZero(operator)) {
+      return false
+    }
+
+    const isInPool: boolean = await this._application.isOperatorInPool(operator)
+
+    return isInPool
   }
 
   get address() {
