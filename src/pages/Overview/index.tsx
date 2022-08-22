@@ -5,6 +5,7 @@ import { H1 } from "@threshold-network/components"
 import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
 import { PageComponent } from "../../types"
+import { AuthorizeApplicationsBanner } from "./AuthorizeApplicationsBanner"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
@@ -13,6 +14,7 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
+      <AuthorizeApplicationsBanner />
       <Outlet />
     </Container>
   )
