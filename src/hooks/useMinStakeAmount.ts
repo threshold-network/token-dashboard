@@ -17,7 +17,6 @@ export const useMinStakeAmount = () => {
       setLoading(true)
       try {
         const minStakeAmount = await tStakingContract?.minTStakeAmount()
-        console.log("min loaded: " + minStakeAmount)
         dispatch(setMinStake({ amount: minStakeAmount.toString() }))
         setLoading(false)
         setHasError(false)
