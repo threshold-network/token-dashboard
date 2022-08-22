@@ -3092,17 +3092,6 @@
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
     "@threshold-network/solidity-contracts" "1.2.0-dev.17"
 
-"@keep-network/ecdsa@development":
-  version "2.0.0-dev.59"
-  resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.0.0-dev.59.tgz#f7dc5deced17c147cd72a4a589c3034ce0b90cf4"
-  integrity sha512-BnJpZLCluejzHcy683wmKUsp9zmB3n6tu1RgcWkCG5uBBxyqitfffTR/lByGSktCkvBOpy/Lm741KFBrh2xK4A==
-  dependencies:
-    "@keep-network/random-beacon" "2.0.0-dev.54"
-    "@keep-network/sortition-pools" "^2.0.0-pre.13"
-    "@openzeppelin/contracts" "^4.6.0"
-    "@openzeppelin/contracts-upgradeable" "^4.6.0"
-    "@threshold-network/solidity-contracts" "1.2.0-dev.17"
-
 "@keep-network/keep-core@1.8.0-dev.5":
   version "1.8.0-dev.5"
   resolved "https://registry.yarnpkg.com/@keep-network/keep-core/-/keep-core-1.8.0-dev.5.tgz#8b4d08ec437f29c94723ee54fcf76456ba5408c3"
@@ -3191,16 +3180,6 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" "1.2.0-dev.17"
 
-"@keep-network/random-beacon@2.0.0-dev.54", "@keep-network/random-beacon@development":
-  version "2.0.0-dev.54"
-  resolved "https://registry.yarnpkg.com/@keep-network/random-beacon/-/random-beacon-2.0.0-dev.54.tgz#f0ad8d148da0e3ccafe359081214830753a93e59"
-  integrity sha512-bO+UJR796q3WWWmP/osf2UoMJzBDjdRnzNN0R9YuGd46MTXykdIh7RRcT6Mo4sWX21FmifTk8OS5QK/KrS6E0Q==
-  dependencies:
-    "@keep-network/sortition-pools" "^2.0.0-pre.13"
-    "@openzeppelin/contracts" "^4.6.0"
-    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
-    "@threshold-network/solidity-contracts" "1.2.0-dev.17"
-
 "@keep-network/sortition-pools@1.2.0-dev.1":
   version "1.2.0-dev.1"
   resolved "https://registry.yarnpkg.com/@keep-network/sortition-pools/-/sortition-pools-1.2.0-dev.1.tgz#2ee371f1dd1ff71f6d05c9ddc2a83a4a93ff56b3"
@@ -3224,33 +3203,19 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.0.0-dev.10"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.10.tgz#ee089ad04a4d89dc0772d6a7d930508210f8868d"
-  integrity sha512-iwLyF17rDyJvPr3isYfp/x2wHregt8p5wX1JqcptG6jhsa1y6e6FJ/FCFz6UEwZ3obB/sijmiRGCj/xTcWTomg==
+  version "1.0.0-dev.11"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.11.tgz#f09d192d1f6f60980b420b8e166f1a80686e873a"
+  integrity sha512-BHGdTG0jD2zNwwMrPn4LlblaUUv4Tp2NKQk7DcHZ75kbrr1cW1BUig/qkXcMcujMHamfQYPsm9N4JqI9+/AJLQ==
   dependencies:
-    "@keep-network/tbtc-v2" "0.1.1-dev.106"
-    bcoin "git+https://github.com/bcoin-org/bcoin.git#semver:~2.2.0"
+    "@keep-network/tbtc-v2" "0.1.1-dev.115"
+    bcoin "git+https://github.com/keep-network/bcoin.git#5accd32c63e6025a0d35d67739c4a6e84095a1f8"
     bcrypto "git+https://github.com/bcoin-org/bcrypto.git#semver:~5.5.0"
     bufio "^1.0.6"
     electrum-client-js "git+https://github.com/keep-network/electrum-client-js.git#v0.1.1"
     ethers "^5.5.2"
     wif "2.0.6"
 
-"@keep-network/tbtc-v2@0.1.1-dev.106":
-  version "0.1.1-dev.106"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-0.1.1-dev.106.tgz#5bade43e31928e27f6b1f9ab8bbb542c07a58f2e"
-  integrity sha512-inRytXMj2EO9yumxe2Q2ixPYwmy+rj8BjT1bccOWDbeqFcw6mNeeLyO10zMel57MNr3Q/Mt88GYbf5pZDGsbVA==
-  dependencies:
-    "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
-    "@keep-network/ecdsa" development
-    "@keep-network/random-beacon" development
-    "@keep-network/tbtc" ">1.1.2-dev <1.1.2-pre"
-    "@openzeppelin/contracts" "^4.6.0"
-    "@openzeppelin/contracts-upgradeable" "^4.6.0"
-    "@tenderly/hardhat-tenderly" "^1.0.12"
-    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
-
-"@keep-network/tbtc-v2@development":
+"@keep-network/tbtc-v2@0.1.1-dev.115", "@keep-network/tbtc-v2@development":
   version "0.1.1-dev.115"
   resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-0.1.1-dev.115.tgz#f510178f0fb8640337e0db87dd40bea61813b1df"
   integrity sha512-8YYXiqpfGo4WWD/qSnTW7mswXaypOjmbknfyhA6p4u45BRkydOfk2fqDOW2ZqXA5Zfs0RzI27j3i60hsryWd7Q==
@@ -7785,9 +7750,9 @@ batch@0.6.1:
   dependencies:
     bsert "~0.0.10"
 
-"bcoin@git+https://github.com/bcoin-org/bcoin.git#semver:~2.2.0":
+"bcoin@git+https://github.com/keep-network/bcoin.git#5accd32c63e6025a0d35d67739c4a6e84095a1f8":
   version "2.2.0"
-  resolved "git+https://github.com/bcoin-org/bcoin.git#acdeb84767f3ceb82b4a75931fe353229c3bc7b5"
+  resolved "git+https://github.com/keep-network/bcoin.git#5accd32c63e6025a0d35d67739c4a6e84095a1f8"
   dependencies:
     bcfg "git+https://github.com/bcoin-org/bcfg.git#semver:~0.1.7"
     bcrypto "git+https://github.com/bcoin-org/bcrypto.git#semver:~5.5.0"
@@ -15763,14 +15728,9 @@ loader-utils@^2.0.0:
     emojis-list "^3.0.0"
     json5 "^2.1.2"
 
-"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1":
+"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1", loady@~0.0.1, loady@~0.0.5:
   version "0.0.5"
   resolved "git+https://github.com/chjj/loady.git#b94958b7ee061518f4b85ea6da380e7ee93222d5"
-
-loady@~0.0.1, loady@~0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/loady/-/loady-0.0.5.tgz#b17adb52d2fb7e743f107b0928ba0b591da5d881"
-  integrity sha512-uxKD2HIj042/HBx77NBcmEPsD+hxCgAtjEWlYNScuUjIsh/62Uyu39GOR68TBR68v+jqDL9zfftCWoUo4y03sQ==
 
 locate-path@^2.0.0:
   version "2.0.0"
