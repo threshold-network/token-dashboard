@@ -20,7 +20,6 @@ import {
 } from "../components/Modal/UnstakeTModal"
 import { LegacyTopUpModal, TopupTModal } from "../components/Modal/TopupTModal"
 import TopupTSuccessModal from "../components/Modal/TopupTSuccessModal"
-import StakingBonusModal from "../components/Modal/StakingBonus"
 import {
   ClaimingRewards,
   ClaimRewardsSuccessModal,
@@ -46,7 +45,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupT]: TopupTModal,
   [ModalType.TopupLegacyStake]: LegacyTopUpModal,
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
-  [ModalType.StakingBonus]: StakingBonusModal,
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
