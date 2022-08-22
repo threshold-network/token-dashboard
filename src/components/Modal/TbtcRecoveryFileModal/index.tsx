@@ -9,6 +9,7 @@ import {
   H5,
   Image,
   BodySm,
+  useDisclosure,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
@@ -26,7 +27,8 @@ const TbtcRecoveryFileModalModal: FC<
     handleDoubleReject: () => void
   }
 > = ({ closeModal, jsonData, handleDownloadClick, handleDoubleReject }) => {
-  const [isOnConfirmStep, setIsOnConfirmStep] = useState(false)
+  const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
+    useDisclosure()
   const { updateState } = useTbtcState()
 
   const titleText = isOnConfirmStep
@@ -73,11 +75,7 @@ const TbtcRecoveryFileModalModal: FC<
             Dismiss anyway
           </Button>
         ) : (
-          <Button
-            onClick={() => setIsOnConfirmStep(true)}
-            variant="outline"
-            mr={2}
-          >
+          <Button onClick={() => setIsOnConfirmStep()} variant="outline" mr={2}>
             Cancel
           </Button>
         )}
