@@ -46,6 +46,7 @@ HowItWorksPage.route = {
   path: "how-it-works",
   index: false,
   title: "How it Works",
+  isPageEnabled: true,
 }
 
 export default HowItWorksPage

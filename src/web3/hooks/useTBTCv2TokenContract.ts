@@ -1,13 +1,10 @@
 import { useErc20TokenContract } from "./useERC20"
 import { Token, TransactionType } from "../../enums"
-import { useContext } from "react"
-import { FeatureFlagsContext } from "../../contexts/FeatureFlagContext"
-import { FeatureFlag } from "../../feature-flags/featureFlags"
 import TBTC from "@keep-network/tbtc-v2/artifacts/TBTC.json"
+import { featureFlags } from "../../constants"
 
 export const useTBTCv2TokenContract: any = () => {
-  const featureFlagsContext = useContext(FeatureFlagsContext)
-  if (featureFlagsContext[FeatureFlag.TBTCV2].isActive) {
+  if (featureFlags.TBTC_V2) {
     const { balanceOf, approve, contract } = useErc20TokenContract(
       TBTC.address,
       undefined,

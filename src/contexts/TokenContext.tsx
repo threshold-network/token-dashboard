@@ -13,8 +13,7 @@ import { useTBTCTokenContract } from "../web3/hooks"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
 import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
-import { FeatureFlag } from "../feature-flags/featureFlags"
-import { FeatureFlagsContext } from "./FeatureFlagContext"
+import { featureFlags } from "../constants"
 
 interface TokenContextState extends TokenState {
   contract: Contract | null
@@ -42,7 +41,6 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const keepConversion = useVendingMachineRatio(Token.Keep)
   const { active, chainId, account } = useWeb3React()
   const fetchOwnerStakes = useFetchOwnerStakes()
-  const featureFlagsContext = useContext(FeatureFlagsContext)
 
   const {
     fetchTokenPriceUSD,
@@ -94,7 +92,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
           setTokenBalance(Token.Keep, keepBalance.toString())
           setTokenBalance(Token.Nu, nuBalance.toString())
           setTokenBalance(Token.T, tBalance.toString())
-          if (featureFlagsContext[FeatureFlag.TBTCV2].isActive) {
+          if (featureFlags.TBTC_V2) {
             setTokenBalance(Token.TBTCV2, tbtcv2Balance.toString())
           }
         }
