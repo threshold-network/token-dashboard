@@ -5,6 +5,7 @@ export type RouteProps = {
   title?: string
   index: boolean
   pages?: PageComponent[]
+  isPageEnabled: boolean
 }
 
 export type PageComponent = FC<RouteProps> & { route: RouteProps }
