@@ -1,5 +1,5 @@
-import { ComponentProps, FC } from "react"
-import { HStack, Stack, Divider } from "@chakra-ui/react"
+import { ComponentProps, FC, useMemo } from "react"
+import { HStack, Divider } from "@chakra-ui/react"
 import {
   BodyLg,
   BodyMd,
@@ -14,20 +14,33 @@ import { TokenAmountForm } from "../../components/Forms"
 import { useStakingState } from "../../hooks/useStakingState"
 import { useModal } from "../../hooks/useModal"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
-import { ModalType, Token } from "../../enums"
+import { ChainID, EnvVariable, ModalType, Token } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
 import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"
+import { getEnvVariable } from "../../utils/getEnvVariable"
+
+const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
 const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
   const { openModal } = useModal()
   const tBalance = useTokenBalance(Token.T)
-  const minStakeAmount = useMinStakeAmount()
+  const { minStakeAmount, isLoading, hasError } = useMinStakeAmount()
 
   const openStakingModal = async (stakeAmount: string) => {
     openModal(ModalType.StakingChecklist, { stakeAmount })
   }
 
   const { stakedBalance } = useStakingState()
+
+  const placeholder = useMemo(() => {
+    if (hasError) {
+      return "Error fetching min stake"
+    }
+
+    return `Minimum stake ${
+      isLoading ? "loading..." : `${formatTokenAmount(minStakeAmount)} T`
+    }`
+  }, [isLoading, hasError])
 
   return (
     <Card h="fit-content" {...props}>
@@ -53,12 +66,11 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
         label="Stake Amount"
         submitButtonText="Stake"
         maxTokenAmount={tBalance}
-        placeholder={`Minimum stake ${
-          minStakeAmount === "0"
-            ? "loading..."
-            : `${formatTokenAmount(minStakeAmount)} T`
-        }`}
+        placeholder={placeholder}
         minTokenAmount={minStakeAmount}
+        shouldValidateForm={
+          supportedChainId.toString() === ChainID.Ethereum.toString()
+        }
       />
       <StakingContractLearnMore mt="3" />
     </Card>
