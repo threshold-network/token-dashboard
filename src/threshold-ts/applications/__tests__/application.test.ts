@@ -1,4 +1,4 @@
-import { ContractInterface, BigNumber } from "ethers"
+import { ContractInterface, BigNumber, providers } from "ethers"
 import { AddressZero, getContract } from "../../utils"
 import { Application, IApplication } from ".."
 import { IStaking } from "../../staking"
@@ -17,6 +17,7 @@ describe("Application test", () => {
   const address = AddressZero
   const abi: ContractInterface = []
   const stakingProvider = "0x486b0ee2eed761f069f327034eb2ae5e07580bf3"
+  const mockedEthereumProvider = {} as providers.Provider
   const mockAppContract = {
     address,
     minimumAuthorization: jest.fn(),
@@ -32,11 +33,20 @@ describe("Application test", () => {
       authorizedStake: jest.fn(),
     } as unknown as IStaking
     ;(getContract as jest.Mock).mockImplementation(() => mockAppContract)
-    application = new Application(staking, { address, abi })
+    application = new Application(staking, {
+      address,
+      abi,
+      providerOrSigner: mockedEthereumProvider,
+      chainId: "1",
+    })
   })
 
   test("should create the Application instance correctly", () => {
-    expect(getContract).toHaveBeenCalledWith(address, abi)
+    expect(getContract).toHaveBeenCalledWith(
+      address,
+      abi,
+      mockedEthereumProvider
+    )
     expect(application.address).toEqual(address)
     expect(application.contract).toEqual(mockAppContract)
   })

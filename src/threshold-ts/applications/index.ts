@@ -1,6 +1,7 @@
 import { BigNumber, Contract, ContractInterface } from "ethers"
 import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
+import { EthereumConfig } from "../types"
 
 /**
  * Represents an applciation.
@@ -68,10 +69,10 @@ export class Application implements IApplication {
 
   constructor(
     staking: IStaking,
-    config: { address: string; abi: ContractInterface }
+    config: EthereumConfig & { address: string; abi: ContractInterface }
   ) {
-    const { address, abi } = config
-    this._application = getContract(address, abi)
+    const { address, abi, providerOrSigner } = config
+    this._application = getContract(address, abi, providerOrSigner)
     this._staking = staking
   }
 

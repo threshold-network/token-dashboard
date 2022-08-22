@@ -1,5 +1,7 @@
 import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
-import { BigNumber, Contract, Signer, providers } from "ethers"
+import { BigNumber, Contract } from "ethers"
+import { EthereumConfig } from "../types"
+import { getContract } from "../utils"
 
 export interface IStaking {
   stakingContract: Contract
@@ -14,11 +16,11 @@ export interface IStaking {
 export class Staking implements IStaking {
   private _staking: Contract
 
-  constructor(config: { signerOrProvider: Signer | providers.Provider }) {
-    this._staking = new Contract(
+  constructor(config: EthereumConfig) {
+    this._staking = getContract(
       TokenStaking.address,
       TokenStaking.abi,
-      config.signerOrProvider
+      config.providerOrSigner
     )
   }
 

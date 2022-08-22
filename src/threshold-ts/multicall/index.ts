@@ -1,4 +1,6 @@
 import { Contract } from "ethers"
+import { EthereumConfig } from "../types"
+import { AddressZero, getContract } from "../utils"
 
 interface ContractCall {
   contract: Contract
@@ -14,12 +16,26 @@ const MULTICALL_ABI = [
   "function aggregate(tuple(address target, bytes callData)[] calls) view returns (uint256 blockNumber, bytes[] returnData)",
   "function getEthBalance(address addr) view returns (uint256 balance)",
 ]
+const MULTICALL_ADDRESSESS = {
+  1: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
+  5: "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
+  1337: process.env.REACT_APP_MULTICALL_ADDRESS || AddressZero,
+} as Record<number | string, string>
 
 export class Multicall implements IMulticall {
   private _multicall: Contract
 
-  constructor(config: { address: string }) {
-    this._multicall = new Contract(config.address, MULTICALL_ABI)
+  constructor(config: EthereumConfig) {
+    const address = MULTICALL_ADDRESSESS[config.chainId]
+    if (!address) {
+      throw new Error("Unsupported chain id")
+    }
+
+    this._multicall = getContract(
+      address,
+      MULTICALL_ABI,
+      config.providerOrSigner
+    )
   }
 
   async aggregate(calls: ContractCall[]): Promise<any[]> {
