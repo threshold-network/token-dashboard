@@ -10,6 +10,7 @@ UpgradeNU.route = {
   path: "nu",
   index: true,
   title: "NU to T",
+  isPageEnabled: true,
 }
 
 export default UpgradeNU

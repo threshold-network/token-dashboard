@@ -1,4 +1,4 @@
-import React, { createContext } from "react"
+import React, { createContext, useContext } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { AddressZero } from "@ethersproject/constants"
 import { useWeb3React } from "@web3-react/core"
@@ -12,6 +12,8 @@ import { TokenState } from "../types"
 import { useTBTCTokenContract } from "../web3/hooks"
 import { useVendingMachineRatio } from "../web3/hooks/useVendingMachineRatio"
 import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
+import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
+import { featureFlags } from "../constants"
 
 interface TokenContextState extends TokenState {
   contract: Contract | null
@@ -24,6 +26,7 @@ export const TokenContext = createContext<{
   [Token.Nu]: {} as TokenContextState,
   [Token.T]: {} as TokenContextState,
   [Token.TBTC]: {} as TokenContextState,
+  [Token.TBTCV2]: {} as TokenContextState,
 })
 
 // Context that handles data fetching when a user connects their wallet or
@@ -33,6 +36,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const nu = useNu()
   const t = useT()
   const tbtc = useTBTCTokenContract()
+  const tbtcv2 = useTBTCv2TokenContract()
   const nuConversion = useVendingMachineRatio(Token.Nu)
   const keepConversion = useVendingMachineRatio(Token.Keep)
   const { active, chainId, account } = useWeb3React()
@@ -46,10 +50,15 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     nu: nuData,
     t: tData,
     tbtc: tbtcData,
+    tbtcv2: tbtcv2Data,
   } = useTokenState()
 
+  const tokenContracts = [keep.contract!, nu.contract!, t.contract!]
+
+  if (!!tbtcv2) tokenContracts.push(tbtcv2.contract)
+
   const fetchBalances = useTokensBalanceCall(
-    [keep.contract!, nu.contract!, t.contract!],
+    tokenContracts,
     active ? account! : AddressZero
   )
 
@@ -78,11 +87,16 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   React.useEffect(() => {
     if (active) {
-      fetchBalances().then(([keepBalance, nuBalance, tBalance]) => {
-        setTokenBalance(Token.Keep, keepBalance.toString())
-        setTokenBalance(Token.Nu, nuBalance.toString())
-        setTokenBalance(Token.T, tBalance.toString())
-      })
+      fetchBalances().then(
+        ([keepBalance, nuBalance, tBalance, tbtcv2Balance]) => {
+          setTokenBalance(Token.Keep, keepBalance.toString())
+          setTokenBalance(Token.Nu, nuBalance.toString())
+          setTokenBalance(Token.T, tBalance.toString())
+          if (featureFlags.TBTC_V2) {
+            setTokenBalance(Token.TBTCV2, tbtcv2Balance.toString())
+          }
+        }
+      )
     } else {
       // set all token balances to 0 if the user disconnects the wallet
       for (const token in Token) {
@@ -117,6 +131,10 @@ export const TokenContextProvider: React.FC = ({ children }) => {
         [Token.TBTC]: {
           ...tbtc,
           ...tbtcData,
+        },
+        [Token.TBTCV2]: {
+          ...tbtcv2,
+          ...tbtcv2Data,
         },
       }}
     >

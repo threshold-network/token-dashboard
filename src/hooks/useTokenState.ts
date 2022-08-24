@@ -14,6 +14,7 @@ export const useTokenState: UseTokenState = () => {
   const nu = useSelector((state: RootState) => state.token[Token.Nu])
   const t = useSelector((state: RootState) => state.token[Token.T])
   const tbtc = useSelector((state: RootState) => state.token[Token.TBTC])
+  const tbtcv2 = useSelector((state: RootState) => state.token[Token.TBTCV2])
 
   const dispatch = useDispatch()
 
@@ -36,6 +37,7 @@ export const useTokenState: UseTokenState = () => {
     nu,
     t,
     tbtc,
+    tbtcv2,
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,

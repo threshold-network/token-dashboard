@@ -52,6 +52,12 @@ COV_POOLS_PATH="$PWD/../coverage-pools"
 TBTC_PATH="$PWD/../tbtc/"
 TBTC_SOL_PATH="$TBTC_PATH/solidity"
 
+ECDSA_CONTRACTS_PATH="$PWD/../keep-core/solidity/ecdsa"
+
+RANDOM_BEACON_CONTRACTS_PATH="$PWD/../keep-core/solidity/random-beacon"
+
+TBTC_V2_CONTRACTS_PATH="$PWD/../tbtc-v2/solidity"
+
 COMPONENTS_LIB_PATH="$PWD/../components/"
 
 function start_dashboard {
@@ -114,8 +120,36 @@ yarn link @keep-network/keep-core
 ./scripts/prepare-dependencies.sh
 printf "${LOG_START}Deploying contracts for threshold solidity contracts...${LOG_START}"
 yarn deploy --network development --reset
-./scripts/prepare-artifacts.sh --network development
+yarn hardhat prepare-artifacts --network development
 yarn link
+
+# cd $RANDOM_BEACON_CONTRACTS_PATH
+# printf "${LOG_START}Migrating contracts for random-beacon...${LOG_END}"
+# yarn
+# yarn link @keep-network/keep-core @threshold-network/solidity-contracts
+# yarn deploy --network development --reset
+# ./scripts/prepare-artifacts.sh --network development
+# yarn link
+
+# cd $ECDSA_CONTRACTS_PATH
+# printf "${LOG_START}Migrating contracts for ecdsa...${LOG_END}"
+# yarn
+# yarn link @keep-network/keep-core @threshold-network/solidity-contracts
+# yarn deploy --network development --reset
+# ./scripts/prepare-artifacts.sh --network development
+# yarn link
+
+# cd $TBTC_V2_CONTRACTS_PATH
+# printf "${LOG_START}Migrating contracts for tbtc-v2...${LOG_END}"
+# yarn
+# yarn link @threshold-network/solidity-contracts \
+#         @keep-network/keep-core \
+#         @keep-network/tbtc \
+#         @keep-network/random-beacon \
+#         @keep-network/ecdsa
+# yarn deploy --network development --reset
+# ./scripts/prepare-artifacts.sh --network development
+# yarn link
 
 cd $COMPONENTS_LIB_PATH
 printf "${LOG_START}Installing local components package...${LOG_START}"
