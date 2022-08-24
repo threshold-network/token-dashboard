@@ -59,7 +59,6 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
             : `${formatTokenAmount(minStakeAmount)} T`
         }`}
         minTokenAmount={minStakeAmount}
-        shouldValidateForm={false}
       />
       <StakingContractLearnMore mt="3" />
     </Card>
