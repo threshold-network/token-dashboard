@@ -11,14 +11,17 @@ import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
 import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 import useUpgradeHref from "../../hooks/useUpgradeHref"
+import { tBTCFill } from "../../static/icons/tBTCFill"
+import { tBTCOutline } from "../../static/icons/tBTCOutline"
+import { featureFlags } from "../../constants"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
 
   const upgradeHref = useUpgradeHref()
 
-  const navItems: NavItemDetail[] = useMemo(
-    () => [
+  const navItems: NavItemDetail[] = useMemo(() => {
+    const navItems = [
       {
         text: "Overview",
         activeIcon: IoHomeSharp,
@@ -37,9 +40,19 @@ const Sidebar = () => {
         passiveIcon: IoChartOutlineSharp,
         href: "/staking",
       },
-    ],
-    [pathname, upgradeHref]
-  )
+    ]
+
+    if (featureFlags.TBTC_V2) {
+      navItems.push({
+        text: "tBTC",
+        activeIcon: tBTCFill,
+        passiveIcon: tBTCOutline,
+        href: "/tBTC",
+      } as NavItemDetail)
+    }
+
+    return navItems
+  }, [pathname, upgradeHref])
 
   return (
     <>
