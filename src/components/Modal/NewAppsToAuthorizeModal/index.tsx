@@ -19,20 +19,21 @@ import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeType } from "../../../utils/getStakeType"
+import { isSameETHAddress } from "../../../web3/utils"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
 
-  const [selectedAuthorizeAddress, setSelectedAuthorizeAddress] = useState("")
+  const [selectedAuthorizerAddress, setSelectedAuthorizerAddress] = useState("")
 
   const navigate = useNavigate()
 
   const routeToStake = useCallback(() => {
-    if (selectedAuthorizeAddress.length > 0) {
-      navigate(`/authorize/${selectedAuthorizeAddress}`)
+    if (selectedAuthorizerAddress) {
+      navigate(`/authorize/${selectedAuthorizerAddress}`)
       closeModal()
     }
-  }, [selectedAuthorizeAddress, closeModal, navigate])
+  }, [selectedAuthorizerAddress, closeModal, navigate])
 
   return (
     <>
@@ -51,15 +52,16 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         </InfoBox>
         <BodyLg my={6}>Choose a stake to continue:</BodyLg>
         <RadioGroup
-          onChange={setSelectedAuthorizeAddress}
-          value={selectedAuthorizeAddress}
+          onChange={setSelectedAuthorizerAddress}
+          value={selectedAuthorizerAddress}
         >
           <Stack>
             {stakes.map((stake, i) => (
               <Card
+                key={stake.stakingProvider}
                 boxShadow="none"
                 borderColor={
-                  stake.authorizer === selectedAuthorizeAddress
+                  isSameETHAddress(stake.authorizer, selectedAuthorizerAddress)
                     ? "brand.500"
                     : undefined
                 }
@@ -81,7 +83,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button
           onClick={routeToStake}
           mr={2}
-          disabled={selectedAuthorizeAddress === ""}
+          disabled={!selectedAuthorizerAddress}
         >
           Continue
         </Button>
