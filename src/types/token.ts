@@ -52,6 +52,7 @@ export interface UseTokenState {
     nu: TokenState
     t: TokenState
     tbtc: TokenState
+    tbtcv2: TokenState
     setTokenBalance: (
       token: Token,
       balance: number | string
