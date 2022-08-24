@@ -12,6 +12,7 @@ UpgradePage.route = {
   index: true,
   pages: [UpgradeKEEP, UpgradeNU],
   title: "Upgrade",
+  isPageEnabled: true,
 }
 
 export default UpgradePage
