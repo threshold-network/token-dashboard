@@ -8,14 +8,10 @@ import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
 import { StakingContractLearnMore } from "../../../components/ExternalLink"
 import { useStakingState } from "../../../hooks/useStakingState"
-import { ModalType } from "../../../enums"
-import { useModal } from "../../../hooks/useModal"
 
 const StakingOverview: FC = () => {
   const { t } = useTokenState()
   const { stakedBalance } = useStakingState()
-
-  const { openModal } = useModal()
 
   return (
     <CardTemplate title="STAKING" height="fit-content">
@@ -29,9 +25,6 @@ const StakingOverview: FC = () => {
       </InfoBox>
       <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/staking">
         Go to Staking
-      </Button>
-      <Button onClick={() => openModal(ModalType.NewAppsToAuthorize)}>
-        modal
       </Button>
       <StakingContractLearnMore mt="4" />
     </CardTemplate>
