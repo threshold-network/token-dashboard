@@ -145,6 +145,7 @@ AuthorizeStakingAppsPage.route = {
   index: false,
   title: "Authorize",
   hideFromMenu: true,
+  isPageEnabled: true,
 }
 
 export default AuthorizeStakingAppsPage
