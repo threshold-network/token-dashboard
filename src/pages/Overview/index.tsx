@@ -22,6 +22,7 @@ Overview.route = {
   path: "overview",
   index: false,
   pages: [Network],
+  isPageEnabled: true,
 }
 
 export default Overview
