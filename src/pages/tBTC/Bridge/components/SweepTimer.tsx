@@ -12,7 +12,6 @@ export const SweepTimer: FC = () => {
   const { nextBridgeCrossingInUnix, updateState } = useTbtcState()
 
   const onComplete = (targetTimeInUnix: number) => {
-    console.log("dadadada", targetTimeInUnix)
     const currentTimeInSeconds = Math.floor(Date.now() / 1000)
     updateState("nextBridgeCrossingInUnix", currentTimeInSeconds + 10)
   }
