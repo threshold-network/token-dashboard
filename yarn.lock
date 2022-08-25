@@ -4828,10 +4828,10 @@
   dependencies:
     "@openzeppelin/contracts" "^4.1.0"
 
-"@threshold-network/components@^1.0.0-dev.9":
-  version "1.0.0-dev.9"
-  resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.9.tgz#2353581a298ef49990193f3c77653e002e2f5733"
-  integrity sha512-yEBE40qmQL8z9bazmVOjkrbosJJOmUAbY8B+0AdIW6McF4cUNmwjQ/+RoTLW5r2ivRxwvlgWEQqlQS3BfIn8+A==
+"@threshold-network/components@development":
+  version "1.0.0-dev.13"
+  resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.13.tgz#aedbeda0f8fa718f5809367f9f0bc11d746a4d84"
+  integrity sha512-VkU28HS9AUlWGkyiNo4FkngsWGTTMOnzR+JWGhdXRZkLmPwwUySzixtAbPTOKH0IWtTJcpjDa5YKpn2S1kyoDQ==
 
 "@threshold-network/solidity-contracts@development":
   version "1.2.0-dev.17"
