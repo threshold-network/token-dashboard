@@ -5,13 +5,14 @@ import {
   ONE_SEC_IN_MILISECONDS,
 } from "../utils/date"
 
-const useCountdown = (targetDateInUnix: number) => {
+const useCountdown = (targetDateInUnix: number, onComplete?: Function) => {
   const [diff, setDiff] = useState(targetDateInUnix - dateToUnixTimestamp())
 
   useEffect(() => {
     const interval = setInterval(() => {
       const diff = targetDateInUnix - dateToUnixTimestamp()
       if (diff === 0) {
+        if (onComplete) onComplete(targetDateInUnix)
         clearInterval(interval)
       }
 
