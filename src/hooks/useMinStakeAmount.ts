@@ -9,11 +9,12 @@ export const useMinStakeAmount = () => {
   const { minStakeAmount } = useStakingState()
   const dispatch = useDispatch()
 
-  const [isLoading, setLoading] = useState(true)
+  const [isLoading, setLoading] = useState(false)
   const [hasError, setHasError] = useState(false)
 
   useEffect(() => {
     const fetchMinStakeAmount = async () => {
+      console.log("rendering the hook")
       setLoading(true)
       try {
         const minStakeAmount = await tStakingContract?.minTStakeAmount()
@@ -26,7 +27,7 @@ export const useMinStakeAmount = () => {
         console.error("Could not fetch the min stake amount: ", error)
       }
     }
-    if (minStakeAmount === "0" && tStakingContract) fetchMinStakeAmount()
+    if (minStakeAmount === undefined && tStakingContract) fetchMinStakeAmount()
   }, [tStakingContract, dispatch, minStakeAmount])
 
   return { minStakeAmount, isLoading, hasError }

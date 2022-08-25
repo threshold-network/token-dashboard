@@ -14,12 +14,9 @@ import { TokenAmountForm } from "../../components/Forms"
 import { useStakingState } from "../../hooks/useStakingState"
 import { useModal } from "../../hooks/useModal"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
-import { ChainID, EnvVariable, ModalType, Token } from "../../enums"
+import { ModalType, Token } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
 import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"
-import { getEnvVariable } from "../../utils/getEnvVariable"
-
-const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
 
 const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
   const { openModal } = useModal()
@@ -38,9 +35,11 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
     }
 
     return `Minimum stake ${
-      isLoading ? "loading..." : `${formatTokenAmount(minStakeAmount)} T`
+      isLoading || minStakeAmount === undefined
+        ? "loading..."
+        : `${formatTokenAmount(minStakeAmount)} T`
     }`
-  }, [isLoading, hasError])
+  }, [isLoading, hasError, minStakeAmount])
 
   return (
     <Card h="fit-content" {...props}>
@@ -68,9 +67,6 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
         maxTokenAmount={tBalance}
         placeholder={placeholder}
         minTokenAmount={minStakeAmount}
-        shouldValidateForm={
-          supportedChainId.toString() === ChainID.Ethereum.toString()
-        }
       />
       <StakingContractLearnMore mt="3" />
     </Card>
