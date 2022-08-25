@@ -6,6 +6,7 @@ export type RouteProps = {
   index: boolean
   pages?: PageComponent[]
   hideFromMenu?: boolean
+  isPageEnabled: boolean
 }
 
 export type PageComponent = FC<RouteProps> & { route: RouteProps }
