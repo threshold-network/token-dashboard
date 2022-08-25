@@ -173,7 +173,10 @@ const renderPageComponent = (PageComponent: PageComponent) => {
         path={PageComponent.route.path}
         element={<PageComponent {...PageComponent.route} />}
       >
-        {PageComponent.route.pages?.map(renderPageComponent)}
+        {PageComponent.route.pages?.map((page) => {
+          if (!page.route.isPageEnabled) return null
+          return renderPageComponent(page)
+        })}
       </Route>
     </Fragment>
   )

@@ -21,6 +21,7 @@ import StakeCardHeader from "./Header"
 import StakeRewards from "./StakeRewards"
 import StakeBalance from "./StakeBalance"
 import StakeAddressInfo from "./StakeAddressInfo"
+import { featureFlags } from "../../../constants"
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -83,8 +84,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       />
       <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
-      <StakeApplications stake={stake} />
-      <LineDivider mb="0" />
+      {featureFlags.MULTI_APP_STAKING && (
+        <>
+          <StakeApplications stake={stake} />
+          <LineDivider mb="0" />
+        </>
+      )}
       <StakeBalance stake={stake} />
       <StakeAddressInfo stake={stake} />
       {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
