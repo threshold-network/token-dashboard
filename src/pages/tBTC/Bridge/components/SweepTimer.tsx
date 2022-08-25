@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react"
 import {
   Box,
-  Countdown,
+  useCountdown,
   H4,
   LabelSm,
   Skeleton,
@@ -12,9 +12,16 @@ export const SweepTimer: FC = () => {
   const { nextBridgeCrossingInUnix, updateState } = useTbtcState()
 
   const onComplete = (targetTimeInUnix: number) => {
+    console.log("dadadada", targetTimeInUnix)
     const currentTimeInSeconds = Math.floor(Date.now() / 1000)
     updateState("nextBridgeCrossingInUnix", currentTimeInSeconds + 10)
   }
+
+  const { days, hours, minutes, seconds } = useCountdown(
+    nextBridgeCrossingInUnix ? nextBridgeCrossingInUnix : 0,
+    false,
+    onComplete
+  )
 
   // TODO: this is a hack to make the timer load after 3 seconds. We need to
   // pull this from the contract
@@ -31,21 +38,9 @@ export const SweepTimer: FC = () => {
       <LabelSm>Next Bridge Crossing</LabelSm>
 
       <Skeleton isLoaded={!!nextBridgeCrossingInUnix}>
-        <Countdown
-          targetDateInUnix={
-            nextBridgeCrossingInUnix ? nextBridgeCrossingInUnix : 0
-          }
-          onComplete={onComplete}
-          withLeadingZeroes={false}
-        >
-          {(days, hours, minutes, seconds) => {
-            return (
-              <H4 color="brand.500" fontWeight={800}>
-                {hours} : {minutes} : {seconds}
-              </H4>
-            )
-          }}
-        </Countdown>
+        <H4 color="brand.500" fontWeight={800}>
+          {hours} : {minutes} : {seconds}
+        </H4>
       </Skeleton>
     </Box>
   )
