@@ -38,11 +38,6 @@ import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
-import {
-  FeatureFlagsContext,
-  FeatureFlagsContextProvider,
-} from "./contexts/FeatureFlagContext"
-import { FeatureFlag } from "./feature-flags/featureFlags"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -151,19 +146,12 @@ const Layout = () => {
 }
 
 const Routing = () => {
-  const featureFlagsContext = useContext(FeatureFlagsContext)
-
   return (
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map((page) => {
-          if (
-            !featureFlagsContext[FeatureFlag.TBTCV2].isActive &&
-            page.route.title === "TBTC"
-          ) {
-            return null
-          }
+        {pages.map((page: PageComponent) => {
+          if (!page.route.isPageEnabled) return null
           return renderPageComponent(page)
         })}
         <Route path="*" element={<Navigate to="overview" />} />
@@ -197,13 +185,11 @@ const App: FC = () => {
       <Web3ReactProvider getLibrary={getLibrary}>
         <ReduxProvider store={reduxStore}>
           <ChakraProvider theme={theme}>
-            <FeatureFlagsContextProvider>
-              <TokenContextProvider>
-                <Web3EventHandlerComponent />
-                <ModalRoot />
-                <AppBody />
-              </TokenContextProvider>
-            </FeatureFlagsContextProvider>
+            <TokenContextProvider>
+              <Web3EventHandlerComponent />
+              <ModalRoot />
+              <AppBody />
+            </TokenContextProvider>
           </ChakraProvider>
         </ReduxProvider>
       </Web3ReactProvider>

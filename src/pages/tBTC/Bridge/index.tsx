@@ -61,6 +61,7 @@ TBTCBridge.route = {
   path: "",
   index: false,
   title: "Bridge",
+  isPageEnabled: true,
 }
 
 export default TBTCBridge

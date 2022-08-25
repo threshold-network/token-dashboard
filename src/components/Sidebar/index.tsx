@@ -5,7 +5,7 @@ import {
   IoSwapHorizontalSharp,
 } from "react-icons/all"
 import { useLocation } from "react-router-dom"
-import { useContext, useMemo } from "react"
+import { useMemo } from "react"
 import DesktopSidebar from "./DesktopSidebar"
 import MobileSidebar from "./MobileSidebar"
 import { IoHomeOutlineSharp } from "../../static/icons/IoHomeOutlineSharp"
@@ -13,15 +13,12 @@ import { IoChartOutlineSharp } from "../../static/icons/IoChartOutlineSharp"
 import useUpgradeHref from "../../hooks/useUpgradeHref"
 import { tBTCFill } from "../../static/icons/tBTCFill"
 import { tBTCOutline } from "../../static/icons/tBTCOutline"
-import { FeatureFlagsContext } from "../../contexts/FeatureFlagContext"
-import { FeatureFlag } from "../../feature-flags/featureFlags"
+import { featureFlags } from "../../constants"
 
 const Sidebar = () => {
   const { pathname } = useLocation()
 
   const upgradeHref = useUpgradeHref()
-
-  const featureFlagsContext = useContext(FeatureFlagsContext)
 
   const navItems: NavItemDetail[] = useMemo(() => {
     const navItems = [
@@ -45,7 +42,7 @@ const Sidebar = () => {
       },
     ]
 
-    if (featureFlagsContext[FeatureFlag.TBTCV2].isActive) {
+    if (featureFlags.TBTC_V2) {
       navItems.push({
         text: "tBTC",
         activeIcon: tBTCFill,
