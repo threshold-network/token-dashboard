@@ -20,6 +20,7 @@ import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
 import { useState } from "react"
+import { featureFlags } from "../../../constants"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { authorizerAddress } = useParams()
@@ -145,7 +146,7 @@ AuthorizeStakingAppsPage.route = {
   index: false,
   title: "Authorize",
   hideFromMenu: true,
-  isPageEnabled: true,
+  isPageEnabled: featureFlags.MULTI_APP_STAKING,
 }
 
 export default AuthorizeStakingAppsPage
