@@ -26,7 +26,7 @@ const RewardsCard: FC<{
   const { openModal } = useModal()
 
   const dropTimestamp = useNextRewardsDropDate()
-  const { days, hours, minutes, seconds } = useCountdown(dropTimestamp)
+  const { days, hours, minutes, seconds } = useCountdown(dropTimestamp, true)
 
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
