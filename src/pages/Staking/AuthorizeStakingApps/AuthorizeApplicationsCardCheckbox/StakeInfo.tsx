@@ -38,8 +38,6 @@ export const StakeInfo: FC<StakeInfoProps> = ({
         <BoxLabel
           icon={<Icon as={IoAlertCircle} />}
           size="sm"
-          // TODO: can remove the ignore once https://github.com/threshold-network/components/pull/16 is merged
-          // @ts-ignore
           status="primary"
           variant="solid"
         >
@@ -48,8 +46,6 @@ export const StakeInfo: FC<StakeInfoProps> = ({
         <BoxLabel
           icon={<Icon as={IoAlertCircle} />}
           size="sm"
-          // TODO: can remove the ignore once https://github.com/threshold-network/components/pull/16 is merged
-          // @ts-ignore
           status="primary"
           variant="solid"
         >
