@@ -11,6 +11,10 @@ export class Threshold {
   constructor(config: ThresholdConfig) {
     this.multicall = new Multicall(config.ethereum)
     this.staking = new Staking(config.ethereum)
-    this.multiAppStaking = new MultiAppStaking(this.staking, this.multicall)
+    this.multiAppStaking = new MultiAppStaking(
+      this.staking,
+      this.multicall,
+      config.ethereum
+    )
   }
 }
