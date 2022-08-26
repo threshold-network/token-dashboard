@@ -70,7 +70,7 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
         onAuthorizeClick={onAuthorizeClick}
         appAuthData={appsAuthData.randomBeacon}
       />
-      <Button mt="5" width="100%">
+      <Button mt="5" width="100%" onClick={onAuthorizeClick}>
         Configure Apps
       </Button>
     </Box>
