@@ -36,7 +36,6 @@ const CopyToClipboard: FC<CopyToClipboardProps> = ({
           onClick={onCopy}
           aria-label={copyTextMsg}
           variant="ghost"
-          mr={2}
         />
       </Tooltip>
       {children}
