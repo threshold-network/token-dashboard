@@ -3,6 +3,30 @@ import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 
+export interface AuthorizationParameters {
+  /**
+   * The minimum authorization amount required so that operator can participate
+   * in the random beacon. This amount is required to execute slashing for
+   * providing a malicious DKG result or when a relay entry times out.
+   */
+  minimumAuthorization: BigNumber
+  /**
+   * Delay in seconds that needs to pass between the time authorization decrease
+   * is requested and the time that request gets approved. Protects against
+   * free-riders earning rewards and not being active in the network.
+   */
+  authorizationDecreaseDelay: BigNumber
+  /**
+   * Authorization decrease change period in seconds. It is the time, before
+   * authorization decrease delay end, during which the pending authorization
+   * decrease request can be overwritten. If set to 0, pending authorization
+   * decrease request can not be overwritten until the endire
+   * `authorizationDecreaseDelay` ends. If set to value equal
+   * `authorizationDecreaseDelay`, request can always be overwritten.
+   */
+  authorizationDecreaseChangePeriod: BigNumber
+}
+
 /**
  * Represents an applciation.
  */
@@ -55,6 +79,14 @@ export interface IApplication {
    * @returns Authorization decrease delay in seconds
    */
   authorizationDecreaseDelay(): Promise<BigNumber>
+
+  /**
+   * Returns authorization-related parameters.
+   * @returns Authorization-related parameters such as: minimum authorization
+   * amount, authorization decrease delay in seconds and authorization decrease
+   * change period in seconds. @see {@link AuthorizationParameters}
+   */
+  authorizationParameters(): Promise<AuthorizationParameters>
   /**
    * Calculates reward eligibility for an application.
    * @returns `true` if the staking provider is eligible for rewards, otherwise
@@ -105,6 +137,20 @@ export class Application implements IApplication {
     const { authorizationDecreaseDelay } =
       await this._application.authorizationParameters()
     return authorizationDecreaseDelay
+  }
+
+  async authorizationParameters(): Promise<any> {
+    const {
+      minimumAuthorization,
+      authorizationDecreaseDelay,
+      authorizationDecreaseChangePeriod,
+    } = await this._application.authorizationParameters()
+
+    return {
+      minimumAuthorization,
+      authorizationDecreaseDelay,
+      authorizationDecreaseChangePeriod,
+    }
   }
 
   async isEligibleForRewards(stakingProvider: string): Promise<boolean> {
