@@ -18,6 +18,7 @@ describe("Application test", () => {
   const abi: ContractInterface = []
   const stakingProvider = "0x486b0ee2eed761f069f327034eb2ae5e07580bf3"
   const mockedEthereumProvider = {} as providers.Provider
+  const mockStakingContract = {}
   const mockAppContract = {
     address,
     minimumAuthorization: jest.fn(),
@@ -27,13 +28,17 @@ describe("Application test", () => {
     stakingProviderToOperator: jest.fn(),
     isOperatorInPool: jest.fn(),
   }
+  const mockMulticall = {
+    aggregate: jest.fn(),
+  }
 
   beforeEach(() => {
     staking = {
       authorizedStake: jest.fn(),
+      stakingContract: mockStakingContract,
     } as unknown as IStaking
     ;(getContract as jest.Mock).mockImplementation(() => mockAppContract)
-    application = new Application(staking, {
+    application = new Application(staking, mockMulticall, {
       address,
       abi,
       providerOrSigner: mockedEthereumProvider,
@@ -150,6 +155,62 @@ describe("Application test", () => {
       expect(spyOnOperatorMap).toHaveBeenCalledWith(stakingProvider)
       expect(spyOnPool).not.toHaveBeenCalled()
       expect(result).toBeFalsy()
+    })
+  })
+
+  test("should return authorization-related parameters", async () => {
+    const mockResult = {
+      authorizationDecreaseDelay: time,
+      minimumAuthorization: amount,
+      authorizationDecreaseChangePeriod: time,
+    }
+    const spy = jest
+      .spyOn(mockAppContract, "authorizationParameters")
+      .mockResolvedValue(mockResult)
+
+    const result = await application.authorizationParameters()
+
+    expect(spy).toHaveBeenCalled()
+    expect(result).toEqual(mockResult)
+  })
+
+  test("should return the app data for a given staking proivder", async () => {
+    const authorizedStake = amount
+    const pendingAuthorizationDecrease = time
+    const remainingAuthorizationDecreaseDelay = time
+    const multicallResult = [
+      authorizedStake,
+      pendingAuthorizationDecrease,
+      remainingAuthorizationDecreaseDelay,
+    ]
+
+    const multicallSpy = jest
+      .spyOn(mockMulticall, "aggregate")
+      .mockResolvedValue(multicallResult)
+
+    const result = await application.getStakingProviderAppInfo(stakingProvider)
+
+    expect(multicallSpy).toHaveBeenCalledWith([
+      {
+        contract: mockStakingContract,
+        method: "authorizedStake",
+        args: [stakingProvider, application.address],
+      },
+      {
+        contract: application.contract,
+        method: "pendingAuthorizationDecrease",
+        args: [stakingProvider],
+      },
+      {
+        contract: application.contract,
+        method: "remainingAuthorizationDecreaseDelay",
+        args: [stakingProvider],
+      },
+    ])
+    expect(result).toEqual({
+      authorizedStake,
+      pendingAuthorizationDecrease,
+      remainingAuthorizationDecreaseDelay,
     })
   })
 })
