@@ -2,7 +2,7 @@ import { Contract } from "ethers"
 import { EthereumConfig } from "../types"
 import { AddressZero, getContract } from "../utils"
 
-interface ContractCall {
+export interface ContractCall {
   contract: Contract
   method: string
   args?: any[]
