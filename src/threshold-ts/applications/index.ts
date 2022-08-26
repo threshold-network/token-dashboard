@@ -2,6 +2,7 @@ import { BigNumber, Contract, ContractInterface } from "ethers"
 import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
+import { IMulticall, ContractCall } from "../multicall"
 
 export interface AuthorizationParameters {
   /**
@@ -25,6 +26,21 @@ export interface AuthorizationParameters {
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
   authorizationDecreaseChangePeriod: BigNumber
+}
+
+export interface StakingProviderAppInfo {
+  /**
+   * Authorized stake amount of the staking provider.
+   */
+  authorizedStake: BigNumber
+  /**
+   * Amount being deauthorized for the staking provider.
+   */
+  pendingAuthorizationDecrease: BigNumber
+  /**
+   * Time in seconds until the deauthorization can be completed.
+   */
+  remainingAuthorizationDecreaseDelay: BigNumber
 }
 
 /**
@@ -93,19 +109,33 @@ export interface IApplication {
    * returns `false`.
    */
   isEligibleForRewards(stakingProvider: string): Promise<boolean>
+
+  /**
+   * Returns the application data for a given staking provider. This function
+   * uses the multicall interface to aggragate contract calls into a single one.
+   * @returns Currently authorized amount, amount being deauthorized for the
+   * staking provider and the time until the deauthorization can be completed.
+   * @see {@link StakingProviderAppInfo}
+   */
+  getStakingProviderAppInfo(
+    stakingProvider: string
+  ): Promise<StakingProviderAppInfo>
 }
 
 export class Application implements IApplication {
   private _application: Contract
   private _staking: IStaking
+  private _multicall: IMulticall
 
   constructor(
     staking: IStaking,
+    multicall: IMulticall,
     config: EthereumConfig & { address: string; abi: ContractInterface }
   ) {
     const { address, abi, providerOrSigner } = config
     this._application = getContract(address, abi, providerOrSigner)
     this._staking = staking
+    this._multicall = multicall
   }
 
   async authorizedStake(stakingProvider: string): Promise<BigNumber> {
@@ -150,6 +180,38 @@ export class Application implements IApplication {
       minimumAuthorization,
       authorizationDecreaseDelay,
       authorizationDecreaseChangePeriod,
+    }
+  }
+
+  async getStakingProviderAppInfo(stakingProvider: string): Promise<any> {
+    const calls: ContractCall[] = [
+      {
+        contract: this._staking.stakingContract,
+        method: "authorizedStake",
+        args: [stakingProvider, this.address],
+      },
+      {
+        contract: this.contract,
+        method: "pendingAuthorizationDecrease",
+        args: [stakingProvider],
+      },
+      {
+        contract: this.contract,
+        method: "remainingAuthorizationDecreaseDelay",
+        args: [stakingProvider],
+      },
+    ]
+
+    const [
+      authorizedStake,
+      pendingAuthorizationDecrease,
+      remainingAuthorizationDecreaseDelay,
+    ] = await this._multicall.aggregate(calls)
+
+    return {
+      authorizedStake,
+      pendingAuthorizationDecrease,
+      remainingAuthorizationDecreaseDelay,
     }
   }
 
