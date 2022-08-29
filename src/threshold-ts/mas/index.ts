@@ -46,12 +46,14 @@ export class MultiAppStaking {
   }> {
     const calls: ContractCall[] = [
       {
-        contract: this.ecdsa.contract,
+        interface: this.ecdsa.contract.interface,
+        address: this.ecdsa.address,
         method: "authorizationParameters",
         args: [],
       },
       {
-        contract: this.randomBeacon.contract,
+        interface: this.randomBeacon.contract.interface,
+        address: this.randomBeacon.address,
         method: "authorizationParameters",
         args: [],
       },

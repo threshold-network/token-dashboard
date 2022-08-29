@@ -186,17 +186,20 @@ export class Application implements IApplication {
   async getStakingProviderAppInfo(stakingProvider: string): Promise<any> {
     const calls: ContractCall[] = [
       {
-        contract: this._staking.stakingContract,
+        interface: this._staking.stakingContract.interface,
+        address: this._staking.stakingContract.address,
         method: "authorizedStake",
         args: [stakingProvider, this.address],
       },
       {
-        contract: this.contract,
+        interface: this.contract.interface,
+        address: this.contract.address,
         method: "pendingAuthorizationDecrease",
         args: [stakingProvider],
       },
       {
-        contract: this.contract,
+        interface: this.contract.interface,
+        address: this.contract.address,
         method: "remainingAuthorizationDecreaseDelay",
         args: [stakingProvider],
       },

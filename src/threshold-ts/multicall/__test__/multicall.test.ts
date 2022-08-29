@@ -1,4 +1,5 @@
 import { providers, Contract } from "ethers"
+import { Interface } from "@ethersproject/abi"
 import {
   ContractCall,
   IMulticall,
@@ -47,24 +48,20 @@ describe("Multicall test", () => {
     const call2DecodeResult = "2"
 
     const call1 = {
-      contract: {
-        address: "0x312Ff8703EA5aA51384061b8649651E1264D7BD8",
-        interface: {
-          encodeFunctionData: jest.fn().mockReturnValue(call1EncodeData),
-          decodeFunctionResult: jest.fn().mockReturnValue(call1DecodeResult),
-        },
-      } as unknown as Contract,
+      address: "0x312Ff8703EA5aA51384061b8649651E1264D7BD8",
+      interface: {
+        encodeFunctionData: jest.fn().mockReturnValue(call1EncodeData),
+        decodeFunctionResult: jest.fn().mockReturnValue(call1DecodeResult),
+      } as unknown as Interface,
       method: "test1",
       args: ["a", 1],
     }
     const call2 = {
-      contract: {
-        address: "0x312Ff8703EA5aA51384061b8649651E1264D7BD8",
-        interface: {
-          encodeFunctionData: jest.fn().mockReturnValue(call2EncodeData),
-          decodeFunctionResult: jest.fn().mockReturnValue(call2DecodeResult),
-        },
-      } as unknown as Contract,
+      address: "0x312Ff8703EA5aA51384061b8649651E1264D7BD8",
+      interface: {
+        encodeFunctionData: jest.fn().mockReturnValue(call2EncodeData),
+        decodeFunctionResult: jest.fn().mockReturnValue(call2DecodeResult),
+      } as unknown as Interface,
       method: "test2",
       args: [],
     }
@@ -77,24 +74,24 @@ describe("Multicall test", () => {
 
     const result = await multicall.aggregate(calls)
 
-    expect(call1.contract.interface.encodeFunctionData).toHaveBeenCalledWith(
+    expect(call1.interface.encodeFunctionData).toHaveBeenCalledWith(
       call1.method,
       call1.args
     )
-    expect(call2.contract.interface.encodeFunctionData).toHaveBeenCalledWith(
+    expect(call2.interface.encodeFunctionData).toHaveBeenCalledWith(
       call2.method,
       call2.args
     )
     const expectedCallRequests = [
-      [call1.contract.address, call1EncodeData],
-      [call2.contract.address, call2EncodeData],
+      [call1.address, call1EncodeData],
+      [call2.address, call2EncodeData],
     ]
     expect(spyOnAggregate).toHaveBeenCalledWith(expectedCallRequests)
-    expect(call1.contract.interface.decodeFunctionResult).toHaveBeenCalledWith(
+    expect(call1.interface.decodeFunctionResult).toHaveBeenCalledWith(
       call1.method,
       mockResult[0]
     )
-    expect(call2.contract.interface.decodeFunctionResult).toHaveBeenCalledWith(
+    expect(call2.interface.decodeFunctionResult).toHaveBeenCalledWith(
       call2.method,
       mockResult[1]
     )

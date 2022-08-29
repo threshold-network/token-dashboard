@@ -18,7 +18,10 @@ describe("Application test", () => {
   const abi: ContractInterface = []
   const stakingProvider = "0x486b0ee2eed761f069f327034eb2ae5e07580bf3"
   const mockedEthereumProvider = {} as providers.Provider
-  const mockStakingContract = {}
+  const mockStakingContract = {
+    interface: {},
+    address: "0x6A55B762689Ba514569E565E439699aBC731f156",
+  }
   const mockAppContract = {
     address,
     minimumAuthorization: jest.fn(),
@@ -192,17 +195,20 @@ describe("Application test", () => {
 
     expect(multicallSpy).toHaveBeenCalledWith([
       {
-        contract: mockStakingContract,
+        interface: mockStakingContract.interface,
+        address: mockStakingContract.address,
         method: "authorizedStake",
         args: [stakingProvider, application.address],
       },
       {
-        contract: application.contract,
+        interface: application.contract.interface,
+        address: application.address,
         method: "pendingAuthorizationDecrease",
         args: [stakingProvider],
       },
       {
-        contract: application.contract,
+        interface: application.contract.interface,
+        address: application.address,
         method: "remainingAuthorizationDecreaseDelay",
         args: [stakingProvider],
       },

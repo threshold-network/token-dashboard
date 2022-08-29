@@ -1,9 +1,11 @@
 import { Contract } from "ethers"
+import { Interface } from "@ethersproject/abi"
 import { EthereumConfig } from "../types"
 import { AddressZero, getContract } from "../utils"
 
 export interface ContractCall {
-  contract: Contract
+  address: string
+  interface: Interface
   method: string
   args?: any[]
 }
@@ -52,15 +54,15 @@ export class Multicall implements IMulticall {
 
   async aggregate(calls: ContractCall[]): Promise<any[]> {
     const callRequests = calls.map((_) => [
-      _.contract.address,
-      _.contract.interface.encodeFunctionData(_.method, _.args),
+      _.address,
+      _.interface.encodeFunctionData(_.method, _.args),
     ])
 
     const [, result] = await this._multicall.aggregate(callRequests)
 
     return result.map((data: string, index: number) => {
       const call = calls[index]
-      return call.contract.interface.decodeFunctionResult(call.method, data)
+      return call.interface.decodeFunctionResult(call.method, data)
     })
   }
 }

@@ -1,12 +1,6 @@
 import { useCallback } from "react"
-import { Contract } from "@ethersproject/contracts"
 import { useThreshold } from "../../contexts/ThresholdContext"
-
-interface ContractCall {
-  contract: Contract
-  method: string
-  args?: any[]
-}
+import { ContractCall } from "../../threshold-ts/multicall"
 
 export const useMulticall = (calls: ContractCall[]) => {
   const threshold = useThreshold()
