@@ -6,14 +6,14 @@ import { StakeData } from "../../../../types"
 import { Switcher } from "../Switcher"
 
 export interface StakeCardHeaderProps {
-  isInActiveStake: boolean
+  isInactiveStake: boolean
   stake: StakeData | null
   onSwitcherClick: () => void
   isActive: boolean
 }
 
 const StakeCardHeader: FC<StakeCardHeaderProps> = ({
-  isInActiveStake,
+  isInactiveStake,
   stake,
   onSwitcherClick,
   isActive,
@@ -21,12 +21,12 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
   return (
     <Flex as="header" alignItems="center">
       <Badge
-        colorScheme={isInActiveStake ? "gray" : "green"}
+        colorScheme={isInactiveStake ? "gray" : "green"}
         variant="subtle"
         size="small"
         mr="2"
       >
-        {isInActiveStake ? "inactive" : "active"}
+        {isInactiveStake ? "inactive" : "active"}
       </Badge>
       <StakeCardHeaderTitle stake={stake} />
       <Switcher onClick={onSwitcherClick} isActive={isActive} />
