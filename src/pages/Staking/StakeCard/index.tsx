@@ -70,14 +70,14 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     }
   }
 
-  const isInActiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
 
   return (
-    <Card borderColor={isInActiveStake || !isPRESet ? "red.200" : undefined}>
+    <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader
-        isInActiveStake={isInActiveStake}
+        isInactiveStake={isInactiveStake}
         stake={stake}
         onSwitcherClick={onSwitcherClick}
         isActive={isStakeAction}

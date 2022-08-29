@@ -31,7 +31,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     }
   })
 
-  const isInActiveStake = stake
+  const isInactiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
@@ -87,12 +87,12 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           <H5>Authorize Applications</H5>
           <HStack>
             <Badge
-              colorScheme={isInActiveStake ? "gray" : "green"}
+              colorScheme={isInactiveStake ? "gray" : "green"}
               variant="subtle"
               size="small"
               mr="2"
             >
-              {isInActiveStake ? "inactive" : "active"}
+              {isInactiveStake ? "inactive" : "active"}
             </Badge>
             <StakeCardHeaderTitle stake={stake} />
           </HStack>
