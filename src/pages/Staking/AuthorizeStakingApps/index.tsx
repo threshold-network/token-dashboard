@@ -121,6 +121,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
+          minAuthAmount={"1000000000000000000000"}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -130,6 +131,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
             .map((app) => app.label)
             .includes("Random Beacon")}
           maxAuthAmount={stake.totalInTStake}
+          minAuthAmount={"1000000000000000000000"}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -137,6 +139,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}
+          minAuthAmount={"1000000000000000000000"}
         />
         <Button
           disabled={selectedApps.length === 0}
