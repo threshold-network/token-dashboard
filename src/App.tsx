@@ -3,7 +3,7 @@ import "@fontsource/inter/700.css"
 import "@fontsource/inter/600.css"
 import "@fontsource/inter/500.css"
 import "@fontsource/inter/400.css"
-import { FC, useEffect, Fragment } from "react"
+import { FC, useEffect, Fragment, useContext } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
@@ -150,7 +150,10 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map(renderPageComponent)}
+        {pages.map((page: PageComponent) => {
+          if (!page.route.isPageEnabled) return null
+          return renderPageComponent(page)
+        })}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>

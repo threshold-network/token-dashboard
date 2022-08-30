@@ -11,6 +11,7 @@ import { transactionSlice } from "./transactions"
 import { stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
+import { tbtcSlice } from "./tbtc"
 
 const combinedReducer = combineReducers({
   modal: modalSlice.reducer,
@@ -19,6 +20,7 @@ const combinedReducer = combineReducers({
   transaction: transactionSlice.reducer,
   staking: stakingSlice.reducer,
   eth: ethSlice.reducer,
+  tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
 })
 

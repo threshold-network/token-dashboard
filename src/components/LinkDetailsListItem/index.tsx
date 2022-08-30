@@ -8,7 +8,7 @@ import { ExternalHref } from "../../enums"
 interface LinkDetailsListItemProps extends ListItemProps {
   title: string
   subTitle?: string
-  href: ExternalHref
+  href: ExternalHref | string
   cta?: string
 }
 
