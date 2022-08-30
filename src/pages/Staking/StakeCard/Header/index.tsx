@@ -1,6 +1,5 @@
 import { FC } from "react"
-import { Flex } from "@chakra-ui/react"
-import { Badge, FilterTabs } from "@threshold-network/components"
+import { Badge, FilterTabs, Flex } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { StakeData } from "../../../../types"
 
