@@ -1,9 +1,9 @@
 import { FC } from "react"
 import { Button, ButtonGroup, useColorModeValue } from "@chakra-ui/react"
 
-export const Switcher: FC<{ onClick: () => void; isActive: boolean }> = ({
+export const Switcher: FC<{ onClick: () => void; isStakeAction: boolean }> = ({
   onClick,
-  isActive,
+  isStakeAction,
 }) => {
   const bgColor = useColorModeValue("gray.50", "gray.700")
   const activeButtonColor = useColorModeValue("white", "gray.700")
@@ -17,15 +17,15 @@ export const Switcher: FC<{ onClick: () => void; isActive: boolean }> = ({
       size="xs"
     >
       <Button
-        variant={isActive ? "outline" : "ghost"}
-        bg={isActive ? activeButtonColor : undefined}
+        variant={isStakeAction ? "outline" : "ghost"}
+        bg={isStakeAction ? activeButtonColor : undefined}
         onClick={onClick}
       >
         Stake
       </Button>
       <Button
-        variant={!isActive ? "outline" : "ghost"}
-        bg={!isActive ? activeButtonColor : undefined}
+        variant={!isStakeAction ? "outline" : "ghost"}
+        bg={!isStakeAction ? activeButtonColor : undefined}
         onClick={onClick}
       >
         Unstake
