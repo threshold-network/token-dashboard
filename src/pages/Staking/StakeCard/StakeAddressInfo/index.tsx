@@ -1,6 +1,5 @@
 import { FC } from "react"
-import { Flex } from "@chakra-ui/react"
-import { BoxLabel } from "@threshold-network/components"
+import { BoxLabel, Flex } from "@threshold-network/components"
 import { CopyAddressToClipboard } from "../../../../components/CopyToClipboard"
 import { StakeData } from "../../../../types"
 

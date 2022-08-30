@@ -1,6 +1,12 @@
-import { Progress, StackProps } from "@chakra-ui/react"
 import { FC } from "react"
-import { Badge, BodySm, Button, HStack } from "@threshold-network/components"
+import {
+  Badge,
+  BodySm,
+  Button,
+  HStack,
+  Progress,
+  StackProps,
+} from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 

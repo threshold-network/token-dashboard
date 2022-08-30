@@ -1,11 +1,16 @@
-import { BoxProps, Grid, Checkbox, GridItem } from "@chakra-ui/react"
-import { Card, FilterTabs } from "@threshold-network/components"
-import { FC, useState } from "react"
+import {
+  Card,
+  FilterTabs,
+  BoxProps,
+  Grid,
+  Checkbox,
+  GridItem,
+} from "@threshold-network/components"
+import { FC } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
 import { Token } from "../../../../enums"
 import { useMinStakeAmount } from "../../../../hooks/useMinStakeAmount"
 import { useTokenBalance } from "../../../../hooks/useTokenBalance"
-import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 
 export interface AppAuthDataProps {

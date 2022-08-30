@@ -1,8 +1,12 @@
 import { FC, useRef, useCallback } from "react"
-import { Button, useBoolean } from "@chakra-ui/react"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
-import { Card, LineDivider } from "@threshold-network/components"
+import {
+  Card,
+  LineDivider,
+  Button,
+  useBoolean,
+} from "@threshold-network/components"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
