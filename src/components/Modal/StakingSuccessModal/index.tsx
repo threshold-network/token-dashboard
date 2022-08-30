@@ -12,7 +12,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+import { BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { PreSetupSteps } from "../../StakingTimeline"
