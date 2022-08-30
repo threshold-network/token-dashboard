@@ -7,8 +7,6 @@ import {
   ModalFooter,
   ModalHeader,
   Divider,
-  Alert,
-  AlertIcon,
 } from "@chakra-ui/react"
 import { BodyLg, BodyMd, BodySm, H5 } from "@threshold-network/components"
 import { FormikProps } from "formik"

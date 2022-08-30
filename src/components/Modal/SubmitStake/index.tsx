@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { useWeb3React } from "@web3-react/core"
 import {
   Button,
   ModalBody,
@@ -21,7 +20,6 @@ import StakingStats from "../../StakingStats"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
-  const { account } = useWeb3React()
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
@@ -46,15 +44,17 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5>You are about to make a deposit into the T Staking Contract.</H5>
+          <H5 mb={4}>
+            You are about to make a deposit into the T Staking Contract.
+          </H5>
           <BodyLg>Staking requires 2 transactions.</BodyLg>
         </InfoBox>
         <StakingStats
           {...{
             stakeAmount,
-            beneficiary: account as string,
-            stakingProvider: account as string,
-            authorizer: account as string,
+            beneficiary,
+            stakingProvider,
+            authorizer,
           }}
         />
         <StakingContractLearnMore textAlign="center" mt="8" />

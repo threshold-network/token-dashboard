@@ -118,6 +118,9 @@ export const PreSetupSteps: FC = () => {
 
 const StakingTimeline: FC = () => {
   const STAKING_PROVIDER_URL = "someURL"
+  const PROVIDER_ADDRESS_URL = "someURL"
+  const BENEFICIARY_ADDRESS_URL = "someURL"
+  const AUTHORIZER_ADDRESS_URL = "someURL"
 
   return (
     <Stack spacing={6}>
@@ -128,9 +131,20 @@ const StakingTimeline: FC = () => {
         preTitle="Step 1"
         status={FlowStepStatus.active}
       >
-        Enter the Provider, Beneficiary, and Authorizer addresses. These will be
-        automatically set to your wallet address. If you want to use a Staking
-        Provider, here is{" "}
+        Enter the{" "}
+        <Link color="brand.500" href={PROVIDER_ADDRESS_URL}>
+          Provider
+        </Link>
+        ,{" "}
+        <Link color="brand.500" href={BENEFICIARY_ADDRESS_URL}>
+          Beneficiary
+        </Link>
+        , and{" "}
+        <Link color="brand.500" href={AUTHORIZER_ADDRESS_URL}>
+          Authorizer
+        </Link>{" "}
+        addresses. These will be automatically set to your wallet address. If
+        you want to use a Staking Provider, here is{" "}
         <Link color="brand.500" href={STAKING_PROVIDER_URL}>
           a list
         </Link>

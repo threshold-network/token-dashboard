@@ -5,6 +5,7 @@ import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 import { Alert, AlertIcon } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { BodyXs } from "@threshold-network/components"
+import { isSameETHAddress } from "../../../web3/utils"
 
 export interface FormValues {
   stakingProvider: string
@@ -42,7 +43,7 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         label="Authorizer Address"
         helperText="This address will authorize applications."
       />
-      {authorizer !== account && (
+      {isSameETHAddress(authorizer, account as string) && (
         <Alert status="warning" mt={6}>
           <AlertIcon />
           <BodyXs>

@@ -24,13 +24,10 @@ import {
   ClaimingRewards,
   ClaimRewardsSuccessModal,
 } from "../components/Modal/ClaimingRewards"
-<<<<<<< HEAD
 import SubmitStakeModal from "../components/Modal/SubmitStake"
-=======
 import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
->>>>>>> afc41e50c6f34aec6b3ea75b360cbe73e3bd10fd
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -51,13 +48,10 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
-<<<<<<< HEAD
   [ModalType.SubmitStake]: SubmitStakeModal,
-=======
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.UseDesktop]: UseDesktopModal,
->>>>>>> afc41e50c6f34aec6b3ea75b360cbe73e3bd10fd
 }
 
 export interface BaseModalProps {
