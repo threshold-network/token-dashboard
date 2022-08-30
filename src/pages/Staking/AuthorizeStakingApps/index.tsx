@@ -13,7 +13,7 @@ import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
 import { useParams } from "react-router-dom"
 import { RootState } from "../../../store"
-import { PageComponent } from "../../../types"
+import { PageComponent, StakeData } from "../../../types"
 import { isSameETHAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
@@ -21,15 +21,19 @@ import AuthorizeApplicationsCardCheckbox, {
 } from "./AuthorizeApplicationsCardCheckbox"
 import { useState } from "react"
 import { featureFlags } from "../../../constants"
+import { selectStakeByStakingProvider } from "../../../store/staking"
+import { useWeb3React } from "@web3-react/core"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
-  const { authorizerAddress } = useParams()
-  const stakes = useSelector((state: RootState) => state.staking.stakes)
-  const stake = stakes.find((stake) => {
-    if (authorizerAddress) {
-      return isSameETHAddress(stake.authorizer, authorizerAddress)
-    }
-  })
+  const { stakingProviderAddress } = useParams()
+  const { account } = useWeb3React()
+
+  const stake = useSelector((state: RootState) =>
+    selectStakeByStakingProvider(state, stakingProviderAddress as string)
+  ) as StakeData
+
+  const isLoggedInAsAuthorizer =
+    stake && account ? isSameETHAddress(stake.authorizer, account) : false
 
   const isInactiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
@@ -71,7 +75,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     }
   }
 
-  return stake ? (
+  return isLoggedInAsAuthorizer ? (
     <>
       <FilterTabs
         tabs={[
@@ -140,12 +144,12 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
       </Card>
     </>
   ) : (
-    <H5>Please connect your wallet</H5>
+    <H5>{`Please connect your wallet as an authorizer of this stake`}</H5>
   )
 }
 
 AuthorizeStakingAppsPage.route = {
-  path: "authorize/:authorizerAddress",
+  path: "authorize/:stakingProviderAddress",
   index: false,
   title: "Authorize",
   hideFromMenu: true,
