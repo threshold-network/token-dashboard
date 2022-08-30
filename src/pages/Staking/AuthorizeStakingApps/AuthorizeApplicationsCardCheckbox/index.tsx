@@ -8,10 +8,8 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
-import { Token } from "../../../../enums"
-import { useMinStakeAmount } from "../../../../hooks/useMinStakeAmount"
-import { useTokenBalance } from "../../../../hooks/useTokenBalance"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
+import { formatTokenAmount } from "../../../../utils/formatAmount"
 
 export interface AppAuthDataProps {
   label: string
@@ -25,6 +23,7 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
   isSelected: boolean
   maxAuthAmount: string
+  minAuthAmount: string
 }
 
 export const AuthorizeApplicationsCardCheckbox: FC<
@@ -34,9 +33,9 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   onCheckboxClick,
   isSelected,
   maxAuthAmount,
+  minAuthAmount,
   ...restProps
 }) => {
-  const minStakeAmount = useMinStakeAmount()
   const collapsed = !appAuthData.isAuthRequired
 
   if (collapsed) {
@@ -119,8 +118,10 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             submitButtonText={`Authorize ${appAuthData.label}`}
             maxTokenAmount={maxAuthAmount}
             placeholder={"Enter amount"}
-            minTokenAmount={minStakeAmount}
-            helperText={`Minimum 40,000 T for ${appAuthData.label}`}
+            minTokenAmount={minAuthAmount}
+            helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
+              appAuthData.label
+            }`}
           />
         </GridItem>
       </Grid>
