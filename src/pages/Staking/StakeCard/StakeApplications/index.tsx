@@ -8,16 +8,11 @@ import {
   Button,
   Link,
 } from "@threshold-network/components"
-import { useNavigate } from "react-router-dom"
 import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
+import { Link as RouterLink } from "react-router-dom"
 
 const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
-  const navigate = useNavigate()
-  const onAuthorizeClick = () => {
-    navigate(`/staking/authorize/${stake.authorizer}`)
-  }
-
   const areNodesMissing = true
 
   // TODO: This will probably be fetched from contracts
@@ -63,14 +58,19 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       )}
       <AuthorizeApplicationRow
         mb={"3"}
-        onAuthorizeClick={onAuthorizeClick}
         appAuthData={appsAuthData.tbtc}
+        stakingProvider={stake.stakingProvider}
       />
       <AuthorizeApplicationRow
-        onAuthorizeClick={onAuthorizeClick}
         appAuthData={appsAuthData.randomBeacon}
+        stakingProvider={stake.stakingProvider}
       />
-      <Button mt="5" width="100%" onClick={onAuthorizeClick}>
+      <Button
+        mt="5"
+        width="100%"
+        as={RouterLink}
+        to={`/staking/authorize/${stake.stakingProvider}`}
+      >
         Configure Apps
       </Button>
     </Box>
