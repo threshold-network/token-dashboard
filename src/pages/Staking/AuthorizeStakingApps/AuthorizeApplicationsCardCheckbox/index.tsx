@@ -114,11 +114,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             label="Amount"
             submitButtonText={`Authorize ${appAuthData.label}`}
             maxTokenAmount={totalInTStake}
-            placeholder={`Minimum stake ${
-              minStakeAmount === "0"
-                ? "loading..."
-                : `${formatTokenAmount(minStakeAmount)} T`
-            }`}
+            placeholder={"Enter amount"}
             minTokenAmount={minStakeAmount}
             helperText={`Minimum 40,000 T for ${appAuthData.label}`}
           />
