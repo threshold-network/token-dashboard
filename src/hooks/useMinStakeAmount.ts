@@ -14,7 +14,6 @@ export const useMinStakeAmount = () => {
 
   useEffect(() => {
     const fetchMinStakeAmount = async () => {
-      console.log("rendering the hook")
       setLoading(true)
       try {
         const minStakeAmount = await tStakingContract?.minTStakeAmount()
