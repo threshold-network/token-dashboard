@@ -1,6 +1,13 @@
 import { InfoIcon } from "@chakra-ui/icons"
-import { VStack, HStack, Badge, StackProps, Icon } from "@chakra-ui/react"
-import { LabelSm, BodyXs, BoxLabel } from "@threshold-network/components"
+import {
+  LabelSm,
+  BoxLabel,
+  VStack,
+  HStack,
+  Badge,
+  StackProps,
+  Icon,
+} from "@threshold-network/components"
 import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
 import { IoAlertCircle } from "react-icons/all"
