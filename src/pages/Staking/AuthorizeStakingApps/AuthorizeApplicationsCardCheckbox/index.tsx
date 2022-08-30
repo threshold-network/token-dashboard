@@ -17,14 +17,20 @@ export interface AppAuthDataProps {
 
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   appAuthData: AppAuthDataProps
+  onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
+  isSelected: boolean
+  totalInTStake: string
 }
 
 export const AuthorizeApplicationsCardCheckbox: FC<
-  AuthorizeApplicationsCardCheckboxProps & {
-    onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
-    isSelected: boolean
-  }
-> = ({ appAuthData, onCheckboxClick, isSelected, ...restProps }) => {
+  AuthorizeApplicationsCardCheckboxProps
+> = ({
+  appAuthData,
+  onCheckboxClick,
+  isSelected,
+  totalInTStake,
+  ...restProps
+}) => {
   const tBalance = useTokenBalance(Token.T)
   const minStakeAmount = useMinStakeAmount()
   const collapsed = !appAuthData.isAuthRequired
@@ -107,7 +113,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             }}
             label="Amount"
             submitButtonText={`Authorize ${appAuthData.label}`}
-            maxTokenAmount={tBalance}
+            maxTokenAmount={totalInTStake}
             placeholder={`Minimum stake ${
               minStakeAmount === "0"
                 ? "loading..."
