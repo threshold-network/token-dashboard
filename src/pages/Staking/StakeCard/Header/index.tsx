@@ -9,14 +9,14 @@ export interface StakeCardHeaderProps {
   isInactiveStake: boolean
   stake: StakeData | null
   onSwitcherClick: () => void
-  isActive: boolean
+  isStakeAction: boolean
 }
 
 const StakeCardHeader: FC<StakeCardHeaderProps> = ({
   isInactiveStake,
   stake,
   onSwitcherClick,
-  isActive,
+  isStakeAction,
 }) => {
   return (
     <Flex as="header" alignItems="center">
@@ -29,7 +29,7 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
         {isInactiveStake ? "inactive" : "active"}
       </Badge>
       <StakeCardHeaderTitle stake={stake} />
-      <Switcher onClick={onSwitcherClick} isActive={isActive} />
+      <Switcher onClick={onSwitcherClick} isStakeAction={isStakeAction} />
     </Flex>
   )
 }

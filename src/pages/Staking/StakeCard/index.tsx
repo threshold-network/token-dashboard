@@ -80,7 +80,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         isInactiveStake={isInactiveStake}
         stake={stake}
         onSwitcherClick={onSwitcherClick}
-        isActive={isStakeAction}
+        isStakeAction={isStakeAction}
       />
       <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
