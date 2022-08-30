@@ -6,7 +6,7 @@ import { Token } from "../../../../enums"
 import { useMinStakeAmount } from "../../../../hooks/useMinStakeAmount"
 import { useTokenBalance } from "../../../../hooks/useTokenBalance"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
-import { StakeInfo } from "./StakeInfo"
+import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 
 export interface AppAuthDataProps {
   label: string
@@ -32,7 +32,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   if (collapsed) {
     return (
       <Card {...restProps} boxShadow="none">
-        <StakeInfo
+        <AppAuthorizationInfo
           label={appAuthData.label}
           percentageAuthorized={100}
           aprPercentage={10}
@@ -81,7 +81,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             onCheckboxClick(appAuthData, e.target.checked)
           }}
         />
-        <StakeInfo
+        <AppAuthorizationInfo
           gridArea="app-info"
           label={appAuthData.label}
           percentageAuthorized={100}
