@@ -11,7 +11,7 @@ import {
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
 import { PageComponent, StakeData } from "../../../types"
 import { isSameETHAddress } from "../../../web3/utils"
@@ -19,17 +19,23 @@ import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
+import { isAddress } from "web3-utils"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
-  const { stakingProviderAddress } = useParams()
+  const { stakingProviderAddress: addressFromUrl } = useParams()
   const { account } = useWeb3React()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!isAddress(addressFromUrl!)) navigate(`/staking`)
+  }, [addressFromUrl, navigate])
 
   const stake = useSelector((state: RootState) =>
-    selectStakeByStakingProvider(state, stakingProviderAddress as string)
+    selectStakeByStakingProvider(state, addressFromUrl!)
   ) as StakeData
 
   const isLoggedInAsAuthorizer =
