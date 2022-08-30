@@ -12,7 +12,7 @@ import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
 import { IoAlertCircle } from "react-icons/all"
 
-export interface StakeInfoProps extends StackProps {
+export interface AppAuthorizationInfoProps extends StackProps {
   label: string
   percentageAuthorized: number
   aprPercentage: number
@@ -20,7 +20,7 @@ export interface StakeInfoProps extends StackProps {
   isAuthorizationRequired?: boolean
 }
 
-export const StakeInfo: FC<StakeInfoProps> = ({
+export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   label,
   percentageAuthorized,
   aprPercentage,
