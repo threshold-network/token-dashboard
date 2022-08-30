@@ -1,22 +1,19 @@
 import { FC } from "react"
 import { Flex } from "@chakra-ui/react"
-import { Badge } from "@threshold-network/components"
+import { Badge, FilterTabs } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { StakeData } from "../../../../types"
-import { Switcher } from "../Switcher"
 
 export interface StakeCardHeaderProps {
   isInactiveStake: boolean
   stake: StakeData | null
-  onSwitcherClick: () => void
-  isStakeAction: boolean
+  onTabClick: () => void
 }
 
 const StakeCardHeader: FC<StakeCardHeaderProps> = ({
   isInactiveStake,
   stake,
-  onSwitcherClick,
-  isStakeAction,
+  onTabClick,
 }) => {
   return (
     <Flex as="header" alignItems="center">
@@ -29,7 +26,16 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
         {isInactiveStake ? "inactive" : "active"}
       </Badge>
       <StakeCardHeaderTitle stake={stake} />
-      <Switcher onClick={onSwitcherClick} isStakeAction={isStakeAction} />
+      <FilterTabs
+        tabs={[
+          { title: "Stake", tabId: "1" },
+          { title: "Unstake", tabId: "2" },
+        ]}
+        selectedTabId="1"
+        size="xs"
+        variant="inline"
+        onTabClick={onTabClick}
+      />
     </Flex>
   )
 }

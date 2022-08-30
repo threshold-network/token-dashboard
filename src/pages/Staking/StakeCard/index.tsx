@@ -35,7 +35,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 
-  const onSwitcherClick = useCallback(() => {
+  const onTabClick = useCallback(() => {
     formRef.current?.resetForm()
     setFlag.toggle()
   }, [setFlag.toggle])
@@ -79,8 +79,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       <StakeCardHeader
         isInactiveStake={isInactiveStake}
         stake={stake}
-        onSwitcherClick={onSwitcherClick}
-        isStakeAction={isStakeAction}
+        onTabClick={onTabClick}
       />
       <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
