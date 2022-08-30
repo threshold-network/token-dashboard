@@ -32,5 +32,6 @@ Network.route = {
   path: "network",
   index: true,
   title: "Network",
+  isPageEnabled: true,
 }
 export default Network
