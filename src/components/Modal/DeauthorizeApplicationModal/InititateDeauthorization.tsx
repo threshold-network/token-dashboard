@@ -54,7 +54,7 @@ const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
         </InfoBox>
         <StakingApplicationIcon
           stakingApplication={chosenStakingApplication}
-          increaseOrDecrease="decrease"
+          operation="decrease"
           h="88px"
           mx="auto"
           my={8}

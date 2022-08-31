@@ -16,12 +16,12 @@ export enum StakingApplication {
 const StakingApplicationIcon: FC<
   {
     stakingApplication: StakingApplication
-    increaseOrDecrease: "increase" | "decrease"
+    operation: "increase" | "decrease"
   } & ImageProps
-> = ({ stakingApplication, increaseOrDecrease, ...props }) => {
+> = ({ stakingApplication, operation, ...props }) => {
   const imgSrc = useMemo(() => {
     if (stakingApplication === StakingApplication.TBTC) {
-      if (increaseOrDecrease === "increase") {
+      if (operation === "increase") {
         return tbtcIncrease
       } else {
         return tbtcDecrease
@@ -29,13 +29,13 @@ const StakingApplicationIcon: FC<
     }
 
     if (stakingApplication === StakingApplication.RANDOM_BEACON) {
-      if (increaseOrDecrease === "increase") {
+      if (operation === "increase") {
         return randomBeaconIncrease
       } else {
         return randomBeaconDecrease
       }
     }
-  }, [stakingApplication, increaseOrDecrease])
+  }, [stakingApplication, operation])
 
   return <Image src={imgSrc} {...props} />
 }
