@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   Stack,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, StakeData } from "../../../types"
@@ -25,15 +26,15 @@ import InfoBox from "../../InfoBox"
 import StakingApplicationOperationIcon, {
   StakingApplication,
 } from "../../StakingApplicationOperationIcon"
-import numeral from "numeral"
 import shortenAddress from "../../../utils/shortenAddress"
+import TokenBalance from "../../TokenBalance"
 
 const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
   closeModal,
   stake,
 }) => {
   const chosenStakingApplication = StakingApplication.TBTC
-  const decreaseAmount = 500000
+  const decreaseAmount = 100000000000000000000
 
   const handleInitiateClick = () => {
     console.log("send deauth tx")
@@ -63,9 +64,16 @@ const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
         <Stack mb={8}>
           <Flex justifyContent="space-between">
             <BodySm color="gray.500">Decrease amount</BodySm>
-            <BodySm color="gray.700">
-              {numeral(decreaseAmount).format("0,0")} T
-            </BodySm>
+            <TokenBalance
+              tokenAmount={decreaseAmount.toString()}
+              tokenSymbol="T"
+              withSymbol
+              as="p"
+              fontSize="sm"
+              fontWeight="400"
+              lineHeight="20px"
+              color={useColorModeValue("gray.700", "gray.300")}
+            />
           </Flex>
           <Flex justifyContent="space-between">
             <BodySm color="gray.500">Gas Cost</BodySm>
