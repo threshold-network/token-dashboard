@@ -26,16 +26,16 @@ import { useWeb3React } from "@web3-react/core"
 import { isAddress } from "web3-utils"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
-  const { stakingProviderAddress: addressFromUrl } = useParams()
+  const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isAddress(addressFromUrl!)) navigate(`/staking`)
-  }, [addressFromUrl, navigate])
+    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+  }, [stakingProviderAddress, navigate])
 
   const stake = useSelector((state: RootState) =>
-    selectStakeByStakingProvider(state, addressFromUrl!)
+    selectStakeByStakingProvider(state, stakingProviderAddress!)
   ) as StakeData
 
   const isLoggedInAsAuthorizer =
