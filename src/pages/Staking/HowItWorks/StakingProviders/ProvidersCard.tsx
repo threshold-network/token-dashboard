@@ -1,8 +1,8 @@
 import { FC, ComponentProps } from "react"
 import { List } from "@chakra-ui/react"
 import { LabelSm, BoxLabel, Card } from "@threshold-network/components"
-import LinkDetailsListItem from "../../../components/LinkDetailsListItem"
-import { ExternalHref } from "../../../enums"
+import LinkDetailsListItem from "../../../../components/LinkDetailsListItem"
+import { ExternalHref } from "../../../../enums"
 
 export const ProvidersCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (

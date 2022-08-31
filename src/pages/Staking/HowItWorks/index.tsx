@@ -1,53 +1,31 @@
-import { Grid } from "@chakra-ui/react"
-import { AboutAddressesCard } from "./AboutAddressesCard"
-import { LegacyStakesCard } from "./LegacyStakesCard"
-import { NewTStakesCard } from "./NewTStakesCard"
-import { ProvidersCard } from "./ProvidersCard"
-import { StakingActionsCard } from "./StakingActionsCard"
-import { ThresholdStakesCard } from "./ThresholdStakesCard"
+import { useState } from "react"
+import { Box, FilterTabs } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
-import { useTStakingContract } from "../../../web3/hooks"
+import StakingOverview from "./StakingOverview"
+import StakingApplications from "./StakingApplications"
+import StakingProviders from "./StakingProviders"
+
+type StakeHowItWorksTab = "overview" | "applications" | "providers"
 
 const HowItWorksPage: PageComponent = (props) => {
-  const tStakingContract = useTStakingContract()
+  const [tab, setTab] = useState<StakeHowItWorksTab>("overview")
 
   return (
-    <Grid
-      gridAutoColumns="minmax(0, 1fr)"
-      gridAutoFlow="column"
-      gridTemplate={{
-        base: `
-          "t-stakes"
-          "legacy-stakes"
-          "new-t-stakes"
-          "staking-actions"
-          "addresses"
-          "providers"
-        `,
-        xl: `
-            "t-stakes        new-t-stakes"
-            "legacy-stakes   new-t-stakes"
-            "legacy-stakes   staking-actions"
-            "addresses       staking-actions"
-            "addresses       staking-actions"
-            "addresses       providers"
-          `,
-      }}
-      gridGap="4"
-    >
-      <ThresholdStakesCard
-        gridArea="t-stakes"
-        tStakingContractAddress={tStakingContract?.address!}
+    <Box>
+      <FilterTabs
+        tabs={[
+          { title: "Staking Overview", tabId: "overview" },
+          { title: "Staking Applications", tabId: "applications" },
+          { title: "Staking Providers", tabId: "providers" },
+        ]}
+        selectedTabId={tab}
+        mb="5"
+        onTabClick={(tab) => setTab(tab as StakeHowItWorksTab)}
       />
-      <NewTStakesCard gridArea="new-t-stakes" />
-      <LegacyStakesCard
-        gridArea="legacy-stakes"
-        tStakingContractAddress={tStakingContract?.address!}
-      />
-      <StakingActionsCard gridArea="staking-actions" />
-      <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
-      <ProvidersCard gridArea="providers" />
-    </Grid>
+      {tab === "overview" && <StakingOverview />}
+      {tab === "applications" && <StakingApplications />}
+      {tab === "providers" && <StakingProviders />}
+    </Box>
   )
 }
 

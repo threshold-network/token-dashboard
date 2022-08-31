@@ -3,10 +3,10 @@ import { Box } from "@chakra-ui/react"
 import {
   PreSetupSteps,
   LegacyStakesDepositSteps,
-} from "../../../components/StakingChecklist"
+} from "../../../../components/StakingChecklist"
 import { BodyMd, LabelSm, Card } from "@threshold-network/components"
-import ViewInBlockExplorer from "../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 
 export const LegacyStakesCard: FC<
   ComponentProps<typeof Card> & { tStakingContractAddress: string }
