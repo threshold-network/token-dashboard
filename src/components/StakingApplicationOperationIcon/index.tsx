@@ -13,7 +13,7 @@ export enum StakingApplication {
   PRE = "PRE",
 }
 
-const StakingApplicationIcon: FC<
+const StakingApplicationOperationIcon: FC<
   {
     stakingApplication: StakingApplication
     operation: "increase" | "decrease"
@@ -40,4 +40,4 @@ const StakingApplicationIcon: FC<
   return <Image src={imgSrc} {...props} />
 }
 
-export default StakingApplicationIcon
+export default StakingApplicationOperationIcon

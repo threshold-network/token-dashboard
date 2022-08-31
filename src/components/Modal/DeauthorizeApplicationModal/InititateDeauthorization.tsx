@@ -22,9 +22,9 @@ import {
   LineDivider,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import StakingApplicationIcon, {
+import StakingApplicationOperationIcon, {
   StakingApplication,
-} from "../../StakingApplicationIcon"
+} from "../../StakingApplicationOperationIcon"
 import numeral from "numeral"
 import shortenAddress from "../../../utils/shortenAddress"
 
@@ -52,7 +52,7 @@ const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
             Initiation and confirmation of deauthorization is a two step action.
           </BodyLg>
         </InfoBox>
-        <StakingApplicationIcon
+        <StakingApplicationOperationIcon
           stakingApplication={chosenStakingApplication}
           operation="decrease"
           h="88px"
