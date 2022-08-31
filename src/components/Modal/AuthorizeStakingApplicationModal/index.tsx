@@ -6,7 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@chakra-ui/react"
-import { BodySm, H5 } from "@threshold-network/components"
+import { BodyLg, H5 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
@@ -28,10 +28,10 @@ const AuthorizeStakingApplicationModal: FC<
           <H5 mb={4}>
             Please authorize Threshold apps to use your stake to earn rewards
           </H5>
-          <BodySm>
+          <BodyLg>
             You can authorize 100% of your stake to all the apps and change this
             at any time.
-          </BodySm>
+          </BodyLg>
         </InfoBox>
       </ModalBody>
       <ModalFooter>

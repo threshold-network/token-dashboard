@@ -3,30 +3,40 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  BodySm,
+  BoxLabel,
   Button,
-  Divider,
+  FlowStep,
+  FlowStepStatus,
+  H5,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+} from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
-import { PreSetupSteps } from "../../StakingChecklist"
 import StakingStats from "../../StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import InfoBox from "../../InfoBox"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
 
 const StakingChecklistModal: FC<
   BaseModalProps & { transactionHash: string }
 > = ({ closeModal, transactionHash }) => {
   const { stakeAmount, stakingProvider, beneficiary, authorizer } =
     useStakingState()
+
+  const { openModal } = useModal()
+
+  const handleSubmit = () => {
+    openModal(ModalType.AuthorizeStakingApplicationModal)
+  }
 
   return (
     <>
@@ -48,25 +58,53 @@ const StakingChecklistModal: FC<
           />
           <InfoBox variant="modal">
             <H5 color={useColorModeValue("gray.800", "white")}>
-              Go through Step 2 to make sure you get Rewards
+              Next, go to Step 2 in order to authorize Threshold apps to earn
+              rewards.
             </H5>
           </InfoBox>
-          <PreSetupSteps />
-          {transactionHash && (
-            <BodySm mt="2.5rem !important" align="center">
-              <ViewInBlockExplorer
-                text="View"
-                id={transactionHash}
-                type={ExplorerDataType.TRANSACTION}
-              />{" "}
-              transaction on Etherscan
-            </BodySm>
-          )}
-          <Divider />
+          <Stack spacing={6}>
+            <BoxLabel>Staking Timeline</BoxLabel>
+            {[
+              {
+                preTitle: "Step 1",
+                title: "Stake Tokens",
+                status: FlowStepStatus.complete,
+              },
+              {
+                preTitle: "Step 2",
+                title: "Authorize Apps",
+                status: FlowStepStatus.active,
+                children:
+                  "You can authorize 100% of your stake for each app. This amount can",
+              },
+              {
+                preTitle: "Step 3",
+                title: "Set up Node",
+                status: FlowStepStatus.inactive,
+                children:
+                  "Set up and run a node for any of the applications authorized.",
+              },
+            ].map((step) => (
+              <FlowStep size="sm" {...step} />
+            ))}
+          </Stack>
         </Stack>
+        {transactionHash && (
+          <BodySm mt="2.5rem !important" align="center">
+            <ViewInBlockExplorer
+              text="View"
+              id={transactionHash}
+              type={ExplorerDataType.TRANSACTION}
+            />{" "}
+            transaction on Etherscan
+          </BodySm>
+        )}
       </ModalBody>
       <ModalFooter>
-        <Button onClick={closeModal}>Dismiss</Button>
+        <Button mr={2} variant="outline" onClick={closeModal}>
+          Dismiss
+        </Button>
+        <Button onClick={handleSubmit}>AuthorizeApps</Button>
       </ModalFooter>
     </>
   )
