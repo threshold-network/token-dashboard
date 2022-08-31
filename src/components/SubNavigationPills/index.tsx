@@ -15,6 +15,7 @@ interface Props {
 }
 
 const SubNavigationPills: FC<Props> = ({ links }) => {
+  const linksWithTitle = links.filter((link) => !!link.title)
   return (
     <>
       <Box
@@ -32,7 +33,7 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
           height="28px"
           as="ul"
         >
-          {links.map(renderPill)}
+          {linksWithTitle.map(renderPill)}
         </HStack>
       </Box>
     </>
@@ -40,8 +41,11 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
 }
 
 const NavPill: FC<RouteProps> = ({ path, title }) => {
+  console.log("PATH", path)
+  path = ":stakingProvider/*"
   const resolved = useResolvedPath(path)
-  const isActive = useMatch({ path: resolved.pathname, end: true })
+  console.log("resolved", resolved)
+  const isActive = useMatch(`staking/:stakingProvider/*`)
   const activeColor = useColorModeValue("brand.500", "white")
 
   return (

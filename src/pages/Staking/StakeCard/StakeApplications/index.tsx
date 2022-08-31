@@ -69,7 +69,7 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
         mt="5"
         width="100%"
         as={RouterLink}
-        to={`/staking/authorize/${stake.stakingProvider}`}
+        to={`/staking/${stake.stakingProvider}/authorize`}
       >
         Configure Apps
       </Button>

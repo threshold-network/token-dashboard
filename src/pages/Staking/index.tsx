@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { SimpleGrid, Stack } from "@chakra-ui/react"
+import { Box, SimpleGrid, Stack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -15,6 +15,8 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
+import { H1 } from "@threshold-network/components"
+import { Outlet, useParams } from "react-router-dom"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -51,6 +53,50 @@ const StakingPage: PageComponent = (props) => {
   )
 }
 
+const StakingProviderDetails: PageComponent = (props) => {
+  return (
+    <>
+      <Box as="header">Header here with links: Overview/Authorization</Box>
+      <Outlet />
+    </>
+  )
+}
+
+const Overview: PageComponent = () => {
+  const { stakingProvider } = useParams()
+
+  return <H1>Staking provider {stakingProvider} overview</H1>
+}
+
+const Auth: PageComponent = () => {
+  const { stakingProvider } = useParams()
+
+  return <H1>Staking provider {stakingProvider} auth</H1>
+}
+
+const MainStakingPage: PageComponent = (props) => {
+  return <PageLayout {...props} />
+}
+
+StakingProviderDetails.route = {
+  path: ":stakingProvider",
+  index: false,
+  pages: [Overview, Auth],
+  isPageEnabled: true,
+}
+
+Overview.route = {
+  path: "overview",
+  index: true,
+  isPageEnabled: true,
+}
+
+Auth.route = {
+  path: "auth",
+  index: false,
+  isPageEnabled: true,
+}
+
 StakingPage.route = {
   path: "",
   index: false,
@@ -58,14 +104,10 @@ StakingPage.route = {
   isPageEnabled: true,
 }
 
-const MainStakingPage: PageComponent = (props) => {
-  return <PageLayout {...props} />
-}
-
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
+  pages: [StakingPage, HowItWorksPage, StakingProviderDetails],
   title: "Staking",
   isPageEnabled: true,
 }
