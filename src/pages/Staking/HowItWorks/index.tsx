@@ -1,9 +1,11 @@
-import { useState } from "react"
+import React, { useState } from "react"
 import { Box, FilterTabs } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import StakingOverview from "./StakingOverview"
 import StakingApplications from "./StakingApplications"
 import StakingProviders from "./StakingProviders"
+import AnnouncementBanner from "../../../components/AnnouncementBanner"
+import stakingHowItWorksIllustration from "../../../static/images/StakingHowItWorksIllustration.png"
 
 type StakeHowItWorksTab = "overview" | "applications" | "providers"
 
@@ -12,6 +14,15 @@ const HowItWorksPage: PageComponent = (props) => {
 
   return (
     <Box>
+      <AnnouncementBanner
+        imgSrc={stakingHowItWorksIllustration}
+        title="Find more information about staking below, then go to the staking page."
+        href="/staking"
+        buttonText="Start Staking"
+        size="lg"
+        variant="secondary"
+        mb={8}
+      />
       <FilterTabs
         tabs={[
           { title: "Staking Overview", tabId: "overview" },

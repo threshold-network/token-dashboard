@@ -6,6 +6,7 @@ import {
   Stack,
   useDisclosure,
   Image,
+  BoxProps,
 } from "@chakra-ui/react"
 import { Card, H4 } from "@threshold-network/components"
 
@@ -14,13 +15,18 @@ interface AnnouncementBannerProps {
   title: string
   buttonText: string
   href: string
+  variant?: "primary" | "secondary"
+  size?: "sm" | "lg"
 }
 
-const AnnouncementBanner: FC<AnnouncementBannerProps> = ({
+const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
   title,
   imgSrc,
   buttonText,
   href,
+  variant = "primary",
+  size = "sm",
+  ...props
 }) => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
@@ -31,6 +37,8 @@ const AnnouncementBanner: FC<AnnouncementBannerProps> = ({
       position="relative"
       px="16"
       mb={4}
+      bg={variant === "secondary" ? "brand.50" : "white"}
+      {...props}
     >
       <CloseButton
         position="absolute"
@@ -44,7 +52,7 @@ const AnnouncementBanner: FC<AnnouncementBannerProps> = ({
         direction={{ base: "column", xl: "row" }}
         bg="inherit"
       >
-        <Image maxW="146px" src={imgSrc} />
+        <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
         <H4 textAlign={{ base: "center", xl: "unset" }} maxW="460px">
           {title}
         </H4>
