@@ -21,7 +21,7 @@ export interface UseStakingState {
     beneficiary: string
     authorizer: string
     updateState: (key: StakingStateKey, value: any) => UpdateStakingState
-    minStakeAmount: string
+    minStakeAmount: string | undefined
   }
 }
 
