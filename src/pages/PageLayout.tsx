@@ -5,13 +5,14 @@ import SubNavigationPills from "../components/SubNavigationPills"
 import { PageComponent } from "../types"
 import useDocumentTitle from "../hooks/useDocumentTitle"
 
-const PageLayout: FC<{ pages?: PageComponent[]; title?: string }> = ({
-  pages,
-  title,
-  children,
-}) => {
+const PageLayout: FC<{
+  pages?: PageComponent[]
+  title?: string
+}> = ({ pages, title, children }) => {
   useDocumentTitle(`Threshold - ${title}`)
-  const links = pages ? pages.map((_) => _.route) : []
+  const links = pages
+    ? pages.filter((_) => !_.route.hideFromMenu).map((_) => _.route)
+    : []
 
   return (
     <>
