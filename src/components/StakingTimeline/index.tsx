@@ -165,7 +165,7 @@ const StakingTimeline: FC = () => {
         preTitle="Step 3"
         status={FlowStepStatus.inactive}
       >
-        Set up and run a node for any of the applications authorized.
+        Set up and run a node for any of the authorized applications.
       </FlowStep>
     </Stack>
   )
