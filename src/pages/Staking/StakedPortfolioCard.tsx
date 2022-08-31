@@ -63,7 +63,7 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
       <TokenAmountForm
         onSubmitForm={openStakingModal}
         label="Stake Amount"
-        submitButtonText="Stake"
+        submitButtonText="New Stake"
         maxTokenAmount={tBalance}
         placeholder={placeholder}
         minTokenAmount={minStakeAmount}

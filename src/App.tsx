@@ -150,10 +150,7 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map((page: PageComponent) => {
-          if (!page.route.isPageEnabled) return null
-          return renderPageComponent(page)
-        })}
+        {pages.map(renderPageComponent)}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
@@ -161,6 +158,8 @@ const Routing = () => {
 }
 
 const renderPageComponent = (PageComponent: PageComponent) => {
+  if (!PageComponent.route.isPageEnabled) return null
+
   return (
     <Fragment key={PageComponent.route.path}>
       {PageComponent.route.index && (
