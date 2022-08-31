@@ -19,7 +19,7 @@ interface StakingState {
   stakeAmount: string
   stakes: StakeData[]
   stakedBalance: BigNumberish
-  minStakeAmount: string
+  minStakeAmount: string | undefined
 }
 
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
@@ -39,7 +39,7 @@ export const stakingSlice = createSlice({
     stakeAmount: "0",
     stakes: [],
     stakedBalance: 0,
-    minStakeAmount: "0",
+    minStakeAmount: undefined,
   } as StakingState,
   reducers: {
     updateState: (

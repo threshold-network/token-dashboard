@@ -1,7 +1,12 @@
 import { FC, useEffect, useState } from "react"
-import { Box, H4, LabelSm, Skeleton } from "@threshold-network/components"
+import {
+  Box,
+  useCountdown,
+  H4,
+  LabelSm,
+  Skeleton,
+} from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { useCountdown } from "../../../../hooks/useCountdown"
 
 export const SweepTimer: FC = () => {
   const { nextBridgeCrossingInUnix, updateState } = useTbtcState()
@@ -13,6 +18,7 @@ export const SweepTimer: FC = () => {
 
   const { days, hours, minutes, seconds } = useCountdown(
     nextBridgeCrossingInUnix ? nextBridgeCrossingInUnix : 0,
+    false,
     onComplete
   )
 
