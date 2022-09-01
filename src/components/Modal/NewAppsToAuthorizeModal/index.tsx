@@ -1,5 +1,5 @@
-import { FC, useCallback, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { FC, useState } from "react"
+import { Link as RouterLink } from "react-router-dom"
 import InfoBox from "../../InfoBox"
 import {
   BodyLg,
@@ -20,20 +20,13 @@ import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeType } from "../../../utils/getStakeType"
 import { isSameETHAddress } from "../../../web3/utils"
+import { Alert, AlertDescription, AlertIcon, Link } from "@chakra-ui/react"
+import { isAddress } from "web3-utils"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
 
   const [selectedAuthorizerAddress, setSelectedAuthorizerAddress] = useState("")
-
-  const navigate = useNavigate()
-
-  const routeToStake = useCallback(() => {
-    if (selectedAuthorizerAddress) {
-      navigate(`/authorize/${selectedAuthorizerAddress}`)
-      closeModal()
-    }
-  }, [selectedAuthorizerAddress, closeModal, navigate])
 
   return (
     <>
@@ -50,39 +43,65 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
             any time.
           </BodyLg>
         </InfoBox>
-        <BodyLg my={6}>Choose a stake to continue:</BodyLg>
-        <RadioGroup
-          onChange={setSelectedAuthorizerAddress}
-          value={selectedAuthorizerAddress}
-        >
-          <Stack>
-            {stakes.map((stake, i) => (
-              <Card
-                key={stake.stakingProvider}
-                boxShadow="none"
-                borderColor={
-                  isSameETHAddress(stake.authorizer, selectedAuthorizerAddress)
-                    ? "brand.500"
-                    : undefined
-                }
+        {stakes.length > 0 ? (
+          <>
+            <BodyLg my={6}>Choose a stake to continue:</BodyLg>
+            <RadioGroup
+              onChange={setSelectedAuthorizerAddress}
+              value={selectedAuthorizerAddress}
+            >
+              <Stack>
+                {stakes.map((stake, i) => (
+                  <Card
+                    key={stake.stakingProvider}
+                    boxShadow="none"
+                    borderColor={
+                      isAddress(selectedAuthorizerAddress) &&
+                      isSameETHAddress(
+                        stake.authorizer,
+                        selectedAuthorizerAddress
+                      )
+                        ? "brand.500"
+                        : undefined
+                    }
+                  >
+                    <Radio value={stake.authorizer} size="lg">
+                      <LabelMd ml={4}>
+                        STAKE {i + 1} {getStakeType(stake)}
+                      </LabelMd>
+                    </Radio>
+                  </Card>
+                ))}
+              </Stack>
+            </RadioGroup>
+          </>
+        ) : (
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertDescription>
+              You have no stakes. You can start staking on the{" "}
+              <Link
+                color="brand.500"
+                as={RouterLink}
+                to="/staking"
+                onClick={closeModal}
               >
-                <Radio value={stake.authorizer} size="lg">
-                  <LabelMd ml={4}>
-                    STAKE {i + 1} {getStakeType(stake)}
-                  </LabelMd>
-                </Radio>
-              </Card>
-            ))}
-          </Stack>
-        </RadioGroup>
+                staking page
+              </Link>
+              .
+            </AlertDescription>
+          </Alert>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
         <Button
-          onClick={routeToStake}
           mr={2}
+          as={RouterLink}
+          to={`/staking/authorize/${selectedAuthorizerAddress}`}
+          onClick={closeModal}
           disabled={!selectedAuthorizerAddress}
         >
           Continue
