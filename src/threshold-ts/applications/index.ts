@@ -21,7 +21,7 @@ export interface AuthorizationParameters {
    * Authorization decrease change period in seconds. It is the time, before
    * authorization decrease delay end, during which the pending authorization
    * decrease request can be overwritten. If set to 0, pending authorization
-   * decrease request can not be overwritten until the endire
+   * decrease request can not be overwritten until the entire
    * `authorizationDecreaseDelay` ends. If set to value equal
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
@@ -44,7 +44,7 @@ export interface StakingProviderAppInfo {
 }
 
 /**
- * Represents an applciation.
+ * Represents an application.
  */
 export interface IApplication {
   /**
@@ -112,7 +112,7 @@ export interface IApplication {
 
   /**
    * Returns the application data for a given staking provider. This function
-   * uses the multicall interface to aggragate contract calls into a single one.
+   * uses the multicall interface to aggregate contract calls into a single one.
    * @returns Currently authorized amount, amount being deauthorized for the
    * staking provider and the time until the deauthorization can be completed.
    * @see {@link StakingProviderAppInfo}
