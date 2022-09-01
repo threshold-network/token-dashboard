@@ -10,17 +10,11 @@ import { FC } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
-
-export interface AppAuthDataProps {
-  label: string
-  isAuthorized: boolean
-  percentage: number
-  isAuthRequired: boolean
-}
+import { TmpAppAuthData } from "../../tmp"
 
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
-  appAuthData: AppAuthDataProps
-  onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
+  appAuthData: TmpAppAuthData
+  onCheckboxClick: (app: TmpAppAuthData, isChecked: boolean) => void
   isSelected: boolean
   maxAuthAmount: string
   minAuthAmount: string

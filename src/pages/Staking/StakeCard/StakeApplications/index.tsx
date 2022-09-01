@@ -11,31 +11,10 @@ import {
 import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
+import { tmpAppAuthData } from "../../tmp"
 
 const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   const areNodesMissing = true
-
-  // TODO: This will probably be fetched from contracts
-  const appsAuthData = {
-    tbtc: {
-      label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
-      isAuthRequired: true,
-    },
-    randomBeacon: {
-      label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: true,
-    },
-    pre: {
-      label: "PRE",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: false,
-    },
-  }
 
   return (
     <Box>
@@ -58,11 +37,11 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       )}
       <AuthorizeApplicationRow
         mb={"3"}
-        appAuthData={appsAuthData.tbtc}
+        appAuthData={tmpAppAuthData.tbtc}
         stakingProvider={stake.stakingProvider}
       />
       <AuthorizeApplicationRow
-        appAuthData={appsAuthData.randomBeacon}
+        appAuthData={tmpAppAuthData.randomBeacon}
         stakingProvider={stake.stakingProvider}
       />
       <Button

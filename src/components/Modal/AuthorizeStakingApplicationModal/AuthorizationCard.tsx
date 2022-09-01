@@ -1,54 +1,31 @@
 import { FC } from "react"
 import {
-  Card,
-  FilterTabs,
   BoxProps,
-  Grid,
+  Card,
   Checkbox,
+  Grid,
   GridItem,
 } from "@threshold-network/components"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { TokenAmountForm } from "../../Forms"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
-
-export interface AppAuthDataProps {
-  label: string
-  isAuthorized: boolean
-  percentage: number
-  isAuthRequired: boolean
-}
+import AppAuthorizationInput from "./AppAuthorizationInput"
+import { TmpAppAuthData } from "../../../pages/Staking/tmp"
+import app from "../../../App"
 
 export interface AuthorizationCardProps extends BoxProps {
-  appAuthData: AppAuthDataProps
-  onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
+  appAuthData: TmpAppAuthData
+  onCheckboxClick: (app: TmpAppAuthData, isChecked: boolean) => void
   isSelected: boolean
-  maxAuthAmount: string
-  minAuthAmount: string
+  formikProps: any
 }
 
 export const AuthorizationCard: FC<AuthorizationCardProps> = ({
   appAuthData,
   onCheckboxClick,
   isSelected,
-  maxAuthAmount,
-  minAuthAmount,
+  formikProps,
   ...restProps
 }) => {
-  const collapsed = !appAuthData.isAuthRequired
-
-  if (collapsed) {
-    return (
-      <Card {...restProps} boxShadow="none">
-        <AppAuthorizationInfo
-          label={appAuthData.label}
-          percentageAuthorized={100}
-          aprPercentage={10}
-          slashingPercentage={1}
-        />
-      </Card>
-    )
-  }
-
+  console.log("received app aith data ", appAuthData)
   return (
     <Card
       {...restProps}
@@ -95,32 +72,10 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
           aprPercentage={10}
           slashingPercentage={1}
           isAuthorizationRequired={true}
-        />
-        <FilterTabs
-          gridArea="filter-tabs"
-          variant="inline"
-          alignItems="center"
-          gap={0}
-          size="sm"
-          tabs={[
-            { title: "Increase", tabId: "1" },
-            { title: "Decrease", tabId: "2" },
-          ]}
+          separatePercentAuthorized
         />
         <GridItem gridArea="token-amount-form" mt={5}>
-          <TokenAmountForm
-            onSubmitForm={() => {
-              console.log("form submitted")
-            }}
-            label="Amount"
-            submitButtonText={`Authorize ${appAuthData.label}`}
-            maxTokenAmount={maxAuthAmount}
-            placeholder={"Enter amount"}
-            minTokenAmount={minAuthAmount}
-            helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
-              appAuthData.label
-            }`}
-          />
+          <AppAuthorizationInput appAuthData={appAuthData} {...formikProps} />
         </GridItem>
       </Grid>
     </Card>

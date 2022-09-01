@@ -8,11 +8,11 @@ import {
   StackProps,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import { Link as RouterLink } from "react-router-dom"
+import { TmpAppAuthData } from "../../tmp"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
-  appAuthData: AppAuthDataProps
+  appAuthData: TmpAppAuthData
   stakingProvider: string
 }
 

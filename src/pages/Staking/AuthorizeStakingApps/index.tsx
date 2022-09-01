@@ -16,14 +16,13 @@ import { RootState } from "../../../store"
 import { PageComponent, StakeData } from "../../../types"
 import { isSameETHAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
-import AuthorizeApplicationsCardCheckbox, {
-  AppAuthDataProps,
-} from "./AuthorizeApplicationsCardCheckbox"
+import AuthorizeApplicationsCardCheckbox from "./AuthorizeApplicationsCardCheckbox"
 import { useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
 import { isAddress } from "web3-utils"
+import { TmpAppAuthData, tmpAppAuthData } from "../tmp"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
@@ -48,35 +47,13 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
-  // TODO: This will probably be fetched from contracts
-  const appsAuthData = {
-    tbtc: {
-      label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
-      isAuthRequired: true,
-    },
-    randomBeacon: {
-      label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: true,
-    },
-    pre: {
-      label: "PRE",
-      isAuthorized: false,
-      percentage: 0,
-      isAuthRequired: false,
-    },
-  }
-
   const onAuthorizeApps = () => {
     console.log("Authorize Apps!!", selectedApps)
   }
 
-  const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
+  const [selectedApps, setSelectedApps] = useState<TmpAppAuthData[]>([])
 
-  const onCheckboxClick = (app: AppAuthDataProps, isChecked: boolean) => {
+  const onCheckboxClick = (app: TmpAppAuthData, isChecked: boolean) => {
     if (isChecked) {
       setSelectedApps([...selectedApps, app])
     } else {
@@ -120,7 +97,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         </AlertBox>
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={appsAuthData.tbtc}
+          appAuthData={tmpAppAuthData.tbtc}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
@@ -128,7 +105,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={appsAuthData.randomBeacon}
+          appAuthData={tmpAppAuthData.randomBeacon}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps
             .map((app) => app.label)
@@ -138,7 +115,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={appsAuthData.pre}
+          appAuthData={tmpAppAuthData.pre}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}

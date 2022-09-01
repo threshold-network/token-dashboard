@@ -1,6 +1,7 @@
-import { FC, useState, useMemo } from "react"
+import { FC, useState } from "react"
 import {
   Button,
+  Stack,
   HStack,
   ModalBody,
   ModalCloseButton,
@@ -9,20 +10,30 @@ import {
   BodyLg,
   H5,
   BodyMd,
+  Card,
+  LabelMd,
+  Badge,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import withBaseModal from "../withBaseModal"
 import AuthorizationCard from "./AuthorizationCard"
-import TokenBalance from "../../TokenBalance"
+import { useStakingState } from "../../../hooks/useStakingState"
+import AppAuthorizationForm from "./AppAuthorizationForm"
 
 const AuthorizeStakingApplicationModal: FC<
   BaseModalProps & { stake: StakeData }
 > = ({ stake, closeModal }) => {
-  const handleSubmit = () => {
-    console.log("next")
+  const handleSubmit = (vals: any) => {
+    console.log("next", vals)
   }
+
+  const [amountTbtcToAuthorize, setAmountTbtcToAuthorize] = useState(
+    stake?.totalInTStake
+  )
+  const [amountRandomBeaconToAuthorize, setAmountRandomBeaconToAuthorize] =
+    useState(stake?.totalInTStake)
 
   return (
     <>
@@ -39,46 +50,17 @@ const AuthorizeStakingApplicationModal: FC<
           </BodyLg>
         </InfoBox>
 
-        <HStack>
+        <Stack spacing={6}>
           <BodyMd>Total Staked Balance</BodyMd>
-          <TokenBalance
-            tokenAmount={stake?.totalInTStake}
-            tokenSymbol="T"
-            withSymbol
-          />
-        </HStack>
+          {/*<TokenBalance*/}
+          {/*  tokenAmount={stake?.totalInTStake}*/}
+          {/*  tokenSymbol="T"*/}
+          {/*  withSymbol*/}
+          {/*/>*/}
 
-        <AuthorizationCard
-          appAuthData={{
-            label: "idk",
-            isAuthorized: false,
-            percentage: 100,
-            isAuthRequired: true,
-          }}
-          isSelected
-          onCheckboxClick={() => {}}
-          maxAuthAmount={stake?.totalInTStake}
-          minAuthAmount={"1"}
-        />
-        <AuthorizationCard
-          appAuthData={{
-            label: "idk",
-            isAuthorized: false,
-            percentage: 100,
-            isAuthRequired: true,
-          }}
-          isSelected
-          onCheckboxClick={() => {}}
-          maxAuthAmount={stake?.totalInTStake}
-          minAuthAmount={"1"}
-        />
+          <AppAuthorizationForm />
+        </Stack>
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
-          Cancel
-        </Button>
-        <Button onClick={handleSubmit}>Authorize Selected Apps</Button>
-      </ModalFooter>
     </>
   )
 }
