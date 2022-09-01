@@ -1,11 +1,12 @@
 import { createContext, FC, useContext, useMemo } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { JsonRpcProvider, Provider } from "@ethersproject/providers"
+import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { EnvVariable } from "../enums"
 import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
 
-const getThresholdLib = (providerOrSigner?: Provider) => {
+const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
   return new Threshold({
     ethereum: {
       chainId: supportedChainId,
