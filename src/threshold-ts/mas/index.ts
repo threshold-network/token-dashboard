@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers"
 import RandomBeacon from "@keep-network/random-beacon/artifacts/RandomBeacon.json"
 import WalletRegistry from "@keep-network/ecdsa/artifacts/WalletRegistry.json"
 import {
@@ -40,10 +39,7 @@ export class MultiAppStaking {
     })
   }
 
-  async getSupportedAppsAuthParameters(): Promise<{
-    tbtc: BigNumber
-    randomBeacon: BigNumber
-  }> {
+  async getSupportedAppsAuthParameters(): Promise<SupportedAppAuthorizationParameters> {
     const calls: ContractCall[] = [
       {
         interface: this.ecdsa.contract.interface,
