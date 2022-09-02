@@ -5,7 +5,6 @@ import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
 import StakeCard from "./StakeCard"
 import RewardsCard from "./RewardsCard"
-import { StakingBonusBanner } from "../../components/StakingBonus"
 import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
@@ -15,6 +14,7 @@ import {
   selectTotalBonusBalance,
   selectTotalRewardsBalance,
 } from "../../store/rewards"
+import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -28,7 +28,6 @@ const StakingPage: PageComponent = (props) => {
 
   return (
     <PageLayout {...props}>
-      <StakingBonusBanner />
       <SimpleGrid
         columns={[1, null, null, 2]}
         spacing="4"
@@ -56,6 +55,7 @@ StakingPage.route = {
   path: "",
   index: false,
   title: "Staking",
+  isPageEnabled: true,
 }
 
 const MainStakingPage: PageComponent = (props) => {
@@ -65,8 +65,9 @@ const MainStakingPage: PageComponent = (props) => {
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage],
+  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
   title: "Staking",
+  isPageEnabled: true,
 }
 
 export default MainStakingPage

@@ -58,6 +58,8 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
   const keepAssetPool = useKeepAssetPoolContract()
   const tTokenStaking = useTStakingContract()
   const keepTokenStaking = useKeepTokenStakingContract()
+  // TODO: fetch tbtcv2 data
+  // const tbtcv2 = useToken(Token.TBTCV2)
 
   const fetchOnChainData = useMulticall([
     {
