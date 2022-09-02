@@ -21,6 +21,7 @@ import withBaseModal from "../withBaseModal"
 import AuthorizationCard from "./AuthorizationCard"
 import { useStakingState } from "../../../hooks/useStakingState"
 import AppAuthorizationForm from "./AppAuthorizationForm"
+import { tmpAppAuthData } from "../../../pages/Staking/tmp"
 
 const AuthorizeStakingApplicationModal: FC<
   BaseModalProps & { stake: StakeData }
@@ -29,11 +30,13 @@ const AuthorizeStakingApplicationModal: FC<
     console.log("next", vals)
   }
 
-  const [amountTbtcToAuthorize, setAmountTbtcToAuthorize] = useState(
+  const [tbtcAuthorizationAmount, setTbtcAuthorizationAmount] = useState(
     stake?.totalInTStake
   )
-  const [amountRandomBeaconToAuthorize, setAmountRandomBeaconToAuthorize] =
-    useState(stake?.totalInTStake)
+  const [
+    randomBeaconAuthorizationAmount,
+    setAmountRandomBeaconAuthorizationAmount,
+  ] = useState(stake?.totalInTStake)
 
   return (
     <>
@@ -58,7 +61,12 @@ const AuthorizeStakingApplicationModal: FC<
           {/*  withSymbol*/}
           {/*/>*/}
 
-          <AppAuthorizationForm />
+          <AppAuthorizationForm
+            tbtcAuthorizationAmount={tbtcAuthorizationAmount}
+            randomBeaconAuthorizationAmount={randomBeaconAuthorizationAmount}
+            appsAuthData={tmpAppAuthData}
+            handleSubmit={handleSubmit}
+          />
         </Stack>
       </ModalBody>
     </>

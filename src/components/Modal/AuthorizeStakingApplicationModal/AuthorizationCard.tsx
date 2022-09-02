@@ -5,11 +5,14 @@ import {
   Checkbox,
   Grid,
   GridItem,
+  BodyMd,
 } from "@threshold-network/components"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
-import AppAuthorizationInput from "./AppAuthorizationInput"
 import { TmpAppAuthData } from "../../../pages/Staking/tmp"
-import app from "../../../App"
+import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
+import { HStack } from "@chakra-ui/react"
 
 export interface AuthorizationCardProps extends BoxProps {
   appAuthData: TmpAppAuthData
@@ -25,7 +28,7 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
   formikProps,
   ...restProps
 }) => {
-  console.log("received app aith data ", appAuthData)
+  const { label, min, max } = appAuthData
   return (
     <Card
       {...restProps}
@@ -75,7 +78,21 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
           separatePercentAuthorized
         />
         <GridItem gridArea="token-amount-form" mt={5}>
-          <AppAuthorizationInput appAuthData={appAuthData} {...formikProps} />
+          {/*<AppAuthorizationInput appAuthData={appAuthData} {...formikProps} />*/}
+          <FormikTokenBalanceInput
+            name={`${label}AuthorizationAmount`}
+            label={
+              <HStack justifyContent="space-between">
+                <BodyMd>Authorized Amount</BodyMd>
+                <BodyMd>Remaining Balance: 5000</BodyMd>
+              </HStack>
+            }
+            placeholder="Enter amount"
+            icon={ThresholdCircleBrand}
+            max={max}
+            helperText={`Minimum ${formatTokenAmount(min)} T for ${label}`}
+            _disabled={{ bg: "gray.50", border: "none" }}
+          />
         </GridItem>
       </Grid>
     </Card>

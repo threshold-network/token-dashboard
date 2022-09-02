@@ -2,12 +2,7 @@ import AuthorizationCard from "./AuthorizationCard"
 import { Form } from "../../Forms"
 import { FC } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { FormValues } from "./AppAuthorizationInput"
-import {
-  DEFAULT_MIN_VALUE,
-  getErrorsObj,
-  validateAmountInRange,
-} from "../../../utils/forms"
+import { getErrorsObj, validateAmountInRange } from "../../../utils/forms"
 import {
   Box,
   Button,
@@ -17,27 +12,45 @@ import {
   Badge,
 } from "@threshold-network/components"
 import { useModal } from "../../../hooks/useModal"
-import { tmpAppAuthData } from "../../../pages/Staking/tmp"
+import { TmpAppAuthData, tmpAppAuthData } from "../../../pages/Staking/tmp"
 
-interface Props {}
+export type FormValues = {
+  tbtcAuthorizationAmount: string
+  randomBeaconAuthorizationAmount: string
+}
+
+interface Props {
+  handleSubmit: (vals: any) => void
+  tbtcAuthorizationAmount: string
+  randomBeaconAuthorizationAmount: string
+  appsAuthData: { [app: string]: TmpAppAuthData }
+}
 
 export const formikWrapper = withFormik<Props, FormValues>({
   handleSubmit: (values) => {
     console.log("submitted the form", values)
   },
-  // mapPropsToValues: (props) => ({
-  //   authorizationAmount: props.maxAuthAmount,
-  // }),
-  // validate: (values, props) => {
-  //   const errors: FormikErrors<FormValues> = {}
-  //
-  //   errors.authorizationAmount = validateAmountInRange(
-  //     values.authorizationAmount,
-  //     props.maxAuthAmount.toString(),
-  //     props.minAuthAmount ? props.minAuthAmount.toString() : DEFAULT_MIN_VALUE
-  //   )
-  //   return getErrorsObj(errors)
-  // },
+  mapPropsToValues: (props) => ({
+    tbtcAuthorizationAmount: props.tbtcAuthorizationAmount,
+    randomBeaconAuthorizationAmount: props.randomBeaconAuthorizationAmount,
+  }),
+  validate: (values, props) => {
+    console.log("alllrighty ", values, props)
+    const errors: FormikErrors<FormValues> = {}
+
+    errors.tbtcAuthorizationAmount = validateAmountInRange(
+      values.tbtcAuthorizationAmount,
+      props.appsAuthData.tbtc.max.toString(),
+      props.appsAuthData.tbtc.min.toString()
+    )
+
+    errors.randomBeaconAuthorizationAmount = validateAmountInRange(
+      values.tbtcAuthorizationAmount,
+      props.appsAuthData.randomBeacon.max.toString(),
+      props.appsAuthData.randomBeacon.min.toString()
+    )
+    return getErrorsObj(errors)
+  },
   displayName: "AuthorizationForm",
 })
 
