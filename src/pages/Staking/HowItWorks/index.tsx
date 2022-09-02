@@ -7,7 +7,7 @@ import StakingProviders from "./StakingProviders"
 import AnnouncementBanner from "../../../components/AnnouncementBanner"
 import stakingHowItWorksIllustration from "../../../static/images/StakingHowItWorksIllustration.png"
 
-type StakeHowItWorksTab = "overview" | "applications" | "providers"
+export type StakeHowItWorksTab = "overview" | "applications" | "providers"
 
 const HowItWorksPage: PageComponent = (props) => {
   const [tab, setTab] = useState<StakeHowItWorksTab>("overview")
@@ -33,7 +33,7 @@ const HowItWorksPage: PageComponent = (props) => {
         mb="5"
         onTabClick={(tab) => setTab(tab as StakeHowItWorksTab)}
       />
-      {tab === "overview" && <StakingOverview />}
+      {tab === "overview" && <StakingOverview setTab={setTab} />}
       {tab === "applications" && <StakingApplications />}
       {tab === "providers" && <StakingProviders />}
     </Box>

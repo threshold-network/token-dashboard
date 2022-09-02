@@ -30,7 +30,7 @@ const aboutAddresses = [
   {
     sectionName: "Provider Address",
     items: [
-      "It’s the address that will be used to set up your nodes. One Provider Address per Stake.",
+      "This address will be used to set up your nodes. There can only be one unique Provider address per stake, and this address cannot be reused.",
     ],
   },
   {
@@ -44,6 +44,7 @@ const aboutAddresses = [
     sectionName: "Authorizer Address",
     items: [
       "This address authorizes which applications can use the funds from your staking pool. It can be the same as your Beneficiary Address. You can have the same Authorizer Address for multiple stakes.",
+      "We recommend that the authorizer address matches your connected wallet.",
     ],
   },
 ]

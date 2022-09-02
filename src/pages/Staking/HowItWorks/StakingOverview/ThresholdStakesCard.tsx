@@ -1,6 +1,6 @@
-import { FC, ComponentProps } from "react"
-import { UnorderedList, ListItem, useColorModeValue } from "@chakra-ui/react"
-import { BodyMd, LabelSm, Card } from "@threshold-network/components"
+import { ComponentProps, FC } from "react"
+import { ListItem, UnorderedList, useColorModeValue } from "@chakra-ui/react"
+import { BodyMd, Card, LabelSm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 

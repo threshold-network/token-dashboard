@@ -6,8 +6,12 @@ import { LegacyStakesCard } from "./LegacyStakesCard"
 import { StakingActionsCard } from "./StakingActionsCard"
 import { AboutAddressesCard } from "./AboutAddressesCard"
 import { useTStakingContract } from "../../../../web3/hooks"
+import { AuthorizingApplicationsCard } from "./AuthorizingApplicationsCard"
+import { StakeHowItWorksTab } from ".."
 
-const StakingOverview: FC = () => {
+const StakingOverview: FC<{ setTab: (tab: StakeHowItWorksTab) => void }> = ({
+  setTab,
+}) => {
   const tStakingContract = useTStakingContract()
   return (
     <Grid
@@ -18,15 +22,16 @@ const StakingOverview: FC = () => {
           "t-stakes"
           "legacy-stakes"
           "new-t-stakes"
+          "authorizing-apps"
           "staking-actions"
           "addresses"
         `,
         xl: `
-            "t-stakes        legacy-stakes"
-            "new-t-stakes    legacy-stakes"
-            "new-t-stakes    staking-actions"
-            "addresses       staking-actions"
-            "addresses       staking-actions"
+            "t-stakes          legacy-stakes"
+            "new-t-stakes      legacy-stakes"
+            "new-t-stakes      authorizing-apps"
+            "staking-actions   authorizing-apps" 
+            "staking-actions   addresses"
           `,
       }}
       gridGap="4"
@@ -36,10 +41,12 @@ const StakingOverview: FC = () => {
         tStakingContractAddress={tStakingContract?.address!}
       />
       <LegacyStakesCard
+        setTab={setTab}
         gridArea="legacy-stakes"
         tStakingContractAddress={tStakingContract?.address!}
       />
       <NewTStakesCard gridArea="new-t-stakes" />
+      <AuthorizingApplicationsCard gridArea="authorizing-apps" />
       <StakingActionsCard gridArea="staking-actions" />
       <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
     </Grid>

@@ -4,7 +4,7 @@ import { LabelSm, BodyMd, BoxLabel, Card } from "@threshold-network/components"
 
 export const StakingActionsCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
-    <Card gridArea="staking-actions" {...props}>
+    <Card {...props} h="fit-content">
       <LabelSm>staking actions</LabelSm>
       <List mt="5" spacing="5">
         {stakingActions.map((action) => (

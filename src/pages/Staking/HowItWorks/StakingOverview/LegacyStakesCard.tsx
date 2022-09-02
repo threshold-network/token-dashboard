@@ -3,10 +3,14 @@ import { BodyMd, BoxLabel, Card, LabelSm } from "@threshold-network/components"
 import { LegacyStakesDepositSteps } from "../../../../components/StakingChecklist"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { StakeHowItWorksTab } from "../index"
 
 export const LegacyStakesCard: FC<
-  ComponentProps<typeof Card> & { tStakingContractAddress: string }
-> = ({ tStakingContractAddress, ...props }) => {
+  ComponentProps<typeof Card> & {
+    tStakingContractAddress: string
+    setTab: (tab: StakeHowItWorksTab) => void
+  }
+> = ({ tStakingContractAddress, setTab, ...props }) => {
   return (
     <Card {...props}>
       <LabelSm>legacy stakes</LabelSm>
@@ -21,7 +25,7 @@ export const LegacyStakesCard: FC<
         on the legacy dashboard.
       </BodyMd>
       <BoxLabel mb={6}>Staking Timeline</BoxLabel>
-      <LegacyStakesDepositSteps />
+      <LegacyStakesDepositSteps setTab={setTab} />
     </Card>
   )
 }
