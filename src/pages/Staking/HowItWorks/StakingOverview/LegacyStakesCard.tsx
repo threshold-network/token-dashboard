@@ -1,10 +1,6 @@
-import { FC, ComponentProps } from "react"
-import { Box } from "@chakra-ui/react"
-import {
-  PreSetupSteps,
-  LegacyStakesDepositSteps,
-} from "../../../../components/StakingChecklist"
-import { BodyMd, LabelSm, Card } from "@threshold-network/components"
+import { ComponentProps, FC } from "react"
+import { BodyMd, BoxLabel, Card, LabelSm } from "@threshold-network/components"
+import { LegacyStakesDepositSteps } from "../../../../components/StakingChecklist"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 
@@ -24,10 +20,8 @@ export const LegacyStakesCard: FC<
         />{" "}
         on the legacy dashboard.
       </BodyMd>
+      <BoxLabel mb={6}>Staking Timeline</BoxLabel>
       <LegacyStakesDepositSteps />
-      <Box mt="6">
-        <PreSetupSteps />
-      </Box>
     </Card>
   )
 }

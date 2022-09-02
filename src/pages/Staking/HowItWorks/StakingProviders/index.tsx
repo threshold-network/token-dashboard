@@ -1,5 +1,13 @@
 import { FC } from "react"
-import { Box, Grid, List, Card, LabelSm } from "@threshold-network/components"
+import {
+  BoxLabel,
+  Divider,
+  Grid,
+  List,
+  Card,
+  BodyMd,
+  H5,
+} from "@threshold-network/components"
 import DetailedLinkListItem from "../../../../components/DetailedLinkListItem"
 import { ExternalHref } from "../../../../enums"
 import StakedLogo from "../../../../static/images/stakingProviders/StakedLogo.png"
@@ -91,7 +99,15 @@ const preOnlyProviders = [
 
 const StakingProviders: FC = () => {
   return (
-    <Box>
+    <Card>
+      <H5 my={8}>Staking Providers</H5>
+      <Divider mb={6} />
+      <BodyMd mb={10}>
+        You can delegate running an application node to one of the
+        node-as-a-service Staking Providers listed below. Please note that these
+        staking providers are not vetted or endorsed by Threshold. Use your
+        judgement when selecting a provider.
+      </BodyMd>
       <Grid
         gridAutoColumns="minmax(0, 1fr)"
         gridAutoFlow="column"
@@ -105,20 +121,20 @@ const StakingProviders: FC = () => {
         gridGap="4"
       >
         <Card gridArea="providers" h="fit-content">
-          <LabelSm>staking providers</LabelSm>
+          <BoxLabel>All Applications</BoxLabel>
           <List mt="6" spacing="4">
             {providers.map(renderProviderListItem)}
           </List>
         </Card>
 
         <Card gridArea="pre-providers" h="fit-content">
-          <LabelSm>Pre only staking providers</LabelSm>
+          <BoxLabel>Pre only</BoxLabel>
           <List mt="6" spacing="4">
             {preOnlyProviders.map(renderProviderListItem)}
           </List>
         </Card>
       </Grid>
-    </Box>
+    </Card>
   )
 }
 

@@ -22,9 +22,9 @@ const StakingOverview: FC = () => {
           "addresses"
         `,
         xl: `
-            "t-stakes        new-t-stakes"
-            "legacy-stakes   new-t-stakes"
-            "legacy-stakes   staking-actions"
+            "t-stakes        legacy-stakes"
+            "new-t-stakes    legacy-stakes"
+            "new-t-stakes    staking-actions"
             "addresses       staking-actions"
             "addresses       staking-actions"
           `,
@@ -35,11 +35,11 @@ const StakingOverview: FC = () => {
         gridArea="t-stakes"
         tStakingContractAddress={tStakingContract?.address!}
       />
-      <NewTStakesCard gridArea="new-t-stakes" />
       <LegacyStakesCard
         gridArea="legacy-stakes"
         tStakingContractAddress={tStakingContract?.address!}
       />
+      <NewTStakesCard gridArea="new-t-stakes" />
       <StakingActionsCard gridArea="staking-actions" />
       <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
     </Grid>
