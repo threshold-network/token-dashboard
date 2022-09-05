@@ -1,22 +1,24 @@
-import { BigNumber, Contract, ContractInterface } from "ethers"
+import { BigNumber, BigNumberish, Contract, ContractInterface } from "ethers"
 import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { IMulticall, ContractCall } from "../multicall"
 
-export interface AuthorizationParameters {
+export interface AuthorizationParameters<
+  NumberType extends BigNumberish = BigNumber
+> {
   /**
    * The minimum authorization amount required so that operator can participate
    * in the random beacon. This amount is required to execute slashing for
    * providing a malicious DKG result or when a relay entry times out.
    */
-  minimumAuthorization: BigNumber
+  minimumAuthorization: NumberType
   /**
    * Delay in seconds that needs to pass between the time authorization decrease
    * is requested and the time that request gets approved. Protects against
    * free-riders earning rewards and not being active in the network.
    */
-  authorizationDecreaseDelay: BigNumber
+  authorizationDecreaseDelay: NumberType
   /**
    * Authorization decrease change period in seconds. It is the time, before
    * authorization decrease delay end, during which the pending authorization
@@ -25,22 +27,24 @@ export interface AuthorizationParameters {
    * `authorizationDecreaseDelay` ends. If set to value equal
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
-  authorizationDecreaseChangePeriod: BigNumber
+  authorizationDecreaseChangePeriod: NumberType
 }
 
-export interface StakingProviderAppInfo {
+export interface StakingProviderAppInfo<
+  NumberType extends BigNumberish = BigNumber
+> {
   /**
    * Authorized stake amount of the staking provider.
    */
-  authorizedStake: BigNumber
+  authorizedStake: NumberType
   /**
    * Amount being deauthorized for the staking provider.
    */
-  pendingAuthorizationDecrease: BigNumber
+  pendingAuthorizationDecrease: NumberType
   /**
    * Time in seconds until the deauthorization can be completed.
    */
-  remainingAuthorizationDecreaseDelay: BigNumber
+  remainingAuthorizationDecreaseDelay: NumberType
 }
 
 /**
