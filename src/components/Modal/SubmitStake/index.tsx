@@ -6,6 +6,7 @@ import {
   ModalFooter,
   ModalHeader,
   Divider,
+  Stack,
 } from "@chakra-ui/react"
 import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
@@ -43,10 +44,8 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox variant="modal">
-          <H5 mb={4}>
-            You are about to make a deposit into the T Staking Contract.
-          </H5>
+        <InfoBox variant="modal" spacing={6} mb={6}>
+          <H5>You are about to make a deposit into the T Staking Contract.</H5>
           <BodyLg>Staking requires 2 transactions.</BodyLg>
         </InfoBox>
         <StakingStats

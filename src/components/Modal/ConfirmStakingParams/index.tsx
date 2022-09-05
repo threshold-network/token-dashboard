@@ -1,14 +1,16 @@
-import { FC, useRef, useEffect, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
+  Alert,
+  AlertIcon,
   Button,
+  Divider,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-  Divider,
 } from "@chakra-ui/react"
-import { BodyLg, BodyMd, BodySm, H5 } from "@threshold-network/components"
+import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import { FormikProps } from "formik"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
@@ -53,6 +55,7 @@ const ConfirmStakingParamsModal: FC<
     updateState("beneficiary", beneficiary)
     updateState("authorizer", authorizer)
     updateState("stakeAmount", stakeAmount)
+
     openModal(ModalType.SubmitStake)
   }
 
@@ -64,7 +67,7 @@ const ConfirmStakingParamsModal: FC<
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox variant="modal">
+        <InfoBox variant="modal" spacing={6}>
           <H5>You are about to make a deposit into the T Staking Contract.</H5>
           <BodyLg>Staking requires 2 transactions.</BodyLg>
         </InfoBox>
@@ -76,13 +79,10 @@ const ConfirmStakingParamsModal: FC<
             authorizer: account as string,
           }}
         />
-        <BodySm color="gray.500" mt="10">
-          Provider, Beneficiary, and Authorizer addresses are currently set to
-          your wallet address.
-        </BodySm>
-        <BodyMd textAlign="center" mt="4" mb="6">
-          {account}
-        </BodyMd>
+        <Alert my={6}>
+          <AlertIcon />
+          Take note! These addresses cannot be changed later.
+        </Alert>
 
         <AdvancedParamsForm
           innerRef={formRef}

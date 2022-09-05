@@ -43,7 +43,7 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         label="Authorizer Address"
         helperText="This address will authorize applications."
       />
-      {isSameETHAddress(authorizer, account as string) && (
+      {!isSameETHAddress(authorizer, account as string) && (
         <Alert status="warning" mt={6}>
           <AlertIcon />
           <BodyXs>
