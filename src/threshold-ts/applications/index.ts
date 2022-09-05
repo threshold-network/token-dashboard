@@ -142,38 +142,38 @@ export class Application implements IApplication {
     this._multicall = multicall
   }
 
-  async authorizedStake(stakingProvider: string): Promise<BigNumber> {
+  authorizedStake = async (stakingProvider: string): Promise<BigNumber> => {
     return await this._staking.authorizedStake(
       stakingProvider,
       this._application.address
     )
   }
 
-  async minimumAuthorization(): Promise<BigNumber> {
+  minimumAuthorization = async (): Promise<BigNumber> => {
     return await this._application.minimumAuthorization()
   }
 
-  async pendingAuthorizationDecrease(
+  pendingAuthorizationDecrease = async (
     stakingProvider: string
-  ): Promise<BigNumber> {
+  ): Promise<BigNumber> => {
     return await this._application.pendingAuthorizationDecrease(stakingProvider)
   }
 
-  async remainingAuthorizationDecreaseDelay(
+  remainingAuthorizationDecreaseDelay = async (
     stakingProvider: string
-  ): Promise<BigNumber> {
+  ): Promise<BigNumber> => {
     return await this._application.remainingAuthorizationDecreaseDelay(
       stakingProvider
     )
   }
 
-  async authorizationDecreaseDelay(): Promise<BigNumber> {
+  authorizationDecreaseDelay = async (): Promise<BigNumber> => {
     const { authorizationDecreaseDelay } =
       await this._application.authorizationParameters()
     return authorizationDecreaseDelay
   }
 
-  async authorizationParameters(): Promise<any> {
+  authorizationParameters = async (): Promise<any> => {
     const {
       minimumAuthorization,
       authorizationDecreaseDelay,
@@ -187,7 +187,7 @@ export class Application implements IApplication {
     }
   }
 
-  async getStakingProviderAppInfo(stakingProvider: string): Promise<any> {
+  getStakingProviderAppInfo = async (stakingProvider: string): Promise<any> => {
     const calls: ContractCall[] = [
       {
         interface: this._staking.stakingContract.interface,
@@ -222,7 +222,7 @@ export class Application implements IApplication {
     }
   }
 
-  async isEligibleForRewards(stakingProvider: string): Promise<boolean> {
+  isEligibleForRewards = async (stakingProvider: string): Promise<boolean> => {
     const operator = await this._application.stakingProviderToOperator(
       stakingProvider
     )
