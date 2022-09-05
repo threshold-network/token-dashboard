@@ -103,6 +103,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
           to={`/staking/authorize/${selectedAuthorizerAddress}`}
           onClick={closeModal}
           disabled={!selectedAuthorizerAddress}
+          style={{ pointerEvents: selectedAuthorizerAddress ? "auto" : "none" }}
         >
           Continue
         </Button>
