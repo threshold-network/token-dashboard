@@ -20,6 +20,7 @@ const HowItWorksPage: PageComponent = (props) => {
         href="/staking"
         buttonText="Start Staking"
         size="lg"
+        hideCloseBtn
         variant="secondary"
         mb={8}
       />

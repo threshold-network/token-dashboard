@@ -17,6 +17,7 @@ interface AnnouncementBannerProps {
   href: string
   variant?: "primary" | "secondary"
   size?: "sm" | "lg"
+  hideCloseBtn?: boolean
 }
 
 const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
@@ -26,6 +27,7 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
   href,
   variant = "primary",
   size = "sm",
+  hideCloseBtn = false,
   ...props
 }) => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
@@ -40,12 +42,14 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
       bg={variant === "secondary" ? "brand.50" : "white"}
       {...props}
     >
-      <CloseButton
-        position="absolute"
-        right="14px"
-        top="12px"
-        onClick={onClose}
-      />
+      {!hideCloseBtn && (
+        <CloseButton
+          position="absolute"
+          right="14px"
+          top="12px"
+          onClick={onClose}
+        />
+      )}
       <Stack
         alignItems="center"
         spacing={{ base: "8", xl: "16" }}
