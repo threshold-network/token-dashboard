@@ -7,3 +7,8 @@ export * from "./eth"
 export * from "./page"
 export * from "./rewards"
 export * from "./staking"
+
+export type FetchingState = {
+  isFetching: boolean
+  error: string
+}
