@@ -22,6 +22,8 @@ import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 import StakingStats from "../../StakingStats"
 import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplicateProviderAddress"
+import { featureFlags } from "../../../constants"
+import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -32,6 +34,14 @@ const ConfirmStakingParamsModal: FC<
   const { account } = useWeb3React()
   const { updateState } = useStakingState()
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
+
+  // stake transaction, opens success modal on success callback
+  // not needed once MAS is launched
+  const { stake } = useStakeTransaction((tx) =>
+    openModal(ModalType.StakeSuccess, {
+      transactionHash: tx.hash,
+    })
+  )
 
   useEffect(() => {
     const forceFormValidation = async () => {
@@ -56,7 +66,11 @@ const ConfirmStakingParamsModal: FC<
     updateState("authorizer", authorizer)
     updateState("stakeAmount", stakeAmount)
 
-    openModal(ModalType.SubmitStake)
+    if (featureFlags.MULTI_APP_STAKING) {
+      openModal(ModalType.SubmitStake)
+    } else {
+      stake({ stakingProvider, beneficiary, authorizer, amount: stakeAmount })
+    }
   }
 
   return (
@@ -69,7 +83,9 @@ const ConfirmStakingParamsModal: FC<
       <ModalBody>
         <InfoBox variant="modal" spacing={6}>
           <H5>You are about to make a deposit into the T Staking Contract.</H5>
-          <BodyLg>Staking requires 2 transactions.</BodyLg>
+          {featureFlags.MULTI_APP_STAKING && (
+            <BodyLg>Staking requires 2 transactions.</BodyLg>
+          )}
         </InfoBox>
         <StakingStats
           {...{
@@ -100,7 +116,7 @@ const ConfirmStakingParamsModal: FC<
           Cancel
         </Button>
         <Button type="submit" form="advanced-staking-params-form">
-          Continue
+          {featureFlags.MULTI_APP_STAKING ? "Continue" : "Stake"}
         </Button>
       </ModalFooter>
     </>
