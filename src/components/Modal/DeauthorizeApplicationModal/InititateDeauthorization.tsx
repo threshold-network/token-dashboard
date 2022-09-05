@@ -11,8 +11,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import withBaseModal from "../withBaseModal"
-import { BaseModalProps, StakeData } from "../../../types"
+import { StakeData } from "../../../types"
 import {
   BodyLg,
   BodySm,
@@ -29,10 +28,10 @@ import StakingApplicationOperationIcon, {
 import shortenAddress from "../../../utils/shortenAddress"
 import TokenBalance from "../../TokenBalance"
 
-const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
-  closeModal,
-  stake,
-}) => {
+const InitiateDeauthorization: FC<{
+  closeModal: () => void
+  stake: StakeData
+}> = ({ closeModal, stake }) => {
   const chosenStakingApplication = StakingApplication.TBTC
   const decreaseAmount = 100000000000000000000
 
@@ -124,4 +123,4 @@ const InitiateDeauthorization: FC<BaseModalProps & { stake: StakeData }> = ({
   )
 }
 
-export default withBaseModal(InitiateDeauthorization)
+export default InitiateDeauthorization
