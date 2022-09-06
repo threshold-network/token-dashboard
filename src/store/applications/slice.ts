@@ -15,15 +15,14 @@ type ApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
 }
 
-interface ApplicationsState {
-  tbtc: {
-    parameters: AuthorizationParameters<string> & FetchingState
-    stakingProviders: ApplicationDataByStakingProvider & FetchingState
-  }
-  randomBeacon: {
-    parameters: AuthorizationParameters<string> & FetchingState
-    stakingProviders: ApplicationDataByStakingProvider & FetchingState
-  }
+export type ApplicationState = {
+  parameters: AuthorizationParameters<string> & FetchingState
+  stakingProviders: ApplicationDataByStakingProvider & FetchingState
+}
+
+export interface ApplicationsState {
+  tbtc: ApplicationState
+  randomBeacon: ApplicationState
 }
 
 export type AppName = "tbtc" | "randomBeacon"
