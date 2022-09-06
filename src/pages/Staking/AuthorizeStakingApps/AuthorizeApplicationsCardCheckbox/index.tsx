@@ -93,7 +93,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         <AppAuthorizationInfo
           gridArea="app-info"
           label={appAuthData.label}
-          percentageAuthorized={100}
+          percentageAuthorized={appAuthData.percentage}
           aprPercentage={10}
           slashingPercentage={1}
           isAuthorizationRequired={true}

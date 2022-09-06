@@ -1,3 +1,25 @@
+import { BigNumber, BigNumberish, FixedNumber } from "ethers"
+
+export const calculatePercenteage = (
+  amount: BigNumberish | undefined,
+  totalAmount: BigNumberish | undefined
+) => {
+  if (
+    !amount ||
+    BigNumber.from(amount).isZero() ||
+    !totalAmount ||
+    BigNumber.from(totalAmount).isZero()
+  )
+    return 0
+
+  return FixedNumber.fromString(amount.toString())
+    .divUnsafe(FixedNumber.fromString(totalAmount.toString()))
+    .mulUnsafe(FixedNumber.fromString("100"))
+    .toUnsafeFloat()
+}
+
+console.log("calculatePercenteage", calculatePercenteage(undefined, undefined))
+
 export const formatPercentage = (
   percentage: number,
   decimalPlaces: number = 0,
