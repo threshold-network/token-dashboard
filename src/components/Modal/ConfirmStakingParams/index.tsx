@@ -95,7 +95,7 @@ const ConfirmStakingParamsModal: FC<
             authorizer: account as string,
           }}
         />
-        <Alert my={6}>
+        <Alert my={6} status="info" fontSize="sm">
           <AlertIcon />
           Take note! These addresses cannot be changed later.
         </Alert>
