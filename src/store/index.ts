@@ -74,6 +74,8 @@ const store = configureStore({
     }).prepend(listenerMiddleware.middleware),
 })
 
-export type RootState = ReturnType<typeof combinedReducer>
+export type RootState = ReturnType<
+  typeof store.getState & typeof combinedReducer
+>
 export type AppDispatch = typeof store.dispatch
 export default store
