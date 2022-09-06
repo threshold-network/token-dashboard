@@ -18,8 +18,6 @@ export const calculatePercenteage = (
     .toUnsafeFloat()
 }
 
-console.log("calculatePercenteage", calculatePercenteage(undefined, undefined))
-
 export const formatPercentage = (
   percentage: number,
   decimalPlaces: number = 0,
