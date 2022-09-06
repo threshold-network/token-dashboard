@@ -15,6 +15,7 @@ describe("Application test", () => {
   const amount = BigNumber.from("123")
   const time = BigNumber.from("456")
   const address = AddressZero
+  const account = "0xE775aE21E40d34f01A5C0E1Db9FB3e637D768596"
   const abi: ContractInterface = []
   const stakingProvider = "0x486b0ee2eed761f069f327034eb2ae5e07580bf3"
   const mockedEthereumProvider = {} as providers.Provider
@@ -46,6 +47,7 @@ describe("Application test", () => {
       abi,
       providerOrSigner: mockedEthereumProvider,
       chainId: "1",
+      account,
     })
   })
 
@@ -53,7 +55,8 @@ describe("Application test", () => {
     expect(getContract).toHaveBeenCalledWith(
       address,
       abi,
-      mockedEthereumProvider
+      mockedEthereumProvider,
+      account
     )
     expect(application.address).toEqual(address)
     expect(application.contract).toEqual(mockAppContract)
