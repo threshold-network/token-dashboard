@@ -20,7 +20,8 @@ export class Staking implements IStaking {
     this._staking = getContract(
       TokenStaking.address,
       TokenStaking.abi,
-      config.providerOrSigner
+      config.providerOrSigner,
+      config.account
     )
   }
 

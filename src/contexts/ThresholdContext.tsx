@@ -1,6 +1,7 @@
 import { createContext, FC, useContext, useEffect, useMemo } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { threshold } from "../utils/getThresholdLib"
+import { supportedChainId } from "../utils/getEnvVariable"
 
 const ThresholdContext = createContext(threshold)
 
@@ -9,11 +10,19 @@ export const useThreshold = () => {
 }
 
 export const ThresholdProvider: FC = ({ children }) => {
-  const { library, active } = useWeb3React()
+  const { library, active, account } = useWeb3React()
 
   useEffect(() => {
-    // TODO: update the signer or provider in threshold instance when user connects to a wallet.
-  }, [])
+    if (active && library && account) {
+      threshold.updateConfig({
+        ethereum: {
+          chainId: supportedChainId,
+          providerOrSigner: library,
+          account,
+        },
+      })
+    }
+  }, [library, active, account])
 
   return (
     <ThresholdContext.Provider value={threshold}>

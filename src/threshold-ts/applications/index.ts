@@ -136,8 +136,8 @@ export class Application implements IApplication {
     multicall: IMulticall,
     config: EthereumConfig & { address: string; abi: ContractInterface }
   ) {
-    const { address, abi, providerOrSigner } = config
-    this._application = getContract(address, abi, providerOrSigner)
+    const { address, abi, providerOrSigner, account } = config
+    this._application = getContract(address, abi, providerOrSigner, account)
     this._staking = staking
     this._multicall = multicall
   }
