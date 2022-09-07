@@ -23,7 +23,6 @@ import { useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
-import { calculatePercenteage } from "../../../utils/percentage"
 import {
   useAppDataByStakingProvider,
   useAppMinAuthorizationAmount,
