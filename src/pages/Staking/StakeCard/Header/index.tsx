@@ -1,19 +1,17 @@
-import { FC } from "react"
+import { FC, useContext } from "react"
 import { Badge, FilterTabs, Flex } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { StakeData } from "../../../../types"
+import { StakeCardContext } from "../../../../contexts/StakeCardContext"
 
 export interface StakeCardHeaderProps {
-  isInactiveStake: boolean
   stake: StakeData | null
   onTabClick: () => void
 }
 
-const StakeCardHeader: FC<StakeCardHeaderProps> = ({
-  isInactiveStake,
-  stake,
-  onTabClick,
-}) => {
+const StakeCardHeader: FC<StakeCardHeaderProps> = ({ stake, onTabClick }) => {
+  const { isInactiveStake } = useContext(StakeCardContext)
+
   return (
     <Flex as="header" alignItems="center">
       <Badge

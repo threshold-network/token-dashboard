@@ -1,4 +1,4 @@
-import { FC, useRef, useCallback } from "react"
+import { FC, useRef, useCallback, useContext } from "react"
 import { FormikProps } from "formik"
 import { BigNumber } from "@ethersproject/bignumber"
 import {
@@ -26,12 +26,35 @@ import StakeRewards from "./StakeRewards"
 import StakeBalance from "./StakeBalance"
 import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
+import { StakeCardContext } from "../../../contexts/StakeCardContext"
+
+const StakeCardContainer: FC<{ stake: StakeData }> = ({ stake }) => {
+  const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
+  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
+  const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+
+  return (
+    <StakeCardContext.Provider
+      value={{
+        isInactiveStake,
+        canTopUpKepp,
+        canTopUpNu,
+        hasLegacyStakes,
+      }}
+    >
+      <StakeCard stake={stake} />
+    </StakeCardContext.Provider>
+  )
+}
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
+  const { isInactiveStake, canTopUpKepp, canTopUpNu } =
+    useContext(StakeCardContext)
 
   const isPRESet =
     !isAddressZero(stake.preConfig.operator) &&
@@ -74,17 +97,9 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     }
   }
 
-  const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
-  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
-  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
-
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
-      <StakeCardHeader
-        isInactiveStake={isInactiveStake}
-        stake={stake}
-        onTabClick={onTabClick}
-      />
+      <StakeCardHeader stake={stake} onTabClick={onTabClick} />
       <StakeRewards stake={stake} isPRESet={isPRESet} />
       <LineDivider />
       {featureFlags.MULTI_APP_STAKING && (
@@ -132,4 +147,4 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-export default StakeCard
+export default StakeCardContainer

@@ -1,12 +1,13 @@
-import { FC } from "react"
+import { FC, useContext } from "react"
 import { BodyMd } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 import TokenBalance from "../../../../components/TokenBalance"
 import { StakeData } from "../../../../types"
 import LegacyStakeBalances from "./LegacyStakeBalances"
+import { StakeCardContext } from "../../../../contexts/StakeCardContext"
 
 const StakeBalance: FC<{ stake: StakeData }> = ({ stake }) => {
-  const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+  const { hasLegacyStakes } = useContext(StakeCardContext)
 
   return hasLegacyStakes ? (
     <LegacyStakeBalances stake={stake} />
