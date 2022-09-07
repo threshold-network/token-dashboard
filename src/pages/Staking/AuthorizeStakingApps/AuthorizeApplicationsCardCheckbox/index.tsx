@@ -10,6 +10,7 @@ import { FC } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { WeiPerEther } from "@ethersproject/constants"
 
 export interface AppAuthDataProps {
   label: string
@@ -120,7 +121,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             submitButtonText={`Authorize ${appAuthData.label}`}
             maxTokenAmount={maxAuthAmount}
             placeholder={"Enter amount"}
-            minTokenAmount={minAuthAmount}
+            minTokenAmount={
+              appAuthData.percentage === 0
+                ? minAuthAmount
+                : WeiPerEther.toString()
+            }
             helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
               appAuthData.label
             }`}
