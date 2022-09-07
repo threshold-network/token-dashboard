@@ -11,22 +11,28 @@ import {
 import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
+import { useAppDataByStakingProvider } from "../../../../hooks/application"
 
 const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   const areNodesMissing = true
+  const tbtcApp = useAppDataByStakingProvider("tbtc", stake.stakingProvider)
+  const randomBeaconApp = useAppDataByStakingProvider(
+    "randomBeacon",
+    stake.stakingProvider
+  )
 
   // TODO: This will probably be fetched from contracts
   const appsAuthData = {
     tbtc: {
       label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
+      isAuthorized: tbtcApp.isAuthorized,
+      percentage: tbtcApp.percentage,
       isAuthRequired: true,
     },
     randomBeacon: {
       label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
+      isAuthorized: randomBeaconApp.isAuthorized,
+      percentage: randomBeaconApp.percentage,
       isAuthRequired: true,
     },
     pre: {
