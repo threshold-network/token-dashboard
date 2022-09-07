@@ -10,6 +10,7 @@ import { FC } from "react"
 import { TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { WeiPerEther } from "@ethersproject/constants"
 
 export interface AppAuthDataProps {
@@ -40,6 +41,17 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
+  const threshold = useThreshold()
+
+  const onAuthorizeApp = async (tokenAmount: string) => {
+    // TODO: Pass the staking provider address as a prop.
+    // TODO: Use `useSendtTransacion` hook to open confirmation modal/pending modals/success modal.
+    // Just test the transacion. The real flow is diffrent- we should opean confirmation modal then trigger transacion.
+    await threshold.multiAppStaking.randomBeacon.increaseAuthorization(
+      stakingProvider,
+      tokenAmount
+    )
+  }
 
   if (collapsed) {
     return (
@@ -114,9 +126,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
-            onSubmitForm={() => {
-              console.log("form submitted")
-            }}
+            onSubmitForm={onAuthorizeApp}
             label="Amount"
             submitButtonText={`Authorize ${appAuthData.label}`}
             maxTokenAmount={maxAuthAmount}
