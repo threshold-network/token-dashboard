@@ -20,6 +20,7 @@ export interface AppAuthDataProps {
 
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   appAuthData: AppAuthDataProps
+  stakingProvider: string
   onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
   isSelected: boolean
   maxAuthAmount: string
@@ -34,6 +35,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   isSelected,
   maxAuthAmount,
   minAuthAmount,
+  stakingProvider,
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
