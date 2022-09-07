@@ -127,6 +127,20 @@ export const applicationsSlice = createSlice({
       state[appName].stakingProviders.isFetching = false
       state[appName].stakingProviders.error = error
     },
+    authorizationIncreased: (
+      state: ApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        toAmount: string
+        appName: AppName
+      }>
+    ) => {
+      const { stakingProvider, toAmount, appName } = action.payload
+      if (state[appName].stakingProviders) {
+        state[appName].stakingProviders[stakingProvider].authorizedStake =
+          toAmount
+      }
+    },
   },
 })
 
