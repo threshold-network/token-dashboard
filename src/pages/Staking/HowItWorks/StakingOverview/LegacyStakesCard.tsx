@@ -24,7 +24,9 @@ export const LegacyStakesCard: FC<
         />{" "}
         on the legacy dashboard.
       </BodyMd>
-      <BoxLabel mb={6}>Staking Timeline</BoxLabel>
+      <BoxLabel status="secondary" mb={6}>
+        Staking Timeline
+      </BoxLabel>
       <LegacyStakesDepositSteps setTab={setTab} />
     </Card>
   )

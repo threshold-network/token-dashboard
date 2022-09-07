@@ -31,7 +31,7 @@ const StakingOverview: FC<{ setTab: (tab: StakeHowItWorksTab) => void }> = ({
             "new-t-stakes      legacy-stakes"
             "new-t-stakes      authorizing-apps"
             "staking-actions   authorizing-apps" 
-            "staking-actions   addresses"
+            "addresses         authorizing-apps"
           `,
       }}
       gridGap="4"

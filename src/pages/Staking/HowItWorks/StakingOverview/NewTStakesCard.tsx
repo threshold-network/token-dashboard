@@ -10,7 +10,9 @@ export const NewTStakesCard: FC<ComponentProps<typeof Card>> = (props) => {
         Before you start staking on Threshold Network, make sure you are aware
         of the following requirements:
       </BodyMd>
-      <BoxLabel mb={6}>Staking Timeline</BoxLabel>
+      <BoxLabel status="secondary" mb={6}>
+        Staking Timeline
+      </BoxLabel>
       <StakingChecklist />
     </Card>
   )

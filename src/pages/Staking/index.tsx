@@ -65,7 +65,7 @@ const MainStakingPage: PageComponent = (props) => {
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
+  pages: [HowItWorksPage, StakingPage, AuthorizeStakingAppsPage],
   title: "Staking",
   isPageEnabled: true,
 }

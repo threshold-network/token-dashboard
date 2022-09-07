@@ -6,15 +6,17 @@ import {
   FlowStep,
   FlowStepStatus,
   LabelSm,
+  Image,
 } from "@threshold-network/components"
 import { Stack } from "@chakra-ui/react"
 import ExternalLink from "../../../../components/ExternalLink"
+import AuthorizingApplicationsIllustration from "../../../../static/images/AuthorizingApplicationsIllustration.png"
 
 export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
   props
 ) => {
   return (
-    <Card {...props}>
+    <Card {...props} h="fit-content">
       <LabelSm>Authorizing Applications</LabelSm>
       <BodyMd my={6}>
         In order to earn rewards, you can authorize Threshold applications to
@@ -22,11 +24,19 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
         <ExternalLink href="/" text="here" />. Note that you can authorize 100%
         of your stake for all of the apps.
       </BodyMd>
+      <Image
+        maxW="370px"
+        mx="auto"
+        my={8}
+        src={AuthorizingApplicationsIllustration}
+      />
       <BodyMd>
         If you want to decrease your authorization, refer to the timeline below
         for deauthorization of some or all of your stake from an application.
       </BodyMd>
-      <BoxLabel my={6}>Deauthorization Timeline</BoxLabel>
+      <BoxLabel status="secondary" my={6}>
+        Deauthorization Timeline
+      </BoxLabel>
       <Stack spacing={6}>
         <FlowStep
           status={FlowStepStatus.active}

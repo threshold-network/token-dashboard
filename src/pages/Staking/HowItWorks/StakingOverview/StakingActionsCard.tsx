@@ -9,7 +9,7 @@ export const StakingActionsCard: FC<ComponentProps<typeof Card>> = (props) => {
       <List mt="5" spacing="5">
         {stakingActions.map((action) => (
           <ListItem key={action.sectionName}>
-            <BoxLabel w="fit-content" mb="4">
+            <BoxLabel status="secondary" w="fit-content" mb="4">
               {action.sectionName}
             </BoxLabel>
             <List spacing="4">
