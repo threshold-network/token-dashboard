@@ -121,14 +121,14 @@ const StakingProviders: FC = () => {
         gridGap="4"
       >
         <Card gridArea="providers" h="fit-content">
-          <BoxLabel>All Applications</BoxLabel>
+          <BoxLabel status="secondary">All Applications</BoxLabel>
           <List mt="6" spacing="4">
             {providers.map(renderProviderListItem)}
           </List>
         </Card>
 
         <Card gridArea="pre-providers" h="fit-content">
-          <BoxLabel>Pre only</BoxLabel>
+          <BoxLabel status="secondary">Pre only</BoxLabel>
           <List mt="6" spacing="4">
             {preOnlyProviders.map(renderProviderListItem)}
           </List>

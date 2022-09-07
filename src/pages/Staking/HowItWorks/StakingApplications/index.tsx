@@ -1,13 +1,14 @@
 import { FC } from "react"
 import {
-  Alert,
-  AlertIcon,
-  Button,
-  Stack,
-  Divider,
-  Card,
   BodyMd,
+  BodyXs,
+  Button,
+  Card,
+  Divider,
   H5,
+  HStack,
+  Image,
+  Stack,
   VStack,
 } from "@threshold-network/components"
 import tbtcAppIllustration from "../../../../static/images/tbtcAppIllustration.png"
@@ -15,26 +16,70 @@ import randomBeaconAppIllustration from "../../../../static/images/randomBeaconA
 import preAppIllustration from "../../../../static/images/preAppIllustration.png"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
 
+import listIconStar from "../../../../static/images/ListIconStar.png"
+import listIconStock from "../../../../static/images/ListIconStock.png"
+import listIconArrows from "../../../../static/images/ListIconArrows.png"
+import stakingApplicationsIllustration from "../../../../static/images/StakingApplicationsIllustration.png"
+
+const CustomList: FC<{
+  items: { imgSrc: any; content: string | JSX.Element }[]
+}> = ({ items }) => {
+  return (
+    <Stack spacing={4}>
+      {items.map(({ imgSrc, content }) => (
+        <HStack spacing={4}>
+          <Image h="32px" w="32px" src={imgSrc} />
+          {typeof content === "string" ? <BodyMd>{content}</BodyMd> : content}
+        </HStack>
+      ))}
+    </Stack>
+  )
+}
+
 const StakingApplications: FC = () => {
   return (
     <Card>
-      <H5 my={8}>Staking Providers</H5>
+      <H5 my={8}>Staking Applications</H5>
       <Divider mb={6} />
-      <BodyMd mb={6}>
-        Authorization allows you to authorize a portion or all of your stake to
-        any number of Threshold applications. You can change this amount by
-        deauthorizing at any time. There is a deauthorization cooldown period of
-        14 days.
-      </BodyMd>
-      {/* TODO: Investigate why magic prop isn't working */}
-      {/*status="magic"*/}
-      <Alert mb={6}>
-        <AlertIcon />
-        In order to earn rewards, please authorize Threshold apps to use your
-        stake. Note that you can authorize 100% of your stake for all of the
-        apps.
-      </Alert>
+      <Stack
+        justifyContent="space-between"
+        spacing={{ base: "8", xl: "16" }}
+        direction={{ base: "column", xl: "row" }}
+        mb={8}
+      >
+        <Stack maxW="408px">
+          <BodyMd mb={6}>
+            Authorization allows you to authorize a portion or all of your stake
+            to be used by Threshold apps.
+          </BodyMd>
 
+          <CustomList
+            items={[
+              {
+                content: "Earn rewards by authorizing apps.",
+                imgSrc: listIconStar,
+              },
+              {
+                content:
+                  "Authorize 100% of your stake for all apps for the most rewards opportunity.",
+                imgSrc: listIconStock,
+              },
+              {
+                content: (
+                  <Stack>
+                    <BodyMd>Change your authorized amount at any time. </BodyMd>
+                    <BodyXs>
+                      There is a deauthorization cooldown period of 14 days.
+                    </BodyXs>
+                  </Stack>
+                ),
+                imgSrc: listIconArrows,
+              },
+            ]}
+          />
+        </Stack>
+        <Image maxW="528px" src={stakingApplicationsIllustration} />
+      </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
           preTitle="TBTC APP"
