@@ -64,20 +64,14 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const appsAuthData = {
     tbtc: {
       label: "tBTC",
-      isAuthorized: tbtcApp?.authorizedStake !== "0",
-      percentage: calculatePercenteage(
-        tbtcApp?.authorizedStake,
-        stake.totalInTStake
-      ),
+      isAuthorized: tbtcApp.isAuthorized,
+      percentage: tbtcApp.percentage,
       isAuthRequired: true,
     },
     randomBeacon: {
       label: "Random Beacon",
-      isAuthorized: tbtcApp?.authorizedStake !== "0",
-      percentage: calculatePercenteage(
-        randomBeaconApp?.authorizedStake,
-        stake.totalInTStake
-      ),
+      isAuthorized: randomBeaconApp.isAuthorized,
+      percentage: randomBeaconApp.percentage,
       isAuthRequired: true,
     },
     pre: {
