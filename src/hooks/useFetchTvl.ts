@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from "react"
-import { FixedNumber } from "@ethersproject/bignumber"
 import { formatUnits } from "@ethersproject/units"
 import {
   useKeepBondingContract,
@@ -64,22 +63,30 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
 
   const fetchOnChainData = useMulticall([
     {
-      contract: multicall!,
+      address: multicall?.address!,
+      interface: multicall?.interface!,
       method: "getEthBalance",
       args: [keepBonding?.address],
     },
     {
-      contract: tbtc.contract!,
+      address: tbtc.contract?.address!,
+      interface: tbtc.contract?.interface!,
       method: "totalSupply",
     },
-    { contract: keepAssetPool!, method: "totalValue" },
     {
-      contract: keep.contract!,
+      address: keepAssetPool?.address!,
+      interface: keepAssetPool?.interface!,
+      method: "totalValue",
+    },
+    {
+      address: keep.contract?.address!,
+      interface: keep.contract?.interface!,
       method: "balanceOf",
       args: [keepTokenStaking?.address],
     },
     {
-      contract: t.contract!,
+      address: t.contract?.address!,
+      interface: t.contract?.interface!,
       method: "balanceOf",
       args: [tTokenStaking?.address],
     },

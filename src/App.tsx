@@ -38,6 +38,7 @@ import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
+import { ThresholdProvider } from "./contexts/ThresholdContext"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -182,15 +183,17 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <ReduxProvider store={reduxStore}>
-          <ChakraProvider theme={theme}>
-            <TokenContextProvider>
-              <Web3EventHandlerComponent />
-              <ModalRoot />
-              <AppBody />
-            </TokenContextProvider>
-          </ChakraProvider>
-        </ReduxProvider>
+        <ThresholdProvider>
+          <ReduxProvider store={reduxStore}>
+            <ChakraProvider theme={theme}>
+              <TokenContextProvider>
+                <Web3EventHandlerComponent />
+                <ModalRoot />
+                <AppBody />
+              </TokenContextProvider>
+            </ChakraProvider>
+          </ReduxProvider>
+        </ThresholdProvider>
       </Web3ReactProvider>
     </Router>
   )
