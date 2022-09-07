@@ -11,15 +11,24 @@ import {
   Stack,
   VStack,
 } from "@threshold-network/components"
-import tbtcAppIllustration from "../../../../static/images/tbtcAppIllustration.png"
-import randomBeaconAppIllustration from "../../../../static/images/randomBeaconAppIllustration.png"
-import preAppIllustration from "../../../../static/images/preAppIllustration.png"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
 
-import listIconStar from "../../../../static/images/ListIconStar.png"
-import listIconStock from "../../../../static/images/ListIconStock.png"
-import listIconArrows from "../../../../static/images/ListIconArrows.png"
-import stakingApplicationsIllustration from "../../../../static/images/StakingApplicationsIllustration.png"
+import tbtcAppIllustrationLight from "../../../../static/images/tbtcAppIllustrationLight.png"
+import tbtcAppIllustrationDark from "../../../../static/images/tbtcAppIllustrationDark.png"
+import randomBeaconAppIllustrationLight from "../../../../static/images/randomBeaconAppIllustrationLight.png"
+import randomBeaconAppIllustrationDark from "../../../../static/images/randomBeaconAppIllustrationDark.png"
+import preAppIllustrationLight from "../../../../static/images/preAppIllustrationLight.png"
+import preAppIllustrationDark from "../../../../static/images/preAppIllustrationDark.png"
+
+import listIconStarLight from "../../../../static/images/ListIconStarLight.png"
+import listIconStarDark from "../../../../static/images/ListIconStarDark.png"
+import listIconStockLight from "../../../../static/images/ListIconStockLight.png"
+import listIconStockDark from "../../../../static/images/ListIconStockDark.png"
+import listIconArrowsLight from "../../../../static/images/ListIconArrowsLight.png"
+import listIconArrowsDark from "../../../../static/images/ListIconArrowsDark.png"
+import stakingApplicationsIllustrationLight from "../../../../static/images/StakingApplicationsIllustrationLight.png"
+import stakingApplicationsIllustrationDark from "../../../../static/images/StakingApplicationsIllustrationDark.png"
+import { useColorMode } from "@chakra-ui/react"
 
 const CustomList: FC<{
   items: { imgSrc: any; content: string | JSX.Element }[]
@@ -37,6 +46,8 @@ const CustomList: FC<{
 }
 
 const StakingApplications: FC = () => {
+  const { colorMode } = useColorMode()
+
   return (
     <Card>
       <H5 my={8}>Staking Applications</H5>
@@ -57,12 +68,14 @@ const StakingApplications: FC = () => {
             items={[
               {
                 content: "Earn rewards by authorizing apps.",
-                imgSrc: listIconStar,
+                imgSrc:
+                  colorMode === "dark" ? listIconStarDark : listIconStarLight,
               },
               {
                 content:
                   "Authorize 100% of your stake for all apps for the most rewards opportunity.",
-                imgSrc: listIconStock,
+                imgSrc:
+                  colorMode === "dark" ? listIconStockDark : listIconStockLight,
               },
               {
                 content: (
@@ -73,19 +86,33 @@ const StakingApplications: FC = () => {
                     </BodyXs>
                   </Stack>
                 ),
-                imgSrc: listIconArrows,
+                imgSrc:
+                  colorMode === "dark"
+                    ? listIconArrowsDark
+                    : listIconArrowsLight,
               },
             ]}
           />
         </Stack>
-        <Image maxW="528px" src={stakingApplicationsIllustration} />
+        <Image
+          maxW="528px"
+          src={
+            colorMode === "dark"
+              ? stakingApplicationsIllustrationDark
+              : stakingApplicationsIllustrationLight
+          }
+        />
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
           preTitle="TBTC APP"
           title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
           description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
-          imgSrc={tbtcAppIllustration}
+          imgSrc={
+            colorMode === "dark"
+              ? tbtcAppIllustrationDark
+              : tbtcAppIllustrationLight
+          }
           ctaButtons={
             <VStack mb={6}>
               <Button isFullWidth>Authorize TBTC</Button>
@@ -106,7 +133,11 @@ const StakingApplications: FC = () => {
           preTitle="Random Beacon APP"
           title="Random Beacon is a threshold relay that can generate verifiable randomness."
           description="The Random Beacon application provides a trusted source of randomness for the process of trustless group election in the Threshold Network."
-          imgSrc={randomBeaconAppIllustration}
+          imgSrc={
+            colorMode === "dark"
+              ? randomBeaconAppIllustrationDark
+              : randomBeaconAppIllustrationLight
+          }
           ctaButtons={
             <VStack mb={6}>
               <Button isFullWidth>Authorize Random Beacon</Button>
@@ -127,7 +158,11 @@ const StakingApplications: FC = () => {
           preTitle="PRE APP"
           title="Proxy Re-Encryption, or PRE, is cryptographic middleware for developing privacy-preserving applications."
           description="PRE is a scalable end-to-end encryption protocol that allows a proxy entity to transform (or re-encrypt) encrypted data from one encryption key to another, without revealing the plaintext data. The nodes on the Threshold Network act as these proxy entities and use threshold cryptography to securely and cooperatively re-encrypt data for recipients based on access conditions defined by the data owner. "
-          imgSrc={preAppIllustration}
+          imgSrc={
+            colorMode === "dark"
+              ? preAppIllustrationDark
+              : preAppIllustrationLight
+          }
           ctaButtons={
             <Button isFullWidth variant="outline" mb={6}>
               PRE Node Docs

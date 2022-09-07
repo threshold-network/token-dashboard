@@ -14,7 +14,7 @@ import {
   Image,
   BoxLabel,
 } from "@threshold-network/components"
-import { Icon } from "@chakra-ui/react"
+import { Icon, useColorMode } from "@chakra-ui/react"
 
 interface Props {
   preTitle: string
@@ -37,6 +37,7 @@ const ApplicationDetailsCard: FC<Props> = ({
   aprPercentage,
   slashingPercentage,
 }) => {
+  const { colorMode } = useColorMode()
   return (
     <Card boxShadow="none">
       <LabelSm mb={6}>{preTitle}</LabelSm>
@@ -55,7 +56,7 @@ const ApplicationDetailsCard: FC<Props> = ({
         <Stack gridArea="providers" h="fit-content" spacing={6}>
           <H5>{title}</H5>
           <BodyMd>{description}</BodyMd>
-          <InfoBox>
+          <InfoBox bg={colorMode === "light" ? "gray.50" : "gray.900"}>
             <Image m="auto" maxH="180px" maxW="360px" w="100%" src={imgSrc} />
           </InfoBox>
         </Stack>

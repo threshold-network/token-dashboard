@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Button,
@@ -7,6 +7,7 @@ import {
   useDisclosure,
   Image,
   BoxProps,
+  useColorMode,
 } from "@chakra-ui/react"
 import { Card, H4 } from "@threshold-network/components"
 
@@ -32,6 +33,16 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
 }) => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
+  const { colorMode } = useColorMode()
+  const darkMode = colorMode === "dark"
+
+  const bg = useMemo(() => {
+    if (variant === "secondary") {
+      return darkMode ? "gray.800" : "brand.50"
+    }
+    return "white"
+  }, [colorMode, variant])
+
   return (
     <Card
       w="100%"
@@ -39,7 +50,7 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
       position="relative"
       px="16"
       mb={4}
-      bg={variant === "secondary" ? "brand.50" : "white"}
+      bg={bg}
       {...props}
     >
       {!hideCloseBtn && (
@@ -57,7 +68,11 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
         bg="inherit"
       >
         <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
-        <H4 textAlign={{ base: "center", xl: "unset" }} maxW="460px">
+        <H4
+          textAlign={{ base: "center", xl: "unset" }}
+          maxW="460px"
+          color={darkMode ? "white" : "gray.700"}
+        >
           {title}
         </H4>
         <Button

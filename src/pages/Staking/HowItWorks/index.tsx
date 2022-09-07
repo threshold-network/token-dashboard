@@ -5,17 +5,25 @@ import StakingOverview from "./StakingOverview"
 import StakingApplications from "./StakingApplications"
 import StakingProviders from "./StakingProviders"
 import AnnouncementBanner from "../../../components/AnnouncementBanner"
-import stakingHowItWorksIllustration from "../../../static/images/StakingHowItWorksIllustration.png"
+import stakingHowItWorksIllustrationLight from "../../../static/images/StakingHowItWorksIllustrationLight.png"
+import stakingHowItWorksIllustrationDark from "../../../static/images/StakingHowItWorksIllustrationDark.png"
+import { useColorMode } from "@chakra-ui/react"
 
 export type StakeHowItWorksTab = "overview" | "applications" | "providers"
 
 const HowItWorksPage: PageComponent = (props) => {
   const [tab, setTab] = useState<StakeHowItWorksTab>("overview")
 
+  const { colorMode } = useColorMode()
+
   return (
     <Box>
       <AnnouncementBanner
-        imgSrc={stakingHowItWorksIllustration}
+        imgSrc={
+          colorMode === "light"
+            ? stakingHowItWorksIllustrationLight
+            : stakingHowItWorksIllustrationDark
+        }
         title="Find more information about staking below, then go to the staking page."
         href="/staking"
         buttonText="Start Staking"

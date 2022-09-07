@@ -8,13 +8,16 @@ import {
   LabelSm,
   Image,
 } from "@threshold-network/components"
-import { Stack } from "@chakra-ui/react"
+import { Stack, useColorMode } from "@chakra-ui/react"
 import ExternalLink from "../../../../components/ExternalLink"
-import AuthorizingApplicationsIllustration from "../../../../static/images/AuthorizingApplicationsIllustration.png"
+import AuthorizingApplicationsIllustrationLight from "../../../../static/images/AuthorizingApplicationsIllustrationLight.png"
+import AuthorizingApplicationsIllustrationDark from "../../../../static/images/AuthorizingApplicationsIllustrationDark.png"
 
 export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
   props
 ) => {
+  const { colorMode } = useColorMode()
+
   return (
     <Card {...props} h="fit-content">
       <LabelSm>Authorizing Applications</LabelSm>
@@ -28,7 +31,11 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
         maxW="370px"
         mx="auto"
         my={8}
-        src={AuthorizingApplicationsIllustration}
+        src={
+          colorMode === "dark"
+            ? AuthorizingApplicationsIllustrationDark
+            : AuthorizingApplicationsIllustrationLight
+        }
       />
       <BodyMd>
         If you want to decrease your authorization, refer to the timeline below
