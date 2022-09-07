@@ -1,4 +1,9 @@
-import { ContractInterface, BigNumber, providers } from "ethers"
+import {
+  ContractInterface,
+  BigNumber,
+  providers,
+  ContractTransaction,
+} from "ethers"
 import { AddressZero, getContract } from "../../utils"
 import { Application, IApplication } from ".."
 import { IStaking } from "../../staking"
@@ -39,6 +44,7 @@ describe("Application test", () => {
   beforeEach(() => {
     staking = {
       authorizedStake: jest.fn(),
+      increaseAuthorization: jest.fn(),
       stakingContract: mockStakingContract,
     } as unknown as IStaking
     ;(getContract as jest.Mock).mockImplementation(() => mockAppContract)
@@ -221,5 +227,24 @@ describe("Application test", () => {
       pendingAuthorizationDecrease,
       remainingAuthorizationDecreaseDelay,
     })
+  })
+
+  test("should trigger the increase authorization transaction", async () => {
+    const tx = {} as ContractTransaction
+    const spyOnStaking = jest
+      .spyOn(staking, "increaseAuthorization")
+      .mockResolvedValue(tx)
+
+    const result = await application.increaseAuthorization(
+      stakingProvider,
+      amount
+    )
+
+    expect(spyOnStaking).toHaveBeenCalledWith(
+      stakingProvider,
+      application.address,
+      amount
+    )
+    expect(result).toEqual(tx)
   })
 })

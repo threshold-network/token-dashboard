@@ -1,4 +1,10 @@
-import { BigNumber, BigNumberish, Contract, ContractInterface } from "ethers"
+import {
+  BigNumber,
+  BigNumberish,
+  Contract,
+  ContractInterface,
+  ContractTransaction,
+} from "ethers"
 import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
@@ -124,6 +130,19 @@ export interface IApplication {
   getStakingProviderAppInfo(
     stakingProvider: string
   ): Promise<StakingProviderAppInfo>
+
+  /**
+   * Increases the authorization of the given staking provider for the
+   * application by the given amount. Can only be called by the given staking
+   * provider’s authorizer.
+   * @param stakingProvider Staking provider address.
+   * @param amount Amount to authrozie.
+   * @returns Ethers `ContractTransaction` instance.
+   */
+  increaseAuthorization(
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -241,5 +260,16 @@ export class Application implements IApplication {
   }
   get contract() {
     return this._application
+  }
+
+  increaseAuthorization = async (
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction> => {
+    return this._staking.increaseAuthorization(
+      stakingProvider,
+      this.address,
+      amount
+    )
   }
 }
