@@ -1,5 +1,6 @@
 import { FC, useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
+import InfoBox from "../../InfoBox"
 import {
   BodyLg,
   Button,
@@ -13,22 +14,19 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Link,
 } from "@threshold-network/components"
-import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeType } from "../../../utils/getStakeType"
-import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import { isSameETHAddress } from "../../../web3/utils"
+import { Alert, AlertDescription, AlertIcon, Link } from "@chakra-ui/react"
+import { isAddress } from "web3-utils"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
 
-  const [selectedProviderAddress, setSelectedProviderAddress] = useState("")
+  const [selectedAuthorizerAddress, setSelectedAuthorizerAddress] = useState("")
 
   return (
     <>
@@ -49,8 +47,8 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
           <>
             <BodyLg my={6}>Choose a stake to continue:</BodyLg>
             <RadioGroup
-              onChange={setSelectedProviderAddress}
-              value={selectedProviderAddress}
+              onChange={setSelectedAuthorizerAddress}
+              value={selectedAuthorizerAddress}
             >
               <Stack>
                 {stakes.map((stake, i) => (
@@ -58,16 +56,16 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                     key={stake.stakingProvider}
                     boxShadow="none"
                     borderColor={
-                      isAddress(selectedProviderAddress) &&
+                      isAddress(selectedAuthorizerAddress) &&
                       isSameETHAddress(
-                        stake.stakingProvider,
-                        selectedProviderAddress
+                        stake.authorizer,
+                        selectedAuthorizerAddress
                       )
                         ? "brand.500"
                         : undefined
                     }
                   >
-                    <Radio value={stake.stakingProvider} size="lg">
+                    <Radio value={stake.authorizer} size="lg">
                       <LabelMd ml={4}>
                         STAKE {i + 1} {getStakeType(stake)}
                       </LabelMd>
@@ -102,10 +100,9 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button
           mr={2}
           as={RouterLink}
-          to={`/staking/authorize/${selectedProviderAddress}`}
+          to={`/staking/authorize/${selectedAuthorizerAddress}`}
           onClick={closeModal}
-          disabled={!selectedProviderAddress}
-          style={{ pointerEvents: selectedProviderAddress ? "auto" : "none" }}
+          disabled={!selectedAuthorizerAddress}
         >
           Continue
         </Button>
