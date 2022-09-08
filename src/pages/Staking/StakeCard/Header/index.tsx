@@ -2,7 +2,7 @@ import { FC, useContext } from "react"
 import { Badge, FilterTabs, Flex } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { StakeData } from "../../../../types"
-import { StakeCardContext } from "../../../../contexts/StakeCardContext"
+import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 
 export interface StakeCardHeaderProps {
   stake: StakeData | null
@@ -10,7 +10,7 @@ export interface StakeCardHeaderProps {
 }
 
 const StakeCardHeader: FC<StakeCardHeaderProps> = ({ stake, onTabClick }) => {
-  const { isInactiveStake } = useContext(StakeCardContext)
+  const { isInactiveStake } = useStakeCardContext()
 
   return (
     <Flex as="header" alignItems="center">

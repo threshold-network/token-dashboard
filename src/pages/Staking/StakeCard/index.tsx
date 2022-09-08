@@ -27,6 +27,7 @@ import StakeBalance from "./StakeBalance"
 import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
 import { StakeCardContext } from "../../../contexts/StakeCardContext"
+import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
 
 const StakeCardContainer: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -53,8 +54,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-  const { isInactiveStake, canTopUpKepp, canTopUpNu } =
-    useContext(StakeCardContext)
+  const { isInactiveStake, canTopUpKepp, canTopUpNu } = useStakeCardContext()
 
   const isPRESet =
     !isAddressZero(stake.preConfig.operator) &&

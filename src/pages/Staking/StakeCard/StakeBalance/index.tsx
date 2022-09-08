@@ -4,10 +4,10 @@ import InfoBox from "../../../../components/InfoBox"
 import TokenBalance from "../../../../components/TokenBalance"
 import { StakeData } from "../../../../types"
 import LegacyStakeBalances from "./LegacyStakeBalances"
-import { StakeCardContext } from "../../../../contexts/StakeCardContext"
+import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 
 const StakeBalance: FC<{ stake: StakeData }> = ({ stake }) => {
-  const { hasLegacyStakes } = useContext(StakeCardContext)
+  const { hasLegacyStakes } = useStakeCardContext()
 
   return hasLegacyStakes ? (
     <LegacyStakeBalances stake={stake} />
