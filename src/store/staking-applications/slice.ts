@@ -11,24 +11,24 @@ import {
   getSupportedAppsEffect,
 } from "./effects"
 
-type ApplicationDataByStakingProvider = {
+type StakingApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
 }
 
-export type ApplicationState = {
+export type StakingApplicationState = {
   parameters: AuthorizationParameters<string> & FetchingState
-  stakingProviders: ApplicationDataByStakingProvider & FetchingState
+  stakingProviders: StakingApplicationDataByStakingProvider & FetchingState
 }
 
-export interface ApplicationsState {
-  tbtc: ApplicationState
-  randomBeacon: ApplicationState
+export interface StakingApplicationsState {
+  tbtc: StakingApplicationState
+  randomBeacon: StakingApplicationState
 }
 
-export type AppName = "tbtc" | "randomBeacon"
+export type StakingAppName = "tbtc" | "randomBeacon"
 
-export const applicationsSlice = createSlice({
-  name: "applications",
+export const stakingApplicationsSlice = createSlice({
+  name: "staking-applications",
   initialState: {
     tbtc: {
       parameters: {
@@ -56,13 +56,13 @@ export const applicationsSlice = createSlice({
         error: "",
       },
     },
-  } as ApplicationsState,
+  } as StakingApplicationsState,
   reducers: {
-    getSupportedApps: (state: ApplicationsState, action) => {},
+    getSupportedApps: (state: StakingApplicationsState, action) => {},
     setAppParameters: (
-      state: ApplicationsState,
+      state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: AppName
+        appName: StakingAppName
         parameters: AuthorizationParameters<string>
       }>
     ) => {
@@ -74,29 +74,25 @@ export const applicationsSlice = createSlice({
       }
     },
     setAppParametersError: (
-      state: ApplicationsState,
-      action: PayloadAction<{ appName: AppName; error: string }>
+      state: StakingApplicationsState,
+      action: PayloadAction<{ appName: StakingAppName; error: string }>
     ) => {
       const { appName, error } = action.payload
       state[appName].parameters.isFetching = false
       state[appName].parameters.error = error
     },
     fetchingAppParameters: (
-      state: ApplicationsState,
-      action: PayloadAction<{ appName: AppName }>
+      state: StakingApplicationsState,
+      action: PayloadAction<{ appName: StakingAppName }>
     ) => {
       const { appName } = action.payload
       state[appName].parameters.isFetching = true
     },
-    // getStakingProvidersAppData: (
-    //   state: ApplicationsState,
-    //   action: PayloadAction<{ appName: AppName }>
-    // ) => {},
     setStakingProvidersAppData: (
-      state: ApplicationsState,
+      state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: AppName
-        data: ApplicationDataByStakingProvider
+        appName: StakingAppName
+        data: StakingApplicationDataByStakingProvider
       }>
     ) => {
       const { appName, data } = action.payload
@@ -108,18 +104,18 @@ export const applicationsSlice = createSlice({
       }
     },
     fetchingStakingProvidersAppData: (
-      state: ApplicationsState,
+      state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: AppName
+        appName: StakingAppName
       }>
     ) => {
       const { appName } = action.payload
       state[appName].stakingProviders.isFetching = true
     },
     setStakingProvidersAppDataError: (
-      state: ApplicationsState,
+      state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: AppName
+        appName: StakingAppName
         error: string
       }>
     ) => {
@@ -128,11 +124,11 @@ export const applicationsSlice = createSlice({
       state[appName].stakingProviders.error = error
     },
     authorizationIncreased: (
-      state: ApplicationsState,
+      state: StakingApplicationsState,
       action: PayloadAction<{
         stakingProvider: string
         toAmount: string
-        appName: AppName
+        appName: StakingAppName
       }>
     ) => {
       const { stakingProvider, toAmount, appName } = action.payload
@@ -145,7 +141,7 @@ export const applicationsSlice = createSlice({
 })
 
 startAppListening({
-  actionCreator: applicationsSlice.actions.getSupportedApps,
+  actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
   effect: getSupportedAppsEffect,
 })
 

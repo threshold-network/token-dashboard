@@ -24,9 +24,9 @@ import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
 import {
-  useAppDataByStakingProvider,
-  useAppMinAuthorizationAmount,
-} from "../../../hooks/application"
+  useStakingAppDataByStakingProvider,
+  useStakingAppMinAuthorizationAmount,
+} from "../../../hooks/staking-applications"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
@@ -37,14 +37,15 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
-  const tbtcMinAuthAmount = useAppMinAuthorizationAmount("tbtc")
-  const randomBeaconMinAuthAmount = useAppMinAuthorizationAmount("randomBeacon")
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const randomBeaconMinAuthAmount =
+    useStakingAppMinAuthorizationAmount("randomBeacon")
 
-  const tbtcApp = useAppDataByStakingProvider(
+  const tbtcApp = useStakingAppDataByStakingProvider(
     "tbtc",
     stakingProviderAddress || AddressZero
   )
-  const randomBeaconApp = useAppDataByStakingProvider(
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )

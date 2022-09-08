@@ -15,14 +15,14 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { applicationsSlice } from "../../store/applications/slice"
+import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(applicationsSlice.actions.getSupportedApps({}))
+    dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
   }, [dispatch])
 
   useEffect(() => {

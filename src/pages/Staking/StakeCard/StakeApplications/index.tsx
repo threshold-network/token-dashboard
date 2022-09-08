@@ -11,12 +11,15 @@ import {
 import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
-import { useAppDataByStakingProvider } from "../../../../hooks/application"
+import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 
 const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   const areNodesMissing = true
-  const tbtcApp = useAppDataByStakingProvider("tbtc", stake.stakingProvider)
-  const randomBeaconApp = useAppDataByStakingProvider(
+  const tbtcApp = useStakingAppDataByStakingProvider(
+    "tbtc",
+    stake.stakingProvider
+  )
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
     stake.stakingProvider
   )

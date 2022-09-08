@@ -12,7 +12,7 @@ import { stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
 import { tbtcSlice } from "./tbtc"
-import { applicationsSlice } from "./applications/slice"
+import { stakingApplicationsSlice } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
 
 const combinedReducer = combineReducers({
@@ -24,7 +24,7 @@ const combinedReducer = combineReducers({
   eth: ethSlice.reducer,
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
-  applications: applicationsSlice.reducer,
+  applications: stakingApplicationsSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"

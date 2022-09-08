@@ -1,4 +1,4 @@
-import { applicationsSlice, AppName } from "./slice"
+import { stakingApplicationsSlice, StakingAppName } from "./slice"
 import { AppListenerEffectAPI } from "../listener"
 import { selectStakingProviders, setStakes } from "../staking"
 import {
@@ -7,16 +7,18 @@ import {
 } from "../../threshold-ts/applications"
 
 export const getSupportedAppsEffect = async (
-  action: ReturnType<typeof applicationsSlice.actions.getSupportedApps>,
+  action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
   listenerApi: AppListenerEffectAPI
 ) => {
   try {
     listenerApi.unsubscribe()
     listenerApi.dispatch(
-      applicationsSlice.actions.fetchingAppParameters({ appName: "tbtc" })
+      stakingApplicationsSlice.actions.fetchingAppParameters({
+        appName: "tbtc",
+      })
     )
     listenerApi.dispatch(
-      applicationsSlice.actions.fetchingAppParameters({
+      stakingApplicationsSlice.actions.fetchingAppParameters({
         appName: "randomBeacon",
       })
     )
@@ -44,13 +46,13 @@ export const getSupportedAppsEffect = async (
       },
     }
     listenerApi.dispatch(
-      applicationsSlice.actions.setAppParameters({
+      stakingApplicationsSlice.actions.setAppParameters({
         appName: "randomBeacon",
         parameters: payload.randomBeacon,
       })
     )
     listenerApi.dispatch(
-      applicationsSlice.actions.setAppParameters({
+      stakingApplicationsSlice.actions.setAppParameters({
         appName: "tbtc",
         parameters: payload.tbtc,
       })
@@ -58,13 +60,13 @@ export const getSupportedAppsEffect = async (
   } catch (error) {
     const errorMessage = (error as Error).toString()
     listenerApi.dispatch(
-      applicationsSlice.actions.setAppParametersError({
+      stakingApplicationsSlice.actions.setAppParametersError({
         appName: "randomBeacon",
         error: errorMessage,
       })
     )
     listenerApi.dispatch(
-      applicationsSlice.actions.setAppParametersError({
+      stakingApplicationsSlice.actions.setAppParametersError({
         appName: "tbtc",
         error: errorMessage,
       })
@@ -106,12 +108,14 @@ export const getSupportedAppsStakingProvidersData = async (
 const getKeepStakingAppStakingProvidersData = async (
   stakingProviders: string[],
   application: IApplication,
-  appName: AppName,
+  appName: StakingAppName,
   listenerApi: AppListenerEffectAPI
 ) => {
   try {
     listenerApi.dispatch(
-      applicationsSlice.actions.fetchingStakingProvidersAppData({ appName })
+      stakingApplicationsSlice.actions.fetchingStakingProvidersAppData({
+        appName,
+      })
     )
     const appData = await Promise.all(
       stakingProviders.map(application.getStakingProviderAppInfo)
@@ -131,14 +135,14 @@ const getKeepStakingAppStakingProvidersData = async (
       {} as { [stakingProvider: string]: StakingProviderAppInfo<string> }
     )
     listenerApi.dispatch(
-      applicationsSlice.actions.setStakingProvidersAppData({
+      stakingApplicationsSlice.actions.setStakingProvidersAppData({
         appName,
         data: appDataByStakingProvider,
       })
     )
   } catch (error) {
     listenerApi.dispatch(
-      applicationsSlice.actions.setStakingProvidersAppDataError({
+      stakingApplicationsSlice.actions.setStakingProvidersAppDataError({
         appName,
         error: (error as Error).toString(),
       })
