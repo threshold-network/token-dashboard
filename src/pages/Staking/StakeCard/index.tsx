@@ -34,6 +34,9 @@ const StakeCardContainer: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+  const isPRESet =
+    !isAddressZero(stake.preConfig.operator) &&
+    stake.preConfig.isOperatorConfirmed
 
   return (
     <StakeCardContext.Provider
@@ -42,6 +45,7 @@ const StakeCardContainer: FC<{ stake: StakeData }> = ({ stake }) => {
         canTopUpKepp,
         canTopUpNu,
         hasLegacyStakes,
+        isPRESet,
       }}
     >
       <StakeCard stake={stake} />
@@ -54,11 +58,8 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-  const { isInactiveStake, canTopUpKepp, canTopUpNu } = useStakeCardContext()
-
-  const isPRESet =
-    !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.isOperatorConfirmed
+  const { isInactiveStake, canTopUpKepp, canTopUpNu, isPRESet } =
+    useStakeCardContext()
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 
@@ -100,7 +101,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader stake={stake} onTabClick={onTabClick} />
-      <StakeRewards stake={stake} isPRESet={isPRESet} />
+      <StakeRewards stake={stake} />
       <LineDivider />
       {featureFlags.MULTI_APP_STAKING && (
         <>

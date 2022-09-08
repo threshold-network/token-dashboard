@@ -6,6 +6,7 @@ interface StakeCardContext {
   canTopUpKepp: boolean
   canTopUpNu: boolean
   hasLegacyStakes: boolean
+  isPRESet: boolean
 }
 
 export const StakeCardContext = React.createContext<
