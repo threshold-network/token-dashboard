@@ -4,5 +4,5 @@ import { useStakingAppParameters } from "./useStakingAppParameters"
 export const useStakingAppMinAuthorizationAmount = (
   appName: StakingAppName
 ) => {
-  return useStakingAppParameters(appName).minimumAuthorization
+  return useStakingAppParameters(appName).data.minimumAuthorization
 }

@@ -16,8 +16,8 @@ type StakingApplicationDataByStakingProvider = {
 }
 
 export type StakingApplicationState = {
-  parameters: AuthorizationParameters<string> & FetchingState
-  stakingProviders: StakingApplicationDataByStakingProvider & FetchingState
+  parameters: FetchingState<AuthorizationParameters<string>>
+  stakingProviders: FetchingState<StakingApplicationDataByStakingProvider>
 }
 
 export interface StakingApplicationsState {
@@ -34,26 +34,32 @@ export const stakingApplicationsSlice = createSlice({
       parameters: {
         isFetching: false,
         error: "",
-        authorizationDecreaseChangePeriod: "0",
-        minimumAuthorization: "0",
-        authorizationDecreaseDelay: "0",
+        data: {
+          authorizationDecreaseChangePeriod: "0",
+          minimumAuthorization: "0",
+          authorizationDecreaseDelay: "0",
+        },
       },
       stakingProviders: {
         isFetching: false,
         error: "",
+        data: {},
       },
     },
     randomBeacon: {
       parameters: {
         isFetching: false,
         error: "",
-        authorizationDecreaseChangePeriod: "0",
-        minimumAuthorization: "0",
-        authorizationDecreaseDelay: "0",
+        data: {
+          authorizationDecreaseChangePeriod: "0",
+          minimumAuthorization: "0",
+          authorizationDecreaseDelay: "0",
+        },
       },
       stakingProviders: {
         isFetching: false,
         error: "",
+        data: {},
       },
     },
   } as StakingApplicationsState,
@@ -68,7 +74,7 @@ export const stakingApplicationsSlice = createSlice({
     ) => {
       const { appName, parameters } = action.payload
       state[appName].parameters = {
-        ...parameters,
+        data: { ...parameters },
         isFetching: false,
         error: "",
       }
@@ -96,11 +102,10 @@ export const stakingApplicationsSlice = createSlice({
       }>
     ) => {
       const { appName, data } = action.payload
-      // @ts-ignore
       state[appName].stakingProviders = {
         isFetching: false,
         error: "",
-        ...data,
+        data,
       }
     },
     fetchingStakingProvidersAppData: (
@@ -133,7 +138,7 @@ export const stakingApplicationsSlice = createSlice({
     ) => {
       const { stakingProvider, toAmount, appName } = action.payload
       if (state[appName].stakingProviders) {
-        state[appName].stakingProviders[stakingProvider].authorizedStake =
+        state[appName].stakingProviders.data[stakingProvider].authorizedStake =
           toAmount
       }
     },

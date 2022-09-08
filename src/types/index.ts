@@ -8,7 +8,8 @@ export * from "./page"
 export * from "./rewards"
 export * from "./staking"
 
-export type FetchingState = {
+export type FetchingState<DataType> = {
   isFetching: boolean
   error: string
+  data: DataType
 }

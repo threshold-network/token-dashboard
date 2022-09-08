@@ -33,8 +33,8 @@ export const selectStakingAppByStakingProvider = createSelector(
     stakingProvider: string,
     stake: StakeData | undefined
   ) => {
-    const authData = appState.stakingProviders[stakingProvider] || {}
-    const minAuth = appState.parameters.minimumAuthorization
+    const authData = appState.stakingProviders.data[stakingProvider] || {}
+    const minAuth = appState.parameters.data.minimumAuthorization
     return {
       ...authData,
       isAuthorized: BigNumber.from(authData?.authorizedStake || "0").gte(
