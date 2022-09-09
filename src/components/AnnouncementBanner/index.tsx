@@ -1,13 +1,14 @@
 import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
+  Card,
+  H4,
   Button,
   CloseButton,
   Stack,
   useDisclosure,
   Image,
-} from "@chakra-ui/react"
-import { Card, H4 } from "@threshold-network/components"
+} from "@threshold-network/components"
 
 interface AnnouncementBannerProps {
   imgSrc: any
