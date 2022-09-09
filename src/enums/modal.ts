@@ -19,4 +19,5 @@ export enum ModalType {
   TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
   TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
   UseDesktop = "USE_DESKTOP",
+  DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
 }
