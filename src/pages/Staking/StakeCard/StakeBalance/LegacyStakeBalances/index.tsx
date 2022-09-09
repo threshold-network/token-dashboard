@@ -1,11 +1,11 @@
 import { FC } from "react"
-import { StakeData } from "../../../types/staking"
-import { Tree, TreeNode } from "../../../components/Tree"
 import { Icon, Tooltip } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
+import { StakeData } from "../../../../../types/staking"
+import { Tree, TreeNode } from "../../../../../components/Tree"
 import { BalanceTreeItem } from "./BalanceTreeItem"
 
-export const BalanceTree: FC<{ stake: StakeData }> = ({ stake }) => {
+const LegacyStakeBalances: FC<{ stake: StakeData }> = ({ stake }) => {
   return (
     <Tree>
       <TreeNode isRoot>
@@ -47,3 +47,5 @@ export const BalanceTree: FC<{ stake: StakeData }> = ({ stake }) => {
     </Tree>
   )
 }
+
+export default LegacyStakeBalances
