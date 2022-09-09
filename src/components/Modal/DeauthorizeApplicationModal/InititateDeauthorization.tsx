@@ -1,5 +1,13 @@
 import { FC } from "react"
+import { StakeData } from "../../../types"
 import {
+  BodyLg,
+  BodySm,
+  BoxLabel,
+  FlowStep,
+  FlowStepStatus,
+  H5,
+  LineDivider,
   Alert,
   AlertIcon,
   Button,
@@ -10,16 +18,6 @@ import {
   ModalHeader,
   Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { StakeData } from "../../../types"
-import {
-  BodyLg,
-  BodySm,
-  BoxLabel,
-  FlowStep,
-  FlowStepStatus,
-  H5,
-  LineDivider,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import StakingApplicationOperationIcon, {
