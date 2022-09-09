@@ -7,6 +7,7 @@ import { Badge } from "./Badge"
 import { Checkbox } from "./Checkbox"
 
 import { defaultTheme } from "@threshold-network/components"
+import { Radio } from "./Radio"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -17,6 +18,7 @@ const index = extendTheme({
     Tree,
     Tabs,
     Badge,
+    Radio,
     Checkbox,
   },
 })

@@ -24,6 +24,7 @@ import {
   ClaimingRewards,
   ClaimRewardsSuccessModal,
 } from "../components/Modal/ClaimingRewards"
+import NewAppsToAuthorizeModal from "../components/Modal/NewAppsToAuthorizeModal"
 import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
@@ -48,6 +49,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TopupTSuccess]: TopupTSuccessModal,
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
+  [ModalType.NewAppsToAuthorize]: NewAppsToAuthorizeModal,
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.UseDesktop]: UseDesktopModal,
