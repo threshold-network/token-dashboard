@@ -8,6 +8,17 @@ on:
       - main
   pull_request:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Environment (network) for workflow execution, e.g. `goerli`"
+        required: false
+      upstream_builds:
+        description: "Upstream builds"
+        required: false
+      upstream_ref:
+        description: "Git reference to checkout (e.g. branch name)"
+        required: false
+        default: "main"
 
 jobs:
   format:
@@ -18,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # This step forces Git to download dependencies using `https://` protocol,
@@ -44,7 +55,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # We need this step because the `@keep-network/tbtc` which we update in
@@ -62,7 +73,11 @@ jobs:
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
-            @keep-network/coverage-pools
+            @keep-network/coverage-pools \
+            @keep-network/tbtc-v2 \
+            @keep-network/tbtc-v2.ts \
+            @keep-network/ecdsa \
+            @keep-network/random-beacon
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -75,91 +90,84 @@ jobs:
           CHAIN_ID: 5
           ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
       #   run: yarn test
 
-  build-and-deploy-testnet:
-    name: Deploy to testnet
+  # The code will be published to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.
+  build-and-deploy-testnet-preview:
+    name: Deploy preview to testnet
     needs: build-and-test
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
-          node-version: "16"
-          cache: "yarn"
+          environment: goerli
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          useUpstreamBuilds: false
+          dependentPackagesTag: goerli
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          gcpBucketName: preview.dashboard.test.threshold.network
+          gcpBucketPath: ${{ github.head_ref }}
+          preview: true
 
-      # We need this step because the `@keep-network/tbtc` which we update in
-      # next step has a dependency to `@summa-tx/relay-sol@2.0.2` package, which
-      # downloads one of its sub-dependencies via unathenticated `git://`
-      # protocol. That protocol is no longer supported. Thanks to this step
-      # `https://` is used instead of `git://`.
-      - name: Configure git to don't use unauthenticated protocol
-        run: git config --global url."https://".insteadOf git://
+  # This job will be triggered via the `workflow_dispatch` event, as part of the
+  # CI flow, which gets triggered manually after changes in the contracts,
+  # client code, etc. As after such changes the manual rotation of the client
+  # pods is needed, we configure the job to use the protected `testnet`
+  # environment. Thanks to this, the job won't start until somebody approves it
+  # in GH Actions.
+  # The code will be published to https://dashboard.test.threshold.network/index.html.
+  build-and-deploy-testnet-on-dispatch:
+    name: Deploy to testnet
+    needs: build-and-test
+    if: |
+      github.event_name == 'workflow_dispatch'
+        && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    # testnet environment is protected, it requires an approval before execution.
+    environment:
+      name: testnet
+    steps:
+      - uses: actions/checkout@v3
 
-      # We provide explicit version of the `keep-core` package, because using
-      # `goerli` tag results in `expected manifest` error - probably caused by
-      # bug in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
-      - name: Resolve latest goerli contracts
-        run: |
-          yarn upgrade \
-            @threshold-network/solidity-contracts@goerli \
-            @keep-network/keep-core@1.8.1-goerli.0 \
-            @keep-network/keep-ecdsa@goerli \
-            @keep-network/tbtc@goerli \
-            @keep-network/coverage-pools@goerli
-
-      - name: Run postinstall script
-        # `yarn upgrade` doesn't trigger the `postinstall` script.
-        run: yarn run postinstall
-
-      - name: Build
-        run: yarn build
-        env:
-          PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 5
-          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-
-      # A pull_request event is a PR; deploy to preview testnet bucket.
-      - name: Deploy PR preview to GCP
-        if: github.event_name == 'pull_request'
-        uses: thesis/gcp-storage-bucket-action@v3.1.0
+      - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
-          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
-          bucket-name: preview.dashboard.test.threshold.network
-          bucket-path: ${{ github.head_ref }}
-          build-folder: build
+          environment: goerli
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          useUpstreamBuilds: true
+          upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          gcpBucketName: dashboard.test.threshold.network
+          preview: false
 
-      - name: Post preview URL to PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: 'Preview uploaded to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.'
-            })
+  # This job will be triggered after merges of PRs to the `main` branch. As the
+  # triggering is not related to the changes in the contracts / client code, we
+  # don't need to rotate the pods and hence don't need to wait with the
+  # execution of workflow for the manual approval.
+  # The code will be published to https://dashboard.test.threshold.network/index.html.
+  build-and-deploy-testnet-on-push:
+    name: Deploy to testnet
+    needs: build-and-test
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
-      # A push event is triggered on main branch merge; deploy to testnet
-      # bucket. Also triggered by manual dispatch from `main` branch.
-      - name: Deploy to GCP bucket
-        if: |
-          github.event_name == 'push'
-          || (github.event_name == 'workflow_dispatch'
-          && github.ref == 'refs/heads/main')
-        uses: thesis/gcp-storage-bucket-action@v3.1.0
+      - uses: ./.github/actions/build-and-deploy-to-bucket
         with:
-          service-key: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          project: ${{ secrets.KEEP_TEST_GOOGLE_PROJECT_ID }}
-          bucket-name: dashboard.test.threshold.network
-          build-folder: build
-          set-website: true
-          home-page-path: index.html
-          error-page-path: index.html
+          environment: goerli
+          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          useUpstreamBuilds: false
+          dependentPackagesTag: goerli
+          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+          gcpBucketName: dashboard.test.threshold.network
+          preview: false
