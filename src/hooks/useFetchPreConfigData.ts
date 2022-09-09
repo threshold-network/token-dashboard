@@ -1,46 +1,29 @@
 import { useCallback } from "react"
-import { useMulticallContract, usePREContract } from "../web3/hooks"
-import { decodeMulticallResult, getMulticallContractCall } from "../web3/utils"
+import { usePREContract } from "../web3/hooks"
 import { PreConfigData } from "../types/staking"
+import { useThreshold } from "../contexts/ThresholdContext"
 
 export const useFetchPreConfigData = (): ((
   stakingProviders: string[]
 ) => Promise<PreConfigData>) => {
   const preContract = usePREContract()
-  const multicallContract = useMulticallContract()
+  const threshold = useThreshold()
 
   return useCallback(
     async (stakingProviders) => {
-      if (
-        !stakingProviders ||
-        stakingProviders.length === 0 ||
-        !preContract ||
-        !multicallContract
-      ) {
+      if (!stakingProviders || stakingProviders.length === 0 || !preContract) {
         return {} as PreConfigData
       }
 
-      const preConfigDataMulticalls = stakingProviders.map(
-        (stakingProvider) => {
+      const preConfigDataRaw = await threshold.multicall.aggregate(
+        stakingProviders.map((stakingProvider) => {
           return {
-            contract: preContract,
+            interface: preContract.interface,
+            address: preContract.address,
             method: "stakingProviderInfo",
             args: [stakingProvider],
           }
-        }
-      )
-
-      const preConfigDataMulticallRequests = preConfigDataMulticalls.map(
-        getMulticallContractCall
-      )
-
-      const [, preConfigDataResults] = await multicallContract?.aggregate(
-        preConfigDataMulticallRequests
-      )
-
-      const preConfigDataRaw = decodeMulticallResult(
-        preConfigDataResults,
-        preConfigDataMulticalls
+        })
       )
 
       return preConfigDataRaw.reduce(
@@ -55,6 +38,6 @@ export const useFetchPreConfigData = (): ((
         {}
       )
     },
-    [preContract, multicallContract]
+    [preContract, threshold]
   )
 }

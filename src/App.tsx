@@ -38,6 +38,7 @@ import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
+import { ThresholdProvider } from "./contexts/ThresholdContext"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -150,10 +151,7 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map((page: PageComponent) => {
-          if (!page.route.isPageEnabled) return null
-          return renderPageComponent(page)
-        })}
+        {pages.map(renderPageComponent)}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
@@ -161,6 +159,8 @@ const Routing = () => {
 }
 
 const renderPageComponent = (PageComponent: PageComponent) => {
+  if (!PageComponent.route.isPageEnabled) return null
+
   return (
     <Fragment key={PageComponent.route.path}>
       {PageComponent.route.index && (
@@ -183,15 +183,17 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <ReduxProvider store={reduxStore}>
-          <ChakraProvider theme={theme}>
-            <TokenContextProvider>
-              <Web3EventHandlerComponent />
-              <ModalRoot />
-              <AppBody />
-            </TokenContextProvider>
-          </ChakraProvider>
-        </ReduxProvider>
+        <ThresholdProvider>
+          <ReduxProvider store={reduxStore}>
+            <ChakraProvider theme={theme}>
+              <TokenContextProvider>
+                <Web3EventHandlerComponent />
+                <ModalRoot />
+                <AppBody />
+              </TokenContextProvider>
+            </ChakraProvider>
+          </ReduxProvider>
+        </ThresholdProvider>
       </Web3ReactProvider>
     </Router>
   )

@@ -1,8 +1,8 @@
 import { FC, Fragment, ReactElement } from "react"
-import { TreeItem, TreeItemLineToNode } from "../../../components/Tree"
 import { BodyMd } from "@threshold-network/components"
-import InfoBox from "../../../components/InfoBox"
-import TokenBalance from "../../../components/TokenBalance"
+import { TreeItem, TreeItemLineToNode } from "../../../../../components/Tree"
+import InfoBox from "../../../../../components/InfoBox"
+import TokenBalance from "../../../../../components/TokenBalance"
 
 export const BalanceTreeItem: FC<{
   label: string | ReactElement
