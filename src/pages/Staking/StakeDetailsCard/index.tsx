@@ -43,7 +43,7 @@ const StakeDetailsCard: FC<{ stake: StakeData }> = ({ stake }) => {
           >
             {isInActiveStake ? "inactive" : "active"}
           </Badge>
-          <StakeCardHeaderTitle stake={stake} />
+          <StakeCardHeaderTitle stakeType={stake.stakeType} />
         </Flex>
       </HStack>
       <LineDivider />
