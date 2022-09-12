@@ -41,11 +41,8 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
 }
 
 const NavPill: FC<RouteProps> = ({ path, title }) => {
-  console.log("PATH", path)
-  path = ":stakingProvider/*"
   const resolved = useResolvedPath(path)
-  console.log("resolved", resolved)
-  const isActive = useMatch(`staking/:stakingProvider/*`)
+  const isActive = useMatch({ path: resolved.pathname, end: true })
   const activeColor = useColorModeValue("brand.500", "white")
 
   return (
