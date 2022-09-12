@@ -9,6 +9,8 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
+  shouldDisplayNewAuthToAuthrozieAppModal,
+  displayNewAuthToAuthrozieAppModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -153,4 +155,9 @@ startAppListening({
 startAppListening({
   actionCreator: setStakes,
   effect: getSupportedAppsStakingProvidersData,
+})
+
+startAppListening({
+  predicate: shouldDisplayNewAuthToAuthrozieAppModal,
+  effect: displayNewAuthToAuthrozieAppModalEffect,
 })
