@@ -100,17 +100,22 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
-      <StakeCardHeader stakeType={stake?.stakeType} onTabClick={onTabClick} />
-      <StakeRewards stake={stake} />
+      <StakeCardHeader stakeType={stake.stakeType} onTabClick={onTabClick} />
+      <StakeRewards stakingProvider={stake.stakingProvider} />
       <LineDivider />
       {featureFlags.MULTI_APP_STAKING && (
         <>
-          <StakeApplications stake={stake} />
+          <StakeApplications stakingProvider={stake.stakingProvider} />
           <LineDivider mb="0" />
         </>
       )}
-      <StakeBalance stake={stake} />
-      <StakeAddressInfo stake={stake} />
+      <StakeBalance
+        nuInTStake={stake.nuInTStake}
+        keepInTStake={stake.keepInTStake}
+        tStake={stake.tStake}
+        totalInTStake={stake.totalInTStake}
+      />
+      <StakeAddressInfo stakingProvider={stake.stakingProvider} />
       {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>
