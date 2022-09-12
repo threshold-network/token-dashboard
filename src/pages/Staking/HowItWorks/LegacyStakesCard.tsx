@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/react"
 import {
   PreSetupSteps,
   LegacyStakesDepositSteps,
-} from "../../../components/StakingChecklist"
+} from "../../../components/StakingTimeline"
 import { BodyMd, LabelSm, Card } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
