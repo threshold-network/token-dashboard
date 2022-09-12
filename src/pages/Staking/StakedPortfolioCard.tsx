@@ -1,5 +1,5 @@
-import { ComponentProps, FC } from "react"
-import { HStack, Stack, Divider } from "@chakra-ui/react"
+import { ComponentProps, FC, useMemo } from "react"
+import { HStack, Divider } from "@chakra-ui/react"
 import {
   BodyLg,
   BodyMd,
@@ -21,13 +21,25 @@ import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"
 const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
   const { openModal } = useModal()
   const tBalance = useTokenBalance(Token.T)
-  const minStakeAmount = useMinStakeAmount()
+  const { minStakeAmount, isLoading, hasError } = useMinStakeAmount()
 
   const openStakingModal = async (stakeAmount: string) => {
     openModal(ModalType.StakingChecklist, { stakeAmount })
   }
 
   const { stakedBalance } = useStakingState()
+
+  const placeholder = useMemo(() => {
+    if (hasError) {
+      return "Error fetching min stake"
+    }
+
+    return `Minimum stake ${
+      isLoading || minStakeAmount === undefined
+        ? "loading..."
+        : `${formatTokenAmount(minStakeAmount)} T`
+    }`
+  }, [isLoading, hasError, minStakeAmount])
 
   return (
     <Card h="fit-content" {...props}>
@@ -53,11 +65,7 @@ const StakedPortfolioCard: FC<ComponentProps<typeof Card>> = (props) => {
         label="Stake Amount"
         submitButtonText="New Stake"
         maxTokenAmount={tBalance}
-        placeholder={`Minimum stake ${
-          minStakeAmount === "0"
-            ? "loading..."
-            : `${formatTokenAmount(minStakeAmount)} T`
-        }`}
+        placeholder={placeholder}
         minTokenAmount={minStakeAmount}
       />
       <StakingContractLearnMore mt="3" />

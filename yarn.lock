@@ -3092,6 +3092,17 @@
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
     "@threshold-network/solidity-contracts" "1.2.0-dev.17"
 
+"@keep-network/ecdsa@development":
+  version "2.0.0-dev.64"
+  resolved "https://registry.npmjs.org/@keep-network/ecdsa/-/ecdsa-2.0.0-dev.64.tgz#4eefd8f4d20a1a7d88d1066cacce5f0d6bfa2907"
+  integrity sha512-jsz8dX3rj5t+Ug1sloey01ZLs7kMr6OV8Ky0mAj/cDicBYCAHHWhjApfK755ccDQHVgW7+MTQpF1mDW7W8WlPg==
+  dependencies:
+    "@keep-network/random-beacon" "2.0.0-dev.63"
+    "@keep-network/sortition-pools" "^2.0.0-pre.13"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@threshold-network/solidity-contracts" "1.2.0-dev.18"
+
 "@keep-network/keep-core@1.8.0-dev.5":
   version "1.8.0-dev.5"
   resolved "https://registry.yarnpkg.com/@keep-network/keep-core/-/keep-core-1.8.0-dev.5.tgz#8b4d08ec437f29c94723ee54fcf76456ba5408c3"
@@ -3179,6 +3190,26 @@
     "@openzeppelin/contracts" "^4.6.0"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" "1.2.0-dev.17"
+
+"@keep-network/random-beacon@2.0.0-dev.63":
+  version "2.0.0-dev.63"
+  resolved "https://registry.npmjs.org/@keep-network/random-beacon/-/random-beacon-2.0.0-dev.63.tgz#631990c9b51b0ae80427fb192e4b37801fa83c48"
+  integrity sha512-LeUZp4HOnbC38xBF9bLE8CuAFncD/+0PlIW6XGHL9vaH9HE5Gt8cBqF5AjmDaWSFlKMyxydhQd3iprpF2XoC7A==
+  dependencies:
+    "@keep-network/sortition-pools" "^2.0.0-pre.13"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+    "@threshold-network/solidity-contracts" "1.2.0-dev.18"
+
+"@keep-network/random-beacon@development":
+  version "2.0.0-dev.65"
+  resolved "https://registry.npmjs.org/@keep-network/random-beacon/-/random-beacon-2.0.0-dev.65.tgz#3b39d75b3ec64830303d929b8b2c136d4fe87274"
+  integrity sha512-Rm+k4RBVcaF9rKm6orbGJQLEfNzWQGiibuq4rGX/ONRLoa7wZo/f4Xu1MItLFPQkzF1sFoufxm0xBL/svKLs/Q==
+  dependencies:
+    "@keep-network/sortition-pools" "^2.0.0-pre.13"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+    "@threshold-network/solidity-contracts" "1.2.0-dev.18"
 
 "@keep-network/sortition-pools@1.2.0-dev.1":
   version "1.2.0-dev.1"
@@ -4929,14 +4960,24 @@
     "@openzeppelin/contracts" "^4.1.0"
 
 "@threshold-network/components@development":
-  version "1.0.0-dev.13"
-  resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.13.tgz#aedbeda0f8fa718f5809367f9f0bc11d746a4d84"
-  integrity sha512-VkU28HS9AUlWGkyiNo4FkngsWGTTMOnzR+JWGhdXRZkLmPwwUySzixtAbPTOKH0IWtTJcpjDa5YKpn2S1kyoDQ==
+  version "1.0.0-dev.15"
+  resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.15.tgz#227a514dbe9b1455b0d465cd3c099999ad54c01c"
+  integrity sha512-DAWB3DB5mZbVof/foIV5iFTgRctH8f9Hrz0HTv2wupCdOhqd08vC71aEl/AmgIBy7EESAKtbNeezut+FqZavmg==
 
 "@threshold-network/solidity-contracts@1.2.0-dev.17", "@threshold-network/solidity-contracts@development":
   version "1.2.0-dev.17"
   resolved "https://registry.yarnpkg.com/@threshold-network/solidity-contracts/-/solidity-contracts-1.2.0-dev.17.tgz#c12157f199bb1ef95ca3748654286abb08ed8f7b"
   integrity sha512-YJE4fgwjBha+61iVo4TiUN/F5eND835U8rWxHy1uBU4e/CZGG99Vv1n33NMDvTNHw6pi2HKLKYqWSyc01/5/PA==
+  dependencies:
+    "@keep-network/keep-core" ">1.8.1-dev <1.8.1-goerli"
+    "@openzeppelin/contracts" "~4.5.0"
+    "@openzeppelin/contracts-upgradeable" "~4.5.2"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+
+"@threshold-network/solidity-contracts@1.2.0-dev.18":
+  version "1.2.0-dev.18"
+  resolved "https://registry.npmjs.org/@threshold-network/solidity-contracts/-/solidity-contracts-1.2.0-dev.18.tgz#814721dea03e47c3fe2f21644802e99d49dd9260"
+  integrity sha512-ao6Kngc8Q9rPg42/DlSlsOi2k/GH0DfdAOB4fmzcQSBl4H4D+dP0k0ymqvK6zfeMgxYmjRYP2KI5kDLPpaF2jg==
   dependencies:
     "@keep-network/keep-core" ">1.8.1-dev <1.8.1-goerli"
     "@openzeppelin/contracts" "~4.5.0"

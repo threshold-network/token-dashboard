@@ -26,16 +26,19 @@ import { useWeb3React } from "@web3-react/core"
 import { isAddress } from "web3-utils"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
-  const { stakingProviderAddress: addressFromUrl } = useParams()
+  const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!isAddress(addressFromUrl!)) navigate(`/staking`)
-  }, [addressFromUrl, navigate])
+    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+  }, [stakingProviderAddress, navigate])
+
+  //TODO: This should be fetched from contract for each app
+  const minAuthAmount = "1000000000000000000000"
 
   const stake = useSelector((state: RootState) =>
-    selectStakeByStakingProvider(state, addressFromUrl!)
+    selectStakeByStakingProvider(state, stakingProviderAddress!)
   ) as StakeData
 
   const isLoggedInAsAuthorizer =
@@ -121,7 +124,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={"1000000000000000000000"}
+          minAuthAmount={minAuthAmount}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -131,7 +134,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
             .map((app) => app.label)
             .includes("Random Beacon")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={"1000000000000000000000"}
+          minAuthAmount={minAuthAmount}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -139,7 +142,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={"1000000000000000000000"}
+          minAuthAmount={minAuthAmount}
         />
         <Button
           disabled={selectedApps.length === 0}
