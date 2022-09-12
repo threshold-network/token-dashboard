@@ -1,19 +1,20 @@
 import { FC } from "react"
 import { Badge, FilterTabs, Flex } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
-import { StakeData } from "../../../../types"
+import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
+import { StakeType } from "../../../../enums"
 
 export interface StakeCardHeaderProps {
-  isInactiveStake: boolean
-  stake: StakeData | null
+  stakeType?: StakeType
   onTabClick: () => void
 }
 
 const StakeCardHeader: FC<StakeCardHeaderProps> = ({
-  isInactiveStake,
-  stake,
+  stakeType,
   onTabClick,
 }) => {
+  const { isInactiveStake } = useStakeCardContext()
+
   return (
     <Flex as="header" alignItems="center">
       <Badge
@@ -24,7 +25,7 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
       >
         {isInactiveStake ? "inactive" : "active"}
       </Badge>
-      <StakeCardHeaderTitle stake={stake} />
+      <StakeCardHeaderTitle stakeType={stakeType} />
       <FilterTabs
         tabs={[
           { title: "Stake", tabId: "1" },
