@@ -107,7 +107,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
             >
               {isInactiveStake ? "inactive" : "active"}
             </Badge>
-            <StakeCardHeaderTitle stake={stake} />
+            <StakeCardHeaderTitle stakeType={stake?.stakeType} />
           </HStack>
         </HStack>
         <LineDivider />

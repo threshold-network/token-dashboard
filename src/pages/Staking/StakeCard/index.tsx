@@ -100,7 +100,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
 
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
-      <StakeCardHeader stake={stake} onTabClick={onTabClick} />
+      <StakeCardHeader stakeType={stake?.stakeType} onTabClick={onTabClick} />
       <StakeRewards stake={stake} />
       <LineDivider />
       {featureFlags.MULTI_APP_STAKING && (
