@@ -1,4 +1,4 @@
-import { FC, useContext } from "react"
+import { FC } from "react"
 import { Badge, FilterTabs, Flex } from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"

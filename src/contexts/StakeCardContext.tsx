@@ -1,4 +1,3 @@
-import React from "react"
 import { createContext } from "react"
 
 interface StakeCardContext {
@@ -9,6 +8,6 @@ interface StakeCardContext {
   isPRESet: boolean
 }
 
-export const StakeCardContext = React.createContext<
-  StakeCardContext | undefined
->(undefined)
+export const StakeCardContext = createContext<StakeCardContext | undefined>(
+  undefined
+)

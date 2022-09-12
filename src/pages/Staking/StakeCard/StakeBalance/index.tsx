@@ -2,7 +2,6 @@ import { FC, useContext } from "react"
 import { BodyMd } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 import TokenBalance from "../../../../components/TokenBalance"
-import { StakeData } from "../../../../types"
 import LegacyStakeBalances from "./LegacyStakeBalances"
 import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 

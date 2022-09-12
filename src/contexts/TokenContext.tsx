@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from "react"
+import React, { createContext } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { AddressZero } from "@ethersproject/constants"
 import { useWeb3React } from "@web3-react/core"

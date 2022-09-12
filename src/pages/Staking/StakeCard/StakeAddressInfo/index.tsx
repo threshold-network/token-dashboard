@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { BoxLabel, Flex } from "@threshold-network/components"
 import { CopyAddressToClipboard } from "../../../../components/CopyToClipboard"
-import { StakeData } from "../../../../types"
 
 const StakeAddressInfo: FC<{ stakingProvider: string }> = ({
   stakingProvider,

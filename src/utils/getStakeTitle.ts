@@ -1,4 +1,3 @@
-// import { StakeData } from "../types"
 import { StakeType } from "../enums"
 
 export const getStakeTitle = (stakeType?: StakeType | null): string => {

@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { Icon, Tooltip } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
-import { StakeData } from "../../../../../types/staking"
 import { Tree, TreeNode } from "../../../../../components/Tree"
 import { BalanceTreeItem } from "./BalanceTreeItem"
 

@@ -8,7 +8,6 @@ import {
   Button,
   Link,
 } from "@threshold-network/components"
-import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
 
