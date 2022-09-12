@@ -29,7 +29,7 @@ import { featureFlags } from "../../../constants"
 import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
 
-const StakeCardContainer: FC<{ stake: StakeData }> = ({ stake }) => {
+const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
@@ -153,4 +153,4 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-export default StakeCardContainer
+export default StakeCardProvider
