@@ -5,6 +5,7 @@ export type RouteProps = {
   title?: string
   index: boolean
   pages?: PageComponent[]
+  hideFromMenu?: boolean
   isPageEnabled: boolean
 }
 

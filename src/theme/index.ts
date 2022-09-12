@@ -6,6 +6,8 @@ import { Tree } from "./Tree"
 import { Tabs } from "./Tabs"
 import { Badge } from "./Badge"
 import { DetailedLinkListItem } from "./DetailedLinkListItem"
+import { Checkbox } from "./Checkbox"
+import { Radio } from "./Radio"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -17,6 +19,8 @@ const index = extendTheme({
     Tabs,
     Badge,
     DetailedLinkListItem,
+    Radio,
+    Checkbox,
   },
 })
 
