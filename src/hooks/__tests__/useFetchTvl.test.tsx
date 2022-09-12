@@ -53,8 +53,8 @@ describe("Test `useFetchTvl` hook", () => {
   const mockedKeepTokenStakingContract = { address: "0x1" }
   const mockedKeepBondingContract = { address: "0x0" }
   const mockedTStakingContract = { address: "0x2" }
-  const mockedMultiCallContract = {}
-  const mockedKeepAssetPoolContract = {}
+  const mockedMultiCallContract = { interface: {}, address: "0x3" }
+  const mockedKeepAssetPoolContract = { interface: {}, address: "0x4" }
 
   const wrapper = ({ children }) => (
     <TokenContext.Provider
@@ -154,22 +154,30 @@ describe("Test `useFetchTvl` hook", () => {
     expect(useKeepTokenStakingContract).toHaveBeenCalled()
     expect(useMulticall).toHaveBeenCalledWith([
       {
-        contract: mockedMultiCallContract,
+        interface: mockedMultiCallContract.interface,
+        address: mockedMultiCallContract.address,
         method: "getEthBalance",
         args: [mockedKeepBondingContract.address],
       },
       {
-        contract: tbtcContext.contract,
+        interface: tbtcContext.contract.interface,
+        address: tbtcContext.contract.address,
         method: "totalSupply",
       },
-      { contract: mockedKeepAssetPoolContract, method: "totalValue" },
       {
-        contract: keepContext.contract,
+        interface: mockedKeepAssetPoolContract.interface,
+        address: mockedKeepAssetPoolContract.address,
+        method: "totalValue",
+      },
+      {
+        interface: keepContext.contract.interface,
+        address: keepContext.contract.address,
         method: "balanceOf",
         args: [mockedKeepTokenStakingContract.address],
       },
       {
-        contract: tContext.contract,
+        interface: tContext.contract.interface,
+        address: tContext.contract.address,
         method: "balanceOf",
         args: [mockedTStakingContract.address],
       },
