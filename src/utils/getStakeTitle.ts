@@ -1,12 +1,16 @@
 import { StakeType } from "../enums"
 
-export const getStakeTitle = (stakeType?: StakeType | null): string => {
-  const stakeTitle1 = "stake"
-  const stakeTitle2 = !stakeType
+export const getStakeTitle = (
+  stakeType?: StakeType,
+  id?: number | string
+): string => {
+  const stakeTitleMain = "stake"
+  const stakeTitleId = id ? ` ${id.toString()}` : ""
+  const stakeTitleType = !stakeType
     ? ""
     : stakeType === (StakeType.NU as StakeType) ||
       stakeType === (StakeType.KEEP as StakeType)
     ? ` - legacy ${StakeType[stakeType]}`
     : " - native"
-  return stakeTitle1 + stakeTitle2
+  return stakeTitleMain + stakeTitleId + stakeTitleType
 }
