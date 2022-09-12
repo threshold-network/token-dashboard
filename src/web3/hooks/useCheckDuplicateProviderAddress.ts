@@ -2,9 +2,8 @@ import { useCallback } from "react"
 import { BigNumber } from "ethers"
 import { useTStakingContract } from "./useTStakingContract"
 import { useKeepTokenStakingContract } from "./useKeepTokenStakingContract"
-import { useMulticallContract } from "./useMulticallContract"
-import { getMulticallContractCall, decodeMulticallResult } from "../utils"
 import { isAddressZero } from "../../web3/utils"
+import { useThreshold } from "../../contexts/ThresholdContext"
 
 const useCheckDuplicateProviderAddress = (): ((
   stakingProvider: string
@@ -12,42 +11,39 @@ const useCheckDuplicateProviderAddress = (): ((
   isProviderUsedForKeep: boolean
   isProviderUsedForT: boolean
 }>) => {
-  const multicallContract = useMulticallContract()
   const tStakingContract = useTStakingContract()
   const keepStakingContract = useKeepTokenStakingContract()
+  const threshold = useThreshold()
 
   const checkIfProviderUsed = useCallback(
     async (stakingProvider) => {
-      if (!tStakingContract || !multicallContract || !keepStakingContract) {
+      if (!tStakingContract || !keepStakingContract) {
         throw new Error(
           "The request cannot be executed because the contract instances do not exist."
         )
       }
-      const multicalls = [
+
+      const [{ owner }, [, createdAt]] = await threshold.multicall.aggregate([
         {
-          contract: tStakingContract,
+          interface: tStakingContract.interface,
+          address: tStakingContract.address,
           method: "rolesOf",
           args: [stakingProvider],
         },
         {
-          contract: keepStakingContract,
+          interface: keepStakingContract.interface,
+          address: keepStakingContract.address,
           method: "getDelegationInfo",
           args: [stakingProvider],
         },
-      ]
-      const multiCallsRequests = multicalls.map(getMulticallContractCall)
-
-      const [, result] = await multicallContract?.aggregate(multiCallsRequests)
-      const data = decodeMulticallResult(result, multicalls)
-
-      const [{ owner }, [, createdAt]] = data
+      ])
 
       const isProviderUsedForKeep = createdAt.gt(BigNumber.from(0))
       const isProviderUsedForT = !isAddressZero(owner)
 
       return { isProviderUsedForKeep, isProviderUsedForT }
     },
-    [tStakingContract, keepStakingContract]
+    [tStakingContract, keepStakingContract, threshold]
   )
 
   return checkIfProviderUsed
