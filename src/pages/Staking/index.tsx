@@ -15,7 +15,7 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { H1 } from "@threshold-network/components"
+import { FilterTabs, H1 } from "@threshold-network/components"
 import { Outlet, useParams } from "react-router-dom"
 
 const StakingPage: PageComponent = (props) => {
@@ -56,22 +56,28 @@ const StakingPage: PageComponent = (props) => {
 const StakingProviderDetails: PageComponent = (props) => {
   return (
     <>
-      <Box as="header">Header here with links: Overview/Authorization</Box>
+      <FilterTabs
+        tabs={[
+          { title: "Stake Details", tabId: "1" },
+          { title: "Authorize Application", tabId: "2" },
+        ]}
+        selectedTabId="2"
+        mb="5"
+        size="lg"
+      />
       <Outlet />
     </>
   )
 }
 
-const Overview: PageComponent = () => {
+const Details: PageComponent = () => {
   const { stakingProvider } = useParams()
 
   return <H1>Staking provider {stakingProvider} overview</H1>
 }
 
 const Auth: PageComponent = () => {
-  const { stakingProvider } = useParams()
-
-  return <H1>Staking provider {stakingProvider} auth</H1>
+  return <AuthorizeStakingAppsPage />
 }
 
 const MainStakingPage: PageComponent = (props) => {
@@ -79,20 +85,20 @@ const MainStakingPage: PageComponent = (props) => {
 }
 
 StakingProviderDetails.route = {
-  path: ":stakingProvider",
+  path: ":stakingProviderAddress",
   index: false,
-  pages: [Overview, Auth],
+  pages: [Details, Auth],
   isPageEnabled: true,
 }
 
-Overview.route = {
-  path: "overview",
+Details.route = {
+  path: "details",
   index: true,
   isPageEnabled: true,
 }
 
 Auth.route = {
-  path: "auth",
+  path: "authorize",
   index: false,
   isPageEnabled: true,
 }
