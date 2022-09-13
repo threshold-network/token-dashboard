@@ -21,4 +21,5 @@ export enum ModalType {
   TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
   UseDesktop = "USE_DESKTOP",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
+  AuthorizeStakingApps = "AUTHORIZE_STAKING_APPS",
 }
