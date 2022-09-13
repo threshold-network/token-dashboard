@@ -12,6 +12,8 @@ import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { WeiPerEther } from "@ethersproject/constants"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
 
 export interface AppAuthDataProps {
   label: string
@@ -24,6 +26,7 @@ export interface AppAuthDataProps {
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   appAuthData: AppAuthDataProps
   stakingProvider: string
+  totalInTStake: string
   onCheckboxClick: (app: AppAuthDataProps, isChecked: boolean) => void
   isSelected: boolean
   maxAuthAmount: string
@@ -79,19 +82,31 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   maxAuthAmount,
   minAuthAmount,
   stakingProvider,
+  totalInTStake,
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
   const threshold = useThreshold()
+  const { openModal } = useModal()
 
   const onAuthorizeApp = async (tokenAmount: string) => {
-    // TODO: Pass the staking provider address as a prop.
-    // TODO: Use `useSendtTransacion` hook to open confirmation modal/pending modals/success modal.
-    // Just test the transacion. The real flow is diffrent- we should opean confirmation modal then trigger transacion.
-    await threshold.multiAppStaking.ecdsa.increaseAuthorization(
-      stakingProvider,
-      tokenAmount
-    )
+    if (!appAuthData.isAuthorized) {
+      // We want to display different modals for the authroization and for the
+      // increase aturhoziation.
+      openModal(ModalType.AuthorizeStakingApps, {
+        stakingProvider,
+        totalInTStake,
+        applications: [
+          {
+            appName: appAuthData.label,
+            authorizationAmount: tokenAmount,
+          },
+        ],
+      })
+    } else {
+      // TODO: Create a increase authroziation modal.
+      console.log("open increase authroziation modal")
+    }
   }
 
   if (collapsed) {

@@ -27,11 +27,14 @@ import {
   useStakingAppDataByStakingProvider,
   useStakingAppMinAuthorizationAmount,
 } from "../../../hooks/staking-applications"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
+  const { openModal } = useModal()
 
   useEffect(() => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
@@ -86,7 +89,16 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   }
 
   const onAuthorizeApps = () => {
-    console.log("Authorize Apps!!", selectedApps)
+    // TODO: trigger validation- check if form for a selected app is completed.
+    openModal(ModalType.AuthorizeStakingApps, {
+      stakingProvider: stakingProviderAddress!,
+      totalInTStake: stake.totalInTStake,
+      applications: selectedApps.map((_) => ({
+        appName: _.label,
+        // TODO: get the `authorizationAmount` from application forms.
+        authorizationAmount: "41000000000000000000000",
+      })),
+    })
   }
 
   const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
@@ -136,6 +148,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.tbtc}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
@@ -145,6 +158,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.randomBeacon}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps
             .map((app) => app.label)
@@ -156,6 +170,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.pre}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}
