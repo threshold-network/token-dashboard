@@ -6,16 +6,19 @@ import {
   Checkbox,
   GridItem,
 } from "@threshold-network/components"
-import { FC } from "react"
-import { TokenAmountForm } from "../../../../components/Forms"
+import { FC, RefObject } from "react"
+import { FormValues, TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { WeiPerEther } from "@ethersproject/constants"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import { StakingAppName } from "../../../../store/staking-applications"
+import { FormikProps } from "formik"
 
 export interface AppAuthDataProps {
+  stakingAppId: StakingAppName | "pre"
   label: string
   isAuthorized: boolean
   percentage: number
@@ -31,6 +34,7 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   isSelected: boolean
   maxAuthAmount: string
   minAuthAmount: string
+  formRef?: RefObject<FormikProps<FormValues>>
 }
 
 const gridTemplate = {
@@ -83,6 +87,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   minAuthAmount,
   stakingProvider,
   totalInTStake,
+  formRef,
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
@@ -179,6 +184,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
+            innerRef={formRef}
             onSubmitForm={onAuthorizeApp}
             label="Amount"
             submitButtonText={

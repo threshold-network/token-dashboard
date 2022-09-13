@@ -12,6 +12,7 @@ import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
+import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 
 const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   const areNodesMissing = true
@@ -25,8 +26,11 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 
   // TODO: This will probably be fetched from contracts
-  const appsAuthData = {
+  const appsAuthData: {
+    [appName: string]: AppAuthDataProps
+  } = {
     tbtc: {
+      stakingAppId: "tbtc",
       label: "tBTC",
       isAuthorized: tbtcApp.isAuthorized,
       percentage: tbtcApp.percentage,
@@ -34,6 +38,7 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       isAuthRequired: true,
     },
     randomBeacon: {
+      stakingAppId: "randomBeacon",
       label: "Random Beacon",
       isAuthorized: randomBeaconApp.isAuthorized,
       percentage: randomBeaconApp.percentage,
@@ -41,6 +46,7 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       isAuthRequired: true,
     },
     pre: {
+      stakingAppId: "pre",
       label: "PRE",
       isAuthorized: false,
       percentage: 0,

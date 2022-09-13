@@ -19,7 +19,7 @@ import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState, RefObject } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
@@ -29,12 +29,25 @@ import {
 } from "../../../hooks/staking-applications"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
+import { FormikProps } from "formik"
+import { FormValues } from "../../../components/Forms"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
   const { openModal } = useModal()
+  const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const randomBeaconAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const preAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const appLabelToFormRef: Record<
+    AppAuthDataProps["stakingAppId"],
+    RefObject<FormikProps<FormValues>>
+  > = {
+    tbtc: tbtcAppFormRef,
+    randomBeacon: randomBeaconAppFormRef,
+    pre: preAppFormRef,
+  }
 
   useEffect(() => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
@@ -64,8 +77,11 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
-  const appsAuthData = {
+  const appsAuthData: {
+    [appName: string]: AppAuthDataProps
+  } = {
     tbtc: {
+      stakingAppId: "tbtc",
       label: "tBTC",
       isAuthorized: tbtcApp.isAuthorized,
       percentage: tbtcApp.percentage,
@@ -73,6 +89,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
       isAuthRequired: true,
     },
     randomBeacon: {
+      stakingAppId: "randomBeacon",
       label: "Random Beacon",
       isAuthorized: randomBeaconApp.isAuthorized,
       percentage: randomBeaconApp.percentage,
@@ -80,6 +97,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
       isAuthRequired: true,
     },
     pre: {
+      stakingAppId: "pre",
       label: "PRE",
       isAuthorized: false,
       percentage: 0,
@@ -88,17 +106,39 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     },
   }
 
-  const onAuthorizeApps = () => {
-    // TODO: trigger validation- check if form for a selected app is completed.
-    openModal(ModalType.AuthorizeStakingApps, {
-      stakingProvider: stakingProviderAddress!,
-      totalInTStake: stake.totalInTStake,
-      applications: selectedApps.map((_) => ({
-        appName: _.label,
-        // TODO: get the `authorizationAmount` from application forms.
-        authorizationAmount: "41000000000000000000000",
-      })),
-    })
+  const isAppSelected = (stakingAppName: AppAuthDataProps["stakingAppId"]) => {
+    return selectedApps.map((app) => app.stakingAppId).includes(stakingAppName)
+  }
+
+  const onAuthorizeApps = async () => {
+    const isTbtcSelected = isAppSelected("tbtc")
+    const isRandomBeaconSelected = isAppSelected("randomBeacon")
+
+    if (isTbtcSelected) {
+      await tbtcAppFormRef.current?.validateForm()
+      tbtcAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    } else if (isRandomBeaconSelected) {
+      await randomBeaconAppFormRef.current?.validateForm()
+      randomBeaconAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    }
+    if (
+      (isTbtcSelected && tbtcAppFormRef.current?.isValid) ||
+      (isRandomBeaconSelected && randomBeaconAppFormRef.current?.isValid) ||
+      (isRandomBeaconSelected &&
+        isTbtcSelected &&
+        tbtcAppFormRef.current?.isValid &&
+        randomBeaconAppFormRef.current?.isValid)
+    ) {
+      openModal(ModalType.AuthorizeStakingApps, {
+        stakingProvider: stakingProviderAddress!,
+        totalInTStake: stake.totalInTStake,
+        applications: selectedApps.map((_) => ({
+          appName: _.label,
+          authorizationAmount:
+            appLabelToFormRef[_.stakingAppId].current?.values.tokenAmount,
+        })),
+      })
+    }
   }
 
   const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
@@ -146,23 +186,23 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           </AlertDescription>
         </AlertBox>
         <AuthorizeApplicationsCardCheckbox
+          formRef={tbtcAppFormRef}
           mt={5}
           appAuthData={appsAuthData.tbtc}
           totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
+          isSelected={isAppSelected("tbtc")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={tbtcMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
+          formRef={randomBeaconAppFormRef}
           appAuthData={appsAuthData.randomBeacon}
           totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps
-            .map((app) => app.label)
-            .includes("Random Beacon")}
+          isSelected={isAppSelected("randomBeacon")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={randomBeaconMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
@@ -172,7 +212,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
           appAuthData={appsAuthData.pre}
           totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps.map((app) => app.label).includes("PRE")}
+          isSelected={isAppSelected("pre")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={"0"}
           stakingProvider={stakingProviderAddress!}
