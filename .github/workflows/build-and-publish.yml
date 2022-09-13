@@ -37,9 +37,10 @@ on:
         type: string
       gcpBucketPath:
         description: >
-          The path where in the bucket the code will be deployed. When you don't to
-          put the code in the bucket's subfolder, set `.`. Otherwise provide the
-          path, without leading `./` (for example `subfolder_1/subfolder_2`).
+          The path where in the bucket the code will be deployed. When you don't
+          want to put the code in the bucket's subfolder, set `.`. Otherwise
+          provide the path, without leading `./` (for example
+          `subfolder_1/subfolder_2`).
         required: false
         default: .
         type: string
@@ -115,8 +116,8 @@ jobs:
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
-      # version of the `keep-core` package, because using `goerli` tag results in
-      # `expected manifest` error - probably caused by bug in Yarn:
+      # version of the `keep-core` package, because using `goerli` tag results
+      # in `expected manifest` error - probably caused by bug in Yarn:
       # https://github.com/yarnpkg/yarn/issues/4731.
 
       - name: Resolve contracts
@@ -143,13 +144,22 @@ jobs:
           environment: ${{ inputs.environment }}
 
       - name: Build
+        if: inputs.gcpBucketPath == '.'
         shell: bash
         run: yarn build
         env:
-          # `head_ref` variable property is only available when the event that
-          # triggers a workflow run is either pull_request or pull_request_target.
-          # For `workflow_dispatch` and `push`, the `PUBLIC_URL` will resolve to `/`.`
-          PUBLIC_URL: /${{ github.head_ref }}
+          PUBLIC_URL: /
+          CHAIN_ID: ${{ env.NETWORK_ID }}
+          ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
+          ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          NODE_OPTIONS: --max_old_space_size=4096
+
+      - name: Build
+        if: inputs.gcpBucketPath != '.'
+        shell: bash
+        run: yarn build
+        env:
+          PUBLIC_URL: /${{ inputs.gcpBucketPath }}
           CHAIN_ID: ${{ env.NETWORK_ID }}
           ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
           ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
@@ -161,7 +171,7 @@ jobs:
           service-key: ${{ secrets.gcpServiceKey }}
           project: ${{ env.GOOGLE_PROJECT_ID }}
           bucket-name: ${{ inputs.gcpBucketName }}
-          bucket-path: ${{ github.head_ref }}
+          bucket-path: ${{ inputs.gcpBucketPath }}
           build-folder: build
           set-website: ${{ inputs.preview == false }}
           home-page-path: index.html
