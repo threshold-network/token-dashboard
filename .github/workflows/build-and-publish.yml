@@ -94,15 +94,24 @@ jobs:
           upstream-builds: ${{ inputs.upstreamBuilds }}
           query: |
             threshold-contracts-version = github.com/threshold-network/solidity-contracts#version
+            random-beacon-contracts-version = github.com/keep-network/keep-core/random-beacon#version
+            ecdsa-contracts-version = github.com/keep-network/keep-core/ecdsa#version
+            tbtc-v2-contracts-version = github.com/keep-network/tbtc-v2#version
 
       - name: Set packages versions
         shell: bash
         id: set-packages-versions
         run: |
-          if [ ${{ inputs.useUpstreamBuilds }} = true ]; then
-            echo "::set-output name=threshold-contracts-version::${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}"
-          else
+          if [ ${{ inputs.useUpstreamBuilds }} = 'false' ]; then
             echo "::set-output name=threshold-contracts-version::${{ inputs.dependentPackagesTag }}"
+            echo "::set-output name=random-beacon-contracts-version::${{ inputs.dependentPackagesTag }}"
+            echo "::set-output name=ecdsa-contracts-version::${{ inputs.dependentPackagesTag }}"
+            echo "::set-output name=tbtc-v2-contracts-version::${{ inputs.dependentPackagesTag }}"
+          else
+            echo "::set-output name=threshold-contracts-version::${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}"
+            echo "::set-output name=random-beacon-contracts-version::${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}"
+            echo "::set-output name=ecdsa-contracts-version::${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}"
+            echo "::set-output name=tbtc-v2-contracts-version::${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}"
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
@@ -110,8 +119,6 @@ jobs:
       # `expected manifest` error - probably caused by bug in Yarn:
       # https://github.com/yarnpkg/yarn/issues/4731.
 
-      # TODO: Add upgrade of @keep-network/random-beacon, @keep-network/ecdsa,
-      # @keep-network/tbtc-v2 once they'll be added as dashboard's dependencies.
       - name: Resolve contracts
         shell: bash
         run: |
@@ -120,7 +127,10 @@ jobs:
             @keep-network/keep-core@1.8.1-goerli.0 \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
-            @keep-network/coverage-pools@${{ inputs.environment }}
+            @keep-network/coverage-pools@${{ inputs.environment }} \
+            @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
+            @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
+            @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }}
 
       - name: Run postinstall script
         shell: bash

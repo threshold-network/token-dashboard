@@ -4,12 +4,13 @@ import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
   ProviderStakedActionPayload,
   StakeData,
+  StakingStateKey,
   UnstakedActionPayload,
   ToppedUpActionPayload,
-  UpdateStateActionPayload,
 } from "../../types/staking"
 import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
+import { UpdateStateActionPayload } from "../../types/state"
 
 interface StakingState {
   stakingProvider: string
@@ -18,7 +19,7 @@ interface StakingState {
   stakeAmount: string
   stakes: StakeData[]
   stakedBalance: BigNumberish
-  minStakeAmount: string
+  minStakeAmount: string | undefined
 }
 
 const calculateStakedBalance = (stakes: StakeData[]): BigNumberish => {
@@ -38,10 +39,13 @@ export const stakingSlice = createSlice({
     stakeAmount: "0",
     stakes: [],
     stakedBalance: 0,
-    minStakeAmount: "0",
+    minStakeAmount: undefined,
   } as StakingState,
   reducers: {
-    updateState: (state, action: PayloadAction<UpdateStateActionPayload>) => {
+    updateState: (
+      state,
+      action: PayloadAction<UpdateStateActionPayload<StakingStateKey>>
+    ) => {
       // @ts-ignore
       state[action.payload.key] = action.payload.value
     },

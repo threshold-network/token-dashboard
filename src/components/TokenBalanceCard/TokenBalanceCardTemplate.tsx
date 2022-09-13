@@ -11,6 +11,8 @@ interface Props {
   tokenBalance: number | string
   usdBalance: string
   contract: Contract | null
+  tokenSymbol?: string
+  withSymbol?: boolean
 }
 
 const TokenBalanceCardTemplate: FC<Props> = ({
@@ -19,9 +21,12 @@ const TokenBalanceCardTemplate: FC<Props> = ({
   tokenBalance,
   usdBalance,
   contract,
+  tokenSymbol,
+  withSymbol = false,
+  ...restProps
 }) => {
   return (
-    <Card>
+    <Card {...restProps}>
       <Stack>
         <HStack>
           <Icon boxSize="16px" as={icon} />
@@ -30,6 +35,8 @@ const TokenBalanceCardTemplate: FC<Props> = ({
         <TokenBalance
           tokenAmount={tokenBalance}
           usdBalance={usdBalance}
+          tokenSymbol={tokenSymbol}
+          withSymbol={withSymbol}
           withUSDBalance
         />
         {/* <AddToMetamaskButton contract={contract} /> */}
