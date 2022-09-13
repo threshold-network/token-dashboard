@@ -153,6 +153,7 @@ jobs:
           CHAIN_ID: ${{ env.NETWORK_ID }}
           ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
           ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          NODE_OPTIONS: --max_old_space_size=4096
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0
