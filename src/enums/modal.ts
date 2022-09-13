@@ -16,8 +16,10 @@ export enum ModalType {
   TopupTSuccess = "TOP_UP_T_SUCCESS",
   ClaimingRewards = "CLAIMING_REWARDS",
   ClaimingRewardsSuccess = "CLAIMING_REWARDS_SUCCESS",
+  NewAppsToAuthorize = "NEW_APPS_TO_AUTHORIZE",
   TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
   TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
   UseDesktop = "USE_DESKTOP",
   AuthorizeStakingApplicationModal = "AUTHORIZE_STAKING_APPLICATION_MODAL",
+  DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
 }
