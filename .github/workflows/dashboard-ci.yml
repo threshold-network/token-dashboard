@@ -101,7 +101,7 @@ jobs:
     name: Deploy preview to testnet
     needs: build-and-test
     if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/build-and-publish.yml
+    uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       environment: goerli
       useUpstreamBuilds: false
@@ -127,7 +127,7 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch'
   # TODO uncomment: && github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/build-and-publish.yml
+    uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       requireApproval: true
       environment: goerli
@@ -151,7 +151,7 @@ jobs:
     name: Deploy to testnet
     needs: build-and-test
     if: github.event_name == 'push'
-    uses: ./.github/workflows/build-and-publish.yml
+    uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       environment: goerli
       useUpstreamBuilds: false
