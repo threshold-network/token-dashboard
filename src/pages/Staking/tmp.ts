@@ -1,6 +1,7 @@
 export interface TmpAppAuthData {
   label: string
   isAuthorized: boolean
+  appName: string
   percentage: number
   isAuthRequired: boolean
   min: string
@@ -11,6 +12,7 @@ export interface TmpAppAuthData {
 export const tmpAppAuthData: { [app: string]: TmpAppAuthData } = {
   tbtc: {
     label: "tBTC",
+    appName: "tbtc",
     isAuthorized: true,
     percentage: 40,
     isAuthRequired: true,
@@ -19,6 +21,7 @@ export const tmpAppAuthData: { [app: string]: TmpAppAuthData } = {
   },
   randomBeacon: {
     label: "Random Beacon",
+    appName: "randomBeacon",
     isAuthorized: false,
     percentage: 0,
     isAuthRequired: true,
@@ -27,6 +30,7 @@ export const tmpAppAuthData: { [app: string]: TmpAppAuthData } = {
   },
   pre: {
     label: "PRE",
+    appName: "pre",
     isAuthorized: false,
     percentage: 0,
     isAuthRequired: false,

@@ -12,28 +12,29 @@ import { TmpAppAuthData } from "../../../pages/Staking/tmp"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
-import { HStack } from "@chakra-ui/react"
+import { FormControl, HStack } from "@chakra-ui/react"
+import { StakeData } from "../../../types"
+import { Field, FieldProps, useField } from "formik"
 
 export interface AuthorizationCardProps extends BoxProps {
   appAuthData: TmpAppAuthData
-  onCheckboxClick: (app: TmpAppAuthData, isChecked: boolean) => void
-  isSelected: boolean
+  stake: StakeData
   formikProps: any
 }
 
 export const AuthorizationCard: FC<AuthorizationCardProps> = ({
   appAuthData,
-  onCheckboxClick,
-  isSelected,
+  stake,
   formikProps,
   ...restProps
 }) => {
-  const { label, min, max } = appAuthData
+  const { appName, label, min, max } = appAuthData
+
   return (
     <Card
       {...restProps}
       boxShadow="none"
-      borderColor={isSelected ? "brand.500" : undefined}
+      // borderColor={isSelected ? "brand.500" : undefined}
     >
       <Grid
         gridTemplateAreas={{
@@ -58,16 +59,24 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
         gap="3"
         p={0}
       >
-        <Checkbox
-          isChecked={isSelected}
-          gridArea="checkbox"
-          alignSelf={"flex-start"}
-          justifySelf={"center"}
-          size="lg"
-          onChange={(e) => {
-            onCheckboxClick(appAuthData, e.target.checked)
+        <Field name={`${appName}Checked`}>
+          {({ field }: FieldProps) => {
+            const { value } = field
+
+            return (
+              <FormControl>
+                <Checkbox
+                  isChecked={value}
+                  gridArea="checkbox"
+                  alignSelf={"flex-start"}
+                  justifySelf={"center"}
+                  size="lg"
+                  {...field}
+                />
+              </FormControl>
+            )
           }}
-        />
+        </Field>
         <AppAuthorizationInfo
           gridArea="app-info"
           label={appAuthData.label}
@@ -80,7 +89,7 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
         <GridItem gridArea="token-amount-form" mt={5}>
           {/*<AppAuthorizationInput appAuthData={appAuthData} {...formikProps} />*/}
           <FormikTokenBalanceInput
-            name={`${label}AuthorizationAmount`}
+            name={`${appName}AuthorizationAmount`}
             label={
               <HStack justifyContent="space-between">
                 <BodyMd>Authorized Amount</BodyMd>

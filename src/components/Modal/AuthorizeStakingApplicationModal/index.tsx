@@ -1,25 +1,17 @@
 import { FC, useState } from "react"
 import {
-  Button,
-  Stack,
-  HStack,
+  BodyLg,
+  BodyMd,
+  H5,
   ModalBody,
   ModalCloseButton,
-  ModalFooter,
   ModalHeader,
-  BodyLg,
-  H5,
-  BodyMd,
-  Card,
-  LabelMd,
-  Badge,
+  Stack,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import withBaseModal from "../withBaseModal"
-import AuthorizationCard from "./AuthorizationCard"
-import { useStakingState } from "../../../hooks/useStakingState"
 import AppAuthorizationForm from "./AppAuthorizationForm"
 import { tmpAppAuthData } from "../../../pages/Staking/tmp"
 
@@ -29,14 +21,6 @@ const AuthorizeStakingApplicationModal: FC<
   const handleSubmit = (vals: any) => {
     console.log("next", vals)
   }
-
-  const [tbtcAuthorizationAmount, setTbtcAuthorizationAmount] = useState(
-    stake?.totalInTStake
-  )
-  const [
-    randomBeaconAuthorizationAmount,
-    setAmountRandomBeaconAuthorizationAmount,
-  ] = useState(stake?.totalInTStake)
 
   return (
     <>
@@ -62,8 +46,7 @@ const AuthorizeStakingApplicationModal: FC<
           {/*/>*/}
 
           <AppAuthorizationForm
-            tbtcAuthorizationAmount={tbtcAuthorizationAmount}
-            randomBeaconAuthorizationAmount={randomBeaconAuthorizationAmount}
+            stake={stake}
             appsAuthData={tmpAppAuthData}
             handleSubmit={handleSubmit}
           />
