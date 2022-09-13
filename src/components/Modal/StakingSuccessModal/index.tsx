@@ -63,7 +63,7 @@ const StakingChecklistModal: FC<
             </H5>
           </InfoBox>
           <Stack spacing={6}>
-            <BoxLabel>Staking Timeline</BoxLabel>
+            <BoxLabel status="secondary">Staking Timeline</BoxLabel>
             {[
               {
                 preTitle: "Step 1",
@@ -104,7 +104,7 @@ const StakingChecklistModal: FC<
         <Button mr={2} variant="outline" onClick={closeModal}>
           Dismiss
         </Button>
-        <Button onClick={handleSubmit}>AuthorizeApps</Button>
+        <Button onClick={handleSubmit}>Authorize Apps</Button>
       </ModalFooter>
     </>
   )

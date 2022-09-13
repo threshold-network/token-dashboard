@@ -26,6 +26,7 @@ import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../ExternalLink"
 import StakingStats from "../../StakingStats"
 import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplicateProviderAddress"
+import { featureFlags } from "../../../constants"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -39,11 +40,18 @@ const ConfirmStakingParamsModal: FC<
   const { isOpen, onToggle, onOpen } = useDisclosure()
 
   // stake transaction, opens success modal on success callback
-  const { stake } = useStakeTransaction((tx) =>
-    openModal(ModalType.StakeSuccess, {
-      transactionHash: tx.hash,
-    })
-  )
+  const { stake } = useStakeTransaction((tx) => {
+    if (featureFlags.MULTI_APP_STAKING) {
+      openModal(ModalType.StakeSuccess, {
+        transactionHash: tx.hash,
+      })
+    } else {
+      openModal(ModalType.StakeSuccessOLD, {
+        transactionHash: tx.hash,
+      })
+    }
+  })
+
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
 
   useEffect(() => {
