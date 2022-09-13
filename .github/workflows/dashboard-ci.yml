@@ -126,14 +126,16 @@ jobs:
     needs: build-and-test
     if: |
       github.event_name == 'workflow_dispatch'
-        && github.ref == 'refs/heads/main'
+  # TODO uncomment: && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/build-and-publish.yml
     with:
       requireApproval: true
       environment: goerli
       useUpstreamBuilds: true
       upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
-      gcpBucketName: dashboard.test.threshold.network
+      # TODO: remove line below, uncomment next line
+      gcpBucketName: dashboard.test.threshold.network-wip
+      # gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
       ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
