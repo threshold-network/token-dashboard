@@ -30,18 +30,21 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       label: "tBTC",
       isAuthorized: tbtcApp.isAuthorized,
       percentage: tbtcApp.percentage,
+      authorizedStake: tbtcApp.authorizedStake,
       isAuthRequired: true,
     },
     randomBeacon: {
       label: "Random Beacon",
       isAuthorized: randomBeaconApp.isAuthorized,
       percentage: randomBeaconApp.percentage,
+      authorizedStake: randomBeaconApp.authorizedStake,
       isAuthRequired: true,
     },
     pre: {
       label: "PRE",
       isAuthorized: false,
       percentage: 0,
+      authorizedStake: stake.totalInTStake,
       isAuthRequired: false,
     },
   }

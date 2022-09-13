@@ -18,6 +18,7 @@ export interface AppAuthDataProps {
   isAuthorized: boolean
   percentage: number
   isAuthRequired: boolean
+  authorizedStake: string
 }
 
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
@@ -27,6 +28,46 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   isSelected: boolean
   maxAuthAmount: string
   minAuthAmount: string
+}
+
+const gridTemplate = {
+  base: {
+    base: `
+            "checkbox             checkbox"
+            "app-info             app-info"
+            "filter-tabs          filter-tabs"
+            "token-amount-form    token-amount-form"
+          `,
+    sm: `
+              "checkbox        app-info"
+              "checkbox        filter-tabs"
+              "checkbox        token-amount-form"
+            `,
+    md: `
+              "checkbox        app-info           filter-tabs      "
+              "checkbox        app-info           _      "
+              "checkbox        token-amount-form  token-amount-form"
+              "checkbox        token-amount-form  token-amount-form"
+            `,
+  },
+  authorized: {
+    base: `
+            "app-info             app-info"
+            "filter-tabs          filter-tabs"
+            "token-amount-form    token-amount-form"
+          `,
+    sm: `
+              "app-info                 app-info"
+              "filter-tabs              filter-tabs"
+              "token-amount-form        token-amount-form"
+            `,
+    md: `
+              "app-info        app-info           filter-tabs      "
+              "app-info        app-info           _      "
+              "token-amount-form        token-amount-form  token-amount-form"
+              "token-amount-form        token-amount-form  token-amount-form"
+            `,
+  },
 }
 
 export const AuthorizeApplicationsCardCheckbox: FC<
@@ -47,7 +88,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     // TODO: Pass the staking provider address as a prop.
     // TODO: Use `useSendtTransacion` hook to open confirmation modal/pending modals/success modal.
     // Just test the transacion. The real flow is diffrent- we should opean confirmation modal then trigger transacion.
-    await threshold.multiAppStaking.randomBeacon.increaseAuthorization(
+    await threshold.multiAppStaking.ecdsa.increaseAuthorization(
       stakingProvider,
       tokenAmount
     )
@@ -57,6 +98,8 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     return (
       <Card {...restProps} boxShadow="none">
         <AppAuthorizationInfo
+          isAuthorized={appAuthData.isAuthorized}
+          authorizedStake={appAuthData.authorizedStake}
           label={appAuthData.label}
           percentageAuthorized={100}
           aprPercentage={10}
@@ -70,43 +113,38 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     <Card
       {...restProps}
       boxShadow="none"
-      borderColor={isSelected ? "brand.500" : undefined}
+      borderColor={
+        appAuthData.isAuthorized
+          ? "green.400"
+          : isSelected
+          ? "brand.500"
+          : undefined
+      }
     >
       <Grid
-        gridTemplateAreas={{
-          base: `
-            "checkbox             checkbox"
-            "app-info             app-info"
-            "filter-tabs          filter-tabs"
-            "token-amount-form    token-amount-form"
-          `,
-          sm: `
-              "checkbox        app-info"
-              "checkbox        filter-tabs"
-              "checkbox        token-amount-form"
-            `,
-          md: `
-              "checkbox        app-info           filter-tabs      "
-              "checkbox        token-amount-form  token-amount-form"
-              "checkbox        token-amount-form  token-amount-form"
-            `,
-        }}
+        gridTemplateAreas={
+          appAuthData.isAuthorized ? gridTemplate.authorized : gridTemplate.base
+        }
         gridTemplateColumns={"1fr 18fr"}
         gap="3"
         p={0}
       >
-        <Checkbox
-          isChecked={isSelected}
-          gridArea="checkbox"
-          alignSelf={"flex-start"}
-          justifySelf={"center"}
-          size="lg"
-          onChange={(e) => {
-            onCheckboxClick(appAuthData, e.target.checked)
-          }}
-        />
+        {!appAuthData.isAuthorized && (
+          <Checkbox
+            isChecked={isSelected}
+            gridArea="checkbox"
+            alignSelf={"flex-start"}
+            justifySelf={"center"}
+            size="lg"
+            onChange={(e) => {
+              onCheckboxClick(appAuthData, e.target.checked)
+            }}
+          />
+        )}
         <AppAuthorizationInfo
           gridArea="app-info"
+          authorizedStake={appAuthData.authorizedStake}
+          isAuthorized={appAuthData.isAuthorized}
           label={appAuthData.label}
           percentageAuthorized={appAuthData.percentage}
           aprPercentage={10}
@@ -128,7 +166,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           <TokenAmountForm
             onSubmitForm={onAuthorizeApp}
             label="Amount"
-            submitButtonText={`Authorize ${appAuthData.label}`}
+            submitButtonText={
+              appAuthData.isAuthorized
+                ? `Authorize Increase`
+                : `Authorize ${appAuthData.label}`
+            }
             maxTokenAmount={maxAuthAmount}
             placeholder={"Enter amount"}
             minTokenAmount={
