@@ -1,19 +1,17 @@
 import React, { FC } from "react"
-import { FiArrowUpRight } from "react-icons/all"
 import { Link as RouterLink } from "react-router-dom"
 import {
   BodyLg,
   BodySm,
   BoxProps,
   Button,
-  Flex,
   HStack,
-  Icon,
   Image,
   Square,
   Stack,
   useMultiStyleConfig,
 } from "@threshold-network/components"
+import ExternalLink from "../ExternalLink"
 
 export interface DetailedLinkListItemProps extends BoxProps {
   imgSrc?: any
@@ -37,41 +35,35 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
 }) => {
   const styles = useMultiStyleConfig("DetailedLinkListItem", restProps)
 
+  const _linkText = linkText || "Read More"
+
   return (
-    <HStack sx={styles.container}>
-      <Flex>
-        {imgSrc ? (
-          <Image sx={styles.image} src={imgSrc} />
-        ) : imgFallback ? (
-          // @ts-ignore
-          <Square sx={styles.imageFallback} size={styles.imageFallback.size}>
-            {imgFallback.slice(0, 3).toUpperCase()}
-          </Square>
-        ) : (
-          <Square
-            sx={styles.imageFallback}
-            // @ts-ignore
-            size={styles.imageFallback.size}
-            background="brand.500"
-          />
-        )}
-        <Stack spacing={0}>
-          <BodyLg>{title}</BodyLg>
-          <BodySm>{subtitle}</BodySm>
-        </Stack>
-      </Flex>
-      <Button
-        sx={styles.link}
-        variant="link"
-        as={isExternal ? "a" : RouterLink}
-        target={isExternal ? "_blank" : undefined}
-        // @ts-ignore
-        href={isExternal ? href : undefined}
-        to={href}
-        rightIcon={isExternal ? <Icon as={FiArrowUpRight} /> : undefined}
-      >
-        {linkText || "Read More"}
-      </Button>
+    <HStack sx={styles.container} as="li">
+      {imgSrc ? (
+        <Image sx={styles.image} src={imgSrc} />
+      ) : (
+        // @ts-ignore <-- imageFallback.size isn't a valid CSS attribute but we save it on the theme
+        <Square sx={styles.imageFallback} size={styles.imageFallback.size}>
+          {imgFallback && imgFallback.slice(0, 3).toUpperCase()}
+        </Square>
+      )}
+      <Stack spacing={0} mr="auto !important">
+        <BodyLg sx={styles.title}>{title}</BodyLg>
+        <BodySm sx={styles.subtitle}>{subtitle}</BodySm>
+      </Stack>
+      {isExternal ? (
+        <ExternalLink
+          href={href}
+          sx={styles.link}
+          text={_linkText}
+          withArrow
+          color={styles.link.color as string}
+        />
+      ) : (
+        <Button sx={styles.link} variant="link" as={RouterLink} to={href}>
+          {_linkText}
+        </Button>
+      )}
     </HStack>
   )
 }
