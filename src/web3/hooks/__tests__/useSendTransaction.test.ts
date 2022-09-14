@@ -71,8 +71,6 @@ describe("Test `useSendTransaction` hook", () => {
     result.current.sendTransaction(from, value)
     await waitForNextUpdate()
 
-    expect(getSigner).toHaveBeenCalledWith(mockedLibrary, account)
-    expect(mockedContract.connect).toHaveBeenCalledWith(mockedSigner)
     expect(mockedContract[methodName]).toHaveBeenCalledWith(from, value)
     expect(mockedTx.wait).toHaveBeenCalled()
     expect(result.current.status).toEqual(TransactionStatus.Succeeded)
@@ -191,8 +189,6 @@ describe("Test `useSendTransaction` hook", () => {
       result.current.sendTransaction(from, value)
       await waitForNextUpdate()
 
-      expect(getSigner).toHaveBeenCalledWith(mockedLibrary, account)
-      expect(mockedContract.connect).toHaveBeenCalledWith(mockedSigner)
       expect(mockedContract[methodName]).toHaveBeenCalledWith(from, value)
       expect(mockedTx.wait).not.toHaveBeenCalled()
       expect(result.current.status).toEqual(expectedStatus)
