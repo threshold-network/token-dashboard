@@ -117,16 +117,21 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     if (isTbtcSelected) {
       await tbtcAppFormRef.current?.validateForm()
       tbtcAppFormRef.current?.setTouched({ tokenAmount: true }, false)
-    } else if (isRandomBeaconSelected) {
+    }
+    if (isRandomBeaconSelected) {
       await randomBeaconAppFormRef.current?.validateForm()
       randomBeaconAppFormRef.current?.setTouched({ tokenAmount: true }, false)
     }
     if (
-      (isTbtcSelected && tbtcAppFormRef.current?.isValid) ||
-      (isRandomBeaconSelected && randomBeaconAppFormRef.current?.isValid) ||
       (isRandomBeaconSelected &&
         isTbtcSelected &&
         tbtcAppFormRef.current?.isValid &&
+        randomBeaconAppFormRef.current?.isValid) ||
+      (isTbtcSelected &&
+        !isRandomBeaconSelected &&
+        tbtcAppFormRef.current?.isValid) ||
+      (isRandomBeaconSelected &&
+        !isTbtcSelected &&
         randomBeaconAppFormRef.current?.isValid)
     ) {
       openModal(ModalType.AuthorizeStakingApps, {
