@@ -15,8 +15,13 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { FilterTabList, FilterTab, H1 } from "@threshold-network/components"
-import { Outlet, useMatch, useParams, useResolvedPath } from "react-router-dom"
+import {
+  FilterTabList,
+  FilterTab,
+  H1,
+  BodyLg,
+} from "@threshold-network/components"
+import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 
 const StakingPage: PageComponent = (props) => {
@@ -56,9 +61,19 @@ const StakingPage: PageComponent = (props) => {
 
 const StakingProviderDetails: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
+  const { pathname } = useLocation()
+  const lastElementOfTheUrl = pathname.split("/").at(-1)
 
   return (
     <>
+      <BodyLg mb={5}>
+        <Link to={"/staking"}>Staking</Link>
+        {" > "}
+        <Link to={pathname}>
+          Stake{" "}
+          {lastElementOfTheUrl === "authorize" ? "applications" : "details"}
+        </Link>
+      </BodyLg>
       <FilterTabList selectedTabId="2" mb="5" size="lg">
         <FilterTab
           tabId={"1"}
