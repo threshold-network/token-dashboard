@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Box, SimpleGrid, Stack } from "@chakra-ui/react"
+import { Button, SimpleGrid, Stack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -15,8 +15,9 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { FilterTabs, H1 } from "@threshold-network/components"
-import { Outlet, useParams } from "react-router-dom"
+import { FilterTabList, FilterTab, H1 } from "@threshold-network/components"
+import { Outlet, useMatch, useParams, useResolvedPath } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -54,17 +55,29 @@ const StakingPage: PageComponent = (props) => {
 }
 
 const StakingProviderDetails: PageComponent = (props) => {
+  const { stakingProviderAddress } = useParams()
+
   return (
     <>
-      <FilterTabs
-        tabs={[
-          { title: "Stake Details", tabId: "1" },
-          { title: "Authorize Application", tabId: "2" },
-        ]}
-        selectedTabId="2"
-        mb="5"
-        size="lg"
-      />
+      <FilterTabList selectedTabId="2" mb="5" size="lg">
+        <FilterTab
+          tabId={"1"}
+          as={RouterLink}
+          to={`/staking/${stakingProviderAddress}/details`}
+        >
+          <Button as={RouterLink} to={"/test"}>
+            Test
+          </Button>
+          Stake Details
+        </FilterTab>
+        <FilterTab
+          tabId={"2"}
+          as={RouterLink}
+          to={`/staking/${stakingProviderAddress}/authorize`}
+        >
+          Authorize Application
+        </FilterTab>
+      </FilterTabList>
       <Outlet />
     </>
   )
