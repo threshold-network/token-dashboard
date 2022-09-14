@@ -22,4 +22,5 @@ export enum ModalType {
   UseDesktop = "USE_DESKTOP",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   AuthorizeStakingApps = "AUTHORIZE_STAKING_APPS",
+  StakingApplicationsAuthorized = "STAKING_APPLICATIONS_AUTHORIZED",
 }

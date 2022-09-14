@@ -1,5 +1,5 @@
 import { ModalType } from "../enums"
-import { ElementType } from "react"
+import { ElementType, Fragment } from "react"
 import SelectWalletModal from "../components/Modal/SelectWalletModal"
 import {
   TransactionIdle as UpgradeToT,
@@ -56,6 +56,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.AuthorizeStakingApps]: AuthorizeStakingApps,
+  // TODO: Implement success modal.
+  [ModalType.StakingApplicationsAuthorized]: Fragment,
 }
 
 export interface BaseModalProps {
