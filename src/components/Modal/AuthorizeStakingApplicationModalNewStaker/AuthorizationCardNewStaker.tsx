@@ -1,34 +1,43 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import {
+  BodyMd,
   BoxProps,
   Card,
   Checkbox,
   Grid,
   GridItem,
-  BodyMd,
 } from "@threshold-network/components"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
-import { TmpAppAuthData } from "../../../pages/Staking/tmp"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
 import { FormControl, HStack } from "@chakra-ui/react"
-import { StakeData } from "../../../types"
 import { Field, FieldProps, useField } from "formik"
+import numeral from "numeral"
+import { formatUnits } from "@ethersproject/units"
 
 export interface AuthorizationCardProps extends BoxProps {
-  appAuthData: TmpAppAuthData
-  stake: StakeData
-  formikProps: any
+  max: string | number
+  min: string | number
+  appName: string
+  label: string
 }
 
-export const AuthorizationCard: FC<AuthorizationCardProps> = ({
-  appAuthData,
-  stake,
-  formikProps,
+export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
+  max,
+  min,
+  appName,
+  label,
   ...restProps
 }) => {
-  const { appName, label, min, max } = appAuthData
+  const [, meta] = useField(`${appName}AmountToAuthorize`)
+
+  const percentToBeAuthorized = useMemo(() => {
+    if (meta.value) {
+      return (Number(formatUnits(meta.value)) / Number(formatUnits(max))) * 100
+    }
+    return 0
+  }, [meta, max])
 
   return (
     <Card
@@ -62,7 +71,6 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
         <Field name={`${appName}Checked`}>
           {({ field }: FieldProps) => {
             const { value } = field
-
             return (
               <FormControl>
                 <Checkbox
@@ -79,21 +87,23 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
         </Field>
         <AppAuthorizationInfo
           gridArea="app-info"
-          label={appAuthData.label}
-          percentageAuthorized={100}
+          label={label}
+          percentageAuthorized={percentToBeAuthorized}
           aprPercentage={10}
           slashingPercentage={1}
           isAuthorizationRequired={true}
           separatePercentAuthorized
         />
         <GridItem gridArea="token-amount-form" mt={5}>
-          {/*<AppAuthorizationInput appAuthData={appAuthData} {...formikProps} />*/}
           <FormikTokenBalanceInput
-            name={`${appName}AuthorizationAmount`}
+            name={`${appName}AmountToAuthorize`}
             label={
               <HStack justifyContent="space-between">
                 <BodyMd>Authorized Amount</BodyMd>
-                <BodyMd>Remaining Balance: 5000</BodyMd>
+                <BodyMd>
+                  Remaining Balance:{" "}
+                  {numeral(formatUnits(max)).format("0,0.00")}
+                </BodyMd>
               </HStack>
             }
             placeholder="Enter amount"
@@ -108,4 +118,4 @@ export const AuthorizationCard: FC<AuthorizationCardProps> = ({
   )
 }
 
-export default AuthorizationCard
+export default AuthorizationCardNewStaker

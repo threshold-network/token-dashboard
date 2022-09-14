@@ -35,7 +35,7 @@ const StakingChecklistModal: FC<
   const { openModal } = useModal()
 
   const handleSubmit = () => {
-    openModal(ModalType.AuthorizeStakingApplicationModal)
+    openModal(ModalType.AuthorizeStakingApplicationModalNewStaker)
   }
 
   return (
