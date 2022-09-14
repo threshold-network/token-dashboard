@@ -9,10 +9,11 @@ import {
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { Link as RouterLink } from "react-router-dom"
-import { TmpAppAuthData } from "../../tmp"
+import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
+import { formatPercentage } from "../../../../utils/percentage"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
-  appAuthData: TmpAppAuthData
+  appAuthData: AppAuthDataProps
   stakingProvider: string
 }
 
@@ -47,7 +48,7 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
             colorScheme="brand"
             borderRadius={50}
           />
-          <BodySm>{percentage}%</BodySm>
+          <BodySm>{formatPercentage(percentage)}</BodySm>
         </HStack>
       ) : (
         <Button

@@ -12,6 +12,8 @@ import { stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
 import { tbtcSlice } from "./tbtc"
+import { stakingApplicationsSlice } from "./staking-applications/slice"
+import { listenerMiddleware } from "./listener"
 
 const combinedReducer = combineReducers({
   modal: modalSlice.reducer,
@@ -22,6 +24,7 @@ const combinedReducer = combineReducers({
   eth: ethSlice.reducer,
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
+  applications: stakingApplicationsSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"
@@ -68,8 +71,11 @@ const store = configureStore({
           "payload.props.setAmountToStake",
         ],
       },
-    }),
+    }).prepend(listenerMiddleware.middleware),
 })
 
-export type RootState = ReturnType<typeof combinedReducer>
+export type RootState = ReturnType<
+  typeof store.getState & typeof combinedReducer
+>
+export type AppDispatch = typeof store.dispatch
 export default store

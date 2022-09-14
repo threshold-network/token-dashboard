@@ -1,34 +1,28 @@
-import { createContext, FC, useContext, useMemo } from "react"
+import { createContext, FC, useContext, useEffect, useMemo } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { JsonRpcProvider, Provider } from "@ethersproject/providers"
-import { Signer } from "ethers"
-import { Threshold } from "../threshold-ts"
-import { EnvVariable } from "../enums"
-import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
+import { threshold } from "../utils/getThresholdLib"
+import { supportedChainId } from "../utils/getEnvVariable"
 
-const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
-  return new Threshold({
-    ethereum: {
-      chainId: supportedChainId,
-      providerOrSigner:
-        providerOrSigner ||
-        new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)),
-    },
-  })
-}
-
-const ThresholdContext = createContext(getThresholdLib())
+const ThresholdContext = createContext(threshold)
 
 export const useThreshold = () => {
   return useContext(ThresholdContext)
 }
 
 export const ThresholdProvider: FC = ({ children }) => {
-  const { library, active } = useWeb3React()
+  const { library, active, account } = useWeb3React()
 
-  const threshold = useMemo(() => {
-    return getThresholdLib(active ? library : undefined)
-  }, [library, active])
+  useEffect(() => {
+    if (active && library && account) {
+      threshold.updateConfig({
+        ethereum: {
+          chainId: supportedChainId,
+          providerOrSigner: library,
+          account,
+        },
+      })
+    }
+  }, [library, active, account])
 
   return (
     <ThresholdContext.Provider value={threshold}>

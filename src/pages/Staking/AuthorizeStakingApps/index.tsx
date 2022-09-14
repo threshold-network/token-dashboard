@@ -14,15 +14,19 @@ import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
 import { PageComponent, StakeData } from "../../../types"
-import { isSameETHAddress } from "../../../web3/utils"
+import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
-import AuthorizeApplicationsCardCheckbox from "./AuthorizeApplicationsCardCheckbox"
+import AuthorizeApplicationsCardCheckbox, {
+  AppAuthDataProps,
+} from "./AuthorizeApplicationsCardCheckbox"
 import { useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
-import { isAddress } from "web3-utils"
-import { TmpAppAuthData, tmpAppAuthData } from "../tmp"
+import {
+  useStakingAppDataByStakingProvider,
+  useStakingAppMinAuthorizationAmount,
+} from "../../../hooks/staking-applications"
 
 const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const { stakingProviderAddress } = useParams()
@@ -33,8 +37,18 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
-  //TODO: This should be fetched from contract for each app
-  const minAuthAmount = "1000000000000000000000"
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const randomBeaconMinAuthAmount =
+    useStakingAppMinAuthorizationAmount("randomBeacon")
+
+  const tbtcApp = useStakingAppDataByStakingProvider(
+    "tbtc",
+    stakingProviderAddress || AddressZero
+  )
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
+    "randomBeacon",
+    stakingProviderAddress || AddressZero
+  )
 
   const stake = useSelector((state: RootState) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -47,13 +61,34 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
+  const appsAuthData = {
+    tbtc: {
+      label: "tBTC",
+      isAuthorized: tbtcApp.isAuthorized,
+      percentage: tbtcApp.percentage,
+      isAuthRequired: true,
+    },
+    randomBeacon: {
+      label: "Random Beacon",
+      isAuthorized: randomBeaconApp.isAuthorized,
+      percentage: randomBeaconApp.percentage,
+      isAuthRequired: true,
+    },
+    pre: {
+      label: "PRE",
+      isAuthorized: false,
+      percentage: 0,
+      isAuthRequired: false,
+    },
+  }
+
   const onAuthorizeApps = () => {
     console.log("Authorize Apps!!", selectedApps)
   }
 
-  const [selectedApps, setSelectedApps] = useState<TmpAppAuthData[]>([])
+  const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
 
-  const onCheckboxClick = (app: TmpAppAuthData, isChecked: boolean) => {
+  const onCheckboxClick = (app: AppAuthDataProps, isChecked: boolean) => {
     if (isChecked) {
       setSelectedApps([...selectedApps, app])
     } else {
@@ -97,29 +132,32 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         </AlertBox>
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={tmpAppAuthData.tbtc}
+          appAuthData={appsAuthData.tbtc}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={tbtcMinAuthAmount}
+          stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={tmpAppAuthData.randomBeacon}
+          appAuthData={appsAuthData.randomBeacon}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps
             .map((app) => app.label)
             .includes("Random Beacon")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={randomBeaconMinAuthAmount}
+          stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
-          appAuthData={tmpAppAuthData.pre}
+          appAuthData={appsAuthData.pre}
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={"0"}
+          stakingProvider={stakingProviderAddress!}
         />
         <Button
           disabled={selectedApps.length === 0}
