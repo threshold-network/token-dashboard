@@ -25,6 +25,7 @@ import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
 import {
   useStakingAppDataByStakingProvider,
+  useStakingApplicationAddress,
   useStakingAppMinAuthorizationAmount,
 } from "../../../hooks/staking-applications"
 import { useModal } from "../../../hooks/useModal"
@@ -40,13 +41,24 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
   const randomBeaconAppFormRef = useRef<FormikProps<FormValues>>(null)
   const preAppFormRef = useRef<FormikProps<FormValues>>(null)
-  const appLabelToFormRef: Record<
+  const stakinAppNameToFormRef: Record<
     AppAuthDataProps["stakingAppId"],
     RefObject<FormikProps<FormValues>>
   > = {
     tbtc: tbtcAppFormRef,
     randomBeacon: randomBeaconAppFormRef,
     pre: preAppFormRef,
+  }
+
+  const tbtcAppAddress = useStakingApplicationAddress("tbtc")
+  const randomBeaconAddress = useStakingApplicationAddress("randomBeacon")
+  const stakinAppNameToAddress: Record<
+    AppAuthDataProps["stakingAppId"],
+    string
+  > = {
+    tbtc: tbtcAppAddress,
+    randomBeacon: randomBeaconAddress,
+    pre: AddressZero,
   }
 
   useEffect(() => {
@@ -78,10 +90,11 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     : false
 
   const appsAuthData: {
-    [appName: string]: AppAuthDataProps
+    [appName: string]: AppAuthDataProps & { address?: string }
   } = {
     tbtc: {
       stakingAppId: "tbtc",
+      address: tbtcAppAddress,
       label: "tBTC",
       isAuthorized: tbtcApp.isAuthorized,
       percentage: tbtcApp.percentage,
@@ -90,6 +103,7 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
     },
     randomBeacon: {
       stakingAppId: "randomBeacon",
+      address: randomBeaconAddress,
       label: "Random Beacon",
       isAuthorized: randomBeaconApp.isAuthorized,
       percentage: randomBeaconApp.percentage,
@@ -139,8 +153,9 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
         totalInTStake: stake.totalInTStake,
         applications: selectedApps.map((_) => ({
           appName: _.label,
+          address: stakinAppNameToAddress[_.stakingAppId],
           authorizationAmount:
-            appLabelToFormRef[_.stakingAppId].current?.values.tokenAmount,
+            stakinAppNameToFormRef[_.stakingAppId].current?.values.tokenAmount,
         })),
       })
     }

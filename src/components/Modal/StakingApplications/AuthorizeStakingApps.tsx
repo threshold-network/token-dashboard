@@ -23,11 +23,16 @@ import {
   formatPercentage,
 } from "../../../utils/percentage"
 import { BaseModalProps, StakeData } from "../../../types"
+import { useAuthorizeMultipleAppsTransaction } from "../../../hooks/staking-applications"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
   totalInTStake: string
-  applications: { appName: string; authorizationAmount: string }[]
+  applications: {
+    appName: string
+    address: string
+    authorizationAmount: string
+  }[]
 }
 
 const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
@@ -36,7 +41,16 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
   applications,
   closeModal,
 }) => {
-  const onAuthorize = () => {}
+  const { authorizeMultipleApps } = useAuthorizeMultipleAppsTransaction()
+  const onAuthorize = async () => {
+    await authorizeMultipleApps(
+      applications.map((_) => ({
+        address: _.address,
+        amount: _.authorizationAmount,
+      })),
+      stakingProvider
+    )
+  }
   const numberOfApps = applications.length
 
   return (
