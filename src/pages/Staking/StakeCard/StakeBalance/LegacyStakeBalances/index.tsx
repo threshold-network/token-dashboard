@@ -1,11 +1,15 @@
 import { FC } from "react"
 import { Icon, Tooltip } from "@chakra-ui/react"
 import { InfoIcon } from "@chakra-ui/icons"
-import { StakeData } from "../../../../../types/staking"
 import { Tree, TreeNode } from "../../../../../components/Tree"
 import { BalanceTreeItem } from "./BalanceTreeItem"
 
-const LegacyStakeBalances: FC<{ stake: StakeData }> = ({ stake }) => {
+const LegacyStakeBalances: FC<{
+  nuInTStake: string
+  keepInTStake: string
+  tStake: string
+  totalInTStake: string
+}> = ({ nuInTStake, keepInTStake, tStake, totalInTStake }) => {
   return (
     <Tree>
       <TreeNode isRoot>
@@ -28,18 +32,15 @@ const LegacyStakeBalances: FC<{ stake: StakeData }> = ({ stake }) => {
               </Tooltip>
             </>
           }
-          value={stake.totalInTStake}
+          value={totalInTStake}
         >
           <TreeNode>
-            <BalanceTreeItem label="Native Stake" value={stake.tStake} />
-            {stake.keepInTStake !== "0" && (
-              <BalanceTreeItem
-                label="KEEP Stake in T"
-                value={stake.keepInTStake}
-              />
+            <BalanceTreeItem label="Native Stake" value={tStake} />
+            {keepInTStake !== "0" && (
+              <BalanceTreeItem label="KEEP Stake in T" value={keepInTStake} />
             )}
-            {stake.nuInTStake !== "0" && (
-              <BalanceTreeItem label="NU Stake in T" value={stake.nuInTStake} />
+            {nuInTStake !== "0" && (
+              <BalanceTreeItem label="NU Stake in T" value={nuInTStake} />
             )}
           </TreeNode>
         </BalanceTreeItem>
