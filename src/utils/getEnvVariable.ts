@@ -10,6 +10,12 @@ const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.ETH_HOSTNAME_WS]: process.env[
     "REACT_APP_ETH_HOSTNAME_WS"
   ] as string,
+  [EnvVariable.FEATURE_FLAG_TBTC_V2]: process.env[
+    "REACT_APP_FEATURE_FLAG_TBTC_V2"
+  ] as string,
+  [EnvVariable.FEATURE_FLAG_MULTI_APP_STAKING]: process.env[
+    "REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING"
+  ] as string,
 }
 
 export const getEnvVariable = (envVar: EnvVariable) => {

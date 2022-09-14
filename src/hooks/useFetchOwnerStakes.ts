@@ -3,14 +3,11 @@ import { BigNumber } from "@ethersproject/bignumber"
 import {
   useTStakingContract,
   T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-  useMulticallContract,
   usePREContract,
   useKeepTokenStakingContract,
 } from "../web3/hooks"
 import {
-  getMulticallContractCall,
   getContractPastEvents,
-  decodeMulticallResult,
   getAddress,
   isSameETHAddress,
   isAddress,
@@ -22,6 +19,7 @@ import { useDispatch } from "react-redux"
 import { useFetchPreConfigData } from "./useFetchPreConfigData"
 import { useTConvertedAmount } from "./useTConvertedAmount"
 import { useNuStakingEscrowContract } from "../web3/hooks/useNuStakingEscrowContract"
+import { useThreshold } from "../contexts/ThresholdContext"
 
 export const useFetchOwnerStakes = () => {
   const tStakingContract = useTStakingContract()
@@ -31,14 +29,13 @@ export const useFetchOwnerStakes = () => {
 
   const simplePREApplicationContract = usePREContract()
 
-  const multicallContract = useMulticallContract()
-
   const fetchPreConfigData = useFetchPreConfigData()
 
   const { convertToT: convertKeepToT } = useTConvertedAmount(Token.Keep, "0")
   const { convertToT: convertNuToT } = useTConvertedAmount(Token.Nu, "0")
 
   const dispatch = useDispatch()
+  const threshold = useThreshold()
 
   return useCallback(
     async (address?: string): Promise<StakeData[]> => {
@@ -47,7 +44,6 @@ export const useFetchOwnerStakes = () => {
         !nuStakingEscrowContract ||
         !keepStakingContract ||
         !simplePREApplicationContract ||
-        !multicallContract ||
         !address
       ) {
         dispatch(setStakes([]))
@@ -75,23 +71,13 @@ export const useFetchOwnerStakes = () => {
 
       const preConfigData = await fetchPreConfigData(stakingProviders)
 
-      const eligibleKeepStakeMulticalls = stakingProviders.map(
-        (stakingProvider) => ({
-          contract: keepStakingContract,
+      const eligibleKeepStakes = await threshold.multicall.aggregate(
+        stakingProviders.map((stakingProvider) => ({
+          interface: keepStakingContract.interface,
+          address: keepStakingContract.address,
           method: "eligibleStake",
           args: [stakingProvider, tStakingContract.address],
-        })
-      )
-      const eligibleKeepStakeRequests = eligibleKeepStakeMulticalls.map(
-        getMulticallContractCall
-      )
-
-      const [, eligibleKeepStakesData] = await multicallContract?.aggregate(
-        eligibleKeepStakeRequests
-      )
-      const eligibleKeepStakes = decodeMulticallResult(
-        eligibleKeepStakesData,
-        eligibleKeepStakeMulticalls
+        }))
       )
 
       // The NU staker can have only one stake.
@@ -119,15 +105,14 @@ export const useFetchOwnerStakes = () => {
         } as StakeData
       })
 
-      const multicalls = stakes.map((_) => ({
-        contract: tStakingContract,
-        method: "stakes",
-        args: [_.stakingProvider],
-      }))
-      const multiCallsRequests = multicalls.map(getMulticallContractCall)
-
-      const [, result] = await multicallContract?.aggregate(multiCallsRequests)
-      const data = decodeMulticallResult(result, multicalls)
+      const data = await threshold.multicall.aggregate(
+        stakes.map((_) => ({
+          interface: tStakingContract.interface,
+          address: tStakingContract.address,
+          method: "stakes",
+          args: [_.stakingProvider],
+        }))
+      )
 
       data.forEach((_, index) => {
         const total = BigNumber.from(_.tStake)
@@ -169,11 +154,11 @@ export const useFetchOwnerStakes = () => {
     },
     [
       tStakingContract,
-      multicallContract,
       dispatch,
       convertKeepToT,
       convertNuToT,
       fetchPreConfigData,
+      threshold,
     ]
   )
 }

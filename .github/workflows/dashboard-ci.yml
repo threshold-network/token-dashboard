@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # This step forces Git to download dependencies using `https://` protocol,
@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "14"
           cache: "yarn"
 
       # We need this step because the `@keep-network/tbtc` which we update in
@@ -73,7 +73,11 @@ jobs:
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
-            @keep-network/coverage-pools
+            @keep-network/coverage-pools \
+            @keep-network/tbtc-v2 \
+            @keep-network/tbtc-v2.ts \
+            @keep-network/ecdsa \
+            @keep-network/random-beacon
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -86,6 +90,7 @@ jobs:
           CHAIN_ID: 5
           ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test

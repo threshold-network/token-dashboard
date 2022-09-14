@@ -3,7 +3,7 @@ import "@fontsource/inter/700.css"
 import "@fontsource/inter/600.css"
 import "@fontsource/inter/500.css"
 import "@fontsource/inter/400.css"
-import { FC, useEffect, Fragment } from "react"
+import { FC, useEffect, Fragment, useContext } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
@@ -38,6 +38,7 @@ import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
+import { ThresholdProvider } from "./contexts/ThresholdContext"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -158,6 +159,8 @@ const Routing = () => {
 }
 
 const renderPageComponent = (PageComponent: PageComponent) => {
+  if (!PageComponent.route.isPageEnabled) return null
+
   return (
     <Fragment key={PageComponent.route.path}>
       {PageComponent.route.index && (
@@ -180,15 +183,17 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <ReduxProvider store={reduxStore}>
-          <ChakraProvider theme={theme}>
-            <TokenContextProvider>
-              <Web3EventHandlerComponent />
-              <ModalRoot />
-              <AppBody />
-            </TokenContextProvider>
-          </ChakraProvider>
-        </ReduxProvider>
+        <ThresholdProvider>
+          <ReduxProvider store={reduxStore}>
+            <ChakraProvider theme={theme}>
+              <TokenContextProvider>
+                <Web3EventHandlerComponent />
+                <ModalRoot />
+                <AppBody />
+              </TokenContextProvider>
+            </ChakraProvider>
+          </ReduxProvider>
+        </ThresholdProvider>
       </Web3ReactProvider>
     </Router>
   )

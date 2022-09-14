@@ -14,6 +14,7 @@ import {
   selectTotalBonusBalance,
   selectTotalRewardsBalance,
 } from "../../store/rewards"
+import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -54,6 +55,7 @@ StakingPage.route = {
   path: "",
   index: false,
   title: "Staking",
+  isPageEnabled: true,
 }
 
 const MainStakingPage: PageComponent = (props) => {
@@ -63,8 +65,9 @@ const MainStakingPage: PageComponent = (props) => {
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage],
+  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
   title: "Staking",
+  isPageEnabled: true,
 }
 
 export default MainStakingPage
