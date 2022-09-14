@@ -65,9 +65,6 @@ const StakingProviderDetails: PageComponent = (props) => {
           as={RouterLink}
           to={`/staking/${stakingProviderAddress}/details`}
         >
-          <Button as={RouterLink} to={"/test"}>
-            Test
-          </Button>
           Stake Details
         </FilterTab>
         <FilterTab
