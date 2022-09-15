@@ -19,17 +19,13 @@ import AuthorizationFormNewStaker, {
 import { useStakingState } from "../../../hooks/useStakingState"
 import TokenBalance from "../../TokenBalance"
 import { useStakingAppMinAuthorizationAmount } from "../../../hooks/staking-applications"
-import { useModal } from "../../../hooks/useModal"
-import { ModalType } from "../../../enums"
 
 const AuthorizeApplicationModalNewStaker: FC<
   BaseModalProps & { stake: StakeData }
 > = () => {
-  const { openModal } = useModal()
-
   const handleSubmit = (vals: FormValues) => {
-    // TODO: This might need to be refactored into a multi-step modal that authorizes each app separately.
-    openModal(ModalType.ConfirmAuthorizationDataNewStaker)
+    // TODO: Hook up this modal to the confirmation modal and transaction flow
+    console.log(vals)
   }
 
   const { stakeAmount } = useStakingState()
