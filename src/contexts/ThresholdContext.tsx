@@ -1,6 +1,9 @@
-import { createContext, FC, useContext, useEffect, useMemo } from "react"
+import { createContext, FC, useContext, useEffect, useRef } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { threshold } from "../utils/getThresholdLib"
+import {
+  getDefaultThresholdLibProvider,
+  threshold,
+} from "../utils/getThresholdLib"
 import { supportedChainId } from "../utils/getEnvVariable"
 
 const ThresholdContext = createContext(threshold)
@@ -11,6 +14,7 @@ export const useThreshold = () => {
 
 export const ThresholdProvider: FC = ({ children }) => {
   const { library, active, account } = useWeb3React()
+  const hasThresholdLibConfigBeenUpdated = useRef(false)
 
   useEffect(() => {
     if (active && library && account) {
@@ -21,6 +25,17 @@ export const ThresholdProvider: FC = ({ children }) => {
           account,
         },
       })
+      hasThresholdLibConfigBeenUpdated.current = true
+    }
+
+    if (!active && !account && hasThresholdLibConfigBeenUpdated.current) {
+      threshold.updateConfig({
+        ethereum: {
+          chainId: supportedChainId,
+          providerOrSigner: getDefaultThresholdLibProvider(),
+        },
+      })
+      hasThresholdLibConfigBeenUpdated.current = false
     }
   }, [library, active, account])
 
