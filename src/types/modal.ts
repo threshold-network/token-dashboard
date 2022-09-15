@@ -31,6 +31,7 @@ import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirm
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import AuthorizeStakingApplicationModal from "../components/Modal/AuthorizeStakingApplicationModalNewStaker"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
+import SubmitStakeModal from "../components/Modal/SubmitStake"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -59,6 +60,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.AuthorizeStakingApplicationModalNewStaker]:
     AuthorizeStakingApplicationModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
+  [ModalType.SubmitStake]: SubmitStakeModal,
 }
 
 export interface BaseModalProps {

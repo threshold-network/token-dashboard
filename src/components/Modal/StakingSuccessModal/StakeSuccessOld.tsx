@@ -12,15 +12,15 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+import { BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
-import { PreSetupSteps } from "../../StakingChecklist"
 import StakingStats from "../../StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import InfoBox from "../../InfoBox"
+import { PreSetupSteps } from "../../StakingTimeline"
 
 const StakeSuccessOld: FC<BaseModalProps & { transactionHash: string }> = ({
   closeModal,

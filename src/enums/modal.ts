@@ -23,4 +23,5 @@ export enum ModalType {
   AuthorizeStakingApplicationModalNewStaker = "AUTHORIZE_STAKING_APPLICATION_MODAL_NEW_STAKER",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   StakeSuccessOLD = "STAKE_SUCCESS_OLD",
+  SubmitStake = "SUBMIT_STAKE",
 }

@@ -1,9 +1,13 @@
 import { Form } from "../../Forms"
 import { FC } from "react"
-import { FormikErrors, FormikProps, withFormik } from "formik"
+import { FormikErrors, FormikProps, useField, withFormik } from "formik"
 import { getErrorsObj, validateAmountInRange } from "../../../utils/forms"
 import {
+  Alert,
+  AlertIcon,
   Badge,
+  BodyMd,
+  BodyXs,
   Box,
   Button,
   Card,
@@ -66,22 +70,39 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
 }) => {
   const { closeModal } = useModal()
 
+  const [, { value: isTbtcChecked }] = useField("isTbtcChecked")
+  const [, { value: isRandomBeaconChecked }] = useField("isRandomBeaconChecked")
+  const bothAppsChecked = isTbtcChecked && isRandomBeaconChecked
+
   return (
     <Form>
-      <AuthorizationCardNewStaker
-        min={tbtcInputConstraints.min}
-        max={tbtcInputConstraints.max}
-        appName="tbtc"
-        label="tBTC"
-        mb={6}
-      />
-      <AuthorizationCardNewStaker
-        min={randomBeaconInputConstraints.min}
-        max={randomBeaconInputConstraints.max}
-        appName="randomBeacon"
-        label="Random Beacon"
-        mb={6}
-      />
+      <Box bg="brand.50" p={4} borderRadius={6} mb={6}>
+        <BodyMd mb={4}>tBTC + Random Beacon Rewards Bundle</BodyMd>
+        <AuthorizationCardNewStaker
+          min={tbtcInputConstraints.min}
+          max={tbtcInputConstraints.max}
+          inputId="amountTbtcToAuthorize"
+          checkBoxId="isTbtcChecked"
+          label="tBTC"
+          mb={6}
+        />
+        <AuthorizationCardNewStaker
+          min={randomBeaconInputConstraints.min}
+          max={randomBeaconInputConstraints.max}
+          inputId="amountRandomBeaconToAuthorize"
+          checkBoxId="isRandomBeaconChecked"
+          label="Random Beacon"
+          mb={6}
+        />
+        {!bothAppsChecked && (
+          <Alert status="error" size="sm">
+            <AlertIcon />
+            <BodyXs>
+              Note that you need to authorize both apps to earn rewards.
+            </BodyXs>
+          </Alert>
+        )}
+      </Box>
       <Card bg="gray.50" boxShadow="none" mb={6}>
         <HStack justifyContent="space-between">
           <LabelMd color="gray.500">PRE</LabelMd>
@@ -90,11 +111,16 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
           </Badge>
         </HStack>
       </Card>
-      <Box>
+      <Box mb={6}>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button type="submit">Authorize Selected Apps</Button>
+        <Button
+          disabled={isTbtcChecked === false && isRandomBeaconChecked === false}
+          type="submit"
+        >
+          Authorize Selected Apps
+        </Button>
       </Box>
     </Form>
   )

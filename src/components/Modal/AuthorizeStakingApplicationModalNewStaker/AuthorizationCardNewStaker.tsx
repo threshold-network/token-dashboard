@@ -6,6 +6,8 @@ import {
   Checkbox,
   Grid,
   GridItem,
+  BodySm,
+  Link,
 } from "@threshold-network/components"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
@@ -19,31 +21,34 @@ import { formatUnits } from "@ethersproject/units"
 export interface AuthorizationCardProps extends BoxProps {
   max: string | number
   min: string | number
-  appName: string
+  inputId: string
+  checkBoxId: string
   label: string
 }
 
 export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
   max,
   min,
-  appName,
+  inputId,
+  checkBoxId,
   label,
   ...restProps
 }) => {
-  const [, meta] = useField(`${appName}AmountToAuthorize`)
+  const [, { value: inputValue }, { setValue }] = useField(inputId)
+  const [, { value: checkboxValue }] = useField(checkBoxId)
 
   const percentToBeAuthorized = useMemo(() => {
-    if (meta.value) {
-      return (Number(formatUnits(meta.value)) / Number(formatUnits(max))) * 100
+    if (inputValue) {
+      return (Number(formatUnits(inputValue)) / Number(formatUnits(max))) * 100
     }
     return 0
-  }, [meta, max])
+  }, [inputValue])
 
   return (
     <Card
       {...restProps}
       boxShadow="none"
-      // borderColor={isSelected ? "brand.500" : undefined}
+      borderColor={checkboxValue === true ? "brand.500" : undefined}
     >
       <Grid
         gridTemplateAreas={{
@@ -68,7 +73,7 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
         gap="3"
         p={0}
       >
-        <Field name={`${appName}Checked`}>
+        <Field name={checkBoxId}>
           {({ field }: FieldProps) => {
             const { value } = field
             return (
@@ -96,7 +101,7 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <FormikTokenBalanceInput
-            name={`${appName}AmountToAuthorize`}
+            name={inputId}
             label={
               <HStack justifyContent="space-between">
                 <BodyMd>Authorized Amount</BodyMd>
@@ -109,7 +114,12 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
             placeholder="Enter amount"
             icon={ThresholdCircleBrand}
             max={max}
-            helperText={`Minimum ${formatTokenAmount(min)} T for ${label}`}
+            helperText={
+              <BodySm>
+                <Link onClick={() => setValue(min)}>Minimum</Link>
+                {formatTokenAmount(min)} T for ${label}
+              </BodySm>
+            }
             _disabled={{ bg: "gray.50", border: "none" }}
           />
         </GridItem>
