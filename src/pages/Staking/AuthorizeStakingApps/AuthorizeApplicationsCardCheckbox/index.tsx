@@ -10,12 +10,12 @@ import { FC, RefObject } from "react"
 import { FormValues, TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { WeiPerEther } from "@ethersproject/constants"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
 import { FormikProps } from "formik"
+import { useStakingApplicationAddress } from "../../../../hooks/staking-applications"
 
 export interface AppAuthDataProps {
   stakingAppId: StakingAppName | "pre"
@@ -91,8 +91,10 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
-  const threshold = useThreshold()
   const { openModal } = useModal()
+  const stakingAppAddress = useStakingApplicationAddress(
+    appAuthData.stakingAppId as StakingAppName
+  )
 
   const onAuthorizeApp = async (tokenAmount: string) => {
     if (!appAuthData.isAuthorized) {
@@ -105,6 +107,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           {
             appName: appAuthData.label,
             authorizationAmount: tokenAmount,
+            address: stakingAppAddress,
           },
         ],
       })
