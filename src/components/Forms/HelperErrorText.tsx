@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { FormErrorMessage, FormHelperText } from "@chakra-ui/react"
+import { FormErrorMessage, FormHelperText } from "@threshold-network/components"
 
 const HelperErrorText: FC<{
   errorMsgText?: string | JSX.Element
