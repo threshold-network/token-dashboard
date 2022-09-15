@@ -1,5 +1,4 @@
 import { useCallback } from "react"
-import { ContractTransaction } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useSendTransactionFromFn } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"
@@ -53,13 +52,17 @@ export const useAuthorizeMultipleAppsTransaction = () => {
             successfullTxs.push({ ...stakingApp, txHash: tx.hash })
           }
         }
-        openModal(ModalType.StakingApplicationsAuthorized, {
-          stakingProvider,
-          transactions: successfullTxs,
-        })
+        if (successfullTxs.length > 0) {
+          openModal(ModalType.StakingApplicationsAuthorized, {
+            stakingProvider,
+            authorizedStakingApplications: successfullTxs,
+          })
+        }
       } catch (error) {
         openModal(ModalType.TransactionFailed, {
-          error,
+          error:
+            (error as Error)?.message ||
+            "Error: Couldn't authorize applications",
           isExpandableError: true,
         })
       }
