@@ -104,11 +104,11 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
             name={inputId}
             label={
               <HStack justifyContent="space-between">
-                <BodyMd>Authorized Amount</BodyMd>
-                <BodyMd>
+                <BodyMd fontWeight="bold">Amount</BodyMd>
+                <BodySm color="gray.500">
                   Remaining Balance:{" "}
-                  {numeral(formatUnits(max)).format("0,0.00")}
-                </BodyMd>
+                  {numeral(formatUnits(max)).format("0,0.00")} T
+                </BodySm>
               </HStack>
             }
             placeholder="Enter amount"
@@ -116,8 +116,10 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
             max={max}
             helperText={
               <BodySm>
-                <Link onClick={() => setValue(min)}>Minimum</Link>
-                {formatTokenAmount(min)} T for ${label}
+                <Link color="brand.500" mr={2} onClick={() => setValue(min)}>
+                  Minimum
+                </Link>
+                {formatTokenAmount(min)} T for {label}
               </BodySm>
             }
             _disabled={{ bg: "gray.50", border: "none" }}

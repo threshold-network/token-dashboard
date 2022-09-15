@@ -3,6 +3,7 @@ import {
   BodyLg,
   BodyMd,
   H5,
+  HStack,
   ModalBody,
   ModalCloseButton,
   ModalHeader,
@@ -12,16 +13,23 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import withBaseModal from "../withBaseModal"
-import AuthorizationFormNewStaker from "./AuthorizationFormNewStaker"
+import AuthorizationFormNewStaker, {
+  FormValues,
+} from "./AuthorizationFormNewStaker"
 import { useStakingState } from "../../../hooks/useStakingState"
 import TokenBalance from "../../TokenBalance"
 import { useStakingAppMinAuthorizationAmount } from "../../../hooks/staking-applications"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
 
 const AuthorizeApplicationModalNewStaker: FC<
   BaseModalProps & { stake: StakeData }
 > = () => {
-  const handleSubmit = (vals: any) => {
-    console.log("next", vals)
+  const { openModal } = useModal()
+
+  const handleSubmit = (vals: FormValues) => {
+    // TODO: This might need to be refactored into a multi-step modal that authorizes each app separately.
+    openModal(ModalType.ConfirmAuthorizationDataNewStaker)
   }
 
   const { stakeAmount } = useStakingState()
@@ -62,12 +70,18 @@ const AuthorizeApplicationModalNewStaker: FC<
           </BodyLg>
         </InfoBox>
         <Stack spacing={6}>
-          <BodyMd>Total Staked Balance</BodyMd>
-          <TokenBalance tokenAmount={stakeAmount} tokenSymbol="T" withSymbol />
+          <HStack justifyContent="space-between" mt={4}>
+            <BodyMd>Total Staked Balance</BodyMd>
+            <TokenBalance
+              tokenAmount={stakeAmount}
+              tokenSymbol="T"
+              withSymbol
+            />
+          </HStack>
           <AuthorizationFormNewStaker
             tbtcInputConstraints={tbtcInputConstraints}
             randomBeaconInputConstraints={randomBeaconInputConstraints}
-            handleSubmit={handleSubmit}
+            onSubmitForm={handleSubmit}
           />
         </Stack>
       </ModalBody>

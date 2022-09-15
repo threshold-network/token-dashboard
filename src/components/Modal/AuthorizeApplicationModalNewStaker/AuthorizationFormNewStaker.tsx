@@ -30,18 +30,18 @@ export interface AuthInputConstraints {
 }
 
 interface Props {
-  handleSubmit: (vals: any) => void
+  onSubmitForm: (values: FormValues) => void
   tbtcInputConstraints: AuthInputConstraints
   randomBeaconInputConstraints: AuthInputConstraints
 }
 
 export const formikWrapper = withFormik<Props, FormValues>({
-  handleSubmit: (values) => {
-    console.log("submitted the form", values)
+  handleSubmit: (values, { props }) => {
+    props.onSubmitForm(values)
   },
   mapPropsToValues: (props) => ({
     tbtcAmountToAuthorize: props.tbtcInputConstraints.max,
-    isTbtcChecked: false,
+    isTbtcChecked: true,
     randomBeaconAmountToAuthorize: props.randomBeaconInputConstraints.max,
     isRandomBeaconChecked: true,
   }),
@@ -67,21 +67,21 @@ export const formikWrapper = withFormik<Props, FormValues>({
 const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
   tbtcInputConstraints,
   randomBeaconInputConstraints,
+  handleSubmit,
 }) => {
   const { closeModal } = useModal()
-
   const [, { value: isTbtcChecked }] = useField("isTbtcChecked")
   const [, { value: isRandomBeaconChecked }] = useField("isRandomBeaconChecked")
   const bothAppsChecked = isTbtcChecked && isRandomBeaconChecked
 
   return (
-    <Form>
+    <Form onSubmit={handleSubmit}>
       <Box bg="brand.50" p={4} borderRadius={6} mb={6}>
         <BodyMd mb={4}>tBTC + Random Beacon Rewards Bundle</BodyMd>
         <AuthorizationCardNewStaker
           min={tbtcInputConstraints.min}
           max={tbtcInputConstraints.max}
-          inputId="amountTbtcToAuthorize"
+          inputId="tbtcAmountToAuthorize"
           checkBoxId="isTbtcChecked"
           label="tBTC"
           mb={6}
@@ -89,7 +89,7 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
         <AuthorizationCardNewStaker
           min={randomBeaconInputConstraints.min}
           max={randomBeaconInputConstraints.max}
-          inputId="amountRandomBeaconToAuthorize"
+          inputId="randomBeaconAmountToAuthorize"
           checkBoxId="isRandomBeaconChecked"
           label="Random Beacon"
           mb={6}
@@ -111,7 +111,7 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
           </Badge>
         </HStack>
       </Card>
-      <Box mb={6}>
+      <HStack mb={6} justifyContent="flex-end">
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
@@ -121,7 +121,7 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
         >
           Authorize Selected Apps
         </Button>
-      </Box>
+      </HStack>
     </Form>
   )
 }

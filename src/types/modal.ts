@@ -32,6 +32,7 @@ import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
 import AuthorizeApplicationModalNewStaker from "../components/Modal/AuthorizeApplicationModalNewStaker"
+import ConfirmAuthorizationDataNewStaker from "../components/Modal/ConfirmAuthorizationDataNewStaker"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -61,6 +62,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.AuthorizeStakingApplicationModalNewStaker]:
     AuthorizeApplicationModalNewStaker,
+  [ModalType.ConfirmAuthorizationDataNewStaker]:
+    ConfirmAuthorizationDataNewStaker,
 }
 
 export interface BaseModalProps {
