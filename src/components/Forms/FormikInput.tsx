@@ -12,6 +12,7 @@ import {
 } from "@threshold-network/components"
 import { useField } from "formik"
 import TooltipIcon from "../TooltipIcon"
+import HelperErrorText from "./HelperErrorText"
 
 export const FormikInput: FC<
   FormControlProps & {
@@ -66,11 +67,11 @@ export const FormikInput: FC<
         {...field}
         value={meta.value}
       />
-      {!isError ? (
-        <FormHelperText>{helperText}</FormHelperText>
-      ) : (
-        <FormErrorMessage>{meta.error}</FormErrorMessage>
-      )}
+      <HelperErrorText
+        helperText={helperText}
+        errorMsgText={meta.error}
+        hasError={isError}
+      />
     </FormControl>
   )
 }
