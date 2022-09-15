@@ -16,13 +16,10 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
 }) => {
   const areNodesMissing = true
-  const tbtcApp = useStakingAppDataByStakingProvider(
-    "tbtc",
-    stake.stakingProvider
-  )
+  const tbtcApp = useStakingAppDataByStakingProvider("tbtc", stakingProvider)
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
-    stake.stakingProvider
+    stakingProvider
   )
 
   // TODO: This will probably be fetched from contracts
