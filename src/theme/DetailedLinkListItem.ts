@@ -28,7 +28,8 @@ export const DetailedLinkListItem = {
         color: mode("gray.700", "white")(props),
       },
       imageFallback: {
-        size: "48px",
+        w: "48px",
+        h: "48px",
         bg: "brand.500",
         color: "white",
         borderRadius: "6px",

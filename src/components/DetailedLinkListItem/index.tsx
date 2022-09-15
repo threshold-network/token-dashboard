@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   BodyLg,
@@ -42,8 +42,7 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
       {imgSrc ? (
         <Image sx={styles.image} src={imgSrc} />
       ) : (
-        // @ts-ignore <-- imageFallback.size isn't a valid CSS attribute but we save it on the theme
-        <Square sx={styles.imageFallback} size={styles.imageFallback.size}>
+        <Square sx={styles.imageFallback}>
           {imgFallback && imgFallback.slice(0, 3).toUpperCase()}
         </Square>
       )}
