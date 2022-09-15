@@ -5,7 +5,7 @@ import {
   BodySm,
   BoxProps,
   Button,
-  HStack,
+  Flex,
   Image,
   Square,
   Stack,
@@ -38,7 +38,7 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
   const _linkText = linkText || "Read More"
 
   return (
-    <HStack sx={styles.container} as="li">
+    <Flex sx={styles.container} as="li">
       {imgSrc ? (
         <Image sx={styles.image} src={imgSrc} />
       ) : (
@@ -46,7 +46,11 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
           {imgFallback && imgFallback.slice(0, 3).toUpperCase()}
         </Square>
       )}
-      <Stack spacing={0} mr="auto !important">
+      <Stack
+        spacing={0}
+        my={{ base: "2", sm: undefined }}
+        mr={{ sm: "auto !important" }}
+      >
         <BodyLg sx={styles.title}>{title}</BodyLg>
         <BodySm sx={styles.subtitle}>{subtitle}</BodySm>
       </Stack>
@@ -63,7 +67,7 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
           {_linkText}
         </Button>
       )}
-    </HStack>
+    </Flex>
   )
 }
 
