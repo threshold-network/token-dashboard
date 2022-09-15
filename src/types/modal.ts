@@ -11,6 +11,7 @@ import {
   TransactionIsWaitingForConfirmation,
 } from "../components/Modal/TransactionModal"
 import StakingSuccessModal from "../components/Modal/StakingSuccessModal"
+import StakeSuccessOldModal from "../components/Modal/StakingSuccessModal/StakeSuccessOld"
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
@@ -30,6 +31,7 @@ import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirm
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
+import AuthorizeApplicationModalNewStaker from "../components/Modal/AuthorizeApplicationModalNewStaker"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -41,6 +43,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UpgradedToT]: UpgradeToTSuccess,
   [ModalType.ConfirmStakingParams]: ConfirmStakingParams,
   [ModalType.StakeSuccess]: StakingSuccessModal,
+  [ModalType.StakeSuccessOLD]: StakeSuccessOldModal,
   [ModalType.UnstakeSuccess]: UnstakingSuccessModal,
   [ModalType.UnstakeT]: UnstakeTModalStep1,
   [ModalType.UnstakeTStep2]: UnstakeTModalStep2,
@@ -56,6 +59,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.SubmitStake]: SubmitStakeModal,
+  [ModalType.AuthorizeStakingApplicationModalNewStaker]:
+    AuthorizeApplicationModalNewStaker,
 }
 
 export interface BaseModalProps {

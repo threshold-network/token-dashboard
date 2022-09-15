@@ -15,6 +15,7 @@ import { IoAlertCircle } from "react-icons/all"
 export interface AppAuthorizationInfoProps extends StackProps {
   label: string
   percentageAuthorized: number
+  separatePercentAuthorized?: boolean
   aprPercentage: number
   slashingPercentage: number
   isAuthorizationRequired?: boolean
@@ -26,19 +27,30 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   aprPercentage,
   slashingPercentage,
   isAuthorizationRequired = false,
+  separatePercentAuthorized,
   ...restProps
 }) => {
   return (
     <VStack alignItems={"flex-start"} {...restProps}>
-      <HStack>
-        <LabelSm>
-          {label} App - {formatPercentage(percentageAuthorized)}
-        </LabelSm>
-        <InfoIcon />
-        {!isAuthorizationRequired && (
-          <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
-            Authorization not required
-          </Badge>
+      <HStack
+        w="full"
+        justifyContent={separatePercentAuthorized ? "space-between" : undefined}
+      >
+        <HStack>
+          <LabelSm>
+            {label} App{" "}
+            {!separatePercentAuthorized &&
+              `- ${formatPercentage(percentageAuthorized)}`}
+          </LabelSm>
+          <InfoIcon />
+          {!isAuthorizationRequired && (
+            <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
+              Authorization not required
+            </Badge>
+          )}
+        </HStack>
+        {separatePercentAuthorized && (
+          <LabelSm>{formatPercentage(percentageAuthorized)}</LabelSm>
         )}
       </HStack>
       <HStack>

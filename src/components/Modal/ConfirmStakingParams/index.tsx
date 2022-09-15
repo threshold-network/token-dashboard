@@ -37,11 +37,17 @@ const ConfirmStakingParamsModal: FC<
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
-  const { stake } = useStakeTransaction((tx) =>
-    openModal(ModalType.StakeSuccess, {
-      transactionHash: tx.hash,
-    })
-  )
+  const { stake } = useStakeTransaction((tx) => {
+    if (featureFlags.MULTI_APP_STAKING) {
+      openModal(ModalType.StakeSuccess, {
+        transactionHash: tx.hash,
+      })
+    } else {
+      openModal(ModalType.StakeSuccessOLD, {
+        transactionHash: tx.hash,
+      })
+    }
+  })
 
   useEffect(() => {
     const forceFormValidation = async () => {
