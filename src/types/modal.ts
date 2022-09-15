@@ -1,5 +1,5 @@
 import { ModalType } from "../enums"
-import { ElementType, Fragment } from "react"
+import { ElementType } from "react"
 import SelectWalletModal from "../components/Modal/SelectWalletModal"
 import {
   TransactionIdle as UpgradeToT,
@@ -29,7 +29,10 @@ import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModa
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
-import { AuthorizeStakingApps } from "../components/Modal/StakingApplications"
+import {
+  AuthorizeStakingApps,
+  StakingApplicationsAuthorized,
+} from "../components/Modal/StakingApplications"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -56,8 +59,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.AuthorizeStakingApps]: AuthorizeStakingApps,
-  // TODO: Implement success modal.
-  [ModalType.StakingApplicationsAuthorized]: Fragment,
+  [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
 }
 
 export interface BaseModalProps {
