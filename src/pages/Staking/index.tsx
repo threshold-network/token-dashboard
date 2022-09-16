@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Button, SimpleGrid, Stack } from "@chakra-ui/react"
+import { SimpleGrid, Stack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -9,7 +9,7 @@ import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
 import HowItWorksPage from "./HowItWorks"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
   selectTotalBonusBalance,
   selectTotalRewardsBalance,
@@ -23,9 +23,15 @@ import {
 } from "@threshold-network/components"
 import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
+import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
+  }, [dispatch])
 
   useEffect(() => {
     fetchtTvlData()

@@ -13,7 +13,7 @@ import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
 import { PageComponent, StakeData } from "../../../types"
-import { isSameETHAddress } from "../../../web3/utils"
+import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
@@ -22,7 +22,10 @@ import { FC, useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
-import { isAddress } from "web3-utils"
+import {
+  useStakingAppDataByStakingProvider,
+  useStakingAppMinAuthorizationAmount,
+} from "../../../hooks/staking-applications"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -33,8 +36,18 @@ const AuthorizeStakingAppsPage: FC = () => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
-  //TODO: This should be fetched from contract for each app
-  const minAuthAmount = "1000000000000000000000"
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const randomBeaconMinAuthAmount =
+    useStakingAppMinAuthorizationAmount("randomBeacon")
+
+  const tbtcApp = useStakingAppDataByStakingProvider(
+    "tbtc",
+    stakingProviderAddress || AddressZero
+  )
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
+    "randomBeacon",
+    stakingProviderAddress || AddressZero
+  )
 
   const stake = useSelector((state: RootState) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -47,18 +60,17 @@ const AuthorizeStakingAppsPage: FC = () => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
-  // TODO: This will probably be fetched from contracts
   const appsAuthData = {
     tbtc: {
       label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
+      isAuthorized: tbtcApp.isAuthorized,
+      percentage: tbtcApp.percentage,
       isAuthRequired: true,
     },
     randomBeacon: {
       label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
+      isAuthorized: randomBeaconApp.isAuthorized,
+      percentage: randomBeaconApp.percentage,
       isAuthRequired: true,
     },
     pre: {
@@ -97,7 +109,7 @@ const AuthorizeStakingAppsPage: FC = () => {
             >
               {isInactiveStake ? "inactive" : "active"}
             </Badge>
-            <StakeCardHeaderTitle stake={stake} />
+            <StakeCardHeaderTitle stakeType={stake?.stakeType} />
           </HStack>
         </HStack>
         <LineDivider />
@@ -114,7 +126,8 @@ const AuthorizeStakingAppsPage: FC = () => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={tbtcMinAuthAmount}
+          stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -124,7 +137,8 @@ const AuthorizeStakingAppsPage: FC = () => {
             .map((app) => app.label)
             .includes("Random Beacon")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={randomBeaconMinAuthAmount}
+          stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
@@ -132,7 +146,8 @@ const AuthorizeStakingAppsPage: FC = () => {
           onCheckboxClick={onCheckboxClick}
           isSelected={selectedApps.map((app) => app.label).includes("PRE")}
           maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={minAuthAmount}
+          minAuthAmount={"0"}
+          stakingProvider={stakingProviderAddress!}
         />
         <Button
           disabled={selectedApps.length === 0}

@@ -48,7 +48,8 @@ export class Multicall implements IMulticall {
     this._multicall = getContract(
       address,
       MULTICALL_ABI,
-      config.providerOrSigner
+      config.providerOrSigner,
+      config.account
     )
   }
 
