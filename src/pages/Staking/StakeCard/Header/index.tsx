@@ -1,7 +1,7 @@
 import { FC } from "react"
 import {
   Badge,
-  FilterTabList,
+  FilterTabs,
   FilterTab,
   Flex,
 } from "@threshold-network/components"
@@ -30,7 +30,7 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
         {isInactiveStake ? "inactive" : "active"}
       </Badge>
       <StakeCardHeaderTitle stake={stake} />
-      <FilterTabList
+      <FilterTabs
         selectedTabId="1"
         size="xs"
         variant="inline"
@@ -38,7 +38,7 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
       >
         <FilterTab tabId={"1"}>Stake</FilterTab>
         <FilterTab tabId={"2"}>Unstake</FilterTab>
-      </FilterTabList>
+      </FilterTabs>
     </Flex>
   )
 }

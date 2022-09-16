@@ -1,6 +1,6 @@
 import { ComponentProps, FC } from "react"
 import { Box } from "@chakra-ui/react"
-import { Card, FilterTabList, FilterTab } from "@threshold-network/components"
+import { Card, FilterTabs, FilterTab } from "@threshold-network/components"
 import { TbtcMintingType } from "../../../types/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 
@@ -11,13 +11,13 @@ export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
 
   return (
     <Box {...props}>
-      <FilterTabList
+      <FilterTabs
         selectedTabId={mintingType}
         onTabClick={(tabId) => updateState("mintingType", tabId)}
       >
         <FilterTab tabId={TbtcMintingType.mint}>Mint</FilterTab>
         <FilterTab tabId={TbtcMintingType.unmint}>Unmint</FilterTab>
-      </FilterTabList>
+      </FilterTabs>
     </Box>
   )
 }

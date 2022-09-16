@@ -1,6 +1,6 @@
 import {
   Card,
-  FilterTabList,
+  FilterTabs,
   FilterTab,
   BoxProps,
   Grid,
@@ -99,7 +99,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           slashingPercentage={1}
           isAuthorizationRequired={true}
         />
-        <FilterTabList
+        <FilterTabs
           gridArea="filter-tabs"
           variant="inline"
           alignItems="center"
@@ -108,7 +108,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         >
           <FilterTab tabId={"1"}>Increase</FilterTab>
           <FilterTab tabId={"2"}>Decrease</FilterTab>
-        </FilterTabList>
+        </FilterTabs>
         <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
             onSubmitForm={() => {

@@ -16,7 +16,7 @@ import {
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
 import {
-  FilterTabList,
+  FilterTabs,
   FilterTab,
   H1,
   BodyLg,
@@ -74,7 +74,7 @@ const StakingProviderDetails: PageComponent = (props) => {
           {lastElementOfTheUrl === "authorize" ? "applications" : "details"}
         </Link>
       </BodyLg>
-      <FilterTabList selectedTabId="2" mb="5" size="lg">
+      <FilterTabs selectedTabId="2" mb="5" size="lg">
         <FilterTab
           tabId={"1"}
           as={RouterLink}
@@ -89,7 +89,7 @@ const StakingProviderDetails: PageComponent = (props) => {
         >
           Authorize Application
         </FilterTab>
-      </FilterTabList>
+      </FilterTabs>
       <Outlet />
     </>
   )
