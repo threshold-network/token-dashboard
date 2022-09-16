@@ -3,6 +3,7 @@ import { providers, Signer } from "ethers"
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
+  account?: string
 }
 
 export interface ThresholdConfig {

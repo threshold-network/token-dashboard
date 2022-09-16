@@ -18,7 +18,11 @@ describe("Multicall test", () => {
   let multicall: IMulticall
   const mockMulticallContract = { aggregate: jest.fn() }
   const mockProvider = {} as providers.Provider
-  const config = { chainId: 1, providerOrSigner: mockProvider }
+  const config = {
+    chainId: 1,
+    providerOrSigner: mockProvider,
+    account: "0xE775aE21E40d34f01A5C0E1Db9FB3e637D768596",
+  }
 
   beforeEach(() => {
     ;(getContract as jest.Mock).mockImplementation(() => mockMulticallContract)
@@ -29,7 +33,8 @@ describe("Multicall test", () => {
     expect(getContract).toHaveBeenCalledWith(
       MULTICALL_ADDRESSESS[config.chainId],
       MULTICALL_ABI,
-      config.providerOrSigner
+      config.providerOrSigner,
+      config.account
     )
     expect(multicall).toBeInstanceOf(Multicall)
     expect(multicall.aggregate).toBeDefined()
