@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { ContractTransaction } from "ethers"
 import {
   BodyLg,
   Button,
@@ -22,23 +23,35 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
 import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
+import { ModalType } from "../../../enums"
+import { useModal } from "../../../hooks/useModal"
 
-export type AuthorizeAppsProps = BaseModalProps & {
+export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
   stakingAppName: StakingAppName
   increaseAmount: string
 }
 
-const IncreaseAuthorizationBase: FC<AuthorizeAppsProps> = ({
+const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   stakingProvider,
   stakingAppName,
   increaseAmount,
   closeModal,
 }) => {
-  const { sendTransaction } = useIncreaseAuthorizationTransacion(stakingAppName)
+  const { openModal } = useModal()
+  const onSuccess = (tx: ContractTransaction) => {
+    openModal(ModalType.AuthorizationIncreased, {
+      txHash: tx.hash,
+      stakingProvider,
+      increaseAmount,
+    })
+  }
+  const { sendTransaction } = useIncreaseAuthorizationTransacion(
+    stakingAppName,
+    onSuccess
+  )
+
   const onAuthorizeIncrease = () => {
-    // TODO: Open success modal, probably we should open success modal in
-    // `useIncreaseAuthorizationTransacion`.
     sendTransaction(stakingProvider, increaseAmount)
   }
 
