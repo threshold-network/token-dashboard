@@ -49,14 +49,16 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   slashingPercentage,
   isAuthorized,
   authorizedStake,
+  hasPendingDeauthorization,
   isAuthorizationRequired = false,
-
   ...restProps
 }) => {
   return (
     <VStack alignItems={"flex-start"} {...restProps}>
       <HStack mb="1rem !important">
-        {isAuthorized && <CheckCircleIcon color="green.400" />}
+        {isAuthorized && !hasPendingDeauthorization && (
+          <CheckCircleIcon color="green.400" />
+        )}
         <LabelSm>
           {label} App - {formatPercentage(percentageAuthorized)}
         </LabelSm>
@@ -66,9 +68,14 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
             Authorization not required
           </Badge>
         )}
-        {isAuthorizationRequired && isAuthorized && (
+        {isAuthorizationRequired && isAuthorized && !hasPendingDeauthorization && (
           <Badge variant={"subtle"} colorScheme="green" size="small">
             Authorized
+          </Badge>
+        )}
+        {hasPendingDeauthorization && (
+          <Badge variant={"subtle"} colorScheme="yellow" size="small">
+            pending deauthorization
           </Badge>
         )}
       </HStack>

@@ -134,6 +134,10 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     }
   }
 
+  const hasPendingDeauthorization = Boolean(
+    appAuthData.hasPendingDeauthorization
+  )
+
   if (collapsed) {
     return (
       <Card {...restProps} boxShadow="none">
@@ -152,10 +156,12 @@ export const AuthorizeApplicationsCardCheckbox: FC<
       {...restProps}
       boxShadow="none"
       borderColor={
-        appAuthData.isAuthorized
+        appAuthData.isAuthorized && !hasPendingDeauthorization
           ? "green.400"
           : isSelected
           ? "brand.500"
+          : hasPendingDeauthorization
+          ? "yellow.400"
           : undefined
       }
     >
@@ -188,6 +194,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           aprPercentage={10}
           slashingPercentage={1}
           isAuthorizationRequired={true}
+          hasPendingDeauthorization={hasPendingDeauthorization}
         />
         <FilterTabs
           gridArea="filter-tabs"
