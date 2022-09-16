@@ -17,14 +17,28 @@ import { StakingAppName } from "../../../../store/staking-applications"
 import { FormikProps } from "formik"
 import { useStakingApplicationAddress } from "../../../../hooks/staking-applications"
 
-export interface AppAuthDataProps {
+interface CommonProps {
   stakingAppId: StakingAppName | "pre"
   label: string
-  isAuthorized: boolean
-  percentage: number
-  isAuthRequired: boolean
-  authorizedStake: string
 }
+
+type AppAuthDataConditionalProps =
+  | {
+      isAuthRequired?: false
+      authorizedStake?: never
+      hasPendingDeauthorization?: never
+      isAuthorized?: never
+      percentage?: never
+    }
+  | {
+      isAuthRequired: true
+      authorizedStake: string
+      hasPendingDeauthorization: boolean
+      isAuthorized: boolean
+      percentage: number
+    }
+
+export type AppAuthDataProps = CommonProps & AppAuthDataConditionalProps
 
 export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   appAuthData: AppAuthDataProps
@@ -124,8 +138,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     return (
       <Card {...restProps} boxShadow="none">
         <AppAuthorizationInfo
-          isAuthorized={appAuthData.isAuthorized}
-          authorizedStake={appAuthData.authorizedStake}
           label={appAuthData.label}
           percentageAuthorized={100}
           aprPercentage={10}

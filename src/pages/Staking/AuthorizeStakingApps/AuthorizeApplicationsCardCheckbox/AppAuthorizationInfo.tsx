@@ -17,15 +17,30 @@ import { IoAlertCircle } from "react-icons/all"
 import InfoBox from "../../../../components/InfoBox"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 
-export interface AppAuthorizationInfoProps extends StackProps {
+interface CommonProps {
   label: string
-  percentageAuthorized: number
   aprPercentage: number
   slashingPercentage: number
-  isAuthorized: boolean
-  isAuthorizationRequired?: boolean
-  authorizedStake: string
+  percentageAuthorized: number
 }
+
+type ConditionalProps =
+  | {
+      isAuthorizationRequired?: false
+      isAuthorized?: never
+      authorizedStake?: never
+      hasPendingDeauthorization?: never
+    }
+  | {
+      isAuthorizationRequired: true
+      isAuthorized: boolean
+      authorizedStake: string
+      hasPendingDeauthorization: boolean
+    }
+
+export type AppAuthorizationInfoProps = CommonProps &
+  ConditionalProps &
+  StackProps
 
 export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   label,
