@@ -5,6 +5,14 @@ import {
   Grid,
   Checkbox,
   GridItem,
+  BodyMd,
+  H3,
+  BodyLg,
+  H5,
+  Box,
+  MultiSegmentProgress,
+  BodySm,
+  Button,
 } from "@threshold-network/components"
 import { FC, RefObject } from "react"
 import { FormValues, TokenAmountForm } from "../../../../components/Forms"
@@ -16,6 +24,8 @@ import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
 import { FormikProps } from "formik"
 import { useStakingApplicationAddress } from "../../../../hooks/staking-applications"
+import InfoBox from "../../../../components/InfoBox"
+import { formatDate } from "../../../../utils/date"
 
 interface CommonProps {
   stakingAppId: StakingAppName | "pre"
@@ -29,6 +39,10 @@ type AppAuthDataConditionalProps =
       hasPendingDeauthorization?: never
       isAuthorized?: never
       percentage?: never
+      pendingAuthorizationDecrease?: never
+      isDeauthorizationReqestActive?: never
+      deauthorizationCreatedAt?: never
+      remainingAuthorizationDecreaseDelay?: string
     }
   | {
       isAuthRequired: true
@@ -36,6 +50,10 @@ type AppAuthDataConditionalProps =
       hasPendingDeauthorization: boolean
       isAuthorized: boolean
       percentage: number
+      pendingAuthorizationDecrease: string
+      isDeauthorizationReqestActive: boolean
+      deauthorizationCreatedAt?: string
+      remainingAuthorizationDecreaseDelay: string
     }
 
 export type AppAuthDataProps = CommonProps & AppAuthDataConditionalProps
@@ -137,6 +155,17 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   const hasPendingDeauthorization = Boolean(
     appAuthData.hasPendingDeauthorization
   )
+  const pendingAuthorizationDecrease =
+    appAuthData.pendingAuthorizationDecrease || "0"
+  const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
+  const isDeauthorizationReqestActive =
+    appAuthData.isDeauthorizationReqestActive
+  const remainingAuthorizationDecreaseDelay =
+    appAuthData.remainingAuthorizationDecreaseDelay
+
+  const onConfirmDeauthorization = () => {
+    // TODO: Implement submit function.
+  }
 
   if (collapsed) {
     return (
@@ -230,6 +259,65 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           />
         </GridItem>
       </Grid>
+      {hasPendingDeauthorization && (
+        <>
+          <BodyMd mt="2.5rem !important">Pending Deauthorization</BodyMd>
+          <InfoBox
+            direction={{ base: "column", sm: "row" }}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <H5>
+              {formatTokenAmount(pendingAuthorizationDecrease)}{" "}
+              <BodyLg as="span">T</BodyLg>
+            </H5>
+            <Box minWidth="220px">
+              <>
+                <MultiSegmentProgress
+                  values={[
+                    {
+                      color: "#7D00FF",
+                      value:
+                        remainingAuthorizationDecreaseDelay === "0"
+                          ? 100
+                          : !isDeauthorizationReqestActive
+                          ? 0
+                          : // TODO: calculatePercenteage(
+                            //     remainingAuthorizationDecreaseDelay,
+                            //     remainingAuthorizationDecreaseDelay +
+                            //       stakingAppAuthDecreaseDelay
+                            //   ),
+                            15,
+                    },
+                  ]}
+                />
+                <BodySm>
+                  {isDeauthorizationReqestActive
+                    ? "Completed"
+                    : "Deauthroziation request not activated"}
+                </BodySm>
+                {deauthorizationCreatedAt && (
+                  <BodySm>
+                    Available:{" "}
+                    <BodySm as="span" color="brand.500">
+                      {formatDate(deauthorizationCreatedAt)}
+                    </BodySm>
+                  </BodySm>
+                )}
+              </>
+            </Box>
+            <Button
+              onClick={onConfirmDeauthorization}
+              disabled={
+                !isDeauthorizationReqestActive ||
+                remainingAuthorizationDecreaseDelay !== "0"
+              }
+            >
+              Confirm Deauthorization
+            </Button>
+          </InfoBox>
+        </>
+      )}
     </Card>
   )
 }
