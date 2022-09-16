@@ -134,6 +134,9 @@ const getKeepStakingAppStakingProvidersData = async (
             _appData.pendingAuthorizationDecrease.toString(),
           remainingAuthorizationDecreaseDelay:
             _appData.remainingAuthorizationDecreaseDelay.toString(),
+          isDeauthorizationReqestActive: _appData.isDeauthorizationReqestActive,
+          deauthorizationCreatedAt:
+            _appData.deauthorizationCreatedAt?.toString(),
         }
         return reducer
       },
