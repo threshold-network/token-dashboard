@@ -4,6 +4,7 @@ import {
   StakingProviderAppInfo,
   AuthorizationParameters,
 } from "../../threshold-ts/applications"
+import { MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
 import { setStakes } from "../staking"
@@ -171,6 +172,44 @@ export const stakingApplicationsSlice = createSlice({
         authorizedStake,
         pendingAuthorizationDecrease: "0",
         remainingAuthorizationDecreaseDelay: "0",
+      }
+    },
+    authorizationDecreaseRequested: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        appName: StakingAppName
+        toAmount: string
+        decreasingAt: string
+      }>
+    ) => {
+      const { stakingProvider, appName, toAmount, decreasingAt } =
+        action.payload
+      const stakingProviderData =
+        state[appName].stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      // There are only two possible scenarios:
+      // 1. When the operator is not known- the application contract sets
+      //    `decreasingAt` to current block timestamp. It means an authorizer
+      //    can approve authorization decrease immediately because that operator
+      //    was never in the sortition pool.
+      // 2. When the operator is known- the application contract sets
+      //    `decreasingAt` to `MAX_UINT64`.  It means that this operator is or
+      //    was in the sortition pool. Before authorization decrease delay
+      //    starts, the operator needs to update the state of the sortition pool
+      //    with a call to `joinSortitionPool` or `updateOperatorStatus`.
+      const isDeauthorizationReqestActive =
+        BigNumber.from(decreasingAt).eq(MAX_UINT64)
+
+      state[appName].stakingProviders.data[stakingProvider] = {
+        ...stakingProviderData,
+        pendingAuthorizationDecrease: toAmount,
+        remainingAuthorizationDecreaseDelay: isDeauthorizationReqestActive
+          ? "0"
+          : MAX_UINT64.toString(),
+        deauthorizationCreatedAt: undefined,
       }
     },
   },

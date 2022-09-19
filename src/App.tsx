@@ -42,6 +42,7 @@ import { ThresholdProvider } from "./contexts/ThresholdContext"
 import {
   useSubscribeToAuthorizationIncreasedEvent,
   useSubscribeToAuthorizationDecreaseApprovedEvent,
+  useSubscribeToAuthorizationDecreaseRequestedEvent,
 } from "./hooks/staking-applications"
 
 const Web3EventHandlerComponent = () => {
@@ -56,6 +57,8 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToAuthorizationIncreasedEvent("randomBeacon")
   useSubscribeToAuthorizationDecreaseApprovedEvent("tbtc")
   useSubscribeToAuthorizationDecreaseApprovedEvent("randomBeacon")
+  useSubscribeToAuthorizationDecreaseRequestedEvent("tbtc")
+  useSubscribeToAuthorizationDecreaseRequestedEvent("randomBeacon")
 
   return <></>
 }
