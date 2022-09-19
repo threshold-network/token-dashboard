@@ -24,7 +24,7 @@ export const LegacyStakesCard: FC<
         />{" "}
         on the legacy dashboard.
       </BodyMd>
-      <LegacyStakesDepositSteps />
+      <LegacyStakesDepositSteps setTab={() => {}} />
       <Box mt="6">
         <PreSetupSteps />
       </Box>
