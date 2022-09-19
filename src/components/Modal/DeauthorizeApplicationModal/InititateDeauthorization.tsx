@@ -23,6 +23,7 @@ import StakingApplicationOperationIcon from "../../StakingApplicationOperationIc
 import shortenAddress from "../../../utils/shortenAddress"
 import TokenBalance from "../../TokenBalance"
 import { StakingAppName } from "../../../store/staking-applications"
+import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
 
 const InitiateDeauthorization: FC<{
   closeModal: () => void
@@ -30,8 +31,10 @@ const InitiateDeauthorization: FC<{
   decreaseAmount: string
   stakingAppName: StakingAppName
 }> = ({ closeModal, stakingProvider, decreaseAmount, stakingAppName }) => {
-  const handleInitiateClick = () => {
-    console.log("send deauth tx")
+  const { sendTransaction } = useInitiateDeauthorization(stakingAppName)
+
+  const handleInitiateClick = async () => {
+    await sendTransaction(stakingProvider, decreaseAmount)
   }
 
   return (
