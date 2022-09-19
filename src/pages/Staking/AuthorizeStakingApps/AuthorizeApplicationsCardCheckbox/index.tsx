@@ -13,6 +13,7 @@ import {
   MultiSegmentProgress,
   BodySm,
   Button,
+  useBoolean,
 } from "@threshold-network/components"
 import { FC, RefObject } from "react"
 import { FormValues, TokenAmountForm } from "../../../../components/Forms"
@@ -123,6 +124,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
+  const [isIncreaseAction, setActionFlag] = useBoolean(true)
   const { openModal } = useModal()
   const stakingAppAddress = useStakingApplicationAddress(
     appAuthData.stakingAppId as StakingAppName
@@ -152,6 +154,19 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     }
   }
 
+  const onInitiateDeauthorization = async (tokenAmount: string) => {
+    openModal(ModalType.DeauthorizeApplication, {
+      stakingProvider: stakingProvider,
+      decreaseAmount: tokenAmount,
+      stakingAppName: appAuthData.stakingAppId,
+    })
+  }
+
+  const onSubmitForm = (tokenAmount: string) => {
+    if (isIncreaseAction) onAuthorizeApp(tokenAmount)
+    else onInitiateDeauthorization(tokenAmount)
+  }
+
   const hasPendingDeauthorization = Boolean(
     appAuthData.hasPendingDeauthorization
   )
@@ -162,6 +177,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     appAuthData.isDeauthorizationReqestActive
   const remainingAuthorizationDecreaseDelay =
     appAuthData.remainingAuthorizationDecreaseDelay
+  const authorizedStake = appAuthData.authorizedStake
 
   const onConfirmDeauthorization = () => {
     openModal(ModalType.ConfirmDeauthorization, {
@@ -235,6 +251,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           alignItems="center"
           gap={0}
           size="sm"
+          onTabClick={setActionFlag.toggle}
           tabs={[
             { title: "Increase", tabId: "1" },
             { title: "Decrease", tabId: "2" },
@@ -243,19 +260,25 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
             innerRef={formRef}
-            onSubmitForm={onAuthorizeApp}
+            onSubmitForm={onSubmitForm}
             label="Amount"
             submitButtonText={
-              appAuthData.isAuthorized
-                ? `Authorize Increase`
-                : `Authorize ${appAuthData.label}`
+              isIncreaseAction
+                ? appAuthData.isAuthorized
+                  ? `Authorize Increase`
+                  : `Authorize ${appAuthData.label}`
+                : "Initiate Deauthorization"
             }
-            maxTokenAmount={maxAuthAmount}
+            maxTokenAmount={
+              isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
+            }
             placeholder={"Enter amount"}
             minTokenAmount={
-              appAuthData.percentage === 0
-                ? minAuthAmount
-                : WeiPerEther.toString()
+              isIncreaseAction
+                ? appAuthData.percentage === 0
+                  ? minAuthAmount
+                  : WeiPerEther.toString()
+                : "0"
             }
             helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
               appAuthData.label
