@@ -4,7 +4,6 @@ import {
   Badge,
   Button,
   Card,
-  FilterTabs,
   H5,
   HStack,
   LineDivider,
@@ -19,7 +18,7 @@ import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
-import { useEffect, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
@@ -28,7 +27,7 @@ import {
   useStakingAppMinAuthorizationAmount,
 } from "../../../hooks/staking-applications"
 
-const AuthorizeStakingAppsPage: PageComponent = (props) => {
+const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
@@ -98,15 +97,6 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
 
   return isLoggedInAsAuthorizer ? (
     <>
-      <FilterTabs
-        tabs={[
-          { title: "Stake Overview", tabId: "1" },
-          { title: "Authorize Application", tabId: "2" },
-        ]}
-        selectedTabId="2"
-        mb="5"
-        size="lg"
-      />
       <Card>
         <HStack justify={"space-between"}>
           <H5>Authorize Applications</H5>
@@ -175,12 +165,12 @@ const AuthorizeStakingAppsPage: PageComponent = (props) => {
   )
 }
 
-AuthorizeStakingAppsPage.route = {
-  path: "authorize/:stakingProviderAddress",
-  index: false,
-  title: "Authorize",
-  hideFromMenu: true,
-  isPageEnabled: featureFlags.MULTI_APP_STAKING,
-}
+// AuthorizeStakingAppsPage.route = {
+//   path: "authorize/:stakingProviderAddress",
+//   index: false,
+//   title: "Authorize",
+//   hideFromMenu: true,
+//   isPageEnabled: featureFlags.MULTI_APP_STAKING,
+// }
 
 export default AuthorizeStakingAppsPage

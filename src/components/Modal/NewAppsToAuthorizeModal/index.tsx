@@ -102,7 +102,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button
           mr={2}
           as={RouterLink}
-          to={`/staking/authorize/${selectedProviderAddress}`}
+          to={`/staking/${selectedProviderAddress}/authorize`}
           onClick={closeModal}
           disabled={!selectedProviderAddress}
           style={{ pointerEvents: selectedProviderAddress ? "auto" : "none" }}

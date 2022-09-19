@@ -15,6 +15,14 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
+import {
+  FilterTabs,
+  FilterTab,
+  H1,
+  BodyLg,
+} from "@threshold-network/components"
+import { Link, Outlet, useLocation, useParams } from "react-router-dom"
+import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 
 const StakingPage: PageComponent = (props) => {
@@ -57,6 +65,75 @@ const StakingPage: PageComponent = (props) => {
   )
 }
 
+const StakingProviderDetails: PageComponent = (props) => {
+  const { stakingProviderAddress } = useParams()
+  const { pathname } = useLocation()
+  const lastElementOfTheUrl = pathname.split("/").at(-1)
+
+  return (
+    <>
+      <BodyLg mb={5}>
+        <Link to={"/staking"}>Staking</Link>
+        {" > "}
+        <Link to={pathname}>
+          Stake{" "}
+          {lastElementOfTheUrl === "authorize" ? "applications" : "details"}
+        </Link>
+      </BodyLg>
+      <FilterTabs selectedTabId="2" mb="5" size="lg">
+        <FilterTab
+          tabId={"1"}
+          as={RouterLink}
+          to={`/staking/${stakingProviderAddress}/details`}
+        >
+          Stake Details
+        </FilterTab>
+        <FilterTab
+          tabId={"2"}
+          as={RouterLink}
+          to={`/staking/${stakingProviderAddress}/authorize`}
+        >
+          Authorize Application
+        </FilterTab>
+      </FilterTabs>
+      <Outlet />
+    </>
+  )
+}
+
+const Details: PageComponent = () => {
+  const { stakingProvider } = useParams()
+
+  return <H1>Staking provider {stakingProvider} overview</H1>
+}
+
+const Auth: PageComponent = () => {
+  return <AuthorizeStakingAppsPage />
+}
+
+const MainStakingPage: PageComponent = (props) => {
+  return <PageLayout {...props} />
+}
+
+StakingProviderDetails.route = {
+  path: ":stakingProviderAddress",
+  index: false,
+  pages: [Details, Auth],
+  isPageEnabled: true,
+}
+
+Details.route = {
+  path: "details",
+  index: true,
+  isPageEnabled: true,
+}
+
+Auth.route = {
+  path: "authorize",
+  index: false,
+  isPageEnabled: true,
+}
+
 StakingPage.route = {
   path: "",
   index: false,
@@ -64,14 +141,10 @@ StakingPage.route = {
   isPageEnabled: true,
 }
 
-const MainStakingPage: PageComponent = (props) => {
-  return <PageLayout {...props} />
-}
-
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage, AuthorizeStakingAppsPage],
+  pages: [StakingPage, HowItWorksPage, StakingProviderDetails],
   title: "Staking",
   isPageEnabled: true,
 }
