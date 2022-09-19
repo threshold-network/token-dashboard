@@ -26,4 +26,5 @@ export enum ModalType {
   IncreaseAuthorization = "INCREASE_AUTHORIZATION",
   AuthorizationIncreased = "AUTHORIZATION_INCREASED",
   ConfirmDeauthorization = "CONFIRM_DEAUTHORIZATION",
+  DeauthorizationCompleted = "DEAUTHORIZATION_COMPLETED",
 }
