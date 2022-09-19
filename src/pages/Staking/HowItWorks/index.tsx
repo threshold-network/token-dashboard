@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useMemo } from "react"
 import {
   Box,
   FilterTabs,
@@ -28,6 +28,19 @@ const HowItWorksPage: PageComponent = (props) => {
     if (pathname === "/staking/how-it-works") {
       navigate("/staking/how-it-works/overview")
     }
+  }, [pathname, navigate])
+
+  const selectedTabId = useMemo(() => {
+    const basePath = `/staking/how-it-works`
+    switch (pathname) {
+      case `${basePath}/overview`:
+        return "1"
+      case `${basePath}/applications`:
+        return "2"
+      case `${basePath}/providers`:
+        return "3"
+    }
+    return "1"
   }, [pathname])
 
   return (
@@ -46,7 +59,7 @@ const HowItWorksPage: PageComponent = (props) => {
         variant="secondary"
         mb={8}
       />
-      <FilterTabs selectedTabId="2" mb="5" size="lg">
+      <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
         <FilterTab tabId={"1"} as={RouterLink} to={`overview`}>
           Overview
         </FilterTab>
@@ -64,6 +77,7 @@ const HowItWorksPage: PageComponent = (props) => {
 
 HowItWorksPage.route = {
   path: "how-it-works",
+  pathOverride: "how-it-works/*",
   index: false,
   pages: [StakingOverview, StakingApplications, StakingProviders],
   title: "How it works",

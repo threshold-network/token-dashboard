@@ -144,7 +144,7 @@ StakingPage.route = {
 MainStakingPage.route = {
   path: "staking",
   index: true,
-  pages: [StakingPage, HowItWorksPage, StakingProviderDetails],
+  pages: [HowItWorksPage, StakingPage, StakingProviderDetails],
   title: "Staking",
   isPageEnabled: true,
 }

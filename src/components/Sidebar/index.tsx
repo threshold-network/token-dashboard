@@ -38,7 +38,7 @@ const Sidebar = () => {
         text: "Staking",
         activeIcon: IoLockClosedSharp,
         passiveIcon: IoLockClosedOutline,
-        href: "/staking",
+        href: "/staking/how-it-works",
       },
     ]
 
