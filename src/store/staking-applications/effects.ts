@@ -2,14 +2,17 @@ import { AnyAction } from "@reduxjs/toolkit"
 import { stakingApplicationsSlice, StakingAppName } from "./slice"
 import { AppListenerEffectAPI } from "../listener"
 import { selectStakingProviders, setStakes } from "../staking"
-import { openModal } from "../modal"
+import { modalSlice, openModal } from "../modal"
 import {
   IApplication,
   StakingProviderAppInfo,
 } from "../../threshold-ts/applications"
 import { ModalType } from "../../enums"
 import { RootState } from ".."
-import { selectStakingAppStateByAppName } from "./selectors"
+import {
+  selectStakingAppByStakingProvider,
+  selectStakingAppStateByAppName,
+} from "./selectors"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -194,5 +197,30 @@ export const shouldDisplayNewAppsToAuthrozieModal = (
     stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
     Boolean(currentState.applications.randomBeacon.stakingProviders.data) &&
     Boolean(currentState.applications.tbtc.stakingProviders.data)
+  )
+}
+
+export const displayDeauthrizationCompletedModalEffect = (
+  action: ReturnType<
+    typeof stakingApplicationsSlice.actions.authorizationDecreaseApproved
+  >,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { stakingProvider, appName, txHash } = action.payload
+  const stakingProviderAppData = selectStakingAppByStakingProvider(
+    listenerApi.getOriginalState(),
+    appName,
+    stakingProvider
+  )
+
+  listenerApi.dispatch(
+    modalSlice.actions.openModal({
+      modalType: ModalType.DeauthorizationCompleted,
+      props: {
+        stakingProvider,
+        txHash,
+        decreaseAmount: stakingProviderAppData.pendingAuthorizationDecrease,
+      },
+    })
   )
 }

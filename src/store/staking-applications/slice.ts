@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { BigNumber } from "ethers"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
@@ -11,6 +12,7 @@ import {
   getSupportedAppsEffect,
   shouldDisplayNewAppsToAuthrozieModal,
   displayNewAppsToAuthrozieModalEffect,
+  displayDeauthrizationCompletedModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -144,6 +146,33 @@ export const stakingApplicationsSlice = createSlice({
           toAmount
       }
     },
+    authorizationDecreaseApproved: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        appName: StakingAppName
+        txHash: string
+      }>
+    ) => {
+      const { stakingProvider, appName } = action.payload
+      const stakingProviderData =
+        state[appName].stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      const authorizedStake = BigNumber.from(
+        stakingProviderData.authorizedStake
+      )
+        .sub(stakingProviderData.pendingAuthorizationDecrease)
+        .toString()
+
+      state[appName].stakingProviders.data[stakingProvider] = {
+        ...stakingProviderData,
+        authorizedStake,
+        pendingAuthorizationDecrease: "0",
+        remainingAuthorizationDecreaseDelay: "0",
+      }
+    },
   },
 })
 
@@ -160,4 +189,9 @@ startAppListening({
 startAppListening({
   predicate: shouldDisplayNewAppsToAuthrozieModal,
   effect: displayNewAppsToAuthrozieModalEffect,
+})
+
+startAppListening({
+  actionCreator: stakingApplicationsSlice.actions.authorizationDecreaseApproved,
+  effect: displayDeauthrizationCompletedModalEffect,
 })
