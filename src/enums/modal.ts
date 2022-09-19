@@ -25,4 +25,5 @@ export enum ModalType {
   StakingApplicationsAuthorized = "STAKING_APPLICATIONS_AUTHORIZED",
   IncreaseAuthorization = "INCREASE_AUTHORIZATION",
   AuthorizationIncreased = "AUTHORIZATION_INCREASED",
+  ConfirmDeauthorization = "CONFIRM_DEAUTHORIZATION",
 }

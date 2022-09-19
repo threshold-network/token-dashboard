@@ -34,6 +34,7 @@ import {
   StakingApplicationsAuthorized,
   IncreaseAuthorization,
   AuthorizationIncreased,
+  ConfirmDeauthorization,
 } from "../components/Modal/StakingApplications"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
@@ -64,6 +65,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.AuthorizationIncreased]: AuthorizationIncreased,
+  [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
 }
 
 export interface BaseModalProps {
