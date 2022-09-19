@@ -29,6 +29,12 @@ export interface IStaking {
     application: string,
     amount: BigNumberish
   ): Promise<ContractTransaction>
+
+  requestAuthorizationDecrease(
+    stakingProvider: string,
+    application: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction>
   // TODO: move other functions here eg fetching all owner stakes.
 }
 
@@ -65,5 +71,15 @@ export class Staking implements IStaking {
       application,
       amount
     )
+  }
+
+  requestAuthorizationDecrease = async (
+    stakingProvider: string,
+    application: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction> => {
+    return await this._staking[
+      "requestAuthorizationDecrease(address,address,uint96)"
+    ](stakingProvider, application, amount)
   }
 }
