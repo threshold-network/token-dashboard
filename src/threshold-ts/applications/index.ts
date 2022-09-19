@@ -157,6 +157,10 @@ export interface IApplication {
     stakingProvider: string,
     amount: BigNumberish
   ): Promise<ContractTransaction>
+
+  approveAuthorizationDecrease(
+    stakingProvider: string
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -320,5 +324,11 @@ export class Application implements IApplication {
       this.address,
       amount
     )
+  }
+
+  approveAuthorizationDecrease = async (
+    stakingProvider: string
+  ): Promise<ContractTransaction> => {
+    return this._application.approveAuthorizationDecrease(stakingProvider)
   }
 }

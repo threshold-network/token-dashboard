@@ -21,6 +21,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
 import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
+import { useConfirmDeatuhorizationTransaction } from "../../../hooks/staking-applications"
 
 export type ConfirmDeauthorizationProps = BaseModalProps & {
   stakingProvider: string
@@ -34,8 +35,11 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
   decreaseAmount,
   closeModal,
 }) => {
-  const onDeauthorize = () => {
-    console.log("test")
+  const { sendTransaction } =
+    useConfirmDeatuhorizationTransaction(stakingAppName)
+
+  const onDeauthorize = async () => {
+    await sendTransaction(stakingProvider)
   }
 
   return (

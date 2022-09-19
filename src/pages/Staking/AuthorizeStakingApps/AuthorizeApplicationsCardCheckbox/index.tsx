@@ -164,7 +164,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     appAuthData.remainingAuthorizationDecreaseDelay
 
   const onConfirmDeauthorization = () => {
-    // TODO: Implement submit function.
+    openModal(ModalType.ConfirmDeauthorization, {
+      stakingProvider,
+      stakingAppName: appAuthData.stakingAppId,
+      decreaseAmount: appAuthData.pendingAuthorizationDecrease,
+    })
   }
 
   if (collapsed) {
