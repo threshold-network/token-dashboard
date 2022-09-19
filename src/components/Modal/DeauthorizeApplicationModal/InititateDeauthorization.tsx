@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { StakeData } from "../../../types"
 import {
   BodyLg,
   BodySm,
@@ -20,19 +19,17 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import StakingApplicationOperationIcon, {
-  StakingApplication,
-} from "../../StakingApplicationOperationIcon"
+import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
 import shortenAddress from "../../../utils/shortenAddress"
 import TokenBalance from "../../TokenBalance"
+import { StakingAppName } from "../../../store/staking-applications"
 
 const InitiateDeauthorization: FC<{
   closeModal: () => void
-  stake: StakeData
-}> = ({ closeModal, stake }) => {
-  const chosenStakingApplication = StakingApplication.TBTC
-  const decreaseAmount = 100000000000000000000
-
+  stakingProvider: string
+  decreaseAmount: string
+  stakingAppName: StakingAppName
+}> = ({ closeModal, stakingProvider, decreaseAmount, stakingAppName }) => {
   const handleInitiateClick = () => {
     console.log("send deauth tx")
   }
@@ -51,7 +48,7 @@ const InitiateDeauthorization: FC<{
           </BodyLg>
         </InfoBox>
         <StakingApplicationOperationIcon
-          stakingApplication={chosenStakingApplication}
+          stakingApplication={stakingAppName}
           operation="decrease"
           h="88px"
           mx="auto"
@@ -73,14 +70,8 @@ const InitiateDeauthorization: FC<{
             />
           </Flex>
           <Flex justifyContent="space-between">
-            <BodySm color="gray.500">Gas Cost</BodySm>
-            <BodySm color="gray.700">~50 gWei</BodySm>
-          </Flex>
-          <Flex justifyContent="space-between">
             <BodySm color="gray.500">Provider Address</BodySm>
-            <BodySm color="gray.700">
-              {shortenAddress(stake?.stakingProvider)}
-            </BodySm>
+            <BodySm color="gray.700">{shortenAddress(stakingProvider)}</BodySm>
           </Flex>
         </Stack>
         <BoxLabel mb={8} colorScheme="outline">
@@ -91,6 +82,7 @@ const InitiateDeauthorization: FC<{
             preTitle="Step 1"
             title="Initiate deauthorization"
             status={FlowStepStatus.active}
+            size="sm"
           >
             This is 1 transaction
           </FlowStep>
@@ -98,6 +90,7 @@ const InitiateDeauthorization: FC<{
             preTitle="Step 2"
             title="14 day cooldown"
             status={FlowStepStatus.inactive}
+            size="sm"
           >
             You must wait a 14 day cooldown to then confirm the deauthorization.
             This is 1 transaction.
