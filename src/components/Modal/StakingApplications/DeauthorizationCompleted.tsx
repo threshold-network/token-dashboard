@@ -46,7 +46,7 @@ const DeauthorizationCompletedBase: FC<DeauthorizationCompletedProps> = ({
         <List spacing="2.5" my="6">
           <ListItem>
             <HStack justifyContent="space-between">
-              <BodySm>Increase Amount</BodySm>
+              <BodySm>Decrease Amount</BodySm>
               <BodySm>{formatTokenAmount(decreaseAmount)} T</BodySm>
             </HStack>
           </ListItem>
