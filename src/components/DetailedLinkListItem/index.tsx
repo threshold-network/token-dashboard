@@ -1,5 +1,4 @@
-import React, { FC } from "react"
-import { FiArrowUpRight } from "react-icons/all"
+import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   BodyLg,
@@ -7,13 +6,12 @@ import {
   BoxProps,
   Button,
   Flex,
-  HStack,
-  Icon,
   Image,
   Square,
   Stack,
   useMultiStyleConfig,
 } from "@threshold-network/components"
+import ExternalLink from "../ExternalLink"
 
 export interface DetailedLinkListItemProps extends BoxProps {
   imgSrc?: any
@@ -37,42 +35,39 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
 }) => {
   const styles = useMultiStyleConfig("DetailedLinkListItem", restProps)
 
+  const _linkText = linkText || "Read More"
+
   return (
-    <HStack sx={styles.container}>
-      <Flex>
-        {imgSrc ? (
-          <Image sx={styles.image} src={imgSrc} />
-        ) : imgFallback ? (
-          // @ts-ignore
-          <Square sx={styles.imageFallback} size={styles.imageFallback.size}>
-            {imgFallback.slice(0, 3).toUpperCase()}
-          </Square>
-        ) : (
-          <Square
-            sx={styles.imageFallback}
-            // @ts-ignore
-            size={styles.imageFallback.size}
-            background="brand.500"
-          />
-        )}
-        <Stack spacing={0}>
-          <BodyLg>{title}</BodyLg>
-          <BodySm>{subtitle}</BodySm>
-        </Stack>
-      </Flex>
-      <Button
-        sx={styles.link}
-        variant="link"
-        as={isExternal ? "a" : RouterLink}
-        target={isExternal ? "_blank" : undefined}
-        // @ts-ignore
-        href={isExternal ? href : undefined}
-        to={href}
-        rightIcon={isExternal ? <Icon as={FiArrowUpRight} /> : undefined}
+    <Flex sx={styles.container} as="li">
+      {imgSrc ? (
+        <Image sx={styles.image} src={imgSrc} />
+      ) : (
+        <Square sx={styles.imageFallback}>
+          {imgFallback && imgFallback.slice(0, 3).toUpperCase()}
+        </Square>
+      )}
+      <Stack
+        spacing={0}
+        my={{ base: "2", sm: undefined }}
+        mr={{ sm: "auto !important" }}
       >
-        {linkText || "Read More"}
-      </Button>
-    </HStack>
+        <BodyLg sx={styles.title}>{title}</BodyLg>
+        <BodySm sx={styles.subtitle}>{subtitle}</BodySm>
+      </Stack>
+      {isExternal ? (
+        <ExternalLink
+          href={href}
+          sx={styles.link}
+          text={_linkText}
+          withArrow
+          color={styles.link.color as string}
+        />
+      ) : (
+        <Button sx={styles.link} variant="link" as={RouterLink} to={href}>
+          {_linkText}
+        </Button>
+      )}
+    </Flex>
   )
 }
 

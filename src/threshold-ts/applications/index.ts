@@ -1,22 +1,30 @@
-import { BigNumber, Contract, ContractInterface } from "ethers"
+import {
+  BigNumber,
+  BigNumberish,
+  Contract,
+  ContractInterface,
+  ContractTransaction,
+} from "ethers"
 import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { IMulticall, ContractCall } from "../multicall"
 
-export interface AuthorizationParameters {
+export interface AuthorizationParameters<
+  NumberType extends BigNumberish = BigNumber
+> {
   /**
    * The minimum authorization amount required so that operator can participate
    * in the random beacon. This amount is required to execute slashing for
    * providing a malicious DKG result or when a relay entry times out.
    */
-  minimumAuthorization: BigNumber
+  minimumAuthorization: NumberType
   /**
    * Delay in seconds that needs to pass between the time authorization decrease
    * is requested and the time that request gets approved. Protects against
    * free-riders earning rewards and not being active in the network.
    */
-  authorizationDecreaseDelay: BigNumber
+  authorizationDecreaseDelay: NumberType
   /**
    * Authorization decrease change period in seconds. It is the time, before
    * authorization decrease delay end, during which the pending authorization
@@ -25,22 +33,24 @@ export interface AuthorizationParameters {
    * `authorizationDecreaseDelay` ends. If set to value equal
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
-  authorizationDecreaseChangePeriod: BigNumber
+  authorizationDecreaseChangePeriod: NumberType
 }
 
-export interface StakingProviderAppInfo {
+export interface StakingProviderAppInfo<
+  NumberType extends BigNumberish = BigNumber
+> {
   /**
    * Authorized stake amount of the staking provider.
    */
-  authorizedStake: BigNumber
+  authorizedStake: NumberType
   /**
    * Amount being deauthorized for the staking provider.
    */
-  pendingAuthorizationDecrease: BigNumber
+  pendingAuthorizationDecrease: NumberType
   /**
    * Time in seconds until the deauthorization can be completed.
    */
-  remainingAuthorizationDecreaseDelay: BigNumber
+  remainingAuthorizationDecreaseDelay: NumberType
 }
 
 /**
@@ -120,6 +130,19 @@ export interface IApplication {
   getStakingProviderAppInfo(
     stakingProvider: string
   ): Promise<StakingProviderAppInfo>
+
+  /**
+   * Increases the authorization of the given staking provider for the
+   * application by the given amount. Can only be called by the given staking
+   * provider’s authorizer.
+   * @param stakingProvider Staking provider address.
+   * @param amount Amount to authrozie.
+   * @returns Ethers `ContractTransaction` instance.
+   */
+  increaseAuthorization(
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -132,44 +155,44 @@ export class Application implements IApplication {
     multicall: IMulticall,
     config: EthereumConfig & { address: string; abi: ContractInterface }
   ) {
-    const { address, abi, providerOrSigner } = config
-    this._application = getContract(address, abi, providerOrSigner)
+    const { address, abi, providerOrSigner, account } = config
+    this._application = getContract(address, abi, providerOrSigner, account)
     this._staking = staking
     this._multicall = multicall
   }
 
-  async authorizedStake(stakingProvider: string): Promise<BigNumber> {
+  authorizedStake = async (stakingProvider: string): Promise<BigNumber> => {
     return await this._staking.authorizedStake(
       stakingProvider,
       this._application.address
     )
   }
 
-  async minimumAuthorization(): Promise<BigNumber> {
+  minimumAuthorization = async (): Promise<BigNumber> => {
     return await this._application.minimumAuthorization()
   }
 
-  async pendingAuthorizationDecrease(
+  pendingAuthorizationDecrease = async (
     stakingProvider: string
-  ): Promise<BigNumber> {
+  ): Promise<BigNumber> => {
     return await this._application.pendingAuthorizationDecrease(stakingProvider)
   }
 
-  async remainingAuthorizationDecreaseDelay(
+  remainingAuthorizationDecreaseDelay = async (
     stakingProvider: string
-  ): Promise<BigNumber> {
+  ): Promise<BigNumber> => {
     return await this._application.remainingAuthorizationDecreaseDelay(
       stakingProvider
     )
   }
 
-  async authorizationDecreaseDelay(): Promise<BigNumber> {
+  authorizationDecreaseDelay = async (): Promise<BigNumber> => {
     const { authorizationDecreaseDelay } =
       await this._application.authorizationParameters()
     return authorizationDecreaseDelay
   }
 
-  async authorizationParameters(): Promise<any> {
+  authorizationParameters = async (): Promise<any> => {
     const {
       minimumAuthorization,
       authorizationDecreaseDelay,
@@ -183,7 +206,7 @@ export class Application implements IApplication {
     }
   }
 
-  async getStakingProviderAppInfo(stakingProvider: string): Promise<any> {
+  getStakingProviderAppInfo = async (stakingProvider: string): Promise<any> => {
     const calls: ContractCall[] = [
       {
         interface: this._staking.stakingContract.interface,
@@ -218,7 +241,7 @@ export class Application implements IApplication {
     }
   }
 
-  async isEligibleForRewards(stakingProvider: string): Promise<boolean> {
+  isEligibleForRewards = async (stakingProvider: string): Promise<boolean> => {
     const operator = await this._application.stakingProviderToOperator(
       stakingProvider
     )
@@ -237,5 +260,16 @@ export class Application implements IApplication {
   }
   get contract() {
     return this._application
+  }
+
+  increaseAuthorization = async (
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction> => {
+    return this._staking.increaseAuthorization(
+      stakingProvider,
+      this.address,
+      amount
+    )
   }
 }

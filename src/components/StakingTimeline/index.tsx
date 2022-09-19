@@ -1,8 +1,11 @@
 import { FC } from "react"
-import { Link, Stack, useColorModeValue } from "@chakra-ui/react"
 import {
+  Link,
+  Stack,
+  useColorModeValue,
   BodyMd,
   BodySm,
+  BoxLabel,
   ChecklistGroup,
   FlowStep,
   FlowStepStatus,
@@ -10,6 +13,7 @@ import {
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 import { StakeHowItWorksTab } from "../../pages/Staking/HowItWorks"
+import { featureFlags } from "../../constants"
 
 export const LegacyStakesDepositSteps: FC<{
   setTab: (tab: StakeHowItWorksTab) => void
@@ -129,7 +133,62 @@ export const PreSetupSteps: FC = () => {
   )
 }
 
-const StakingChecklist: FC = () => {
+const StakingTimeline: FC = () => {
+  const STAKING_PROVIDER_URL = "someURL"
+  const PROVIDER_ADDRESS_URL = "someURL"
+  const BENEFICIARY_ADDRESS_URL = "someURL"
+  const AUTHORIZER_ADDRESS_URL = "someURL"
+
+  if (featureFlags.MULTI_APP_STAKING) {
+    return (
+      <Stack spacing={6}>
+        <BoxLabel>Staking Timeline</BoxLabel>
+        <FlowStep
+          size="sm"
+          title="Stake Tokens"
+          preTitle="Step 1"
+          status={FlowStepStatus.active}
+        >
+          Enter the{" "}
+          <Link color="brand.500" href={PROVIDER_ADDRESS_URL}>
+            Provider
+          </Link>
+          ,{" "}
+          <Link color="brand.500" href={BENEFICIARY_ADDRESS_URL}>
+            Beneficiary
+          </Link>
+          , and{" "}
+          <Link color="brand.500" href={AUTHORIZER_ADDRESS_URL}>
+            Authorizer
+          </Link>{" "}
+          addresses. These will be automatically set to your wallet address. If
+          you want to use a Staking Provider, here is{" "}
+          <Link color="brand.500" href={STAKING_PROVIDER_URL}>
+            a list
+          </Link>
+          .
+        </FlowStep>
+        <FlowStep
+          size="sm"
+          title="Authorize Apps"
+          preTitle="Step 2"
+          status={FlowStepStatus.inactive}
+        >
+          You can authorize 100% of your stake for each app. This amount can be
+          changed at any time.
+        </FlowStep>
+        <FlowStep
+          size="sm"
+          title="Set up node"
+          preTitle="Step 3"
+          status={FlowStepStatus.inactive}
+        >
+          Set up and run a node for any of the authorized applications.
+        </FlowStep>
+      </Stack>
+    )
+  }
+
   return (
     <Stack spacing={6}>
       <FlowStep
@@ -176,4 +235,4 @@ const StakingChecklist: FC = () => {
   )
 }
 
-export default StakingChecklist
+export default StakingTimeline

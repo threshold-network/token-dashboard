@@ -9,15 +9,21 @@ import { useFetchTvl } from "../../hooks/useFetchTvl"
 import { useStakingState } from "../../hooks/useStakingState"
 import { PageComponent } from "../../types"
 import HowItWorksPage from "./HowItWorks"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import {
   selectTotalBonusBalance,
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
+import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
+  }, [dispatch])
 
   useEffect(() => {
     fetchtTvlData()

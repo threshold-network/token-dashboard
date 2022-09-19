@@ -39,6 +39,7 @@ import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
+import { useSubscribeToAuthorizationIncreasedEvent } from "./hooks/staking-applications"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -48,6 +49,8 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToStakedEvent()
   useSubscribeToUnstakedEvent()
   useSubscribeToToppedUpEvent()
+  useSubscribeToAuthorizationIncreasedEvent("tbtc")
+  useSubscribeToAuthorizationIncreasedEvent("randomBeacon")
 
   return <></>
 }

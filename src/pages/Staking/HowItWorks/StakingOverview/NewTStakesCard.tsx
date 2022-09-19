@@ -1,6 +1,6 @@
 import { FC, ComponentProps } from "react"
 import { BodyMd, BoxLabel, LabelSm, Card } from "@threshold-network/components"
-import StakingChecklist from "../../../../components/StakingChecklist"
+import StakingChecklist from "../../../../components/StakingTimeline"
 
 export const NewTStakesCard: FC<ComponentProps<typeof Card>> = (props) => {
   return (
