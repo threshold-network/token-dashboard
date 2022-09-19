@@ -7,9 +7,8 @@ import { LegacyStakesDepositSteps } from "../../../../components/StakingTimeline
 export const LegacyStakesCard: FC<
   ComponentProps<typeof Card> & {
     tStakingContractAddress: string
-    setTab: (tab: string) => void
   }
-> = ({ tStakingContractAddress, setTab, ...props }) => {
+> = ({ tStakingContractAddress, ...props }) => {
   return (
     <Card {...props}>
       <LabelSm>legacy stakes</LabelSm>
@@ -26,7 +25,7 @@ export const LegacyStakesCard: FC<
       <BoxLabel status="secondary" mb={6}>
         Staking Timeline
       </BoxLabel>
-      <LegacyStakesDepositSteps setTab={setTab} />
+      <LegacyStakesDepositSteps />
     </Card>
   )
 }

@@ -7,8 +7,9 @@ import { StakingActionsCard } from "./StakingActionsCard"
 import { AboutAddressesCard } from "./AboutAddressesCard"
 import { useTStakingContract } from "../../../../web3/hooks"
 import { AuthorizingApplicationsCard } from "./AuthorizingApplicationsCard"
+import { PageComponent } from "../../../../types"
 
-const StakingOverview: FC<{ setTab: (tab: string) => void }> = ({ setTab }) => {
+const StakingOverview: PageComponent = () => {
   const tStakingContract = useTStakingContract()
   return (
     <Grid
@@ -38,7 +39,6 @@ const StakingOverview: FC<{ setTab: (tab: string) => void }> = ({ setTab }) => {
         tStakingContractAddress={tStakingContract?.address!}
       />
       <LegacyStakesCard
-        setTab={setTab}
         gridArea="legacy-stakes"
         tStakingContractAddress={tStakingContract?.address!}
       />
@@ -48,6 +48,12 @@ const StakingOverview: FC<{ setTab: (tab: string) => void }> = ({ setTab }) => {
       <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
     </Grid>
   )
+}
+
+StakingOverview.route = {
+  path: "overview",
+  index: false,
+  isPageEnabled: true,
 }
 
 export default StakingOverview

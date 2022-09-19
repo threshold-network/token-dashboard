@@ -1,60 +1,72 @@
-import { Grid } from "@chakra-ui/react"
-import { AboutAddressesCard } from "./StakingOverview/AboutAddressesCard"
-import { LegacyStakesCard } from "./LegacyStakesCard"
-import { NewTStakesCard } from "./StakingOverview/NewTStakesCard"
-import { ProvidersCard } from "./ProvidersCard"
-import { StakingActionsCard } from "./StakingOverview/StakingActionsCard"
-import { ThresholdStakesCard } from "./StakingOverview/ThresholdStakesCard"
+import React, { useEffect } from "react"
+import {
+  Box,
+  FilterTabs,
+  FilterTab,
+  useColorMode,
+} from "@threshold-network/components"
+import StakingOverview from "./StakingOverview"
+import StakingApplications from "./StakingApplications"
+import StakingProviders from "./StakingProviders"
+import AnnouncementBanner from "../../../components/AnnouncementBanner"
+import stakingHowItWorksIllustrationLight from "../../../static/images/StakingHowItWorksIllustrationLight.png"
+import stakingHowItWorksIllustrationDark from "../../../static/images/StakingHowItWorksIllustrationDark.png"
 import { PageComponent } from "../../../types"
-import { useTStakingContract } from "../../../web3/hooks"
+import {
+  Link as RouterLink,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router-dom"
 
 const HowItWorksPage: PageComponent = (props) => {
-  const tStakingContract = useTStakingContract()
+  const { colorMode } = useColorMode()
+  const { pathname } = useLocation()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (pathname === "/staking/how-it-works") {
+      navigate("/staking/how-it-works/overview")
+    }
+  }, [pathname])
 
   return (
-    <Grid
-      gridAutoColumns="minmax(0, 1fr)"
-      gridAutoFlow="column"
-      gridTemplate={{
-        base: `
-          "t-stakes"
-          "legacy-stakes"
-          "new-t-stakes"
-          "staking-actions"
-          "addresses"
-          "providers"
-        `,
-        xl: `
-            "t-stakes        new-t-stakes"
-            "legacy-stakes   new-t-stakes"
-            "legacy-stakes   staking-actions"
-            "addresses       staking-actions"
-            "addresses       staking-actions"
-            "addresses       providers"
-          `,
-      }}
-      gridGap="4"
-    >
-      <ThresholdStakesCard
-        gridArea="t-stakes"
-        tStakingContractAddress={tStakingContract?.address!}
+    <Box>
+      <AnnouncementBanner
+        imgSrc={
+          colorMode === "light"
+            ? stakingHowItWorksIllustrationLight
+            : stakingHowItWorksIllustrationDark
+        }
+        title="Find more information about staking below, then go to the staking page."
+        href="/staking"
+        buttonText="Start Staking"
+        size="lg"
+        hideCloseBtn
+        variant="secondary"
+        mb={8}
       />
-      <NewTStakesCard gridArea="new-t-stakes" />
-      <LegacyStakesCard
-        gridArea="legacy-stakes"
-        tStakingContractAddress={tStakingContract?.address!}
-      />
-      <StakingActionsCard gridArea="staking-actions" />
-      <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
-      <ProvidersCard gridArea="providers" />
-    </Grid>
+      <FilterTabs selectedTabId="2" mb="5" size="lg">
+        <FilterTab tabId={"1"} as={RouterLink} to={`overview`}>
+          Overview
+        </FilterTab>
+        <FilterTab tabId={"2"} as={RouterLink} to={`applications`}>
+          Applications
+        </FilterTab>
+        <FilterTab tabId={"3"} as={RouterLink} to={`providers`}>
+          Providers
+        </FilterTab>
+      </FilterTabs>
+      <Outlet />
+    </Box>
   )
 }
 
 HowItWorksPage.route = {
   path: "how-it-works",
   index: false,
-  title: "How it Works",
+  pages: [StakingOverview, StakingApplications, StakingProviders],
+  title: "How it works",
   isPageEnabled: true,
 }
 

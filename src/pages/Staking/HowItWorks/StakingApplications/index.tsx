@@ -10,6 +10,7 @@ import {
   Image,
   Stack,
   VStack,
+  useColorMode,
 } from "@threshold-network/components"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
 import tbtcAppIllustrationLight from "../../../../static/images/tbtcAppIllustrationLight.png"
@@ -26,15 +27,15 @@ import listIconArrowsLight from "../../../../static/images/ListIconArrowsLight.p
 import listIconArrowsDark from "../../../../static/images/ListIconArrowsDark.png"
 import stakingApplicationsIllustrationLight from "../../../../static/images/StakingApplicationsIllustrationLight.png"
 import stakingApplicationsIllustrationDark from "../../../../static/images/StakingApplicationsIllustrationDark.png"
-import { useColorMode } from "@chakra-ui/react"
+import { PageComponent } from "../../../../types"
 
 const CustomList: FC<{
   items: { imgSrc: any; content: string | JSX.Element }[]
 }> = ({ items }) => {
   return (
     <Stack spacing={4}>
-      {items.map(({ imgSrc, content }) => (
-        <HStack spacing={4}>
+      {items.map(({ imgSrc, content }, i) => (
+        <HStack spacing={4} key={i}>
           <Image h="32px" w="32px" src={imgSrc} />
           {typeof content === "string" ? <BodyMd>{content}</BodyMd> : content}
         </HStack>
@@ -43,7 +44,7 @@ const CustomList: FC<{
   )
 }
 
-const StakingApplications: FC = () => {
+const StakingApplications: PageComponent = () => {
   const { colorMode } = useColorMode()
 
   return (
@@ -173,6 +174,12 @@ const StakingApplications: FC = () => {
       </Stack>
     </Card>
   )
+}
+
+StakingApplications.route = {
+  path: "applications",
+  index: false,
+  isPageEnabled: true,
 }
 
 export default StakingApplications

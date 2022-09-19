@@ -14,9 +14,7 @@ import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 import { featureFlags } from "../../constants"
 
-export const LegacyStakesDepositSteps: FC<{
-  setTab: (tab: string) => void
-}> = ({ setTab }) => {
+export const LegacyStakesDepositSteps: FC = () => {
   // TODO: Links from @threshold-network/components should be extended have these colors set by default
   const linkColor = useColorModeValue("brand.500", "white")
 
@@ -49,10 +47,7 @@ export const LegacyStakesDepositSteps: FC<{
         <BodyMd>
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
-          Staking Provider, here is{" "}
-          <Link color={linkColor} onClick={() => setTab("providers")}>
-            a list.
-          </Link>
+          Staking Provider, here is <Link color={linkColor}>a list.</Link>
         </BodyMd>
       </FlowStep>
 
