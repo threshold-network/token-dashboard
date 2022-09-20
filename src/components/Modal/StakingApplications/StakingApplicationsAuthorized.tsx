@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, Fragment } from "react"
 import { Link as RouterLink, useNavigate } from "react-router-dom"
 import {
   HStack,
@@ -16,6 +16,7 @@ import {
   BodySm,
   Divider,
   Link,
+  FlowStepStatus,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import ExternalLink from "../../ExternalLink"
@@ -33,6 +34,7 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppNameFromAddress"
+import StakingTimeline from "../../StakingTimeline"
 
 export type StakingApplicationsAuthorizeProps = BaseModalProps & {
   stakingProvider: string
@@ -52,8 +54,7 @@ const StakingApplicationsAuthorizedBase: FC<
   const navigate = useNavigate()
   const onAuthorizeOtherApps = async () => {
     closeModal()
-    // TODO: Redirect to the authorization page.
-    navigate("/staking")
+    navigate(`/staking/${stakingProvider}/authorize`)
   }
 
   return (
@@ -68,7 +69,7 @@ const StakingApplicationsAuthorizedBase: FC<
         <List spacing="2" mb="6">
           <ListItem>
             <HStack justifyContent="space-between">
-              <BodySm>Staking Provider</BodySm>
+              <BodySm>Provider Address</BodySm>
               <BodySm>{shortenAddress(stakingProvider)}</BodySm>
             </HStack>
           </ListItem>
@@ -85,7 +86,7 @@ const StakingApplicationsAuthorizedBase: FC<
             </ListItem>
           ))}
         </List>
-        <InfoBox variant="modal" mb="6" mt="0">
+        <InfoBox variant="modal">
           <H5>
             You can authorize more apps, or continue to Step 3 to set up nodes.
           </H5>
@@ -97,21 +98,43 @@ const StakingApplicationsAuthorizedBase: FC<
             .
           </BodyLg>
         </InfoBox>
-        {/* TODO: Display staking timeline */}
-        <List spacing="2">
-          {authorizedStakingApplications.map((_) => (
-            <ListItem>
-              <BodySm align="center">
-                <ViewInBlockExplorer
-                  text="View"
-                  id={_.txHash}
-                  type={ExplorerDataType.TRANSACTION}
-                />{" "}
-                transaction on Etherscan
-              </BodySm>
-            </ListItem>
-          ))}
-        </List>
+        <StakingTimeline
+          mt="9"
+          statuses={[
+            FlowStepStatus.complete,
+            FlowStepStatus.complete,
+            FlowStepStatus.active,
+          ]}
+        />
+        <BodySm align="center" mt="12">
+          {authorizedStakingApplications.length === 1 ? (
+            <>
+              <ViewInBlockExplorer
+                text="View"
+                id={authorizedStakingApplications[0].txHash}
+                type={ExplorerDataType.TRANSACTION}
+              />{" "}
+              transaction on Etherscan
+            </>
+          ) : (
+            <>
+              View{" "}
+              {authorizedStakingApplications.map((_, index) => (
+                <Fragment key={_.address}>
+                  <ViewInBlockExplorer
+                    text={`transaction ${index + 1}`}
+                    id={_.txHash}
+                    type={ExplorerDataType.TRANSACTION}
+                  />
+                  {index + 1 === authorizedStakingApplications.length
+                    ? " "
+                    : " and "}
+                </Fragment>
+              ))}
+              on Etherscan
+            </>
+          )}
+        </BodySm>
         <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
@@ -119,8 +142,7 @@ const StakingApplicationsAuthorizedBase: FC<
           variant="outline"
           as={ExternalLink}
           mr={2}
-          // TODO: set correct link
-          href={"TODO" as ExternalHref}
+          href={ExternalHref.setupNodes}
           text="Node Setup Doc"
           withArrow
         />
