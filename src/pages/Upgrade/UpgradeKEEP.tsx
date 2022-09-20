@@ -11,6 +11,7 @@ UpgradeKEEP.route = {
   path: "keep",
   index: false,
   title: "KEEP to T",
+  isPageEnabled: true,
 }
 
 export default UpgradeKEEP

@@ -4,7 +4,8 @@ import { useMulticall } from "../web3/hooks/useMulticall"
 export const useTokensBalanceCall = (tokens: Contract[], address: string) => {
   return useMulticall(
     tokens.map((tokenContract) => ({
-      contract: tokenContract,
+      address: tokenContract.address,
+      interface: tokenContract.interface,
       method: "balanceOf",
       args: [address],
     }))

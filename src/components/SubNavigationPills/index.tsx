@@ -15,6 +15,7 @@ interface Props {
 }
 
 const SubNavigationPills: FC<Props> = ({ links }) => {
+  const linksWithTitle = links.filter((link) => !!link.title)
   return (
     <>
       <Box
@@ -32,7 +33,7 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
           height="28px"
           as="ul"
         >
-          {links.map(renderPill)}
+          {linksWithTitle.map(renderPill)}
         </HStack>
       </Box>
     </>
