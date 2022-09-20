@@ -48,7 +48,7 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
       label: "PRE",
       isAuthorized: false,
       percentage: 0,
-      authorizedStake: stake.totalInTStake,
+      authorizedStake: "0",
       isAuthRequired: false,
     },
   }
