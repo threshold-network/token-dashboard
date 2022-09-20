@@ -112,7 +112,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         ],
       })
     } else {
-      openModal(ModalType.IncreaseAuthorization, {
+      openModal(ModalType.IncreaseAuthorizationSuccess, {
         stakingProvider,
         increaseAmount: tokenAmount,
         stakingAppName: appAuthData.stakingAppId,

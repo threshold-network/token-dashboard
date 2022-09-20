@@ -100,4 +100,6 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   )
 }
 
-export const IncreaseAuthorization = withBaseModal(IncreaseAuthorizationBase)
+export const IncreaseAuthorizationSuccess = withBaseModal(
+  IncreaseAuthorizationBase
+)
