@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   Divider,
+  Link,
   H5,
   HStack,
   Image,
@@ -28,6 +29,7 @@ import listIconArrowsDark from "../../../../static/images/ListIconArrowsDark.png
 import stakingApplicationsIllustrationLight from "../../../../static/images/StakingApplicationsIllustrationLight.png"
 import stakingApplicationsIllustrationDark from "../../../../static/images/StakingApplicationsIllustrationDark.png"
 import { PageComponent } from "../../../../types"
+import { ExternalHref } from "../../../../enums"
 
 const CustomList: FC<{
   items: { imgSrc: any; content: string | JSX.Element }[]
@@ -114,10 +116,14 @@ const StakingApplications: PageComponent = () => {
           }
           ctaButtons={
             <VStack mb={6}>
-              <Button isFullWidth>Authorize TBTC</Button>
-              <Button isFullWidth variant="outline">
-                Authorize TBTC
-              </Button>
+              <Link href="/somewhere" width="full">
+                <Button isFullWidth>Authorize TBTC</Button>
+              </Link>
+              <Link href="/somewhere" width="full">
+                <Button isFullWidth variant="outline">
+                  TBTC Node Docs
+                </Button>
+              </Link>
             </VStack>
           }
           rewardSteps={[
@@ -139,10 +145,14 @@ const StakingApplications: PageComponent = () => {
           }
           ctaButtons={
             <VStack mb={6}>
-              <Button isFullWidth>Authorize Random Beacon</Button>
-              <Button isFullWidth variant="outline">
-                Random Beacon Node Docs
-              </Button>
+              <Link href="/somewhere" width="full">
+                <Button isFullWidth>Authorize Random Beacon</Button>
+              </Link>
+              <Link href="/somewhere" width="full">
+                <Button isFullWidth variant="outline">
+                  Random Beacon Node Docs
+                </Button>
+              </Link>
             </VStack>
           }
           rewardSteps={[
@@ -163,9 +173,17 @@ const StakingApplications: PageComponent = () => {
               : preAppIllustrationLight
           }
           ctaButtons={
-            <Button isFullWidth variant="outline" mb={6}>
-              PRE Node Docs
-            </Button>
+            <Link
+              href={ExternalHref.preNodeSetup}
+              target="_blank"
+              rel="noopener noreferrer"
+              mb={6}
+              width="full"
+            >
+              <Button isFullWidth variant="outline" mb={6}>
+                PRE Node Docs
+              </Button>
+            </Link>
           }
           rewardSteps={["Run a PRE node", "Have a staked balance"]}
           aprPercentage={10}

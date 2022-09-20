@@ -18,6 +18,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom"
+import { featureFlags } from "../../../constants"
 
 const HowItWorksPage: PageComponent = (props) => {
   const { colorMode } = useColorMode()
@@ -59,17 +60,19 @@ const HowItWorksPage: PageComponent = (props) => {
         variant="secondary"
         mb={8}
       />
-      <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
-        <FilterTab tabId={"1"} as={RouterLink} to={`overview`}>
-          Overview
-        </FilterTab>
-        <FilterTab tabId={"2"} as={RouterLink} to={`applications`}>
-          Applications
-        </FilterTab>
-        <FilterTab tabId={"3"} as={RouterLink} to={`providers`}>
-          Providers
-        </FilterTab>
-      </FilterTabs>
+      {featureFlags.MULTI_APP_STAKING && (
+        <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
+          <FilterTab tabId={"1"} as={RouterLink} to="overview">
+            Overview
+          </FilterTab>
+          <FilterTab tabId={"2"} as={RouterLink} to="applications">
+            Applications
+          </FilterTab>
+          <FilterTab tabId={"3"} as={RouterLink} to="providers">
+            Providers
+          </FilterTab>
+        </FilterTabs>
+      )}
       <Outlet />
     </Box>
   )

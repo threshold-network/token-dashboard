@@ -20,7 +20,7 @@ export const LegacyStakesCard: FC<
           type={ExplorerDataType.ADDRESS}
           text="Threshold Staking Contract"
         />{" "}
-        on the legacy dashboard.
+        on the legacy dashboards.
       </BodyMd>
       <BoxLabel status="secondary" mb={6}>
         Staking Timeline

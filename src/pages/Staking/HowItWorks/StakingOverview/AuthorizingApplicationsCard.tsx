@@ -9,9 +9,9 @@ import {
   Image,
 } from "@threshold-network/components"
 import { Stack, useColorMode } from "@chakra-ui/react"
-import ExternalLink from "../../../../components/ExternalLink"
 import AuthorizingApplicationsIllustrationLight from "../../../../static/images/AuthorizingApplicationsIllustrationLight.png"
 import AuthorizingApplicationsIllustrationDark from "../../../../static/images/AuthorizingApplicationsIllustrationDark.png"
+import InternalLink from "../../../../components/InternalLink"
 
 export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
   props
@@ -24,8 +24,10 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
       <BodyMd my={6}>
         In order to earn rewards, you can authorize Threshold applications to
         use your stake. You can read more about the applications{" "}
-        <ExternalLink href="/" text="here" />. Note that you can authorize 100%
-        of your stake for all of the apps.
+        <InternalLink to="/staking/how-it-works/applications">
+          here
+        </InternalLink>
+        . Note that you can authorize 100% of your stake for all of the apps.
       </BodyMd>
       <Image
         maxW="370px"
