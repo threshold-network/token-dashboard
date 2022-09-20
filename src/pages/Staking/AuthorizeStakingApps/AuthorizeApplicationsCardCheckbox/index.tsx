@@ -1,6 +1,7 @@
 import {
   Card,
   FilterTabs,
+  FilterTab,
   BoxProps,
   Grid,
   Checkbox,
@@ -180,11 +181,10 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           alignItems="center"
           gap={0}
           size="sm"
-          tabs={[
-            { title: "Increase", tabId: "1" },
-            { title: "Decrease", tabId: "2" },
-          ]}
-        />
+        >
+          <FilterTab tabId={"1"}>Increase</FilterTab>
+          <FilterTab tabId={"2"}>Decrease</FilterTab>
+        </FilterTabs>
         <GridItem gridArea="token-amount-form" mt={5}>
           <TokenAmountForm
             innerRef={formRef}

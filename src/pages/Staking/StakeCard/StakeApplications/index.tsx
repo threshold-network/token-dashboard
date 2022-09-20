@@ -8,21 +8,19 @@ import {
   Button,
   Link,
 } from "@threshold-network/components"
-import { StakeData } from "../../../../types"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 
-const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
+const StakeApplications: FC<{ stakingProvider: string }> = ({
+  stakingProvider,
+}) => {
   const areNodesMissing = true
-  const tbtcApp = useStakingAppDataByStakingProvider(
-    "tbtc",
-    stake.stakingProvider
-  )
+  const tbtcApp = useStakingAppDataByStakingProvider("tbtc", stakingProvider)
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
-    stake.stakingProvider
+    stakingProvider
   )
 
   // TODO: This will probably be fetched from contracts
@@ -77,17 +75,17 @@ const StakeApplications: FC<{ stake: StakeData }> = ({ stake }) => {
       <AuthorizeApplicationRow
         mb={"3"}
         appAuthData={appsAuthData.tbtc}
-        stakingProvider={stake.stakingProvider}
+        stakingProvider={stakingProvider}
       />
       <AuthorizeApplicationRow
         appAuthData={appsAuthData.randomBeacon}
-        stakingProvider={stake.stakingProvider}
+        stakingProvider={stakingProvider}
       />
       <Button
         mt="5"
         width="100%"
         as={RouterLink}
-        to={`/staking/authorize/${stake.stakingProvider}`}
+        to={`/staking/${stakingProvider}/authorize`}
       >
         Configure Apps
       </Button>

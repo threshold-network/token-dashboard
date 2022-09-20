@@ -26,16 +26,40 @@ import StakeRewards from "./StakeRewards"
 import StakeBalance from "./StakeBalance"
 import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
+import { StakeCardContext } from "../../../contexts/StakeCardContext"
+import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
+
+const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
+  const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
+  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
+  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
+  const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
+  const isPRESet =
+    !isAddressZero(stake.preConfig.operator) &&
+    stake.preConfig.isOperatorConfirmed
+
+  return (
+    <StakeCardContext.Provider
+      value={{
+        isInactiveStake,
+        canTopUpKepp,
+        canTopUpNu,
+        hasLegacyStakes,
+        isPRESet,
+      }}
+    >
+      <StakeCard stake={stake} />
+    </StakeCardContext.Provider>
+  )
+}
 
 const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-
-  const isPRESet =
-    !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.isOperatorConfirmed
+  const { isInactiveStake, canTopUpKepp, canTopUpNu, isPRESet } =
+    useStakeCardContext()
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 
@@ -74,27 +98,24 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     }
   }
 
-  const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
-  const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
-  const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
-
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
-      <StakeCardHeader
-        isInactiveStake={isInactiveStake}
-        stake={stake}
-        onTabClick={onTabClick}
-      />
-      <StakeRewards stake={stake} isPRESet={isPRESet} />
+      <StakeCardHeader stakeType={stake.stakeType} onTabClick={onTabClick} />
+      <StakeRewards stakingProvider={stake.stakingProvider} />
       <LineDivider />
       {featureFlags.MULTI_APP_STAKING && (
         <>
-          <StakeApplications stake={stake} />
+          <StakeApplications stakingProvider={stake.stakingProvider} />
           <LineDivider mb="0" />
         </>
       )}
-      <StakeBalance stake={stake} />
-      <StakeAddressInfo stake={stake} />
+      <StakeBalance
+        nuInTStake={stake.nuInTStake}
+        keepInTStake={stake.keepInTStake}
+        tStake={stake.tStake}
+        totalInTStake={stake.totalInTStake}
+      />
+      <StakeAddressInfo stakingProvider={stake.stakingProvider} />
       {(canTopUpNu || canTopUpKepp) && isStakeAction ? (
         <Button
           onClick={() =>
@@ -132,4 +153,4 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-export default StakeCard
+export default StakeCardProvider

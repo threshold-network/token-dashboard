@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef } from "react"
+import { FC, useEffect, useMemo, useRef } from "react"
 import {
   Button,
   Icon,
@@ -21,6 +21,7 @@ import {
   NumberFormatInputProps,
 } from "@threshold-network/components"
 import { web3 as web3Constants } from "../../constants"
+import HelperErrorText from "../Forms/HelperErrorText"
 
 export interface TokenBalanceInputProps
   extends InputProps,
@@ -31,8 +32,8 @@ export interface TokenBalanceInputProps
   setAmount: (val?: string | number) => void
   label?: string | JSX.Element
   hasError?: boolean
-  errorMsgText?: string
-  helperText?: String
+  errorMsgText?: string | JSX.Element
+  helperText?: string | JSX.Element
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -117,11 +118,11 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           </InputRightElement>
         )}
       </InputGroup>
-      {!hasError ? (
-        <FormHelperText>{helperText}</FormHelperText>
-      ) : (
-        <FormErrorMessage>{errorMsgText}</FormErrorMessage>
-      )}
+      <HelperErrorText
+        helperText={helperText}
+        errorMsgText={errorMsgText}
+        hasError={hasError}
+      />
     </FormControl>
   )
 }

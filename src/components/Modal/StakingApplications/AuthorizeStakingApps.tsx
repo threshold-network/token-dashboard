@@ -22,7 +22,7 @@ import {
   calculatePercenteage,
   formatPercentage,
 } from "../../../utils/percentage"
-import { BaseModalProps, StakeData } from "../../../types"
+import { BaseModalProps } from "../../../types"
 import { useAuthorizeMultipleAppsTransaction } from "../../../hooks/staking-applications"
 
 export type AuthorizeAppsProps = BaseModalProps & {
@@ -111,7 +111,7 @@ const StakingApplicationToAuth: FC<{
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
       <TokenBalance tokenAmount={authorizationAmount} isLarge />
-      <StakeAddressInfo stake={{ stakingProvider } as StakeData} mb="0" />
+      <StakeAddressInfo stakingProvider={stakingProvider} mb="0" />
     </Card>
   )
 }
