@@ -17,7 +17,7 @@ import {
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import IncreaseAuthIcon from "../../../static/images/increase-auth.svg"
-import { useIncreaseAuthorizationTransacion } from "../../../hooks/staking-applications"
+import { useIncreaseAuthorizationTransaction } from "../../../hooks/staking-applications"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
@@ -49,7 +49,7 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
     },
     [openModal, stakingProvider, increaseAmount]
   )
-  const { sendTransaction } = useIncreaseAuthorizationTransacion(
+  const { sendTransaction } = useIncreaseAuthorizationTransaction(
     stakingAppName,
     onSuccess
   )
