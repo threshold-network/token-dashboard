@@ -96,10 +96,10 @@ jobs:
       # - name: Test
       #   run: yarn test
 
-  # This job will be triggered for PR updates. It will build the dashboard 
+  # This job will be triggered for PR updates. It will build the dashboard
   # using `dapp-development-goerli`-taggeed packages which contain contracts
   # with values modified to help with the testing of dashboard. The code will be
-  # published to 
+  # published to
   # https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html
   # and link to the deployment will be posted as a comment in the PR.
   build-and-deploy-testnet-preview:
@@ -112,7 +112,7 @@ jobs:
       useUpstreamBuilds: false
       # We use `dapp-development-goerli`-taggeed packages with modified
       # contracts. They contain modifications that help with the testing of
-      # dashboard features. 
+      # dashboard features.
       dependentPackagesTag: dapp-development-goerli
       gcpBucketName: preview.dashboard.test.threshold.network
       gcpBucketPath: ${{ github.head_ref }}
