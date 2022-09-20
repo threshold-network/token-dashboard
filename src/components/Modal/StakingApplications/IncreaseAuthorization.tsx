@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import { ContractTransaction } from "ethers"
 import {
   BodyLg,
@@ -39,21 +39,24 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   closeModal,
 }) => {
   const { openModal } = useModal()
-  const onSuccess = (tx: ContractTransaction) => {
-    openModal(ModalType.AuthorizationIncreased, {
-      txHash: tx.hash,
-      stakingProvider,
-      increaseAmount,
-    })
-  }
+  const onSuccess = useCallback(
+    (tx: ContractTransaction) => {
+      openModal(ModalType.AuthorizationIncreased, {
+        txHash: tx.hash,
+        stakingProvider,
+        increaseAmount,
+      })
+    },
+    [openModal, stakingProvider, increaseAmount]
+  )
   const { sendTransaction } = useIncreaseAuthorizationTransacion(
     stakingAppName,
     onSuccess
   )
 
-  const onAuthorizeIncrease = () => {
+  const onAuthorizeIncrease = useCallback(() => {
     sendTransaction(stakingProvider, increaseAmount)
-  }
+  }, [sendTransaction, stakingProvider, increaseAmount, onSuccess])
 
   return (
     <>
