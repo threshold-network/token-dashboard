@@ -9,6 +9,8 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
+  shouldDisplayMapOperatorToStakingProviderModal,
+  displayMapOperatorToStakingProviderModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -153,4 +155,9 @@ startAppListening({
 startAppListening({
   actionCreator: setStakes,
   effect: getSupportedAppsStakingProvidersData,
+})
+
+startAppListening({
+  predicate: shouldDisplayMapOperatorToStakingProviderModal,
+  effect: displayMapOperatorToStakingProviderModalEffect,
 })

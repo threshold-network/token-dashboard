@@ -5,6 +5,8 @@ import {
   IApplication,
   StakingProviderAppInfo,
 } from "../../threshold-ts/applications"
+import { AnyAction } from "@reduxjs/toolkit"
+import { RootState } from ".."
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -149,4 +151,28 @@ const getKeepStakingAppStakingProvidersData = async (
     )
     throw error
   }
+}
+
+export const displayMapOperatorToStakingProviderModalEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { connectedAccount } = listenerApi.getState()
+  const { address } = connectedAccount
+  if (address) {
+    console.log("DISPLAY MODAL")
+    const { owner, authorizer, beneficiary } =
+      await listenerApi.extra.threshold.staking.rolesOf(address)
+  }
+}
+
+export const shouldDisplayMapOperatorToStakingProviderModal = (
+  action: AnyAction,
+  currentState: RootState,
+  previousState: RootState
+) => {
+  return (
+    previousState.connectedAccount.address !==
+    currentState.connectedAccount.address
+  )
 }
