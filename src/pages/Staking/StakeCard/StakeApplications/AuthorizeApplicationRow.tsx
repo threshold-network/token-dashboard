@@ -53,7 +53,7 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
       ) : (
         <Button
           as={RouterLink}
-          to={`/staking/authorize/${stakingProvider}`}
+          to={`/staking/${stakingProvider}/authorize`}
           size="sm"
           variant="outline"
         >

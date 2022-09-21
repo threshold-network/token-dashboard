@@ -76,7 +76,7 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         mt="5"
         width="100%"
         as={RouterLink}
-        to={`/staking/authorize/${stakingProvider}`}
+        to={`/staking/${stakingProvider}/authorize`}
       >
         Configure Apps
       </Button>
