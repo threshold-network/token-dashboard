@@ -7,6 +7,7 @@ import {
 } from "../../threshold-ts/applications"
 import { AnyAction } from "@reduxjs/toolkit"
 import { RootState } from ".."
+import { isAddressZero } from "../../web3/utils"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -160,9 +161,18 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   const { connectedAccount } = listenerApi.getState()
   const { address } = connectedAccount
   if (address) {
-    console.log("DISPLAY MODAL")
+    // check if the current connected address is used somewhere as a staking
+    // provider
     const { owner, authorizer, beneficiary } =
       await listenerApi.extra.threshold.staking.rolesOf(address)
+
+    if (
+      !isAddressZero(owner) ||
+      !isAddressZero(authorizer) ||
+      !isAddressZero(beneficiary)
+    ) {
+      console.log("display modal")
+    }
   }
 }
 
