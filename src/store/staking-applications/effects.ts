@@ -161,7 +161,7 @@ export const displayNewAppsToAuthrozieModalEffect = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   listenerApi.unsubscribe()
-  const hasAnyUnauthroizedStakes = Object.values(
+  const hasAnyUnauthorizedStakes = Object.values(
     selectStakingAppStateByAppName(listenerApi.getState(), "tbtc")
       .stakingProviders.data
   )
@@ -177,7 +177,7 @@ export const displayNewAppsToAuthrozieModalEffect = async (
         stakingProviderAppInfo.authorizedStake === "0"
     )
 
-  if (hasAnyUnauthroizedStakes) {
+  if (hasAnyUnauthorizedStakes) {
     listenerApi.dispatch(openModal({ modalType: ModalType.NewAppsToAuthorize }))
   }
 }
