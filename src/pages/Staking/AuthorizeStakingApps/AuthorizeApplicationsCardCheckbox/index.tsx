@@ -9,10 +9,10 @@ import {
   BodyLg,
   H5,
   Box,
-  MultiSegmentProgress,
   BodySm,
   Button,
   useBoolean,
+  Progress,
 } from "@threshold-network/components"
 import { InfoIcon } from "@chakra-ui/icons"
 import { FC, RefObject, useCallback, useEffect } from "react"
@@ -327,23 +327,22 @@ export const AuthorizeApplicationsCardCheckbox: FC<
             </H5>
             <Box minWidth="220px">
               <>
-                <MultiSegmentProgress
-                  values={[
-                    {
-                      color: "#7D00FF",
-                      value:
-                        remainingAuthorizationDecreaseDelay === "0"
-                          ? 100
-                          : !isDeauthorizationReqestActive
-                          ? 0
-                          : // TODO: calculatePercenteage(
-                            //     remainingAuthorizationDecreaseDelay,
-                            //     remainingAuthorizationDecreaseDelay +
-                            //       stakingAppAuthDecreaseDelay
-                            //   ),
-                            15,
-                    },
-                  ]}
+                <Progress
+                  h="2"
+                  borderRadius="md"
+                  colorScheme="brand"
+                  value={
+                    remainingAuthorizationDecreaseDelay === "0"
+                      ? 100
+                      : !isDeauthorizationReqestActive
+                      ? 0
+                      : // TODO: calculatePercenteage(
+                        //     remainingAuthorizationDecreaseDelay,
+                        //     remainingAuthorizationDecreaseDelay +
+                        //       stakingAppAuthDecreaseDelay
+                        //   ),
+                        15
+                  }
                 />
                 <BodySm>
                   {isDeauthorizationReqestActive
