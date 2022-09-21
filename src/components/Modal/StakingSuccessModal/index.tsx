@@ -15,7 +15,7 @@ import {
 import { BodyLg, BodySm, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
-import { PreSetupSteps } from "../../StakingChecklist"
+import { PreSetupSteps } from "../../StakingTimeline"
 import StakingStats from "../../StakingStats"
 import { useStakingState } from "../../../hooks/useStakingState"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"

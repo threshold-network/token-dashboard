@@ -29,6 +29,7 @@ import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModa
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
+import SubmitStakeModal from "../components/Modal/SubmitStake"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -54,6 +55,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
+  [ModalType.SubmitStake]: SubmitStakeModal,
 }
 
 export interface BaseModalProps {

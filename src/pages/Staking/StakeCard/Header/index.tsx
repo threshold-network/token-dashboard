@@ -1,5 +1,10 @@
 import { FC } from "react"
-import { Badge, FilterTabs, Flex } from "@threshold-network/components"
+import {
+  Badge,
+  FilterTabs,
+  FilterTab,
+  Flex,
+} from "@threshold-network/components"
 import { StakeCardHeaderTitle } from "./HeaderTitle"
 import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 import { StakeType } from "../../../../enums"
@@ -27,15 +32,14 @@ const StakeCardHeader: FC<StakeCardHeaderProps> = ({
       </Badge>
       <StakeCardHeaderTitle stakeType={stakeType} />
       <FilterTabs
-        tabs={[
-          { title: "Stake", tabId: "1" },
-          { title: "Unstake", tabId: "2" },
-        ]}
         selectedTabId="1"
         size="xs"
         variant="inline"
         onTabClick={onTabClick}
-      />
+      >
+        <FilterTab tabId={"1"}>Stake</FilterTab>
+        <FilterTab tabId={"2"}>Unstake</FilterTab>
+      </FilterTabs>
     </Flex>
   )
 }

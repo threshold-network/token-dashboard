@@ -10,24 +10,30 @@ import {
 } from "@threshold-network/components"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
+import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
 }) => {
   const areNodesMissing = true
+  const tbtcApp = useStakingAppDataByStakingProvider("tbtc", stakingProvider)
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
+    "randomBeacon",
+    stakingProvider
+  )
 
   // TODO: This will probably be fetched from contracts
   const appsAuthData = {
     tbtc: {
       label: "tBTC",
-      isAuthorized: true,
-      percentage: 40,
+      isAuthorized: tbtcApp.isAuthorized,
+      percentage: tbtcApp.percentage,
       isAuthRequired: true,
     },
     randomBeacon: {
       label: "Random Beacon",
-      isAuthorized: false,
-      percentage: 0,
+      isAuthorized: randomBeaconApp.isAuthorized,
+      percentage: randomBeaconApp.percentage,
       isAuthRequired: true,
     },
     pre: {
@@ -70,7 +76,7 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         mt="5"
         width="100%"
         as={RouterLink}
-        to={`/staking/authorize/${stakingProvider}`}
+        to={`/staking/${stakingProvider}/authorize`}
       >
         Configure Apps
       </Button>

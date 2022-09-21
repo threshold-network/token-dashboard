@@ -2,7 +2,7 @@ import { mode } from "@chakra-ui/theme-tools"
 
 export const InfoBox = {
   defaultProps: {
-    varaint: "base",
+    variant: "base",
   },
   baseStyle: {
     mt: 4,

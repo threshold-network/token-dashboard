@@ -10,6 +10,7 @@ import {
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import { Link as RouterLink } from "react-router-dom"
+import { formatPercentage } from "../../../../utils/percentage"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
   appAuthData: AppAuthDataProps
@@ -47,12 +48,12 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
             colorScheme="brand"
             borderRadius={50}
           />
-          <BodySm>{percentage}%</BodySm>
+          <BodySm>{formatPercentage(percentage)}</BodySm>
         </HStack>
       ) : (
         <Button
           as={RouterLink}
-          to={`/staking/authorize/${stakingProvider}`}
+          to={`/staking/${stakingProvider}/authorize`}
           size="sm"
           variant="outline"
         >
