@@ -9,13 +9,12 @@ import {
   ModalHeader,
   List,
   ListItem,
-  Image,
   Divider,
   HStack,
   BodySm,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import DeauthorizeAppIcon from "../../../static/images/deauthorize-tbtc.svg"
+import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
@@ -51,8 +50,14 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
           <H5>The cooldown period is complete.</H5>
           <BodyLg mt="4">Confirm your deauthorization.</BodyLg>
         </InfoBox>
-        {/* TODO: Get the icon based on the `stakingAppName` prop. */}
-        <Image src={DeauthorizeAppIcon} mb="6" mx="auto" />
+        <StakingApplicationOperationIcon
+          stakingApplication={stakingAppName}
+          operation="decrease"
+          w="88px"
+          h="88px"
+          mb="6"
+          mx="auto"
+        />
         <Divider />
         <List spacing="2.5" my="6">
           <ListItem>
