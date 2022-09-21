@@ -19,16 +19,25 @@ import TokenBalance from "../../../components/TokenBalance"
 import { useFetchRewardsForSingleStake } from "../../../hooks/useFetchRewardsForSingleStake"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
+import { useParams } from "react-router-dom"
+import { useSelector } from "react-redux"
+import { RootState } from "../../../store"
+import { selectStakeByStakingProvider } from "../../../store/staking"
 
-const StakeDetailsCard: FC<{ stake: StakeData }> = ({ stake }) => {
-  // TODO: this is shared code with the stake card - we could put this computed variable in the store
+const StakeDetailsPage: FC = () => {
+  const { stakingProviderAddress } = useParams()
+  const stake = useSelector((state: RootState) =>
+    selectStakeByStakingProvider(state, stakingProviderAddress!)
+  ) as StakeData
+
   const isInActiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
   const rewardsForStake = useFetchRewardsForSingleStake(stake?.stakingProvider)
 
-  if (!stake) return <div>connect wallet</div>
+  if (!stake)
+    return <div>No Stake found for address: {stakingProviderAddress} </div>
 
   return (
     <Card>
@@ -109,4 +118,4 @@ const StakeDetailsCard: FC<{ stake: StakeData }> = ({ stake }) => {
   )
 }
 
-export default StakeDetailsCard
+export default StakeDetailsPage
