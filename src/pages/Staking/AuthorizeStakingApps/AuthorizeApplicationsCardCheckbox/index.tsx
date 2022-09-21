@@ -24,9 +24,13 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
 import { FormikProps } from "formik"
-import { useStakingApplicationAddress } from "../../../../hooks/staking-applications"
+import {
+  useStakingApplicationAddress,
+  useStakingApplicationDecreaseDelay,
+} from "../../../../hooks/staking-applications"
 import InfoBox from "../../../../components/InfoBox"
 import { formatDate } from "../../../../utils/date"
+import { calculatePercenteage } from "../../../../utils/percentage"
 
 interface CommonProps {
   stakingAppId: StakingAppName | "pre"
@@ -128,6 +132,9 @@ export const AuthorizeApplicationsCardCheckbox: FC<
 
   const { openModal } = useModal()
   const stakingAppAddress = useStakingApplicationAddress(
+    appAuthData.stakingAppId as StakingAppName
+  )
+  const stakingAppAuthDecreaseDelay = useStakingApplicationDecreaseDelay(
     appAuthData.stakingAppId as StakingAppName
   )
 
@@ -336,27 +343,32 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                       ? 100
                       : !isDeauthorizationReqestActive
                       ? 0
-                      : // TODO: calculatePercenteage(
-                        //     remainingAuthorizationDecreaseDelay,
-                        //     remainingAuthorizationDecreaseDelay +
-                        //       stakingAppAuthDecreaseDelay
-                        //   ),
-                        15
+                      : calculatePercenteage(
+                          remainingAuthorizationDecreaseDelay,
+                          stakingAppAuthDecreaseDelay
+                        )
                   }
                 />
                 <BodySm>
-                  {isDeauthorizationReqestActive
-                    ? "Completed"
-                    : "Deauthroziation request not activated"}
+                  {!isDeauthorizationReqestActive &&
+                    "Deauthroziation request not activated"}
+                  {isDeauthorizationReqestActive &&
+                    remainingAuthorizationDecreaseDelay === "0" &&
+                    "Completed"}
+                  {isDeauthorizationReqestActive &&
+                    remainingAuthorizationDecreaseDelay !== "0" &&
+                    deauthorizationCreatedAt !== undefined && (
+                      <>
+                        Available:{" "}
+                        <BodySm as="span" color="brand.500">
+                          {formatDate(
+                            +deauthorizationCreatedAt +
+                              +stakingAppAuthDecreaseDelay
+                          )}
+                        </BodySm>
+                      </>
+                    )}
                 </BodySm>
-                {deauthorizationCreatedAt && (
-                  <BodySm>
-                    Available:{" "}
-                    <BodySm as="span" color="brand.500">
-                      {formatDate(deauthorizationCreatedAt)}
-                    </BodySm>
-                  </BodySm>
-                )}
               </>
             </Box>
             <Button
