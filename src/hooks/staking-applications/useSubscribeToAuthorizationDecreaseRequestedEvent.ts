@@ -29,18 +29,19 @@ export const useSubscribeToAuthorizationDecreaseRequestedEvent = (
       decreasingAt: BigNumberish,
       event: Event
     ) => {
+      const decreaseAmount = BigNumber.from(fromAmount.toString())
+        .sub(BigNumber.from(toAmount.toString()))
+        .toString()
       openModal(ModalType.DeauthorizationInitiated, {
         stakingProvider: stakingProvider,
         txHash: event.transactionHash,
-        decreaseAmount: BigNumber.from(toAmount.toString()).sub(
-          BigNumber.from(fromAmount.toString()).abs().toString()
-        ),
+        decreaseAmount,
       })
       dispatch(
         stakingApplicationsSlice.actions.authorizationDecreaseRequested({
           stakingProvider,
           appName,
-          toAmount: toAmount.toString(),
+          decreaseAmount,
           decreasingAt: decreasingAt.toString(),
         })
       )

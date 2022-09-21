@@ -179,11 +179,11 @@ export const stakingApplicationsSlice = createSlice({
       action: PayloadAction<{
         stakingProvider: string
         appName: StakingAppName
-        toAmount: string
+        decreaseAmount: string
         decreasingAt: string
       }>
     ) => {
-      const { stakingProvider, appName, toAmount, decreasingAt } =
+      const { stakingProvider, appName, decreaseAmount, decreasingAt } =
         action.payload
       const stakingProviderData =
         state[appName].stakingProviders.data[stakingProvider]
@@ -201,11 +201,11 @@ export const stakingApplicationsSlice = createSlice({
       //    starts, the operator needs to update the state of the sortition pool
       //    with a call to `joinSortitionPool` or `updateOperatorStatus`.
       const isDeauthorizationReqestActive =
-        BigNumber.from(decreasingAt).eq(MAX_UINT64)
+        !BigNumber.from(decreasingAt).eq(MAX_UINT64)
 
       state[appName].stakingProviders.data[stakingProvider] = {
         ...stakingProviderData,
-        pendingAuthorizationDecrease: toAmount,
+        pendingAuthorizationDecrease: decreaseAmount,
         remainingAuthorizationDecreaseDelay: isDeauthorizationReqestActive
           ? "0"
           : MAX_UINT64.toString(),
