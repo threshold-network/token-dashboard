@@ -29,11 +29,7 @@ const ExternalLink: FC<Props & LinkProps> = ({
       {...props}
     >
       {text}
-      {withArrow ? (
-        <Icon boxSize="12px" ml="1" as={FiArrowUpRight} color={finalColor} />
-      ) : (
-        icon
-      )}
+      {withArrow ? <Icon boxSize="12px" ml="1" as={FiArrowUpRight} /> : icon}
     </Link>
   )
 }

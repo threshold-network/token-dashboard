@@ -1,10 +1,15 @@
+import { AnyAction } from "@reduxjs/toolkit"
 import { stakingApplicationsSlice, StakingAppName } from "./slice"
 import { AppListenerEffectAPI } from "../listener"
 import { selectStakingProviders, setStakes } from "../staking"
+import { openModal } from "../modal"
 import {
   IApplication,
   StakingProviderAppInfo,
 } from "../../threshold-ts/applications"
+import { ModalType } from "../../enums"
+import { RootState } from ".."
+import { selectStakingAppStateByAppName } from "./selectors"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -149,4 +154,42 @@ const getKeepStakingAppStakingProvidersData = async (
     )
     throw error
   }
+}
+
+export const displayNewAppsToAuthrozieModalEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  listenerApi.unsubscribe()
+  const hasAnyUnauthorizedStakes = Object.values(
+    selectStakingAppStateByAppName(listenerApi.getState(), "tbtc")
+      .stakingProviders.data
+  )
+    .concat(
+      Object.values(
+        selectStakingAppStateByAppName(listenerApi.getState(), "randomBeacon")
+          .stakingProviders.data
+      )
+    )
+    .some(
+      (stakingProviderAppInfo) =>
+        stakingProviderAppInfo.authorizedStake &&
+        stakingProviderAppInfo.authorizedStake === "0"
+    )
+
+  if (hasAnyUnauthorizedStakes) {
+    listenerApi.dispatch(openModal({ modalType: ModalType.NewAppsToAuthorize }))
+  }
+}
+
+export const shouldDisplayNewAppsToAuthrozieModal = (
+  action: AnyAction,
+  currentState: RootState,
+  previousState: RootState
+) => {
+  return (
+    stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
+    Boolean(currentState.applications.randomBeacon.stakingProviders.data) &&
+    Boolean(currentState.applications.tbtc.stakingProviders.data)
+  )
 }
