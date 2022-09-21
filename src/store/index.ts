@@ -14,8 +14,10 @@ import { rewardsSlice } from "./rewards"
 import { tbtcSlice } from "./tbtc"
 import { stakingApplicationsSlice } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
+import { connectedAccountSlice } from "./connected-account"
 
 const combinedReducer = combineReducers({
+  connectedAccount: connectedAccountSlice.reducer,
   modal: modalSlice.reducer,
   token: tokenSlice.reducer,
   sidebar: sidebarSlice.reducer,

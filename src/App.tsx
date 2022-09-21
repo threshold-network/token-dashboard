@@ -40,6 +40,7 @@ import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
 import { useSubscribeToAuthorizationIncreasedEvent } from "./hooks/staking-applications"
+import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -127,6 +128,7 @@ const AppBody = () => {
 
   useCheckBonusEligibility()
   useFetchStakingRewards()
+  useSaveConnectedAddressToStore()
 
   return <Routing />
 }
