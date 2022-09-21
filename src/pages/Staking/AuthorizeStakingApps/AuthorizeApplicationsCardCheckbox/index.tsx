@@ -6,7 +6,6 @@ import {
   Checkbox,
   GridItem,
   BodyMd,
-  H3,
   BodyLg,
   H5,
   Box,
@@ -15,7 +14,8 @@ import {
   Button,
   useBoolean,
 } from "@threshold-network/components"
-import { FC, RefObject } from "react"
+import { InfoIcon } from "@chakra-ui/icons"
+import { FC, RefObject, useCallback, useEffect } from "react"
 import { FormValues, TokenAmountForm } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
@@ -124,10 +124,32 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
-  const [isIncreaseAction, setActionFlag] = useBoolean(true)
+  const [isIncreaseAction, actionCallbacks] = useBoolean(true)
+
   const { openModal } = useModal()
   const stakingAppAddress = useStakingApplicationAddress(
     appAuthData.stakingAppId as StakingAppName
+  )
+
+  const hasPendingDeauthorization = Boolean(
+    appAuthData.hasPendingDeauthorization
+  )
+
+  useEffect(() => {
+    if (hasPendingDeauthorization) {
+      actionCallbacks.off()
+    }
+  }, [hasPendingDeauthorization, actionCallbacks])
+
+  const onFilterTabClick = useCallback(
+    (tabId: string) => {
+      if (tabId === "increase") {
+        actionCallbacks.on()
+      } else if (tabId === "decrease") {
+        actionCallbacks.off()
+      }
+    },
+    [actionCallbacks]
   )
 
   const onAuthorizeApp = async (tokenAmount: string) => {
@@ -167,9 +189,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     else onInitiateDeauthorization(tokenAmount)
   }
 
-  const hasPendingDeauthorization = Boolean(
-    appAuthData.hasPendingDeauthorization
-  )
   const pendingAuthorizationDecrease =
     appAuthData.pendingAuthorizationDecrease || "0"
   const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
@@ -251,45 +270,53 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           alignItems="center"
           gap={0}
           size="sm"
-          onTabClick={setActionFlag.toggle}
+          onTabClick={onFilterTabClick}
+          // If we control the `selectedTabId` from a parent component the
+          // `FilterTabs` doesn't update internal state once the `selectedTabId`
+          // prop changes. Fixed in:
+          // https://github.com/threshold-network/components/pull/24
+          selectedTabId={isIncreaseAction ? "increase" : "decrease"}
           tabs={[
-            { title: "Increase", tabId: "1" },
-            { title: "Decrease", tabId: "2" },
+            { title: "Increase", tabId: "increase" },
+            { title: "Decrease", tabId: "decrease" },
           ]}
         />
-        <GridItem gridArea="token-amount-form" mt={5}>
-          <TokenAmountForm
-            innerRef={formRef}
-            onSubmitForm={onSubmitForm}
-            label="Amount"
-            submitButtonText={
-              isIncreaseAction
-                ? appAuthData.isAuthorized
-                  ? `Authorize Increase`
-                  : `Authorize ${appAuthData.label}`
-                : "Initiate Deauthorization"
-            }
-            maxTokenAmount={
-              isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
-            }
-            placeholder={"Enter amount"}
-            minTokenAmount={
-              isIncreaseAction
-                ? appAuthData.percentage === 0
-                  ? minAuthAmount
-                  : WeiPerEther.toString()
-                : "0"
-            }
-            helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
-              appAuthData.label
-            }`}
-          />
-        </GridItem>
+        {!hasPendingDeauthorization && (
+          <GridItem gridArea="token-amount-form" mt={5}>
+            <TokenAmountForm
+              innerRef={formRef}
+              onSubmitForm={onSubmitForm}
+              label="Amount"
+              submitButtonText={
+                isIncreaseAction
+                  ? appAuthData.isAuthorized
+                    ? `Authorize Increase`
+                    : `Authorize ${appAuthData.label}`
+                  : "Initiate Deauthorization"
+              }
+              maxTokenAmount={
+                isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
+              }
+              placeholder={"Enter amount"}
+              minTokenAmount={
+                isIncreaseAction
+                  ? appAuthData.percentage === 0
+                    ? minAuthAmount
+                    : WeiPerEther.toString()
+                  : "0"
+              }
+              helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
+                appAuthData.label
+              }`}
+            />
+          </GridItem>
+        )}
       </Grid>
       {hasPendingDeauthorization && (
         <>
-          <BodyMd mt="2.5rem !important">Pending Deauthorization</BodyMd>
+          <BodyMd>Pending Deauthorization</BodyMd>
           <InfoBox
+            p="6"
             direction={{ base: "column", sm: "row" }}
             justifyContent="space-between"
             alignItems="center"
@@ -343,6 +370,13 @@ export const AuthorizeApplicationsCardCheckbox: FC<
               Confirm Deauthorization
             </Button>
           </InfoBox>
+          <BodySm mt="4" color="gray.500">
+            <InfoIcon verticalAlign="sub" />{" "}
+            <Box as="span">
+              Increasing or decreasing the authorization amount is suspended
+              until the pending deauthorization is confirmed.
+            </Box>
+          </BodySm>
         </>
       )}
     </Card>
