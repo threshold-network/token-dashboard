@@ -16,13 +16,13 @@ import { BigNumber } from "ethers"
 import InfoBox from "../../../components/InfoBox"
 import NodeStatusLabel from "./NodeStatusLabel"
 import TokenBalance from "../../../components/TokenBalance"
-import { useFetchRewardsForSingleStake } from "../../../hooks/useFetchRewardsForSingleStake"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import { useParams } from "react-router-dom"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../store"
 import { selectStakeByStakingProvider } from "../../../store/staking"
+import { selectRewardsByStakingProvider } from "../../../store/rewards"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -34,7 +34,9 @@ const StakeDetailsPage: FC = () => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
-  const rewardsForStake = useFetchRewardsForSingleStake(stake?.stakingProvider)
+  const { total: rewardsForStake } = useSelector((state: RootState) =>
+    selectRewardsByStakingProvider(state, stake.stakingProvider)
+  )
 
   if (!stake)
     return <div>No Stake found for address: {stakingProviderAddress} </div>
