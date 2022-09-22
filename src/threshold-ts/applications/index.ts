@@ -311,6 +311,6 @@ export class Application implements IApplication {
   }
 
   operatorToStakingProvider = async (operator: string): Promise<string> => {
-    return await this._application.opratorToStakingProvider(operator)
+    return await this._application.operatorToStakingProvider(operator)
   }
 }
