@@ -28,7 +28,9 @@ const MapOperatorToStakingProviderFormBase: FC<
 type MapOperatorToStakingProviderFormProps = {
   initialAddress: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
-  // checkIfOperatorMapped: (operator: string) => Promise<boolean>
+  checkIfOperatorIsMappedToAnotherStakingProvider: (
+    operator: string
+  ) => Promise<boolean>
   onSubmitForm: (values: MapOperatorToStakingProviderFormValues) => void
 } & ComponentProps
 
@@ -40,16 +42,17 @@ const MapOperatorToStakingProviderForm = withFormik<
     operator: initialAddress,
   }),
   validate: async (values, props) => {
-    // const { checkIfOperatorMapped } = props
+    const { checkIfOperatorIsMappedToAnotherStakingProvider } = props
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
     if (!errors.operator) {
       let validationMsg: string | undefined = ""
       try {
-        const isOperatorUsed = false
-        validationMsg = isOperatorUsed
-          ? "Operator is already mapped."
+        const isOperatorMappedToOtherStakingProvider =
+          await checkIfOperatorIsMappedToAnotherStakingProvider(values.operator)
+        validationMsg = isOperatorMappedToOtherStakingProvider
+          ? "Operator is already mapped to another staking provider."
           : undefined
       } catch (error) {
         console.error(

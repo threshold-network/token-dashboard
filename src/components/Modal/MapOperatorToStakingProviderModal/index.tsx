@@ -30,6 +30,8 @@ import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const { account } = useWeb3React()
@@ -37,6 +39,7 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
   const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
+  const threshold = useThreshold()
 
   // useEffect(() => {
   //   const forceFormValidation = async () => {
@@ -51,8 +54,55 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   //   forceFormValidation()
   // })
 
-  const onSubmit = ({ operator }: MapOperatorToStakingProviderFormValues) => {
+  const onSubmit = async ({
+    operator,
+  }: MapOperatorToStakingProviderFormValues) => {
     console.log("submit", operator)
+    if (account) {
+      const stakingProviderEcdsa =
+        await threshold.multiAppStaking.ecdsa.stakingProviderToOperator(account)
+      const stakingProviderRandomBeacon =
+        await threshold.multiAppStaking.randomBeacon.stakingProviderToOperator(
+          account
+        )
+
+      console.log("stakingProviderEcdsa", stakingProviderEcdsa)
+      console.log("stakingProviderRandomBeacon", stakingProviderRandomBeacon)
+    }
+  }
+
+  const checkIfOperatorIsMappedToAnotherStakingProvider: (
+    operator: string
+  ) => Promise<boolean> = async (operator: string) => {
+    const stakingProviderMappedEcdsa =
+      await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(operator)
+    const stakingProviderMappedRandomBeacon =
+      await threshold.multiAppStaking.randomBeacon.operatorToStakingProvider(
+        operator
+      )
+
+    return (
+      !isAddressZero(stakingProviderMappedEcdsa) &&
+      !isAddressZero(stakingProviderMappedRandomBeacon) &&
+      !isSameETHAddress(stakingProviderMappedEcdsa, account!) &&
+      !isSameETHAddress(stakingProviderMappedRandomBeacon, account!)
+    )
+  }
+
+  const checkIfStakingProviderHasOperatorMappedToOneApplication: (
+    stakingProvider: string
+  ) => Promise<boolean> = async (stakingProvider: string) => {
+    const operatorMappedEcdsa =
+      await threshold.multiAppStaking.ecdsa.stakingProviderToOperator(
+        stakingProvider
+      )
+    const operatorMappedRandomBeacon =
+      await threshold.multiAppStaking.randomBeacon.stakingProviderToOperator(
+        stakingProvider
+      )
+
+    // TODO
+    return false
   }
 
   return (
@@ -87,6 +137,9 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
             formId="map-operator-to-staking-provider-form"
             initialAddress={"0x0"}
             onSubmitForm={onSubmit}
+            checkIfOperatorIsMappedToAnotherStakingProvider={
+              checkIfOperatorIsMappedToAnotherStakingProvider
+            }
           />
         </Box>
         <AlertBox
