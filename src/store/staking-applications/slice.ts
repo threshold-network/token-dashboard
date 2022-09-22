@@ -1,3 +1,4 @@
+import { AddressZero } from "@ethersproject/constants"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import {
   StakingProviderAppInfo,
@@ -11,6 +12,7 @@ import {
   getSupportedAppsEffect,
   shouldDisplayMapOperatorToStakingProviderModal,
   displayMapOperatorToStakingProviderModalEffect,
+  getMappedOperatorsEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -20,6 +22,7 @@ type StakingApplicationDataByStakingProvider = {
 export type StakingApplicationState = {
   parameters: FetchingState<AuthorizationParameters<string>>
   stakingProviders: FetchingState<StakingApplicationDataByStakingProvider>
+  mappedOperator: FetchingState<string>
 }
 
 export interface StakingApplicationsState {
@@ -47,6 +50,12 @@ export const stakingApplicationsSlice = createSlice({
         error: "",
         data: {},
       },
+      mappedOperator: {
+        isInitialFetchDone: false,
+        isFetching: false,
+        error: "",
+        data: AddressZero,
+      },
     },
     randomBeacon: {
       parameters: {
@@ -62,6 +71,12 @@ export const stakingApplicationsSlice = createSlice({
         isFetching: false,
         error: "",
         data: {},
+      },
+      mappedOperator: {
+        isInitialFetchDone: false,
+        isFetching: false,
+        error: "",
+        data: AddressZero,
       },
     },
   } as StakingApplicationsState,
@@ -130,6 +145,51 @@ export const stakingApplicationsSlice = createSlice({
       state[appName].stakingProviders.isFetching = false
       state[appName].stakingProviders.error = error
     },
+    fetchMappedOperators: (state: StakingApplicationsState, action) => {},
+    setMappedOperator: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        operator: string
+      }>
+    ) => {
+      const { appName, operator } = action.payload
+      state[appName].mappedOperator = {
+        isFetching: false,
+        error: "",
+        data: operator,
+      }
+    },
+    setMappedOperatorInitialFetch: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        value: boolean
+      }>
+    ) => {
+      const { appName, value } = action.payload
+      state[appName].mappedOperator.isInitialFetchDone = value
+    },
+    fetchingMappedOperator: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+      }>
+    ) => {
+      const { appName } = action.payload
+      state[appName].mappedOperator.isFetching = true
+    },
+    setMappedOperatorError: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        error: string
+      }>
+    ) => {
+      const { appName, error } = action.payload
+      state[appName].mappedOperator.isFetching = false
+      state[appName].mappedOperator.error = error
+    },
     authorizationIncreased: (
       state: StakingApplicationsState,
       action: PayloadAction<{
@@ -155,6 +215,16 @@ startAppListening({
 startAppListening({
   actionCreator: setStakes,
   effect: getSupportedAppsStakingProvidersData,
+})
+
+startAppListening({
+  actionCreator: setStakes,
+  effect: getMappedOperatorsEffect,
+})
+
+startAppListening({
+  actionCreator: stakingApplicationsSlice.actions.fetchMappedOperators,
+  effect: getMappedOperatorsEffect,
 })
 
 startAppListening({

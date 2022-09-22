@@ -9,6 +9,7 @@ export * from "./rewards"
 export * from "./staking"
 
 export type FetchingState<DataType> = {
+  isInitialFetchDone?: boolean
   isFetching: boolean
   error: string
   data: DataType

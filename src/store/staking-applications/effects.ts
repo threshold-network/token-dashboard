@@ -157,6 +157,60 @@ const getKeepStakingAppStakingProvidersData = async (
   }
 }
 
+export const getMappedOperatorsEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  try {
+    const { connectedAccount } = listenerApi.getState()
+    const { address } = connectedAccount
+
+    if (address) {
+      getMappedOperatorEffect(address, "randomBeacon", listenerApi)
+      getMappedOperatorEffect(address, "tbtc", listenerApi)
+    }
+  } catch (error) {
+    console.log(
+      "Could not fetch mapped operator for connected staking provider: ",
+      error
+    )
+  }
+}
+
+const getMappedOperatorEffect = async (
+  stakingProvider: string,
+  appName: StakingAppName,
+  listenerApi: AppListenerEffectAPI
+) => {
+  try {
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.fetchingMappedOperator({
+        appName,
+      })
+    )
+    const appNameProp = appName === "tbtc" ? "ecdsa" : appName
+    if (stakingProvider) {
+      const operatorMapped = await listenerApi.extra.threshold.multiAppStaking[
+        appNameProp
+      ].stakingProviderToOperator(stakingProvider)
+      listenerApi.dispatch(
+        stakingApplicationsSlice.actions.setMappedOperator({
+          appName: appName,
+          operator: operatorMapped,
+        })
+      )
+    }
+  } catch (error) {
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setStakingProvidersAppDataError({
+        appName,
+        error: (error as Error).toString(),
+      })
+    )
+    throw error
+  }
+}
+
 export const displayMapOperatorToStakingProviderModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
