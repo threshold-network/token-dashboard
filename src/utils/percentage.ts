@@ -23,9 +23,13 @@ export const formatPercentage = (
   decimalPlaces: number = 0,
   displayLessThanGreaterThanSigns: boolean = false
 ): string => {
-  if (percentage < 1 && displayLessThanGreaterThanSigns) {
+  if (percentage < 1 && percentage > 0 && displayLessThanGreaterThanSigns) {
     return "<1%"
-  } else if (percentage > 99 && displayLessThanGreaterThanSigns) {
+  } else if (
+    percentage > 99 &&
+    percentage < 100 &&
+    displayLessThanGreaterThanSigns
+  ) {
     return ">99%"
   }
 

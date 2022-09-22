@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
@@ -9,6 +10,8 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
+  shouldDisplayNewAppsToAuthorizeModal,
+  displayNewAppsToAuthorizeModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -145,12 +148,19 @@ export const stakingApplicationsSlice = createSlice({
   },
 })
 
-startAppListening({
-  actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
-  effect: getSupportedAppsEffect,
-})
+if (featureFlags.MULTI_APP_STAKING) {
+  startAppListening({
+    actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
+    effect: getSupportedAppsEffect,
+  })
 
-startAppListening({
-  actionCreator: setStakes,
-  effect: getSupportedAppsStakingProvidersData,
-})
+  startAppListening({
+    actionCreator: setStakes,
+    effect: getSupportedAppsStakingProvidersData,
+  })
+
+  startAppListening({
+    predicate: shouldDisplayNewAppsToAuthorizeModal,
+    effect: displayNewAppsToAuthorizeModalEffect,
+  })
+}
