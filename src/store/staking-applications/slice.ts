@@ -155,6 +155,7 @@ export const stakingApplicationsSlice = createSlice({
     ) => {
       const { appName, operator } = action.payload
       state[appName].mappedOperator = {
+        ...state[appName].mappedOperator,
         isFetching: false,
         error: "",
         data: operator,

@@ -166,6 +166,7 @@ export const getMappedOperatorsEffect = async (
     const { address } = connectedAccount
 
     if (address) {
+      listenerApi.unsubscribe()
       getMappedOperatorEffect(address, "randomBeacon", listenerApi)
       getMappedOperatorEffect(address, "tbtc", listenerApi)
     }
@@ -174,6 +175,7 @@ export const getMappedOperatorsEffect = async (
       "Could not fetch mapped operator for connected staking provider: ",
       error
     )
+    listenerApi.subscribe()
   }
 }
 
@@ -197,6 +199,12 @@ const getMappedOperatorEffect = async (
         stakingApplicationsSlice.actions.setMappedOperator({
           appName: appName,
           operator: operatorMapped,
+        })
+      )
+      listenerApi.dispatch(
+        stakingApplicationsSlice.actions.setMappedOperatorInitialFetch({
+          appName: appName,
+          value: true,
         })
       )
     }
@@ -242,8 +250,13 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
   currentState: RootState,
   previousState: RootState
 ) => {
+  // TODO: Fix this condition (doesn't work properly)
   return (
     previousState.connectedAccount.address !==
-    currentState.connectedAccount.address
+      currentState.connectedAccount.address &&
+    (currentState.applications.randomBeacon.mappedOperator
+      .isInitialFetchDone! as boolean) &&
+    (currentState.applications.tbtc.mappedOperator
+      .isInitialFetchDone as boolean)
   )
 }
