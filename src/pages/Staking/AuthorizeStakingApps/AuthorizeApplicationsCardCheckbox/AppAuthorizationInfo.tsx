@@ -25,7 +25,7 @@ export interface AppAuthorizationInfoProps extends StackProps {
   slashingPercentage: number
   isAuthorized: boolean
   isAuthorizationRequired?: boolean
-  authorizedStake: string
+  authorizedStake?: string
 }
 
 export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
@@ -91,7 +91,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           <BodyMd mt="2.5rem !important">Total Authorized Balance</BodyMd>
           <InfoBox pr="44">
             <H3>
-              {formatTokenAmount(authorizedStake)} <BodyLg as="span">T</BodyLg>
+              {formatTokenAmount(authorizedStake!)} <BodyLg as="span">T</BodyLg>
             </H3>
           </InfoBox>
         </>

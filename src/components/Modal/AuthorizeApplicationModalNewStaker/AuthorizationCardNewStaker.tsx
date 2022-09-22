@@ -1,22 +1,24 @@
 import { FC, useMemo } from "react"
 import {
   BodyMd,
+  BodySm,
   BoxProps,
   Card,
   Checkbox,
+  FormControl,
   Grid,
   GridItem,
-  BodySm,
+  HStack,
   Link,
 } from "@threshold-network/components"
+import { Field, FieldProps, useField } from "formik"
+import numeral from "numeral"
+import { formatUnits } from "@ethersproject/units"
+import { BigNumber } from "ethers"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
-import { FormControl, HStack } from "@chakra-ui/react"
-import { Field, FieldProps, useField } from "formik"
-import numeral from "numeral"
-import { formatUnits } from "@ethersproject/units"
 
 export interface AuthorizationCardProps extends BoxProps {
   max: string | number
@@ -39,10 +41,25 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
 
   const percentToBeAuthorized = useMemo(() => {
     if (inputValue) {
+      if (BigNumber.from(inputValue).gte(BigNumber.from(max))) {
+        return 100
+      }
       return (Number(formatUnits(inputValue)) / Number(formatUnits(max))) * 100
     }
     return 0
   }, [inputValue])
+
+  const remainingAmount = useMemo(() => {
+    if (inputValue) {
+      if (BigNumber.from(inputValue).gte(BigNumber.from(max))) {
+        return "0"
+      }
+      return numeral(formatUnits(BigNumber.from(max).sub(inputValue))).format(
+        "0,0.00"
+      )
+    }
+    return numeral(formatUnits(max)).format("0,0.00")
+  }, [max, inputValue])
 
   return (
     <Card
@@ -91,6 +108,7 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
           }}
         </Field>
         <AppAuthorizationInfo
+          isAuthorized={false}
           gridArea="app-info"
           label={label}
           percentageAuthorized={percentToBeAuthorized}
@@ -106,8 +124,7 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
               <HStack justifyContent="space-between">
                 <BodyMd fontWeight="bold">Amount</BodyMd>
                 <BodySm color="gray.500">
-                  Remaining Balance:{" "}
-                  {numeral(formatUnits(max)).format("0,0.00")} T
+                  Remaining Balance: {remainingAmount} T
                 </BodySm>
               </HStack>
             }

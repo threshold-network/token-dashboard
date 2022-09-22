@@ -18,22 +18,27 @@ import AuthorizationFormNewStaker, {
 } from "./AuthorizationFormNewStaker"
 import { useStakingState } from "../../../hooks/useStakingState"
 import TokenBalance from "../../TokenBalance"
-import { useStakingAppMinAuthorizationAmount } from "../../../hooks/staking-applications"
+import {
+  useStakingApplicationAddress,
+  useStakingAppMinAuthorizationAmount,
+} from "../../../hooks/staking-applications"
+import { ModalType } from "../../../enums"
+import { useModal } from "../../../hooks/useModal"
 
 const AuthorizeApplicationModalNewStaker: FC<
   BaseModalProps & { stake: StakeData }
 > = () => {
-  const handleSubmit = (vals: FormValues) => {
-    // TODO: Hook up this modal to the confirmation modal and transaction flow
-    console.log(vals)
-  }
+  const tbtc = "tbtc"
+  const randomBeacon = "randomBeacon"
 
-  const { stakeAmount } = useStakingState()
+  const { openModal } = useModal()
 
-  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const { stakeAmount, stakingProvider } = useStakingState()
+
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount(tbtc)
 
   const randomBeaconMinAuthAmount =
-    useStakingAppMinAuthorizationAmount("randomBeacon")
+    useStakingAppMinAuthorizationAmount(randomBeacon)
 
   const tbtcInputConstraints = useMemo(
     () => ({
@@ -50,6 +55,40 @@ const AuthorizeApplicationModalNewStaker: FC<
     }),
     [stakeAmount, randomBeaconMinAuthAmount]
   )
+
+  const tbtcAppAddress = useStakingApplicationAddress(tbtc)
+  const randomBeaconAppAddress = useStakingApplicationAddress(randomBeacon)
+
+  const handleSubmit = (vals: FormValues) => {
+    const tbtcAppInfo = {
+      appName: tbtc,
+      address: tbtcAppAddress,
+      authorizationAmount: vals.tbtcAmountToAuthorize,
+    }
+
+    const randomBeaconAppInfo = {
+      appName: randomBeacon,
+      address: randomBeaconAppAddress,
+      authorizationAmount: vals.randomBeaconAmountToAuthorize,
+    }
+
+    const applications = [
+      vals.isRandomBeaconChecked ? randomBeaconAppInfo : null,
+      vals.isTbtcChecked ? tbtcAppInfo : null,
+    ].filter(Boolean)
+
+    console.log("opening the authorizatino modal with ", {
+      stakingProvider: stakingProvider,
+      totalInTStake: stakeAmount,
+      applications,
+    })
+
+    openModal(ModalType.AuthorizeStakingApps, {
+      stakingProvider: stakingProvider,
+      totalInTStake: stakeAmount,
+      applications,
+    })
+  }
 
   return (
     <>

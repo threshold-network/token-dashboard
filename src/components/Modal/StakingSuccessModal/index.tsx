@@ -75,7 +75,7 @@ const StakingChecklistModal: FC<
                 title: "Authorize Apps",
                 status: FlowStepStatus.active,
                 children:
-                  "You can authorize 100% of your stake for each app. This amount can",
+                  "You can authorize 100% of your stake for each app. This amount can be changed at any time.",
               },
               {
                 preTitle: "Step 3",
