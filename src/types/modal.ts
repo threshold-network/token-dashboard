@@ -35,6 +35,7 @@ import {
   IncreaseAuthorizationSuccess,
   AuthorizationIncreased,
 } from "../components/Modal/StakingApplications"
+import SubmitStakeModal from "../components/Modal/SubmitStake"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -64,6 +65,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
   [ModalType.AuthorizationIncreased]: AuthorizationIncreased,
+  [ModalType.SubmitStake]: SubmitStakeModal,
 }
 
 export interface BaseModalProps {

@@ -22,7 +22,7 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
-import { getStakeType } from "../../../utils/getStakeType"
+import { getStakeTitle } from "../../../utils/getStakeTitle"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
@@ -69,7 +69,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                   >
                     <Radio value={stake.stakingProvider} size="lg">
                       <LabelMd ml={4}>
-                        STAKE {i + 1} {getStakeType(stake)}
+                        {getStakeTitle(stake.stakeType, i + 1)}
                       </LabelMd>
                     </Radio>
                   </Card>
@@ -102,7 +102,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button
           mr={2}
           as={RouterLink}
-          to={`/staking/authorize/${selectedProviderAddress}`}
+          to={`/staking/${selectedProviderAddress}/authorize`}
           onClick={closeModal}
           disabled={!selectedProviderAddress}
           style={{ pointerEvents: selectedProviderAddress ? "auto" : "none" }}

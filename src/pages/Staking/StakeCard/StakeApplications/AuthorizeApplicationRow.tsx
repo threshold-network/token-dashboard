@@ -48,12 +48,12 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
             colorScheme="brand"
             borderRadius={50}
           />
-          <BodySm>{formatPercentage(percentage)}</BodySm>
+          <BodySm>{formatPercentage(percentage, undefined, true)}</BodySm>
         </HStack>
       ) : (
         <Button
           as={RouterLink}
-          to={`/staking/authorize/${stakingProvider}`}
+          to={`/staking/${stakingProvider}/authorize`}
           size="sm"
           variant="outline"
         >
