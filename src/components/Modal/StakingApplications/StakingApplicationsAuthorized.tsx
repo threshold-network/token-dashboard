@@ -52,7 +52,7 @@ const StakingApplicationsAuthorizedBase: FC<
     selectStakeByStakingProvider(state, stakingProvider)
   )
   const navigate = useNavigate()
-  const onAuthorizeOtherApps = async () => {
+  const onAuthorizeOtherApps = () => {
     closeModal()
     navigate(`/staking/${stakingProvider}/authorize`)
   }
