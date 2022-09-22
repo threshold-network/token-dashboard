@@ -43,7 +43,8 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
       <HStack mb="1rem !important">
         {isAuthorized && <CheckCircleIcon color="green.400" />}
         <LabelSm>
-          {label} App - {formatPercentage(percentageAuthorized)}
+          {label} App -{" "}
+          {formatPercentage(percentageAuthorized, undefined, true)}
         </LabelSm>
         <InfoIcon />
         {!isAuthorizationRequired && (
