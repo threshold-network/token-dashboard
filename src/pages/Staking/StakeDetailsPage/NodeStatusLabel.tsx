@@ -1,33 +1,25 @@
 import { FC, useMemo } from "react"
-import { BoxLabel, Icon } from "@threshold-network/components"
-import { BsCheckCircleFill, FiAlertCircle } from "react-icons/all"
+import { Alert, AlertIcon, BodyXs } from "@threshold-network/components"
 
 const NodeStatusLabel: FC<{ status: "success" | "warning" | "error" }> = ({
   status,
 }) => {
-  const { text, icon } = useMemo(() => {
+  const text = useMemo(() => {
     switch (status) {
       case "success":
-        return { text: "Launched", icon: BsCheckCircleFill, color: "green.500" }
+        return "Launched"
       case "warning":
-        return {
-          text: "Not Authorized",
-          icon: FiAlertCircle,
-          color: "yellow.500",
-        }
+        return "Not authorized"
       case "error":
-        return {
-          text: "Not earning rewards",
-          icon: FiAlertCircle,
-          color: "red.500",
-        }
+        return "Not earning rewards"
     }
   }, [status])
 
   return (
-    <BoxLabel status={status} icon={<Icon as={icon} />}>
-      {text}
-    </BoxLabel>
+    <Alert p={2} status={status} w="fit-content">
+      <AlertIcon boxSize="16px" />
+      <BodyXs>{text}</BodyXs>
+    </Alert>
   )
 }
 
