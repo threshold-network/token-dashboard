@@ -8,6 +8,9 @@ import {
 import { AnyAction } from "@reduxjs/toolkit"
 import { RootState } from ".."
 import { isAddressZero } from "../../web3/utils"
+import { openModal } from "../modal"
+import { ModalType } from "../../enums"
+import { featureFlags } from "../../constants"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -171,7 +174,11 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
       !isAddressZero(authorizer) ||
       !isAddressZero(beneficiary)
     ) {
-      console.log("display modal")
+      if (featureFlags.MULTI_APP_STAKING === true) {
+        listenerApi.dispatch(
+          openModal({ modalType: ModalType.MapOperatorToStakingProvider })
+        )
+      }
     }
   }
 }

@@ -22,4 +22,5 @@ export enum ModalType {
   UseDesktop = "USE_DESKTOP",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   SubmitStake = "SUBMIT_STAKE",
+  MapOperatorToStakingProvider = "MAP_OPERATOR_TO_STAKING_PROVIDER",
 }
