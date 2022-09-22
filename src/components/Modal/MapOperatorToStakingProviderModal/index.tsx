@@ -32,9 +32,16 @@ import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
+import { useOperatorsMappedToStakingProvider } from "../../../hooks/staking-applications"
+import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 
 const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const { account } = useWeb3React()
+  const mappedOperatorRandomBeacon =
+    useOperatorsMappedToStakingProvider("randomBeacon")
+  const mappedOperatorTbtc = useOperatorsMappedToStakingProvider("tbtc")
+  const operatorMappedToStakingProviderHelpers =
+    useOperatorMappedtoStakingProviderHelpers()
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
@@ -59,15 +66,8 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   }: MapOperatorToStakingProviderFormValues) => {
     console.log("submit", operator)
     if (account) {
-      const stakingProviderEcdsa =
-        await threshold.multiAppStaking.ecdsa.stakingProviderToOperator(account)
-      const stakingProviderRandomBeacon =
-        await threshold.multiAppStaking.randomBeacon.stakingProviderToOperator(
-          account
-        )
-
-      console.log("stakingProviderEcdsa", stakingProviderEcdsa)
-      console.log("stakingProviderRandomBeacon", stakingProviderRandomBeacon)
+      console.log("mappedOperatorTbtc", mappedOperatorTbtc)
+      console.log("mappedOperatorRandomBeacon", mappedOperatorRandomBeacon)
     }
   }
 
@@ -89,32 +89,23 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
     )
   }
 
-  const checkIfStakingProviderHasOperatorMappedToOneApplication: (
-    stakingProvider: string
-  ) => Promise<boolean> = async (stakingProvider: string) => {
-    const operatorMappedEcdsa =
-      await threshold.multiAppStaking.ecdsa.stakingProviderToOperator(
-        stakingProvider
-      )
-    const operatorMappedRandomBeacon =
-      await threshold.multiAppStaking.randomBeacon.stakingProviderToOperator(
-        stakingProvider
-      )
-
-    // TODO
-    return false
-  }
-
   return (
     <>
       <ModalHeader>Operator Address Mapping</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5>
-            We’ve noticed your wallet address is the same with your Provider
-            Address
-          </H5>
+          {operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInRandomBeacon ||
+          operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInTbtc ? (
+            <H5>
+              We noticed you've only mapped 1 application's Operator Address.
+            </H5>
+          ) : (
+            <H5>
+              We’ve noticed your wallet address is the same with your Provider
+              Address
+            </H5>
+          )}
           <BodyLg mt="4">
             Would you like to map your Operator Address? Mapping an Operator
             Address will require one transaction per application.
@@ -130,7 +121,13 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
           mt={"5"}
           mb={"5"}
         >
-          <LabelSm>TBTC + Random Beacon apps (requires 2txs)</LabelSm>
+          {operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInRandomBeacon ? (
+            <LabelSm>random beacon app</LabelSm>
+          ) : operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInTbtc ? (
+            <LabelSm>tbtc app</LabelSm>
+          ) : (
+            <LabelSm>TBTC + Random Beacon apps (requires 2txs)</LabelSm>
+          )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
             innerRef={formRef}
@@ -139,6 +136,9 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
             onSubmitForm={onSubmit}
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
+            }
+            operatorMappedToStakingProviderHelpers={
+              operatorMappedToStakingProviderHelpers
             }
           />
         </Box>
