@@ -10,8 +10,8 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
-  shouldDisplayNewAppsToAuthrozieModal,
-  displayNewAppsToAuthrozieModalEffect,
+  shouldDisplayNewAppsToAuthorizeModal,
+  displayNewAppsToAuthorizeModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -160,7 +160,7 @@ if (featureFlags.MULTI_APP_STAKING) {
   })
 
   startAppListening({
-    predicate: shouldDisplayNewAppsToAuthrozieModal,
-    effect: displayNewAppsToAuthrozieModalEffect,
+    predicate: shouldDisplayNewAppsToAuthorizeModal,
+    effect: displayNewAppsToAuthorizeModalEffect,
   })
 }

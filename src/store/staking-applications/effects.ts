@@ -156,7 +156,7 @@ const getKeepStakingAppStakingProvidersData = async (
   }
 }
 
-export const displayNewAppsToAuthrozieModalEffect = async (
+export const displayNewAppsToAuthorizeModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
 ) => {
@@ -182,7 +182,7 @@ export const displayNewAppsToAuthrozieModalEffect = async (
   }
 }
 
-export const shouldDisplayNewAppsToAuthrozieModal = (
+export const shouldDisplayNewAppsToAuthorizeModal = (
   action: AnyAction,
   currentState: RootState,
   previousState: RootState
