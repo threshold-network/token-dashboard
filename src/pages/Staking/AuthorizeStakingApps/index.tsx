@@ -1,7 +1,10 @@
 import {
+  Alert,
   AlertBox,
   AlertDescription,
+  AlertIcon,
   Badge,
+  BodySm,
   Button,
   Card,
   H5,
@@ -12,7 +15,7 @@ import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
-import { PageComponent, StakeData } from "../../../types"
+import { StakeData } from "../../../types"
 import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
@@ -206,6 +209,15 @@ const AuthorizeStakingAppsPage: FC = () => {
           minAuthAmount={tbtcMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
         />
+        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+          <Alert status="error" mt="4" p="2">
+            <AlertIcon w="15px" h="15px" alignSelf="center" />
+            <BodySm as={AlertDescription}>
+              Not earning rewards. tBTC + Random Beacon earn bundled rewards. In
+              order to earn rewards you need to authorize both apps.
+            </BodySm>
+          </Alert>
+        )}
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           formRef={randomBeaconAppFormRef}
