@@ -174,6 +174,22 @@ const AuthorizeStakingAppsPage: FC = () => {
     }
   }
 
+  const shouldRenderBundledRewardsAlert = () => {
+    const isTbtcSelected = isAppSelected("tbtc")
+    const isRandomBeaconSelected = isAppSelected("randomBeacon")
+
+    // If one of the app is selected and the other one is either selected or
+    // authorized.
+    return Boolean(
+      (!tbtcApp.isAuthorized &&
+        !isTbtcSelected &&
+        (isRandomBeaconSelected || randomBeaconApp.isAuthorized)) ||
+        (!randomBeaconApp.isAuthorized &&
+          !isRandomBeaconSelected &&
+          (isTbtcSelected || tbtcApp.isAuthorized))
+    )
+  }
+
   return isLoggedInAsAuthorizer ? (
     <>
       <Card>
@@ -210,9 +226,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           minAuthAmount={tbtcMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
         />
-        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
-          <BundledRewardsAlert />
-        )}
+        {shouldRenderBundledRewardsAlert() && <BundledRewardsAlert />}
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           formRef={randomBeaconAppFormRef}
