@@ -12,6 +12,7 @@ import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
+import BundledRewardsAlert from "../../../../components/BundledRewardsAlert"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
@@ -56,6 +57,9 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   return (
     <Box>
       <BodyMd>Applications</BodyMd>
+      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+        <BundledRewardsAlert />
+      )}
       {areNodesMissing && (
         <Alert status="error" my={4} px={2} py={1}>
           <AlertIcon />
