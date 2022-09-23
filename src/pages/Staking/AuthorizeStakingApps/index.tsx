@@ -34,6 +34,7 @@ import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import { FormikProps } from "formik"
 import { FormValues } from "../../../components/Forms"
+import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -210,13 +211,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           stakingProvider={stakingProviderAddress!}
         />
         {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
-          <Alert status="error" mt="4" p="2">
-            <AlertIcon w="15px" h="15px" alignSelf="center" />
-            <BodySm as={AlertDescription}>
-              Not earning rewards. tBTC + Random Beacon earn bundled rewards. In
-              order to earn rewards you need to authorize both apps.
-            </BodySm>
-          </Alert>
+          <BundledRewardsAlert />
         )}
         <AuthorizeApplicationsCardCheckbox
           mt={5}
