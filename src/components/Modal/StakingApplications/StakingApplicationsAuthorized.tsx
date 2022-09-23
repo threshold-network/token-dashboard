@@ -52,7 +52,7 @@ const StakingApplicationsAuthorizedBase: FC<
     selectStakeByStakingProvider(state, stakingProvider)
   )
   const navigate = useNavigate()
-  const onAuthorizeOtherApps = async () => {
+  const onAuthorizeOtherApps = () => {
     closeModal()
     navigate(`/staking/${stakingProvider}/authorize`)
   }
@@ -74,7 +74,7 @@ const StakingApplicationsAuthorizedBase: FC<
             </HStack>
           </ListItem>
           {authorizedStakingApplications.map((_) => (
-            <ListItem>
+            <ListItem key={_.address}>
               <HStack justifyContent="space-between">
                 <BodySm>{`${getStakingAppNameFromAddress(
                   _.address

@@ -100,7 +100,9 @@ const StakingApplicationToAuth: FC<{
   totalInTStake: string
 }> = ({ appName, authorizationAmount, stakingProvider, totalInTStake }) => {
   const percentage = formatPercentage(
-    calculatePercenteage(authorizationAmount, totalInTStake)
+    calculatePercenteage(authorizationAmount, totalInTStake),
+    undefined,
+    true
   )
 
   return (

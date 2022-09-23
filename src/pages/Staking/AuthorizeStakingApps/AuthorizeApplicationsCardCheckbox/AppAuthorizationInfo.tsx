@@ -41,25 +41,17 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
 }) => {
   return (
     <VStack alignItems={"flex-start"} {...restProps}>
-      <HStack
-        w="full"
-        justifyContent={separatePercentAuthorized ? "space-between" : undefined}
-      >
-        <HStack>
-          <LabelSm>
-            {label} App{" "}
-            {!separatePercentAuthorized &&
-              `- ${formatPercentage(percentageAuthorized)}`}
-          </LabelSm>
-          <InfoIcon />
-          {!isAuthorizationRequired && (
-            <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
-              Authorization not required
-            </Badge>
-          )}
-        </HStack>
-        {separatePercentAuthorized && (
-          <LabelSm>{formatPercentage(percentageAuthorized)}</LabelSm>
+      <HStack mb="1rem !important">
+        {isAuthorized && <CheckCircleIcon color="green.400" />}
+        <LabelSm>
+          {label} App -{" "}
+          {formatPercentage(percentageAuthorized, undefined, true)}
+        </LabelSm>
+        <InfoIcon />
+        {!isAuthorizationRequired && (
+          <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
+            Authorization not required
+          </Badge>
         )}
         {isAuthorizationRequired && isAuthorized && (
           <Badge variant={"subtle"} colorScheme="green" size="small">
@@ -86,7 +78,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           {`${formatPercentage(slashingPercentage, 0, true)}`}
         </BoxLabel>
       </HStack>
-      {isAuthorizationRequired && isAuthorized && (
+      {isAuthorizationRequired && isAuthorized && authorizedStake && (
         <>
           <BodyMd mt="2.5rem !important">Total Authorized Balance</BodyMd>
           <InfoBox pr="44">

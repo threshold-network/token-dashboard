@@ -48,7 +48,7 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
             colorScheme="brand"
             borderRadius={50}
           />
-          <BodySm>{formatPercentage(percentage)}</BodySm>
+          <BodySm>{formatPercentage(percentage, undefined, true)}</BodySm>
         </HStack>
       ) : (
         <Button
