@@ -113,8 +113,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         ],
       })
     } else {
-      // TODO: Create a increase authroziation modal.
-      console.log("open increase authroziation modal")
+      openModal(ModalType.IncreaseAuthorization, {
+        stakingProvider,
+        increaseAmount: tokenAmount,
+        stakingAppName: appAuthData.stakingAppId,
+      })
     }
   }
 

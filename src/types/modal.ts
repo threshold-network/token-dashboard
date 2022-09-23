@@ -32,6 +32,8 @@ import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicat
 import {
   AuthorizeStakingApps,
   StakingApplicationsAuthorized,
+  IncreaseAuthorization,
+  IncreaseAuthorizationSuccess,
 } from "../components/Modal/StakingApplications"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
 
@@ -61,6 +63,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.AuthorizeStakingApps]: AuthorizeStakingApps,
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
+  [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
+  [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
   [ModalType.SubmitStake]: SubmitStakeModal,
 }
 
