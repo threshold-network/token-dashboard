@@ -25,9 +25,9 @@ jobs:
     name: Check code format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "14"
           cache: "yarn"
@@ -51,9 +51,9 @@ jobs:
     name: Build and test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: "14"
           cache: "yarn"
@@ -96,26 +96,31 @@ jobs:
       # - name: Test
       #   run: yarn test
 
-  # The code will be published to https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html.
+  # This job will be triggered for PR updates. It will build the dashboard
+  # using `dapp-development-goerli`-taggeed packages which contain contracts
+  # with values modified to help with the testing of dashboard. The code will be
+  # published to
+  # https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html
+  # and link to the deployment will be posted as a comment in the PR.
   build-and-deploy-testnet-preview:
     name: Deploy preview to testnet
     needs: build-and-test
     if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ./.github/actions/build-and-deploy-to-bucket
-        with:
-          environment: goerli
-          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          useUpstreamBuilds: false
-          dependentPackagesTag: goerli
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpBucketName: preview.dashboard.test.threshold.network
-          gcpBucketPath: ${{ github.head_ref }}
-          preview: true
+    uses: ./.github/workflows/reusable-build-and-publish.yml
+    with:
+      environment: goerli
+      useUpstreamBuilds: false
+      # We use `dapp-development-goerli`-taggeed packages with modified
+      # contracts. They contain modifications that help with the testing of
+      # dashboard features.
+      dependentPackagesTag: dapp-development-goerli
+      gcpBucketName: preview.dashboard.test.threshold.network
+      gcpBucketPath: ${{ github.head_ref }}
+      preview: true
+    secrets:
+      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
   # CI flow, which gets triggered manually after changes in the contracts,
@@ -130,23 +135,18 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch'
         && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    # testnet environment is protected, it requires an approval before execution.
-    environment:
-      name: testnet
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ./.github/actions/build-and-deploy-to-bucket
-        with:
-          environment: goerli
-          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          useUpstreamBuilds: true
-          upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpBucketName: dashboard.test.threshold.network
-          preview: false
+    uses: ./.github/workflows/reusable-build-and-publish.yml
+    with:
+      requireApproval: true
+      environment: goerli
+      useUpstreamBuilds: true
+      upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
+      gcpBucketName: dashboard.test.threshold.network
+      preview: false
+    secrets:
+      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
   # triggering is not related to the changes in the contracts / client code, we
@@ -157,17 +157,14 @@ jobs:
     name: Deploy to testnet
     needs: build-and-test
     if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: ./.github/actions/build-and-deploy-to-bucket
-        with:
-          environment: goerli
-          ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-          useUpstreamBuilds: false
-          dependentPackagesTag: goerli
-          gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-          gcpBucketName: dashboard.test.threshold.network
-          preview: false
+    uses: ./.github/workflows/reusable-build-and-publish.yml
+    with:
+      environment: goerli
+      useUpstreamBuilds: false
+      dependentPackagesTag: goerli
+      gcpBucketName: dashboard.test.threshold.network
+      preview: false
+    secrets:
+      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}

@@ -12,15 +12,14 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../../store"
 import { selectRewardsByStakingProvider } from "../../../../store/rewards"
-import { StakeData } from "../../../../types"
+import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 
-const StakeRewards: FC<{ stake: StakeData; isPRESet: boolean }> = ({
-  stake,
-  isPRESet,
-}) => {
+const StakeRewards: FC<{ stakingProvider: string }> = ({ stakingProvider }) => {
   const { total, bonus } = useSelector((state: RootState) =>
-    selectRewardsByStakingProvider(state, stake.stakingProvider)
+    selectRewardsByStakingProvider(state, stakingProvider)
   )
+
+  const { isPRESet } = useStakeCardContext()
 
   return (
     <Box>

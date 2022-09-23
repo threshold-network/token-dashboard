@@ -96,15 +96,14 @@ export const getSupportedAppsStakingProvidersData = async (
 
     await getKeepStakingAppStakingProvidersData(
       stakingProviders,
-      listenerApi.extra.threshold.multiAppStaking.randomBeacon,
-      "randomBeacon",
-      listenerApi
-    )
-
-    await getKeepStakingAppStakingProvidersData(
-      stakingProviders,
       listenerApi.extra.threshold.multiAppStaking.ecdsa,
       "tbtc",
+      listenerApi
+    )
+    await getKeepStakingAppStakingProvidersData(
+      stakingProviders,
+      listenerApi.extra.threshold.multiAppStaking.randomBeacon,
+      "randomBeacon",
       listenerApi
     )
   } catch (error) {
@@ -162,12 +161,12 @@ const getKeepStakingAppStakingProvidersData = async (
   }
 }
 
-export const displayNewAppsToAuthrozieModalEffect = async (
+export const displayNewAppsToAuthorizeModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
 ) => {
   listenerApi.unsubscribe()
-  const hasAnyUnauthroizedStakes = Object.values(
+  const hasAnyUnauthorizedStakes = Object.values(
     selectStakingAppStateByAppName(listenerApi.getState(), "tbtc")
       .stakingProviders.data
   )
@@ -183,20 +182,23 @@ export const displayNewAppsToAuthrozieModalEffect = async (
         stakingProviderAppInfo.authorizedStake === "0"
     )
 
-  if (hasAnyUnauthroizedStakes) {
+  if (hasAnyUnauthorizedStakes) {
     listenerApi.dispatch(openModal({ modalType: ModalType.NewAppsToAuthorize }))
   }
 }
 
-export const shouldDisplayNewAppsToAuthrozieModal = (
+export const shouldDisplayNewAppsToAuthorizeModal = (
   action: AnyAction,
   currentState: RootState,
   previousState: RootState
 ) => {
   return (
     stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
-    Boolean(currentState.applications.randomBeacon.stakingProviders.data) &&
-    Boolean(currentState.applications.tbtc.stakingProviders.data)
+    Object.values(
+      currentState.applications.randomBeacon.stakingProviders.data ?? {}
+    ).length > 0 &&
+    Object.values(currentState.applications.tbtc.stakingProviders.data ?? {})
+      .length > 0
   )
 }
 

@@ -1,6 +1,7 @@
 import {
   Card,
   FilterTabs,
+  FilterTab,
   BoxProps,
   Grid,
   Checkbox,
@@ -278,16 +279,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           gap={0}
           size="sm"
           onTabClick={onFilterTabClick}
-          // If we control the `selectedTabId` from a parent component the
-          // `FilterTabs` doesn't update internal state once the `selectedTabId`
-          // prop changes. Fixed in:
-          // https://github.com/threshold-network/components/pull/24
           selectedTabId={isIncreaseAction ? "increase" : "decrease"}
-          tabs={[
-            { title: "Increase", tabId: "increase" },
-            { title: "Decrease", tabId: "decrease" },
-          ]}
-        />
+        >
+          <FilterTab tabId="increase">Increase</FilterTab>
+          <FilterTab tabId="decrease">Decrease</FilterTab>
+        </FilterTabs>
         {!hasPendingDeauthorization && (
           <GridItem gridArea="token-amount-form" mt={5}>
             <TokenAmountForm

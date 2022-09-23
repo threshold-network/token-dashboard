@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useCallback } from "react"
 import { ContractTransaction } from "ethers"
 import {
   BodyLg,
@@ -17,7 +17,7 @@ import {
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import IncreaseAuthIcon from "../../../static/images/increase-auth.svg"
-import { useIncreaseAuthorizationTransacion } from "../../../hooks/staking-applications"
+import { useIncreaseAuthorizationTransaction } from "../../../hooks/staking-applications"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
@@ -39,21 +39,24 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   closeModal,
 }) => {
   const { openModal } = useModal()
-  const onSuccess = (tx: ContractTransaction) => {
-    openModal(ModalType.AuthorizationIncreased, {
-      txHash: tx.hash,
-      stakingProvider,
-      increaseAmount,
-    })
-  }
-  const { sendTransaction } = useIncreaseAuthorizationTransacion(
+  const onSuccess = useCallback(
+    (tx: ContractTransaction) => {
+      openModal(ModalType.IncreaseAuthorizationSuccess, {
+        txHash: tx.hash,
+        stakingProvider,
+        increaseAmount,
+      })
+    },
+    [openModal, stakingProvider, increaseAmount]
+  )
+  const { sendTransaction } = useIncreaseAuthorizationTransaction(
     stakingAppName,
     onSuccess
   )
 
-  const onAuthorizeIncrease = () => {
+  const onAuthorizeIncrease = useCallback(() => {
     sendTransaction(stakingProvider, increaseAmount)
-  }
+  }, [sendTransaction, stakingProvider, increaseAmount, onSuccess])
 
   return (
     <>

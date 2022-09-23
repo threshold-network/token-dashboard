@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { BigNumber } from "ethers"
+import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
@@ -11,8 +12,8 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
-  shouldDisplayNewAppsToAuthrozieModal,
-  displayNewAppsToAuthrozieModalEffect,
+  shouldDisplayNewAppsToAuthorizeModal,
+  displayNewAppsToAuthorizeModalEffect,
   displayDeauthrizationCompletedModalEffect,
 } from "./effects"
 
@@ -215,22 +216,25 @@ export const stakingApplicationsSlice = createSlice({
   },
 })
 
-startAppListening({
-  actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
-  effect: getSupportedAppsEffect,
-})
+if (featureFlags.MULTI_APP_STAKING) {
+  startAppListening({
+    actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
+    effect: getSupportedAppsEffect,
+  })
 
-startAppListening({
-  actionCreator: setStakes,
-  effect: getSupportedAppsStakingProvidersData,
-})
+  startAppListening({
+    actionCreator: setStakes,
+    effect: getSupportedAppsStakingProvidersData,
+  })
 
-startAppListening({
-  predicate: shouldDisplayNewAppsToAuthrozieModal,
-  effect: displayNewAppsToAuthrozieModalEffect,
-})
+  startAppListening({
+    predicate: shouldDisplayNewAppsToAuthorizeModal,
+    effect: displayNewAppsToAuthorizeModalEffect,
+  })
 
-startAppListening({
-  actionCreator: stakingApplicationsSlice.actions.authorizationDecreaseApproved,
-  effect: displayDeauthrizationCompletedModalEffect,
-})
+  startAppListening({
+    actionCreator:
+      stakingApplicationsSlice.actions.authorizationDecreaseApproved,
+    effect: displayDeauthrizationCompletedModalEffect,
+  })
+}

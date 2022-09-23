@@ -1,10 +1,9 @@
 import { FC } from "react"
 import { BoxLabel, Flex, FlexProps } from "@threshold-network/components"
 import { CopyAddressToClipboard } from "../../../../components/CopyToClipboard"
-import { StakeData } from "../../../../types"
 
-const StakeAddressInfo: FC<{ stake: StakeData } & FlexProps> = ({
-  stake,
+const StakeAddressInfo: FC<{ stakingProvider: string } & FlexProps> = ({
+  stakingProvider,
   ...restProps
 }) => {
   return (
@@ -12,7 +11,7 @@ const StakeAddressInfo: FC<{ stake: StakeData } & FlexProps> = ({
       <BoxLabel bg="brand.50" color="brand.700" mr="auto">
         Provider address
       </BoxLabel>
-      <CopyAddressToClipboard address={stake.stakingProvider} />
+      <CopyAddressToClipboard address={stakingProvider} />
     </Flex>
   )
 }

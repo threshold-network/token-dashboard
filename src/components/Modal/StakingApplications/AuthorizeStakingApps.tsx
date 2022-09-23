@@ -22,7 +22,7 @@ import {
   calculatePercenteage,
   formatPercentage,
 } from "../../../utils/percentage"
-import { BaseModalProps, StakeData } from "../../../types"
+import { BaseModalProps } from "../../../types"
 import { useAuthorizeMultipleAppsTransaction } from "../../../hooks/staking-applications"
 
 export type AuthorizeAppsProps = BaseModalProps & {
@@ -60,8 +60,8 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
       <ModalBody>
         <InfoBox variant="modal" mb="6" mt="0">
           <H5>
-            You are authorizing the Threshold Application
-            {numberOfApps > 1 ? "s" : ""} to use your stake.
+            You are authorizing your stake for Threshold application
+            {numberOfApps > 1 ? "s" : ""}.
           </H5>
           <BodyLg mt="4">
             This will require {numberOfApps} transaction
@@ -100,7 +100,9 @@ const StakingApplicationToAuth: FC<{
   totalInTStake: string
 }> = ({ appName, authorizationAmount, stakingProvider, totalInTStake }) => {
   const percentage = formatPercentage(
-    calculatePercenteage(authorizationAmount, totalInTStake)
+    calculatePercenteage(authorizationAmount, totalInTStake),
+    undefined,
+    true
   )
 
   return (
@@ -111,7 +113,7 @@ const StakingApplicationToAuth: FC<{
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
       <TokenBalance tokenAmount={authorizationAmount} isLarge />
-      <StakeAddressInfo stake={{ stakingProvider } as StakeData} mb="0" />
+      <StakeAddressInfo stakingProvider={stakingProvider} mb="0" />
     </Card>
   )
 }

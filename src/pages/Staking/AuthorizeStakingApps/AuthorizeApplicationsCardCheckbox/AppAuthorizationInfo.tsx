@@ -60,7 +60,8 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           <CheckCircleIcon color="green.400" />
         )}
         <LabelSm>
-          {label} App - {formatPercentage(percentageAuthorized)}
+          {label} App -{" "}
+          {formatPercentage(percentageAuthorized, undefined, true)}
         </LabelSm>
         <InfoIcon />
         {!isAuthorizationRequired && (
@@ -98,7 +99,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           {`${formatPercentage(slashingPercentage, 0, true)}`}
         </BoxLabel>
       </HStack>
-      {isAuthorizationRequired && isAuthorized && (
+      {isAuthorizationRequired && isAuthorized && authorizedStake && (
         <>
           <BodyMd mt="2.5rem !important">Total Authorized Balance</BodyMd>
           <InfoBox pr="44">

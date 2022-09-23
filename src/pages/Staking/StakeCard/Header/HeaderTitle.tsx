@@ -1,17 +1,17 @@
 import { FC } from "react"
-import { StakeData } from "../../../../types/staking"
 import NotificationPill from "../../../../components/NotificationPill"
 import { LabelSm } from "@threshold-network/components"
-import { getStakeType } from "../../../../utils/getStakeType"
+import { getStakeTitle } from "../../../../utils/getStakeTitle"
+import { StakeType } from "../../../../enums"
 
-export const StakeCardHeaderTitle: FC<{ stake: StakeData | null }> = ({
-  stake,
+export const StakeCardHeaderTitle: FC<{ stakeType?: StakeType }> = ({
+  stakeType,
 }) => {
   return (
     <>
       <NotificationPill colorScheme="brand" mr="2" variant="gradient" />
       <LabelSm textTransform="uppercase" mr="auto">
-        stake{getStakeType(stake)}
+        {getStakeTitle(stakeType)}
       </LabelSm>
     </>
   )

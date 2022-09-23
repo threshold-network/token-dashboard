@@ -33,11 +33,12 @@ import {
   AuthorizeStakingApps,
   StakingApplicationsAuthorized,
   IncreaseAuthorization,
-  AuthorizationIncreased,
+  IncreaseAuthorizationSuccess,
   ConfirmDeauthorization,
   DeauthorizationCompleted,
   DeauthorizationInitiated,
 } from "../components/Modal/StakingApplications"
+import SubmitStakeModal from "../components/Modal/SubmitStake"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -66,7 +67,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.AuthorizeStakingApps]: AuthorizeStakingApps,
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
-  [ModalType.AuthorizationIncreased]: AuthorizationIncreased,
+  [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
+  [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
   [ModalType.DeauthorizationCompleted]: DeauthorizationCompleted,
   [ModalType.DeauthorizationInitiated]: DeauthorizationInitiated,
