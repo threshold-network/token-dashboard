@@ -1,4 +1,4 @@
 export { AuthorizeStakingApps } from "./AuthorizeStakingApps"
 export { StakingApplicationsAuthorized } from "./StakingApplicationsAuthorized"
-export { IncreaseAuthorizationSuccess } from "./IncreaseAuthorizationSuccess"
+export { IncreaseAuthorization } from "./IncreaseAuthorization"
 export { AuthorizationIncreased } from "./AuthorizationIncreased"
