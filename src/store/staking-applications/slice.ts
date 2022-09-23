@@ -140,10 +140,14 @@ export const stakingApplicationsSlice = createSlice({
       }>
     ) => {
       const { stakingProvider, toAmount, appName } = action.payload
-      if (state[appName].stakingProviders) {
-        state[appName].stakingProviders.data[stakingProvider].authorizedStake =
-          toAmount
-      }
+
+      const stakingProviderData =
+        state[appName]?.stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      state[appName].stakingProviders.data[stakingProvider].authorizedStake =
+        toAmount
     },
   },
   extraReducers: (builder) => {
