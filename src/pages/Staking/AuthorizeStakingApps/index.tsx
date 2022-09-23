@@ -18,19 +18,47 @@ import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useRef, useState, RefObject } from "react"
 import { featureFlags } from "../../../constants"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
 import {
   useStakingAppDataByStakingProvider,
+  useStakingApplicationAddress,
   useStakingAppMinAuthorizationAmount,
 } from "../../../hooks/staking-applications"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
+import { FormikProps } from "formik"
+import { FormValues } from "../../../components/Forms"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
   const { account } = useWeb3React()
   const navigate = useNavigate()
+  const { openModal } = useModal()
+  const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const randomBeaconAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const preAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const stakinAppNameToFormRef: Record<
+    AppAuthDataProps["stakingAppId"],
+    RefObject<FormikProps<FormValues>>
+  > = {
+    tbtc: tbtcAppFormRef,
+    randomBeacon: randomBeaconAppFormRef,
+    pre: preAppFormRef,
+  }
+
+  const tbtcAppAddress = useStakingApplicationAddress("tbtc")
+  const randomBeaconAddress = useStakingApplicationAddress("randomBeacon")
+  const stakinAppNameToAddress: Record<
+    AppAuthDataProps["stakingAppId"],
+    string
+  > = {
+    tbtc: tbtcAppAddress,
+    randomBeacon: randomBeaconAddress,
+    pre: AddressZero,
+  }
 
   useEffect(() => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
@@ -60,29 +88,76 @@ const AuthorizeStakingAppsPage: FC = () => {
     ? BigNumber.from(stake?.totalInTStake).isZero()
     : false
 
-  const appsAuthData = {
+  const appsAuthData: {
+    [appName: string]: AppAuthDataProps & { address?: string }
+  } = {
     tbtc: {
+      stakingAppId: "tbtc",
+      address: tbtcAppAddress,
       label: "tBTC",
       isAuthorized: tbtcApp.isAuthorized,
       percentage: tbtcApp.percentage,
+      authorizedStake: tbtcApp.authorizedStake,
       isAuthRequired: true,
     },
     randomBeacon: {
+      stakingAppId: "randomBeacon",
+      address: randomBeaconAddress,
       label: "Random Beacon",
       isAuthorized: randomBeaconApp.isAuthorized,
       percentage: randomBeaconApp.percentage,
+      authorizedStake: randomBeaconApp.authorizedStake,
       isAuthRequired: true,
     },
     pre: {
+      stakingAppId: "pre",
       label: "PRE",
       isAuthorized: false,
       percentage: 0,
+      authorizedStake: stake.totalInTStake,
       isAuthRequired: false,
     },
   }
 
-  const onAuthorizeApps = () => {
-    console.log("Authorize Apps!!", selectedApps)
+  const isAppSelected = (stakingAppName: AppAuthDataProps["stakingAppId"]) => {
+    return selectedApps.map((app) => app.stakingAppId).includes(stakingAppName)
+  }
+
+  const onAuthorizeApps = async () => {
+    const isTbtcSelected = isAppSelected("tbtc")
+    const isRandomBeaconSelected = isAppSelected("randomBeacon")
+
+    if (isTbtcSelected) {
+      await tbtcAppFormRef.current?.validateForm()
+      tbtcAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    }
+    if (isRandomBeaconSelected) {
+      await randomBeaconAppFormRef.current?.validateForm()
+      randomBeaconAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    }
+    if (
+      (isRandomBeaconSelected &&
+        isTbtcSelected &&
+        tbtcAppFormRef.current?.isValid &&
+        randomBeaconAppFormRef.current?.isValid) ||
+      (isTbtcSelected &&
+        !isRandomBeaconSelected &&
+        tbtcAppFormRef.current?.isValid) ||
+      (isRandomBeaconSelected &&
+        !isTbtcSelected &&
+        randomBeaconAppFormRef.current?.isValid)
+    ) {
+      openModal(ModalType.AuthorizeStakingApps, {
+        stakingProvider: stakingProviderAddress!,
+        totalInTStake: stake.totalInTStake,
+        applications: selectedApps.map((_) => ({
+          appName: _.label,
+          address: stakinAppNameToAddress[_.stakingAppId],
+          authorizationAmount:
+            stakinAppNameToFormRef[_.stakingAppId].current?.values.tokenAmount,
+        })),
+      })
+    }
   }
 
   const [selectedApps, setSelectedApps] = useState<AppAuthDataProps[]>([])
@@ -121,21 +196,23 @@ const AuthorizeStakingAppsPage: FC = () => {
           </AlertDescription>
         </AlertBox>
         <AuthorizeApplicationsCardCheckbox
+          formRef={tbtcAppFormRef}
           mt={5}
           appAuthData={appsAuthData.tbtc}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps.map((app) => app.label).includes("tBTC")}
+          isSelected={isAppSelected("tbtc")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={tbtcMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
         />
         <AuthorizeApplicationsCardCheckbox
           mt={5}
+          formRef={randomBeaconAppFormRef}
           appAuthData={appsAuthData.randomBeacon}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps
-            .map((app) => app.label)
-            .includes("Random Beacon")}
+          isSelected={isAppSelected("randomBeacon")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={randomBeaconMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
@@ -143,8 +220,9 @@ const AuthorizeStakingAppsPage: FC = () => {
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           appAuthData={appsAuthData.pre}
+          totalInTStake={stake.totalInTStake}
           onCheckboxClick={onCheckboxClick}
-          isSelected={selectedApps.map((app) => app.label).includes("PRE")}
+          isSelected={isAppSelected("pre")}
           maxAuthAmount={stake.totalInTStake}
           minAuthAmount={"0"}
           stakingProvider={stakingProviderAddress!}

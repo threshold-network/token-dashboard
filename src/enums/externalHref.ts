@@ -19,4 +19,5 @@ export enum ExternalHref {
   ankr = "https://www.ankr.com/",
   p2pValidator = "https://p2p.org/",
   infStones = "https://infstones.com/",
+  setupNodes = "https://docs.threshold.network/",
 }

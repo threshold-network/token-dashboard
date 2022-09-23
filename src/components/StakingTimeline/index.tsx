@@ -8,6 +8,7 @@ import {
   FlowStepStatus,
   Stack,
   useColorModeValue,
+  StackProps,
 } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
@@ -203,7 +204,10 @@ export const PreSetupSteps: FC = () => {
   )
 }
 
-const StakingTimeline: FC = () => {
+const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
+  statuses = [],
+  ...restProps
+}) => {
   if (featureFlags.MULTI_APP_STAKING) {
     return (
       <Stack spacing={6}>
@@ -212,7 +216,7 @@ const StakingTimeline: FC = () => {
           size="sm"
           title="Stake Tokens"
           preTitle="Step 1"
-          status={FlowStepStatus.active}
+          status={statuses[0] ?? FlowStepStatus.active}
         >
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
@@ -225,7 +229,7 @@ const StakingTimeline: FC = () => {
           size="sm"
           title="Authorize Apps"
           preTitle="Step 2"
-          status={FlowStepStatus.active}
+          status={statuses[1] ?? FlowStepStatus.inactive}
         >
           For each stake, there are three applications available. PRE does not
           require authorization. To authorize TBTC and Random Beacon, go to the{" "}
@@ -236,7 +240,7 @@ const StakingTimeline: FC = () => {
           size="sm"
           title="Set up node"
           preTitle="Step 3"
-          status={FlowStepStatus.active}
+          status={statuses[2] ?? FlowStepStatus.inactive}
         >
           You will need to run a node for applications that you have authorized
           to earn rewards. If you don’t have one, learn how to do it{" "}
@@ -251,7 +255,7 @@ const StakingTimeline: FC = () => {
   }
 
   return (
-    <Stack>
+    <Stack {...restProps}>
       <Box mb={6}>
         <StakingDepositStepsNonMAS />
       </Box>
