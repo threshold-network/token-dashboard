@@ -18,16 +18,16 @@ import TokenBalance from "../../../components/TokenBalance"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import { useParams } from "react-router-dom"
-import { useSelector } from "react-redux"
-import { RootState } from "../../../store"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import NodeStatusLabel from "./NodeStatusLabel"
 import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-applications"
+import { useAppSelector } from "../../../hooks/store"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const stake = useSelector((state: RootState) =>
+
+  const stake = useAppSelector((state) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
   ) as StakeData
 
@@ -35,18 +35,15 @@ const StakeDetailsPage: FC = () => {
     "tbtc",
     stake.stakingProvider
   )
-  console.log(tbtcApp)
+
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
     stake.stakingProvider
   )
-  console.log(randomBeaconApp)
 
-  const isInActiveStake = stake
-    ? BigNumber.from(stake?.totalInTStake).isZero()
-    : false
+  const isInActiveStake = BigNumber.from(stake?.totalInTStake ?? "0").isZero()
 
-  const { total: rewardsForStake } = useSelector((state: RootState) =>
+  const { total: rewardsForStake } = useAppSelector((state) =>
     selectRewardsByStakingProvider(state, stake.stakingProvider)
   )
 
@@ -104,27 +101,28 @@ const StakeDetailsPage: FC = () => {
           <StakeDetailRow
             isPrimary
             label="Provider Address"
-            value={stake.stakingProvider}
+            isAddress
+            address={stake.stakingProvider}
           />
-          <StakeDetailRow label="Authorizer Address" value={stake.authorizer} />
+          <StakeDetailRow
+            label="Authorizer Address"
+            isAddress
+            address={stake.authorizer}
+          />
           <StakeDetailRow
             label="Beneficiary Address"
-            value={stake.beneficiary}
+            isAddress
+            address={stake.beneficiary}
           />
-          <StakeDetailRow
-            label="PRE Node Status"
-            value={<NodeStatusLabel isAuthorized />}
-          />
-          <StakeDetailRow
-            label="TBTC Node Status"
-            value={<NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />}
-          />
-          <StakeDetailRow
-            label="Random Beacon Node Status"
-            value={
-              <NodeStatusLabel isAuthorized={randomBeaconApp.isAuthorized} />
-            }
-          />
+          <StakeDetailRow label="PRE Node Status">
+            <NodeStatusLabel isAuthorized />
+          </StakeDetailRow>
+          <StakeDetailRow label="TBTC Node Status">
+            <NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />
+          </StakeDetailRow>
+          <StakeDetailRow label="Random Beacon Node Status">
+            <NodeStatusLabel isAuthorized={randomBeaconApp.isAuthorized} />
+          </StakeDetailRow>
         </Stack>
       </SimpleGrid>
     </Card>

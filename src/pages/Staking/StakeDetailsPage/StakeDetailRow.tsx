@@ -3,22 +3,40 @@ import { BodyMd, BoxLabel, HStack } from "@threshold-network/components"
 import CopyToClipboard from "../../../components/CopyToClipboard"
 import shortenAddress from "../../../utils/shortenAddress"
 
-const StakeDetailRow: FC<{
+type CommonProps = {
   label: string
-  value: string | JSX.Element
   isPrimary?: boolean
-}> = ({ label, value, isPrimary }) => {
+}
+type ConditionalProps =
+  | {
+      isAddress?: false
+      address?: never
+    }
+  | {
+      isAddress: true
+      address: string
+    }
+
+type Props = CommonProps & ConditionalProps
+
+const StakeDetailRow: FC<Props> = ({
+  label,
+  isAddress,
+  address,
+  isPrimary,
+  children,
+}) => {
   return (
     <HStack justify="space-between" minH="40px">
       <BoxLabel status={isPrimary ? "primary" : "secondary"}>{label}</BoxLabel>
-      {typeof value === "string" ? (
-        <CopyToClipboard textToCopy={value}>
+      {isAddress ? (
+        <CopyToClipboard textToCopy={address}>
           <BodyMd color={isPrimary ? "brand.500" : "gray.500"}>
-            {shortenAddress(value)}
+            {shortenAddress(address)}
           </BodyMd>
         </CopyToClipboard>
       ) : (
-        value
+        children
       )}
     </HStack>
   )
