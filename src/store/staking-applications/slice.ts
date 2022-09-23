@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
@@ -6,7 +6,7 @@ import {
 } from "../../threshold-ts/applications"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
-import { setStakes } from "../staking"
+import { providerStaked, setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
@@ -145,6 +145,27 @@ export const stakingApplicationsSlice = createSlice({
           toAmount
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      (action: AnyAction) => action.type.match(providerStaked),
+      (state, action: ReturnType<typeof providerStaked>) => {
+        const { stakingProvider } = action.payload
+
+        const defaultAuthData = {
+          authorizedStake: "0",
+          pendingAuthorizationDecrease: "0",
+          remainingAuthorizationDecreaseDelay: "0",
+        }
+
+        state.randomBeacon.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+        state.tbtc.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+      }
+    )
   },
 })
 
