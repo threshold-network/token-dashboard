@@ -41,7 +41,7 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   const { openModal } = useModal()
   const onSuccess = useCallback(
     (tx: ContractTransaction) => {
-      openModal(ModalType.AuthorizationIncreased, {
+      openModal(ModalType.IncreaseAuthorizationSuccess, {
         txHash: tx.hash,
         stakingProvider,
         increaseAmount,

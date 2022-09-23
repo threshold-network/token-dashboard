@@ -20,18 +20,15 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { BaseModalProps } from "../../../types"
 
-export type AuthorizationIncreasedProps = BaseModalProps & {
+export type IncreaseAuthorizationSuccessProps = BaseModalProps & {
   stakingProvider: string
   txHash: string
   increaseAmount: string
 }
 
-const AuthorizationIncreasedBase: FC<AuthorizationIncreasedProps> = ({
-  stakingProvider,
-  txHash,
-  increaseAmount,
-  closeModal,
-}) => {
+const IncreaseAuthorizationSuccessBase: FC<
+  IncreaseAuthorizationSuccessProps
+> = ({ stakingProvider, txHash, increaseAmount, closeModal }) => {
   return (
     <>
       <ModalHeader>Increase Successful</ModalHeader>
@@ -72,4 +69,6 @@ const AuthorizationIncreasedBase: FC<AuthorizationIncreasedProps> = ({
   )
 }
 
-export const AuthorizationIncreased = withBaseModal(AuthorizationIncreasedBase)
+export const IncreaseAuthorizationSuccess = withBaseModal(
+  IncreaseAuthorizationSuccessBase
+)
