@@ -1,24 +1,11 @@
-import { FC, useMemo } from "react"
+import React, { FC } from "react"
 import { Alert, AlertIcon, BodyXs } from "@threshold-network/components"
 
-const NodeStatusLabel: FC<{ status: "success" | "warning" | "error" }> = ({
-  status,
-}) => {
-  const text = useMemo(() => {
-    switch (status) {
-      case "success":
-        return "Launched"
-      case "warning":
-        return "Not authorized"
-      case "error":
-        return "Not earning rewards"
-    }
-  }, [status])
-
+const NodeStatusLabel: FC<{ isAuthorized: boolean }> = ({ isAuthorized }) => {
   return (
-    <Alert p={2} status={status} w="fit-content">
+    <Alert p={2} status={isAuthorized ? "success" : "error"} w="fit-content">
       <AlertIcon boxSize="16px" />
-      <BodyXs>{text}</BodyXs>
+      <BodyXs>{isAuthorized ? "" : "Not"} Authorized</BodyXs>
     </Alert>
   )
 }

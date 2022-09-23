@@ -14,7 +14,6 @@ import {
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import InfoBox from "../../../components/InfoBox"
-import NodeStatusLabel from "./NodeStatusLabel"
 import TokenBalance from "../../../components/TokenBalance"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
@@ -23,12 +22,25 @@ import { useSelector } from "react-redux"
 import { RootState } from "../../../store"
 import { selectStakeByStakingProvider } from "../../../store/staking"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
+import NodeStatusLabel from "./NodeStatusLabel"
+import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-applications"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
   const stake = useSelector((state: RootState) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
   ) as StakeData
+
+  const tbtcApp = useStakingAppDataByStakingProvider(
+    "tbtc",
+    stake.stakingProvider
+  )
+  console.log(tbtcApp)
+  const randomBeaconApp = useStakingAppDataByStakingProvider(
+    "randomBeacon",
+    stake.stakingProvider
+  )
+  console.log(randomBeaconApp)
 
   const isInActiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
@@ -101,18 +113,17 @@ const StakeDetailsPage: FC = () => {
           />
           <StakeDetailRow
             label="PRE Node Status"
-            // TODO: These statuses need to be computed
-            value={<NodeStatusLabel status="success" />}
+            value={<NodeStatusLabel isAuthorized />}
           />
           <StakeDetailRow
             label="TBTC Node Status"
-            // TODO: These statuses need to be computed
-            value={<NodeStatusLabel status="warning" />}
+            value={<NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />}
           />
           <StakeDetailRow
             label="Random Beacon Node Status"
-            // TODO: These statuses need to be computed
-            value={<NodeStatusLabel status="error" />}
+            value={
+              <NodeStatusLabel isAuthorized={randomBeaconApp.isAuthorized} />
+            }
           />
         </Stack>
       </SimpleGrid>
