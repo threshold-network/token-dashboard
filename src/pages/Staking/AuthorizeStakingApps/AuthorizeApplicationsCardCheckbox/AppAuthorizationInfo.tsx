@@ -35,7 +35,6 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   isAuthorized,
   authorizedStake,
   isAuthorizationRequired = false,
-
   ...restProps
 }) => {
   return (
@@ -77,7 +76,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           {`${formatPercentage(slashingPercentage, 0, true)}`}
         </BoxLabel>
       </HStack>
-      {isAuthorizationRequired && isAuthorized && (
+      {isAuthorizationRequired && isAuthorized && authorizedStake && (
         <>
           <BodyMd mt="2.5rem !important">Total Authorized Balance</BodyMd>
           <InfoBox pr="44">
