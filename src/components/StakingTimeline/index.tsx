@@ -62,7 +62,7 @@ export const LegacyStakesDepositSteps: FC = () => {
               <ExternalLink href={ExternalHref.nuDapp} text="here" withArrow />
             </BodyMd>
             <BodyMd>
-              Authorize Keep network legacy stakes{" "}
+              Authorize Keep Network legacy stakes{" "}
               <ExternalLink
                 href={ExternalHref.keepDapp}
                 text="here"
