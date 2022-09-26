@@ -37,13 +37,14 @@ import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/stakin
 
 const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const { account } = useWeb3React()
-  const mappedOperatorRandomBeacon =
-    useOperatorsMappedToStakingProvider("randomBeacon")
-  const mappedOperatorTbtc = useOperatorsMappedToStakingProvider("tbtc")
   const operatorMappedToStakingProviderHelpers =
     useOperatorMappedtoStakingProviderHelpers()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    operatorMappedToStakingProviderHelpers
+  const {
+    isOperatorMappedOnlyInRandomBeacon,
+    isOperatorMappedOnlyInTbtc,
+    operatorMappedRandomBeacon,
+    operatorMappedTbtc,
+  } = operatorMappedToStakingProviderHelpers
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
@@ -134,7 +135,13 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
           <MapOperatorToStakingProviderForm
             innerRef={formRef}
             formId="map-operator-to-staking-provider-form"
-            initialAddress={"0x0"}
+            initialAddress={
+              isOperatorMappedOnlyInRandomBeacon
+                ? operatorMappedRandomBeacon
+                : isOperatorMappedOnlyInTbtc
+                ? operatorMappedTbtc
+                : ""
+            }
             onSubmitForm={onSubmit}
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
