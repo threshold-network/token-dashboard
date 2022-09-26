@@ -87,10 +87,10 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
       )
 
     return (
-      !isAddressZero(stakingProviderMappedEcdsa) &&
-      !isAddressZero(stakingProviderMappedRandomBeacon) &&
-      !isSameETHAddress(stakingProviderMappedEcdsa, account!) &&
-      !isSameETHAddress(stakingProviderMappedRandomBeacon, account!)
+      (!isAddressZero(stakingProviderMappedEcdsa) &&
+        !isSameETHAddress(stakingProviderMappedEcdsa, account!)) ||
+      (!isAddressZero(stakingProviderMappedRandomBeacon) &&
+        !isSameETHAddress(stakingProviderMappedRandomBeacon, account!))
     )
   }
 
