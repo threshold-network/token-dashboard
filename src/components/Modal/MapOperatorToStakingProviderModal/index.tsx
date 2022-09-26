@@ -68,8 +68,6 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   }: MapOperatorToStakingProviderFormValues) => {
     console.log("submit", operator)
     if (account) {
-      console.log("mappedOperatorTbtc", mappedOperatorTbtc)
-      console.log("mappedOperatorRandomBeacon", mappedOperatorRandomBeacon)
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,
       })
@@ -127,9 +125,9 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
           mb={"5"}
         >
           {isOperatorMappedOnlyInRandomBeacon ? (
-            <LabelSm>random beacon app</LabelSm>
-          ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>tbtc app</LabelSm>
+          ) : isOperatorMappedOnlyInTbtc ? (
+            <LabelSm>random beacon app</LabelSm>
           ) : (
             <LabelSm>TBTC + Random Beacon apps (requires 2txs)</LabelSm>
           )}

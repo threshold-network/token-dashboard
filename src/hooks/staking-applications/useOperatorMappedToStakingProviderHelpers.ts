@@ -11,7 +11,6 @@ export interface OperatorMappedToStakingProviderHelpers {
 
 export const useOperatorMappedtoStakingProviderHelpers: () => OperatorMappedToStakingProviderHelpers =
   () => {
-    const { account } = useWeb3React()
     const operatorMappedRandomBeacon =
       useOperatorsMappedToStakingProvider("randomBeacon")
     const operatorMappedTbtc = useOperatorsMappedToStakingProvider("tbtc")

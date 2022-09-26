@@ -17,7 +17,13 @@ import {
   LabelSm,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { FC } from "react"
+import { ContractTransaction } from "ethers"
+import { FC, useCallback } from "react"
+import { ModalType } from "../../../enums"
+import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
+import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
+import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
@@ -55,9 +61,48 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   }
 > = ({ operator, closeModal }) => {
   const { account } = useWeb3React()
+  const { registerMultipleOperators } =
+    useRegisterMultipleOperatorsTransaction()
 
-  const submitMappingOperator = () => {
-    console.log("submit operator mapping")
+  const operatorMappedToStakingProviderHelpers =
+    useOperatorMappedtoStakingProviderHelpers()
+  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
+    operatorMappedToStakingProviderHelpers
+
+  const { openModal } = useModal()
+  const onSuccess = useCallback(
+    (tx: ContractTransaction) => {
+      openModal(ModalType.MapOperatorToStakingProviderSuccess, {
+        transactions: [
+          {
+            txHash: tx,
+            application: {
+              appName: isOperatorMappedOnlyInRandomBeacon
+                ? "tbtc"
+                : "randomBeacon",
+              operator,
+              stakingProvider: account,
+            },
+          },
+        ],
+      })
+    },
+    [openModal, operator, account]
+  )
+
+  const { sendTransaction: registerOperatorTbtc } =
+    useRegisterOperatorTransaction("tbtc", onSuccess)
+  const { sendTransaction: registerOperatorRandomBeacon } =
+    useRegisterOperatorTransaction("randomBeacon", onSuccess)
+
+  const submitMappingOperator = async () => {
+    if (isOperatorMappedOnlyInRandomBeacon) {
+      registerOperatorTbtc(operator)
+    } else if (isOperatorMappedOnlyInTbtc) {
+      registerOperatorRandomBeacon(operator)
+    } else {
+      await registerMultipleOperators(operator)
+    }
   }
 
   return (
@@ -69,19 +114,27 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
             You are about to map Operator Addresses to your Provider Address
           </H5>
           <BodyLg mt="4">
-            This will require 2 transactions. Each mapping is one transaction
+            This will require{" "}
+            {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+              ? "1 transaction"
+              : "2 transactions"}
+            . Each mapping is one transaction
           </BodyLg>
         </InfoBox>
-        <OperatorMappingConfirmation
-          appName="tbtc"
-          operator={operator}
-          stakingProvider={account ? account : AddressZero}
-        />
-        <OperatorMappingConfirmation
-          appName="random beacon"
-          operator={operator}
-          stakingProvider={account ? account : AddressZero}
-        />
+        {!isOperatorMappedOnlyInTbtc && (
+          <OperatorMappingConfirmation
+            appName="tbtc"
+            operator={operator}
+            stakingProvider={account ? account : AddressZero}
+          />
+        )}
+        {!isOperatorMappedOnlyInRandomBeacon && (
+          <OperatorMappingConfirmation
+            appName="random beacon"
+            operator={operator}
+            stakingProvider={account ? account : AddressZero}
+          />
+        )}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>

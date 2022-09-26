@@ -156,7 +156,7 @@ export interface IApplication {
    * the staking provider.
    * @param operator Operator address
    */
-  registerOperator(operator: string): Promise<void>
+  registerOperator(operator: string): Promise<ContractTransaction>
 
   /**
    * Used to get a registered operator mapped to the given staking provider
@@ -300,8 +300,8 @@ export class Application implements IApplication {
     )
   }
 
-  registerOperator = async (operator: string): Promise<void> => {
-    await this._application.registerOperator(operator)
+  registerOperator = async (operator: string): Promise<ContractTransaction> => {
+    return await this._application.registerOperator(operator)
   }
 
   stakingProviderToOperator = async (
