@@ -5,11 +5,12 @@ import {
   IApplication,
   StakingProviderAppInfo,
 } from "../../threshold-ts/applications"
-import { AnyAction } from "@reduxjs/toolkit"
+import { ModalType } from "../../enums"
 import { RootState } from ".."
+import { selectStakingAppStateByAppName } from "./selectors"
+import { AnyAction } from "@reduxjs/toolkit"
 import { isAddressZero } from "../../web3/utils"
 import { openModal } from "../modal"
-import { ModalType } from "../../enums"
 import { featureFlags } from "../../constants"
 
 export const getSupportedAppsEffect = async (
@@ -94,15 +95,14 @@ export const getSupportedAppsStakingProvidersData = async (
 
     await getKeepStakingAppStakingProvidersData(
       stakingProviders,
-      listenerApi.extra.threshold.multiAppStaking.randomBeacon,
-      "randomBeacon",
-      listenerApi
-    )
-
-    await getKeepStakingAppStakingProvidersData(
-      stakingProviders,
       listenerApi.extra.threshold.multiAppStaking.ecdsa,
       "tbtc",
+      listenerApi
+    )
+    await getKeepStakingAppStakingProvidersData(
+      stakingProviders,
+      listenerApi.extra.threshold.multiAppStaking.randomBeacon,
+      "randomBeacon",
       listenerApi
     )
   } catch (error) {
@@ -257,5 +257,46 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
       .isInitialFetchDone as boolean) &&
     (currentState.applications.tbtc.mappedOperator
       .isInitialFetchDone as boolean)
+  )
+}
+
+export const displayNewAppsToAuthorizeModalEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  listenerApi.unsubscribe()
+  const hasAnyUnauthorizedStakes = Object.values(
+    selectStakingAppStateByAppName(listenerApi.getState(), "tbtc")
+      .stakingProviders.data
+  )
+    .concat(
+      Object.values(
+        selectStakingAppStateByAppName(listenerApi.getState(), "randomBeacon")
+          .stakingProviders.data
+      )
+    )
+    .some(
+      (stakingProviderAppInfo) =>
+        stakingProviderAppInfo.authorizedStake &&
+        stakingProviderAppInfo.authorizedStake === "0"
+    )
+
+  if (hasAnyUnauthorizedStakes) {
+    listenerApi.dispatch(openModal({ modalType: ModalType.NewAppsToAuthorize }))
+  }
+}
+
+export const shouldDisplayNewAppsToAuthorizeModal = (
+  action: AnyAction,
+  currentState: RootState,
+  previousState: RootState
+) => {
+  return (
+    stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
+    Object.values(
+      currentState.applications.randomBeacon.stakingProviders.data ?? {}
+    ).length > 0 &&
+    Object.values(currentState.applications.tbtc.stakingProviders.data ?? {})
+      .length > 0
   )
 }

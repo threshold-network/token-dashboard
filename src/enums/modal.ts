@@ -24,4 +24,8 @@ export enum ModalType {
   SubmitStake = "SUBMIT_STAKE",
   MapOperatorToStakingProvider = "MAP_OPERATOR_TO_STAKING_PROVIDER",
   MapOperatorToStakingProviderConfirmation = "MAP_OPERATOR_TO_STAKING_PROVIDER_CONFIRMATION",
+  AuthorizeStakingApps = "AUTHORIZE_STAKING_APPS",
+  StakingApplicationsAuthorized = "STAKING_APPLICATIONS_AUTHORIZED",
+  IncreaseAuthorization = "INCREASE_AUTHORIZATION",
+  IncreaseAuthorizationSuccess = "INCREASE_AUTHORIZATION_SUCCESS",
 }

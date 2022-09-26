@@ -1,5 +1,6 @@
 import { AddressZero } from "@ethersproject/constants"
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
@@ -10,9 +11,11 @@ import { setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
+  getMappedOperatorsEffect,
   shouldDisplayMapOperatorToStakingProviderModal,
   displayMapOperatorToStakingProviderModalEffect,
-  getMappedOperatorsEffect,
+  shouldDisplayNewAppsToAuthorizeModal,
+  displayNewAppsToAuthorizeModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -208,27 +211,34 @@ export const stakingApplicationsSlice = createSlice({
   },
 })
 
-startAppListening({
-  actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
-  effect: getSupportedAppsEffect,
-})
+if (featureFlags.MULTI_APP_STAKING) {
+  startAppListening({
+    actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
+    effect: getSupportedAppsEffect,
+  })
 
-startAppListening({
-  actionCreator: setStakes,
-  effect: getSupportedAppsStakingProvidersData,
-})
+  startAppListening({
+    actionCreator: setStakes,
+    effect: getSupportedAppsStakingProvidersData,
+  })
 
-startAppListening({
-  actionCreator: setStakes,
-  effect: getMappedOperatorsEffect,
-})
+  startAppListening({
+    predicate: shouldDisplayNewAppsToAuthorizeModal,
+    effect: displayNewAppsToAuthorizeModalEffect,
+  })
 
-startAppListening({
-  actionCreator: stakingApplicationsSlice.actions.fetchMappedOperators,
-  effect: getMappedOperatorsEffect,
-})
+  startAppListening({
+    actionCreator: setStakes,
+    effect: getMappedOperatorsEffect,
+  })
 
-startAppListening({
-  predicate: shouldDisplayMapOperatorToStakingProviderModal,
-  effect: displayMapOperatorToStakingProviderModalEffect,
-})
+  startAppListening({
+    actionCreator: stakingApplicationsSlice.actions.fetchMappedOperators,
+    effect: getMappedOperatorsEffect,
+  })
+
+  startAppListening({
+    predicate: shouldDisplayMapOperatorToStakingProviderModal,
+    effect: displayMapOperatorToStakingProviderModalEffect,
+  })
+}
