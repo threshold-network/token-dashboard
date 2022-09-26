@@ -237,7 +237,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
       !isAddressZero(authorizer) ||
       !isAddressZero(beneficiary)
     ) {
-      if (featureFlags.MULTI_APP_STAKING === true) {
+      if (featureFlags.MULTI_APP_STAKING) {
         listenerApi.dispatch(
           openModal({ modalType: ModalType.MapOperatorToStakingProvider })
         )
