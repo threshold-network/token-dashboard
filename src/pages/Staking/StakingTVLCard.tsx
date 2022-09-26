@@ -1,10 +1,14 @@
 import { FC } from "react"
-import { H1, LabelSm, Card } from "@threshold-network/components"
+import { H1, LabelSm, Card, BoxProps } from "@threshold-network/components"
 import { formatFiatCurrencyAmount } from "../../utils/formatAmount"
 
-const StakingTVLCard: FC<{ tvl: string }> = ({ tvl }) => {
+export interface StakingTvlCardProps extends BoxProps {
+  tvl: string
+}
+
+const StakingTVLCard: FC<StakingTvlCardProps> = ({ tvl, ...restProps }) => {
   return (
-    <Card>
+    <Card {...restProps}>
       <LabelSm mb={8} textTransform="uppercase">
         staking tvl
       </LabelSm>
