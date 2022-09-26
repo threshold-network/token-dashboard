@@ -39,7 +39,6 @@ export const resetStoreAction = () => ({
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
   if (action.type === APP_RESET_STORE) {
     listenerMiddleware.clearListeners()
-    listenerMiddleware.middleware
     registerStakingListeners()
     registerStakingAppsListeners()
     state = {
