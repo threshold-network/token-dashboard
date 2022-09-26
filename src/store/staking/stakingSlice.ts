@@ -11,6 +11,8 @@ import {
 import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
 import { UpdateStateActionPayload } from "../../types/state"
+import { startAppListening } from "../listener"
+import { fetchStakeByStakingProviderEffect } from "./effects"
 
 interface StakingState {
   stakingProvider: string
@@ -181,3 +183,8 @@ export const {
   unstaked,
   setMinStake,
 } = stakingSlice.actions
+
+startAppListening({
+  actionCreator: requestStakeByStakingProvider,
+  effect: fetchStakeByStakingProviderEffect,
+})
