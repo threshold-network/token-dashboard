@@ -3,8 +3,8 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
-  BodySm,
   AlertProps,
+  BodyXs,
 } from "@threshold-network/components"
 
 const defaultText =
@@ -17,7 +17,7 @@ const BundledRewardsAlert: FC<{ text?: string } & AlertProps> = ({
   return (
     <Alert status="error" mt="4" p="2" {...restProps}>
       <AlertIcon w="15px" h="15px" alignSelf="center" />
-      <BodySm as={AlertDescription}>{text}</BodySm>
+      <BodyXs as={AlertDescription}>{text}</BodyXs>
     </Alert>
   )
 }
