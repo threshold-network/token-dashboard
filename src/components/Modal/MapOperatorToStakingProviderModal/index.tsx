@@ -68,6 +68,9 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
     if (account) {
       console.log("mappedOperatorTbtc", mappedOperatorTbtc)
       console.log("mappedOperatorRandomBeacon", mappedOperatorRandomBeacon)
+      openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
+        operator,
+      })
     }
   }
 
@@ -118,6 +121,7 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
           p={"24px"}
           border={"1px solid"}
           borderColor={"gray.100"}
+          borderRadius={"12px"}
           mt={"5"}
           mb={"5"}
         >

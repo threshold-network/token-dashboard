@@ -31,6 +31,7 @@ import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
 import MapOperatorToStakingProviderModal from "../components/Modal/MapOperatorToStakingProviderModal"
+import MapOperatorToStakingProviderConfirmationModal from "../components/Modal/MapOperatorToStakingProviderConfirmationModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -58,6 +59,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.MapOperatorToStakingProvider]: MapOperatorToStakingProviderModal,
+  [ModalType.MapOperatorToStakingProviderConfirmation]:
+    MapOperatorToStakingProviderConfirmationModal,
 }
 
 export interface BaseModalProps {

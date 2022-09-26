@@ -1,12 +1,13 @@
 import { FC } from "react"
-import { BoxLabel, Flex } from "@threshold-network/components"
+import { BoxLabel, Flex, FlexProps } from "@threshold-network/components"
 import { CopyAddressToClipboard } from "../../../../components/CopyToClipboard"
 
-const StakeAddressInfo: FC<{ stakingProvider: string }> = ({
+const StakeAddressInfo: FC<FlexProps & { stakingProvider: string }> = ({
   stakingProvider,
+  ...restProps
 }) => {
   return (
-    <Flex mt="6" mb="8" alignItems="center">
+    <Flex mt="6" mb="8" alignItems="center" {...restProps}>
       <BoxLabel bg="brand.50" color="brand.700" mr="auto">
         Provider address
       </BoxLabel>
