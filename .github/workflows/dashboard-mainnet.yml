@@ -48,6 +48,8 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          FEATURE_FLAG_TBTC_V2: ${{ secrets.MAINNET_FEATURE_FLAG_TBTC_V2 }}
+          FEATURE_FLAG_MULTI_APP_STAKING: ${{ secrets.MAINNET_FEATURE_FLAG_MULTI_APP_STAKING }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -57,6 +59,8 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          FEATURE_FLAG_TBTC_V2: ${{ secrets.MAINNET_FEATURE_FLAG_TBTC_V2 }}
+          FEATURE_FLAG_MULTI_APP_STAKING: ${{ secrets.MAINNET_FEATURE_FLAG_MULTI_APP_STAKING }}
 
       - uses: actions/upload-artifact@v3
         with:
