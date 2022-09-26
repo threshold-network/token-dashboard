@@ -12,6 +12,7 @@ import { AnyAction } from "@reduxjs/toolkit"
 import { isAddressZero } from "../../web3/utils"
 import { openModal } from "../modal"
 import { featureFlags } from "../../constants"
+import { mapOperatorToStakingProviderModalClosed } from "../modalQueue"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -253,6 +254,7 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
 ) => {
   return (
     !!previousState.connectedAccount.address &&
+    currentState.modalQueue.isSuccessfullLoginModalClosed &&
     (currentState.applications.randomBeacon.mappedOperator
       .isInitialFetchDone as boolean) &&
     (currentState.applications.tbtc.mappedOperator
@@ -296,7 +298,12 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
   previousState: RootState
 ) => {
   return (
-    stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
+    currentState.modalQueue.isSuccessfullLoginModalClosed &&
+    (currentState.modalQueue.isMappingOperatorToStakingProviderModalClosed ||
+      (!isAddressZero(
+        currentState.applications.randomBeacon.mappedOperator.data
+      ) &&
+        !isAddressZero(currentState.applications.tbtc.mappedOperator.data))) &&
     Object.values(
       currentState.applications.randomBeacon.stakingProviders.data ?? {}
     ).length > 0 &&

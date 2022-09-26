@@ -15,6 +15,7 @@ import { tbtcSlice } from "./tbtc"
 import { stakingApplicationsSlice } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
 import { connectedAccountSlice } from "./connected-account"
+import { modalQueueSlice } from "./modalQueue"
 
 const combinedReducer = combineReducers({
   connectedAccount: connectedAccountSlice.reducer,
@@ -27,6 +28,7 @@ const combinedReducer = combineReducers({
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
   applications: stakingApplicationsSlice.reducer,
+  modalQueue: modalQueueSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"

@@ -6,10 +6,13 @@ import { ModalType } from "../../enums"
 import { useOperatorMappedtoStakingProviderHelpers } from "./useOperatorMappedToStakingProviderHelpers"
 import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
+import { mapOperatorToStakingProviderModalClosed } from "../../store/modalQueue"
+import { useDispatch } from "react-redux"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const { account } = useWeb3React()
-  const { openModal } = useModal()
+  const { openModal, closeModal } = useModal()
+  const dispatch = useDispatch()
 
   const {
     sendTransaction: sendRegisterOperatorTransactionTbtc,
@@ -72,11 +75,15 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           })
         }
 
-        if (successfullTxs.length === 1) {
+        if (successfullTxs.length < 2) {
           openModal(ModalType.TransactionFailed, {
             error: new Error(
               "Transaction rejected. You are required to map the Operator Address for both apps."
             ),
+            closeModal: () => {
+              closeModal()
+              dispatch(mapOperatorToStakingProviderModalClosed())
+            },
           })
         }
 
@@ -88,8 +95,13 @@ export const useRegisterMultipleOperatorsTransaction = () => {
       } catch (error) {
         openModal(ModalType.TransactionFailed, {
           error:
-            (error as Error)?.message || "Error: Couldn't map operator address",
+            (error as Error)?.message ||
+            new Error("Error: Couldn't map operator address"),
           isExpandableError: true,
+          closeModal: () => {
+            closeModal()
+            dispatch(mapOperatorToStakingProviderModalClosed())
+          },
         })
       }
     },

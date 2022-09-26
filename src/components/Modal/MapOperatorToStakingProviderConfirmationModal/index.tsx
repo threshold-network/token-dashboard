@@ -19,12 +19,14 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import { ContractTransaction } from "ethers"
 import { FC, useCallback } from "react"
+import { useDispatch } from "react-redux"
 import { ModalType } from "../../../enums"
 import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
 import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
+import { mapOperatorToStakingProviderModalClosed } from "../../../store/modalQueue"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
@@ -63,6 +65,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   const { account } = useWeb3React()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
+  const dispatch = useDispatch()
 
   const operatorMappedToStakingProviderHelpers =
     useOperatorMappedtoStakingProviderHelpers()
@@ -97,9 +100,31 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
 
   const submitMappingOperator = async () => {
     if (isOperatorMappedOnlyInRandomBeacon) {
-      registerOperatorTbtc(operator)
+      const tx = await registerOperatorTbtc(operator)
+      if (!tx) {
+        openModal(ModalType.TransactionFailed, {
+          error: new Error(
+            "Transaction rejected. You are required to map the Operator Address for both apps."
+          ),
+          closeModal: () => {
+            closeModal()
+            dispatch(mapOperatorToStakingProviderModalClosed())
+          },
+        })
+      }
     } else if (isOperatorMappedOnlyInTbtc) {
-      registerOperatorRandomBeacon(operator)
+      const tx = await registerOperatorRandomBeacon(operator)
+      if (!tx) {
+        openModal(ModalType.TransactionFailed, {
+          error: new Error(
+            "Transaction rejected. You are required to map the Operator Address for both apps."
+          ),
+          closeModal: () => {
+            closeModal()
+            dispatch(mapOperatorToStakingProviderModalClosed())
+          },
+        })
+      }
     } else {
       await registerMultipleOperators(operator)
     }

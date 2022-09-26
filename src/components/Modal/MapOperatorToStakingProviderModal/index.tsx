@@ -66,7 +66,6 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const onSubmit = async ({
     operator,
   }: MapOperatorToStakingProviderFormValues) => {
-    console.log("submit", operator)
     if (account) {
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,

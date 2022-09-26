@@ -1,11 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { ModalType } from "../../enums"
+
+export interface modalState {
+  modalType: ModalType | null
+  props: any
+}
 
 export const modalSlice = createSlice({
   name: "modal",
   initialState: {
     modalType: null,
     props: {},
-  },
+  } as modalState,
   reducers: {
     openModal: (state, action) => {
       state.modalType = action.payload.modalType
