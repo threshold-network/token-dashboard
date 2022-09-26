@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAction } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
@@ -168,6 +168,10 @@ export const stakingSlice = createSlice({
     },
   },
 })
+
+export const requestStakeByStakingProvider = createAction<{
+  stakingProvider: string | undefined
+}>("staking/request-stake-by-staking-provider")
 
 export const {
   updateState,
