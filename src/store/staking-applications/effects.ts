@@ -228,6 +228,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   if (address) {
     // check if the current connected address is used somewhere as a staking
     // provider
+    listenerApi.unsubscribe()
     const { owner, authorizer, beneficiary } =
       await listenerApi.extra.threshold.staking.rolesOf(address)
 
@@ -250,12 +251,10 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
   currentState: RootState,
   previousState: RootState
 ) => {
-  // TODO: Fix this condition (doesn't work properly)
   return (
-    previousState.connectedAccount.address !==
-      currentState.connectedAccount.address &&
+    !!previousState.connectedAccount.address &&
     (currentState.applications.randomBeacon.mappedOperator
-      .isInitialFetchDone! as boolean) &&
+      .isInitialFetchDone as boolean) &&
     (currentState.applications.tbtc.mappedOperator
       .isInitialFetchDone as boolean)
   )
