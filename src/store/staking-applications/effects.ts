@@ -256,7 +256,11 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
     (currentState.applications.randomBeacon.mappedOperator
       .isInitialFetchDone as boolean) &&
     (currentState.applications.tbtc.mappedOperator
-      .isInitialFetchDone as boolean)
+      .isInitialFetchDone as boolean) &&
+    (isAddressZero(
+      currentState.applications.randomBeacon.mappedOperator.data
+    ) ||
+      isAddressZero(currentState.applications.tbtc.mappedOperator.data))
   )
 }
 
