@@ -42,6 +42,8 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const mappedOperatorTbtc = useOperatorsMappedToStakingProvider("tbtc")
   const operatorMappedToStakingProviderHelpers =
     useOperatorMappedtoStakingProviderHelpers()
+  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
+    operatorMappedToStakingProviderHelpers
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
@@ -98,8 +100,7 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          {operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInRandomBeacon ||
-          operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInTbtc ? (
+          {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc ? (
             <H5>
               We noticed you've only mapped 1 application's Operator Address.
             </H5>
@@ -125,9 +126,9 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
           mt={"5"}
           mb={"5"}
         >
-          {operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInRandomBeacon ? (
+          {isOperatorMappedOnlyInRandomBeacon ? (
             <LabelSm>random beacon app</LabelSm>
-          ) : operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInTbtc ? (
+          ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>tbtc app</LabelSm>
           ) : (
             <LabelSm>TBTC + Random Beacon apps (requires 2txs)</LabelSm>

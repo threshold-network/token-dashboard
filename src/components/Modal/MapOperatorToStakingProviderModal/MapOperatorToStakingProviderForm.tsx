@@ -48,6 +48,12 @@ const MapOperatorToStakingProviderForm = withFormik<
       checkIfOperatorIsMappedToAnotherStakingProvider,
       operatorMappedToStakingProviderHelpers,
     } = props
+    const {
+      operatorMappedRandomBeacon,
+      operatorMappedTbtc,
+      isOperatorMappedOnlyInRandomBeacon,
+      isOperatorMappedOnlyInTbtc,
+    } = operatorMappedToStakingProviderHelpers
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
@@ -62,17 +68,15 @@ const MapOperatorToStakingProviderForm = withFormik<
             "Operator is already mapped to another staking provider."
         }
         if (
-          operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInRandomBeacon &&
-          values.operator !==
-            operatorMappedToStakingProviderHelpers.operatorMappedRandomBeacon
+          isOperatorMappedOnlyInRandomBeacon &&
+          values.operator !== operatorMappedRandomBeacon
         ) {
           validationMsg =
             "The operator address doesn't match the one used in tbtc app"
         }
         if (
-          operatorMappedToStakingProviderHelpers.isOperatorMappedOnlyInTbtc &&
-          values.operator !==
-            operatorMappedToStakingProviderHelpers.operatorMappedTbtc
+          isOperatorMappedOnlyInTbtc &&
+          values.operator !== operatorMappedTbtc
         ) {
           validationMsg =
             "The operator address doesn't match the one used in random beacon app"
