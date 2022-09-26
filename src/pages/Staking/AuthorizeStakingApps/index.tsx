@@ -2,6 +2,7 @@ import {
   AlertBox,
   AlertDescription,
   Badge,
+  BodyLg,
   Button,
   Card,
   H5,
@@ -20,7 +21,10 @@ import AuthorizeApplicationsCardCheckbox, {
 } from "./AuthorizeApplicationsCardCheckbox"
 import { FC, useEffect, useRef, useState, RefObject } from "react"
 import { featureFlags } from "../../../constants"
-import { selectStakeByStakingProvider } from "../../../store/staking"
+import {
+  requestStakeByStakingProvider,
+  selectStakeByStakingProvider,
+} from "../../../store/staking"
 import { useWeb3React } from "@web3-react/core"
 import {
   useStakingAppDataByStakingProvider,
@@ -31,10 +35,12 @@ import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import { FormikProps } from "formik"
 import { FormValues } from "../../../components/Forms"
+import { useAppDispatch } from "../../../hooks/store"
+import { stakingApplicationsSlice } from "../../../store/staking-applications"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account } = useWeb3React()
+  const { account, active } = useWeb3React()
   const navigate = useNavigate()
   const { openModal } = useModal()
   const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
@@ -48,6 +54,8 @@ const AuthorizeStakingAppsPage: FC = () => {
     randomBeacon: randomBeaconAppFormRef,
     pre: preAppFormRef,
   }
+
+  const dispatch = useAppDispatch()
 
   const tbtcAppAddress = useStakingApplicationAddress("tbtc")
   const randomBeaconAddress = useStakingApplicationAddress("randomBeacon")
@@ -63,6 +71,16 @@ const AuthorizeStakingAppsPage: FC = () => {
   useEffect(() => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
+
+  useEffect(() => {
+    dispatch(
+      requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
+    )
+  }, [stakingProviderAddress, account])
+
+  useEffect(() => {
+    dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
+  }, [dispatch, account])
 
   const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
   const randomBeaconMinAuthAmount =
@@ -114,7 +132,7 @@ const AuthorizeStakingAppsPage: FC = () => {
       label: "PRE",
       isAuthorized: false,
       percentage: 0,
-      authorizedStake: stake.totalInTStake,
+      authorizedStake: "0",
       isAuthRequired: false,
     },
   }
@@ -170,7 +188,7 @@ const AuthorizeStakingAppsPage: FC = () => {
     }
   }
 
-  return isLoggedInAsAuthorizer ? (
+  return active ? (
     <>
       <Card>
         <HStack justify={"space-between"}>
@@ -188,6 +206,14 @@ const AuthorizeStakingAppsPage: FC = () => {
           </HStack>
         </HStack>
         <LineDivider />
+        {stake && !isLoggedInAsAuthorizer && (
+          <AlertBox status="warning" mb="4">
+            <AlertDescription>
+              Only the authorizer can authorize staking applications. Please
+              connect your wallet as an authorizer of this stake.
+            </AlertDescription>
+          </AlertBox>
+        )}
         <AlertBox status="magic" alignItems="flex-start">
           <AlertDescription color={"gray.700"}>
             In order to earn rewards, please authorize Threshold apps to use
@@ -195,40 +221,50 @@ const AuthorizeStakingAppsPage: FC = () => {
             of the apps. You can change this amount at any time.
           </AlertDescription>
         </AlertBox>
-        <AuthorizeApplicationsCardCheckbox
-          formRef={tbtcAppFormRef}
-          mt={5}
-          appAuthData={appsAuthData.tbtc}
-          totalInTStake={stake.totalInTStake}
-          onCheckboxClick={onCheckboxClick}
-          isSelected={isAppSelected("tbtc")}
-          maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={tbtcMinAuthAmount}
-          stakingProvider={stakingProviderAddress!}
-        />
-        <AuthorizeApplicationsCardCheckbox
-          mt={5}
-          formRef={randomBeaconAppFormRef}
-          appAuthData={appsAuthData.randomBeacon}
-          totalInTStake={stake.totalInTStake}
-          onCheckboxClick={onCheckboxClick}
-          isSelected={isAppSelected("randomBeacon")}
-          maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={randomBeaconMinAuthAmount}
-          stakingProvider={stakingProviderAddress!}
-        />
-        <AuthorizeApplicationsCardCheckbox
-          mt={5}
-          appAuthData={appsAuthData.pre}
-          totalInTStake={stake.totalInTStake}
-          onCheckboxClick={onCheckboxClick}
-          isSelected={isAppSelected("pre")}
-          maxAuthAmount={stake.totalInTStake}
-          minAuthAmount={"0"}
-          stakingProvider={stakingProviderAddress!}
-        />
+        {stake === undefined ? (
+          <BodyLg textAlign="center" mt="4">
+            Loading stake data...
+          </BodyLg>
+        ) : (
+          <>
+            <AuthorizeApplicationsCardCheckbox
+              formRef={tbtcAppFormRef}
+              mt={5}
+              appAuthData={appsAuthData.tbtc}
+              totalInTStake={stake.totalInTStake}
+              onCheckboxClick={onCheckboxClick}
+              isSelected={isAppSelected("tbtc")}
+              maxAuthAmount={stake.totalInTStake}
+              minAuthAmount={tbtcMinAuthAmount}
+              stakingProvider={stakingProviderAddress!}
+              canSubmitForm={isLoggedInAsAuthorizer}
+            />
+            <AuthorizeApplicationsCardCheckbox
+              mt={5}
+              formRef={randomBeaconAppFormRef}
+              appAuthData={appsAuthData.randomBeacon}
+              totalInTStake={stake.totalInTStake}
+              onCheckboxClick={onCheckboxClick}
+              isSelected={isAppSelected("randomBeacon")}
+              maxAuthAmount={stake.totalInTStake}
+              minAuthAmount={randomBeaconMinAuthAmount}
+              stakingProvider={stakingProviderAddress!}
+              canSubmitForm={isLoggedInAsAuthorizer}
+            />
+            <AuthorizeApplicationsCardCheckbox
+              mt={5}
+              appAuthData={appsAuthData.pre}
+              totalInTStake={stake.totalInTStake}
+              onCheckboxClick={onCheckboxClick}
+              isSelected={isAppSelected("pre")}
+              maxAuthAmount={stake.totalInTStake}
+              minAuthAmount={"0"}
+              stakingProvider={stakingProviderAddress!}
+            />
+          </>
+        )}
         <Button
-          disabled={selectedApps.length === 0}
+          disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
           variant="outline"
           width="100%"
           mt={5}
@@ -239,7 +275,7 @@ const AuthorizeStakingAppsPage: FC = () => {
       </Card>
     </>
   ) : (
-    <H5>{`Please connect your wallet as an authorizer of this stake`}</H5>
+    <H5>{`Please connect your wallet.`}</H5>
   )
 }
 
