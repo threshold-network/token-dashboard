@@ -91,8 +91,7 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
         </List>
         {numberOfApps === 1 &&
           !tbtcAppAuthData.isAuthorized &&
-          !randomBeaconAuthData.isAuthorized &&
-          randomBeaconAuthData && <BundledRewardsAlert />}
+          !randomBeaconAuthData.isAuthorized && <BundledRewardsAlert />}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
