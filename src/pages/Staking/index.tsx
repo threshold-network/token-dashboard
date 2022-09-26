@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react"
-import { SimpleGrid, Stack } from "@chakra-ui/react"
+import { HStack, Stack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -35,28 +35,36 @@ const StakingPage: PageComponent = (props) => {
   const { stakes } = useStakingState()
   const totalRewardsBalance = useSelector(selectTotalRewardsBalance)
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
+  const hasStakes = stakes.length > 0
 
   return (
-    <PageLayout {...props}>
-      <SimpleGrid
-        columns={[1, null, null, 2]}
-        spacing="4"
-        w="100%"
-        mt="4"
-        alignItems="self-start"
+    <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
+      <HStack
+        alignItems={"flexStart"}
+        w={"100%"}
+        flexDirection={{ base: "column", lg: "row", xl: "row" }}
       >
-        <StakedPortfolioCard />
-        <Stack spacing={4}>
-          <RewardsCard
-            totalBonusBalance={totalBonusBalance}
-            totalRewardsBalance={totalRewardsBalance}
-          />
-          <StakingTVLCard tvl={data.total} />
-        </Stack>
-        {stakes.map((stake) => (
-          <StakeCard key={stake.stakingProvider} stake={stake} />
-        ))}
-      </SimpleGrid>
+        <VStack w={"100%"}>
+          {hasStakes ? (
+            stakes.map((stake) => (
+              <StakeCard key={stake.stakingProvider} stake={stake} />
+            ))
+          ) : (
+            <StakedPortfolioCard />
+          )}
+        </VStack>
+
+        <VStack w={"100%"}>
+          {hasStakes && <StakedPortfolioCard />}
+          <Stack spacing={4} w={"100%"}>
+            <RewardsCard
+              totalBonusBalance={totalBonusBalance}
+              totalRewardsBalance={totalRewardsBalance}
+            />
+            <StakingTVLCard tvl={data.total} />
+          </Stack>
+        </VStack>
+      </HStack>
     </PageLayout>
   )
 }
@@ -115,7 +123,13 @@ const Auth: PageComponent = () => {
 }
 
 const MainStakingPage: PageComponent = (props) => {
-  return <PageLayout {...props} />
+  return (
+    <PageLayout
+      pages={props.pages}
+      title={props.title}
+      maxW={{ base: "2xl", lg: "4xl", xl: "6xl" }}
+    />
+  )
 }
 
 StakingProviderDetails.route = {
