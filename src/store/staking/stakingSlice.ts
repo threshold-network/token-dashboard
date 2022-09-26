@@ -184,7 +184,11 @@ export const {
   setMinStake,
 } = stakingSlice.actions
 
-startAppListening({
-  actionCreator: requestStakeByStakingProvider,
-  effect: fetchStakeByStakingProviderEffect,
-})
+export const registerStakingListeners = () => {
+  startAppListening({
+    actionCreator: requestStakeByStakingProvider,
+    effect: fetchStakeByStakingProviderEffect,
+  })
+}
+
+registerStakingListeners()
