@@ -1,20 +1,23 @@
 import { FC } from "react"
-import InfoBox from "../../../../components/InfoBox"
 import { IoAlertCircle, MdCheckCircle } from "react-icons/all"
-import { formatPercentage } from "../../../../utils/percentage"
 import {
-  Card,
   BodyMd,
-  H5,
-  LabelSm,
   Box,
-  Grid,
-  HStack,
-  Stack,
-  Image,
   BoxLabel,
+  Card,
+  Grid,
+  H5,
+  HStack,
+  Icon,
+  Image,
+  LabelSm,
+  Stack,
+  useColorModeValue,
+  List,
+  ListItem,
 } from "@threshold-network/components"
-import { Icon, useColorMode } from "@chakra-ui/react"
+import InfoBox from "../../../../components/InfoBox"
+import { formatPercentage } from "../../../../utils/percentage"
 
 interface Props {
   preTitle: string
@@ -37,9 +40,10 @@ const ApplicationDetailsCard: FC<Props> = ({
   aprPercentage,
   slashingPercentage,
 }) => {
-  const { colorMode } = useColorMode()
+  const infoBoxBg = useColorModeValue("gray.50", "gray.900")
+
   return (
-    <Card boxShadow="none">
+    <Card boxShadow="none" as="section">
       <LabelSm mb={6}>{preTitle}</LabelSm>
       <Grid
         gridAutoColumns="minmax(0, 3fr)"
@@ -56,7 +60,7 @@ const ApplicationDetailsCard: FC<Props> = ({
         <Stack gridArea="providers" h="fit-content" spacing={6}>
           <H5>{title}</H5>
           <BodyMd>{description}</BodyMd>
-          <InfoBox bg={colorMode === "light" ? "gray.50" : "gray.900"}>
+          <InfoBox bg={infoBoxBg}>
             <Image m="auto" maxH="180px" maxW="360px" w="100%" src={imgSrc} />
           </InfoBox>
         </Stack>
@@ -83,16 +87,16 @@ const ApplicationDetailsCard: FC<Props> = ({
               {`${formatPercentage(slashingPercentage, 0, true)}`}
             </BoxLabel>
           </HStack>
-          <Stack mb={6}>
+          <List mb={6} as={Stack} spacing={2}>
             {rewardSteps.map((step) => {
               return (
-                <HStack key={step}>
+                <ListItem key={step} as={HStack} spacing={2}>
                   <Icon boxSize="24px" as={MdCheckCircle} color="green.500" />
                   <BodyMd>{step}</BodyMd>
-                </HStack>
+                </ListItem>
               )
             })}
-          </Stack>
+          </List>
         </Box>
       </Grid>
     </Card>

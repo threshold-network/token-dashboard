@@ -24,6 +24,7 @@ const gridTemplate = featureFlags.MULTI_APP_STAKING
             "t-stakes          legacy-stakes"
             "new-t-stakes      legacy-stakes"
             "new-t-stakes      authorizing-apps"
+            "new-t-stakes      authorizing-apps"
             "staking-actions   authorizing-apps" 
             "addresses         authorizing-apps"
           `,

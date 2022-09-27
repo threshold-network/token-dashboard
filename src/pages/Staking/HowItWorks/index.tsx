@@ -3,7 +3,7 @@ import {
   Box,
   FilterTabs,
   FilterTab,
-  useColorMode,
+  useColorModeValue,
 } from "@threshold-network/components"
 import StakingOverview from "./StakingOverview"
 import StakingApplications from "./StakingApplications"
@@ -20,10 +20,14 @@ import {
 } from "react-router-dom"
 import { featureFlags } from "../../../constants"
 
-const HowItWorksPage: PageComponent = (props) => {
-  const { colorMode } = useColorMode()
+const HowItWorksPage: PageComponent = () => {
   const { pathname } = useLocation()
   const navigate = useNavigate()
+
+  const howItWorksIllustration = useColorModeValue(
+    stakingHowItWorksIllustrationLight,
+    stakingHowItWorksIllustrationDark
+  )
 
   useEffect(() => {
     if (pathname === "/staking/how-it-works") {
@@ -47,11 +51,7 @@ const HowItWorksPage: PageComponent = (props) => {
   return (
     <Box>
       <AnnouncementBanner
-        imgSrc={
-          colorMode === "light"
-            ? stakingHowItWorksIllustrationLight
-            : stakingHowItWorksIllustrationDark
-        }
+        imgSrc={howItWorksIllustration}
         title="Find more information about staking below, then go to the staking page."
         href="/staking"
         buttonText="Start Staking"

@@ -1,4 +1,3 @@
-import { FC } from "react"
 import {
   BodyMd,
   BodyXs,
@@ -9,7 +8,6 @@ import {
   HStack,
   Image,
   Stack,
-  useColorMode,
   VStack,
 } from "@threshold-network/components"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
@@ -31,20 +29,34 @@ import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
 import ExternalLink from "../../../../components/ExternalLink"
+import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 
-const CustomList: FC<{
-  items: { imgSrc: any; content: string | JSX.Element }[]
-}> = ({ items }) => {
-  return (
-    <Stack spacing={4}>
-      {items.map(({ imgSrc, content }, i) => (
-        <HStack spacing={4} key={i}>
-          <Image h="32px" w="32px" src={imgSrc} />
-          {typeof content === "string" ? <BodyMd>{content}</BodyMd> : content}
-        </HStack>
-      ))}
-    </Stack>
-  )
+const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
+const randomBeaconNodeSteps = [
+  "Run a Random Beacon node",
+  "Authorize a portion of your stake to Random Beacon",
+  "Have a staked balance",
+]
+const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
+  star: { light: listIconStarLight, dark: listIconStarDark },
+  stock: { light: listIconStockLight, dark: listIconStockDark },
+  arrows: { light: listIconArrowsLight, dark: listIconArrowsDark },
+  stakingApps: {
+    light: stakingApplicationsIllustrationLight,
+    dark: stakingApplicationsIllustrationDark,
+  },
+  tbtc: {
+    light: tbtcAppIllustrationLight,
+    dark: tbtcAppIllustrationDark,
+  },
+  pre: {
+    light: preAppIllustrationLight,
+    dark: preAppIllustrationDark,
+  },
+  randomBeacon: {
+    light: randomBeaconAppIllustrationLight,
+    dark: randomBeaconAppIllustrationDark,
+  },
 }
 
 const StakingApplications: PageComponent = () => {
@@ -65,56 +77,49 @@ const StakingApplications: PageComponent = () => {
             Authorization allows you to authorize a portion or all of your stake
             to be used by Threshold apps.
           </BodyMd>
-
-          <CustomList
-            items={[
-              {
-                content: "Earn rewards by authorizing apps.",
-                imgSrc:
-                  colorMode === "dark" ? listIconStarDark : listIconStarLight,
-              },
-              {
-                content:
-                  "Authorize 100% of your stake for all apps for the most rewards opportunity.",
-                imgSrc:
-                  colorMode === "dark" ? listIconStockDark : listIconStockLight,
-              },
-              {
-                content: (
+          <List>
+            <ListItem>
+              <HStack spacing={4}>
+                <Image h="32px" w="32px" src={iconMap.star[colorMode]} />
+                <BodyMd>Earn rewards by authorizing apps.</BodyMd>
+              </HStack>
+            </ListItem>
+          </List>
+          <List>
+            <ListItem>
+              <HStack spacing={4}>
+                <Image h="32px" w="32px" src={iconMap.stock[colorMode]} />
+                <BodyMd>
+                  Authorize 100% of your stake for all apps for the most rewards
+                  opportunity.
+                </BodyMd>
+              </HStack>
+            </ListItem>
+          </List>
+          <List>
+            <ListItem>
+              <HStack spacing={4}>
+                <Image h="32px" w="32px" src={iconMap.arrows[colorMode]} />
+                <BodyMd>
                   <Stack>
                     <BodyMd>Change your authorized amount at any time. </BodyMd>
                     <BodyXs>
                       There is a deauthorization cooldown period of 14 days.
                     </BodyXs>
                   </Stack>
-                ),
-                imgSrc:
-                  colorMode === "dark"
-                    ? listIconArrowsDark
-                    : listIconArrowsLight,
-              },
-            ]}
-          />
+                </BodyMd>
+              </HStack>
+            </ListItem>
+          </List>
         </Stack>
-        <Image
-          maxW="528px"
-          src={
-            colorMode === "dark"
-              ? stakingApplicationsIllustrationDark
-              : stakingApplicationsIllustrationLight
-          }
-        />
+        <Image maxW="528px" src={iconMap.stakingApps[colorMode]} />
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
           preTitle="TBTC APP"
           title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
           description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
-          imgSrc={
-            colorMode === "dark"
-              ? tbtcAppIllustrationDark
-              : tbtcAppIllustrationLight
-          }
+          imgSrc={iconMap.tbtc[colorMode]}
           ctaButtons={
             <VStack mb={6}>
               <Button
@@ -146,11 +151,7 @@ const StakingApplications: PageComponent = () => {
           preTitle="Random Beacon APP"
           title="Random Beacon is a threshold relay that can generate verifiable randomness."
           description="The Random Beacon application provides a trusted source of randomness for the process of trustless group election in the Threshold Network."
-          imgSrc={
-            colorMode === "dark"
-              ? randomBeaconAppIllustrationDark
-              : randomBeaconAppIllustrationLight
-          }
+          imgSrc={iconMap.randomBeacon[colorMode]}
           ctaButtons={
             <VStack mb={6}>
               <Button
@@ -171,11 +172,7 @@ const StakingApplications: PageComponent = () => {
               />
             </VStack>
           }
-          rewardSteps={[
-            "Run a Random Beacon node",
-            "Authorize a portion of your stake to Random Beacon",
-            "Have a staked balance",
-          ]}
+          rewardSteps={randomBeaconNodeSteps}
           aprPercentage={10}
           slashingPercentage={1}
         />
@@ -183,11 +180,7 @@ const StakingApplications: PageComponent = () => {
           preTitle="PRE APP"
           title="Proxy Re-Encryption, or PRE, is cryptographic middleware for developing privacy-preserving applications."
           description="PRE is a scalable end-to-end encryption protocol that allows a proxy entity to transform (or re-encrypt) encrypted data from one encryption key to another, without revealing the plaintext data. The nodes on the Threshold Network act as these proxy entities and use threshold cryptography to securely and cooperatively re-encrypt data for recipients based on access conditions defined by the data owner. "
-          imgSrc={
-            colorMode === "dark"
-              ? preAppIllustrationDark
-              : preAppIllustrationLight
-          }
+          imgSrc={iconMap.pre[colorMode]}
           ctaButtons={
             <Button
               as={ExternalLink}
@@ -199,7 +192,7 @@ const StakingApplications: PageComponent = () => {
               text="PRE Node Docs"
             />
           }
-          rewardSteps={["Run a PRE node", "Have a staked balance"]}
+          rewardSteps={preNodeSteps}
           aprPercentage={10}
           slashingPercentage={1}
         />
