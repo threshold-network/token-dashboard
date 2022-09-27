@@ -21,6 +21,7 @@ import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
+import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -47,6 +48,7 @@ const StakingPage: PageComponent = (props) => {
         spacing={5}
       >
         <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
+          <OperatorAddressMappingCard />
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />
