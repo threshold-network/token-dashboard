@@ -36,7 +36,7 @@ const OperatorAddressMappingCard = () => {
         alignItems={"center"}
         mt={5}
       >
-        <AlertIcon alignSelf="auto" />
+        <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
         <BodyXs>
           {isOneOfTheAppsNotMapped
             ? "One application from the tBTC + Random Beacon Rewards Bundle Suite requires the Operator Address mapped."
