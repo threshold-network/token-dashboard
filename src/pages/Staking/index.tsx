@@ -43,7 +43,7 @@ const StakingPage: PageComponent = (props) => {
   const hasStakes = stakes.length > 0
 
   const { owner, authorizer, beneficiary } = useRolesOf()
-  const { operatorMappedRandomBeacon, operatorMappedTbtc } =
+  const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
     useOperatorMappedtoStakingProviderHelpers()
 
   const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
@@ -56,13 +56,16 @@ const StakingPage: PageComponent = (props) => {
       !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
       !isEmptyOrZeroAddress(operatorMappedTbtc)
 
-    return isStakingProviderUsed && !isOperatorMappedInAllApps
+    return (
+      isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
+    )
   }, [
     owner,
     authorizer,
     beneficiary,
     operatorMappedRandomBeacon,
     operatorMappedTbtc,
+    isInitialFetchDone,
     isEmptyOrZeroAddress,
   ])
 
