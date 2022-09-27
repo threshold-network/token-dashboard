@@ -20,6 +20,7 @@ import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 import StakeDetailsPage from "./StakeDetailsPage"
+import NewStakeCard from "./NewStakeCard"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -40,29 +41,29 @@ const StakingPage: PageComponent = (props) => {
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
       <HStack
-        alignItems={"flexStart"}
+        alignItems={{ base: "flex-end", lg: "flex-start" }}
         w={"100%"}
-        flexDirection={{ base: "column", lg: "row", xl: "row" }}
+        flexDirection={{ base: "column", lg: "row" }}
+        spacing={5}
       >
-        <VStack w={"100%"}>
+        <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />
             ))
           ) : (
-            <StakedPortfolioCard />
+            <NewStakeCard />
           )}
         </VStack>
 
-        <VStack w={"100%"}>
-          {hasStakes && <StakedPortfolioCard />}
-          <Stack spacing={4} w={"100%"}>
-            <RewardsCard
-              totalBonusBalance={totalBonusBalance}
-              totalRewardsBalance={totalRewardsBalance}
-            />
-            <StakingTVLCard tvl={data.total} pb={"3rem"} />
-          </Stack>
+        <VStack w={"100%"} spacing={5}>
+          <RewardsCard
+            totalBonusBalance={totalBonusBalance}
+            totalRewardsBalance={totalRewardsBalance}
+          />
+          <StakedPortfolioCard />
+          <StakingTVLCard tvl={data.total} pb={"3rem"} />
+          {hasStakes && <NewStakeCard />}
         </VStack>
       </HStack>
     </PageLayout>
