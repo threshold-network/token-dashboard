@@ -57,7 +57,14 @@ const StakingPage: PageComponent = (props) => {
       !isEmptyOrZeroAddress(operatorMappedTbtc)
 
     return isStakingProviderUsed && !isOperatorMappedInAllApps
-  }, [owner, authorizer, beneficiary, isEmptyOrZeroAddress])
+  }, [
+    owner,
+    authorizer,
+    beneficiary,
+    operatorMappedRandomBeacon,
+    operatorMappedTbtc,
+    isEmptyOrZeroAddress,
+  ])
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
