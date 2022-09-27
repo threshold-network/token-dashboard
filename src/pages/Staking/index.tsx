@@ -22,6 +22,9 @@ import { stakingApplicationsSlice } from "../../store/staking-applications/slice
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
+import { useRolesOf } from "../../hooks/useRolesOf"
+import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -39,6 +42,23 @@ const StakingPage: PageComponent = (props) => {
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
   const hasStakes = stakes.length > 0
 
+  const { owner, authorizer, beneficiary } = useRolesOf()
+  const { operatorMappedRandomBeacon, operatorMappedTbtc } =
+    useOperatorMappedtoStakingProviderHelpers()
+
+  const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
+    const isStakingProviderUsed =
+      !isEmptyOrZeroAddress(owner) ||
+      !isEmptyOrZeroAddress(authorizer) ||
+      !isEmptyOrZeroAddress(beneficiary)
+
+    const isOperatorMappedInAllApps =
+      !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
+      !isEmptyOrZeroAddress(operatorMappedTbtc)
+
+    return isStakingProviderUsed && !isOperatorMappedInAllApps
+  }, [owner, authorizer, beneficiary, isEmptyOrZeroAddress])
+
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
       <HStack
@@ -48,7 +68,9 @@ const StakingPage: PageComponent = (props) => {
         spacing={5}
       >
         <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
-          <OperatorAddressMappingCard />
+          {shouldDisplayOperatorAddressMappingCard && (
+            <OperatorAddressMappingCard />
+          )}
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />
