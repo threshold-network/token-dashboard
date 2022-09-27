@@ -253,7 +253,7 @@ export const shouldDisplayMapOperatorToStakingProviderModal = (
   previousState: RootState
 ) => {
   return (
-    !!previousState.connectedAccount.address &&
+    !!currentState.connectedAccount.address &&
     currentState.modalQueue.isSuccessfullLoginModalClosed &&
     (currentState.applications.randomBeacon.mappedOperator
       .isInitialFetchDone as boolean) &&
