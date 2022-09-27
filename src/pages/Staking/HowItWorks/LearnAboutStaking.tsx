@@ -4,7 +4,7 @@ import LearnAboutStakingIllustration from "../../../static/images/LearnAboutStak
 import ViewInBlockExplorer from "../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 
-export const LearnAboutStakingHero: FC<
+export const LearnAboutStaking: FC<
   ComponentProps<typeof Card> & { tStakingContractAddress: string }
 > = ({ tStakingContractAddress }) => {
   return (
