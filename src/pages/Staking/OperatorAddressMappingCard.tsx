@@ -27,7 +27,7 @@ const OperatorAddressMappingCard = () => {
     <Card borderColor={isOneOfTheAppsNotMapped ? "red.500" : "gray.100"}>
       <HStack justifyContent={"space-between"}>
         <LabelSm>Operator Address Mapping</LabelSm>
-        <Badge variant={"solid"} size={"sm"}>
+        <Badge variant={"solid"} size={"sm"} backgroundColor={"gray.800"}>
           Node operators only
         </Badge>
       </HStack>
@@ -35,6 +35,7 @@ const OperatorAddressMappingCard = () => {
         status={isOneOfTheAppsNotMapped ? "error" : "warning"}
         alignItems={"center"}
         mt={5}
+        p={"8px 10px"}
       >
         <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
         <BodyXs>
