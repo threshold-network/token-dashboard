@@ -5,7 +5,6 @@ import {
   Box,
   BoxLabel,
   Card,
-  Grid,
   H5,
   HStack,
   Icon,
@@ -18,6 +17,7 @@ import {
 } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 import { formatPercentage } from "../../../../utils/percentage"
+import { SimpleGrid } from "@chakra-ui/react"
 
 interface Props {
   preTitle: string
@@ -45,27 +45,15 @@ const ApplicationDetailsCard: FC<Props> = ({
   return (
     <Card boxShadow="none" as="section">
       <LabelSm mb={6}>{preTitle}</LabelSm>
-      <Grid
-        gridAutoColumns="minmax(0, 3fr)"
-        gridAutoFlow="column"
-        gridTemplate={{
-          base: `
-            "providers"
-            "pre-providers"
-          `,
-          xl: `"providers   providers   pre-providers"`,
-        }}
-        gridGap="8"
-      >
-        <Stack gridArea="providers" h="fit-content" spacing={6}>
+      <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={10}>
+        <Stack spacing={6}>
           <H5>{title}</H5>
           <BodyMd>{description}</BodyMd>
           <InfoBox bg={infoBoxBg}>
             <Image m="auto" maxH="180px" maxW="360px" w="100%" src={imgSrc} />
           </InfoBox>
         </Stack>
-
-        <Box gridArea="pre-providers" h="fit-content" w="100%">
+        <Box>
           {ctaButtons}
           <LabelSm mb={6}>How to earn rewards</LabelSm>
           <HStack mb={6}>
@@ -98,7 +86,7 @@ const ApplicationDetailsCard: FC<Props> = ({
             })}
           </List>
         </Box>
-      </Grid>
+      </SimpleGrid>
     </Card>
   )
 }
