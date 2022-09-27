@@ -5,13 +5,12 @@ import {
   Button,
   Card,
   Divider,
-  Link,
   H5,
   HStack,
   Image,
   Stack,
-  VStack,
   useColorMode,
+  VStack,
 } from "@threshold-network/components"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
 import tbtcAppIllustrationLight from "../../../../static/images/tbtcAppIllustrationLight.png"
@@ -31,6 +30,7 @@ import stakingApplicationsIllustrationDark from "../../../../static/images/Staki
 import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
+import ExternalLink from "../../../../components/ExternalLink"
 
 const CustomList: FC<{
   items: { imgSrc: any; content: string | JSX.Element }[]
@@ -117,14 +117,21 @@ const StakingApplications: PageComponent = () => {
           }
           ctaButtons={
             <VStack mb={6}>
-              <Link href="/somewhere" width="full">
-                <Button isFullWidth>Authorize TBTC</Button>
-              </Link>
-              <Link href="/somewhere" width="full">
-                <Button isFullWidth variant="outline">
-                  TBTC Node Docs
-                </Button>
-              </Link>
+              <Button
+                as={ExternalLink}
+                textDecoration="none"
+                href="/somewhere"
+                width="full"
+                text="Authorize TBTC"
+              />
+              <Button
+                as={ExternalLink}
+                textDecoration="none"
+                href="/somewhere"
+                width="full"
+                variant="outline"
+                text="TBTC Node Docs"
+              />
             </VStack>
           }
           rewardSteps={[
@@ -146,14 +153,22 @@ const StakingApplications: PageComponent = () => {
           }
           ctaButtons={
             <VStack mb={6}>
-              <Link href="/somewhere" width="full">
-                <Button isFullWidth>Authorize Random Beacon</Button>
-              </Link>
-              <Link href="/somewhere" width="full">
-                <Button isFullWidth variant="outline">
-                  Random Beacon Node Docs
-                </Button>
-              </Link>
+              <Button
+                as={ExternalLink}
+                textDecoration="none"
+                href="/somewhere"
+                width="full"
+                text="Authorize Random Beacon"
+              />
+
+              <Button
+                as={ExternalLink}
+                textDecoration="none"
+                href="/somewhere"
+                width="full"
+                variant="outline"
+                text="Random Beacon Node Docs"
+              />
             </VStack>
           }
           rewardSteps={[
@@ -174,17 +189,15 @@ const StakingApplications: PageComponent = () => {
               : preAppIllustrationLight
           }
           ctaButtons={
-            <Link
+            <Button
+              as={ExternalLink}
               href={ExternalHref.preNodeSetup}
-              target="_blank"
-              rel="noopener noreferrer"
+              textDecoration="none"
               mb={6}
               width="full"
-            >
-              <Button isFullWidth variant="outline" mb={6}>
-                PRE Node Docs
-              </Button>
-            </Link>
+              variant="outline"
+              text="PRE Node Docs"
+            />
           }
           rewardSteps={["Run a PRE node", "Have a staked balance"]}
           aprPercentage={10}
