@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { SimpleGrid, Stack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
@@ -15,15 +15,11 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import {
-  FilterTabs,
-  FilterTab,
-  H1,
-  BodyLg,
-} from "@threshold-network/components"
+import { FilterTabs, FilterTab, BodyLg } from "@threshold-network/components"
 import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
+import StakeDetailsPage from "./StakeDetailsPage"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -70,6 +66,15 @@ const StakingProviderDetails: PageComponent = (props) => {
   const { pathname } = useLocation()
   const lastElementOfTheUrl = pathname.split("/").at(-1)
 
+  const selectedTabId = useMemo(() => {
+    if (pathname.includes("details")) {
+      return "1"
+    }
+    if (pathname.includes("authorize")) {
+      return "2"
+    }
+  }, [pathname])
+
   return (
     <>
       <BodyLg mb={5}>
@@ -80,7 +85,7 @@ const StakingProviderDetails: PageComponent = (props) => {
           {lastElementOfTheUrl === "authorize" ? "applications" : "details"}
         </Link>
       </BodyLg>
-      <FilterTabs selectedTabId="2" mb="5" size="lg">
+      <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
         <FilterTab
           tabId={"1"}
           as={RouterLink}
@@ -102,9 +107,7 @@ const StakingProviderDetails: PageComponent = (props) => {
 }
 
 const Details: PageComponent = () => {
-  const { stakingProvider } = useParams()
-
-  return <H1>Staking provider {stakingProvider} overview</H1>
+  return <StakeDetailsPage />
 }
 
 const Auth: PageComponent = () => {

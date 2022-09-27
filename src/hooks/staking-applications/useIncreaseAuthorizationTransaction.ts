@@ -4,7 +4,7 @@ import { StakingAppName } from "../../store/staking-applications"
 import { useSendTransactionFromFn } from "../../web3/hooks"
 import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
 
-export const useIncreaseAuthorizationTransacion = (
+export const useIncreaseAuthorizationTransaction = (
   appName: StakingAppName,
   onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
