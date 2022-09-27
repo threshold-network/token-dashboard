@@ -19,6 +19,7 @@ import AnkrLogo from "../../../../static/images/stakingProviders/AnkrLogo.png"
 import P2PValidatorLogo from "../../../../static/images/stakingProviders/P2PValidatorLogo.png"
 import InfStonesLogo from "../../../../static/images/stakingProviders/InfStonesLogo.png"
 import { PageComponent } from "../../../../types"
+import { featureFlags } from "../../../../constants"
 
 type ProviderItem = {
   name: string
@@ -141,7 +142,7 @@ const StakingProviders: PageComponent = () => {
 StakingProviders.route = {
   path: "providers",
   index: false,
-  isPageEnabled: true,
+  isPageEnabled: featureFlags.MULTI_APP_STAKING,
 }
 
 export default StakingProviders

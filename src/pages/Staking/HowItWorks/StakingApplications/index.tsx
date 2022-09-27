@@ -30,6 +30,7 @@ import stakingApplicationsIllustrationLight from "../../../../static/images/Stak
 import stakingApplicationsIllustrationDark from "../../../../static/images/StakingApplicationsIllustrationDark.png"
 import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
+import { featureFlags } from "../../../../constants"
 
 const CustomList: FC<{
   items: { imgSrc: any; content: string | JSX.Element }[]
@@ -197,7 +198,7 @@ const StakingApplications: PageComponent = () => {
 StakingApplications.route = {
   path: "applications",
   index: false,
-  isPageEnabled: true,
+  isPageEnabled: featureFlags.MULTI_APP_STAKING,
 }
 
 export default StakingApplications
