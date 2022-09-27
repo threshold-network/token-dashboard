@@ -11,6 +11,7 @@ import {
   BoxProps,
   useColorMode,
 } from "@threshold-network/components"
+import { useMultiStyleConfig } from "@chakra-ui/react"
 
 interface AnnouncementBannerProps {
   imgSrc: any
@@ -34,56 +35,26 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
 }) => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
-  const { colorMode } = useColorMode()
-  const darkMode = colorMode === "dark"
-
-  const bg = useMemo(() => {
-    if (variant === "secondary") {
-      return darkMode ? "gray.800" : "brand.50"
-    }
-    return "white"
-  }, [colorMode, variant])
+  const styles = useMultiStyleConfig("AnnouncementBanner", {
+    isOpen,
+    size,
+    variant,
+    ...props,
+  })
 
   return (
-    <Card
-      w="100%"
-      display={isOpen ? "block" : "none"}
-      position="relative"
-      px="16"
-      mb={4}
-      bg={bg}
-      {...props}
-    >
+    <Card sx={styles.container} {...props}>
       {!hideCloseBtn && (
-        <CloseButton
-          position="absolute"
-          right="14px"
-          top="12px"
-          onClick={onClose}
-        />
+        <CloseButton sx={styles.closeButton} onClick={onClose} />
       )}
       <Stack
-        alignItems="center"
-        spacing={{ base: "8", xl: "16" }}
         direction={{ base: "column", xl: "row" }}
-        bg="inherit"
+        spacing={{ base: "8", xl: "16" }}
+        sx={styles.subContainer}
       >
         <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
-        <H4
-          textAlign={{ base: "center", xl: "unset" }}
-          maxW="460px"
-          color={darkMode ? "white" : "gray.700"}
-        >
-          {title}
-        </H4>
-        <Button
-          as={RouterLink}
-          to={href}
-          w={{ base: "100%", xl: "auto" }}
-          mt={{ base: 12, xl: "auto" }}
-          marginInlineStart={{ base: "8", xl: "auto !important" }}
-          px={{ base: 4, md: 12 }}
-        >
+        <H4 sx={styles.title}>{title}</H4>
+        <Button as={RouterLink} to={href} sx={styles.ctaButton}>
           {buttonText}
         </Button>
       </Stack>
