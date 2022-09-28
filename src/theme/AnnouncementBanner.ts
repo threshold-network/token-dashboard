@@ -53,14 +53,7 @@ const variants = {
 }
 
 export const AnnouncementBanner = {
-  parts: [
-    "container",
-    "closeButton",
-    "image",
-    "subContainer",
-    "title",
-    "ctaButton",
-  ],
+  parts: parts.keys,
   baseStyle,
   variants,
 }
