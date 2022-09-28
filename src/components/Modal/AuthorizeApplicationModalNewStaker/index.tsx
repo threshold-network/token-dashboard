@@ -77,12 +77,6 @@ const AuthorizeApplicationModalNewStaker: FC<
       vals.isTbtcChecked ? tbtcAppInfo : null,
     ].filter(Boolean)
 
-    console.log("opening the authorizatino modal with ", {
-      stakingProvider: stakingProvider,
-      totalInTStake: stakeAmount,
-      applications,
-    })
-
     openModal(ModalType.AuthorizeStakingApps, {
       stakingProvider: stakingProvider,
       totalInTStake: stakeAmount,
