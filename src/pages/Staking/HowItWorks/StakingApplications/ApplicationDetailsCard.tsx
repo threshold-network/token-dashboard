@@ -17,7 +17,6 @@ import {
   SimpleGrid,
 } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
-import { formatPercentage } from "../../../../utils/percentage"
 
 interface Props {
   preTitle: string
@@ -26,8 +25,6 @@ interface Props {
   imgSrc: any
   ctaButtons: JSX.Element
   rewardSteps: string[]
-  aprPercentage: number
-  slashingPercentage: number
 }
 
 const ApplicationDetailsCard: FC<Props> = ({
@@ -37,8 +34,6 @@ const ApplicationDetailsCard: FC<Props> = ({
   imgSrc,
   ctaButtons,
   rewardSteps,
-  aprPercentage,
-  slashingPercentage,
 }) => {
   const infoBoxBg = useColorModeValue("gray.50", "gray.900")
 
@@ -56,25 +51,6 @@ const ApplicationDetailsCard: FC<Props> = ({
         <Box>
           {ctaButtons}
           <LabelSm mb={6}>How to earn rewards</LabelSm>
-          <HStack mb={6}>
-            <BoxLabel
-              icon={<Icon as={IoAlertCircle} />}
-              size="sm"
-              status="primary"
-              variant="solid"
-            >
-              APR &#183; {formatPercentage(aprPercentage, 0, true)}
-            </BoxLabel>
-            <BoxLabel
-              icon={<Icon as={IoAlertCircle} />}
-              size="sm"
-              status="primary"
-              variant="solid"
-            >
-              {"Slashing "} &#183;{" "}
-              {`${formatPercentage(slashingPercentage, 0, true)}`}
-            </BoxLabel>
-          </HStack>
           <List mb={6} as={Stack} spacing={2}>
             {rewardSteps.map((step) => {
               return (

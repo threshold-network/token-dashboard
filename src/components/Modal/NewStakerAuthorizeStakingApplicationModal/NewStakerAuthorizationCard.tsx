@@ -98,8 +98,6 @@ export const NewStakerAuthorizationCard: FC<
           gridArea="app-info"
           label={label}
           percentageAuthorized={percentToBeAuthorized}
-          aprPercentage={10}
-          slashingPercentage={1}
           isAuthorizationRequired={true}
         />
         <GridItem gridArea="token-amount-form" mt={5}>
