@@ -1,11 +1,19 @@
 import { FC, useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   BodyLg,
+  BodyMd,
+  Box,
+  BoxLabel,
   Button,
   Card,
   H5,
-  LabelMd,
+  HStack,
+  LabelSm,
+  Link,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -13,10 +21,6 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Link,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
@@ -24,6 +28,7 @@ import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeTitle } from "../../../utils/getStakeTitle"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import shortenAddress from "../../../utils/shortenAddress"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
@@ -55,6 +60,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
               <Stack>
                 {stakes.map((stake, i) => (
                   <Card
+                    p={4}
                     key={stake.stakingProvider}
                     boxShadow="none"
                     borderColor={
@@ -67,10 +73,18 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                         : undefined
                     }
                   >
-                    <Radio value={stake.stakingProvider} size="lg">
-                      <LabelMd ml={4}>
-                        {getStakeTitle(stake.stakeType, i + 1)}
-                      </LabelMd>
+                    <Radio value={stake.stakingProvider} size="lg" w="100%">
+                      <Box ml={4} w="100">
+                        <LabelSm mb={2}>
+                          {getStakeTitle(stake.stakeType, i + 1)}
+                        </LabelSm>
+                        <HStack justifyContent="space-between" w="100">
+                          <BoxLabel>Provider Address</BoxLabel>
+                          <BodyMd color="brand.500">
+                            {shortenAddress(stake.stakingProvider)}
+                          </BodyMd>
+                        </HStack>
+                      </Box>
                     </Radio>
                   </Card>
                 ))}
