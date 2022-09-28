@@ -64,7 +64,7 @@ export const formikWrapper = withFormik<Props, FormValues>({
   displayName: "AuthorizationForm",
 })
 
-const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
+const AuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
   tbtcInputConstraints,
   randomBeaconInputConstraints,
   handleSubmit,
@@ -126,4 +126,4 @@ const AppAuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
   )
 }
 
-export default formikWrapper(AppAuthorizationFormNewStaker)
+export default formikWrapper(AuthorizationFormNewStaker)
