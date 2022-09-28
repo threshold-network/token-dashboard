@@ -14,10 +14,10 @@ import {
   useColorModeValue,
   List,
   ListItem,
+  SimpleGrid,
 } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 import { formatPercentage } from "../../../../utils/percentage"
-import { SimpleGrid } from "@chakra-ui/react"
 
 interface Props {
   preTitle: string

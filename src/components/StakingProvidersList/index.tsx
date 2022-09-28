@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { List, ListProps } from "@chakra-ui/react"
+import { List, ListProps } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import DetailedLinkListItem from "../DetailedLinkListItem"
 import StakedLogo from "../../static/images/stakingProviders/StakedLogo.png"
