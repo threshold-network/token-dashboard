@@ -19,6 +19,7 @@ import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApp
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
+import { calculatePercenteage } from "../../../utils/percentage"
 
 export interface AuthorizationCardProps extends BoxProps {
   max: string | number
@@ -39,27 +40,19 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
   const [, { value: inputValue }, { setValue }] = useField(inputId)
   const [, { value: checkboxValue }] = useField(checkBoxId)
 
-  const percentToBeAuthorized = useMemo(() => {
-    if (inputValue) {
-      if (BigNumber.from(inputValue).gte(BigNumber.from(max))) {
-        return 100
-      }
-      return (Number(formatUnits(inputValue)) / Number(formatUnits(max))) * 100
-    }
-    return 0
-  }, [inputValue])
-
-  const remainingAmount = useMemo(() => {
+  const calculateRemainingAmount = () => {
     if (inputValue) {
       if (BigNumber.from(inputValue).gte(BigNumber.from(max))) {
         return "0"
       }
-      return numeral(formatUnits(BigNumber.from(max).sub(inputValue))).format(
-        "0,0.00"
-      )
+      return formatTokenAmount(BigNumber.from(max).sub(inputValue).toString())
     }
-    return numeral(formatUnits(max)).format("0,0.00")
-  }, [max, inputValue])
+
+    return formatTokenAmount(max)
+  }
+
+  const percentToBeAuthorized = calculatePercenteage(inputValue, max)
+  const remainingAmount = calculateRemainingAmount()
 
   return (
     <Card
