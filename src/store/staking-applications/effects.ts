@@ -1,7 +1,11 @@
 import { AnyAction } from "@reduxjs/toolkit"
 import { stakingApplicationsSlice, StakingAppName } from "./slice"
 import { AppListenerEffectAPI } from "../listener"
-import { selectStakingProviders, setStakes } from "../staking"
+import {
+  selectStakeByStakingProvider,
+  selectStakingProviders,
+  setStakes,
+} from "../staking"
 import { modalSlice, openModal } from "../modal"
 import {
   IApplication,
@@ -209,6 +213,13 @@ export const displayDeauthrizationCompletedModalEffect = (
   listenerApi: AppListenerEffectAPI
 ) => {
   const { stakingProvider, appName, txHash } = action.payload
+
+  const stake = selectStakeByStakingProvider(
+    listenerApi.getOriginalState(),
+    stakingProvider
+  )
+  if (!stake) return
+
   const stakingProviderAppData = selectStakingAppByStakingProvider(
     listenerApi.getOriginalState(),
     appName,
