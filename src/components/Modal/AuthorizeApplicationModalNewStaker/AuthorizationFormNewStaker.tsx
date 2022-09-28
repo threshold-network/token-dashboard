@@ -55,7 +55,7 @@ export const formikWrapper = withFormik<Props, FormValues>({
     )
 
     errors.randomBeaconAmountToAuthorize = validateAmountInRange(
-      values?.tbtcAmountToAuthorize?.toString(),
+      values?.randomBeaconAmountToAuthorize?.toString(),
       props.randomBeaconInputConstraints.max.toString(),
       props.randomBeaconInputConstraints.min.toString()
     )
