@@ -2,6 +2,7 @@ import { FC } from "react"
 
 export type RouteProps = {
   path: string
+  pathOverride?: string
   title?: string
   index: boolean
   pages?: PageComponent[]

@@ -1,22 +1,25 @@
 import { FC } from "react"
 import {
-  Box,
-  Link,
-  Stack,
-  useColorModeValue,
   BodyMd,
   BodySm,
   BoxLabel,
   ChecklistGroup,
   FlowStep,
   FlowStepStatus,
+  Stack,
+  useColorModeValue,
   StackProps,
 } from "@threshold-network/components"
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 import { featureFlags } from "../../constants"
+import InternalLink from "../InternalLink"
+import { Box } from "@chakra-ui/react"
 
-export const StakingDepositSteps: FC = () => {
+const STAKING_PROVIDER_URL = "/staking/how-it-works/providers"
+const APPLICATION_DOCS_URL = "/staking/how-it-works/applications"
+
+export const StakingDepositStepsNonMAS: FC = () => {
   return (
     <ChecklistGroup
       title="Step 1 - Staking Deposit"
@@ -43,34 +46,114 @@ export const StakingDepositSteps: FC = () => {
 }
 
 export const LegacyStakesDepositSteps: FC = () => {
-  return (
-    <ChecklistGroup
-      title="Step 1 - T Staking Contract Authorization"
-      checklistItems={[
-        {
-          itemId: "t_staking_contract_auth__0",
-          itemTitle: (
+  if (featureFlags.MULTI_APP_STAKING) {
+    return (
+      <Stack spacing={6}>
+        <FlowStep
+          status={FlowStepStatus.active}
+          preTitle="Step 1"
+          title="Authorize T staking contract"
+          size="sm"
+          margin="0 !important"
+        >
+          <Stack spacing={0}>
             <BodyMd>
-              Authorize your NuCypher legacy stake{" "}
-              <ExternalLink text="here" href={ExternalHref.nuDapp} withArrow />
+              Authorize NuCypher legacy stakes{" "}
+              <ExternalLink href={ExternalHref.nuDapp} text="here" withArrow />
             </BodyMd>
-          ),
-        },
-        {
-          itemId: "t_staking_contract_auth__1",
-          itemTitle: (
             <BodyMd>
-              Authorize your Keep Network legacy stake{" "}
+              Authorize Keep Network legacy stakes{" "}
               <ExternalLink
+                href={ExternalHref.keepDapp}
                 text="here"
-                href={ExternalHref.keepDappAuthPage}
                 withArrow
               />
             </BodyMd>
-          ),
-        },
-      ]}
-    />
+          </Stack>
+        </FlowStep>
+        <FlowStep
+          status={FlowStepStatus.active}
+          preTitle="Step 2"
+          title="Stake Tokens"
+          size="sm"
+        >
+          <BodyMd>
+            Enter the Provider, Beneficiary, and Authorizer addresses. These
+            will be automatically set to your wallet address. If you want to use
+            a Staking Provider, here is{" "}
+            <InternalLink to={STAKING_PROVIDER_URL} withArrow>
+              a list
+            </InternalLink>
+          </BodyMd>
+        </FlowStep>
+
+        <FlowStep
+          status={FlowStepStatus.active}
+          preTitle="Step 3"
+          title="Authorize Apps"
+          size="sm"
+        >
+          <BodyMd>
+            For each stake, there are three applications available. PRE does not
+            require authorization. To authorize TBTC and Random Beacon, go to
+            the <InternalLink to="/staking">Staking Page</InternalLink> and
+            select “Configure Stake”.
+          </BodyMd>
+        </FlowStep>
+
+        <FlowStep
+          status={FlowStepStatus.active}
+          preTitle="Step 4"
+          title="Set up node"
+          size="sm"
+        >
+          You will need to run a node for applications that you have authorized
+          to earn rewards. If you don’t have one, learn how to do it{" "}
+          <InternalLink to={APPLICATION_DOCS_URL}>here</InternalLink> or contact{" "}
+          <InternalLink to={STAKING_PROVIDER_URL}>
+            a Staking Provider
+          </InternalLink>
+        </FlowStep>
+      </Stack>
+    )
+  }
+
+  return (
+    <Box>
+      <ChecklistGroup
+        mb={8}
+        title="Step 1 - T Staking Contract Authorization"
+        checklistItems={[
+          {
+            itemId: "t_staking_contract_auth__0",
+            itemTitle: (
+              <BodyMd>
+                Authorize your NuCypher legacy stake{" "}
+                <ExternalLink
+                  text="here"
+                  href={ExternalHref.nuDapp}
+                  withArrow
+                />
+              </BodyMd>
+            ),
+          },
+          {
+            itemId: "t_staking_contract_auth__1",
+            itemTitle: (
+              <BodyMd>
+                Authorize your Keep Network legacy stake{" "}
+                <ExternalLink
+                  text="here"
+                  href={ExternalHref.keepDappAuthPage}
+                  withArrow
+                />
+              </BodyMd>
+            ),
+          },
+        ]}
+      />
+      <PreSetupSteps />
+    </Box>
   )
 }
 
@@ -125,59 +208,48 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
   statuses = [],
   ...restProps
 }) => {
-  const STAKING_PROVIDER_URL = "someURL"
-  const PROVIDER_ADDRESS_URL = "someURL"
-  const BENEFICIARY_ADDRESS_URL = "someURL"
-  const AUTHORIZER_ADDRESS_URL = "someURL"
-
   if (featureFlags.MULTI_APP_STAKING) {
     return (
-      <Stack spacing={6} {...restProps}>
-        <BoxLabel>Staking Timeline</BoxLabel>
-        <Box pl="6">
-          <FlowStep
-            size="sm"
-            title="Stake Tokens"
-            preTitle="Step 1"
-            status={statuses[0] ?? FlowStepStatus.active}
-          >
-            Enter the{" "}
-            <Link color="brand.500" href={PROVIDER_ADDRESS_URL}>
-              Provider
-            </Link>
-            ,{" "}
-            <Link color="brand.500" href={BENEFICIARY_ADDRESS_URL}>
-              Beneficiary
-            </Link>
-            , and{" "}
-            <Link color="brand.500" href={AUTHORIZER_ADDRESS_URL}>
-              Authorizer
-            </Link>{" "}
-            addresses. These will be automatically set to your wallet address.
-            If you want to use a Staking Provider, here is{" "}
-            <Link color="brand.500" href={STAKING_PROVIDER_URL}>
-              a list
-            </Link>
-            .
-          </FlowStep>
-          <FlowStep
-            size="sm"
-            title="Authorize Apps"
-            preTitle="Step 2"
-            status={statuses[1] ?? FlowStepStatus.inactive}
-          >
-            You can authorize 100% of your stake for each app. This amount can
-            be changed at any time.
-          </FlowStep>
-          <FlowStep
-            size="sm"
-            title="Set up node"
-            preTitle="Step 3"
-            status={statuses[2] ?? FlowStepStatus.inactive}
-          >
-            Set up and run a node for any of the authorized applications.
-          </FlowStep>
-        </Box>
+      <Stack spacing={6}>
+        <BoxLabel status="secondary">Staking Timeline</BoxLabel>
+        <FlowStep
+          size="sm"
+          title="Stake Tokens"
+          preTitle="Step 1"
+          status={statuses[0] ?? FlowStepStatus.active}
+        >
+          Enter the Provider, Beneficiary, and Authorizer addresses. These will
+          be automatically set to your wallet address. If you want to use a
+          Staking Provider, here is{" "}
+          <InternalLink to={STAKING_PROVIDER_URL} withArrow>
+            a list
+          </InternalLink>
+        </FlowStep>
+        <FlowStep
+          size="sm"
+          title="Authorize Apps"
+          preTitle="Step 2"
+          status={statuses[1] ?? FlowStepStatus.inactive}
+        >
+          For each stake, there are three applications available. PRE does not
+          require authorization. To authorize TBTC and Random Beacon, go to the{" "}
+          <InternalLink to="/staking">Staking page</InternalLink> and select
+          “Configure Stake”.
+        </FlowStep>
+        <FlowStep
+          size="sm"
+          title="Set up node"
+          preTitle="Step 3"
+          status={statuses[2] ?? FlowStepStatus.inactive}
+        >
+          You will need to run a node for applications that you have authorized
+          to earn rewards. If you don’t have one, learn how to do it{" "}
+          <InternalLink to={APPLICATION_DOCS_URL}>here</InternalLink> or contact
+          a{" "}
+          <InternalLink to={STAKING_PROVIDER_URL}>
+            Staking Provider.
+          </InternalLink>
+        </FlowStep>
       </Stack>
     )
   }
@@ -185,7 +257,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
   return (
     <Stack {...restProps}>
       <Box mb={6}>
-        <StakingDepositSteps />
+        <StakingDepositStepsNonMAS />
       </Box>
       <Box>
         <PreSetupSteps />
