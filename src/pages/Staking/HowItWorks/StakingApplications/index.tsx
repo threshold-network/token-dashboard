@@ -37,6 +37,12 @@ const randomBeaconNodeSteps = [
   "Authorize a portion of your stake to Random Beacon",
   "Have a staked balance",
 ]
+const tbtcNodeSteps = [
+  "Run a tBTC node",
+  "Authorize a portion of your stake to tBTC",
+  "Have a staked balance",
+]
+
 const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
   star: { light: listIconStarLight, dark: listIconStarDark },
   stock: { light: listIconStockLight, dark: listIconStockDark },
@@ -139,11 +145,7 @@ const StakingApplications: PageComponent = () => {
               />
             </VStack>
           }
-          rewardSteps={[
-            "Run a tBTC node",
-            "Authorize a portion of your stake to tBTC",
-            "Have a staked balance",
-          ]}
+          rewardSteps={tbtcNodeSteps}
           aprPercentage={10}
           slashingPercentage={1}
         />
