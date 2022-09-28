@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { BigNumber } from "ethers"
 import { featureFlags } from "../../constants"
 import {
@@ -8,7 +8,7 @@ import {
 import { MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
-import { setStakes } from "../staking"
+import { providerStaked, setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
@@ -143,10 +143,14 @@ export const stakingApplicationsSlice = createSlice({
       }>
     ) => {
       const { stakingProvider, toAmount, appName } = action.payload
-      if (state[appName].stakingProviders) {
-        state[appName].stakingProviders.data[stakingProvider].authorizedStake =
-          toAmount
-      }
+
+      const stakingProviderData =
+        state[appName]?.stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      state[appName].stakingProviders.data[stakingProvider].authorizedStake =
+        toAmount
     },
     authorizationDecreaseApproved: (
       state: StakingApplicationsState,
@@ -213,6 +217,29 @@ export const stakingApplicationsSlice = createSlice({
         deauthorizationCreatedAt: undefined,
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      (action: AnyAction) => action.type.match(providerStaked),
+      (state, action: ReturnType<typeof providerStaked>) => {
+        const { stakingProvider } = action.payload
+
+        const defaultAuthData: StakingProviderAppInfo<string> = {
+          authorizedStake: "0",
+          pendingAuthorizationDecrease: "0",
+          remainingAuthorizationDecreaseDelay: "0",
+          isDeauthorizationReqestActive: false,
+          deauthorizationCreatedAt: undefined,
+        }
+
+        state.randomBeacon.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+        state.tbtc.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+      }
+    )
   },
 })
 
