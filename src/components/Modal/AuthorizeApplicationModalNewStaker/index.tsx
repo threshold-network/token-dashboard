@@ -11,7 +11,6 @@ import {
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
-import { StakeData } from "../../../types/staking"
 import withBaseModal from "../withBaseModal"
 import AuthorizationFormNewStaker, {
   FormValues,
@@ -25,9 +24,7 @@ import {
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 
-const AuthorizeApplicationModalNewStaker: FC<
-  BaseModalProps & { stake: StakeData }
-> = () => {
+const AuthorizeApplicationModalNewStaker: FC<BaseModalProps> = () => {
   const { openModal } = useModal()
 
   const { stakeAmount, stakingProvider } = useStakingState()
