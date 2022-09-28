@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useMemo } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Card,
@@ -8,55 +8,53 @@ import {
   Stack,
   useDisclosure,
   Image,
+  BoxProps,
+  useColorMode,
 } from "@threshold-network/components"
+import { useMultiStyleConfig } from "@chakra-ui/react"
 
 interface AnnouncementBannerProps {
   imgSrc: any
   title: string
   buttonText: string
   href: string
+  variant?: "primary" | "secondary"
+  size?: "sm" | "lg"
+  hideCloseBtn?: boolean
 }
 
-const AnnouncementBanner: FC<AnnouncementBannerProps> = ({
+const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
   title,
   imgSrc,
   buttonText,
   href,
+  variant = "primary",
+  size = "sm",
+  hideCloseBtn = false,
+  ...props
 }) => {
   const { isOpen, onClose } = useDisclosure({ defaultIsOpen: true })
 
+  const styles = useMultiStyleConfig("AnnouncementBanner", {
+    isOpen,
+    size,
+    variant,
+    ...props,
+  })
+
   return (
-    <Card
-      w="100%"
-      display={isOpen ? "block" : "none"}
-      position="relative"
-      px="16"
-      mb={4}
-    >
-      <CloseButton
-        position="absolute"
-        right="14px"
-        top="12px"
-        onClick={onClose}
-      />
+    <Card sx={styles.container} {...props}>
+      {!hideCloseBtn && (
+        <CloseButton sx={styles.closeButton} onClick={onClose} />
+      )}
       <Stack
-        alignItems="center"
-        spacing={{ base: "8", xl: "16" }}
         direction={{ base: "column", xl: "row" }}
-        bg="inherit"
+        spacing={{ base: "8", xl: "16" }}
+        sx={styles.subContainer}
       >
-        <Image maxW="146px" src={imgSrc} />
-        <H4 textAlign={{ base: "center", xl: "unset" }} maxW="460px">
-          {title}
-        </H4>
-        <Button
-          as={RouterLink}
-          to={href}
-          w={{ base: "100%", xl: "auto" }}
-          mt={{ base: 12, xl: "auto" }}
-          marginInlineStart={{ base: "8", xl: "auto !important" }}
-          px={{ base: 4, md: 12 }}
-        >
+        <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
+        <H4 sx={styles.title}>{title}</H4>
+        <Button as={RouterLink} to={href} sx={styles.ctaButton}>
           {buttonText}
         </Button>
       </Stack>

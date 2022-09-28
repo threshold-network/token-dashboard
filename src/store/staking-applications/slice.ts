@@ -1,5 +1,5 @@
+import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { AddressZero } from "@ethersproject/constants"
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
@@ -7,7 +7,7 @@ import {
 } from "../../threshold-ts/applications"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
-import { setStakes } from "../staking"
+import { providerStaked, setStakes } from "../staking"
 import {
   getSupportedAppsStakingProvidersData,
   getSupportedAppsEffect,
@@ -203,11 +203,36 @@ export const stakingApplicationsSlice = createSlice({
       }>
     ) => {
       const { stakingProvider, toAmount, appName } = action.payload
-      if (state[appName].stakingProviders) {
-        state[appName].stakingProviders.data[stakingProvider].authorizedStake =
-          toAmount
-      }
+
+      const stakingProviderData =
+        state[appName]?.stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      state[appName].stakingProviders.data[stakingProvider].authorizedStake =
+        toAmount
     },
+  },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      (action: AnyAction) => action.type.match(providerStaked),
+      (state, action: ReturnType<typeof providerStaked>) => {
+        const { stakingProvider } = action.payload
+
+        const defaultAuthData = {
+          authorizedStake: "0",
+          pendingAuthorizationDecrease: "0",
+          remainingAuthorizationDecreaseDelay: "0",
+        }
+
+        state.randomBeacon.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+        state.tbtc.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+      }
+    )
   },
 })
 
