@@ -15,7 +15,7 @@ import {
   LabelMd,
 } from "@threshold-network/components"
 import { useModal } from "../../../hooks/useModal"
-import AuthorizationCardNewStaker from "./AuthorizationCardNewStaker"
+import NewStakerAuthorizationCard from "./NewStakerAuthorizationCard"
 
 export type FormValues = {
   tbtcAmountToAuthorize: string | number
@@ -64,7 +64,7 @@ export const formikWrapper = withFormik<Props, FormValues>({
   displayName: "AuthorizationForm",
 })
 
-const AuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
+const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
   tbtcInputConstraints,
   randomBeaconInputConstraints,
   handleSubmit,
@@ -78,7 +78,7 @@ const AuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
     <Form onSubmit={handleSubmit}>
       <Box bg="brand.50" p={4} borderRadius={6} mb={6}>
         <BodyMd mb={4}>tBTC + Random Beacon Rewards Bundle</BodyMd>
-        <AuthorizationCardNewStaker
+        <NewStakerAuthorizationCard
           min={tbtcInputConstraints.min}
           max={tbtcInputConstraints.max}
           inputId="tbtcAmountToAuthorize"
@@ -86,7 +86,7 @@ const AuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
           label="tBTC"
           mb={6}
         />
-        <AuthorizationCardNewStaker
+        <NewStakerAuthorizationCard
           min={randomBeaconInputConstraints.min}
           max={randomBeaconInputConstraints.max}
           inputId="randomBeaconAmountToAuthorize"
@@ -126,4 +126,4 @@ const AuthorizationFormNewStaker: FC<Props & FormikProps<FormValues>> = ({
   )
 }
 
-export default formikWrapper(AuthorizationFormNewStaker)
+export default formikWrapper(NewStakerAuthorizationForm)

@@ -12,8 +12,6 @@ import {
   Link,
 } from "@threshold-network/components"
 import { Field, FieldProps, useField } from "formik"
-import numeral from "numeral"
-import { formatUnits } from "@ethersproject/units"
 import { BigNumber } from "ethers"
 import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
@@ -21,7 +19,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
 import { calculatePercenteage } from "../../../utils/percentage"
 
-export interface AuthorizationCardProps extends BoxProps {
+export interface NewStakerAuthorizationCardProps extends BoxProps {
   max: string | number
   min: string | number
   inputId: string
@@ -29,14 +27,9 @@ export interface AuthorizationCardProps extends BoxProps {
   label: string
 }
 
-export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
-  max,
-  min,
-  inputId,
-  checkBoxId,
-  label,
-  ...restProps
-}) => {
+export const NewStakerAuthorizationCard: FC<
+  NewStakerAuthorizationCardProps
+> = ({ max, min, inputId, checkBoxId, label, ...restProps }) => {
   const [, { value: inputValue }, { setValue }] = useField(inputId)
   const [, { value: checkboxValue }] = useField(checkBoxId)
 
@@ -139,4 +132,4 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
   )
 }
 
-export default AuthorizationCardNewStaker
+export default NewStakerAuthorizationCard

@@ -57,7 +57,7 @@ const StakingSuccessModal: FC<BaseModalProps & { transactionHash: string }> = ({
   const { openModal } = useModal()
 
   const handleSubmit = () => {
-    openModal(ModalType.AuthorizeStakingApplicationModalNewStaker)
+    openModal(ModalType.NewStakerAuthorizeStakingApplication)
   }
 
   return (

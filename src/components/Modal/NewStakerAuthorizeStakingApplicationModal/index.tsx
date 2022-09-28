@@ -12,9 +12,9 @@ import {
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import AuthorizationFormNewStaker, {
+import NewStakerAuthorizationForm, {
   FormValues,
-} from "./AuthorizationFormNewStaker"
+} from "./NewStakerAuthorizationForm"
 import { useStakingState } from "../../../hooks/useStakingState"
 import TokenBalance from "../../TokenBalance"
 import {
@@ -24,7 +24,7 @@ import {
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 
-const AuthorizeApplicationModalNewStaker: FC<BaseModalProps> = () => {
+const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
   const { openModal } = useModal()
 
   const { stakeAmount, stakingProvider } = useStakingState()
@@ -101,7 +101,7 @@ const AuthorizeApplicationModalNewStaker: FC<BaseModalProps> = () => {
               withSymbol
             />
           </HStack>
-          <AuthorizationFormNewStaker
+          <NewStakerAuthorizationForm
             tbtcInputConstraints={tbtcInputConstraints}
             randomBeaconInputConstraints={randomBeaconInputConstraints}
             onSubmitForm={handleSubmit}
@@ -112,4 +112,4 @@ const AuthorizeApplicationModalNewStaker: FC<BaseModalProps> = () => {
   )
 }
 
-export default withBaseModal(AuthorizeApplicationModalNewStaker)
+export default withBaseModal(NewStakerAuthorizeStakingApplicationModal)
