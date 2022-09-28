@@ -115,7 +115,6 @@ export const AuthorizationCardNewStaker: FC<AuthorizationCardProps> = ({
           aprPercentage={10}
           slashingPercentage={1}
           isAuthorizationRequired={true}
-          separatePercentAuthorized
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <FormikTokenBalanceInput

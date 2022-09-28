@@ -20,7 +20,6 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 export interface AppAuthorizationInfoProps extends StackProps {
   label: string
   percentageAuthorized: number
-  separatePercentAuthorized?: boolean
   aprPercentage: number
   slashingPercentage: number
   isAuthorized: boolean
@@ -36,7 +35,6 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   isAuthorized,
   authorizedStake,
   isAuthorizationRequired = false,
-  separatePercentAuthorized,
   ...restProps
 }) => {
   return (
