@@ -26,9 +26,31 @@ import InfoBox from "../../InfoBox"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 
-const StakingChecklistModal: FC<
-  BaseModalProps & { transactionHash: string }
-> = ({ closeModal, transactionHash }) => {
+const simpleStakingTimelineFlowSteps = [
+  {
+    preTitle: "Step 1",
+    title: "Stake Tokens",
+    status: FlowStepStatus.complete,
+  },
+  {
+    preTitle: "Step 2",
+    title: "Authorize Apps",
+    status: FlowStepStatus.active,
+    children:
+      "You can authorize 100% of your stake for each app. This amount can be changed at any time.",
+  },
+  {
+    preTitle: "Step 3",
+    title: "Set up Node",
+    status: FlowStepStatus.inactive,
+    children: "Set up and run a node for any of the applications authorized.",
+  },
+]
+
+const StakingSuccessModal: FC<BaseModalProps & { transactionHash: string }> = ({
+  closeModal,
+  transactionHash,
+}) => {
   const { stakeAmount, stakingProvider, beneficiary, authorizer } =
     useStakingState()
 
@@ -64,28 +86,12 @@ const StakingChecklistModal: FC<
           </InfoBox>
           <Stack spacing={6}>
             <BoxLabel status="secondary">Staking Timeline</BoxLabel>
-            {[
-              {
-                preTitle: "Step 1",
-                title: "Stake Tokens",
-                status: FlowStepStatus.complete,
-              },
-              {
-                preTitle: "Step 2",
-                title: "Authorize Apps",
-                status: FlowStepStatus.active,
-                children:
-                  "You can authorize 100% of your stake for each app. This amount can be changed at any time.",
-              },
-              {
-                preTitle: "Step 3",
-                title: "Set up Node",
-                status: FlowStepStatus.inactive,
-                children:
-                  "Set up and run a node for any of the applications authorized.",
-              },
-            ].map((step) => (
-              <FlowStep size="sm" {...step} />
+            {simpleStakingTimelineFlowSteps.map((step, i) => (
+              <FlowStep
+                size="sm"
+                {...step}
+                key={`staking_success_modal_timeline__step_${i + 1}`}
+              />
             ))}
           </Stack>
         </Stack>
@@ -110,4 +116,4 @@ const StakingChecklistModal: FC<
   )
 }
 
-export default withBaseModal(StakingChecklistModal)
+export default withBaseModal(StakingSuccessModal)
