@@ -28,17 +28,14 @@ import { useModal } from "../../../hooks/useModal"
 const AuthorizeApplicationModalNewStaker: FC<
   BaseModalProps & { stake: StakeData }
 > = () => {
-  const tbtc = "tbtc"
-  const randomBeacon = "randomBeacon"
-
   const { openModal } = useModal()
 
   const { stakeAmount, stakingProvider } = useStakingState()
 
-  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount(tbtc)
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
 
   const randomBeaconMinAuthAmount =
-    useStakingAppMinAuthorizationAmount(randomBeacon)
+    useStakingAppMinAuthorizationAmount("randomBeacon")
 
   const tbtcInputConstraints = useMemo(
     () => ({
@@ -56,18 +53,18 @@ const AuthorizeApplicationModalNewStaker: FC<
     [stakeAmount, randomBeaconMinAuthAmount]
   )
 
-  const tbtcAppAddress = useStakingApplicationAddress(tbtc)
-  const randomBeaconAppAddress = useStakingApplicationAddress(randomBeacon)
+  const tbtcAppAddress = useStakingApplicationAddress("tbtc")
+  const randomBeaconAppAddress = useStakingApplicationAddress("randomBeacon")
 
   const handleSubmit = (vals: FormValues) => {
     const tbtcAppInfo = {
-      appName: tbtc,
+      appName: "tbtc",
       address: tbtcAppAddress,
       authorizationAmount: vals.tbtcAmountToAuthorize,
     }
 
     const randomBeaconAppInfo = {
-      appName: randomBeacon,
+      appName: "randomBeacon",
       address: randomBeaconAppAddress,
       authorizationAmount: vals.randomBeaconAmountToAuthorize,
     }
