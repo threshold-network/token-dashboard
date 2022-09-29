@@ -99,6 +99,7 @@ export const NewStakerAuthorizationCard: FC<
           label={label}
           percentageAuthorized={percentToBeAuthorized}
           isAuthorizationRequired={true}
+          hasPendingDeauthorization={false}
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <FormikTokenBalanceInput

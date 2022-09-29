@@ -1,9 +1,11 @@
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { BigNumber } from "ethers"
 import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
 } from "../../threshold-ts/applications"
+import { MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
 import { providerStaked, setStakes } from "../staking"
@@ -12,6 +14,8 @@ import {
   getSupportedAppsEffect,
   shouldDisplayNewAppsToAuthorizeModal,
   displayNewAppsToAuthorizeModalEffect,
+  displayDeauthrizationCompletedModalEffect,
+  displayDeauthrizationInitiatedModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -149,6 +153,72 @@ export const stakingApplicationsSlice = createSlice({
       state[appName].stakingProviders.data[stakingProvider].authorizedStake =
         toAmount
     },
+    authorizationDecreaseApproved: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        appName: StakingAppName
+        txHash: string
+      }>
+    ) => {
+      const { stakingProvider, appName } = action.payload
+      const stakingProviderData =
+        state[appName].stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      const authorizedStake = BigNumber.from(
+        stakingProviderData.authorizedStake
+      )
+        .sub(stakingProviderData.pendingAuthorizationDecrease)
+        .toString()
+
+      state[appName].stakingProviders.data[stakingProvider] = {
+        ...stakingProviderData,
+        authorizedStake,
+        pendingAuthorizationDecrease: "0",
+        remainingAuthorizationDecreaseDelay: "0",
+      }
+    },
+    authorizationDecreaseRequested: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        appName: StakingAppName
+        decreaseAmount: string
+        decreasingAt: string
+        txHash: string
+      }>
+    ) => {
+      const { stakingProvider, appName, decreaseAmount, decreasingAt } =
+        action.payload
+      const stakingProviderData =
+        state[appName].stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      // There are only two possible scenarios:
+      // 1. When the operator is not known- the application contract sets
+      //    `decreasingAt` to current block timestamp. It means an authorizer
+      //    can approve authorization decrease immediately because that operator
+      //    was never in the sortition pool.
+      // 2. When the operator is known- the application contract sets
+      //    `decreasingAt` to `MAX_UINT64`.  It means that this operator is or
+      //    was in the sortition pool. Before authorization decrease delay
+      //    starts, the operator needs to update the state of the sortition pool
+      //    with a call to `joinSortitionPool` or `updateOperatorStatus`.
+      const isDeauthorizationReqestActive =
+        !BigNumber.from(decreasingAt).eq(MAX_UINT64)
+
+      state[appName].stakingProviders.data[stakingProvider] = {
+        ...stakingProviderData,
+        pendingAuthorizationDecrease: decreaseAmount,
+        remainingAuthorizationDecreaseDelay: isDeauthorizationReqestActive
+          ? "0"
+          : MAX_UINT64.toString(),
+        deauthorizationCreatedAt: undefined,
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -156,10 +226,12 @@ export const stakingApplicationsSlice = createSlice({
       (state, action: ReturnType<typeof providerStaked>) => {
         const { stakingProvider } = action.payload
 
-        const defaultAuthData = {
+        const defaultAuthData: StakingProviderAppInfo<string> = {
           authorizedStake: "0",
           pendingAuthorizationDecrease: "0",
           remainingAuthorizationDecreaseDelay: "0",
+          isDeauthorizationReqestActive: false,
+          deauthorizationCreatedAt: undefined,
         }
 
         state.randomBeacon.stakingProviders.data[stakingProvider] = {
@@ -187,5 +259,17 @@ if (featureFlags.MULTI_APP_STAKING) {
   startAppListening({
     predicate: shouldDisplayNewAppsToAuthorizeModal,
     effect: displayNewAppsToAuthorizeModalEffect,
+  })
+
+  startAppListening({
+    actionCreator:
+      stakingApplicationsSlice.actions.authorizationDecreaseApproved,
+    effect: displayDeauthrizationCompletedModalEffect,
+  })
+
+  startAppListening({
+    actionCreator:
+      stakingApplicationsSlice.actions.authorizationDecreaseRequested,
+    effect: displayDeauthrizationInitiatedModalEffect,
   })
 }

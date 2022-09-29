@@ -9,6 +9,7 @@ import { getContract, isAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { IMulticall, ContractCall } from "../multicall"
+import { MAX_UINT64, ZERO } from "../utils"
 
 export interface AuthorizationParameters<
   NumberType extends BigNumberish = BigNumber
@@ -51,6 +52,19 @@ export interface StakingProviderAppInfo<
    * Time in seconds until the deauthorization can be completed.
    */
   remainingAuthorizationDecreaseDelay: NumberType
+  /**
+   * A boolean flag that indicates whether the deauthorization request is in an
+   * active state. If a `remainingAuthorizationDecreaseDelay` is equal
+   * `MAX_UINT64` the deauthorization reqest is pending and an operator have to
+   * call `joinSortitionPool` or `updateOperatorStatus` to activate the request.
+   * In that case we can't estimate when the deauthorization request started.
+   */
+  isDeauthorizationReqestActive: boolean
+  /**
+   * Timestamp when the deauthorization request was created.Takes an undefined
+   * value if it cannot be estimated
+   */
+  deauthorizationCreatedAt: undefined | NumberType
 }
 
 /**
@@ -143,6 +157,15 @@ export interface IApplication {
     stakingProvider: string,
     amount: BigNumberish
   ): Promise<ContractTransaction>
+
+  approveAuthorizationDecrease(
+    stakingProvider: string
+  ): Promise<ContractTransaction>
+
+  requestAuthorizationDecrease(
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -226,18 +249,53 @@ export class Application implements IApplication {
         method: "remainingAuthorizationDecreaseDelay",
         args: [stakingProvider],
       },
+      this._multicall.getCurrentBlockTimestampCallObj(),
+      {
+        interface: this.contract.interface,
+        address: this.contract.address,
+        method: "authorizationParameters",
+      },
     ]
 
     const [
       authorizedStake,
       pendingAuthorizationDecrease,
       remainingAuthorizationDecreaseDelay,
+      requestTimestamp,
+      { authorizationDecreaseDelay },
     ] = await this._multicall.aggregate(calls)
+
+    const _remainingAuthorizationDecreaseDelay = BigNumber.from(
+      remainingAuthorizationDecreaseDelay.toString()
+    )
+
+    let isDeauthorizationReqestActive = true
+    if (_remainingAuthorizationDecreaseDelay.eq(MAX_UINT64)) {
+      // If a `remainingAuthorizationDecreaseDelay` is equal `MAX_UINT64` the
+      // deauthorization reqest is pending and an operator have to call
+      // `joinSortitionPool` or `updateOperatorStatus` to activate the request.
+      // In that case we can't estimate when the deauthorization request
+      // started.
+      isDeauthorizationReqestActive = false
+    }
+
+    // If the deauthorization request is not active or the
+    // `_remainingAuthorizationDecreaseDelay` is equal `0` we can't estimate
+    // when the deauthorization was requested.
+    const deauthorizationCreatedAt =
+      !isDeauthorizationReqestActive ||
+      _remainingAuthorizationDecreaseDelay.eq(ZERO)
+        ? undefined
+        : BigNumber.from(requestTimestamp.toString())
+            .add(_remainingAuthorizationDecreaseDelay)
+            .sub(BigNumber.from(authorizationDecreaseDelay.toString()))
 
     return {
       authorizedStake,
       pendingAuthorizationDecrease,
       remainingAuthorizationDecreaseDelay,
+      isDeauthorizationReqestActive,
+      deauthorizationCreatedAt,
     }
   }
 
@@ -267,6 +325,23 @@ export class Application implements IApplication {
     amount: BigNumberish
   ): Promise<ContractTransaction> => {
     return this._staking.increaseAuthorization(
+      stakingProvider,
+      this.address,
+      amount
+    )
+  }
+
+  approveAuthorizationDecrease = async (
+    stakingProvider: string
+  ): Promise<ContractTransaction> => {
+    return this._application.approveAuthorizationDecrease(stakingProvider)
+  }
+
+  requestAuthorizationDecrease = async (
+    stakingProvider: string,
+    amount: BigNumberish
+  ): Promise<ContractTransaction> => {
+    return this._staking.requestAuthorizationDecrease(
       stakingProvider,
       this.address,
       amount
