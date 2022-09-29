@@ -346,7 +346,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                         )
                   }
                 />
-                <BodySm>
+                <BodySm mt="2">
                   {!isDeauthorizationReqestActive &&
                     "Deauthroziation request not activated"}
                   {isDeauthorizationReqestActive &&
