@@ -1,10 +1,10 @@
 import {
-  Card,
-  FilterTabs,
-  FilterTab,
   BoxProps,
-  Grid,
+  Card,
   Checkbox,
+  FilterTab,
+  FilterTabs,
+  Grid,
   GridItem,
 } from "@threshold-network/components"
 import { FC, RefObject } from "react"
@@ -113,8 +113,11 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         ],
       })
     } else {
-      // TODO: Create a increase authroziation modal.
-      console.log("open increase authroziation modal")
+      openModal(ModalType.IncreaseAuthorization, {
+        stakingProvider,
+        increaseAmount: tokenAmount,
+        stakingAppName: appAuthData.stakingAppId,
+      })
     }
   }
 
@@ -126,8 +129,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           authorizedStake={appAuthData.authorizedStake}
           label={appAuthData.label}
           percentageAuthorized={100}
-          aprPercentage={10}
-          slashingPercentage={1}
         />
       </Card>
     )
@@ -171,8 +172,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           isAuthorized={appAuthData.isAuthorized}
           label={appAuthData.label}
           percentageAuthorized={appAuthData.percentage}
-          aprPercentage={10}
-          slashingPercentage={1}
           isAuthorizationRequired={true}
         />
         <FilterTabs

@@ -9,7 +9,7 @@ export const AboutAddressesCard: FC<ComponentProps<typeof Card>> = (props) => {
       <List mt="5" spacing="5">
         {aboutAddresses.map((action) => (
           <ListItem key={action.sectionName}>
-            <BoxLabel w="fit-content" mb="4">
+            <BoxLabel status="secondary" w="fit-content" mb="4">
               {action.sectionName}
             </BoxLabel>
             <List spacing="4">

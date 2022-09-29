@@ -8,11 +8,13 @@ import { Badge } from "./Badge"
 import { DetailedLinkListItem } from "./DetailedLinkListItem"
 import { Checkbox } from "./Checkbox"
 import { Radio } from "./Radio"
+import { AnnouncementBanner } from "./AnnouncementBanner"
 
 const index = extendTheme({
   ...defaultTheme,
   components: {
     ...defaultTheme.components,
+    AnnouncementBanner,
     InfoBox,
     NotificationPill,
     Tree,
