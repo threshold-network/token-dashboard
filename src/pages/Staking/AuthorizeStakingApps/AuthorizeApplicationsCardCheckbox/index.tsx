@@ -86,6 +86,7 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   isSelected: boolean
   maxAuthAmount: string
   minAuthAmount: string
+  canSubmitForm?: boolean
   formRef?: RefObject<FormikProps<FormValues>>
 }
 
@@ -140,6 +141,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   stakingProvider,
   totalInTStake,
   formRef,
+  canSubmitForm = true,
   ...restProps
 }) => {
   const collapsed = !appAuthData.isAuthRequired
@@ -263,6 +265,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
       >
         {!appAuthData.isAuthorized && (
           <Checkbox
+            isDisabled={!canSubmitForm}
             isChecked={isSelected}
             gridArea="checkbox"
             alignSelf={"flex-start"}
@@ -307,6 +310,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                     : `Authorize ${appAuthData.label}`
                   : "Initiate Deauthorization"
               }
+              isDisabled={!canSubmitForm}
               maxTokenAmount={
                 isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
               }

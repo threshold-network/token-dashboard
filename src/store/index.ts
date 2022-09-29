@@ -8,11 +8,14 @@ import { modalSlice } from "./modal"
 import { tokenSlice } from "./tokens"
 import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
-import { stakingSlice } from "./staking"
+import { registerStakingListeners, stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
 import { tbtcSlice } from "./tbtc"
-import { stakingApplicationsSlice } from "./staking-applications/slice"
+import {
+  registerStakingAppsListeners,
+  stakingApplicationsSlice,
+} from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
 
 const combinedReducer = combineReducers({
@@ -35,6 +38,9 @@ export const resetStoreAction = () => ({
 
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
   if (action.type === APP_RESET_STORE) {
+    listenerMiddleware.clearListeners()
+    registerStakingListeners()
+    registerStakingAppsListeners()
     state = {
       eth: { ...state.eth },
       token: {

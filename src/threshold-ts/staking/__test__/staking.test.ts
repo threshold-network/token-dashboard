@@ -2,6 +2,7 @@ import { BigNumber, ContractTransaction, providers } from "ethers"
 import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
 import { IStaking, Staking } from ".."
 import { AddressZero, getContract } from "../../utils"
+import { IMulticall } from "../../multicall"
 
 jest.mock("../../utils", () => ({
   ...(jest.requireActual("../../utils") as {}),
@@ -17,6 +18,7 @@ jest.mock(
 
 describe("Staking test", () => {
   let staking: IStaking
+  let multicall: IMulticall
   const mockStakingContract = {
     interface: {},
     address: TokenStaking.address,
@@ -34,7 +36,10 @@ describe("Staking test", () => {
 
   beforeEach(() => {
     ;(getContract as jest.Mock).mockImplementation(() => mockStakingContract)
-    staking = new Staking(ethConfig)
+    multicall = {
+      aggregate: jest.fn(),
+    }
+    staking = new Staking(ethConfig, multicall)
   })
 
   test("should create the staking instance correctly", () => {
@@ -78,5 +83,45 @@ describe("Staking test", () => {
       amount
     )
     expect(result).toEqual(tx)
+  })
+
+  test("should return the stake data by staking provider address", async () => {
+    const rolesOf = {
+      owner: stakingProvider,
+      beneficiary: stakingProvider,
+      authorizer: stakingProvider,
+    }
+    const amount = BigNumber.from("100")
+    const stakes = { tStake: amount, keepInTStake: amount, nuInTStake: amount }
+    const multiCallResult = [rolesOf, stakes]
+
+    const aggregateSpyOn = jest
+      .spyOn(multicall, "aggregate")
+      .mockResolvedValue(multiCallResult)
+
+    const result = await staking.getStakeByStakingProvider(stakingProvider)
+
+    expect(aggregateSpyOn).toHaveBeenCalledWith([
+      {
+        interface: mockStakingContract.interface,
+        address: mockStakingContract.address,
+        method: "rolesOf",
+        args: [stakingProvider],
+      },
+      {
+        interface: mockStakingContract.interface,
+        address: mockStakingContract.address,
+        method: "stakes",
+        args: [stakingProvider],
+      },
+    ])
+    expect(result).toEqual({
+      ...rolesOf,
+      ...stakes,
+      stakingProvider,
+      totalInTStake: stakes.tStake
+        .add(stakes.keepInTStake)
+        .add(stakes.nuInTStake),
+    })
   })
 })

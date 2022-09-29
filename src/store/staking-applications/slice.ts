@@ -245,31 +245,34 @@ export const stakingApplicationsSlice = createSlice({
   },
 })
 
-if (featureFlags.MULTI_APP_STAKING) {
-  startAppListening({
-    actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
-    effect: getSupportedAppsEffect,
-  })
+export const registerStakingAppsListeners = () => {
+  if (featureFlags.MULTI_APP_STAKING) {
+    startAppListening({
+      actionCreator: stakingApplicationsSlice.actions.getSupportedApps,
+      effect: getSupportedAppsEffect,
+    })
 
-  startAppListening({
-    actionCreator: setStakes,
-    effect: getSupportedAppsStakingProvidersData,
-  })
+    startAppListening({
+      actionCreator: setStakes,
+      effect: getSupportedAppsStakingProvidersData,
+    })
 
-  startAppListening({
-    predicate: shouldDisplayNewAppsToAuthorizeModal,
-    effect: displayNewAppsToAuthorizeModalEffect,
-  })
+    startAppListening({
+      predicate: shouldDisplayNewAppsToAuthorizeModal,
+      effect: displayNewAppsToAuthorizeModalEffect,
+    })
 
-  startAppListening({
-    actionCreator:
-      stakingApplicationsSlice.actions.authorizationDecreaseApproved,
-    effect: displayDeauthrizationCompletedModalEffect,
-  })
+    startAppListening({
+      actionCreator:
+        stakingApplicationsSlice.actions.authorizationDecreaseApproved,
+      effect: displayDeauthrizationCompletedModalEffect,
+    })
 
-  startAppListening({
-    actionCreator:
-      stakingApplicationsSlice.actions.authorizationDecreaseRequested,
-    effect: displayDeauthrizationInitiatedModalEffect,
-  })
+    startAppListening({
+      actionCreator:
+        stakingApplicationsSlice.actions.authorizationDecreaseRequested,
+      effect: displayDeauthrizationInitiatedModalEffect,
+    })
+  }
 }
+registerStakingAppsListeners()
