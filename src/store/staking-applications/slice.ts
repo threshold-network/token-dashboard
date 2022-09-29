@@ -15,6 +15,7 @@ import {
   shouldDisplayNewAppsToAuthorizeModal,
   displayNewAppsToAuthorizeModalEffect,
   displayDeauthrizationCompletedModalEffect,
+  displayDeauthrizationInitiatedModalEffect,
 } from "./effects"
 
 type StakingApplicationDataByStakingProvider = {
@@ -186,6 +187,7 @@ export const stakingApplicationsSlice = createSlice({
         appName: StakingAppName
         decreaseAmount: string
         decreasingAt: string
+        txHash: string
       }>
     ) => {
       const { stakingProvider, appName, decreaseAmount, decreasingAt } =
@@ -263,5 +265,11 @@ if (featureFlags.MULTI_APP_STAKING) {
     actionCreator:
       stakingApplicationsSlice.actions.authorizationDecreaseApproved,
     effect: displayDeauthrizationCompletedModalEffect,
+  })
+
+  startAppListening({
+    actionCreator:
+      stakingApplicationsSlice.actions.authorizationDecreaseRequested,
+    effect: displayDeauthrizationInitiatedModalEffect,
   })
 }

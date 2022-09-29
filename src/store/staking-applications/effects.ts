@@ -237,3 +237,29 @@ export const displayDeauthrizationCompletedModalEffect = (
     })
   )
 }
+
+export const displayDeauthrizationInitiatedModalEffect = (
+  action: ReturnType<
+    typeof stakingApplicationsSlice.actions.authorizationDecreaseRequested
+  >,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { stakingProvider, txHash, decreaseAmount } = action.payload
+
+  const stake = selectStakeByStakingProvider(
+    listenerApi.getOriginalState(),
+    stakingProvider
+  )
+  if (!stake) return
+
+  listenerApi.dispatch(
+    modalSlice.actions.openModal({
+      modalType: ModalType.DeauthorizationInitiated,
+      props: {
+        stakingProvider,
+        txHash,
+        decreaseAmount,
+      },
+    })
+  )
+}
