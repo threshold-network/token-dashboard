@@ -13,6 +13,7 @@ import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import BundledRewardsAlert from "../../../../components/BundledRewardsAlert"
+import { useAppSelector } from "../../../../hooks/store"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
@@ -22,6 +23,12 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
     stakingProvider
+  )
+  const isTbtcFetching = useAppSelector(
+    (state) => state.applications.tbtc.stakingProviders.isFetching
+  )
+  const isRandomBeaconFetching = useAppSelector(
+    (state) => state.applications.randomBeacon.stakingProviders.isFetching
   )
 
   // TODO: This will probably be fetched from contracts
@@ -57,9 +64,9 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   return (
     <Box>
       <BodyMd>Applications</BodyMd>
-      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
-        <BundledRewardsAlert />
-      )}
+      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) &&
+        !isTbtcFetching &&
+        !isRandomBeaconFetching && <BundledRewardsAlert />}
       {areNodesMissing && (
         <Alert status="error" my={4} px={2} py={1}>
           <AlertIcon />
