@@ -1,8 +1,11 @@
 import {
+  Alert,
   AlertBox,
   AlertDescription,
+  AlertIcon,
   Badge,
   BodyLg,
+  BodySm,
   Button,
   Card,
   H5,
@@ -13,7 +16,7 @@ import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
-import { PageComponent, StakeData } from "../../../types"
+import { StakeData } from "../../../types"
 import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
@@ -37,6 +40,7 @@ import { FormikProps } from "formik"
 import { FormValues } from "../../../components/Forms"
 import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
+import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -110,30 +114,22 @@ const AuthorizeStakingAppsPage: FC = () => {
     [appName: string]: AppAuthDataProps & { address?: string }
   } = {
     tbtc: {
+      ...tbtcApp,
       stakingAppId: "tbtc",
       address: tbtcAppAddress,
       label: "tBTC",
-      isAuthorized: tbtcApp.isAuthorized,
-      percentage: tbtcApp.percentage,
-      authorizedStake: tbtcApp.authorizedStake,
       isAuthRequired: true,
     },
     randomBeacon: {
+      ...randomBeaconApp,
       stakingAppId: "randomBeacon",
       address: randomBeaconAddress,
       label: "Random Beacon",
-      isAuthorized: randomBeaconApp.isAuthorized,
-      percentage: randomBeaconApp.percentage,
-      authorizedStake: randomBeaconApp.authorizedStake,
       isAuthRequired: true,
     },
     pre: {
       stakingAppId: "pre",
       label: "PRE",
-      isAuthorized: false,
-      percentage: 0,
-      authorizedStake: "0",
-      isAuthRequired: false,
     },
   }
 
@@ -188,6 +184,22 @@ const AuthorizeStakingAppsPage: FC = () => {
     }
   }
 
+  const shouldRenderBundledRewardsAlert = () => {
+    const isTbtcSelected = isAppSelected("tbtc")
+    const isRandomBeaconSelected = isAppSelected("randomBeacon")
+
+    // If one of the app is selected and the other one is either selected or
+    // authorized.
+    return Boolean(
+      (!tbtcApp.isAuthorized &&
+        !isTbtcSelected &&
+        (isRandomBeaconSelected || randomBeaconApp.isAuthorized)) ||
+        (!randomBeaconApp.isAuthorized &&
+          !isRandomBeaconSelected &&
+          (isTbtcSelected || tbtcApp.isAuthorized))
+    )
+  }
+
   return active ? (
     <>
       <Card>
@@ -239,6 +251,7 @@ const AuthorizeStakingAppsPage: FC = () => {
               stakingProvider={stakingProviderAddress!}
               canSubmitForm={isLoggedInAsAuthorizer}
             />
+            {shouldRenderBundledRewardsAlert() && <BundledRewardsAlert />}
             <AuthorizeApplicationsCardCheckbox
               mt={5}
               formRef={randomBeaconAppFormRef}

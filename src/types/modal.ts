@@ -11,6 +11,7 @@ import {
   TransactionIsWaitingForConfirmation,
 } from "../components/Modal/TransactionModal"
 import StakingSuccessModal from "../components/Modal/StakingSuccessModal"
+import StakeSuccessOldModal from "../components/Modal/StakingSuccessModal/StakeSuccessOld"
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
@@ -34,8 +35,12 @@ import {
   StakingApplicationsAuthorized,
   IncreaseAuthorization,
   IncreaseAuthorizationSuccess,
+  ConfirmDeauthorization,
+  DeauthorizationCompleted,
+  DeauthorizationInitiated,
 } from "../components/Modal/StakingApplications"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
+import NewStakerAuthorizeStakingApplicationModal from "../components/Modal/NewStakerAuthorizeStakingApplicationModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -47,6 +52,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.UpgradedToT]: UpgradeToTSuccess,
   [ModalType.ConfirmStakingParams]: ConfirmStakingParams,
   [ModalType.StakeSuccess]: StakingSuccessModal,
+  [ModalType.StakeSuccessOLD]: StakeSuccessOldModal,
   [ModalType.UnstakeSuccess]: UnstakingSuccessModal,
   [ModalType.UnstakeT]: UnstakeTModalStep1,
   [ModalType.UnstakeTStep2]: UnstakeTModalStep2,
@@ -66,6 +72,11 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
   [ModalType.SubmitStake]: SubmitStakeModal,
+  [ModalType.NewStakerAuthorizeStakingApplication]:
+    NewStakerAuthorizeStakingApplicationModal,
+  [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
+  [ModalType.DeauthorizationCompleted]: DeauthorizationCompleted,
+  [ModalType.DeauthorizationInitiated]: DeauthorizationInitiated,
 }
 
 export interface BaseModalProps {

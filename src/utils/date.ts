@@ -19,3 +19,13 @@ export const dateAs = (targetUnix: number) => {
 
   return { days, hours, minutes, seconds }
 }
+
+export const formatDate = (
+  timestamp: string | number,
+  locales: Intl.LocalesArgument = "en-gb",
+  options?: Intl.DateTimeFormatOptions
+) =>
+  new Date(+timestamp * ONE_SEC_IN_MILISECONDS).toLocaleDateString(
+    locales,
+    options
+  )

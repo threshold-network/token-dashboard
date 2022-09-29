@@ -16,7 +16,11 @@ jest.mock("../../utils", () => ({
 
 describe("Multicall test", () => {
   let multicall: IMulticall
-  const mockMulticallContract = { aggregate: jest.fn() }
+  const mockMulticallContract = {
+    aggregate: jest.fn(),
+    interface: {},
+    address: "0xE775aE21E40d34f01A5C0E1Db9FB3e637D768596",
+  }
   const mockProvider = {} as providers.Provider
   const config = {
     chainId: 1,
@@ -102,5 +106,15 @@ describe("Multicall test", () => {
     )
 
     expect(result).toEqual([call1DecodeResult, call2DecodeResult])
+  })
+
+  test("should return the contract call object for `getCurrentBlockTimestamp` function", () => {
+    const result = multicall.getCurrentBlockTimestampCallObj()
+
+    expect(result).toEqual({
+      interface: mockMulticallContract.interface,
+      address: mockMulticallContract.address,
+      method: "getCurrentBlockTimestamp",
+    })
   })
 })
