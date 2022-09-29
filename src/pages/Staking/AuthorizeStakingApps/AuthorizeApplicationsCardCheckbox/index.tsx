@@ -14,6 +14,7 @@ import {
   Button,
   useBoolean,
   Progress,
+  HStack,
 } from "@threshold-network/components"
 import { InfoIcon } from "@chakra-ui/icons"
 import { FC, RefObject, useCallback, useEffect } from "react"
@@ -377,13 +378,13 @@ export const AuthorizeApplicationsCardCheckbox: FC<
               Confirm Deauthorization
             </Button>
           </InfoBox>
-          <BodySm mt="4" color="gray.500">
-            <InfoIcon verticalAlign="sub" />{" "}
-            <Box as="span">
+          <HStack mt="4" spacing="2">
+            <InfoIcon color="gray.500" />
+            <BodySm as="span" color="gray.500">
               Increasing or decreasing the authorization amount is suspended
               until the pending deauthorization is confirmed.
-            </Box>
-          </BodySm>
+            </BodySm>
+          </HStack>
         </>
       )}
     </Card>
