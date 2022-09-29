@@ -194,6 +194,16 @@ export const stakingApplicationsSlice = createSlice({
       state[appName].mappedOperator.isFetching = false
       state[appName].mappedOperator.error = error
     },
+    operatorMapped: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        operator: string
+      }>
+    ) => {
+      const { appName, operator } = action.payload
+      state[appName].mappedOperator.data = operator
+    },
     authorizationIncreased: (
       state: StakingApplicationsState,
       action: PayloadAction<{
@@ -267,3 +277,5 @@ if (featureFlags.MULTI_APP_STAKING) {
     effect: displayMapOperatorToStakingProviderModalEffect,
   })
 }
+
+export const { operatorMapped } = stakingApplicationsSlice.actions
