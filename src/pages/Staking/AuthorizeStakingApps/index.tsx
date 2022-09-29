@@ -1,7 +1,10 @@
 import {
+  Alert,
   AlertBox,
   AlertDescription,
+  AlertIcon,
   Badge,
+  BodySm,
   Button,
   Card,
   H5,
@@ -12,7 +15,7 @@ import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
-import { PageComponent, StakeData } from "../../../types"
+import { StakeData } from "../../../types"
 import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
@@ -31,6 +34,7 @@ import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import { FormikProps } from "formik"
 import { FormValues } from "../../../components/Forms"
+import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -162,6 +166,22 @@ const AuthorizeStakingAppsPage: FC = () => {
     }
   }
 
+  const shouldRenderBundledRewardsAlert = () => {
+    const isTbtcSelected = isAppSelected("tbtc")
+    const isRandomBeaconSelected = isAppSelected("randomBeacon")
+
+    // If one of the app is selected and the other one is either selected or
+    // authorized.
+    return Boolean(
+      (!tbtcApp.isAuthorized &&
+        !isTbtcSelected &&
+        (isRandomBeaconSelected || randomBeaconApp.isAuthorized)) ||
+        (!randomBeaconApp.isAuthorized &&
+          !isRandomBeaconSelected &&
+          (isTbtcSelected || tbtcApp.isAuthorized))
+    )
+  }
+
   return isLoggedInAsAuthorizer ? (
     <>
       <Card>
@@ -198,6 +218,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           minAuthAmount={tbtcMinAuthAmount}
           stakingProvider={stakingProviderAddress!}
         />
+        {shouldRenderBundledRewardsAlert() && <BundledRewardsAlert />}
         <AuthorizeApplicationsCardCheckbox
           mt={5}
           formRef={randomBeaconAppFormRef}

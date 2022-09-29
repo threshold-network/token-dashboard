@@ -1,10 +1,10 @@
 import {
-  Card,
-  FilterTabs,
-  FilterTab,
   BoxProps,
-  Grid,
+  Card,
   Checkbox,
+  FilterTab,
+  FilterTabs,
+  Grid,
   GridItem,
   BodyMd,
   BodyLg,
@@ -234,8 +234,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         <AppAuthorizationInfo
           label={appAuthData.label}
           percentageAuthorized={100}
-          aprPercentage={10}
-          slashingPercentage={1}
         />
       </Card>
     )
@@ -281,8 +279,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           isAuthorized={appAuthData.isAuthorized}
           label={appAuthData.label}
           percentageAuthorized={appAuthData.percentage}
-          aprPercentage={10}
-          slashingPercentage={1}
           isAuthorizationRequired={true}
           hasPendingDeauthorization={hasPendingDeauthorization}
         />

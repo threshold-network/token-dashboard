@@ -19,8 +19,6 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 
 interface CommonProps {
   label: string
-  aprPercentage: number
-  slashingPercentage: number
   percentageAuthorized: number
 }
 
@@ -45,8 +43,6 @@ export type AppAuthorizationInfoProps = CommonProps &
 export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   label,
   percentageAuthorized,
-  aprPercentage,
-  slashingPercentage,
   isAuthorized,
   authorizedStake,
   hasPendingDeauthorization,
@@ -63,7 +59,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           {label} App -{" "}
           {formatPercentage(percentageAuthorized, undefined, true)}
         </LabelSm>
-        <InfoIcon />
+        <InfoIcon color="gray.500" />
         {!isAuthorizationRequired && (
           <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
             Authorization not required
@@ -79,25 +75,6 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
             pending deauthorization
           </Badge>
         )}
-      </HStack>
-      <HStack>
-        <BoxLabel
-          icon={<Icon as={IoAlertCircle} />}
-          size="sm"
-          status="primary"
-          variant="solid"
-        >
-          APR &#183; {formatPercentage(aprPercentage, 0, true)}
-        </BoxLabel>
-        <BoxLabel
-          icon={<Icon as={IoAlertCircle} />}
-          size="sm"
-          status="primary"
-          variant="solid"
-        >
-          {"Slashing "} &#183;{" "}
-          {`${formatPercentage(slashingPercentage, 0, true)}`}
-        </BoxLabel>
       </HStack>
       {isAuthorizationRequired && isAuthorized && authorizedStake && (
         <>

@@ -17,6 +17,7 @@ import { CheckCircleIcon } from "@chakra-ui/icons"
 import InfoBox from "../../InfoBox"
 import TokenBalance from "../../TokenBalance"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
+import BundledRewardsAlert from "../../BundledRewardsAlert"
 import withBaseModal from "../withBaseModal"
 import {
   calculatePercenteage,
@@ -24,6 +25,8 @@ import {
 } from "../../../utils/percentage"
 import { BaseModalProps } from "../../../types"
 import { useAuthorizeMultipleAppsTransaction } from "../../../hooks/staking-applications"
+import { useAppSelector } from "../../../hooks/store"
+import { selectStakingAppByStakingProvider } from "../../../store/staking-applications"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
@@ -41,6 +44,12 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
   applications,
   closeModal,
 }) => {
+  const tbtcAppAuthData = useAppSelector((state) =>
+    selectStakingAppByStakingProvider(state, "tbtc", stakingProvider)
+  )
+  const randomBeaconAuthData = useAppSelector((state) =>
+    selectStakingAppByStakingProvider(state, "randomBeacon", stakingProvider)
+  )
   const { authorizeMultipleApps } = useAuthorizeMultipleAppsTransaction()
   const onAuthorize = async () => {
     await authorizeMultipleApps(
@@ -80,6 +89,9 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
             </ListItem>
           ))}
         </List>
+        {numberOfApps === 1 &&
+          !tbtcAppAuthData.isAuthorized &&
+          !randomBeaconAuthData.isAuthorized && <BundledRewardsAlert />}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
