@@ -9,7 +9,7 @@ const StakeAddressInfo: FC<{ stakingProvider: string } & FlexProps> = ({
   return (
     <Flex mt="6" mb="8" alignItems="center" {...restProps}>
       <BoxLabel bg="brand.50" color="brand.700" mr="auto">
-        Provider address
+        Provider Address
       </BoxLabel>
       <CopyAddressToClipboard address={stakingProvider} />
     </Flex>
