@@ -48,8 +48,14 @@ type AppAuthDataConditionalProps =
       percentage?: never
       pendingAuthorizationDecrease?: never
       isDeauthorizationReqestActive?: never
+      /**
+       * Timestamp when the deauthorization request was created.
+       */
       deauthorizationCreatedAt?: never
-      remainingAuthorizationDecreaseDelay?: string
+      /**
+       * Time in seconds until the deauthorization can be completed.
+       */
+      remainingAuthorizationDecreaseDelay?: never
     }
   | {
       isAuthRequired: true
@@ -59,7 +65,14 @@ type AppAuthDataConditionalProps =
       percentage: number
       pendingAuthorizationDecrease: string
       isDeauthorizationReqestActive: boolean
+      /**
+       * Timestamp when the deauthorization request was created. Takes an
+       * `undefined` value if it cannot be estimated.
+       */
       deauthorizationCreatedAt?: string
+      /**
+       * Time in seconds until the deauthorization can be completed.
+       */
       remainingAuthorizationDecreaseDelay: string
     }
 
