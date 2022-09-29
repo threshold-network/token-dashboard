@@ -4,6 +4,8 @@ import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
 import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
+import BundledRewardsAlert from "../../../../components/BundledRewardsAlert"
+import { useAppSelector } from "../../../../hooks/store"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
@@ -12,6 +14,12 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
     stakingProvider
+  )
+  const isTbtcFetching = useAppSelector(
+    (state) => state.applications.tbtc.stakingProviders.isFetching
+  )
+  const isRandomBeaconFetching = useAppSelector(
+    (state) => state.applications.randomBeacon.stakingProviders.isFetching
   )
 
   const appsAuthData: {
@@ -46,6 +54,9 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   return (
     <Box>
       <BodyMd>Applications</BodyMd>
+      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) &&
+        !isTbtcFetching &&
+        !isRandomBeaconFetching && <BundledRewardsAlert mb="4" />}
       <AuthorizeApplicationRow
         mb={"3"}
         appAuthData={appsAuthData.tbtc}
