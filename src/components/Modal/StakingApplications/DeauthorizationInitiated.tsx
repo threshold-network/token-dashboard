@@ -45,7 +45,7 @@ const DeauthorizationInitiatedBase: FC<DeauthorizationInitiatedProps> = ({
       <ModalBody>
         <Alert status="success" mb={4}>
           <AlertIcon />
-          Your deauthorization was initiated. Your 14 day cooldown period has
+          Your deauthorization was initiated. Your 45 day cooldown period has
           started.
         </Alert>
         <List spacing="2.5" my="6">
@@ -76,11 +76,11 @@ const DeauthorizationInitiatedBase: FC<DeauthorizationInitiatedProps> = ({
           </FlowStep>
           <FlowStep
             preTitle="Step 2"
-            title="14 day cooldown"
+            title="45 day cooldown"
             status={FlowStepStatus.active}
             size="sm"
           >
-            You must wait a 14 day cooldown to then confirm the deauthorization.
+            You must wait a 45 day cooldown to then confirm the deauthorization.
             This is 1 transaction.
           </FlowStep>
         </Stack>
