@@ -40,8 +40,8 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
   )
 }
 
-const NavPill: FC<RouteProps> = ({ path, title }) => {
-  const resolved = useResolvedPath(path)
+const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
+  const resolved = useResolvedPath(pathOverride || path)
   const isActive = useMatch({ path: resolved.pathname, end: true })
   const activeColor = useColorModeValue("brand.500", "white")
 

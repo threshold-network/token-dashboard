@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, createAction } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber"
 import {
@@ -11,6 +11,8 @@ import {
 import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
 import { UpdateStateActionPayload } from "../../types/state"
+import { startAppListening } from "../listener"
+import { fetchStakeByStakingProviderEffect } from "./effects"
 
 interface StakingState {
   stakingProvider: string
@@ -169,6 +171,10 @@ export const stakingSlice = createSlice({
   },
 })
 
+export const requestStakeByStakingProvider = createAction<{
+  stakingProvider: string | undefined
+}>("staking/request-stake-by-staking-provider")
+
 export const {
   updateState,
   setStakes,
@@ -177,3 +183,12 @@ export const {
   unstaked,
   setMinStake,
 } = stakingSlice.actions
+
+export const registerStakingListeners = () => {
+  startAppListening({
+    actionCreator: requestStakeByStakingProvider,
+    effect: fetchStakeByStakingProviderEffect,
+  })
+}
+
+registerStakingListeners()

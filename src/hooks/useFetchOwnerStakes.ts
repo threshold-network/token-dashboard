@@ -46,7 +46,6 @@ export const useFetchOwnerStakes = () => {
         !simplePREApplicationContract ||
         !address
       ) {
-        dispatch(setStakes([]))
         return []
       }
 

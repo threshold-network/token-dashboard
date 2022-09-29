@@ -18,11 +18,10 @@ import withBaseModal from "../withBaseModal"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
-    jsonData: DepositScriptParameters
+    jsonData: any
     handleDownloadClick: any
     handleDoubleReject: () => void
   }

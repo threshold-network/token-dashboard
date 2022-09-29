@@ -24,11 +24,19 @@ export interface IMulticall {
    * @returns Contract calls results aggregated into a single result.
    */
   aggregate(calls: ContractCall[]): Promise<any[]>
+
+  /**
+   * Returns the contract call object for the `getCurrentBlockTimestamp` helper
+   * function of the `Multicall` contract.
+   * @returns The contract call object @see {@link ContractCall}.
+   */
+  getCurrentBlockTimestampCallObj(): ContractCall
 }
 
 export const MULTICALL_ABI = [
   "function aggregate(tuple(address target, bytes callData)[] calls) view returns (uint256 blockNumber, bytes[] returnData)",
   "function getEthBalance(address addr) view returns (uint256 balance)",
+  "function getCurrentBlockTimestamp() view returns (uint256 timestamp)",
 ]
 export const MULTICALL_ADDRESSESS = {
   1: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
@@ -65,5 +73,13 @@ export class Multicall implements IMulticall {
       const call = calls[index]
       return call.interface.decodeFunctionResult(call.method, data)
     })
+  }
+
+  getCurrentBlockTimestampCallObj = () => {
+    return {
+      interface: this._multicall.interface,
+      address: this._multicall.address,
+      method: "getCurrentBlockTimestamp",
+    }
   }
 }

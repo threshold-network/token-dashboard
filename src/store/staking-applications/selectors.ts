@@ -9,6 +9,7 @@ import { selectStakeByStakingProvider } from "../staking"
 import { StakeData } from "../../types"
 import { calculatePercenteage } from "../../utils/percentage"
 import { BigNumber } from "ethers"
+import { Zero } from "@ethersproject/constants"
 
 export const selectStakingAppState = (state: RootState) => state.applications
 
@@ -43,6 +44,10 @@ export const selectStakingAppByStakingProvider = createSelector(
       percentage: calculatePercenteage(
         authData?.authorizedStake,
         stake?.totalInTStake
+      ),
+      hasPendingDeauthorization: Boolean(
+        authData.pendingAuthorizationDecrease &&
+          BigNumber.from(authData.pendingAuthorizationDecrease).gt(Zero)
       ),
     }
   }

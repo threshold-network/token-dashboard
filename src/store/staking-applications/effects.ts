@@ -1,16 +1,23 @@
+import { AnyAction } from "@reduxjs/toolkit"
 import { stakingApplicationsSlice, StakingAppName } from "./slice"
 import { AppListenerEffectAPI } from "../listener"
-import { selectStakingProviders, setStakes } from "../staking"
+import {
+  selectStakeByStakingProvider,
+  selectStakingProviders,
+  setStakes,
+} from "../staking"
+import { modalSlice, openModal } from "../modal"
 import {
   IApplication,
   StakingProviderAppInfo,
 } from "../../threshold-ts/applications"
 import { ModalType } from "../../enums"
 import { RootState } from ".."
-import { selectStakingAppStateByAppName } from "./selectors"
-import { AnyAction } from "@reduxjs/toolkit"
+import {
+  selectStakingAppByStakingProvider,
+  selectStakingAppStateByAppName,
+} from "./selectors"
 import { isAddressZero } from "../../web3/utils"
-import { openModal } from "../modal"
 import { featureFlags } from "../../constants"
 import { mapOperatorToStakingProviderModalClosed } from "../modalQueue"
 
@@ -136,6 +143,9 @@ const getKeepStakingAppStakingProvidersData = async (
             _appData.pendingAuthorizationDecrease.toString(),
           remainingAuthorizationDecreaseDelay:
             _appData.remainingAuthorizationDecreaseDelay.toString(),
+          isDeauthorizationReqestActive: _appData.isDeauthorizationReqestActive,
+          deauthorizationCreatedAt:
+            _appData.deauthorizationCreatedAt?.toString(),
         }
         return reducer
       },
@@ -309,5 +319,63 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
     ).length > 0 &&
     Object.values(currentState.applications.tbtc.stakingProviders.data ?? {})
       .length > 0
+  )
+}
+
+export const displayDeauthrizationCompletedModalEffect = (
+  action: ReturnType<
+    typeof stakingApplicationsSlice.actions.authorizationDecreaseApproved
+  >,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { stakingProvider, appName, txHash } = action.payload
+
+  const stake = selectStakeByStakingProvider(
+    listenerApi.getOriginalState(),
+    stakingProvider
+  )
+  if (!stake) return
+
+  const stakingProviderAppData = selectStakingAppByStakingProvider(
+    listenerApi.getOriginalState(),
+    appName,
+    stakingProvider
+  )
+
+  listenerApi.dispatch(
+    modalSlice.actions.openModal({
+      modalType: ModalType.DeauthorizationCompleted,
+      props: {
+        stakingProvider,
+        txHash,
+        decreaseAmount: stakingProviderAppData.pendingAuthorizationDecrease,
+      },
+    })
+  )
+}
+
+export const displayDeauthrizationInitiatedModalEffect = (
+  action: ReturnType<
+    typeof stakingApplicationsSlice.actions.authorizationDecreaseRequested
+  >,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { stakingProvider, txHash, decreaseAmount } = action.payload
+
+  const stake = selectStakeByStakingProvider(
+    listenerApi.getOriginalState(),
+    stakingProvider
+  )
+  if (!stake) return
+
+  listenerApi.dispatch(
+    modalSlice.actions.openModal({
+      modalType: ModalType.DeauthorizationInitiated,
+      props: {
+        stakingProvider,
+        txHash,
+        decreaseAmount,
+      },
+    })
   )
 }
