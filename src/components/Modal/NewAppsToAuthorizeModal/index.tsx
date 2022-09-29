@@ -1,11 +1,16 @@
 import { FC, useState } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   BodyLg,
+  Box,
   Button,
   Card,
   H5,
-  LabelMd,
+  LabelSm,
+  Link,
   ModalBody,
   ModalCloseButton,
   ModalFooter,
@@ -13,12 +18,9 @@ import {
   Radio,
   RadioGroup,
   Stack,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Link,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
+import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
@@ -55,6 +57,7 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
               <Stack>
                 {stakes.map((stake, i) => (
                   <Card
+                    p={4}
                     key={stake.stakingProvider}
                     boxShadow="none"
                     borderColor={
@@ -67,10 +70,16 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                         : undefined
                     }
                   >
-                    <Radio value={stake.stakingProvider} size="lg">
-                      <LabelMd ml={4}>
+                    <Radio value={stake.stakingProvider} size="lg" w="100%">
+                      <LabelSm as="span" mb={2} ml="4">
                         {getStakeTitle(stake.stakeType, i + 1)}
-                      </LabelMd>
+                      </LabelSm>
+                      <StakeAddressInfo
+                        as="span"
+                        stakingProvider={stake.stakingProvider}
+                        ml="4"
+                        my="0"
+                      />
                     </Radio>
                   </Card>
                 ))}
