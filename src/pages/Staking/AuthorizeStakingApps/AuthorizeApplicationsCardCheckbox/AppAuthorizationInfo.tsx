@@ -20,8 +20,6 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 export interface AppAuthorizationInfoProps extends StackProps {
   label: string
   percentageAuthorized: number
-  aprPercentage: number
-  slashingPercentage: number
   isAuthorized: boolean
   isAuthorizationRequired?: boolean
   authorizedStake?: string
@@ -30,8 +28,6 @@ export interface AppAuthorizationInfoProps extends StackProps {
 export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   label,
   percentageAuthorized,
-  aprPercentage,
-  slashingPercentage,
   isAuthorized,
   authorizedStake,
   isAuthorizationRequired = false,
@@ -56,25 +52,6 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
             Authorized
           </Badge>
         )}
-      </HStack>
-      <HStack>
-        <BoxLabel
-          icon={<Icon as={IoAlertCircle} />}
-          size="sm"
-          status="primary"
-          variant="solid"
-        >
-          APR &#183; {formatPercentage(aprPercentage, 0, true)}
-        </BoxLabel>
-        <BoxLabel
-          icon={<Icon as={IoAlertCircle} />}
-          size="sm"
-          status="primary"
-          variant="solid"
-        >
-          {"Slashing "} &#183;{" "}
-          {`${formatPercentage(slashingPercentage, 0, true)}`}
-        </BoxLabel>
       </HStack>
       {isAuthorizationRequired && isAuthorized && authorizedStake && (
         <>
