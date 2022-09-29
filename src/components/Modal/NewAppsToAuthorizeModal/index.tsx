@@ -5,13 +5,10 @@ import {
   AlertDescription,
   AlertIcon,
   BodyLg,
-  BodyMd,
   Box,
-  BoxLabel,
   Button,
   Card,
   H5,
-  HStack,
   LabelSm,
   Link,
   ModalBody,
@@ -23,12 +20,12 @@ import {
   Stack,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
+import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeTitle } from "../../../utils/getStakeTitle"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
-import shortenAddress from "../../../utils/shortenAddress"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
@@ -74,17 +71,15 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                     }
                   >
                     <Radio value={stake.stakingProvider} size="lg" w="100%">
-                      <Box ml={4} w="100">
-                        <LabelSm mb={2}>
-                          {getStakeTitle(stake.stakeType, i + 1)}
-                        </LabelSm>
-                        <HStack justifyContent="space-between" w="100">
-                          <BoxLabel>Provider Address</BoxLabel>
-                          <BodyMd color="brand.500">
-                            {shortenAddress(stake.stakingProvider)}
-                          </BodyMd>
-                        </HStack>
-                      </Box>
+                      <LabelSm as="span" mb={2} ml="4">
+                        {getStakeTitle(stake.stakeType, i + 1)}
+                      </LabelSm>
+                      <StakeAddressInfo
+                        as="span"
+                        stakingProvider={stake.stakingProvider}
+                        ml="4"
+                        my="0"
+                      />
                     </Radio>
                   </Card>
                 ))}
