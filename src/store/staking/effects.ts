@@ -1,5 +1,5 @@
 import { StakeData } from "../../types"
-import { AddressZero, isAddress } from "../../web3/utils"
+import { AddressZero, isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { selectStakeByStakingProvider } from "./selectors"
 import { requestStakeByStakingProvider, setStakes } from "./stakingSlice"
@@ -10,7 +10,12 @@ export const fetchStakeByStakingProviderEffect = async (
 ) => {
   const { stakingProvider } = actionCreator.payload
 
-  if (!stakingProvider || !isAddress(stakingProvider)) return
+  if (
+    !stakingProvider ||
+    !isAddress(stakingProvider) ||
+    isAddressZero(stakingProvider)
+  )
+    return
 
   const stake = selectStakeByStakingProvider(
     listenerApi.getState(),
