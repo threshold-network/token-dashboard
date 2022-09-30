@@ -139,15 +139,17 @@ const WalletBalances: FC = () => {
       </Button>
 
       {/* exchange rate link */}
-      <HStack justify="center" mt={4}>
+      <BodySm
+        color={useColorModeValue("gray.500", "gray.300")}
+        mt="4"
+        textAlign="center"
+      >
         <ExternalLink
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
-        />
-        <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-          about Exchange Rate
-        </BodySm>
-      </HStack>
+        />{" "}
+        about Exchange Rate
+      </BodySm>
     </CardTemplate>
   )
 }
