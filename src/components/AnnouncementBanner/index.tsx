@@ -10,8 +10,8 @@ import {
   useDisclosure,
   Image,
   BoxProps,
+  useMultiStyleConfig,
 } from "@threshold-network/components"
-import { useMultiStyleConfig } from "@chakra-ui/react"
 
 interface AnnouncementBannerProps {
   imgSrc: any
@@ -56,7 +56,7 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
       >
         <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
         <Stack>
-          <LabelMd sx={styles.preTitle}>{preTitle}</LabelMd>
+          {preTitle && <LabelMd sx={styles.preTitle}>{preTitle}</LabelMd>}
           <H4 sx={styles.title}>{title}</H4>
         </Stack>
         <Button as={RouterLink} to={href} sx={styles.ctaButton}>
