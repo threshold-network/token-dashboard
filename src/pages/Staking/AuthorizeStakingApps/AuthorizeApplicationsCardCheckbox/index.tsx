@@ -17,11 +17,10 @@ import {
   HStack,
 } from "@threshold-network/components"
 import { InfoIcon } from "@chakra-ui/icons"
-import { FC, RefObject, useCallback, useEffect } from "react"
-import { FormValues, TokenAmountForm } from "../../../../components/Forms"
+import { FC, Ref, useCallback, useEffect } from "react"
+import { FormValues } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
-import { WeiPerEther } from "@ethersproject/constants"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
@@ -33,6 +32,7 @@ import {
 import InfoBox from "../../../../components/InfoBox"
 import { formatDate } from "../../../../utils/date"
 import { calculatePercenteage } from "../../../../utils/percentage"
+import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 
 interface CommonProps {
   stakingAppId: StakingAppName | "pre"
@@ -87,7 +87,7 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   maxAuthAmount: string
   minAuthAmount: string
   canSubmitForm?: boolean
-  formRef?: RefObject<FormikProps<FormValues>>
+  formRef?: Ref<FormikProps<FormValues>>
 }
 
 const gridTemplate = {
@@ -299,10 +299,9 @@ export const AuthorizeApplicationsCardCheckbox: FC<
         </FilterTabs>
         {!hasPendingDeauthorization && (
           <GridItem gridArea="token-amount-form" mt={5}>
-            <TokenAmountForm
+            <StakingAppForm
               innerRef={formRef}
               onSubmitForm={onSubmitForm}
-              label="Amount"
               submitButtonText={
                 isIncreaseAction
                   ? appAuthData.isAuthorized
@@ -311,20 +310,18 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                   : "Initiate Deauthorization"
               }
               isDisabled={!canSubmitForm}
-              maxTokenAmount={
-                isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
-              }
+              totalStake={totalInTStake}
               placeholder={"Enter amount"}
-              minTokenAmount={
-                isIncreaseAction
-                  ? appAuthData.percentage === 0
-                    ? minAuthAmount
-                    : WeiPerEther.toString()
-                  : "0"
+              minimumAuthorizationAmount={minAuthAmount}
+              authorizedAmount={appAuthData.authorizedStake}
+              helperText={
+                appAuthData.isAuthorized && isIncreaseAction
+                  ? undefined
+                  : `Minimum ${formatTokenAmount(minAuthAmount)} T for ${
+                      appAuthData.label
+                    }`
               }
-              helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
-                appAuthData.label
-              }`}
+              isAuthorization={isIncreaseAction}
             />
           </GridItem>
         )}

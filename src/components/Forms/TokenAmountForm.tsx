@@ -16,25 +16,22 @@ export type FormValues = {
   tokenAmount: string
 }
 
-type TokenAmountFormProps = {
-  onSubmitForm: (tokenAmount: string) => void
+export type TokenAmountFormBaseProps = {
   submitButtonText: string
   maxTokenAmount: string | number
-  initialTokenAmount?: string
-  label?: string
+  label?: string | JSX.Element
   helperText?: string
   icon?: typeof Icon
   isDisabled?: boolean
   shouldValidateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
   token?: { decimals: number; symbol: string }
-  innerRef?: Ref<FormikProps<FormValues>>
   placeholder?: string
   minTokenAmount?: string | number
 }
 
-const TokenAmountFormBase: FC<
-  TokenAmountFormProps & FormikProps<FormValues>
+export const TokenAmountFormBase: FC<
+  TokenAmountFormBaseProps & FormikProps<FormValues>
 > = ({
   submitButtonText,
   maxTokenAmount,
@@ -83,6 +80,12 @@ const TokenAmountFormBase: FC<
     </Form>
   )
 }
+
+export type TokenAmountFormProps = {
+  innerRef?: Ref<FormikProps<FormValues>>
+  onSubmitForm: (tokenAmount: string) => void
+  initialTokenAmount?: string
+} & TokenAmountFormBaseProps
 
 export const TokenAmountForm = withFormik<TokenAmountFormProps, FormValues>({
   mapPropsToValues: (props) => ({
