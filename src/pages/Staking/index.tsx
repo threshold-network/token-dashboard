@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react"
-import { SimpleGrid, Stack } from "@chakra-ui/react"
+import { HStack, Stack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -20,6 +20,11 @@ import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 import StakeDetailsPage from "./StakeDetailsPage"
+import NewStakeCard from "./NewStakeCard"
+import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
+import { useRolesOf } from "../../hooks/useRolesOf"
+import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -35,28 +40,66 @@ const StakingPage: PageComponent = (props) => {
   const { stakes } = useStakingState()
   const totalRewardsBalance = useSelector(selectTotalRewardsBalance)
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
+  const hasStakes = stakes.length > 0
+
+  const { owner, authorizer, beneficiary } = useRolesOf()
+  const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
+    useOperatorMappedtoStakingProviderHelpers()
+
+  const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
+    const isStakingProviderUsed =
+      !isEmptyOrZeroAddress(owner) ||
+      !isEmptyOrZeroAddress(authorizer) ||
+      !isEmptyOrZeroAddress(beneficiary)
+
+    const isOperatorMappedInAllApps =
+      !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
+      !isEmptyOrZeroAddress(operatorMappedTbtc)
+
+    return (
+      isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
+    )
+  }, [
+    owner,
+    authorizer,
+    beneficiary,
+    operatorMappedRandomBeacon,
+    operatorMappedTbtc,
+    isInitialFetchDone,
+    isEmptyOrZeroAddress,
+  ])
 
   return (
-    <PageLayout {...props}>
-      <SimpleGrid
-        columns={[1, null, null, 2]}
-        spacing="4"
-        w="100%"
-        mt="4"
-        alignItems="self-start"
+    <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
+      <HStack
+        alignItems={{ base: "flex-end", lg: "flex-start" }}
+        w={"100%"}
+        flexDirection={{ base: "column", lg: "row" }}
+        spacing={5}
       >
-        <StakedPortfolioCard />
-        <Stack spacing={4}>
+        <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
+          {shouldDisplayOperatorAddressMappingCard && (
+            <OperatorAddressMappingCard />
+          )}
+          {hasStakes ? (
+            stakes.map((stake) => (
+              <StakeCard key={stake.stakingProvider} stake={stake} />
+            ))
+          ) : (
+            <NewStakeCard />
+          )}
+        </VStack>
+
+        <VStack w={"100%"} spacing={5}>
           <RewardsCard
             totalBonusBalance={totalBonusBalance}
             totalRewardsBalance={totalRewardsBalance}
           />
-          <StakingTVLCard tvl={data.total} />
-        </Stack>
-        {stakes.map((stake) => (
-          <StakeCard key={stake.stakingProvider} stake={stake} />
-        ))}
-      </SimpleGrid>
+          <StakedPortfolioCard />
+          <StakingTVLCard tvl={data.total} pb={"3rem"} />
+          {hasStakes && <NewStakeCard />}
+        </VStack>
+      </HStack>
     </PageLayout>
   )
 }
@@ -115,7 +158,13 @@ const Auth: PageComponent = () => {
 }
 
 const MainStakingPage: PageComponent = (props) => {
-  return <PageLayout {...props} />
+  return (
+    <PageLayout
+      pages={props.pages}
+      title={props.title}
+      maxW={{ base: "2xl", lg: "4xl", xl: "6xl" }}
+    />
+  )
 }
 
 StakingProviderDetails.route = {
