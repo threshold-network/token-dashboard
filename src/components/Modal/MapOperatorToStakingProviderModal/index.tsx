@@ -32,37 +32,30 @@ import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
-import { useOperatorsMappedToStakingProvider } from "../../../hooks/staking-applications"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 
-const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
+export interface MapOperatorToStakingProviderModalProps {
+  stakingProvider: string
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
+}
+
+const MapOperatorToStakingProviderModal: FC<
+  BaseModalProps & MapOperatorToStakingProviderModalProps
+> = ({ stakingProvider, mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { account } = useWeb3React()
-  const operatorMappedToStakingProviderHelpers =
-    useOperatorMappedtoStakingProviderHelpers()
-  const {
-    isOperatorMappedOnlyInRandomBeacon,
-    isOperatorMappedOnlyInTbtc,
-    operatorMappedRandomBeacon,
-    operatorMappedTbtc,
-  } = operatorMappedToStakingProviderHelpers
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
   const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
   const threshold = useThreshold()
 
-  // useEffect(() => {
-  //   const forceFormValidation = async () => {
-  //     if (hasBeenValidatedOnMount || !formRef.current) return
-  //     setHasBeenValidatedOnMount(true)
-  //     const errors = await formRef.current.validateForm()
-  //     if (errors) {
-  //       formRef.current.setErrors(errors)
-  //       formRef.current.setTouched({ operator: true })
-  //     }
-  //   }
-  //   forceFormValidation()
-  // })
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
 
   const onSubmit = async ({
     operator,
@@ -70,6 +63,8 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
     if (account) {
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,
+        mappedOperatorTbtc,
+        mappedOperatorRandomBeacon,
       })
     }
   }
@@ -137,18 +132,17 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
             formId="map-operator-to-staking-provider-form"
             initialAddress={
               isOperatorMappedOnlyInRandomBeacon
-                ? operatorMappedRandomBeacon
+                ? mappedOperatorRandomBeacon
                 : isOperatorMappedOnlyInTbtc
-                ? operatorMappedTbtc
+                ? mappedOperatorTbtc
                 : ""
             }
             onSubmitForm={onSubmit}
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
-            operatorMappedToStakingProviderHelpers={
-              operatorMappedToStakingProviderHelpers
-            }
+            mappedOperatorTbtc={mappedOperatorTbtc}
+            mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
           />
         </Box>
         <AlertBox

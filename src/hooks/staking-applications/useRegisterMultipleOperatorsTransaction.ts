@@ -3,16 +3,17 @@ import { isAddressZero } from "../../web3/utils"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "./useOperatorMappedToStakingProviderHelpers"
 import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modalQueue"
 import { useDispatch } from "react-redux"
+import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
   const dispatch = useDispatch()
+  const threshold = useThreshold()
 
   const {
     sendTransaction: sendRegisterOperatorTransactionTbtc,
@@ -23,24 +24,31 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     status: registerOperatorRandomBeaconStatus,
   } = useRegisterOperatorTransaction("randomBeacon")
 
-  const {
-    operatorMappedRandomBeacon,
-    operatorMappedTbtc,
-    isOperatorMappedOnlyInRandomBeacon,
-    isOperatorMappedOnlyInTbtc,
-  } = useOperatorMappedtoStakingProviderHelpers()
-
   const registerMultipleOperators = useCallback(
     async (operator: string) => {
       try {
         if (!account) {
           throw new Error("Connect to the staking provider account first!")
         }
+        const {
+          tbtc: mappedOperatorTbtc,
+          randomBeacon: mappedOperatorRandomBeacon,
+        } = await threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
+          account
+        )
         if (
-          !isAddressZero(operatorMappedRandomBeacon) &&
-          !isAddressZero(operatorMappedTbtc)
+          !isAddressZero(mappedOperatorRandomBeacon) &&
+          !isAddressZero(mappedOperatorTbtc)
         )
           throw new Error("Both apps already have mapped operator!")
+
+        const isOperatorMappedOnlyInTbtc =
+          !isAddressZero(mappedOperatorTbtc) &&
+          isAddressZero(mappedOperatorRandomBeacon)
+
+        const isOperatorMappedOnlyInRandomBeacon =
+          isAddressZero(mappedOperatorTbtc) &&
+          !isAddressZero(mappedOperatorRandomBeacon)
 
         if (isOperatorMappedOnlyInRandomBeacon)
           throw new Error("Random beacon app already has mapped operator!")
