@@ -24,8 +24,6 @@ export type OperatorMappedSuccessTx = {
   txHash: string
 }
 
-// export type MapOperatorToSuccessM
-
 export type MapOperatorToStakingProviderSuccessProps = BaseModalProps & {
   transactions: OperatorMappedSuccessTx[]
 }
