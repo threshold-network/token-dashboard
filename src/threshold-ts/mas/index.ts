@@ -14,6 +14,11 @@ export interface SupportedAppAuthorizationParameters {
   randomBeacon: AuthorizationParameters
 }
 
+export interface MappedOperatorsForStakingProvider {
+  tbtc: string
+  randomBeacon: string
+}
+
 export class MultiAppStaking {
   private _staking: IStaking
   private _multicall: IMulticall
@@ -61,6 +66,33 @@ export class MultiAppStaking {
     return {
       tbtc: tbtcMinAuthorizationParams,
       randomBeacon: randomBeaconMinAuthorizationParams,
+    }
+  }
+
+  async getMappedOperatorsForStakingProvider(
+    stakingProvider: string
+  ): Promise<MappedOperatorsForStakingProvider> {
+    const calls: ContractCall[] = [
+      {
+        interface: this.ecdsa.contract.interface,
+        address: this.ecdsa.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
+      {
+        interface: this.randomBeacon.contract.interface,
+        address: this.randomBeacon.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
+    ]
+
+    const [tbtcMinAuthorizationParams, randomBeaconMinAuthorizationParams] =
+      await this._multicall.aggregate(calls)
+
+    return {
+      tbtc: tbtcMinAuthorizationParams.toString(),
+      randomBeacon: randomBeaconMinAuthorizationParams.toString(),
     }
   }
 }
