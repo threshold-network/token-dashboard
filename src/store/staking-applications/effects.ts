@@ -171,9 +171,12 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const result = await listenerApi.condition((action, currentState: any) => {
-    return currentState.modalQueue.isSuccessfullLoginModalClosed
-  })
+  const { modalQueue } = listenerApi.getState()
+  if (!modalQueue.isSuccessfullLoginModalClosed) {
+    await listenerApi.condition((action, currentState: any) => {
+      return currentState.modalQueue.isSuccessfullLoginModalClosed
+    })
+  }
   const { connectedAccount, staking } = listenerApi.getState()
   const { address } = connectedAccount
   if (address) {
@@ -201,6 +204,8 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
           stakingProvider = address
         }
       }
+
+      console.log("SP", stakingProvider)
 
       if (stakingProvider) {
         const mappedOperators =
