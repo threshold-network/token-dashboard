@@ -110,7 +110,7 @@ const StakingApplications: PageComponent = () => {
                   <Stack>
                     <BodyMd>Change your authorized amount at any time. </BodyMd>
                     <BodyXs>
-                      There is a deauthorization cooldown period of 14 days.
+                      There is a deauthorization cooldown period of 45 days.
                     </BodyXs>
                   </Stack>
                 </BodyMd>

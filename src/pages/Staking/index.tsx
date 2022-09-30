@@ -15,7 +15,12 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { FilterTabs, FilterTab, BodyLg } from "@threshold-network/components"
+import {
+  FilterTabs,
+  FilterTab,
+  BodyLg,
+  H4,
+} from "@threshold-network/components"
 import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
@@ -78,6 +83,13 @@ const StakingPage: PageComponent = (props) => {
         spacing={5}
       >
         <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
+          <H4
+            alignSelf={"flex-start"}
+            display={{ sm: "none", xl: "block" }}
+            mb={10}
+          >
+            Your Stake
+          </H4>
           {shouldDisplayOperatorAddressMappingCard && (
             <OperatorAddressMappingCard />
           )}
@@ -91,6 +103,13 @@ const StakingPage: PageComponent = (props) => {
         </VStack>
 
         <VStack w={"100%"} spacing={5}>
+          <H4
+            alignSelf={"flex-start"}
+            display={{ sm: "none", lg: "block" }}
+            mb={10}
+          >
+            Overview
+          </H4>
           <RewardsCard
             totalBonusBalance={totalBonusBalance}
             totalRewardsBalance={totalRewardsBalance}

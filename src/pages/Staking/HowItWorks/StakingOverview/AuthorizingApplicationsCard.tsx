@@ -60,10 +60,10 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
         <FlowStep
           status={FlowStepStatus.active}
           preTitle="Step 2"
-          title="14 day cooldown"
+          title="45 day cooldown"
           size="sm"
         >
-          You must wait a 14 day cooldown to then confirm the deauthorization.
+          You must wait a 45 day cooldown to then confirm the deauthorization.
           This is 1 transaction.
         </FlowStep>
       </Stack>

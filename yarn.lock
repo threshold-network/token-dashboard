@@ -4960,9 +4960,9 @@
     "@openzeppelin/contracts" "^4.1.0"
 
 "@threshold-network/components@development":
-  version "1.0.0-dev.17"
-  resolved "https://registry.yarnpkg.com/@threshold-network/components/-/components-1.0.0-dev.17.tgz#48f232a9c4f63d1c02fbd482aa3f6ab80a4491a8"
-  integrity sha512-A19XZueC5TDZDaCTDEAJ3gSnypZ7UMmf5p8F1QkgdC/hdQWsyZs6Z0ZGfKikAkOzTJx0dV72lPOR0aXrCNki0A==
+  version "1.0.0-dev.21"
+  resolved "https://registry.npmjs.org/@threshold-network/components/-/components-1.0.0-dev.21.tgz#29566c1ec0e14cb4de4ba9af8fb609188f6b9224"
+  integrity sha512-F1hc8Emytye9qv+9QiW7IL1Lm5EoEYTbskqWMFcKj0Alb9N7vBlgD/zophABnzyhw3sYJJZvfcSMdU60qi5dhA==
 
 "@threshold-network/solidity-contracts@1.2.0-dev.17", "@threshold-network/solidity-contracts@development":
   version "1.2.0-dev.17"
