@@ -6,7 +6,8 @@ import {
   IconButton,
   Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
+  H5,
+} from "@threshold-network/components"
 import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import HamburgerButton from "./HamburgerButton"
@@ -16,7 +17,6 @@ import NetworkButton from "./NetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
-import { H5 } from "@threshold-network/components"
 import { pages } from "../../pages"
 import { PageComponent } from "../../types"
 
@@ -36,6 +36,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   const isMobile = useChakraBreakpoint("md")
   const IconComponent = useColorModeValue(ThresholdPurple, ThresholdWhite)
   const isOverviewPage = useMatch("overview/*")
+  const borderBottomColor = useColorModeValue("gray.100", "gray.700")
 
   return (
     <>
@@ -43,7 +44,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         p={6}
         pr={{ base: 6, md: 24 }}
         borderBottom={isOverviewPage ? undefined : "1px"}
-        borderColor="gray.100"
+        borderColor={borderBottomColor}
         display="flex"
       >
         <Routes>{pages.map(renderPageTitle)}</Routes>
