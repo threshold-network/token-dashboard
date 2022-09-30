@@ -57,7 +57,6 @@ const HowItWorksPage: PageComponent = () => {
         buttonText="Start Staking"
         size="lg"
         hideCloseBtn
-        variant="secondary"
         mb={8}
       />
       {featureFlags.MULTI_APP_STAKING && (

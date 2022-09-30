@@ -6,6 +6,7 @@ export const AuthorizeApplicationsBanner = () => {
   return (
     <AnnouncementBanner
       imgSrc={authorizeAppsFingerPrint}
+      preTitle="Get Started"
       title="Authorize Threshold apps and stake your T to earn rewards."
       href="/staking"
       buttonText="Start Staking"

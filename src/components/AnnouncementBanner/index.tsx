@@ -1,20 +1,21 @@
-import { FC, useMemo } from "react"
+import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Card,
   H4,
+  LabelMd,
   Button,
   CloseButton,
   Stack,
   useDisclosure,
   Image,
   BoxProps,
-  useColorMode,
 } from "@threshold-network/components"
 import { useMultiStyleConfig } from "@chakra-ui/react"
 
 interface AnnouncementBannerProps {
   imgSrc: any
+  preTitle?: string
   title: string
   buttonText: string
   href: string
@@ -24,6 +25,7 @@ interface AnnouncementBannerProps {
 }
 
 const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
+  preTitle,
   title,
   imgSrc,
   buttonText,
@@ -53,7 +55,10 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
         sx={styles.subContainer}
       >
         <Image maxW={size == "sm" ? "146px" : "280px"} src={imgSrc} />
-        <H4 sx={styles.title}>{title}</H4>
+        <Stack>
+          <LabelMd sx={styles.preTitle}>{preTitle}</LabelMd>
+          <H4 sx={styles.title}>{title}</H4>
+        </Stack>
         <Button as={RouterLink} to={href} sx={styles.ctaButton}>
           {buttonText}
         </Button>
