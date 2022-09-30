@@ -88,7 +88,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Get upstream packages versions
-        if: inputs.upstreamBuilds == true
+        if: inputs.useUpstreamBuilds == true
         uses: keep-network/ci/actions/upstream-builds-query@v2
         id: upstream-builds-query
         with:
