@@ -18,14 +18,8 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       position: "relative",
       px: "16",
       mb: 4,
-      // TODO: update to gradient.4 when components PR is merged
-      // https://github.com/threshold-network/components/pull/25
-      bg: mode(
-        "linear-gradient(to bottom right, #F0E1FF, #D7C9FF)",
-
-        // TODO: Figure out if this is a new color in the DS (gray.1000 ?)
-        "#13171B"
-      )(props),
+      bg: mode("gradient.4", "#13171B")(props),
+      borderColor: mode("brand.100", "brand.500")(props),
     },
     closeButton: {
       position: "absolute",
