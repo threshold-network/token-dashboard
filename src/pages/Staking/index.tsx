@@ -15,7 +15,12 @@ import {
   selectTotalRewardsBalance,
 } from "../../store/rewards"
 import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
-import { FilterTabs, FilterTab, BodyLg } from "@threshold-network/components"
+import {
+  FilterTabs,
+  FilterTab,
+  BodyLg,
+  H4,
+} from "@threshold-network/components"
 import { Link, Outlet, useLocation, useParams } from "react-router-dom"
 import { Link as RouterLink } from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
@@ -45,6 +50,12 @@ const StakingPage: PageComponent = (props) => {
         mt="4"
         alignItems="self-start"
       >
+        <H4 display={{ sm: "none", xl: "block" }} mb={10}>
+          Your Stake
+        </H4>
+        <H4 display={{ sm: "none", xl: "block" }} mb={10}>
+          Overview
+        </H4>
         <StakedPortfolioCard />
         <Stack spacing={4}>
           <RewardsCard
