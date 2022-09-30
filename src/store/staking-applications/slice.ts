@@ -198,6 +198,16 @@ export const stakingApplicationsSlice = createSlice({
       state[appName].mappedOperator.isFetching = false
       state[appName].mappedOperator.error = error
     },
+    operatorMapped: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        operator: string
+      }>
+    ) => {
+      const { appName, operator } = action.payload
+      state[appName].mappedOperator.data = operator
+    },
     authorizationIncreased: (
       state: StakingApplicationsState,
       action: PayloadAction<{
@@ -354,3 +364,5 @@ export const registerStakingAppsListeners = () => {
   }
 }
 registerStakingAppsListeners()
+
+export const { operatorMapped } = stakingApplicationsSlice.actions

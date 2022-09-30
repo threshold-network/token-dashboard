@@ -21,18 +21,13 @@ import MapOperatorToStakingProviderForm, {
   MapOperatorToStakingProviderFormValues,
 } from "./MapOperatorToStakingProviderForm"
 import { FormikProps } from "formik"
-import { featureFlags } from "../../../constants"
 import { ModalType } from "../../../enums"
-import { openModal } from "../../../store/modal"
-import { updateState } from "../../../store/staking"
-import { FormValues } from "../../Forms"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
-import { useOperatorsMappedToStakingProvider } from "../../../hooks/staking-applications"
 import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 
 const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
@@ -48,21 +43,7 @@ const MapOperatorToStakingProviderModal: FC<BaseModalProps> = () => {
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
-  const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
   const threshold = useThreshold()
-
-  // useEffect(() => {
-  //   const forceFormValidation = async () => {
-  //     if (hasBeenValidatedOnMount || !formRef.current) return
-  //     setHasBeenValidatedOnMount(true)
-  //     const errors = await formRef.current.validateForm()
-  //     if (errors) {
-  //       formRef.current.setErrors(errors)
-  //       formRef.current.setTouched({ operator: true })
-  //     }
-  //   }
-  //   forceFormValidation()
-  // })
 
   const onSubmit = async ({
     operator,

@@ -80,6 +80,7 @@ export const stakingSlice = createSlice({
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },
+    providerStakedForStakingProvider: (state: StakingState, action) => {},
     toppedUp: (
       state: StakingState,
       action: PayloadAction<ToppedUpActionPayload>
@@ -179,6 +180,7 @@ export const {
   updateState,
   setStakes,
   providerStaked,
+  providerStakedForStakingProvider,
   toppedUp,
   unstaked,
   setMinStake,
