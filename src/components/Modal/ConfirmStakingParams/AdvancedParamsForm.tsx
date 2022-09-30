@@ -1,4 +1,4 @@
-import { FC, Ref, useMemo } from "react"
+import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
