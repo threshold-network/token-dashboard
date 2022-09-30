@@ -88,7 +88,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
         }
 
         if (successfullTxs.length === 2) {
-          openModal(ModalType.StakingApplicationsAuthorized, {
+          openModal(ModalType.MapOperatorToStakingProviderSuccess, {
             transactions: successfullTxs,
           })
         }
