@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { HStack, Stack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
@@ -22,13 +22,20 @@ import { stakingApplicationsSlice } from "../../store/staking-applications/slice
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
-import { useRolesOf } from "../../hooks/useRolesOf"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
+import { useAppSelector } from "../../hooks/store"
+import { selectStakingAppByStakingProvider } from "../../store/staking-applications"
+import { RootState } from "../../store"
+import useCheckDuplicateProviderAddress from "../../web3/hooks/useCheckDuplicateProviderAddress"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
   const dispatch = useDispatch()
+  const { address } = useSelector((state: RootState) => state.connectedAccount)
+  const [
+    displayOperatorAddressMappingCard,
+    setDisplayOperatorAddressMappingCard,
+  ] = useState(false)
 
   useEffect(() => {
     dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
@@ -42,30 +49,39 @@ const StakingPage: PageComponent = (props) => {
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
   const hasStakes = stakes.length > 0
 
-  const { owner, authorizer, beneficiary } = useRolesOf()
-  const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
-    useOperatorMappedtoStakingProviderHelpers()
+  const checkIfProviderUsed = useCheckDuplicateProviderAddress()
 
-  const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
-    const isStakingProviderUsed =
-      !isEmptyOrZeroAddress(owner) ||
-      !isEmptyOrZeroAddress(authorizer) ||
-      !isEmptyOrZeroAddress(beneficiary)
+  const tbtcAppAuthData = useAppSelector((state) =>
+    selectStakingAppByStakingProvider(state, "tbtc", address)
+  )
 
-    const isOperatorMappedInAllApps =
-      !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
-      !isEmptyOrZeroAddress(operatorMappedTbtc)
+  const randomBeaconAuthData = useAppSelector((state) =>
+    selectStakingAppByStakingProvider(state, "randomBeacon", address)
+  )
 
-    return (
-      isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
-    )
+  // TODO: fix this - the modal displays for staking provider that has all
+  // operators mapped
+  useEffect(() => {
+    const checkIfShouldDisplayOperatorAddressMappingCard = async () => {
+      if (address) {
+        const { isProviderUsedForT } = await checkIfProviderUsed(address)
+        const isOperatorMappedInAllApps =
+          !isEmptyOrZeroAddress(randomBeaconAuthData.mappedOperator) &&
+          !isEmptyOrZeroAddress(tbtcAppAuthData.mappedOperator)
+
+        if (isProviderUsedForT && !isOperatorMappedInAllApps) {
+          setDisplayOperatorAddressMappingCard(false)
+        } else {
+          setDisplayOperatorAddressMappingCard(true)
+        }
+      }
+    }
+    checkIfShouldDisplayOperatorAddressMappingCard()
   }, [
-    owner,
-    authorizer,
-    beneficiary,
-    operatorMappedRandomBeacon,
-    operatorMappedTbtc,
-    isInitialFetchDone,
+    checkIfProviderUsed,
+    address,
+    randomBeaconAuthData.mappedOperator,
+    tbtcAppAuthData.mappedOperator,
     isEmptyOrZeroAddress,
   ])
 
@@ -78,8 +94,11 @@ const StakingPage: PageComponent = (props) => {
         spacing={5}
       >
         <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
-          {shouldDisplayOperatorAddressMappingCard && (
-            <OperatorAddressMappingCard />
+          {displayOperatorAddressMappingCard && (
+            <OperatorAddressMappingCard
+              operatorMappedTbtc={tbtcAppAuthData.mappedOperator}
+              operatorMappedRandomBeacon={tbtcAppAuthData.mappedOperator}
+            />
           )}
           {hasStakes ? (
             stakes.map((stake) => (

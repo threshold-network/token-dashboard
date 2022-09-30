@@ -65,6 +65,11 @@ export interface StakingProviderAppInfo<
    * value if it cannot be estimated
    */
   deauthorizationCreatedAt: undefined | NumberType
+
+  /**
+   * Operator mapped to currently logged in staking provider
+   */
+  mappedOperator: string
 }
 
 /**
@@ -282,6 +287,12 @@ export class Application implements IApplication {
         address: this.contract.address,
         method: "authorizationParameters",
       },
+      {
+        interface: this.contract.interface,
+        address: this.contract.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
     ]
 
     const [
@@ -290,6 +301,7 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay,
       requestTimestamp,
       { authorizationDecreaseDelay },
+      mappedOperator,
     ] = await this._multicall.aggregate(calls)
 
     const _remainingAuthorizationDecreaseDelay = BigNumber.from(
@@ -323,6 +335,7 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay,
       isDeauthorizationReqestActive,
       deauthorizationCreatedAt,
+      mappedOperator,
     }
   }
 

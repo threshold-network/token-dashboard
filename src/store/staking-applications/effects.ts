@@ -145,6 +145,7 @@ const getKeepStakingAppStakingProvidersData = async (
           isDeauthorizationReqestActive: _appData.isDeauthorizationReqestActive,
           deauthorizationCreatedAt:
             _appData.deauthorizationCreatedAt?.toString(),
+          mappedOperator: _appData.mappedOperator.toString(),
         }
         return reducer
       },
@@ -204,8 +205,6 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
           stakingProvider = address
         }
       }
-
-      console.log("SP", stakingProvider)
 
       if (stakingProvider) {
         const mappedOperators =

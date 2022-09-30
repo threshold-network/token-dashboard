@@ -8,14 +8,24 @@ import {
   HStack,
 } from "@threshold-network/components"
 import { LabelSm } from "@threshold-network/components"
+import { FC } from "react"
 import { ModalType } from "../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
+import { isAddressZero } from "../../web3/utils"
 
-const OperatorAddressMappingCard = () => {
+const OperatorAddressMappingCard: FC<{
+  operatorMappedTbtc: string
+  operatorMappedRandomBeacon: string
+}> = ({ operatorMappedTbtc, operatorMappedRandomBeacon }) => {
   const { openModal } = useModal()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    useOperatorMappedtoStakingProviderHelpers()
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(operatorMappedTbtc) &&
+    isAddressZero(operatorMappedRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(operatorMappedTbtc) &&
+    !isAddressZero(operatorMappedRandomBeacon)
+
   const isOneOfTheAppsNotMapped =
     isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
 
