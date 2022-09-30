@@ -5,6 +5,7 @@ const parts = anatomy("AnnouncementBanner").parts(
   "closeButton",
   "image",
   "subContainer",
+  "preTitle",
   "title",
   "ctaButton"
 )
@@ -17,6 +18,8 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       position: "relative",
       px: "16",
       mb: 4,
+      bg: mode("gradient.4", "#13171B")(props),
+      borderColor: mode("brand.100", "brand.500")(props),
     },
     closeButton: {
       position: "absolute",
@@ -29,6 +32,12 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
     },
     image: {
       maxW: props.size == "sm" ? "146px" : "280px",
+    },
+    preTitle: {
+      color: mode(undefined, "brand.300")(props),
+      background: mode("gradient.3", undefined)(props),
+      backgroundClip: mode("text", undefined)(props),
+      textFillColor: mode("transparent", undefined)(props),
     },
     title: {
       textAlign: { base: "center", xl: "unset" },
@@ -44,16 +53,7 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
   }
 }
 
-const variants = {
-  secondary: (props: any) => ({
-    container: {
-      background: mode("brand.50", "gray.800")(props),
-    },
-  }),
-}
-
 export const AnnouncementBanner = {
   parts: parts.keys,
   baseStyle,
-  variants,
 }
