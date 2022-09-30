@@ -50,7 +50,7 @@ export const useSubscribeToStakedEvent = () => {
         })
       )
     },
-    [null, [account]]
+    [null, account]
   )
 
   /**
