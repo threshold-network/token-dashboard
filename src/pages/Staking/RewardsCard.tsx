@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Button, VStack } from "@chakra-ui/react"
+import { Button, useColorModeValue, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import {
   BodyMd,
@@ -31,6 +31,8 @@ const RewardsCard: FC<{
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
 
+  const timerColor = useColorModeValue("brand.500", "brand.300")
+
   return (
     <Card>
       <HStack justifyContent={"space-between"} alignItems="flex-start">
@@ -44,7 +46,7 @@ const RewardsCard: FC<{
             <LabelSm textTransform="uppercase">Next emission</LabelSm>
             <BodyMd
               as="span"
-              color="brand.500"
+              color={timerColor}
             >{`${days}d : ${hours}h : ${minutes}m : ${seconds}s`}</BodyMd>
           </VStack>
         )}
