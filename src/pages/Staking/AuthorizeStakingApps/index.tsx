@@ -41,6 +41,7 @@ import { FormValues } from "../../../components/Forms"
 import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
+import { useColorModeValue } from "@chakra-ui/react"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -200,6 +201,8 @@ const AuthorizeStakingAppsPage: FC = () => {
     )
   }
 
+  const alertTextColor = useColorModeValue("gray.700", "white")
+
   return active ? (
     <>
       <Card>
@@ -227,7 +230,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           </AlertBox>
         )}
         <AlertBox status="magic" alignItems="flex-start">
-          <AlertDescription color={"gray.700"}>
+          <AlertDescription color={alertTextColor}>
             In order to earn rewards, please authorize Threshold apps to use
             your stake. Note that you can authorize 100% of your stake for all
             of the apps. You can change this amount at any time.
