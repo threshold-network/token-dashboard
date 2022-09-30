@@ -62,7 +62,7 @@ export const useAuthorizeMultipleAppsTransaction = () => {
         openModal(ModalType.TransactionFailed, {
           error:
             (error as Error)?.message ||
-            "Error: Couldn't authorize applications",
+            new Error("Error: Couldn't authorize applications"),
           isExpandableError: true,
         })
       }

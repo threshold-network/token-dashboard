@@ -17,6 +17,9 @@ import {
   selectStakingAppByStakingProvider,
   selectStakingAppStateByAppName,
 } from "./selectors"
+import { isAddressZero } from "../../web3/utils"
+import { featureFlags } from "../../constants"
+import { mapOperatorToStakingProviderModalClosed } from "../modalQueue"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -165,6 +168,114 @@ const getKeepStakingAppStakingProvidersData = async (
   }
 }
 
+export const getMappedOperatorsEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  try {
+    const { connectedAccount } = listenerApi.getState()
+    const { address } = connectedAccount
+
+    if (address) {
+      listenerApi.unsubscribe()
+      getMappedOperatorEffect(address, "randomBeacon", listenerApi)
+      getMappedOperatorEffect(address, "tbtc", listenerApi)
+    }
+  } catch (error) {
+    console.log(
+      "Could not fetch mapped operator for connected staking provider: ",
+      error
+    )
+    listenerApi.subscribe()
+  }
+}
+
+const getMappedOperatorEffect = async (
+  stakingProvider: string,
+  appName: StakingAppName,
+  listenerApi: AppListenerEffectAPI
+) => {
+  try {
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.fetchingMappedOperator({
+        appName,
+      })
+    )
+    const appNameProp = appName === "tbtc" ? "ecdsa" : appName
+    if (stakingProvider) {
+      const operatorMapped = await listenerApi.extra.threshold.multiAppStaking[
+        appNameProp
+      ].stakingProviderToOperator(stakingProvider)
+      listenerApi.dispatch(
+        stakingApplicationsSlice.actions.setMappedOperator({
+          appName: appName,
+          operator: operatorMapped,
+        })
+      )
+      listenerApi.dispatch(
+        stakingApplicationsSlice.actions.setMappedOperatorInitialFetch({
+          appName: appName,
+          value: true,
+        })
+      )
+    }
+  } catch (error) {
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setStakingProvidersAppDataError({
+        appName,
+        error: (error as Error).toString(),
+      })
+    )
+    throw error
+  }
+}
+
+export const displayMapOperatorToStakingProviderModalEffect = async (
+  action: AnyAction,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { connectedAccount } = listenerApi.getState()
+  const { address } = connectedAccount
+  if (address) {
+    // check if the current connected address is used somewhere as a staking
+    // provider
+    listenerApi.unsubscribe()
+    const { owner, authorizer, beneficiary } =
+      await listenerApi.extra.threshold.staking.rolesOf(address)
+
+    if (
+      !isAddressZero(owner) ||
+      !isAddressZero(authorizer) ||
+      !isAddressZero(beneficiary)
+    ) {
+      if (featureFlags.MULTI_APP_STAKING) {
+        listenerApi.dispatch(
+          openModal({ modalType: ModalType.MapOperatorToStakingProvider })
+        )
+      }
+    }
+  }
+}
+
+export const shouldDisplayMapOperatorToStakingProviderModal = (
+  action: AnyAction,
+  currentState: RootState,
+  previousState: RootState
+) => {
+  return (
+    !!currentState.connectedAccount.address &&
+    currentState.modalQueue.isSuccessfullLoginModalClosed &&
+    (currentState.applications.randomBeacon.mappedOperator
+      .isInitialFetchDone as boolean) &&
+    (currentState.applications.tbtc.mappedOperator
+      .isInitialFetchDone as boolean) &&
+    (isAddressZero(
+      currentState.applications.randomBeacon.mappedOperator.data
+    ) ||
+      isAddressZero(currentState.applications.tbtc.mappedOperator.data))
+  )
+}
+
 export const displayNewAppsToAuthorizeModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
@@ -197,7 +308,12 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
   previousState: RootState
 ) => {
   return (
-    stakingApplicationsSlice.actions.setStakingProvidersAppData.match(action) &&
+    currentState.modalQueue.isSuccessfullLoginModalClosed &&
+    (currentState.modalQueue.isMappingOperatorToStakingProviderModalClosed ||
+      (!isAddressZero(
+        currentState.applications.randomBeacon.mappedOperator.data
+      ) &&
+        !isAddressZero(currentState.applications.tbtc.mappedOperator.data))) &&
     Object.values(
       currentState.applications.randomBeacon.stakingProviders.data ?? {}
     ).length > 0 &&

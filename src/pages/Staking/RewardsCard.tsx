@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Button } from "@chakra-ui/react"
+import { Button, useColorModeValue, VStack } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import {
   BodyMd,
@@ -31,25 +31,27 @@ const RewardsCard: FC<{
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
 
+  const timerColor = useColorModeValue("brand.500", "brand.300")
+
   return (
     <Card>
-      <LabelSm textTransform="uppercase">Rewards</LabelSm>
-      <HStack mt="6">
-        <BodyMd>Total Rewards</BodyMd>
+      <HStack justifyContent={"space-between"} alignItems="flex-start">
+        <LabelSm textTransform="uppercase">Rewards</LabelSm>
         {hasBonusRewards ? (
           <Badge variant="magic" ml="auto !important">
             staking bonus
           </Badge>
         ) : (
-          <BodyMd ml="auto !important">
-            Next rewards emission:{" "}
+          <VStack alignItems={"flex-end"}>
+            <LabelSm textTransform="uppercase">Next emission</LabelSm>
             <BodyMd
               as="span"
-              color="brand.500"
-            >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
-          </BodyMd>
+              color={timerColor}
+            >{`${days}d : ${hours}h : ${minutes}m : ${seconds}s`}</BodyMd>
+          </VStack>
         )}
       </HStack>
+      <BodyMd mt="6">Total Rewards</BodyMd>
       <InfoBox mt="2" direction="row" p={active ? 0 : 4} alignItems="center">
         {active ? (
           <>

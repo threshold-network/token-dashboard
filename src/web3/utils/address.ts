@@ -26,4 +26,8 @@ export const isSameETHAddress = (
 export const isAddressZero = (address: string): boolean =>
   isSameETHAddress(address, AddressZero)
 
+export const isEmptyOrZeroAddress = (address: string): boolean => {
+  return !isAddress(address) || isAddressZero(address)
+}
+
 export { AddressZero }

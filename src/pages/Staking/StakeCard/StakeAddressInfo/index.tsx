@@ -2,7 +2,7 @@ import { FC } from "react"
 import { BoxLabel, Flex, FlexProps } from "@threshold-network/components"
 import { CopyAddressToClipboard } from "../../../../components/CopyToClipboard"
 
-const StakeAddressInfo: FC<{ stakingProvider: string } & FlexProps> = ({
+const StakeAddressInfo: FC<FlexProps & { stakingProvider: string }> = ({
   stakingProvider,
   ...restProps
 }) => {

@@ -43,7 +43,9 @@ import {
   useSubscribeToAuthorizationIncreasedEvent,
   useSubscribeToAuthorizationDecreaseApprovedEvent,
   useSubscribeToAuthorizationDecreaseRequestedEvent,
+  useSubscribeToOperatorRegisteredEvent,
 } from "./hooks/staking-applications"
+import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -59,6 +61,8 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToAuthorizationDecreaseApprovedEvent("randomBeacon")
   useSubscribeToAuthorizationDecreaseRequestedEvent("tbtc")
   useSubscribeToAuthorizationDecreaseRequestedEvent("randomBeacon")
+  useSubscribeToOperatorRegisteredEvent("tbtc")
+  useSubscribeToOperatorRegisteredEvent("randomBeacon")
 
   return <></>
 }
@@ -135,6 +139,7 @@ const AppBody = () => {
 
   useCheckBonusEligibility()
   useFetchStakingRewards()
+  useSaveConnectedAddressToStore()
 
   return <Routing />
 }

@@ -11,13 +11,15 @@ import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "@threshold-network/components"
-import { WalletOption } from "../../../types"
+import { BaseModalProps, WalletOption } from "../../../types"
 import coinbaseConnector from "../../../web3/connectors/coinbaseWallet"
 import ConnectCoinbase from "./ConnectCoinbase"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
+import { useModal } from "../../../hooks/useModal"
 
-const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
+const SelectWalletModal: FC<BaseModalProps> = () => {
   const { activate, deactivate } = useWeb3React()
+  const { closeModal } = useModal()
 
   const walletOptions: WalletOption[] = [
     {
@@ -82,7 +84,7 @@ const SelectWalletModal: FC<{ closeModal: () => void }> = ({ closeModal }) => {
       <ModalHeader>
         <H5>Connect a Wallet</H5>
       </ModalHeader>
-      <ModalCloseButton />
+      <ModalCloseButton onClick={closeModal} />
       {walletToConnect === null && (
         <InitialWalletSelection walletOptions={walletOptions} />
       )}

@@ -166,6 +166,33 @@ export interface IApplication {
     stakingProvider: string,
     amount: BigNumberish
   ): Promise<ContractTransaction>
+
+  /**
+   * Copied from:
+   * https://github.com/keep-network/keep-core/blob/main/solidity/random-beacon/contracts/RandomBeacon.sol#L712
+   *
+   * Used by staking provider to set operator address that will operate ECDSA
+   * node. The given staking provider can set operator address only one time.
+   * The operator address can not be changed and must be unique. Reverts if the
+   * operator is already set for the staking provider or if the operator address
+   * is already in use. Reverts if there is a pending authorization decrease for
+   * the staking provider.
+   * @param operator Operator address
+   */
+  registerOperator(operator: string): Promise<ContractTransaction>
+
+  /**
+   * Used to get a registered operator mapped to the given staking provider
+   * @param stakingProvider Staking provider address
+   */
+  stakingProviderToOperator(stakingProvider: string): Promise<string>
+
+  /**
+   * Used to get staking provider address mapped to the given registered
+   * operator address
+   * @param operator Operator address
+   */
+  operatorToStakingProvider(operator: string): Promise<string>
 }
 
 export class Application implements IApplication {
@@ -346,5 +373,19 @@ export class Application implements IApplication {
       this.address,
       amount
     )
+  }
+
+  registerOperator = async (operator: string): Promise<ContractTransaction> => {
+    return await this._application.registerOperator(operator)
+  }
+
+  stakingProviderToOperator = async (
+    stakingProvider: string
+  ): Promise<string> => {
+    return await this._application.stakingProviderToOperator(stakingProvider)
+  }
+
+  operatorToStakingProvider = async (operator: string): Promise<string> => {
+    return await this._application.operatorToStakingProvider(operator)
   }
 }

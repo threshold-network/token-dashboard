@@ -16,6 +16,12 @@ export interface Stake<NumberType extends BigNumberish = BigNumber> {
   // TODO: add `possibleKeepTopUpInT` and `possibleNuTopUpInT`.
 }
 
+export interface RolesOf {
+  owner: string
+  beneficiary: string
+  authorizer: string
+}
+
 export interface IStaking {
   stakingContract: Contract
   /**
@@ -54,6 +60,17 @@ export interface IStaking {
     application: string,
     amount: BigNumberish
   ): Promise<ContractTransaction>
+
+  /**
+   * Gets the stake owner, the beneficiary and the authorizer for the specified
+   * staking provider address.
+   * @param stakingProvider Staking provider address
+   * @returns Object containing owner, beneficiary and authorizer of the given
+   * stake. If the staking provider is not used in any stake then it returns
+   * zero address for each role.
+   */
+  rolesOf(stakingProvider: string): Promise<RolesOf>
+
   // TODO: move other functions here eg fetching all owner stakes.
 }
 
@@ -139,5 +156,14 @@ export class Staking implements IStaking {
     return await this._staking[
       "requestAuthorizationDecrease(address,address,uint96)"
     ](stakingProvider, application, amount)
+  }
+
+  rolesOf = async (stakingProvider: string): Promise<RolesOf> => {
+    const rolesOf = await this._staking.rolesOf(stakingProvider)
+    return {
+      owner: rolesOf.owner,
+      beneficiary: rolesOf.beneficiary,
+      authorizer: rolesOf.authorizer,
+    }
   }
 }

@@ -41,6 +41,9 @@ import {
 } from "../components/Modal/StakingApplications"
 import SubmitStakeModal from "../components/Modal/SubmitStake"
 import NewStakerAuthorizeStakingApplicationModal from "../components/Modal/NewStakerAuthorizeStakingApplicationModal"
+import MapOperatorToStakingProviderModal from "../components/Modal/MapOperatorToStakingProviderModal"
+import MapOperatorToStakingProviderConfirmationModal from "../components/Modal/MapOperatorToStakingProviderConfirmationModal"
+import { MapOperatorToStakingProviderSuccess } from "../components/Modal/MapOperatorToStakingProviderSuccessModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -67,6 +70,12 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
+  [ModalType.SubmitStake]: SubmitStakeModal,
+  [ModalType.MapOperatorToStakingProvider]: MapOperatorToStakingProviderModal,
+  [ModalType.MapOperatorToStakingProviderConfirmation]:
+    MapOperatorToStakingProviderConfirmationModal,
+  [ModalType.MapOperatorToStakingProviderSuccess]:
+    MapOperatorToStakingProviderSuccess,
   [ModalType.AuthorizeStakingApps]: AuthorizeStakingApps,
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
@@ -99,6 +108,6 @@ export interface UseModal {
     modalType: ModalType | null
     modalProps: any
     openModal: (type: ModalType, props?: any) => ModalActionTypes
-    closeModal: () => ModalActionTypes
+    closeModal: () => ModalActionTypes | void
   }
 }
