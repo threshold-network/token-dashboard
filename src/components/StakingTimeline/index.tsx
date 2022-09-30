@@ -81,9 +81,7 @@ export const LegacyStakesDepositSteps: FC = () => {
             Enter the Provider, Beneficiary, and Authorizer addresses. These
             will be automatically set to your wallet address. If you want to use
             a Staking Provider, here is{" "}
-            <InternalLink to={STAKING_PROVIDER_URL} withArrow>
-              a list
-            </InternalLink>
+            <InternalLink to={STAKING_PROVIDER_URL}>a list</InternalLink>
           </BodyMd>
         </FlowStep>
 
@@ -221,9 +219,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
           Staking Provider, here is{" "}
-          <InternalLink to={STAKING_PROVIDER_URL} withArrow>
-            a list
-          </InternalLink>
+          <InternalLink to={STAKING_PROVIDER_URL}>a list</InternalLink>
         </FlowStep>
         <FlowStep
           size="sm"
