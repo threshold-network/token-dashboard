@@ -1,5 +1,5 @@
-import { FC } from "react"
-import { Button } from "@chakra-ui/react"
+import { FC, useMemo } from "react"
+import { Button, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import {
   BodyMd,
@@ -27,9 +27,20 @@ const RewardsCard: FC<{
 
   const dropTimestamp = useNextRewardsDropDate()
   const { days, hours, minutes, seconds } = useCountdown(dropTimestamp, true)
-
   const hasBonusRewards = BigNumber.from(totalBonusBalance).gt(0)
   const hasRewards = BigNumber.from(totalRewardsBalance).gt(0)
+
+  const timerColor = useColorModeValue("brand.500", "brand.300")
+
+  // TODO: Determine if we need the "h", "m" "s" qualifiers and update if needed or remove this comment
+  const timerText = useMemo(() => {
+    let t = ""
+    if (days !== "00") t = `${t}${days} : `
+    if (hours !== "00") t = `${t}${hours} : `
+    if (minutes !== "00") t = `${t}${minutes} : `
+    t = `${t}${seconds}`
+    return t
+  }, [days, hours, minutes, seconds])
 
   return (
     <Card>
@@ -43,10 +54,9 @@ const RewardsCard: FC<{
         ) : (
           <BodyMd ml="auto !important">
             Next rewards emission:{" "}
-            <BodyMd
-              as="span"
-              color="brand.500"
-            >{`${days}d:${hours}h:${minutes}m:${seconds}s`}</BodyMd>
+            <BodyMd as="span" color={timerColor}>
+              {timerText}
+            </BodyMd>
           </BodyMd>
         )}
       </HStack>
