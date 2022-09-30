@@ -143,6 +143,7 @@ const WalletBalances: FC = () => {
         <ExternalLink
           href={ExternalHref.exchangeRateLearnMore}
           text="Read More"
+          fontSize="14px"
         />
         <BodySm color={useColorModeValue("gray.500", "gray.300")}>
           about Exchange Rate
