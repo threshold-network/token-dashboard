@@ -10,13 +10,11 @@ import {
   ModalHeader,
   List,
   ListItem,
-  Image,
   Divider,
   HStack,
   BodySm,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import IncreaseAuthIcon from "../../../static/images/increase-auth.svg"
 import { useIncreaseAuthorizationTransaction } from "../../../hooks/staking-applications"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
@@ -25,6 +23,7 @@ import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
+import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
 
 export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
@@ -70,7 +69,14 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
             amount at any time.
           </BodyLg>
         </InfoBox>
-        <Image src={IncreaseAuthIcon} mb="6" mx="auto" />
+        <StakingApplicationOperationIcon
+          stakingApplication={stakingAppName}
+          operation="increase"
+          w="88px"
+          h="88px"
+          mb="6"
+          mx="auto"
+        />
         <Divider />
         <List spacing="2.5" my="6">
           <ListItem>
