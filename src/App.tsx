@@ -41,6 +41,8 @@ import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
 import {
   useSubscribeToAuthorizationIncreasedEvent,
+  useSubscribeToAuthorizationDecreaseApprovedEvent,
+  useSubscribeToAuthorizationDecreaseRequestedEvent,
   useSubscribeToOperatorRegisteredEvent,
 } from "./hooks/staking-applications"
 import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
@@ -55,6 +57,10 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToToppedUpEvent()
   useSubscribeToAuthorizationIncreasedEvent("tbtc")
   useSubscribeToAuthorizationIncreasedEvent("randomBeacon")
+  useSubscribeToAuthorizationDecreaseApprovedEvent("tbtc")
+  useSubscribeToAuthorizationDecreaseApprovedEvent("randomBeacon")
+  useSubscribeToAuthorizationDecreaseRequestedEvent("tbtc")
+  useSubscribeToAuthorizationDecreaseRequestedEvent("randomBeacon")
   useSubscribeToOperatorRegisteredEvent("tbtc")
   useSubscribeToOperatorRegisteredEvent("randomBeacon")
 

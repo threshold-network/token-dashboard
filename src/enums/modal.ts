@@ -22,6 +22,8 @@ export enum ModalType {
   UseDesktop = "USE_DESKTOP",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   SubmitStake = "SUBMIT_STAKE",
+  NewStakerAuthorizeStakingApplication = "NEW_STAKER_AUTHORIZE_STAKING_APPLICATION",
+  StakeSuccessOLD = "STAKE_SUCCESS_OLD",
   MapOperatorToStakingProvider = "MAP_OPERATOR_TO_STAKING_PROVIDER",
   MapOperatorToStakingProviderConfirmation = "MAP_OPERATOR_TO_STAKING_PROVIDER_CONFIRMATION",
   MapOperatorToStakingProviderSuccess = "MAP_OPERATOR_TO_STAKING_PROVIDER_SUCCESS",
@@ -29,4 +31,7 @@ export enum ModalType {
   StakingApplicationsAuthorized = "STAKING_APPLICATIONS_AUTHORIZED",
   IncreaseAuthorization = "INCREASE_AUTHORIZATION",
   IncreaseAuthorizationSuccess = "INCREASE_AUTHORIZATION_SUCCESS",
+  ConfirmDeauthorization = "CONFIRM_DEAUTHORIZATION",
+  DeauthorizationCompleted = "DEAUTHORIZATION_COMPLETED",
+  DeauthorizationInitiated = "DeauthorizationInitiated",
 }

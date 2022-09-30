@@ -11,6 +11,9 @@ const baseStyle: PartsStyleFunction<typeof radioAnatomy> = () => {
         },
       },
     },
+    label: {
+      width: "100%",
+    },
   }
 }
 

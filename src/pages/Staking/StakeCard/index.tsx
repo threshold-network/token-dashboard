@@ -6,6 +6,10 @@ import {
   LineDivider,
   Button,
   useBoolean,
+  Alert,
+  AlertDescription,
+  BodySm,
+  AlertIcon,
 } from "@threshold-network/components"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
@@ -19,7 +23,7 @@ import {
   TopUpType,
   UnstakeType,
 } from "../../../enums"
-import { isAddressZero } from "../../../web3/utils"
+import { AddressZero, isAddressZero } from "../../../web3/utils"
 import StakeApplications from "./StakeApplications"
 import StakeCardHeader from "./Header"
 import StakeRewards from "./StakeRewards"
@@ -28,6 +32,8 @@ import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
 import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
+import { isSameETHAddress } from "../../../threshold-ts/utils"
+import { useWeb3React } from "@web3-react/core"
 
 const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -60,6 +66,9 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const { openModal } = useModal()
   const { isInactiveStake, canTopUpKepp, canTopUpNu, isPRESet } =
     useStakeCardContext()
+  const { account } = useWeb3React()
+
+  const isOwner = isSameETHAddress(account ?? AddressZero, stake.owner)
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 
@@ -109,6 +118,14 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           <LineDivider mb="0" />
         </>
       )}
+      {!isOwner && (
+        <Alert status="warning" mt="4" p="2">
+          <AlertIcon />
+          <BodySm as={AlertDescription}>
+            You are not the owner of this stake.
+          </BodySm>
+        </Alert>
+      )}
       <StakeBalance
         nuInTStake={stake.nuInTStake}
         keepInTStake={stake.keepInTStake}
@@ -127,6 +144,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
             )
           }
           isFullWidth
+          isDisabled={!isOwner}
         >
           Confirm Legacy Top-up
         </Button>
@@ -138,9 +156,14 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
+          isDisabled={!isOwner}
         />
       ) : (
-        <Button onClick={onSubmitUnstakeOrTopupBtn} isFullWidth>
+        <Button
+          onClick={onSubmitUnstakeOrTopupBtn}
+          isFullWidth
+          isDisabled={!isOwner}
+        >
           {submitButtonText}
         </Button>
       )}

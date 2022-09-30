@@ -146,8 +146,6 @@ const StakingApplications: PageComponent = () => {
             </VStack>
           }
           rewardSteps={tbtcNodeSteps}
-          aprPercentage={10}
-          slashingPercentage={1}
         />
         <ApplicationDetailsCard
           preTitle="Random Beacon APP"
@@ -175,8 +173,6 @@ const StakingApplications: PageComponent = () => {
             </VStack>
           }
           rewardSteps={randomBeaconNodeSteps}
-          aprPercentage={10}
-          slashingPercentage={1}
         />
         <ApplicationDetailsCard
           preTitle="PRE APP"
@@ -195,8 +191,6 @@ const StakingApplications: PageComponent = () => {
             />
           }
           rewardSteps={preNodeSteps}
-          aprPercentage={10}
-          slashingPercentage={1}
         />
       </Stack>
     </Card>

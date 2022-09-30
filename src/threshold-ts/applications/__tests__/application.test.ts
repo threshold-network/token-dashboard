@@ -3,10 +3,12 @@ import {
   BigNumber,
   providers,
   ContractTransaction,
+  Contract,
 } from "ethers"
-import { AddressZero, getContract } from "../../utils"
-import { Application, IApplication } from ".."
+import { AddressZero, getContract, MAX_UINT64 } from "../../utils"
+import { Application, IApplication, StakingProviderAppInfo } from ".."
 import { IStaking } from "../../staking"
+import { ContractCall, IMulticall } from "../../multicall"
 
 jest.mock("../../utils", () => ({
   ...(jest.requireActual("../../utils") as {}),
@@ -16,6 +18,7 @@ jest.mock("../../utils", () => ({
 describe("Application test", () => {
   let application: IApplication
   let staking: IStaking
+  let mockMulticall: IMulticall
 
   const amount = BigNumber.from("123")
   const time = BigNumber.from("456")
@@ -28,6 +31,7 @@ describe("Application test", () => {
     interface: {},
     address: "0x6A55B762689Ba514569E565E439699aBC731f156",
   }
+  const currentBlockTimestampContractCall = {}
   const mockAppContract = {
     address,
     minimumAuthorization: jest.fn(),
@@ -37,9 +41,6 @@ describe("Application test", () => {
     stakingProviderToOperator: jest.fn(),
     isOperatorInPool: jest.fn(),
   }
-  const mockMulticall = {
-    aggregate: jest.fn(),
-  }
 
   beforeEach(() => {
     staking = {
@@ -48,6 +49,12 @@ describe("Application test", () => {
       stakingContract: mockStakingContract,
     } as unknown as IStaking
     ;(getContract as jest.Mock).mockImplementation(() => mockAppContract)
+    mockMulticall = {
+      aggregate: jest.fn(),
+      getCurrentBlockTimestampCallObj: jest
+        .fn()
+        .mockReturnValue(currentBlockTimestampContractCall),
+    }
     application = new Application(staking, mockMulticall, {
       address,
       abi,
@@ -186,47 +193,106 @@ describe("Application test", () => {
     expect(result).toEqual(mockResult)
   })
 
-  test("should return the app data for a given staking proivder", async () => {
-    const authorizedStake = amount
-    const pendingAuthorizationDecrease = time
-    const remainingAuthorizationDecreaseDelay = time
-    const multicallResult = [
-      authorizedStake,
-      pendingAuthorizationDecrease,
-      remainingAuthorizationDecreaseDelay,
+  describe("getting the staking provider app info", () => {
+    const currentBlockTimestamp = 100
+    const authorizationDecreaseDelay = 20
+    const remainingAuthorizationDecreaseDelay = 30
+    const createdAt =
+      currentBlockTimestamp +
+      remainingAuthorizationDecreaseDelay -
+      authorizationDecreaseDelay
+    const testCases = [
+      {
+        remainingAuthorizationDecreaseDelay: MAX_UINT64,
+        expectedValue: {
+          isDeauthorizationReqestActive: false,
+          deauthorizationCreatedAt: undefined,
+        },
+        testMessage:
+          "when the deauthorization request has not been activated yet",
+      },
+      {
+        remainingAuthorizationDecreaseDelay: 0,
+        expectedValue: {
+          isDeauthorizationReqestActive: true,
+          deauthorizationCreatedAt: undefined,
+        },
+        testMessage:
+          "when the deauthorization request has been activated and can be approved",
+      },
+      {
+        remainingAuthorizationDecreaseDelay,
+        expectedValue: {
+          isDeauthorizationReqestActive: true,
+          deauthorizationCreatedAt: BigNumber.from(createdAt),
+        },
+        testMessage:
+          "when the deauthorization request has been activated but the authorization decrease delay not passed",
+      },
     ]
+    test.each`
+      remainingAuthorizationDecreaseDelay                 | expectedValue                 | testMessage
+      ${testCases[0].remainingAuthorizationDecreaseDelay} | ${testCases[0].expectedValue} | ${testCases[0].testMessage}
+      ${testCases[1].remainingAuthorizationDecreaseDelay} | ${testCases[1].expectedValue} | ${testCases[1].testMessage}
+      ${testCases[2].remainingAuthorizationDecreaseDelay} | ${testCases[2].expectedValue} | ${testCases[2].testMessage}
+    `(
+      "should return the staking provider app info $testMessage",
+      async ({ remainingAuthorizationDecreaseDelay, expectedValue }) => {
+        const authorizedStake = amount
+        const pendingAuthorizationDecrease = time
+        const authParameters = {
+          authorizationDecreaseDelay,
+        }
+        const multicallResult = [
+          authorizedStake,
+          pendingAuthorizationDecrease,
+          remainingAuthorizationDecreaseDelay,
+          currentBlockTimestamp,
+          authParameters,
+        ]
 
-    const multicallSpy = jest
-      .spyOn(mockMulticall, "aggregate")
-      .mockResolvedValue(multicallResult)
+        const multicallSpy = jest
+          .spyOn(mockMulticall, "aggregate")
+          .mockResolvedValue(multicallResult)
 
-    const result = await application.getStakingProviderAppInfo(stakingProvider)
+        const result = await application.getStakingProviderAppInfo(
+          stakingProvider
+        )
 
-    expect(multicallSpy).toHaveBeenCalledWith([
-      {
-        interface: mockStakingContract.interface,
-        address: mockStakingContract.address,
-        method: "authorizedStake",
-        args: [stakingProvider, application.address],
-      },
-      {
-        interface: application.contract.interface,
-        address: application.address,
-        method: "pendingAuthorizationDecrease",
-        args: [stakingProvider],
-      },
-      {
-        interface: application.contract.interface,
-        address: application.address,
-        method: "remainingAuthorizationDecreaseDelay",
-        args: [stakingProvider],
-      },
-    ])
-    expect(result).toEqual({
-      authorizedStake,
-      pendingAuthorizationDecrease,
-      remainingAuthorizationDecreaseDelay,
-    })
+        expect(multicallSpy).toHaveBeenCalledWith([
+          {
+            interface: mockStakingContract.interface,
+            address: mockStakingContract.address,
+            method: "authorizedStake",
+            args: [stakingProvider, application.address],
+          },
+          {
+            interface: application.contract.interface,
+            address: application.address,
+            method: "pendingAuthorizationDecrease",
+            args: [stakingProvider],
+          },
+          {
+            interface: application.contract.interface,
+            address: application.address,
+            method: "remainingAuthorizationDecreaseDelay",
+            args: [stakingProvider],
+          },
+          currentBlockTimestampContractCall,
+          {
+            interface: application.contract.interface,
+            address: application.address,
+            method: "authorizationParameters",
+          },
+        ])
+        expect(result).toEqual({
+          authorizedStake,
+          pendingAuthorizationDecrease,
+          remainingAuthorizationDecreaseDelay,
+          ...expectedValue,
+        })
+      }
+    )
   })
 
   test("should trigger the increase authorization transaction", async () => {
