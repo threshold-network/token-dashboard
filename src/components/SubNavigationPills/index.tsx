@@ -17,12 +17,14 @@ interface Props {
 
 const SubNavigationPills: FC<Props> = ({ links }) => {
   const linksWithTitle = links.filter((link) => !!link.title)
+  const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
+
   return (
     <>
       <Box
         w="100%"
         borderBottom="1px solid"
-        borderColor="gray.100"
+        borderColor={wrapperBorderColor}
         py={6}
         pr={10}
         pl={{ base: 8, md: 16 }}
@@ -30,7 +32,9 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
       >
         <HStack
           spacing={4}
-          divider={<Divider orientation="vertical" borderColor="gray.300" />}
+          divider={
+            <Divider orientation="vertical" borderColor={wrapperBorderColor} />
+          }
           height="28px"
           as="ul"
         >
@@ -44,7 +48,7 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
 const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
   const resolved = useResolvedPath(pathOverride || path)
   const isActive = useMatch({ path: resolved.pathname, end: true })
-  const activeColor = useColorModeValue("brand.500", "white")
+  const activeColor = useColorModeValue("brand.500", "gray.100")
   const underlineColor = useColorModeValue("brand.500", "white")
 
   return (
@@ -67,7 +71,7 @@ const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
           opacity="1"
           borderColor={underlineColor}
           border="1px solid"
-          top="47px"
+          top="49px"
           position="absolute"
           left={0}
           borderRadius="8px"
