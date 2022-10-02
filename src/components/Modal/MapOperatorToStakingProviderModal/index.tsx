@@ -30,14 +30,13 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderModalProps {
-  stakingProvider: string
   mappedOperatorTbtc: string
   mappedOperatorRandomBeacon: string
 }
 
 const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
-> = ({ stakingProvider, mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
+> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { account } = useWeb3React()
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
