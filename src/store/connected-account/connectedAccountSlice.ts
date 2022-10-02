@@ -80,6 +80,16 @@ export const connectedAccountSlice = createSlice({
       const { error } = action.payload
       state.operatorMapping.error = error
     },
+    operatorRegistered: (
+      state: ConnectedAccountState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        operator: string
+      }>
+    ) => {
+      const { appName, operator } = action.payload
+      state.operatorMapping.data.mappedOperators[appName] = operator
+    },
   },
   extraReducers: (builder) => {
     builder.addMatcher(
@@ -116,4 +126,5 @@ export const {
   setFetchingOperatorMapping,
   operatorMappingInitialFetchDone,
   setOperatorMappingError,
+  operatorRegistered,
 } = connectedAccountSlice.actions

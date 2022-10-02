@@ -1,6 +1,5 @@
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { BigNumber } from "ethers"
-import { AddressZero } from "@ethersproject/constants"
 import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
@@ -137,17 +136,6 @@ export const stakingApplicationsSlice = createSlice({
       const { appName, error } = action.payload
       state[appName].stakingProviders.isFetching = false
       state[appName].stakingProviders.error = error
-    },
-    operatorMapped: (
-      state: StakingApplicationsState,
-      action: PayloadAction<{
-        appName: StakingAppName
-        operator: string
-      }>
-    ) => {
-      const { appName, operator } = action.payload
-      // TODO: refactor this when refactoring subscribtion to
-      // `OperatorRegistered` event
     },
     authorizationIncreased: (
       state: StakingApplicationsState,
@@ -295,5 +283,3 @@ export const registerStakingAppsListeners = () => {
   }
 }
 registerStakingAppsListeners()
-
-export const { operatorMapped } = stakingApplicationsSlice.actions
