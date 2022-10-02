@@ -1,14 +1,41 @@
+import { AddressZero } from "@ethersproject/constants"
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { providerStaked, providerStakedForStakingProvider } from "../staking"
+import { featureFlags } from "../../constants"
+import { FetchingState } from "../../types"
+import { isSameETHAddress } from "../../web3/utils"
+import { startAppListening } from "../listener"
+import {
+  providerStaked,
+  providerStakedForStakingProvider,
+  setStakes,
+} from "../staking"
+import { StakingAppName } from "../staking-applications"
+import { getStakingProviderOperatorInfo } from "./effects"
 
 interface ConnectedAccountState {
   address: string
+  operatorMapping: FetchingState<{
+    isUsedAsStakingProvider: boolean
+    mappedOperators: {
+      tbtc: string
+      randomBeacon: string
+    }
+  }>
 }
 
 export const connectedAccountSlice = createSlice({
   name: "connected-account",
   initialState: {
     address: "",
+    operatorMapping: {
+      data: {
+        isUsedAsStakingProvider: false,
+        mappedOperators: {
+          tbtc: AddressZero,
+          randomBeacon: AddressZero,
+        },
+      },
+    },
   } as ConnectedAccountState,
   reducers: {
     setConnectedAccountAddress: (
@@ -16,6 +43,42 @@ export const connectedAccountSlice = createSlice({
       action: PayloadAction<string>
     ) => {
       state.address = action.payload
+    },
+    accountUsedAsStakingProvider: (
+      state: ConnectedAccountState,
+      action: PayloadAction
+    ) => {
+      state.operatorMapping.data.isUsedAsStakingProvider = true
+    },
+    setMappedOperator: (
+      state: ConnectedAccountState,
+      action: PayloadAction<{
+        appName: StakingAppName
+        operator: string
+      }>
+    ) => {
+      const { appName, operator } = action.payload
+      state.operatorMapping.data.mappedOperators[appName] = operator
+    },
+    setFetchingOperatorMapping: (
+      state: ConnectedAccountState,
+      action: PayloadAction<{ isFetching: boolean }>
+    ) => {
+      const { isFetching } = action.payload
+      state.operatorMapping.isFetching = isFetching
+    },
+    operatorMappingInitialFetchDone: (
+      state: ConnectedAccountState,
+      action: PayloadAction
+    ) => {
+      state.operatorMapping.isInitialFetchDone = true
+    },
+    setOperatorMappingError: (
+      state: ConnectedAccountState,
+      action: PayloadAction<{ error: string }>
+    ) => {
+      const { error } = action.payload
+      state.operatorMapping.error = error
     },
   },
   extraReducers: (builder) => {
@@ -28,18 +91,29 @@ export const connectedAccountSlice = createSlice({
 
         const { address } = state
 
-        // TODO: Fix this when refactoring "Staked" listener for provider
-
-        // if (isSameETHAddress(stakingProvider, address)) {
-        //   state.rolesOf = {
-        //     owner,
-        //     beneficiary,
-        //     authorizer,
-        //   }
-        // }
+        if (isSameETHAddress(stakingProvider, address)) {
+          state.operatorMapping.data.isUsedAsStakingProvider = true
+        }
       }
     )
   },
 })
 
-export const { setConnectedAccountAddress } = connectedAccountSlice.actions
+export const registerConnectedAccountListeners = () => {
+  if (featureFlags.MULTI_APP_STAKING) {
+    startAppListening({
+      actionCreator: setStakes,
+      effect: getStakingProviderOperatorInfo,
+    })
+  }
+}
+registerConnectedAccountListeners()
+
+export const {
+  setConnectedAccountAddress,
+  accountUsedAsStakingProvider,
+  setMappedOperator,
+  setFetchingOperatorMapping,
+  operatorMappingInitialFetchDone,
+  setOperatorMappingError,
+} = connectedAccountSlice.actions

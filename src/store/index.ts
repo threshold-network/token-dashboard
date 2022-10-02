@@ -17,7 +17,10 @@ import {
   stakingApplicationsSlice,
 } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
-import { connectedAccountSlice } from "./connected-account"
+import {
+  connectedAccountSlice,
+  registerConnectedAccountListeners,
+} from "./connected-account"
 import { modalQueueSlice } from "./modalQueue"
 
 const combinedReducer = combineReducers({
@@ -45,6 +48,7 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
     listenerMiddleware.clearListeners()
     registerStakingListeners()
     registerStakingAppsListeners()
+    registerConnectedAccountListeners()
     state = {
       eth: { ...state.eth },
       token: {

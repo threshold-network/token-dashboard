@@ -172,72 +172,36 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const { modalQueue } = listenerApi.getState()
+  const { connectedAccount, staking } = listenerApi.getState()
   if (!modalQueue.isSuccessfullLoginModalClosed) {
     await listenerApi.condition((action, currentState: any) => {
       return currentState.modalQueue.isSuccessfullLoginModalClosed
     })
   }
-  const { connectedAccount, staking } = listenerApi.getState()
   const { address } = connectedAccount
-  if (address) {
+  if (address && connectedAccount.operatorMapping.isInitialFetchDone) {
     listenerApi.unsubscribe()
     try {
-      const { stakes } = staking
-      let stakingProvider
+      const { isUsedAsStakingProvider, mappedOperators } =
+        connectedAccount.operatorMapping.data
 
-      // Check if connected account is a staking provider in a current set of
-      // stakes saved in the state. Since we keep the stakes from the owner
-      // perspective this means that we are checking is there are stake for this
-      // connected account where owner === stakingProvider
-      const stake = stakes.find((stake) =>
-        isSameETHAddress(stake.stakingProvider, address)
-      )
-
-      if (stake) {
-        // If there is such stake we are getting it's staking provider
-        stakingProvider = stake.stakingProvider
+      if (
+        isUsedAsStakingProvider &&
+        (isAddressZero(mappedOperators.tbtc) ||
+          isAddressZero(mappedOperators.randomBeacon))
+      ) {
+        listenerApi.dispatch(
+          openModal({
+            modalType: ModalType.MapOperatorToStakingProvider,
+            props: {
+              address,
+              mappedOperatorTbtc: mappedOperators.tbtc,
+              mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
+            },
+          })
+        )
       } else {
-        // If there is not such stakes we are checking if connected account is
-        // used as a staking provider in other stakes where it's not an owner.
-        const { owner, authorizer, beneficiary } =
-          await listenerApi.extra.threshold.staking.rolesOf(address)
-
-        if (
-          !isAddressZero(owner) &&
-          !isAddressZero(authorizer) &&
-          !isAddressZero(beneficiary)
-        ) {
-          // If such stakes exist then wer are getting a staking provider
-          stakingProvider = address
-        }
-      }
-
-      if (stakingProvider) {
-        // get mapped operators for all apps for given staking provider
-        const mappedOperators =
-          await listenerApi.extra.threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
-            address
-          )
-
-        if (
-          isAddressZero(mappedOperators.tbtc) ||
-          isAddressZero(mappedOperators.randomBeacon)
-        ) {
-          // If staking provider does not have operator mapped for all apps we
-          // are displaying him the `MapOperatorToStakingProvider` modal
-          listenerApi.dispatch(
-            openModal({
-              modalType: ModalType.MapOperatorToStakingProvider,
-              props: {
-                stakingProvider,
-                mappedOperatorTbtc: mappedOperators.tbtc,
-                mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
-              },
-            })
-          )
-        } else {
-          listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
-        }
+        listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
       }
     } catch (error) {
       console.log(

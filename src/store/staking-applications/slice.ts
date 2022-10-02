@@ -19,6 +19,7 @@ import {
   displayDeauthrizationCompletedModalEffect,
   displayDeauthrizationInitiatedModalEffect,
 } from "./effects"
+import { operatorMappingInitialFetchDone } from "../connected-account"
 
 type StakingApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
@@ -288,7 +289,7 @@ export const registerStakingAppsListeners = () => {
     })
 
     startAppListening({
-      actionCreator: setStakes,
+      actionCreator: operatorMappingInitialFetchDone,
       effect: displayMapOperatorToStakingProviderModalEffect,
     })
   }
