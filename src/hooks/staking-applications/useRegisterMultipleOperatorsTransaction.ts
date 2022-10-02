@@ -6,14 +6,21 @@ import { ModalType } from "../../enums"
 import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modalQueue"
-import { useDispatch } from "react-redux"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "../../store"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
+  const mappedOperatorTbtc = useSelector(
+    (state: RootState) =>
+      state.connectedAccount.operatorMapping.data.mappedOperators.tbtc
+  )
+  const mappedOperatorRandomBeacon = useSelector(
+    (state: RootState) =>
+      state.connectedAccount.operatorMapping.data.mappedOperators.randomBeacon
+  )
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
   const dispatch = useDispatch()
-  const threshold = useThreshold()
 
   const {
     sendTransaction: sendRegisterOperatorTransactionTbtc,
@@ -30,13 +37,6 @@ export const useRegisterMultipleOperatorsTransaction = () => {
         if (!account) {
           throw new Error("Connect to the staking provider account first!")
         }
-
-        const {
-          tbtc: mappedOperatorTbtc,
-          randomBeacon: mappedOperatorRandomBeacon,
-        } = await threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
-          account
-        )
 
         if (
           !isAddressZero(mappedOperatorRandomBeacon) &&
@@ -116,6 +116,9 @@ export const useRegisterMultipleOperatorsTransaction = () => {
       }
     },
     [
+      account,
+      mappedOperatorRandomBeacon,
+      mappedOperatorTbtc,
       sendRegisterOperatorTransactionTbtc,
       sendRegisterOperatorTransactionRandomBeacon,
       openModal,
