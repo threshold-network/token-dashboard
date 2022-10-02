@@ -2,7 +2,7 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { OperatorMappedToStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { isAddressZero } from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
@@ -28,8 +28,9 @@ const MapOperatorToStakingProviderFormBase: FC<
 
 type MapOperatorToStakingProviderFormProps = {
   initialAddress: string
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
-  operatorMappedToStakingProviderHelpers: OperatorMappedToStakingProviderHelpers
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>
@@ -45,15 +46,18 @@ const MapOperatorToStakingProviderForm = withFormik<
   }),
   validate: async (values, props) => {
     const {
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon,
       checkIfOperatorIsMappedToAnotherStakingProvider,
-      operatorMappedToStakingProviderHelpers,
     } = props
-    const {
-      operatorMappedRandomBeacon,
-      operatorMappedTbtc,
-      isOperatorMappedOnlyInRandomBeacon,
-      isOperatorMappedOnlyInTbtc,
-    } = operatorMappedToStakingProviderHelpers
+
+    const isOperatorMappedOnlyInTbtc =
+      !isAddressZero(mappedOperatorTbtc) &&
+      isAddressZero(mappedOperatorRandomBeacon)
+
+    const isOperatorMappedOnlyInRandomBeacon =
+      isAddressZero(mappedOperatorTbtc) &&
+      !isAddressZero(mappedOperatorRandomBeacon)
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
@@ -69,14 +73,14 @@ const MapOperatorToStakingProviderForm = withFormik<
         }
         if (
           isOperatorMappedOnlyInRandomBeacon &&
-          values.operator !== operatorMappedRandomBeacon
+          values.operator !== mappedOperatorRandomBeacon
         ) {
           validationMsg =
             "The operator address doesn't match the one used in tbtc app"
         }
         if (
           isOperatorMappedOnlyInTbtc &&
-          values.operator !== operatorMappedTbtc
+          values.operator !== mappedOperatorTbtc
         ) {
           validationMsg =
             "The operator address doesn't match the one used in random beacon app"

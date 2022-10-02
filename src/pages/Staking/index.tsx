@@ -27,8 +27,8 @@ import { stakingApplicationsSlice } from "../../store/staking-applications/slice
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
-import { useRolesOf } from "../../hooks/useRolesOf"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+// import { useRolesOf } from "../../hooks/useRolesOf"
+// import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 const StakingPage: PageComponent = (props) => {
@@ -47,32 +47,34 @@ const StakingPage: PageComponent = (props) => {
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
   const hasStakes = stakes.length > 0
 
-  const { owner, authorizer, beneficiary } = useRolesOf()
-  const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
-    useOperatorMappedtoStakingProviderHelpers()
+  // TODO: fix this
 
-  const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
-    const isStakingProviderUsed =
-      !isEmptyOrZeroAddress(owner) ||
-      !isEmptyOrZeroAddress(authorizer) ||
-      !isEmptyOrZeroAddress(beneficiary)
+  // const { owner, authorizer, beneficiary } = useRolesOf()
+  // const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
+  //   useOperatorMappedtoStakingProviderHelpers()
 
-    const isOperatorMappedInAllApps =
-      !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
-      !isEmptyOrZeroAddress(operatorMappedTbtc)
+  // const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
+  //   const isStakingProviderUsed =
+  //     !isEmptyOrZeroAddress(owner) ||
+  //     !isEmptyOrZeroAddress(authorizer) ||
+  //     !isEmptyOrZeroAddress(beneficiary)
 
-    return (
-      isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
-    )
-  }, [
-    owner,
-    authorizer,
-    beneficiary,
-    operatorMappedRandomBeacon,
-    operatorMappedTbtc,
-    isInitialFetchDone,
-    isEmptyOrZeroAddress,
-  ])
+  //   const isOperatorMappedInAllApps =
+  //     !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
+  //     !isEmptyOrZeroAddress(operatorMappedTbtc)
+
+  //   return (
+  //     isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
+  //   )
+  // }, [
+  //   owner,
+  //   authorizer,
+  //   beneficiary,
+  //   operatorMappedRandomBeacon,
+  //   operatorMappedTbtc,
+  //   isInitialFetchDone,
+  //   isEmptyOrZeroAddress,
+  // ])
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
@@ -90,9 +92,9 @@ const StakingPage: PageComponent = (props) => {
           >
             Your Stake
           </H4>
-          {shouldDisplayOperatorAddressMappingCard && (
+          {/* {shouldDisplayOperatorAddressMappingCard && (
             <OperatorAddressMappingCard />
-          )}
+          )} */}
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />

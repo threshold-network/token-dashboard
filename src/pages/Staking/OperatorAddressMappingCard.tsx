@@ -9,15 +9,17 @@ import {
 } from "@threshold-network/components"
 import { LabelSm } from "@threshold-network/components"
 import { ModalType } from "../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+// import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
 
+//TODO: Fix this
 const OperatorAddressMappingCard = () => {
   const { openModal } = useModal()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    useOperatorMappedtoStakingProviderHelpers()
-  const isOneOfTheAppsNotMapped =
-    isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+  // const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
+  //   useOperatorMappedtoStakingProviderHelpers()
+  // const isOneOfTheAppsNotMapped =
+  //   isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+  const isOneOfTheAppsNotMapped = false
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider)
