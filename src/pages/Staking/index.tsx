@@ -27,9 +27,8 @@ import { stakingApplicationsSlice } from "../../store/staking-applications/slice
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
-// import { useRolesOf } from "../../hooks/useRolesOf"
-// import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
-import { isEmptyOrZeroAddress } from "../../web3/utils"
+import { isAddressZero } from "../../web3/utils"
+import { RootState } from "../../store"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -47,34 +46,10 @@ const StakingPage: PageComponent = (props) => {
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
   const hasStakes = stakes.length > 0
 
-  // TODO: fix this
-
-  // const { owner, authorizer, beneficiary } = useRolesOf()
-  // const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
-  //   useOperatorMappedtoStakingProviderHelpers()
-
-  // const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
-  //   const isStakingProviderUsed =
-  //     !isEmptyOrZeroAddress(owner) ||
-  //     !isEmptyOrZeroAddress(authorizer) ||
-  //     !isEmptyOrZeroAddress(beneficiary)
-
-  //   const isOperatorMappedInAllApps =
-  //     !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
-  //     !isEmptyOrZeroAddress(operatorMappedTbtc)
-
-  //   return (
-  //     isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
-  //   )
-  // }, [
-  //   owner,
-  //   authorizer,
-  //   beneficiary,
-  //   operatorMappedRandomBeacon,
-  //   operatorMappedTbtc,
-  //   isInitialFetchDone,
-  //   isEmptyOrZeroAddress,
-  // ])
+  const {
+    isInitialFetchDone: isOperatorMappingInitialFetchDone,
+    data: { isUsedAsStakingProvider, mappedOperators },
+  } = useSelector((state: RootState) => state.connectedAccount.operatorMapping)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
@@ -92,9 +67,15 @@ const StakingPage: PageComponent = (props) => {
           >
             Your Stake
           </H4>
-          {/* {shouldDisplayOperatorAddressMappingCard && (
-            <OperatorAddressMappingCard />
-          )} */}
+          {isUsedAsStakingProvider &&
+            isOperatorMappingInitialFetchDone &&
+            isAddressZero(mappedOperators.tbtc) &&
+            isAddressZero(mappedOperators.randomBeacon) && (
+              <OperatorAddressMappingCard
+                mappedOperatorTbtc={mappedOperators.tbtc}
+                mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
+              />
+            )}
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />

@@ -8,21 +8,34 @@ import {
   HStack,
 } from "@threshold-network/components"
 import { LabelSm } from "@threshold-network/components"
+import { FC } from "react"
 import { ModalType } from "../../enums"
 // import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
+import { isAddressZero } from "../../web3/utils"
 
 //TODO: Fix this
-const OperatorAddressMappingCard = () => {
+const OperatorAddressMappingCard: FC<{
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
+}> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { openModal } = useModal()
-  // const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-  //   useOperatorMappedtoStakingProviderHelpers()
-  // const isOneOfTheAppsNotMapped =
-  //   isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
-  const isOneOfTheAppsNotMapped = false
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOneOfTheAppsNotMapped =
+    isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
 
   const onStartMappingClick = () => {
-    openModal(ModalType.MapOperatorToStakingProvider)
+    openModal(ModalType.MapOperatorToStakingProvider, {
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon,
+    })
   }
 
   return (
