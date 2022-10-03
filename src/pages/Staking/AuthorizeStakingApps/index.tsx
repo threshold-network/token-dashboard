@@ -1,16 +1,14 @@
 import {
-  Alert,
   AlertBox,
   AlertDescription,
-  AlertIcon,
   Badge,
   BodyLg,
-  BodySm,
   Button,
   Card,
   H5,
   HStack,
   LineDivider,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
@@ -23,7 +21,6 @@ import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
 import { FC, useEffect, useRef, useState, RefObject } from "react"
-import { featureFlags } from "../../../constants"
 import {
   requestStakeByStakingProvider,
   selectStakeByStakingProvider,
@@ -200,6 +197,8 @@ const AuthorizeStakingAppsPage: FC = () => {
     )
   }
 
+  const alertTextColor = useColorModeValue("gray.900", "white")
+
   return active ? (
     <>
       <Card>
@@ -227,7 +226,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           </AlertBox>
         )}
         <AlertBox status="magic" alignItems="flex-start">
-          <AlertDescription color={"gray.700"}>
+          <AlertDescription color={alertTextColor}>
             In order to earn rewards, please authorize Threshold apps to use
             your stake. Note that you can authorize 100% of your stake for all
             of the apps. You can change this amount at any time.
@@ -291,13 +290,5 @@ const AuthorizeStakingAppsPage: FC = () => {
     <H5>{`Please connect your wallet.`}</H5>
   )
 }
-
-// AuthorizeStakingAppsPage.route = {
-//   path: "authorize/:stakingProviderAddress",
-//   index: false,
-//   title: "Authorize",
-//   hideFromMenu: true,
-//   isPageEnabled: featureFlags.MULTI_APP_STAKING,
-// }
 
 export default AuthorizeStakingAppsPage
