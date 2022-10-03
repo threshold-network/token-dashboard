@@ -70,7 +70,7 @@ const StakingApplicationFormBase: FC<
           : _max.sub(_tokenAmount).toString()
         : maxAmount
     )
-  }, [tokenAmount, authorizedAmount, totalStake, maxAmount])
+  }, [tokenAmount, maxAmount])
 
   return (
     <TokenAmountFormBase
