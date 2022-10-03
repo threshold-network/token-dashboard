@@ -11,7 +11,7 @@ const ViewInBlockExplorer: FC<
     id: string
     type: ExplorerDataType
     text: string
-  } & LinkProps
+  } & Omit<LinkProps, "isExternal">
 > = ({ id, type, text = "View in Block Explorer", ...restProps }) => {
   const etherscanLink = createEtherscanLink(
     Number(supportedChainId),
@@ -20,7 +20,7 @@ const ViewInBlockExplorer: FC<
   )
 
   return (
-    <ExternalLink isExternal href={etherscanLink} {...restProps}>
+    <ExternalLink isExternal={true} href={etherscanLink} {...restProps}>
       {text}
     </ExternalLink>
   )

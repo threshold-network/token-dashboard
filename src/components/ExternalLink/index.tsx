@@ -1,22 +1,25 @@
 import { FC, ReactElement } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
+  forwardRef,
   Icon,
   Link,
   LinkProps,
   useColorModeValue,
-  forwardRef,
 } from "@threshold-network/components"
 import { FiArrowUpRight } from "react-icons/all"
 
-interface Props {
-  // TODO conditional props
-  href?: string
+interface CommonProps extends LinkProps {
   icon?: ReactElement
-  isExternal?: boolean
 }
 
-const ExternalLink: FC<Props & LinkProps> = forwardRef(
+type LinkDestinationProps =
+  | { isExternal?: false; href?: never; to?: string }
+  | { isExternal?: true; href?: string; to?: never }
+
+type Props = CommonProps & LinkDestinationProps
+
+const ExternalLink: FC<Props> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
@@ -34,7 +37,11 @@ const ExternalLink: FC<Props & LinkProps> = forwardRef(
         {...props}
       >
         {children}
-        {icon || <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />}
+        {icon ? (
+          icon
+        ) : isExternal ? (
+          <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />
+        ) : null}
       </Link>
     )
   }

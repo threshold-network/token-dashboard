@@ -13,7 +13,6 @@ import {
 import { ExternalHref } from "../../enums"
 import ExternalLink from "../ExternalLink"
 import { featureFlags } from "../../constants"
-import InternalLink from "../InternalLink"
 import { Box } from "@chakra-ui/react"
 
 const STAKING_PROVIDER_URL = "/staking/how-it-works/providers"
@@ -60,7 +59,9 @@ export const LegacyStakesDepositSteps: FC = () => {
           <Stack spacing={0}>
             <BodyMd>
               Authorize NuCypher legacy stakes{" "}
-              <ExternalLink isExternal href={ExternalHref.nuDapp} />
+              <ExternalLink isExternal href={ExternalHref.nuDapp}>
+                here
+              </ExternalLink>
             </BodyMd>
             <BodyMd>
               Authorize Keep Network legacy stakes{" "}
@@ -80,7 +81,7 @@ export const LegacyStakesDepositSteps: FC = () => {
             Enter the Provider, Beneficiary, and Authorizer addresses. These
             will be automatically set to your wallet address. If you want to use
             a Staking Provider, here is{" "}
-            <InternalLink to={STAKING_PROVIDER_URL}>a list</InternalLink>
+            <ExternalLink to={STAKING_PROVIDER_URL}>a list</ExternalLink>
           </BodyMd>
         </FlowStep>
 
@@ -93,7 +94,7 @@ export const LegacyStakesDepositSteps: FC = () => {
           <BodyMd>
             For each stake, there are three applications available. PRE does not
             require authorization. To authorize TBTC and Random Beacon, go to
-            the <InternalLink to="/staking">Staking Page</InternalLink> and
+            the <ExternalLink to="/staking">Staking Page</ExternalLink> and
             select “Configure Stake”.
           </BodyMd>
         </FlowStep>
@@ -106,10 +107,10 @@ export const LegacyStakesDepositSteps: FC = () => {
         >
           You will need to run a node for applications that you have authorized
           to earn rewards. If you don’t have one, learn how to do it{" "}
-          <InternalLink to={APPLICATION_DOCS_URL}>here</InternalLink> or contact{" "}
-          <InternalLink to={STAKING_PROVIDER_URL}>
+          <ExternalLink to={APPLICATION_DOCS_URL}>here</ExternalLink> or contact{" "}
+          <ExternalLink to={STAKING_PROVIDER_URL}>
             a Staking Provider
-          </InternalLink>
+          </ExternalLink>
         </FlowStep>
       </Stack>
     )
@@ -211,7 +212,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
           Staking Provider, here is{" "}
-          <InternalLink to={STAKING_PROVIDER_URL}>a list</InternalLink>
+          <ExternalLink to={STAKING_PROVIDER_URL}>a list</ExternalLink>
         </FlowStep>
         <FlowStep
           size="sm"
@@ -221,7 +222,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         >
           For each stake, there are three applications available. PRE does not
           require authorization. To authorize TBTC and Random Beacon, go to the{" "}
-          <InternalLink to="/staking">Staking page</InternalLink> and select
+          <ExternalLink to="/staking">Staking page</ExternalLink> and select
           “Configure Stake”.
         </FlowStep>
         <FlowStep
@@ -232,11 +233,11 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         >
           You will need to run a node for applications that you have authorized
           to earn rewards. If you don’t have one, learn how to do it{" "}
-          <InternalLink to={APPLICATION_DOCS_URL}>here</InternalLink> or contact
+          <ExternalLink to={APPLICATION_DOCS_URL}>here</ExternalLink> or contact
           a{" "}
-          <InternalLink to={STAKING_PROVIDER_URL}>
+          <ExternalLink to={STAKING_PROVIDER_URL}>
             Staking Provider.
-          </InternalLink>
+          </ExternalLink>
         </FlowStep>
       </Stack>
     )
