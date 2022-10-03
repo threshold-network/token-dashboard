@@ -82,7 +82,7 @@ const StakingApplicationFormBase: FC<
       }
       submitButtonText={submitButtonText}
       isDisabled={isDisabled}
-      maxTokenAmount={totalStake}
+      maxTokenAmount={maxAmount}
       placeholder={"Enter amount"}
       helperText={helperText}
       {...formikProps}
