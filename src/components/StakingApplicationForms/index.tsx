@@ -56,9 +56,13 @@ const StakingApplicationFormBase: FC<
 
   useEffect(() => {
     if (!isAuthorization) {
-      setMaxAmount(authorizedAmount)
+      setMaxAmount(authorizedAmount || "0")
     } else {
-      setMaxAmount(BigNumber.from(totalStake).sub(authorizedAmount).toString())
+      setMaxAmount(
+        BigNumber.from(totalStake || "0")
+          .sub(authorizedAmount || "0")
+          .toString()
+      )
     }
   }, [authorizedAmount, totalStake, isAuthorization])
 
