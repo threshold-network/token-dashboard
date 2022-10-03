@@ -29,6 +29,7 @@ import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
 import ExternalLink from "../../../../components/ExternalLink"
+import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 
 const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
@@ -129,16 +130,17 @@ const StakingApplications: PageComponent = () => {
           ctaButtons={
             <VStack mb={6}>
               <Button
-                as={ExternalLink}
+                as={RouterLink}
                 textDecoration="none"
-                href="/somewhere"
+                to="/staking"
                 width="full"
-                text="Authorize TBTC"
-              />
+              >
+                Authorize TBTC
+              </Button>
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/somewhere"
+                href="/staking"
                 width="full"
                 variant="outline"
                 text="TBTC Node Docs"
@@ -155,17 +157,18 @@ const StakingApplications: PageComponent = () => {
           ctaButtons={
             <VStack mb={6}>
               <Button
-                as={ExternalLink}
+                as={RouterLink}
                 textDecoration="none"
-                href="/somewhere"
+                to="/staking"
                 width="full"
-                text="Authorize Random Beacon"
-              />
+              >
+                Authorize Random Beacon
+              </Button>
 
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/somewhere"
+                href="/staking"
                 width="full"
                 variant="outline"
                 text="Random Beacon Node Docs"
