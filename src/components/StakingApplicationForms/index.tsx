@@ -132,7 +132,7 @@ const deauthorizationValidation = (
   const { tokenAmount } = values
   const { authorizedAmount, minimumAuthorizationAmount } = props
   const max = BigNumber.from(authorizedAmount).sub(minimumAuthorizationAmount)
-  const _tokenAmount = BigNumber.from(tokenAmount)
+  const _tokenAmount = BigNumber.from(tokenAmount || "0")
 
   if (!_tokenAmount.eq(authorizedAmount)) {
     errors.tokenAmount = validateAmountInRange(
