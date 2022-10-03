@@ -52,11 +52,9 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
         <BodyMd>
           Based on these two addresses the protocol will create using a P2SWH a
           unique BTC deposit address for each user.{" "}
-          <ExternalLink
-            isExternal
-            text="Read more"
-            href={ExternalHref.nuDapp}
-          />
+          <ExternalLink isExternal href={ExternalHref.nuDapp}>
+            Read more
+          </ExternalLink>
         </BodyMd>
       </Stack>
     </Card>

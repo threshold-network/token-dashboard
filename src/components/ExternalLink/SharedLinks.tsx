@@ -37,11 +37,9 @@ export const StakingBonusReadMore: FC<StakingBonusReadMoreProps> = (props) => {
   return (
     <BodySm mt="16" textAlign="center" {...props}>
       Read more about the{" "}
-      <ExternalLink
-        isExternal
-        href={ExternalHref.stakingBonusDocs}
-        text="Staking Bonus."
-      />
+      <ExternalLink isExternal href={ExternalHref.stakingBonusDocs}>
+        Staking Bonus.
+      </ExternalLink>
     </BodySm>
   )
 }

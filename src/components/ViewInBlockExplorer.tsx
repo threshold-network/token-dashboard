@@ -20,7 +20,9 @@ const ViewInBlockExplorer: FC<
   )
 
   return (
-    <ExternalLink isExternal href={etherscanLink} text={text} {...restProps} />
+    <ExternalLink isExternal href={etherscanLink} {...restProps}>
+      {text}
+    </ExternalLink>
   )
 }
 

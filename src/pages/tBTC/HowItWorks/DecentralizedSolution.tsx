@@ -26,11 +26,9 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
               <BodyMd>
                 The group of independent operators works together to secure your
                 deposited Bitcoin through{" "}
-                <ExternalLink
-                  isExternal
-                  text="threshold cryptography"
-                  href="NEED_URL"
-                />
+                <ExternalLink isExternal href="NEED_URL">
+                  threshold cryptography
+                </ExternalLink>
               </BodyMd>
             ),
           },

@@ -9,11 +9,9 @@ const MetamaskNotInstalledAlert: FC = () => {
       <AlertIcon />
       <AlertDescription>
         MetaMask is not installed. Please install the MetaMask extension on{" "}
-        <ExternalLink
-          isExternal
-          href={ExternalHref.metamaskHomePage}
-          text="their website"
-        />
+        <ExternalLink isExternal href={ExternalHref.metamaskHomePage}>
+          their website
+        </ExternalLink>
       </AlertDescription>
     </Alert>
   )

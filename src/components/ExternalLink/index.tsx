@@ -1,4 +1,5 @@
 import { FC, ReactElement } from "react"
+import { Link as RouterLink } from "react-router-dom"
 import {
   Icon,
   Link,
@@ -9,28 +10,30 @@ import {
 import { FiArrowUpRight } from "react-icons/all"
 
 interface Props {
-  href: string
-  text: string
+  // TODO conditional props
+  href?: string
   icon?: ReactElement
   isExternal?: boolean
 }
 
 const ExternalLink: FC<Props & LinkProps> = forwardRef(
-  ({ text, href, icon, ...props }, ref) => {
+  ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
 
     return (
       <Link
-        ref={ref}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
+        as={isExternal ? "a" : RouterLink}
+        ref={isExternal ? ref : undefined}
+        href={isExternal ? href : undefined}
+        to={isExternal ? undefined : to}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
         color={finalColor}
         textDecoration="underline"
         {...props}
       >
-        {text}
+        {children}
         {icon || <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />}
       </Link>
     )

@@ -59,9 +59,10 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
           isExternal
           href={href}
           sx={styles.link}
-          text={_linkText}
           color={styles.link.color as string}
-        />
+        >
+          {_linkText}
+        </ExternalLink>
       ) : (
         <Button sx={styles.link} variant="link" as={RouterLink} to={href}>
           {_linkText}

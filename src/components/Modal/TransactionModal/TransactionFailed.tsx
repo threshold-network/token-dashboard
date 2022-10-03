@@ -92,9 +92,10 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                 <ExternalLink
                   isExternal
                   href={ExternalHref.thresholdDiscord}
-                  text="Get help on discord"
                   fontWeight="bold"
-                />
+                >
+                  Get help on discord
+                </ExternalLink>
               </AlertDescription>
             )}
           </Alert>

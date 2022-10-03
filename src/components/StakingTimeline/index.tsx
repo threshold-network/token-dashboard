@@ -35,8 +35,9 @@ export const StakingDepositStepsNonMAS: FC = () => {
               <ExternalLink
                 isExternal
                 href={ExternalHref.preStakingProvidersList}
-                text="this"
-              />
+              >
+                this
+              </ExternalLink>
             </BodySm>
           ),
         },
@@ -59,15 +60,13 @@ export const LegacyStakesDepositSteps: FC = () => {
           <Stack spacing={0}>
             <BodyMd>
               Authorize NuCypher legacy stakes{" "}
-              <ExternalLink isExternal href={ExternalHref.nuDapp} text="here" />
+              <ExternalLink isExternal href={ExternalHref.nuDapp} />
             </BodyMd>
             <BodyMd>
               Authorize Keep Network legacy stakes{" "}
-              <ExternalLink
-                isExternal
-                href={ExternalHref.keepDapp}
-                text="here"
-              />
+              <ExternalLink isExternal href={ExternalHref.keepDapp}>
+                here
+              </ExternalLink>
             </BodyMd>
           </Stack>
         </FlowStep>
@@ -127,11 +126,9 @@ export const LegacyStakesDepositSteps: FC = () => {
             itemTitle: (
               <BodyMd>
                 Authorize your NuCypher legacy stake{" "}
-                <ExternalLink
-                  isExternal
-                  text="here"
-                  href={ExternalHref.nuDapp}
-                />
+                <ExternalLink isExternal href={ExternalHref.nuDapp}>
+                  here
+                </ExternalLink>
               </BodyMd>
             ),
           },
@@ -140,11 +137,9 @@ export const LegacyStakesDepositSteps: FC = () => {
             itemTitle: (
               <BodyMd>
                 Authorize your Keep Network legacy stake{" "}
-                <ExternalLink
-                  isExternal
-                  text="here"
-                  href={ExternalHref.keepDappAuthPage}
-                />
+                <ExternalLink isExternal href={ExternalHref.keepDappAuthPage}>
+                  here
+                </ExternalLink>
               </BodyMd>
             ),
           },
@@ -167,17 +162,16 @@ export const PreSetupSteps: FC = () => {
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               You will need to run a PRE node to get rewards. If you don’t have
               one, learn how to do it here{" "}
-              <ExternalLink
-                isExternal
-                href={ExternalHref.preNodeSetup}
-                text="here"
-              />
+              <ExternalLink isExternal href={ExternalHref.preNodeSetup}>
+                here
+              </ExternalLink>
               , or contact{" "}
               <ExternalLink
                 isExternal
                 href={ExternalHref.preStakingProvidersList}
-                text="a staking provider"
-              />
+              >
+                a staking provider
+              </ExternalLink>
               .
             </BodySm>
           ),
@@ -188,11 +182,9 @@ export const PreSetupSteps: FC = () => {
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               Make sure you add your PRE Operator address{" "}
-              <ExternalLink
-                isExternal
-                href={ExternalHref.preNodeSetup}
-                text="here"
-              />{" "}
+              <ExternalLink isExternal href={ExternalHref.preNodeSetup}>
+                here
+              </ExternalLink>{" "}
               to gain rewards.
             </BodySm>
           ),

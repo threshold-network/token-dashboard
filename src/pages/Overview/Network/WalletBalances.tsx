@@ -144,10 +144,9 @@ const WalletBalances: FC = () => {
         mt="4"
         textAlign="center"
       >
-        <ExternalLink
-          href={ExternalHref.exchangeRateLearnMore}
-          text="Read More"
-        />{" "}
+        <ExternalLink isExternal href={ExternalHref.exchangeRateLearnMore}>
+          Read More
+        </ExternalLink>{" "}
         about Exchange Rate
       </BodySm>
     </CardTemplate>

@@ -5,10 +5,12 @@ import { FiArrowUpRight } from "react-icons/all"
 
 interface Props {
   to: string
+  withArrow?: boolean
   icon?: ReactElement
 }
 
 const InternalLink: FC<Props & LinkProps> = ({
+  withArrow,
   icon,
   to,
   children,
@@ -26,6 +28,11 @@ const InternalLink: FC<Props & LinkProps> = ({
       {...props}
     >
       {children}
+      {withArrow ? (
+        <Icon boxSize="12px" ml="1" as={FiArrowUpRight} color={finalColor} />
+      ) : (
+        icon
+      )}
     </Link>
   )
 }

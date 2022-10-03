@@ -141,8 +141,9 @@ const StakingApplications: PageComponent = () => {
                 href={ExternalHref.tbtcNodeDocs}
                 width="full"
                 variant="outline"
-                text="TBTC Node Docs"
-              />
+              >
+                TBTC Node Docs
+              </Button>
             </VStack>
           }
           rewardSteps={tbtcNodeSteps}
@@ -169,8 +170,9 @@ const StakingApplications: PageComponent = () => {
                 href={ExternalHref.randomBeaconNodeDocs}
                 width="full"
                 variant="outline"
-                text="Random Beacon Node Docs"
-              />
+              >
+                Random Beacon Node Docs
+              </Button>
             </VStack>
           }
           rewardSteps={randomBeaconNodeSteps}
@@ -188,8 +190,9 @@ const StakingApplications: PageComponent = () => {
               mb={6}
               width="full"
               variant="outline"
-              text="PRE Node Docs"
-            />
+            >
+              PRE Node Docs
+            </Button>
           }
           rewardSteps={preNodeSteps}
         />
