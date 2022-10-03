@@ -146,7 +146,7 @@ const deauthorizationValidation = (
       {
         ...defaultValidationOptions,
         lessThanValidationMsg(amount) {
-          return `${defaultLessThanMsg(amount)} or ${formatTokenAmount(
+          return `${defaultLessThanMsg(amount)} or equal to ${formatTokenAmount(
             authorizedAmount.toString()
           )} T`
         },
