@@ -108,17 +108,19 @@ const authorizationValidation = (
   const { tokenAmount } = values
   const { authorizedAmount, totalStake, minimumAuthorizationAmount } = props
 
-  const _authorizedAmount = BigNumber.from(authorizedAmount)
-  const _max = BigNumber.from(totalStake).sub(_authorizedAmount)
-  const _minimumAuthorizationAmount = BigNumber.from(minimumAuthorizationAmount)
+  const authorizedAmountInBN = BigNumber.from(authorizedAmount)
+  const max = BigNumber.from(totalStake).sub(authorizedAmountInBN)
+  const minimumAuthorizationAmountInBN = BigNumber.from(
+    minimumAuthorizationAmount
+  )
 
-  const min = _authorizedAmount.gt(_minimumAuthorizationAmount)
+  const min = authorizedAmountInBN.gt(minimumAuthorizationAmountInBN)
     ? DEFAULT_MIN_VALUE
-    : _minimumAuthorizationAmount.sub(_authorizedAmount)
+    : minimumAuthorizationAmountInBN.sub(authorizedAmountInBN)
 
   errors.tokenAmount = validateAmountInRange(
     tokenAmount,
-    _max.toString(),
+    max.toString(),
     min.toString()
   )
 
@@ -134,9 +136,9 @@ const deauthorizationValidation = (
   const { tokenAmount } = values
   const { authorizedAmount, minimumAuthorizationAmount } = props
   const max = BigNumber.from(authorizedAmount).sub(minimumAuthorizationAmount)
-  const _tokenAmount = BigNumber.from(tokenAmount || "0")
+  const tokenAmountInBN = BigNumber.from(tokenAmount || "0")
 
-  if (!_tokenAmount.eq(authorizedAmount)) {
+  if (!tokenAmountInBN.eq(authorizedAmount)) {
     errors.tokenAmount = validateAmountInRange(
       tokenAmount,
       max.toString(),
