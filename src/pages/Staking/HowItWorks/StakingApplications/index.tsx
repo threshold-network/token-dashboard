@@ -107,14 +107,12 @@ const StakingApplications: PageComponent = () => {
             <ListItem>
               <HStack spacing={4}>
                 <Image h="32px" w="32px" src={iconMap.arrows[colorMode]} />
-                <BodyMd>
-                  <Stack>
-                    <BodyMd>Change your authorized amount at any time. </BodyMd>
-                    <BodyXs>
-                      There is a deauthorization cooldown period of 45 days.
-                    </BodyXs>
-                  </Stack>
-                </BodyMd>
+                <Stack>
+                  <BodyMd>Change your authorized amount at any time. </BodyMd>
+                  <BodyXs>
+                    There is a deauthorization cooldown period of 45 days.
+                  </BodyXs>
+                </Stack>
               </HStack>
             </ListItem>
           </List>
