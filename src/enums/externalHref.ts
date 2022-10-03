@@ -20,4 +20,6 @@ export enum ExternalHref {
   p2pValidator = "https://p2p.org/",
   infStones = "https://infstones.com/",
   setupNodes = "https://docs.threshold.network/",
+  tbtcNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
+  randomBeaconNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
 }

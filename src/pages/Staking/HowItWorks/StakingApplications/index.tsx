@@ -138,7 +138,7 @@ const StakingApplications: PageComponent = () => {
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/staking"
+                href={ExternalHref.tbtcNodeDocs}
                 width="full"
                 variant="outline"
                 text="TBTC Node Docs"
@@ -166,7 +166,7 @@ const StakingApplications: PageComponent = () => {
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/staking"
+                href={ExternalHref.randomBeaconNodeDocs}
                 width="full"
                 variant="outline"
                 text="Random Beacon Node Docs"
