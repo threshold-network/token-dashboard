@@ -20,9 +20,9 @@ type ComponentProps = {
   isAuthorization?: boolean
 } & Omit<TokenAmountFormBaseProps, "label" | "maxTokenAmount">
 
-const Label: FC<{ label: string; remainigAmount: string }> = ({
+const Label: FC<{ label: string; remainingAmount: string }> = ({
   label,
-  remainigAmount,
+  remainingAmount,
 }) => {
   return (
     <>
@@ -30,7 +30,7 @@ const Label: FC<{ label: string; remainigAmount: string }> = ({
         {label}
       </BodyMd>
       <BodySm as="span" color="gray.500" float="right">
-        Remaining Balance: {formatTokenAmount(remainigAmount)} T
+        Remaining Balance: {formatTokenAmount(remainingAmount)} T
       </BodySm>
     </>
   )
@@ -49,7 +49,7 @@ const StakingApplicationFormBase: FC<
 }) => {
   const { values } = formikProps
   const { tokenAmount } = values
-  const [remainigAmount, setRemainingAmount] = useState("0")
+  const [remainingAmount, setRemainingAmount] = useState("0")
   const [maxAmount, setMaxAmount] = useState("0")
 
   useEffect(() => {
@@ -77,7 +77,7 @@ const StakingApplicationFormBase: FC<
       label={
         <Label
           label={isAuthorization ? "Increase Amount" : "Decrease Amount"}
-          remainigAmount={remainigAmount}
+          remainingAmount={remainingAmount}
         />
       }
       submitButtonText={submitButtonText}
