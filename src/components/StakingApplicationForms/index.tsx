@@ -134,7 +134,7 @@ const deauthorizationValidation = (
   const max = BigNumber.from(authorizedAmount).sub(minimumAuthorizationAmount)
   const _tokenAmount = BigNumber.from(tokenAmount)
 
-  if (_tokenAmount.lt(authorizedAmount)) {
+  if (!_tokenAmount.eq(authorizedAmount)) {
     errors.tokenAmount = validateAmountInRange(
       tokenAmount,
       max.toString(),
