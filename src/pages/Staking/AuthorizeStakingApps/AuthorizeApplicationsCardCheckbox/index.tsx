@@ -17,7 +17,7 @@ import {
   HStack,
 } from "@threshold-network/components"
 import { InfoIcon } from "@chakra-ui/icons"
-import { FC, Ref, useCallback, useEffect } from "react"
+import { FC, RefObject, useCallback, useEffect } from "react"
 import { FormValues } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
@@ -87,7 +87,7 @@ export interface AuthorizeApplicationsCardCheckboxProps extends BoxProps {
   maxAuthAmount: string
   minAuthAmount: string
   canSubmitForm?: boolean
-  formRef?: Ref<FormikProps<FormValues>>
+  formRef?: RefObject<FormikProps<FormValues>>
 }
 
 const gridTemplate = {
@@ -158,22 +158,35 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   const hasPendingDeauthorization = Boolean(
     appAuthData.hasPendingDeauthorization
   )
+  const pendingAuthorizationDecrease =
+    appAuthData.pendingAuthorizationDecrease || "0"
+  const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
+  const isDeauthorizationReqestActive =
+    appAuthData.isDeauthorizationReqestActive
+  const remainingAuthorizationDecreaseDelay =
+    appAuthData.remainingAuthorizationDecreaseDelay
+  const authorizedStake = appAuthData.authorizedStake
+  const canDecrease = authorizedStake !== "0"
 
   useEffect(() => {
     if (hasPendingDeauthorization) {
       actionCallbacks.off()
+    } else {
+      actionCallbacks.on()
     }
   }, [hasPendingDeauthorization, actionCallbacks])
 
   const onFilterTabClick = useCallback(
     (tabId: string) => {
-      if (tabId === "increase") {
+      if (tabId === "increase" && !hasPendingDeauthorization) {
         actionCallbacks.on()
-      } else if (tabId === "decrease") {
+        formRef?.current?.resetForm()
+      } else if (tabId === "decrease" && authorizedStake !== "0") {
         actionCallbacks.off()
+        formRef?.current?.resetForm()
       }
     },
-    [actionCallbacks]
+    [actionCallbacks, authorizedStake, hasPendingDeauthorization]
   )
 
   const onAuthorizeApp = async (tokenAmount: string) => {
@@ -212,15 +225,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     if (isIncreaseAction) onAuthorizeApp(tokenAmount)
     else onInitiateDeauthorization(tokenAmount)
   }
-
-  const pendingAuthorizationDecrease =
-    appAuthData.pendingAuthorizationDecrease || "0"
-  const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
-  const isDeauthorizationReqestActive =
-    appAuthData.isDeauthorizationReqestActive
-  const remainingAuthorizationDecreaseDelay =
-    appAuthData.remainingAuthorizationDecreaseDelay
-  const authorizedStake = appAuthData.authorizedStake
 
   const onConfirmDeauthorization = () => {
     openModal(ModalType.ConfirmDeauthorization, {
@@ -294,8 +298,20 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           onTabClick={onFilterTabClick}
           selectedTabId={isIncreaseAction ? "increase" : "decrease"}
         >
-          <FilterTab tabId="increase">Increase</FilterTab>
-          <FilterTab tabId="decrease">Decrease</FilterTab>
+          <FilterTab
+            tabId="increase"
+            disabled={hasPendingDeauthorization}
+            pointerEvents={hasPendingDeauthorization ? "none" : undefined}
+          >
+            Increase
+          </FilterTab>
+          <FilterTab
+            tabId="decrease"
+            disabled={!canDecrease}
+            pointerEvents={canDecrease ? undefined : "none"}
+          >
+            Decrease
+          </FilterTab>
         </FilterTabs>
         {!hasPendingDeauthorization && (
           <GridItem gridArea="token-amount-form" mt={5}>
