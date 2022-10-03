@@ -1,16 +1,14 @@
 import {
-  Alert,
   AlertBox,
   AlertDescription,
-  AlertIcon,
   Badge,
   BodyLg,
-  BodySm,
   Button,
   Card,
   H5,
   HStack,
   LineDivider,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
@@ -23,7 +21,6 @@ import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
 } from "./AuthorizeApplicationsCardCheckbox"
 import { FC, useEffect, useRef, useState, RefObject } from "react"
-import { featureFlags } from "../../../constants"
 import {
   requestStakeByStakingProvider,
   selectStakeByStakingProvider,
@@ -41,7 +38,6 @@ import { FormValues } from "../../../components/Forms"
 import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
-import { useColorModeValue } from "@chakra-ui/react"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -201,7 +197,7 @@ const AuthorizeStakingAppsPage: FC = () => {
     )
   }
 
-  const alertTextColor = useColorModeValue("gray.700", "white")
+  const alertTextColor = useColorModeValue("gray.900", "white")
 
   return active ? (
     <>
@@ -294,13 +290,5 @@ const AuthorizeStakingAppsPage: FC = () => {
     <H5>{`Please connect your wallet.`}</H5>
   )
 }
-
-// AuthorizeStakingAppsPage.route = {
-//   path: "authorize/:stakingProviderAddress",
-//   index: false,
-//   title: "Authorize",
-//   hideFromMenu: true,
-//   isPageEnabled: featureFlags.MULTI_APP_STAKING,
-// }
 
 export default AuthorizeStakingAppsPage
