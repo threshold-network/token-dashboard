@@ -26,16 +26,16 @@ const unstakeTypeToLegacyDappLink: Record<
   JSX.Element
 > = {
   [UnstakeType.LEGACY_KEEP]: (
-    <ExternalLink text="here" href={ExternalHref.keepDapp} />
+    <ExternalLink isExternal text="here" href={ExternalHref.keepDapp} />
   ),
   [UnstakeType.LEGACY_NU]: (
-    <ExternalLink text="here" href={ExternalHref.nuDapp} />
+    <ExternalLink isExternal text="here" href={ExternalHref.nuDapp} />
   ),
   [UnstakeType.ALL]: (
     <>
-      <ExternalLink text="KEEP dapp" href={ExternalHref.keepDapp} />
+      <ExternalLink isExternal text="KEEP dapp" href={ExternalHref.keepDapp} />
       {" or "}
-      <ExternalLink text="NU dapp" href={ExternalHref.nuDapp} />
+      <ExternalLink isExternal text="NU dapp" href={ExternalHref.nuDapp} />
     </>
   ),
 }

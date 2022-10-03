@@ -56,10 +56,10 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
       </Stack>
       {isExternal ? (
         <ExternalLink
+          isExternal
           href={href}
           sx={styles.link}
           text={_linkText}
-          withArrow
           color={styles.link.color as string}
         />
       ) : (

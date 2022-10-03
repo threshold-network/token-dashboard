@@ -19,7 +19,9 @@ const ViewInBlockExplorer: FC<
     type
   )
 
-  return <ExternalLink href={etherscanLink} text={text} {...restProps} />
+  return (
+    <ExternalLink isExternal href={etherscanLink} text={text} {...restProps} />
+  )
 }
 
 export default ViewInBlockExplorer

@@ -33,9 +33,9 @@ export const StakingDepositStepsNonMAS: FC = () => {
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
               <ExternalLink
+                isExternal
                 href={ExternalHref.preStakingProvidersList}
                 text="this"
-                withArrow
               />
             </BodySm>
           ),
@@ -59,14 +59,14 @@ export const LegacyStakesDepositSteps: FC = () => {
           <Stack spacing={0}>
             <BodyMd>
               Authorize NuCypher legacy stakes{" "}
-              <ExternalLink href={ExternalHref.nuDapp} text="here" withArrow />
+              <ExternalLink isExternal href={ExternalHref.nuDapp} text="here" />
             </BodyMd>
             <BodyMd>
               Authorize Keep Network legacy stakes{" "}
               <ExternalLink
+                isExternal
                 href={ExternalHref.keepDapp}
                 text="here"
-                withArrow
               />
             </BodyMd>
           </Stack>
@@ -128,9 +128,9 @@ export const LegacyStakesDepositSteps: FC = () => {
               <BodyMd>
                 Authorize your NuCypher legacy stake{" "}
                 <ExternalLink
+                  isExternal
                   text="here"
                   href={ExternalHref.nuDapp}
-                  withArrow
                 />
               </BodyMd>
             ),
@@ -141,9 +141,9 @@ export const LegacyStakesDepositSteps: FC = () => {
               <BodyMd>
                 Authorize your Keep Network legacy stake{" "}
                 <ExternalLink
+                  isExternal
                   text="here"
                   href={ExternalHref.keepDappAuthPage}
-                  withArrow
                 />
               </BodyMd>
             ),
@@ -168,15 +168,15 @@ export const PreSetupSteps: FC = () => {
               You will need to run a PRE node to get rewards. If you don’t have
               one, learn how to do it here{" "}
               <ExternalLink
+                isExternal
                 href={ExternalHref.preNodeSetup}
                 text="here"
-                withArrow
               />
               , or contact{" "}
               <ExternalLink
+                isExternal
                 href={ExternalHref.preStakingProvidersList}
                 text="a staking provider"
-                withArrow
               />
               .
             </BodySm>
@@ -189,9 +189,9 @@ export const PreSetupSteps: FC = () => {
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               Make sure you add your PRE Operator address{" "}
               <ExternalLink
+                isExternal
                 href={ExternalHref.preNodeSetup}
                 text="here"
-                withArrow
               />{" "}
               to gain rewards.
             </BodySm>

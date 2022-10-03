@@ -90,6 +90,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
               <AlertDescription maxWidth="100%">
                 <BodySm mb={8}>{error?.stack?.toString()}</BodySm>
                 <ExternalLink
+                  isExternal
                   href={ExternalHref.thresholdDiscord}
                   text="Get help on discord"
                   fontWeight="bold"

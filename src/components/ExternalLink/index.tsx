@@ -11,12 +11,12 @@ import { FiArrowUpRight } from "react-icons/all"
 interface Props {
   href: string
   text: string
-  withArrow?: boolean
   icon?: ReactElement
+  isExternal?: boolean
 }
 
 const ExternalLink: FC<Props & LinkProps> = forwardRef(
-  ({ text, href, withArrow, icon, ...props }, ref) => {
+  ({ text, href, icon, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
 
@@ -31,7 +31,7 @@ const ExternalLink: FC<Props & LinkProps> = forwardRef(
         {...props}
       >
         {text}
-        {withArrow ? <Icon boxSize="12px" ml="1" as={FiArrowUpRight} /> : icon}
+        {icon || <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />}
       </Link>
     )
   }

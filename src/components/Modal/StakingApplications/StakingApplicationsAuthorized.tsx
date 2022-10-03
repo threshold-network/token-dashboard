@@ -141,10 +141,10 @@ const StakingApplicationsAuthorizedBase: FC<
         <Button
           variant="outline"
           as={ExternalLink}
+          isExternal
           mr={2}
           href={ExternalHref.setupNodes}
           text="Node Setup Doc"
-          withArrow
         />
         <Button onClick={onAuthorizeOtherApps} mr={2}>
           Authorize Other Apps
