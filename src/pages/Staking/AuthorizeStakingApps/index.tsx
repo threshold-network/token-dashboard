@@ -11,6 +11,7 @@ import {
   H5,
   HStack,
   LineDivider,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import { useSelector } from "react-redux"
@@ -200,6 +201,8 @@ const AuthorizeStakingAppsPage: FC = () => {
     )
   }
 
+  const earnRewardsAlertTextColor = useColorModeValue("gray.900", "white")
+
   return active ? (
     <>
       <Card>
@@ -227,7 +230,7 @@ const AuthorizeStakingAppsPage: FC = () => {
           </AlertBox>
         )}
         <AlertBox status="magic" alignItems="flex-start">
-          <AlertDescription color={"gray.700"}>
+          <AlertDescription color={earnRewardsAlertTextColor}>
             In order to earn rewards, please authorize Threshold apps to use
             your stake. Note that you can authorize 100% of your stake for all
             of the apps. You can change this amount at any time.
