@@ -8,6 +8,8 @@ import {
   FormValues,
 } from "../Forms"
 import {
+  defaultLessThanMsg,
+  defaultValidationOptions,
   DEFAULT_MIN_VALUE,
   getErrorsObj,
   validateAmountInRange,
@@ -138,7 +140,15 @@ const deauthorizationValidation = (
     errors.tokenAmount = validateAmountInRange(
       tokenAmount,
       max.toString(),
-      DEFAULT_MIN_VALUE
+      DEFAULT_MIN_VALUE,
+      {
+        ...defaultValidationOptions,
+        lessThanValidationMsg(amount) {
+          return `${defaultLessThanMsg(amount)} or ${formatTokenAmount(
+            authorizedAmount.toString()
+          )} T`
+        },
+      }
     )
   }
 
