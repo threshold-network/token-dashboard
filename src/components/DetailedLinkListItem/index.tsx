@@ -9,7 +9,7 @@ import {
   Stack,
   useMultiStyleConfig,
 } from "@threshold-network/components"
-import ExternalLink from "../ExternalLink"
+import Link from "../Link"
 import ButtonLink from "../ButtonLink"
 
 export interface DetailedLinkListItemProps extends BoxProps {
@@ -54,14 +54,14 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
         <BodySm sx={styles.subtitle}>{subtitle}</BodySm>
       </Stack>
       {isExternal ? (
-        <ExternalLink
+        <Link
           isExternal
           href={href}
           sx={styles.link}
           color={styles.link.color as string}
         >
           {_linkText}
-        </ExternalLink>
+        </Link>
       ) : (
         <ButtonLink sx={styles.link} variant="link" to={href}>
           {_linkText}

@@ -28,7 +28,6 @@ import stakingApplicationsIllustrationDark from "../../../../static/images/Staki
 import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
-import ExternalLink from "../../../../components/ExternalLink"
 import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 import ButtonLink from "../../../../components/ButtonLink"

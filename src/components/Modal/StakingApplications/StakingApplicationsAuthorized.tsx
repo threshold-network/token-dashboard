@@ -1,5 +1,5 @@
 import { FC, Fragment } from "react"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import {
   HStack,
   BodyLg,
@@ -15,11 +15,10 @@ import {
   AlertIcon,
   BodySm,
   Divider,
-  Link,
   FlowStepStatus,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import ExternalLink from "../../ExternalLink"
+import Link from "../../Link"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import withBaseModal from "../withBaseModal"
 import { useAppSelector } from "../../../hooks/store"
@@ -93,7 +92,7 @@ const StakingApplicationsAuthorizedBase: FC<
           </H5>
           <BodyLg mt="4">
             You can adjust the authorization amount at any time from the{" "}
-            <ExternalLink to="/staking">Staking page</ExternalLink>.
+            <Link to="/staking">Staking page</Link>.
           </BodyLg>
         </InfoBox>
         <StakingTimeline

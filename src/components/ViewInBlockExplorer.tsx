@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { LinkProps } from "@chakra-ui/react"
-import ExternalLink from "./ExternalLink"
+import Link from "./Link"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../utils/createEtherscanLink"
@@ -20,9 +20,9 @@ const ViewInBlockExplorer: FC<
   )
 
   return (
-    <ExternalLink isExternal={true} href={etherscanLink} {...restProps}>
+    <Link isExternal href={etherscanLink} {...restProps}>
       {text}
-    </ExternalLink>
+    </Link>
   )
 }
 

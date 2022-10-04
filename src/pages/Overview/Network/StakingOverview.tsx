@@ -6,7 +6,7 @@ import { BodyMd } from "@threshold-network/components"
 import { useTokenState } from "../../../hooks/useTokenState"
 import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
-import { StakingContractLearnMore } from "../../../components/ExternalLink"
+import { StakingContractLearnMore } from "../../../components/Link"
 import { useStakingState } from "../../../hooks/useStakingState"
 import ButtonLink from "../../../components/ButtonLink"
 

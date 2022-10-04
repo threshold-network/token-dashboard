@@ -3,7 +3,7 @@ import { Link as RouterLink } from "react-router-dom"
 import {
   forwardRef,
   Icon,
-  Link,
+  Link as ChakraLink,
   LinkProps,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -23,13 +23,13 @@ type LinkToProps =
 
 type Props = CommonProps & LinkHrefProps & LinkToProps
 
-const ExternalLink: FC<Props> = forwardRef(
+const Link: FC<Props> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
 
     return (
-      <Link
+      <ChakraLink
         as={isExternal ? "a" : RouterLink}
         ref={isExternal ? ref : undefined}
         href={isExternal ? href : undefined}
@@ -46,11 +46,11 @@ const ExternalLink: FC<Props> = forwardRef(
         ) : isExternal ? (
           <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />
         ) : null}
-      </Link>
+      </ChakraLink>
     )
   }
 )
 
 export * from "./SharedLinks"
 
-export default ExternalLink
+export default Link

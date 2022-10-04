@@ -13,7 +13,7 @@ import {
 
 import AuthorizingApplicationsIllustrationLight from "../../../../static/images/AuthorizingApplicationsIllustrationLight.png"
 import AuthorizingApplicationsIllustrationDark from "../../../../static/images/AuthorizingApplicationsIllustrationDark.png"
-import ExternalLink from "../../../../components/ExternalLink"
+import Link from "../../../../components/Link"
 
 export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
   props
@@ -29,10 +29,8 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
       <BodyMd my={6}>
         In order to earn rewards, you can authorize Threshold applications to
         use your stake. You can read more about the applications{" "}
-        <ExternalLink to="/staking/how-it-works/applications">
-          here
-        </ExternalLink>
-        . Note that you can authorize 100% of your stake for all of the apps.
+        <Link to="/staking/how-it-works/applications">here</Link>. Note that you
+        can authorize 100% of your stake for all of the apps.
       </BodyMd>
       <Image
         maxW="370px"

@@ -16,7 +16,7 @@ import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { ExternalHref, Token } from "../../../enums"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import InfoBox from "../../../components/InfoBox"
-import ExternalLink from "../../../components/ExternalLink"
+import Link from "../../../components/Link"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"
 import ButtonLink from "../../../components/ButtonLink"
 
@@ -144,9 +144,9 @@ const WalletBalances: FC = () => {
         mt="4"
         textAlign="center"
       >
-        <ExternalLink isExternal href={ExternalHref.exchangeRateLearnMore}>
+        <Link isExternal href={ExternalHref.exchangeRateLearnMore}>
           Read More
-        </ExternalLink>{" "}
+        </Link>{" "}
         about Exchange Rate
       </BodySm>
     </CardTemplate>

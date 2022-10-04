@@ -9,7 +9,7 @@ import {
 } from "@threshold-network/components"
 import { useMatch, useResolvedPath } from "react-router-dom"
 import { RouteProps } from "../../types"
-import ExternalLink from "../ExternalLink"
+import Link from "../Link"
 
 interface Props {
   links: RouteProps[]
@@ -54,7 +54,7 @@ const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
   return (
     <Stack position="relative" padding={2} as="li">
       <BodyMd>
-        <ExternalLink
+        <Link
           fontWeight={isActive ? "700" : undefined}
           color={isActive ? activeColor : undefined}
           to={path}
@@ -64,7 +64,7 @@ const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
           textDecoration="none"
         >
           {title}
-        </ExternalLink>
+        </Link>
       </BodyMd>
       {isActive && (
         <Divider
