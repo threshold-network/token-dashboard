@@ -69,8 +69,8 @@ const StakingPage: PageComponent = (props) => {
           </H4>
           {isUsedAsStakingProvider &&
             isOperatorMappingInitialFetchDone &&
-            isAddressZero(mappedOperators.tbtc) &&
-            isAddressZero(mappedOperators.randomBeacon) && (
+            (isAddressZero(mappedOperators.tbtc) ||
+              isAddressZero(mappedOperators.randomBeacon)) && (
               <OperatorAddressMappingCard
                 mappedOperatorTbtc={mappedOperators.tbtc}
                 mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
