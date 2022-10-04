@@ -1,10 +1,8 @@
 import { FC } from "react"
-import { Link as RouterLink } from "react-router-dom"
 import {
   BodyLg,
   BodySm,
   BoxProps,
-  Button,
   Flex,
   Image,
   Square,
@@ -12,6 +10,7 @@ import {
   useMultiStyleConfig,
 } from "@threshold-network/components"
 import ExternalLink from "../ExternalLink"
+import ButtonLink from "../ButtonLink"
 
 export interface DetailedLinkListItemProps extends BoxProps {
   imgSrc?: any
@@ -64,9 +63,9 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
           {_linkText}
         </ExternalLink>
       ) : (
-        <Button sx={styles.link} variant="link" as={RouterLink} to={href}>
+        <ButtonLink sx={styles.link} variant="link" to={href}>
           {_linkText}
-        </Button>
+        </ButtonLink>
       )}
     </Flex>
   )

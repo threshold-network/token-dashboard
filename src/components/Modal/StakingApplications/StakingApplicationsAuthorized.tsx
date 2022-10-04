@@ -35,6 +35,7 @@ import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppNameFromAddress"
 import StakingTimeline from "../../StakingTimeline"
+import ButtonLink from "../../ButtonLink"
 
 export type StakingApplicationsAuthorizeProps = BaseModalProps & {
   stakingProvider: string
@@ -92,10 +93,7 @@ const StakingApplicationsAuthorizedBase: FC<
           </H5>
           <BodyLg mt="4">
             You can adjust the authorization amount at any time from the{" "}
-            <Link as={RouterLink} to="/staking" color="brand.500">
-              Staking page
-            </Link>
-            .
+            <ExternalLink to="/staking">Staking page</ExternalLink>.
           </BodyLg>
         </InfoBox>
         <StakingTimeline
@@ -138,15 +136,14 @@ const StakingApplicationsAuthorizedBase: FC<
         <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
-        <Button
+        <ButtonLink
           variant="outline"
-          as={ExternalLink}
           isExternal
           mr={2}
           href={ExternalHref.setupNodes}
         >
           Node Setup Doc
-        </Button>
+        </ButtonLink>
         <Button onClick={onAuthorizeOtherApps} mr={2}>
           Authorize Other Apps
         </Button>

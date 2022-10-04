@@ -1,11 +1,11 @@
 import { FC } from "react"
-import { BodyMd, Box, Button } from "@threshold-network/components"
+import { BodyMd, Box } from "@threshold-network/components"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
-import { Link as RouterLink } from "react-router-dom"
 import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import BundledRewardsAlert from "../../../../components/BundledRewardsAlert"
 import { useAppSelector } from "../../../../hooks/store"
+import ButtonLink from "../../../../components/ButtonLink"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
@@ -59,14 +59,13 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         appAuthData={appsAuthData.randomBeacon}
         stakingProvider={stakingProvider}
       />
-      <Button
+      <ButtonLink
         mt="5"
-        width="100%"
-        as={RouterLink}
+        isFullWidth
         to={`/staking/${stakingProvider}/authorize`}
       >
         Configure Apps
-      </Button>
+      </ButtonLink>
     </Box>
   )
 }

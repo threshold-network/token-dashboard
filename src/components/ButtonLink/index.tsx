@@ -1,15 +1,15 @@
 import { FC, ReactElement } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
+  Button,
+  ButtonProps,
   forwardRef,
   Icon,
-  Link,
-  LinkProps,
   useColorModeValue,
 } from "@threshold-network/components"
 import { FiArrowUpRight } from "react-icons/all"
 
-interface CommonProps extends LinkProps {
+interface CommonProps extends ButtonProps {
   icon?: ReactElement
 }
 
@@ -23,34 +23,30 @@ type LinkToProps =
 
 type Props = CommonProps & LinkHrefProps & LinkToProps
 
-const ExternalLink: FC<Props> = forwardRef(
+const ButtonLink: FC<Props> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
-    const defaultColor = useColorModeValue("brand.500", "white")
-    const finalColor = props.color ? props.color : defaultColor
-
     return (
-      <Link
+      <Button
         as={isExternal ? "a" : RouterLink}
         ref={isExternal ? ref : undefined}
         href={isExternal ? href : undefined}
         to={isExternal ? undefined : to}
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
-        color={finalColor}
-        textDecoration="underline"
+        // textDecoration="underline"
+        rightIcon={
+          icon ? (
+            icon
+          ) : isExternal ? (
+            <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />
+          ) : undefined
+        }
         {...props}
       >
         {children}
-        {icon ? (
-          icon
-        ) : isExternal ? (
-          <Icon boxSize="12px" ml="1" as={FiArrowUpRight} />
-        ) : null}
-      </Link>
+      </Button>
     )
   }
 )
 
-export * from "./SharedLinks"
-
-export default ExternalLink
+export default ButtonLink

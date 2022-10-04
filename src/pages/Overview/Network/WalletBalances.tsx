@@ -1,6 +1,5 @@
 import { FC, useMemo } from "react"
-import { Link as RouterLink } from "react-router-dom"
-import { Button, HStack, Stack, useColorModeValue } from "@chakra-ui/react"
+import { HStack, Stack, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { formatUnits } from "@ethersproject/units"
 import IconEnum from "../../../enums/icon"
@@ -19,6 +18,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import InfoBox from "../../../components/InfoBox"
 import ExternalLink from "../../../components/ExternalLink"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"
+import ButtonLink from "../../../components/ButtonLink"
 
 const BalanceStat: FC<{
   balance: string | number
@@ -134,9 +134,9 @@ const WalletBalances: FC = () => {
       </InfoBox>
 
       {/* Link to upgrade page */}
-      <Button size="lg" isFullWidth mt={4} as={RouterLink} to={upgradeHref}>
+      <ButtonLink size="lg" isFullWidth mt={4} to={upgradeHref}>
         Upgrade Tokens
-      </Button>
+      </ButtonLink>
 
       {/* exchange rate link */}
       <BodySm

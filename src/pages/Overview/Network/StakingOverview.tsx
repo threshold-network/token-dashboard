@@ -8,6 +8,7 @@ import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
 import { StakingContractLearnMore } from "../../../components/ExternalLink"
 import { useStakingState } from "../../../hooks/useStakingState"
+import ButtonLink from "../../../components/ButtonLink"
 
 const StakingOverview: FC = () => {
   const { t } = useTokenState()
@@ -23,9 +24,9 @@ const StakingOverview: FC = () => {
           isLarge
         />
       </InfoBox>
-      <Button size="lg" isFullWidth mt={4} as={RouterLink} to="/staking">
+      <ButtonLink size="lg" isFullWidth mt={4} to="/something">
         Go to Staking
-      </Button>
+      </ButtonLink>
       <StakingContractLearnMore mt="4" />
     </CardTemplate>
   )

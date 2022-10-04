@@ -4,12 +4,12 @@ import {
   BodyMd,
   Divider,
   HStack,
-  Link,
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { Link as RouterLink, useMatch, useResolvedPath } from "react-router-dom"
+import { useMatch, useResolvedPath } from "react-router-dom"
 import { RouteProps } from "../../types"
+import ExternalLink from "../ExternalLink"
 
 interface Props {
   links: RouteProps[]
@@ -54,17 +54,17 @@ const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
   return (
     <Stack position="relative" padding={2} as="li">
       <BodyMd>
-        <Link
+        <ExternalLink
           fontWeight={isActive ? "700" : undefined}
           color={isActive ? activeColor : undefined}
-          as={RouterLink}
           to={path}
           _hover={{
             textDecoration: "none",
           }}
+          textDecoration="none"
         >
           {title}
-        </Link>
+        </ExternalLink>
       </BodyMd>
       {isActive && (
         <Divider
