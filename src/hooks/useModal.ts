@@ -2,14 +2,12 @@ import { useDispatch, useSelector } from "react-redux"
 import { UseModal } from "../types"
 import {
   closeModal as closeModalAction,
+  mapOperatorToStakingProviderModalClosed,
   openModal as openModalAction,
+  successfullLoginModalClosed,
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
-import {
-  mapOperatorToStakingProviderModalClosed,
-  successfullLoginModalClosed,
-} from "../store/modalQueue"
 
 export const useModal: UseModal = () => {
   const modalType = useSelector((state: RootState) => state.modal.modalType)

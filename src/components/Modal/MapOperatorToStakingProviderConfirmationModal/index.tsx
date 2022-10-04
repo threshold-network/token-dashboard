@@ -19,7 +19,7 @@ import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-
 import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
-import { mapOperatorToStakingProviderModalClosed } from "../../../store/modalQueue"
+import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
 import { BaseModalProps } from "../../../types"
 import { isAddressZero } from "../../../web3/utils"
 import InfoBox from "../../InfoBox"

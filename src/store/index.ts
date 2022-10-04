@@ -21,7 +21,6 @@ import {
   connectedAccountSlice,
   registerConnectedAccountListeners,
 } from "./connected-account"
-import { modalQueueSlice } from "./modalQueue"
 
 const combinedReducer = combineReducers({
   connectedAccount: connectedAccountSlice.reducer,
@@ -34,7 +33,6 @@ const combinedReducer = combineReducers({
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
   applications: stakingApplicationsSlice.reducer,
-  modalQueue: modalQueueSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"
@@ -59,8 +57,11 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
       },
       // we don't display successful login modal when changin account so we are
       // setting this flag to true
-      modalQueue: {
-        isSuccessfullLoginModalClosed: true,
+      modal: {
+        modalQueue: {
+          ...state.modal.modalQueue,
+          isSuccessfullLoginModalClosed: true,
+        },
       },
     } as RootState
   }

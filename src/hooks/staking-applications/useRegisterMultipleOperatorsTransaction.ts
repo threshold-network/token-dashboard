@@ -5,9 +5,9 @@ import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
 import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
-import { mapOperatorToStakingProviderModalClosed } from "../../store/modalQueue"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../../store"
+import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const mappedOperatorTbtc = useSelector(

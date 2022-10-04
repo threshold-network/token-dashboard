@@ -6,7 +6,11 @@ import {
   selectStakingProviders,
   setStakes,
 } from "../staking"
-import { modalSlice, openModal } from "../modal"
+import {
+  mapOperatorToStakingProviderModalClosed,
+  modalSlice,
+  openModal,
+} from "../modal"
 import {
   IApplication,
   StakingProviderAppInfo,
@@ -17,8 +21,7 @@ import {
   selectStakingAppByStakingProvider,
   selectStakingAppStateByAppName,
 } from "./selectors"
-import { isAddressZero, isSameETHAddress } from "../../web3/utils"
-import { mapOperatorToStakingProviderModalClosed } from "../modalQueue"
+import { isAddressZero } from "../../web3/utils"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -171,11 +174,13 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   action: AnyAction,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { modalQueue } = listenerApi.getState()
+  const {
+    modal: { modalQueue },
+  } = listenerApi.getState()
   const { connectedAccount, staking } = listenerApi.getState()
   if (!modalQueue.isSuccessfullLoginModalClosed) {
-    await listenerApi.condition((action, currentState: any) => {
-      return currentState.modalQueue.isSuccessfullLoginModalClosed
+    await listenerApi.condition((action, currentState: RootState) => {
+      return currentState.modal.modalQueue.isSuccessfullLoginModalClosed
     })
   }
   const { address } = connectedAccount
@@ -245,8 +250,9 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
   previousState: RootState
 ) => {
   return (
-    currentState.modalQueue.isSuccessfullLoginModalClosed &&
-    currentState.modalQueue.isMappingOperatorToStakingProviderModalClosed &&
+    currentState.modal.modalQueue.isSuccessfullLoginModalClosed &&
+    currentState.modal.modalQueue
+      .isMappingOperatorToStakingProviderModalClosed &&
     Object.values(
       currentState.applications.randomBeacon.stakingProviders.data ?? {}
     ).length > 0 &&
