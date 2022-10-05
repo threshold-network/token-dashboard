@@ -16,6 +16,9 @@ const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.FEATURE_FLAG_MULTI_APP_STAKING]: process.env[
     "REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING"
   ] as string,
+  [EnvVariable.FEATURE_FLAG_POSTHOG]: process.env[
+    "REACT_APP_FEATURE_FLAG_POSTHOG"
+  ] as string,
 }
 
 export const getEnvVariable = (envVar: EnvVariable) => {
