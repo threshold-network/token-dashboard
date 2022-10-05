@@ -29,6 +29,7 @@ import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
 import ExternalLink from "../../../../components/ExternalLink"
+import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 
 const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
@@ -106,14 +107,12 @@ const StakingApplications: PageComponent = () => {
             <ListItem>
               <HStack spacing={4}>
                 <Image h="32px" w="32px" src={iconMap.arrows[colorMode]} />
-                <BodyMd>
-                  <Stack>
-                    <BodyMd>Change your authorized amount at any time. </BodyMd>
-                    <BodyXs>
-                      There is a deauthorization cooldown period of 45 days.
-                    </BodyXs>
-                  </Stack>
-                </BodyMd>
+                <Stack>
+                  <BodyMd>Change your authorized amount at any time. </BodyMd>
+                  <BodyXs>
+                    There is a deauthorization cooldown period of 45 days.
+                  </BodyXs>
+                </Stack>
               </HStack>
             </ListItem>
           </List>
@@ -129,16 +128,17 @@ const StakingApplications: PageComponent = () => {
           ctaButtons={
             <VStack mb={6}>
               <Button
-                as={ExternalLink}
+                as={RouterLink}
                 textDecoration="none"
-                href="/somewhere"
+                to="/staking"
                 width="full"
-                text="Authorize TBTC"
-              />
+              >
+                Authorize TBTC
+              </Button>
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/somewhere"
+                href={ExternalHref.tbtcNodeDocs}
                 width="full"
                 variant="outline"
                 text="TBTC Node Docs"
@@ -155,17 +155,18 @@ const StakingApplications: PageComponent = () => {
           ctaButtons={
             <VStack mb={6}>
               <Button
-                as={ExternalLink}
+                as={RouterLink}
                 textDecoration="none"
-                href="/somewhere"
+                to="/staking"
                 width="full"
-                text="Authorize Random Beacon"
-              />
+              >
+                Authorize Random Beacon
+              </Button>
 
               <Button
                 as={ExternalLink}
                 textDecoration="none"
-                href="/somewhere"
+                href={ExternalHref.randomBeaconNodeDocs}
                 width="full"
                 variant="outline"
                 text="Random Beacon Node Docs"

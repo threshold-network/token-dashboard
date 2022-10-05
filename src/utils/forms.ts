@@ -15,18 +15,22 @@ type ValidationOptions = {
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-const defaultLessThanMsg: ValidationMsg = (minAmount) => {
+export const defaultLessThanMsg: (minAmount: string) => string = (
+  minAmount
+) => {
   return `The value should be less than or equal ${formatTokenAmount(
     minAmount
   )}`
 }
 
-const defaultGreaterThanMsg: ValidationMsg = (maxAmount) => {
+export const defaultGreaterThanMsg: (minAmount: string) => string = (
+  maxAmount
+) => {
   return `The value should be greater than or equal ${formatTokenAmount(
     maxAmount
   )}`
 }
-const defaultValidationOptions: ValidationOptions = {
+export const defaultValidationOptions: ValidationOptions = {
   greaterThanValidationMsg: defaultGreaterThanMsg,
   lessThanValidationMsg: defaultLessThanMsg,
   requiredMsg: "Required",

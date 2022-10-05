@@ -4,7 +4,6 @@ import { ExternalHref } from "../../enums"
 import DetailedLinkListItem from "../DetailedLinkListItem"
 import StakedLogo from "../../static/images/stakingProviders/StakedLogo.png"
 import BisonTrailsLogo from "../../static/images/stakingProviders/BisonTrailsLogo.png"
-import BlockDaemonLogo from "../../static/images/stakingProviders/BlockDaemonLogo.png"
 import BoarLogo from "../../static/images/stakingProviders/BoarLogo.png"
 import FigmentLogo from "../../static/images/stakingProviders/FigmentLogo.png"
 import LowFeeValidationLogo from "../../static/images/stakingProviders/LowFeeValidationLogo.png"
@@ -31,6 +30,18 @@ const renderProviderListItem = (provider: ProviderItem) => (
 
 const providers: ProviderItem[] = [
   {
+    name: "Boar",
+    email: "hello@boar.network",
+    link: ExternalHref.boar,
+    imgSrc: BoarLogo,
+  },
+  {
+    name: "P2P Validator",
+    email: "hello@p2p.org",
+    link: ExternalHref.p2pValidator,
+    imgSrc: P2PValidatorLogo,
+  },
+  {
     name: "Staked",
     email: "togilvie@staked.us",
     link: ExternalHref.stakedUs,
@@ -41,18 +52,6 @@ const providers: ProviderItem[] = [
     email: "viktor@bisontrails.co",
     link: ExternalHref.bisonTrails,
     imgSrc: BisonTrailsLogo,
-  },
-  {
-    name: "BlockDaemon",
-    email: "konstantin@blockdaemon.com",
-    link: ExternalHref.blockDaemon,
-    imgSrc: BlockDaemonLogo,
-  },
-  {
-    name: "Boar",
-    email: "hello@boar.network",
-    link: ExternalHref.boar,
-    imgSrc: BoarLogo,
   },
   {
     name: "Figment",
@@ -74,12 +73,6 @@ const preOnlyProviders = [
     email: "sales@ankr.com",
     link: ExternalHref.ankr,
     imgSrc: AnkrLogo,
-  },
-  {
-    name: "P2P Validator",
-    email: "hello@p2p.org",
-    link: ExternalHref.p2pValidator,
-    imgSrc: P2PValidatorLogo,
   },
   {
     name: "InfStones",

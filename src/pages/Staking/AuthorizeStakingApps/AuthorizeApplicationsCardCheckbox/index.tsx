@@ -18,10 +18,9 @@ import {
 } from "@threshold-network/components"
 import { InfoIcon } from "@chakra-ui/icons"
 import { FC, RefObject, useCallback, useEffect } from "react"
-import { FormValues, TokenAmountForm } from "../../../../components/Forms"
+import { FormValues } from "../../../../components/Forms"
 import { AppAuthorizationInfo } from "./AppAuthorizationInfo"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
-import { WeiPerEther } from "@ethersproject/constants"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
@@ -33,6 +32,7 @@ import {
 import InfoBox from "../../../../components/InfoBox"
 import { formatDate } from "../../../../utils/date"
 import { calculatePercenteage } from "../../../../utils/percentage"
+import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 
 interface CommonProps {
   stakingAppId: StakingAppName | "pre"
@@ -158,22 +158,35 @@ export const AuthorizeApplicationsCardCheckbox: FC<
   const hasPendingDeauthorization = Boolean(
     appAuthData.hasPendingDeauthorization
   )
+  const pendingAuthorizationDecrease =
+    appAuthData.pendingAuthorizationDecrease || "0"
+  const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
+  const isDeauthorizationReqestActive =
+    appAuthData.isDeauthorizationReqestActive
+  const remainingAuthorizationDecreaseDelay =
+    appAuthData.remainingAuthorizationDecreaseDelay
+  const authorizedStake = appAuthData.authorizedStake
+  const canDecrease = authorizedStake !== "0"
 
   useEffect(() => {
     if (hasPendingDeauthorization) {
       actionCallbacks.off()
+    } else {
+      actionCallbacks.on()
     }
   }, [hasPendingDeauthorization, actionCallbacks])
 
   const onFilterTabClick = useCallback(
     (tabId: string) => {
-      if (tabId === "increase") {
+      if (tabId === "increase" && !hasPendingDeauthorization) {
         actionCallbacks.on()
-      } else if (tabId === "decrease") {
+        formRef?.current?.resetForm()
+      } else if (tabId === "decrease" && authorizedStake !== "0") {
         actionCallbacks.off()
+        formRef?.current?.resetForm()
       }
     },
-    [actionCallbacks]
+    [actionCallbacks, authorizedStake, hasPendingDeauthorization]
   )
 
   const onAuthorizeApp = async (tokenAmount: string) => {
@@ -212,15 +225,6 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     if (isIncreaseAction) onAuthorizeApp(tokenAmount)
     else onInitiateDeauthorization(tokenAmount)
   }
-
-  const pendingAuthorizationDecrease =
-    appAuthData.pendingAuthorizationDecrease || "0"
-  const deauthorizationCreatedAt = appAuthData.deauthorizationCreatedAt
-  const isDeauthorizationReqestActive =
-    appAuthData.isDeauthorizationReqestActive
-  const remainingAuthorizationDecreaseDelay =
-    appAuthData.remainingAuthorizationDecreaseDelay
-  const authorizedStake = appAuthData.authorizedStake
 
   const onConfirmDeauthorization = () => {
     openModal(ModalType.ConfirmDeauthorization, {
@@ -294,15 +298,26 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           onTabClick={onFilterTabClick}
           selectedTabId={isIncreaseAction ? "increase" : "decrease"}
         >
-          <FilterTab tabId="increase">Increase</FilterTab>
-          <FilterTab tabId="decrease">Decrease</FilterTab>
+          <FilterTab
+            tabId="increase"
+            disabled={hasPendingDeauthorization}
+            pointerEvents={hasPendingDeauthorization ? "none" : undefined}
+          >
+            Increase
+          </FilterTab>
+          <FilterTab
+            tabId="decrease"
+            disabled={!canDecrease}
+            pointerEvents={canDecrease ? undefined : "none"}
+          >
+            Decrease
+          </FilterTab>
         </FilterTabs>
         {!hasPendingDeauthorization && (
           <GridItem gridArea="token-amount-form" mt={5}>
-            <TokenAmountForm
+            <StakingAppForm
               innerRef={formRef}
               onSubmitForm={onSubmitForm}
-              label="Amount"
               submitButtonText={
                 isIncreaseAction
                   ? appAuthData.isAuthorized
@@ -311,20 +326,18 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                   : "Initiate Deauthorization"
               }
               isDisabled={!canSubmitForm}
-              maxTokenAmount={
-                isIncreaseAction ? maxAuthAmount : authorizedStake ?? "0"
-              }
+              totalStake={totalInTStake}
               placeholder={"Enter amount"}
-              minTokenAmount={
-                isIncreaseAction
-                  ? appAuthData.percentage === 0
-                    ? minAuthAmount
-                    : WeiPerEther.toString()
-                  : "0"
+              minimumAuthorizationAmount={minAuthAmount}
+              authorizedAmount={appAuthData.authorizedStake}
+              helperText={
+                appAuthData.isAuthorized && isIncreaseAction
+                  ? undefined
+                  : `Minimum ${formatTokenAmount(minAuthAmount)} T for ${
+                      appAuthData.label
+                    }`
               }
-              helperText={`Minimum ${formatTokenAmount(minAuthAmount)} T for ${
-                appAuthData.label
-              }`}
+              isAuthorization={isIncreaseAction}
             />
           </GridItem>
         )}
