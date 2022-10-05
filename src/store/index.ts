@@ -59,8 +59,8 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
       // setting this flag to true
       modal: {
         modalQueue: {
-          ...state.modal.modalQueue,
           isSuccessfullLoginModalClosed: true,
+          isMappingOperatorToStakingProviderModalClosed: false,
         },
       },
     } as RootState
