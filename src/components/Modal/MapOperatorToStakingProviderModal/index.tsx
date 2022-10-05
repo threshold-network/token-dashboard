@@ -7,7 +7,6 @@ import {
   Box,
   Button,
   H5,
-  HStack,
   LabelSm,
   ModalBody,
   ModalCloseButton,
@@ -25,9 +24,12 @@ import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { useWeb3React } from "@web3-react/core"
-import { AddressZero } from "@ethersproject/constants"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
+import {
+  isAddressZero,
+  isSameETHAddress,
+  AddressZero,
+} from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
