@@ -25,11 +25,16 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
   const { label, isAuthorized, percentage } = appAuthData
   return (
     <HStack justify="space-between" {...restProps}>
-      <BoxLabel>
-        <HStack>
-          {isAuthorized && <CheckCircleIcon w={4} h={4} color="green.500" />}
-          <BodySm>{label} App</BodySm>
-        </HStack>
+      <BoxLabel
+        size="sm"
+        status="secondary"
+        icon={
+          isAuthorized ? (
+            <CheckCircleIcon w={4} h={4} color="green.500" />
+          ) : null
+        }
+      >
+        {label} App
       </BoxLabel>
       {isAuthorized ? (
         <HStack width="40%">
