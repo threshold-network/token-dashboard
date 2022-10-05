@@ -13,10 +13,10 @@ import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { ContractTransaction } from "ethers"
 import { FC, useCallback } from "react"
-import { useDispatch } from "react-redux"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
 import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
+import { useAppDispatch } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
@@ -66,7 +66,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   const { account } = useWeb3React()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const isOperatorMappedOnlyInTbtc =
     !isAddressZero(mappedOperatorTbtc) &&

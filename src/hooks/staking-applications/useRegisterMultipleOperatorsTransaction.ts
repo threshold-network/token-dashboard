@@ -5,22 +5,20 @@ import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
 import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
-import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../../store"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
+import { useAppDispatch, useAppSelector } from "../store"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
-  const mappedOperatorTbtc = useSelector(
-    (state: RootState) =>
-      state.connectedAccount.operatorMapping.data.mappedOperators.tbtc
+  const mappedOperatorTbtc = useAppSelector(
+    (state) => state.connectedAccount.operatorMapping.data.mappedOperators.tbtc
   )
-  const mappedOperatorRandomBeacon = useSelector(
-    (state: RootState) =>
+  const mappedOperatorRandomBeacon = useAppSelector(
+    (state) =>
       state.connectedAccount.operatorMapping.data.mappedOperators.randomBeacon
   )
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const {
     sendTransaction: sendRegisterOperatorTransactionTbtc,
