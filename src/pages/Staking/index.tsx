@@ -47,9 +47,12 @@ const StakingPage: PageComponent = (props) => {
   const hasStakes = stakes.length > 0
 
   const {
-    isInitialFetchDone: isOperatorMappingInitialFetchDone,
-    data: { isUsedAsStakingProvider, mappedOperators },
-  } = useSelector((state: RootState) => state.connectedAccount.operatorMapping)
+    address,
+    operatorMapping: {
+      isInitialFetchDone: isOperatorMappingInitialFetchDone,
+      data: { isUsedAsStakingProvider, mappedOperators },
+    },
+  } = useSelector((state: RootState) => state.connectedAccount)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
@@ -67,11 +70,13 @@ const StakingPage: PageComponent = (props) => {
           >
             Your Stake
           </H4>
-          {isUsedAsStakingProvider &&
+          {address &&
+            isUsedAsStakingProvider &&
             isOperatorMappingInitialFetchDone &&
             (isAddressZero(mappedOperators.tbtc) ||
               isAddressZero(mappedOperators.randomBeacon)) && (
               <OperatorAddressMappingCard
+                stakingProvider={address}
                 mappedOperatorTbtc={mappedOperators.tbtc}
                 mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
               />
@@ -83,6 +88,17 @@ const StakingPage: PageComponent = (props) => {
           ) : (
             <NewStakeCard />
           )}
+          {address &&
+            isUsedAsStakingProvider &&
+            isOperatorMappingInitialFetchDone &&
+            !isAddressZero(mappedOperators.tbtc) &&
+            !isAddressZero(mappedOperators.randomBeacon) && (
+              <OperatorAddressMappingCard
+                stakingProvider={address}
+                mappedOperatorTbtc={mappedOperators.tbtc}
+                mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
+              />
+            )}
         </VStack>
 
         <VStack w={"100%"} spacing={5}>

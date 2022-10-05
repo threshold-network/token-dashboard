@@ -1,24 +1,30 @@
+import { CheckCircleIcon, Icon } from "@chakra-ui/icons"
 import {
   Alert,
   AlertIcon,
   Badge,
+  BodyMd,
   BodyXs,
+  BoxLabel,
   Button,
   Card,
   HStack,
+  Tooltip,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { LabelSm } from "@threshold-network/components"
 import { FC } from "react"
 import { ModalType } from "../../enums"
-// import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
+import shortenAddress from "../../utils/shortenAddress"
 import { isAddressZero } from "../../web3/utils"
+import { FiLink2 } from "react-icons/all"
 
-//TODO: Fix this
 const OperatorAddressMappingCard: FC<{
+  stakingProvider: string
   mappedOperatorTbtc: string
   mappedOperatorRandomBeacon: string
-}> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
+}> = ({ stakingProvider, mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { openModal } = useModal()
   const isOperatorMappedOnlyInTbtc =
     !isAddressZero(mappedOperatorTbtc) &&
@@ -30,6 +36,10 @@ const OperatorAddressMappingCard: FC<{
 
   const isOneOfTheAppsNotMapped =
     isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+
+  const areAllAppsMappedSuccessfuly =
+    !isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider, {
@@ -46,22 +56,49 @@ const OperatorAddressMappingCard: FC<{
           Node operators only
         </Badge>
       </HStack>
-      <Alert
-        status={isOneOfTheAppsNotMapped ? "error" : "warning"}
-        alignItems={"center"}
-        mt={5}
-        p={"8px 10px"}
-      >
-        <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
-        <BodyXs>
-          {isOneOfTheAppsNotMapped
-            ? "One application from the tBTC + Random Beacon Rewards Bundle Suite requires the Operator Address mapped."
-            : "This section is for Staking Providers and self-operating stakers only. Map your Operator Address to your Provider Address for a better support for your hardware wallet in the node setup."}
-        </BodyXs>
-      </Alert>
-      <Button size="lg" w="100%" mt="5" onClick={onStartMappingClick}>
-        Start mapping
-      </Button>
+      {areAllAppsMappedSuccessfuly ? (
+        <HStack justify="space-between" mt={5}>
+          <BoxLabel
+            status="secondary"
+            size={"sm"}
+            icon={<CheckCircleIcon w={4} h={4} color="green.500" />}
+          >
+            Operator Mapped
+          </BoxLabel>
+          <HStack>
+            <BodyMd color={useColorModeValue("brand.500", "brand.550")}>
+              <Tooltip label={`Staking provider`}>
+                {shortenAddress(stakingProvider)}
+              </Tooltip>
+            </BodyMd>
+            <Icon color="gray.500" boxSize="16px" as={FiLink2} />
+            <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
+              <Tooltip label={`Operator`}>
+                {shortenAddress(mappedOperatorTbtc)}
+              </Tooltip>
+            </BodyMd>
+          </HStack>
+        </HStack>
+      ) : (
+        <>
+          <Alert
+            status={isOneOfTheAppsNotMapped ? "error" : "warning"}
+            alignItems={"center"}
+            mt={5}
+            p={"8px 10px"}
+          >
+            <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
+            <BodyXs>
+              {isOneOfTheAppsNotMapped
+                ? "One application from the tBTC + Random Beacon Rewards Bundle Suite requires the Operator Address mapped."
+                : "This section is for Staking Providers and self-operating stakers only. Map your Operator Address to your Provider Address for a better support for your hardware wallet in the node setup."}
+            </BodyXs>
+          </Alert>
+          <Button size="lg" w="100%" mt="5" onClick={onStartMappingClick}>
+            Start mapping
+          </Button>
+        </>
+      )}
     </Card>
   )
 }
