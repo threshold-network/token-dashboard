@@ -14,11 +14,6 @@ export const getStakingProviderOperatorInfo = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   try {
-    listenerApi.dispatch(
-      setFetchingOperatorMapping({
-        isFetching: true,
-      })
-    )
     const { connectedAccount } = listenerApi.getState()
     const { address } = connectedAccount
     const { owner, authorizer, beneficiary } =
@@ -30,6 +25,11 @@ export const getStakingProviderOperatorInfo = async (
       !isZeroAddress(beneficiary)
 
     if (isUsedAsStakingProvider) {
+      listenerApi.dispatch(
+        setFetchingOperatorMapping({
+          isFetching: true,
+        })
+      )
       listenerApi.dispatch(accountUsedAsStakingProvider())
 
       const mappedOperators =
@@ -50,8 +50,6 @@ export const getStakingProviderOperatorInfo = async (
           operator: mappedOperators.randomBeacon,
         })
       )
-
-      listenerApi.dispatch(setFetchingOperatorMapping({ isFetching: false }))
 
       listenerApi.dispatch(operatorMappingInitialFetchDone())
     }

@@ -35,6 +35,8 @@ export const connectedAccountSlice = createSlice({
           randomBeacon: AddressZero,
         },
       },
+      isFetching: false,
+      isInitialFetchDone: false,
     },
   } as ConnectedAccountState,
   reducers: {
@@ -71,6 +73,7 @@ export const connectedAccountSlice = createSlice({
       state: ConnectedAccountState,
       action: PayloadAction
     ) => {
+      state.operatorMapping.isFetching = false
       state.operatorMapping.isInitialFetchDone = true
     },
     setOperatorMappingError: (
@@ -78,6 +81,7 @@ export const connectedAccountSlice = createSlice({
       action: PayloadAction<{ error: string }>
     ) => {
       const { error } = action.payload
+      state.operatorMapping.isFetching = false
       state.operatorMapping.error = error
     },
     operatorRegistered: (
