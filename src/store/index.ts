@@ -56,7 +56,8 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
         TBTC: { ...state.token.TBTC, balance: 0 },
       },
       // we don't display successful login modal when changin account so we are
-      // setting this flag to true
+      // setting the isSuccessfullLoginModalClosed flag to true and also
+      // isMappingOperatorToStakingProviderModalClosed flag back to false
       modal: {
         modalQueue: {
           isSuccessfullLoginModalClosed: true,
