@@ -4,7 +4,13 @@ const POSTHOG_API_KEY = "phc_5XMnBAeMVxZQhmBm6G0Kee5ujBOiUhGYIakUKfDhgs5"
 const POSTHOG_API_HOST = "https://app.posthog.com"
 
 export const init = () => {
-  posthog.init(POSTHOG_API_KEY, { api_host: POSTHOG_API_HOST })
+  posthog.init(POSTHOG_API_KEY, {
+    api_host: POSTHOG_API_HOST,
+    // T dapp is a single page app so we need to make a `pageview` call
+    // manually. It also prevents sending the `pageview` event on postohog
+    // initialization.
+    capture_pageview: false,
+  })
 }
 
 export const identify = (ethAddress: string) => {
