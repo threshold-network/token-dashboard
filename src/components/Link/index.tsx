@@ -4,12 +4,12 @@ import {
   forwardRef,
   Icon,
   Link as ChakraLink,
-  LinkProps,
+  LinkProps as ChakraLinkProps,
   useColorModeValue,
 } from "@threshold-network/components"
 import { FiArrowUpRight } from "react-icons/all"
 
-interface CommonProps extends LinkProps {
+interface CommonLinkProps {
   icon?: ReactElement
 }
 
@@ -21,9 +21,11 @@ type LinkToProps =
   | { isExternal?: false; to: string }
   | { isExternal: true; to?: never }
 
-type Props = CommonProps & LinkHrefProps & LinkToProps
+type ConditionalLinkProps = LinkHrefProps & LinkToProps
 
-const Link: FC<Props> = forwardRef(
+export type LinkProps = CommonLinkProps & ConditionalLinkProps
+
+const Link: FC<ChakraLinkProps & LinkProps> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor

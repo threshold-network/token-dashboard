@@ -1,29 +1,15 @@
-import { FC, ReactElement } from "react"
+import { FC } from "react"
 import { Link as RouterLink } from "react-router-dom"
 import {
   Button,
   ButtonProps,
   forwardRef,
   Icon,
-  useColorModeValue,
 } from "@threshold-network/components"
 import { FiArrowUpRight } from "react-icons/all"
+import { LinkProps } from "../Link"
 
-interface CommonProps extends ButtonProps {
-  icon?: ReactElement
-}
-
-type LinkHrefProps =
-  | { isExternal?: false; href?: never }
-  | { isExternal: true; href: string }
-
-type LinkToProps =
-  | { isExternal?: false; to: string }
-  | { isExternal: true; to?: never }
-
-type Props = CommonProps & LinkHrefProps & LinkToProps
-
-const ButtonLink: FC<Props> = forwardRef(
+const ButtonLink: FC<ButtonProps & LinkProps> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     return (
       <Button
@@ -33,7 +19,6 @@ const ButtonLink: FC<Props> = forwardRef(
         to={isExternal ? undefined : to}
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
-        // textDecoration="underline"
         rightIcon={
           icon ? (
             icon
