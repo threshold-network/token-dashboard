@@ -1,6 +1,6 @@
 import { FC } from "react"
 import {
-  Badge,
+  BoxLabel,
   BodySm,
   HStack,
   Progress,
@@ -24,20 +24,12 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
   const { label, isAuthorized, percentage } = appAuthData
   return (
     <HStack justify="space-between" {...restProps}>
-      <Badge
-        variant="solid"
-        borderRadius={5}
-        px={2}
-        py={2}
-        backgroundColor="gray.50"
-        color="gray.700"
-        textTransform="none"
-      >
+      <BoxLabel>
         <HStack>
           {isAuthorized && <CheckCircleIcon w={4} h={4} color="green.500" />}
           <BodySm>{label} App</BodySm>
         </HStack>
-      </Badge>
+      </BoxLabel>
       {isAuthorized ? (
         <HStack width="40%">
           <Progress
