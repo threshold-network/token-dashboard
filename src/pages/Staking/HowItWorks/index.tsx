@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo } from "react"
 import {
   Box,
-  FilterTabs,
   FilterTab,
+  FilterTabs,
   useColorModeValue,
 } from "@threshold-network/components"
 import StakingOverview from "./StakingOverview"
