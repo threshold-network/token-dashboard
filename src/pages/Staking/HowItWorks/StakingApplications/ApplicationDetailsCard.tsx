@@ -7,13 +7,13 @@ import {
   H5,
   HStack,
   Icon,
-  Grid,
   Image,
   LabelSm,
   Stack,
   useColorModeValue,
   List,
   ListItem,
+  Grid,
 } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 
