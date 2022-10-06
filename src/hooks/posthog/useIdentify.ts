@@ -14,7 +14,7 @@ export const useIdentify = () => {
     const onLogin = async () => {
       const account = await connector?.getAccount()
       if (account) {
-        posthog.identify(account)
+        posthog.identify(getAddress(account))
       }
     }
     onLogin()
