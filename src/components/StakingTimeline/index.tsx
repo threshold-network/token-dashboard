@@ -78,7 +78,7 @@ export const LegacyStakesDepositSteps: FC = () => {
             Enter the Provider, Beneficiary, and Authorizer addresses. These
             will be automatically set to your wallet address. If you want to use
             a Staking Provider, here is{" "}
-            <Link to={STAKING_PROVIDER_URL}>a list</Link>
+            <Link to={STAKING_PROVIDER_URL}>a list</Link>.
           </BodyMd>
         </FlowStep>
 
@@ -105,7 +105,7 @@ export const LegacyStakesDepositSteps: FC = () => {
           You will need to run a node for applications that you have authorized
           to earn rewards. If you don’t have one, learn how to do it{" "}
           <Link to={APPLICATION_DOCS_URL}>here</Link> or contact{" "}
-          <Link to={STAKING_PROVIDER_URL}>a Staking Provider</Link>
+          <Link to={STAKING_PROVIDER_URL}>a Staking Provider</Link>.
         </FlowStep>
       </Stack>
     )
@@ -165,7 +165,6 @@ export const PreSetupSteps: FC = () => {
               <Link isExternal href={ExternalHref.preStakingProvidersList}>
                 a staking provider
               </Link>
-              .
             </BodySm>
           ),
         },
@@ -204,7 +203,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
           Staking Provider, here is{" "}
-          <Link to={STAKING_PROVIDER_URL}>a list</Link>
+          <Link to={STAKING_PROVIDER_URL}>a list</Link>.
         </FlowStep>
         <FlowStep
           size="sm"
@@ -225,7 +224,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           You will need to run a node for applications that you have authorized
           to earn rewards. If you don’t have one, learn how to do it{" "}
           <Link to={APPLICATION_DOCS_URL}>here</Link> or contact a{" "}
-          <Link to={STAKING_PROVIDER_URL}>Staking Provider.</Link>
+          <Link to={STAKING_PROVIDER_URL}>Staking Provider</Link>.
         </FlowStep>
       </Stack>
     )
