@@ -10,6 +10,7 @@ export const init = () => {
     // manually. It also prevents sending the `pageview` event on postohog
     // initialization.
     capture_pageview: false,
+    persistence: "memory",
   })
 }
 
