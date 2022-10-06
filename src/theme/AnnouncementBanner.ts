@@ -53,7 +53,20 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
   }
 }
 
+const secondaryVariant: PartsStyleFunction<typeof parts> = (props) => ({
+  container: {
+    bg: mode("brand.50", "#2B3036")(props),
+    border: mode("none", "1px solid")(props),
+    borderColor: "brand.300",
+  },
+})
+
+const variants = {
+  secondary: secondaryVariant,
+}
+
 export const AnnouncementBanner = {
   parts: parts.keys,
   baseStyle,
+  variants,
 }
