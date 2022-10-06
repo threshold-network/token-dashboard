@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Stack } from "@chakra-ui/react"
+import { Stack, SimpleGrid } from "@threshold-network/components"
 import UpgradeCard from "../../components/UpgradeCard"
 import TokenBalanceCard from "../../components/TokenBalanceCard"
 import { useModal } from "../../hooks/useModal"
@@ -19,18 +19,13 @@ const UpgradeToken: FC<RouteProps & { token: UpgredableToken }> = ({
   }
 
   return (
-    <Stack
-      direction={{ base: "column-reverse", md: "row" }}
-      w="100%"
-      align="flex-start"
-      spacing="1rem"
-    >
+    <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
       <UpgradeCard token={token} onSubmit={onSubmit} />
-      <Stack w={{ base: "100%", md: "50%" }} spacing="1rem">
+      <Stack spacing={4}>
         <TokenBalanceCard token={token} />
         <TokenBalanceCard token={Token.T} />
       </Stack>
-    </Stack>
+    </SimpleGrid>
   )
 }
 

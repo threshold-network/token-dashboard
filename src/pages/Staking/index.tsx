@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react"
-import { HStack, Stack, VStack } from "@chakra-ui/react"
+import { HStack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -80,14 +80,10 @@ const StakingPage: PageComponent = (props) => {
         alignItems={{ base: "flex-end", lg: "flex-start" }}
         w={"100%"}
         flexDirection={{ base: "column", lg: "row" }}
-        spacing={5}
+        spacing={4}
       >
-        <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
-          <H4
-            alignSelf={"flex-start"}
-            display={{ sm: "none", xl: "block" }}
-            mb={10}
-          >
+        <VStack w={"100%"} spacing={4} mb={{ base: 10, xl: 0 }}>
+          <H4 alignSelf={"flex-start"} mb={10}>
             Your Stake
           </H4>
           {shouldDisplayOperatorAddressMappingCard && (
@@ -101,13 +97,8 @@ const StakingPage: PageComponent = (props) => {
             <NewStakeCard />
           )}
         </VStack>
-
-        <VStack w={"100%"} spacing={5}>
-          <H4
-            alignSelf={"flex-start"}
-            display={{ sm: "none", lg: "block" }}
-            mb={10}
-          >
+        <VStack w={"100%"} spacing={4}>
+          <H4 alignSelf={"flex-start"} mb={10}>
             Overview
           </H4>
           <RewardsCard
@@ -115,7 +106,7 @@ const StakingPage: PageComponent = (props) => {
             totalRewardsBalance={totalRewardsBalance}
           />
           <StakedPortfolioCard />
-          <StakingTVLCard tvl={data.total} pb={"3rem"} />
+          <StakingTVLCard tvl={data.total} />
           {hasStakes && <NewStakeCard />}
         </VStack>
       </HStack>

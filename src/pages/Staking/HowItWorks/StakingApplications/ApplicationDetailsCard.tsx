@@ -1,9 +1,8 @@
 import { FC } from "react"
-import { IoAlertCircle, MdCheckCircle } from "react-icons/all"
+import { MdCheckCircle } from "react-icons/all"
 import {
   BodyMd,
   Box,
-  BoxLabel,
   Card,
   H5,
   HStack,
