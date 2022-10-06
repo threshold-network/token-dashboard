@@ -38,6 +38,7 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       background: mode("gradient.3", undefined)(props),
       backgroundClip: mode("text", undefined)(props),
       textFillColor: mode("transparent", undefined)(props),
+      margin: { base: "auto", xl: 0 },
     },
     title: {
       textAlign: { base: "center", xl: "unset" },
