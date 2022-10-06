@@ -14,7 +14,8 @@ export const InfoBox = {
   variants: {
     modal: (props: any) => ({
       background: mode("gray.50", "gray.800")(props),
-      padding: props.padding || 4,
+      padding: 4,
+      marginTop: 0,
     }),
     base: (props: any) => ({
       background: mode("gray.50", "gray.700")(props),
