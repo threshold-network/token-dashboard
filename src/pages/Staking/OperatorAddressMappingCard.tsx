@@ -6,11 +6,10 @@ import {
   Button,
   Card,
   HStack,
+  LabelSm,
 } from "@threshold-network/components"
-import { LabelSm } from "@threshold-network/components"
 import { FC } from "react"
 import { ModalType } from "../../enums"
-// import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
 import { isAddressZero } from "../../web3/utils"
 
