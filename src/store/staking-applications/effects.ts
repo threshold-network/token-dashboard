@@ -179,7 +179,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   } = listenerApi.getState()
   const { connectedAccount, staking } = listenerApi.getState()
   if (!modalQueue.isSuccessfullLoginModalClosed) {
-    await listenerApi.condition((action, currentState: RootState) => {
+    await listenerApi.condition((action, currentState) => {
       return currentState.modal.modalQueue.isSuccessfullLoginModalClosed
     })
   }
