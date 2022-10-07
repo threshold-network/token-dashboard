@@ -184,37 +184,37 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
     })
   }
   const { address } = connectedAccount
-  if (address && connectedAccount.operatorMapping.isInitialFetchDone) {
-    listenerApi.unsubscribe()
-    try {
-      const { isUsedAsStakingProvider, mappedOperators } =
-        connectedAccount.operatorMapping.data
+  if (!address) return
 
-      if (
-        isUsedAsStakingProvider &&
-        (isAddressZero(mappedOperators.tbtc) ||
-          isAddressZero(mappedOperators.randomBeacon))
-      ) {
-        listenerApi.dispatch(
-          openModal({
-            modalType: ModalType.MapOperatorToStakingProvider,
-            props: {
-              address,
-              mappedOperatorTbtc: mappedOperators.tbtc,
-              mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
-            },
-          })
-        )
-      } else {
-        listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
-      }
-    } catch (error) {
-      console.log(
-        "Could not fetch info about mapped operators for given staking provider:",
-        error
+  listenerApi.unsubscribe()
+  try {
+    const { isUsedAsStakingProvider, mappedOperators } =
+      connectedAccount.operatorMapping.data
+
+    if (
+      isUsedAsStakingProvider &&
+      (isAddressZero(mappedOperators.tbtc) ||
+        isAddressZero(mappedOperators.randomBeacon))
+    ) {
+      listenerApi.dispatch(
+        openModal({
+          modalType: ModalType.MapOperatorToStakingProvider,
+          props: {
+            address,
+            mappedOperatorTbtc: mappedOperators.tbtc,
+            mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
+          },
+        })
       )
-      listenerApi.subscribe()
+    } else {
+      listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
     }
+  } catch (error) {
+    console.log(
+      "Could not fetch info about mapped operators for given staking provider:",
+      error
+    )
+    listenerApi.subscribe()
   }
 }
 
