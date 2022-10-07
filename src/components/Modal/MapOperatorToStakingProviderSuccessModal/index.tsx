@@ -68,7 +68,7 @@ const MapOperatorToStakingProviderSuccessBase: FC<
               <>
                 View{" "}
                 {transactions.map((_, index) => (
-                  <Fragment key={`map_operator_transaction_${index}`}>
+                  <Fragment key={_.txHash}>
                     <ViewInBlockExplorer
                       text={`transaction ${index + 1}`}
                       id={_.txHash}
