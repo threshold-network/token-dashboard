@@ -24,35 +24,35 @@ export const getStakingProviderOperatorInfo = async (
       !isZeroAddress(authorizer) &&
       !isZeroAddress(beneficiary)
 
-    if (isUsedAsStakingProvider) {
-      listenerApi.dispatch(
-        setFetchingOperatorMapping({
-          isFetching: true,
-        })
-      )
-      listenerApi.dispatch(accountUsedAsStakingProvider())
+    if (!isUsedAsStakingProvider) return
 
-      const mappedOperators =
-        await listenerApi.extra.threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
-          address
-        )
+    listenerApi.dispatch(
+      setFetchingOperatorMapping({
+        isFetching: true,
+      })
+    )
+    listenerApi.dispatch(accountUsedAsStakingProvider())
 
-      listenerApi.dispatch(
-        setMappedOperator({
-          appName: "tbtc",
-          operator: mappedOperators.tbtc,
-        })
+    const mappedOperators =
+      await listenerApi.extra.threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
+        address
       )
 
-      listenerApi.dispatch(
-        setMappedOperator({
-          appName: "randomBeacon",
-          operator: mappedOperators.randomBeacon,
-        })
-      )
+    listenerApi.dispatch(
+      setMappedOperator({
+        appName: "tbtc",
+        operator: mappedOperators.tbtc,
+      })
+    )
 
-      listenerApi.dispatch(operatorMappingInitialFetchDone())
-    }
+    listenerApi.dispatch(
+      setMappedOperator({
+        appName: "randomBeacon",
+        operator: mappedOperators.randomBeacon,
+      })
+    )
+
+    listenerApi.dispatch(operatorMappingInitialFetchDone())
   } catch (error) {
     listenerApi.dispatch(
       connectedAccountSlice.actions.setFetchingOperatorMapping({
