@@ -117,7 +117,10 @@ const StakingApplications: PageComponent = () => {
             </ListItem>
           </List>
         </Stack>
-        <Image maxW="528px" src={iconMap.stakingApps[colorMode]} />
+        <Image
+          maxW={{ base: "100%", xl: "528px" }}
+          src={iconMap.stakingApps[colorMode]}
+        />
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
