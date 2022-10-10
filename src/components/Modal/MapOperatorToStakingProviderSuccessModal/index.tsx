@@ -59,7 +59,7 @@ const MapOperatorToStakingProviderSuccessBase: FC<
               <>
                 <ViewInBlockExplorer
                   text="View"
-                  id={`map_operator_transaction_${transactions[0].txHash}`}
+                  id={transactions[0].txHash}
                   type={ExplorerDataType.TRANSACTION}
                 />{" "}
                 transaction on Etherscan
