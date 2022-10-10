@@ -178,9 +178,9 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
     modal: { modalQueue },
   } = listenerApi.getState()
   const { connectedAccount, staking } = listenerApi.getState()
-  if (!modalQueue.isSuccessfullLoginModalClosed) {
+  if (!modalQueue.isSuccessfulLoginModalClosed) {
     await listenerApi.condition((action, currentState) => {
-      return currentState.modal.modalQueue.isSuccessfullLoginModalClosed
+      return currentState.modal.modalQueue.isSuccessfulLoginModalClosed
     })
   }
   const { address } = connectedAccount
@@ -250,7 +250,7 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
   previousState: RootState
 ) => {
   return (
-    currentState.modal.modalQueue.isSuccessfullLoginModalClosed &&
+    currentState.modal.modalQueue.isSuccessfulLoginModalClosed &&
     currentState.modal.modalQueue
       .isMappingOperatorToStakingProviderModalClosed &&
     Object.values(

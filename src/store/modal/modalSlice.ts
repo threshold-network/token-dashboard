@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { ModalType } from "../../enums"
 
 export interface ModalQueueState {
-  isSuccessfullLoginModalClosed: boolean
+  isSuccessfulLoginModalClosed: boolean
   isMappingOperatorToStakingProviderModalClosed: boolean
 }
 
@@ -18,7 +18,7 @@ export const modalSlice = createSlice({
     modalType: null,
     props: {},
     modalQueue: {
-      isSuccessfullLoginModalClosed: false,
+      isSuccessfulLoginModalClosed: false,
       isMappingOperatorToStakingProviderModalClosed: false,
     },
   } as ModalState,
@@ -35,7 +35,7 @@ export const modalSlice = createSlice({
       state.props = {}
     },
     successfullLoginModalClosed: (state: ModalState) => {
-      state.modalQueue.isSuccessfullLoginModalClosed = true
+      state.modalQueue.isSuccessfulLoginModalClosed = true
     },
     mapOperatorToStakingProviderModalClosed: (state: ModalState) => {
       state.modalQueue.isMappingOperatorToStakingProviderModalClosed = true
