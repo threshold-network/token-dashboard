@@ -13,7 +13,6 @@ import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import { isAddressZero } from "../../web3/utils"
 
-//TODO: Fix this
 const OperatorAddressMappingCard: FC<{
   mappedOperatorTbtc: string
   mappedOperatorRandomBeacon: string
