@@ -49,7 +49,7 @@ const StakingPage: PageComponent = (props) => {
   const {
     isInitialFetchDone: isOperatorMappingInitialFetchDone,
     data: { isUsedAsStakingProvider, mappedOperators },
-  } = useAppSelector((state) => state.connectedAccount.operatorMapping)
+  } = useAppSelector((state) => state.account.operatorMapping)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>

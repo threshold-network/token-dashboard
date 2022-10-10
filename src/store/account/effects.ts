@@ -1,24 +1,23 @@
 import { isZeroAddress } from "ethereumjs-util"
-import { useAppSelector } from "../../hooks/store"
 import { StakeData } from "../../types"
 import { isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
-import { selectStakeByStakingProvider, setStakes } from "../staking"
+import { setStakes } from "../staking"
 import {
   accountUsedAsStakingProvider,
-  connectedAccountSlice,
+  accountSlice,
   operatorMappingInitialFetchDone,
   setFetchingOperatorMapping,
   setMappedOperator,
-} from "./connectedAccountSlice"
+} from "./slice"
 
 export const getStakingProviderOperatorInfo = async (
   action: ReturnType<typeof setStakes>,
   listenerApi: AppListenerEffectAPI
 ) => {
   try {
-    const { connectedAccount } = listenerApi.getState()
-    const { address } = connectedAccount
+    const { account } = listenerApi.getState()
+    const { address } = account
     const stakes = action.payload
 
     const stake = stakes.find((_: StakeData) =>
@@ -70,7 +69,7 @@ export const getStakingProviderOperatorInfo = async (
     listenerApi.dispatch(operatorMappingInitialFetchDone())
   } catch (error) {
     listenerApi.dispatch(
-      connectedAccountSlice.actions.setFetchingOperatorMapping({
+      accountSlice.actions.setFetchingOperatorMapping({
         isFetching: false,
       })
     )

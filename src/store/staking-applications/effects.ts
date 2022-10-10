@@ -177,19 +177,19 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   const {
     modal: { modalQueue },
   } = listenerApi.getState()
-  const { connectedAccount, staking } = listenerApi.getState()
+  const { account } = listenerApi.getState()
   if (!modalQueue.isSuccessfulLoginModalClosed) {
     await listenerApi.condition((action, currentState) => {
       return currentState.modal.modalQueue.isSuccessfulLoginModalClosed
     })
   }
-  const { address } = connectedAccount
+  const { address } = account
   if (!address) return
 
   listenerApi.unsubscribe()
   try {
     const { isUsedAsStakingProvider, mappedOperators } =
-      connectedAccount.operatorMapping.data
+      account.operatorMapping.data
 
     if (
       isUsedAsStakingProvider &&
