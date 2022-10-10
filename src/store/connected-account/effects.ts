@@ -1,6 +1,9 @@
 import { isZeroAddress } from "ethereumjs-util"
+import { useAppSelector } from "../../hooks/store"
+import { StakeData } from "../../types"
+import { isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
-import { setStakes } from "../staking"
+import { selectStakeByStakingProvider, setStakes } from "../staking"
 import {
   accountUsedAsStakingProvider,
   connectedAccountSlice,
@@ -16,13 +19,25 @@ export const getStakingProviderOperatorInfo = async (
   try {
     const { connectedAccount } = listenerApi.getState()
     const { address } = connectedAccount
-    const { owner, authorizer, beneficiary } =
-      await listenerApi.extra.threshold.staking.rolesOf(address)
+    const stakes = action.payload
 
-    const isUsedAsStakingProvider =
-      !isZeroAddress(owner) &&
-      !isZeroAddress(authorizer) &&
-      !isZeroAddress(beneficiary)
+    const stake = stakes.find((_: StakeData) =>
+      isSameETHAddress(_.stakingProvider, address)
+    )
+
+    let isUsedAsStakingProvider = false
+
+    if (stake) {
+      isUsedAsStakingProvider = true
+    } else {
+      const { owner, authorizer, beneficiary } =
+        await listenerApi.extra.threshold.staking.rolesOf(address)
+
+      isUsedAsStakingProvider =
+        !isZeroAddress(owner) &&
+        !isZeroAddress(authorizer) &&
+        !isZeroAddress(beneficiary)
+    }
 
     if (!isUsedAsStakingProvider) return
 
