@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react"
-import { HStack, Stack, VStack } from "@chakra-ui/react"
+import { HStack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -28,7 +28,7 @@ import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
 import { isAddressZero } from "../../web3/utils"
-import { RootState } from "../../store"
+import { useAppSelector } from "../../hooks/store"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -52,7 +52,7 @@ const StakingPage: PageComponent = (props) => {
       isInitialFetchDone: isOperatorMappingInitialFetchDone,
       data: { isUsedAsStakingProvider, mappedOperators },
     },
-  } = useSelector((state: RootState) => state.connectedAccount)
+  } = useAppSelector((state) => state.account)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>

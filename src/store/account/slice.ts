@@ -12,7 +12,7 @@ import {
 import { StakingAppName } from "../staking-applications"
 import { getStakingProviderOperatorInfo } from "./effects"
 
-interface ConnectedAccountState {
+interface AccountState {
   address: string
   operatorMapping: FetchingState<{
     isUsedAsStakingProvider: boolean
@@ -23,8 +23,8 @@ interface ConnectedAccountState {
   }>
 }
 
-export const connectedAccountSlice = createSlice({
-  name: "connected-account",
+export const accountSlice = createSlice({
+  name: "account",
   initialState: {
     address: "",
     operatorMapping: {
@@ -38,22 +38,19 @@ export const connectedAccountSlice = createSlice({
       isFetching: false,
       isInitialFetchDone: false,
     },
-  } as ConnectedAccountState,
+  } as AccountState,
   reducers: {
-    setConnectedAccountAddress: (
-      state: ConnectedAccountState,
-      action: PayloadAction<string>
-    ) => {
+    setAccountAddress: (state: AccountState, action: PayloadAction<string>) => {
       state.address = action.payload
     },
     accountUsedAsStakingProvider: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction
     ) => {
       state.operatorMapping.data.isUsedAsStakingProvider = true
     },
     setMappedOperator: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction<{
         appName: StakingAppName
         operator: string
@@ -63,21 +60,21 @@ export const connectedAccountSlice = createSlice({
       state.operatorMapping.data.mappedOperators[appName] = operator
     },
     setFetchingOperatorMapping: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction<{ isFetching: boolean }>
     ) => {
       const { isFetching } = action.payload
       state.operatorMapping.isFetching = isFetching
     },
     operatorMappingInitialFetchDone: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction
     ) => {
       state.operatorMapping.isFetching = false
       state.operatorMapping.isInitialFetchDone = true
     },
     setOperatorMappingError: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction<{ error: string }>
     ) => {
       const { error } = action.payload
@@ -85,7 +82,7 @@ export const connectedAccountSlice = createSlice({
       state.operatorMapping.error = error
     },
     operatorRegistered: (
-      state: ConnectedAccountState,
+      state: AccountState,
       action: PayloadAction<{
         appName: StakingAppName
         operator: string
@@ -113,7 +110,7 @@ export const connectedAccountSlice = createSlice({
   },
 })
 
-export const registerConnectedAccountListeners = () => {
+export const registerAccountListeners = () => {
   if (featureFlags.MULTI_APP_STAKING) {
     startAppListening({
       actionCreator: setStakes,
@@ -121,14 +118,14 @@ export const registerConnectedAccountListeners = () => {
     })
   }
 }
-registerConnectedAccountListeners()
+registerAccountListeners()
 
 export const {
-  setConnectedAccountAddress,
+  setAccountAddress,
   accountUsedAsStakingProvider,
   setMappedOperator,
   setFetchingOperatorMapping,
   operatorMappingInitialFetchDone,
   setOperatorMappingError,
   operatorRegistered,
-} = connectedAccountSlice.actions
+} = accountSlice.actions

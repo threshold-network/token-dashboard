@@ -76,14 +76,14 @@ const MapOperatorToStakingProviderForm = withFormik<
           values.operator !== mappedOperatorRandomBeacon
         ) {
           validationMsg =
-            "The operator address doesn't match the one used in tbtc app"
+            "The operator address doesn't match the one used in random beacon app"
         }
         if (
           isOperatorMappedOnlyInTbtc &&
           values.operator !== mappedOperatorTbtc
         ) {
           validationMsg =
-            "The operator address doesn't match the one used in random beacon app"
+            "The operator address doesn't match the one used in tbtc app"
         }
       } catch (error) {
         console.error(

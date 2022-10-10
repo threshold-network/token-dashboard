@@ -1,5 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
-import { operatorRegistered } from "../../store/connected-account"
+import { operatorRegistered } from "../../store/account"
 import { StakingAppName } from "../../store/staking-applications"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"

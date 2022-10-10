@@ -9,10 +9,10 @@ import {
   Button,
   Card,
   HStack,
+  LabelSm,
   Tooltip,
   useColorModeValue,
 } from "@threshold-network/components"
-import { LabelSm } from "@threshold-network/components"
 import { FC } from "react"
 import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"

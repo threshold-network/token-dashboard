@@ -177,44 +177,44 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   const {
     modal: { modalQueue },
   } = listenerApi.getState()
-  const { connectedAccount, staking } = listenerApi.getState()
-  if (!modalQueue.isSuccessfullLoginModalClosed) {
-    await listenerApi.condition((action, currentState: RootState) => {
-      return currentState.modal.modalQueue.isSuccessfullLoginModalClosed
+  const { account } = listenerApi.getState()
+  if (!modalQueue.isSuccessfulLoginModalClosed) {
+    await listenerApi.condition((action, currentState) => {
+      return currentState.modal.modalQueue.isSuccessfulLoginModalClosed
     })
   }
-  const { address } = connectedAccount
-  if (address && connectedAccount.operatorMapping.isInitialFetchDone) {
-    listenerApi.unsubscribe()
-    try {
-      const { isUsedAsStakingProvider, mappedOperators } =
-        connectedAccount.operatorMapping.data
+  const { address } = account
+  if (!address) return
 
-      if (
-        isUsedAsStakingProvider &&
-        (isAddressZero(mappedOperators.tbtc) ||
-          isAddressZero(mappedOperators.randomBeacon))
-      ) {
-        listenerApi.dispatch(
-          openModal({
-            modalType: ModalType.MapOperatorToStakingProvider,
-            props: {
-              address,
-              mappedOperatorTbtc: mappedOperators.tbtc,
-              mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
-            },
-          })
-        )
-      } else {
-        listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
-      }
-    } catch (error) {
-      console.log(
-        "Could not fetch info about mapped operators for given staking provider:",
-        error
+  listenerApi.unsubscribe()
+  try {
+    const { isUsedAsStakingProvider, mappedOperators } =
+      account.operatorMapping.data
+
+    if (
+      isUsedAsStakingProvider &&
+      (isAddressZero(mappedOperators.tbtc) ||
+        isAddressZero(mappedOperators.randomBeacon))
+    ) {
+      listenerApi.dispatch(
+        openModal({
+          modalType: ModalType.MapOperatorToStakingProvider,
+          props: {
+            address,
+            mappedOperatorTbtc: mappedOperators.tbtc,
+            mappedOperatorRandomBeacon: mappedOperators.randomBeacon,
+          },
+        })
       )
-      listenerApi.subscribe()
+    } else {
+      listenerApi.dispatch(mapOperatorToStakingProviderModalClosed())
     }
+  } catch (error) {
+    console.log(
+      "Could not fetch info about mapped operators for given staking provider:",
+      error
+    )
+    listenerApi.subscribe()
   }
 }
 
@@ -250,7 +250,7 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
   previousState: RootState
 ) => {
   return (
-    currentState.modal.modalQueue.isSuccessfullLoginModalClosed &&
+    currentState.modal.modalQueue.isSuccessfulLoginModalClosed &&
     currentState.modal.modalQueue
       .isMappingOperatorToStakingProviderModalClosed &&
     Object.values(

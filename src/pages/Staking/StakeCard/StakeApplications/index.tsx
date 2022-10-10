@@ -51,7 +51,7 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         !isTbtcFetching &&
         !isRandomBeaconFetching && <BundledRewardsAlert mb="4" />}
       <AuthorizeApplicationRow
-        mb={"3"}
+        my={"3"}
         appAuthData={appsAuthData.tbtc}
         stakingProvider={stakingProvider}
       />

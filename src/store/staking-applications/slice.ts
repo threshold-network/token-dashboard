@@ -18,7 +18,7 @@ import {
   displayDeauthrizationCompletedModalEffect,
   displayDeauthrizationInitiatedModalEffect,
 } from "./effects"
-import { operatorMappingInitialFetchDone } from "../connected-account"
+import { operatorMappingInitialFetchDone } from "../account"
 
 type StakingApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
