@@ -275,15 +275,17 @@ const AuthorizeStakingAppsPage: FC = () => {
             />
           </>
         )}
-        <Button
-          disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
-          variant="outline"
-          width="100%"
-          mt={5}
-          onClick={onAuthorizeApps}
-        >
-          Authorize selected apps
-        </Button>
+        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+          <Button
+            disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
+            variant="outline"
+            width="100%"
+            mt={5}
+            onClick={onAuthorizeApps}
+          >
+            Authorize selected apps
+          </Button>
+        )}
       </Card>
     </>
   ) : (
