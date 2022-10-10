@@ -83,10 +83,6 @@ const AuthorizeStakingAppsPage: FC = () => {
     dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
   }, [dispatch, account])
 
-  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
-  const randomBeaconMinAuthAmount =
-    useStakingAppMinAuthorizationAmount("randomBeacon")
-
   const tbtcApp = useStakingAppDataByStakingProvider(
     "tbtc",
     stakingProviderAddress || AddressZero
@@ -95,17 +91,6 @@ const AuthorizeStakingAppsPage: FC = () => {
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )
-
-  const stake = useSelector((state: RootState) =>
-    selectStakeByStakingProvider(state, stakingProviderAddress!)
-  ) as StakeData
-
-  const isLoggedInAsAuthorizer =
-    stake && account ? isSameETHAddress(stake.authorizer, account) : false
-
-  const isInactiveStake = stake
-    ? BigNumber.from(stake?.totalInTStake).isZero()
-    : false
 
   const appsAuthData: {
     [appName: string]: AppAuthDataProps & { address?: string }
@@ -129,6 +114,33 @@ const AuthorizeStakingAppsPage: FC = () => {
       label: "PRE",
     },
   }
+
+  useEffect(() => {
+    if (tbtcApp.isAuthorized) {
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(({ stakingAppId }) => stakingAppId !== "tbtc")
+      )
+    }
+
+    if (randomBeaconApp.isAuthorized) {
+      selectedApps.filter(({ stakingAppId }) => stakingAppId !== "randomBeacon")
+    }
+  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized])
+
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const randomBeaconMinAuthAmount =
+    useStakingAppMinAuthorizationAmount("randomBeacon")
+
+  const stake = useSelector((state: RootState) =>
+    selectStakeByStakingProvider(state, stakingProviderAddress!)
+  ) as StakeData
+
+  const isLoggedInAsAuthorizer =
+    stake && account ? isSameETHAddress(stake.authorizer, account) : false
+
+  const isInactiveStake = stake
+    ? BigNumber.from(stake?.totalInTStake).isZero()
+    : false
 
   const isAppSelected = (stakingAppName: AppAuthDataProps["stakingAppId"]) => {
     return selectedApps.map((app) => app.stakingAppId).includes(stakingAppName)
