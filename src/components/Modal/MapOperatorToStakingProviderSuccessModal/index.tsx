@@ -1,11 +1,5 @@
 import { FC, Fragment } from "react"
-import {
-  BodyMd,
-  BodySm,
-  HStack,
-  List,
-  ListItem,
-} from "@threshold-network/components"
+import { BodySm, HStack, List, ListItem } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { StakingAppName } from "../../../store/staking-applications"
@@ -13,7 +7,6 @@ import TransactionSuccessModal from "../TransactionSuccessModal"
 import shortenAddress from "../../../utils/shortenAddress"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { camelCaseToNormal } from "../../../utils/text"
 
 export type OperatorMappedSuccessTx = {
   application: {
@@ -36,7 +29,7 @@ const MapOperatorToStakingProviderSuccessBase: FC<
       subTitle="You successfully mapped your Operator Address."
       body={
         <>
-          <List spacing="2" mb={"4rem"}>
+          <List spacing="2" mb={"16"}>
             <ListItem key="map_operator_success_modal__staking_provider">
               <HStack justify="space-between">
                 <BodySm>Provider Address</BodySm>
