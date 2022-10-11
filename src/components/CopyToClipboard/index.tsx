@@ -55,7 +55,7 @@ export const CopyAddressToClipboard: FC<CopyAddressToClipboardProps> = ({
   address,
   ...restProps
 }) => {
-  const addressColor = useColorModeValue("brand.500", "brand.550")
+  const addressColor = useColorModeValue("brand.500", "brand.100")
   return (
     <CopyToClipboard textToCopy={address}>
       <BodyMd color={addressColor} {...restProps}>
