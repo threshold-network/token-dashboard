@@ -10,6 +10,7 @@ import {
   AlertDescription,
   BodySm,
   AlertIcon,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
@@ -106,16 +107,17 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       })
     }
   }
+  const dividerColor = useColorModeValue("gray.300", "gray.700")
 
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader stakeType={stake.stakeType} onTabClick={onTabClick} />
       <StakeRewards stakingProvider={stake.stakingProvider} />
-      <LineDivider />
+      <LineDivider borderColor={dividerColor} />
       {featureFlags.MULTI_APP_STAKING && (
         <>
           <StakeApplications stakingProvider={stake.stakingProvider} />
-          <LineDivider mb="0" />
+          <LineDivider mb="0" borderColor={dividerColor} />
         </>
       )}
       {!isOwner && (
