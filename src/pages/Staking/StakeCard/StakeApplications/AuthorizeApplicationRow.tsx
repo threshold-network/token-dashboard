@@ -9,21 +9,23 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import { Link as RouterLink } from "react-router-dom"
 import { formatPercentage } from "../../../../utils/percentage"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
-  appAuthData: AppAuthDataProps
+  label: string
+  isAuthorized: boolean
+  percentage: number
   stakingProvider: string
 }
 
 const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
-  appAuthData,
+  label,
+  isAuthorized,
+  percentage,
   stakingProvider,
   ...restProps
 }) => {
-  const { label, isAuthorized, percentage } = appAuthData
   const iconColor = useColorModeValue("green.500", "green.300")
 
   return (
