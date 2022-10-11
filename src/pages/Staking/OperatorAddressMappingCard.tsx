@@ -58,7 +58,7 @@ const OperatorAddressMappingCard: FC<{
         </BodyXs>
       </Alert>
       <Button size="lg" w="100%" mt="5" onClick={onStartMappingClick}>
-        Start mapping
+        Start Mapping
       </Button>
     </Card>
   )

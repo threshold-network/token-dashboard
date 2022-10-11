@@ -95,13 +95,14 @@ const MapOperatorToStakingProviderModal: FC<
             </H5>
           ) : (
             <H5>
-              We’ve noticed your wallet address is the same with your Provider
+              We’ve noticed your wallet address is the same as your Provider
               Address
             </H5>
           )}
           <BodyLg mt="4">
-            Would you like to map your Operator Address? Mapping an Operator
-            Address will require one transaction per application.
+            Map your Operator Address to your Provider Address to improve the
+            support of your hardware wallet. Mapping will require one
+            transaction per application.
           </BodyLg>
         </InfoBox>
         <BodyLg mt={"10"}>
