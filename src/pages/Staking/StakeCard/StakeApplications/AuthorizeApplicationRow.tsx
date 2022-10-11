@@ -6,6 +6,7 @@ import {
   HStack,
   Progress,
   StackProps,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
@@ -23,6 +24,8 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
   ...restProps
 }) => {
   const { label, isAuthorized, percentage } = appAuthData
+  const iconColor = useColorModeValue("green.500", "green.300")
+
   return (
     <HStack justify="space-between" {...restProps}>
       <BoxLabel
@@ -30,7 +33,7 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
         status="secondary"
         icon={
           isAuthorized ? (
-            <CheckCircleIcon w={4} h={4} color="green.500" />
+            <CheckCircleIcon w={4} h={4} color={iconColor} />
           ) : null
         }
       >
