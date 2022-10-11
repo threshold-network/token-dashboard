@@ -50,9 +50,11 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
         spacing={0}
         my={{ base: "2", sm: undefined }}
         mr={{ sm: "auto !important" }}
+        flex={1}
+        minWidth="0"
       >
         <BodyLg sx={styles.title}>{title}</BodyLg>
-        <BodySm sx={styles.subtitle}>{subtitle}</BodySm>
+        <BodySm sx={styles.subTitle}>{subtitle}</BodySm>
       </Stack>
       {isExternal ? (
         <ExternalLink
