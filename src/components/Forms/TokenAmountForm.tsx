@@ -1,5 +1,5 @@
 import { FC, Ref } from "react"
-import { Icon, Box, ButtonProps } from "@threshold-network/components"
+import { Icon, Box, ButtonProps, BodySm } from "@threshold-network/components"
 import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
@@ -55,12 +55,12 @@ export const TokenAmountFormBase: FC<
           shouldDisplayMaxAmountInLabel ? (
             <>
               <Box as="span">{label} </Box>
-              <Box as="span" float="right">
+              <BodySm as="span" float="right" color="gray.500">
                 {maxTokenAmount
                   ? formatTokenAmount(maxTokenAmount, undefined, token.decimals)
                   : "--"}{" "}
                 {token.symbol}
-              </Box>
+              </BodySm>
             </>
           ) : (
             label
