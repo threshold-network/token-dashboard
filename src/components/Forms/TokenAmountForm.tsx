@@ -1,5 +1,5 @@
 import { FC, Ref } from "react"
-import { Icon, Box } from "@chakra-ui/react"
+import { Icon, Box, ButtonProps } from "@threshold-network/components"
 import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
 import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
@@ -28,6 +28,7 @@ export type TokenAmountFormBaseProps = {
   token?: { decimals: number; symbol: string }
   placeholder?: string
   minTokenAmount?: string | number
+  submitButtonVariant?: ButtonProps["variant"]
 }
 
 export const TokenAmountFormBase: FC<
@@ -43,6 +44,7 @@ export const TokenAmountFormBase: FC<
   shouldValidateForm = true,
   shouldDisplayMaxAmountInLabel = false,
   placeholder,
+  submitButtonVariant = "solid",
   ...formikProps
 }) => {
   return (
@@ -76,6 +78,8 @@ export const TokenAmountFormBase: FC<
         w="100%"
         mt="6"
         submitText={submitButtonText}
+        variant={submitButtonVariant}
+        isDisabled={isDisabled}
       />
     </Form>
   )

@@ -143,6 +143,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
               canTopUpNu ? TopUpType.LEGACY_NU : TopUpType.LEGACY_KEEP
             )
           }
+          variant="outline"
           isFullWidth
           isDisabled={!isOwner}
         >
@@ -157,12 +158,14 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
           isDisabled={!isOwner}
+          submitButtonVariant="outline"
         />
       ) : (
         <Button
           onClick={onSubmitUnstakeOrTopupBtn}
           isFullWidth
           isDisabled={!isOwner}
+          variant="outline"
         >
           {submitButtonText}
         </Button>
