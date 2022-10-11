@@ -167,11 +167,6 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           {submitButtonText}
         </Button>
       )}
-      {!isPRESet && (
-        <Button as="a" mt="4" href={ExternalHref.preNodeSetup} isFullWidth>
-          Set PRE
-        </Button>
-      )}
     </Card>
   )
 }
