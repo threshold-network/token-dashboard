@@ -33,6 +33,7 @@ const CopyToClipboard: FC<CopyToClipboardProps> = ({
       >
         <IconButton
           icon={<CopyIcon />}
+          color="gray.500"
           onClick={onCopy}
           aria-label={copyTextMsg}
           variant="ghost"
