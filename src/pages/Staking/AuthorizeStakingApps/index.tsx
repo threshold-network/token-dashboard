@@ -295,7 +295,7 @@ const AuthorizeStakingAppsPage: FC = () => {
             mt={5}
             onClick={onAuthorizeApps}
           >
-            Authorize selected apps
+            Authorize Selected Apps
           </Button>
         )}
       </Card>
