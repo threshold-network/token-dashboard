@@ -155,7 +155,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
-          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
+          label="Amount"
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
