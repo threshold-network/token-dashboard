@@ -162,7 +162,7 @@ const AuthorizeStakingAppsPage: FC = () => {
         stakingProvider: stakingProviderAddress!,
         totalInTStake: stake.totalInTStake,
         applications: selectedApps.map((_) => ({
-          appName: _.label,
+          appName: _.stakingAppId,
           address: stakinAppNameToAddress[_.stakingAppId],
           authorizationAmount:
             stakinAppNameToFormRef[_.stakingAppId].current?.values.tokenAmount,
