@@ -1,6 +1,9 @@
 import { FC, useEffect, useRef, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
+  BodyLg,
+  BodySm,
+  H5,
   Alert,
   AlertIcon,
   Button,
@@ -9,8 +12,10 @@ import {
   ModalCloseButton,
   ModalFooter,
   ModalHeader,
-} from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+  List,
+  ListItem,
+  HStack,
+} from "@threshold-network/components"
 import { FormikProps } from "formik"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
@@ -24,6 +29,7 @@ import StakingStats from "../../StakingStats"
 import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplicateProviderAddress"
 import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
+import { formatTokenAmount } from "../../../utils/formatAmount"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -87,21 +93,23 @@ const ConfirmStakingParamsModal: FC<
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
-        <InfoBox variant="modal" spacing={6}>
-          <H5>You are about to make a deposit into the T Staking Contract.</H5>
+        <InfoBox variant="modal">
+          <H5 mb="4">
+            You are about to make a deposit into the T Staking Contract.
+          </H5>
           {featureFlags.MULTI_APP_STAKING && (
             <BodyLg>Staking requires 2 transactions.</BodyLg>
           )}
         </InfoBox>
-        <StakingStats
-          {...{
-            stakeAmount,
-            beneficiary: account as string,
-            stakingProvider: account as string,
-            authorizer: account as string,
-          }}
-        />
-        <Alert my={6} status="info" fontSize="sm">
+        <List mt="6">
+          <ListItem>
+            <HStack justifyContent="space-between">
+              <BodySm>Staked Amount</BodySm>
+              <BodySm>{`${formatTokenAmount(stakeAmount)} T`}</BodySm>
+            </HStack>
+          </ListItem>
+        </List>
+        <Alert mb={6} my={9} status="info" fontSize="sm">
           <AlertIcon />
           Take note! These addresses cannot be changed later.
         </Alert>

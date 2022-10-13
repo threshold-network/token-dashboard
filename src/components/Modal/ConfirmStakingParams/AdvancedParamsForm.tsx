@@ -2,9 +2,8 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { Alert, AlertIcon } from "@chakra-ui/react"
+import { Alert, AlertIcon, Link, BodyXs } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { BodyXs } from "@threshold-network/components"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
 
 export interface FormValues {
@@ -29,19 +28,23 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="stakingProvider"
         label="Provider Address"
-        helperText="Enter a staking provider address."
+        helperText={
+          <AddressHelper text="This is your node address. You can setup this address on your own or receive it from your Staking Provider." />
+        }
       />
       <FormikInput
         mt="6"
         name="beneficiary"
         label="Beneficiary Address"
-        helperText="This address will receive rewards."
+        helperText={<AddressHelper text="This address will receive rewards." />}
       />
       <FormikInput
         mt="6"
         name="authorizer"
         label="Authorizer Address"
-        helperText="This address will authorize applications."
+        helperText={
+          <AddressHelper text="This address will authorize applications. We recommend you to use the same address as your wallet address." />
+        }
       />
       {isAddress(authorizer) &&
         !isSameETHAddress(authorizer, account as string) && (
@@ -54,6 +57,16 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
           </Alert>
         )}
     </Form>
+  )
+}
+
+const AddressHelper: FC<{ text: string }> = ({ text }) => {
+  return (
+    <BodyXs color="gray.500">
+      {text}{" "}
+      {/* TODO: use the `Link` component from https://github.com/threshold-network/token-dashboard/pull/258  */}
+      <Link>Learn more</Link>
+    </BodyXs>
   )
 }
 
