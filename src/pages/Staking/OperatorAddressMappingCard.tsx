@@ -5,11 +5,13 @@ import {
   Badge,
   BodyMd,
   BodyXs,
+  Box,
   BoxLabel,
   Button,
   Card,
   HStack,
   LabelSm,
+  LineDivider,
   Tooltip,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -18,13 +20,26 @@ import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import shortenAddress from "../../utils/shortenAddress"
 import { isAddressZero } from "../../web3/utils"
-import { FiLink2 } from "react-icons/all"
+import { FcCheckmark, FiLink2 } from "react-icons/all"
+import { MappedOperatorsForStakingProvider } from "../../threshold-ts/mas"
+
+interface AppLabels {
+  tbtc: string
+  randomBeacon: string
+}
 
 const OperatorAddressMappingCard: FC<{
   stakingProvider: string
-  mappedOperatorTbtc: string
-  mappedOperatorRandomBeacon: string
-}> = ({ stakingProvider, mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
+  mappedOperators: MappedOperatorsForStakingProvider
+}> = ({ stakingProvider, mappedOperators }) => {
+  const { tbtc: mappedOperatorTbtc, randomBeacon: mappedOperatorRandomBeacon } =
+    mappedOperators
+
+  const appLabels: AppLabels = {
+    tbtc: "tBTC",
+    randomBeacon: "Random Beacon",
+  }
+
   const { openModal } = useModal()
   const isOperatorMappedOnlyInTbtc =
     !isAddressZero(mappedOperatorTbtc) &&
@@ -57,28 +72,45 @@ const OperatorAddressMappingCard: FC<{
         </Badge>
       </HStack>
       {areAllAppsMappedSuccessfuly ? (
-        <HStack justify="space-between" mt={5}>
-          <BoxLabel
-            status="secondary"
-            size={"sm"}
-            icon={<CheckCircleIcon w={4} h={4} color="green.500" />}
-          >
-            Operator Mapped
-          </BoxLabel>
-          <HStack>
-            <BodyMd color={useColorModeValue("brand.500", "brand.550")}>
-              <Tooltip label={`Staking provider`}>
-                {shortenAddress(stakingProvider)}
-              </Tooltip>
-            </BodyMd>
-            <Icon color="gray.500" boxSize="16px" as={FiLink2} />
-            <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
-              <Tooltip label={`Operator`}>
-                {shortenAddress(mappedOperatorTbtc)}
-              </Tooltip>
-            </BodyMd>
-          </HStack>
-        </HStack>
+        Object.entries(mappedOperators).map(([appName, operator]) => {
+          return (
+            <Box key={`mapped_operator_${appName}_${operator}`}>
+              <HStack mt={5}>
+                <BoxLabel status="secondary" size={"sm"}>
+                  {appLabels[appName as keyof AppLabels]} App
+                </BoxLabel>
+                <Badge variant="subtle" size={"md"} bgColor={"green.50"} py={1}>
+                  <HStack>
+                    <Icon as={FcCheckmark} />{" "}
+                    <LabelSm color={"green.500"}>Operator Mapped</LabelSm>
+                  </HStack>
+                </Badge>
+              </HStack>
+              <HStack justify="space-between" mt={5}>
+                <BoxLabel status="primary" size={"sm"}>
+                  Provider
+                </BoxLabel>
+                <BodyMd color={useColorModeValue("brand.500", "brand.550")}>
+                  <Tooltip label={`Staking provider`}>
+                    {shortenAddress(stakingProvider)}
+                  </Tooltip>
+                </BodyMd>
+                <Icon color="gray.500" boxSize="16px" as={FiLink2} />
+                <BoxLabel status="secondary" size={"sm"}>
+                  Operator
+                </BoxLabel>
+                <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
+                  <Tooltip label={`Operator`}>
+                    {shortenAddress(operator)}
+                  </Tooltip>
+                </BodyMd>
+              </HStack>
+              {Object.keys(mappedOperators)[
+                Object.keys(mappedOperators).length - 1
+              ] !== appName && <LineDivider />}
+            </Box>
+          )
+        })
       ) : (
         <>
           <Alert

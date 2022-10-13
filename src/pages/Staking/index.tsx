@@ -77,8 +77,7 @@ const StakingPage: PageComponent = (props) => {
               isAddressZero(mappedOperators.randomBeacon)) && (
               <OperatorAddressMappingCard
                 stakingProvider={address}
-                mappedOperatorTbtc={mappedOperators.tbtc}
-                mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
+                mappedOperators={mappedOperators}
               />
             )}
           {hasStakes ? (
@@ -95,8 +94,7 @@ const StakingPage: PageComponent = (props) => {
             !isAddressZero(mappedOperators.randomBeacon) && (
               <OperatorAddressMappingCard
                 stakingProvider={address}
-                mappedOperatorTbtc={mappedOperators.tbtc}
-                mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
+                mappedOperators={mappedOperators}
               />
             )}
         </VStack>
