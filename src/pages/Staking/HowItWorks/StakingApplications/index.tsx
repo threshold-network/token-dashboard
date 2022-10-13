@@ -136,7 +136,7 @@ const StakingApplications: PageComponent = () => {
                 to="/staking"
                 width="full"
               >
-                Authorize TBTC
+                Authorize tBTC
               </Button>
               <Button
                 as={ExternalLink}
@@ -144,7 +144,7 @@ const StakingApplications: PageComponent = () => {
                 href={ExternalHref.tbtcNodeDocs}
                 width="full"
                 variant="outline"
-                text="TBTC Node Docs"
+                text="tBTC Node Docs"
               />
             </VStack>
           }

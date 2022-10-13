@@ -1,7 +1,7 @@
 import { threshold } from "./getThresholdLib"
 
 const stakingAppAddressToName: { [key: string]: string } = {
-  [threshold.multiAppStaking.ecdsa.address]: "TBTC",
+  [threshold.multiAppStaking.ecdsa.address]: "tBTC",
   [threshold.multiAppStaking.randomBeacon.address]: "Random Beacon",
 }
 

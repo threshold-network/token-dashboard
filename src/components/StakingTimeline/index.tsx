@@ -93,7 +93,7 @@ export const LegacyStakesDepositSteps: FC = () => {
         >
           <BodyMd>
             For each stake, there are three applications available. PRE does not
-            require authorization. To authorize TBTC and Random Beacon, go to
+            require authorization. To authorize tBTC and Random Beacon, go to
             the <InternalLink to="/staking">Staking Page</InternalLink> and
             select “Configure Stake”.
           </BodyMd>
@@ -228,7 +228,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           status={statuses[1] ?? FlowStepStatus.inactive}
         >
           For each stake, there are three applications available. PRE does not
-          require authorization. To authorize TBTC and Random Beacon, go to the{" "}
+          require authorization. To authorize tBTC and Random Beacon, go to the{" "}
           <InternalLink to="/staking">Staking page</InternalLink> and select
           “Configure Stake”.
         </FlowStep>

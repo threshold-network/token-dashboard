@@ -25,6 +25,11 @@ import TokenBalance from "../../TokenBalance"
 import { StakingAppName } from "../../../store/staking-applications"
 import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
 
+const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
+  tbtc: "tBTC",
+  randomBeacon: "Random Beacon",
+}
+
 const InitiateDeauthorization: FC<{
   closeModal: () => void
   stakingProvider: string
@@ -44,7 +49,8 @@ const InitiateDeauthorization: FC<{
       <ModalBody>
         <InfoBox variant="modal">
           <H5 mb={4}>
-            You're about to initiate the decrease of your TBTC authoriation.
+            You're about to initiate the decrease of your{" "}
+            {stakingAppNameToAppLabel[stakingAppName]} authorization.
           </H5>
           <BodyLg>
             Initiation and confirmation of deauthorization is a two step action.
