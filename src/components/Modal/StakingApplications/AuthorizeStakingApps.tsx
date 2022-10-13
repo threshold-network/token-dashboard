@@ -132,7 +132,12 @@ const StakingApplicationToAuth: FC<{
         {stakingAppNameToAppLabel[appName]} app - {percentage}
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
-      <TokenBalance tokenAmount={authorizationAmount} isLarge />
+      <TokenBalance
+        tokenAmount={authorizationAmount}
+        isLarge
+        withSymbol
+        tokenSymbol="T"
+      />
       <StakeAddressInfo stakingProvider={stakingProvider} mb="0" />
     </Card>
   )
