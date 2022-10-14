@@ -1,4 +1,4 @@
-import { CheckCircleIcon, Icon } from "@chakra-ui/icons"
+import { Icon } from "@chakra-ui/icons"
 import {
   Alert,
   AlertIcon,
@@ -52,7 +52,7 @@ const OperatorAddressMappingCard: FC<{
   const isOneOfTheAppsNotMapped =
     isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
 
-  const areAllAppsMappedSuccessfuly =
+  const shoudlDisplaySuccessState =
     !isAddressZero(mappedOperatorTbtc) &&
     !isAddressZero(mappedOperatorRandomBeacon)
 
@@ -71,7 +71,7 @@ const OperatorAddressMappingCard: FC<{
           Node operators only
         </Badge>
       </HStack>
-      {areAllAppsMappedSuccessfuly ? (
+      {shoudlDisplaySuccessState ? (
         Object.entries(mappedOperators).map(([appName, operator]) => {
           return (
             <Box key={`mapped_operator_${appName}_${operator}`}>
