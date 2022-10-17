@@ -2,7 +2,7 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { isAddressZero } from "../../../web3/utils"
+import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
@@ -24,6 +24,53 @@ const MapOperatorToStakingProviderFormBase: FC<
       />
     </Form>
   )
+}
+
+const validateInputtedOperatorAddress = async (
+  operator: string,
+  checkIfOperatorIsMappedToAnotherStakingProvider: (
+    operator: string
+  ) => Promise<boolean>,
+  mappedOperatorRandomBeacon: string,
+  mappedOperatorTbtc: string
+): Promise<string | undefined> => {
+  let validationMsg: string | undefined = ""
+
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
+
+  try {
+    const isOperatorMappedToAnotherStakingProvider =
+      await checkIfOperatorIsMappedToAnotherStakingProvider(operator)
+    validationMsg = undefined
+    if (isOperatorMappedToAnotherStakingProvider) {
+      validationMsg = "Operator is already mapped to another staking provider."
+    }
+    if (
+      isOperatorMappedOnlyInRandomBeacon &&
+      !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+    ) {
+      validationMsg =
+        "The operator address doesn't match the one used in random beacon app"
+    }
+    if (
+      isOperatorMappedOnlyInTbtc &&
+      !isSameETHAddress(operator, mappedOperatorTbtc)
+    ) {
+      validationMsg =
+        "The operator address doesn't match the one used in random beacon app"
+    }
+  } catch (error) {
+    console.error("`MapOperatorToStakingProviderForm` validation error.", error)
+    validationMsg = (error as Error)?.message
+  }
+
+  return validationMsg
 }
 
 type MapOperatorToStakingProviderFormProps = {
@@ -50,49 +97,16 @@ const MapOperatorToStakingProviderForm = withFormik<
       mappedOperatorRandomBeacon,
       checkIfOperatorIsMappedToAnotherStakingProvider,
     } = props
-
-    const isOperatorMappedOnlyInTbtc =
-      !isAddressZero(mappedOperatorTbtc) &&
-      isAddressZero(mappedOperatorRandomBeacon)
-
-    const isOperatorMappedOnlyInRandomBeacon =
-      isAddressZero(mappedOperatorTbtc) &&
-      !isAddressZero(mappedOperatorRandomBeacon)
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
     if (!errors.operator) {
-      let validationMsg: string | undefined = ""
-      try {
-        const isOperatorMappedToAnotherStakingProvider =
-          await checkIfOperatorIsMappedToAnotherStakingProvider(values.operator)
-        validationMsg = undefined
-        if (isOperatorMappedToAnotherStakingProvider) {
-          validationMsg =
-            "Operator is already mapped to another staking provider."
-        }
-        if (
-          isOperatorMappedOnlyInRandomBeacon &&
-          values.operator !== mappedOperatorRandomBeacon
-        ) {
-          validationMsg =
-            "The operator address doesn't match the one used in random beacon app"
-        }
-        if (
-          isOperatorMappedOnlyInTbtc &&
-          values.operator !== mappedOperatorTbtc
-        ) {
-          validationMsg =
-            "The operator address doesn't match the one used in tbtc app"
-        }
-      } catch (error) {
-        console.error(
-          "`MapOperatorToStakingProviderForm` validation error.",
-          error
-        )
-        validationMsg = (error as Error)?.message
-      }
-      errors.operator = validationMsg
+      errors.operator = await validateInputtedOperatorAddress(
+        values.operator,
+        checkIfOperatorIsMappedToAnotherStakingProvider,
+        mappedOperatorRandomBeacon,
+        mappedOperatorTbtc
+      )
     }
 
     return getErrorsObj(errors)

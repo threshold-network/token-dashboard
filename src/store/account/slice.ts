@@ -40,7 +40,7 @@ export const accountSlice = createSlice({
     },
   } as AccountState,
   reducers: {
-    setAccountAddress: (state: AccountState, action: PayloadAction<string>) => {
+    walletConnected: (state: AccountState, action: PayloadAction<string>) => {
       state.address = action.payload
     },
     accountUsedAsStakingProvider: (
@@ -97,8 +97,7 @@ export const accountSlice = createSlice({
       (action: AnyAction) =>
         action.type.match(providerStakedForStakingProvider),
       (state, action: ReturnType<typeof providerStaked>) => {
-        const { owner, beneficiary, authorizer, stakingProvider } =
-          action.payload
+        const { stakingProvider } = action.payload
 
         const { address } = state
 
@@ -121,7 +120,7 @@ export const registerAccountListeners = () => {
 registerAccountListeners()
 
 export const {
-  setAccountAddress,
+  walletConnected,
   accountUsedAsStakingProvider,
   setMappedOperator,
   setFetchingOperatorMapping,

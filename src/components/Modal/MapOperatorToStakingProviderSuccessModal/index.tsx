@@ -30,7 +30,7 @@ const MapOperatorToStakingProviderSuccessBase: FC<
       body={
         <>
           <List spacing="2" mb={"16"}>
-            <ListItem key="map_operator_success_modal__staking_provider">
+            <ListItem>
               <HStack justify="space-between">
                 <BodySm>Provider Address</BodySm>
                 <BodySm>
@@ -38,7 +38,7 @@ const MapOperatorToStakingProviderSuccessBase: FC<
                 </BodySm>
               </HStack>
             </ListItem>
-            <ListItem key="map_operator_success_modal__operator">
+            <ListItem>
               <HStack justify="space-between">
                 <BodySm>Operator Address</BodySm>
                 <BodySm>
