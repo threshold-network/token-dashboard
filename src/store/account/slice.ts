@@ -97,8 +97,7 @@ export const accountSlice = createSlice({
       (action: AnyAction) =>
         action.type.match(providerStakedForStakingProvider),
       (state, action: ReturnType<typeof providerStaked>) => {
-        const { owner, beneficiary, authorizer, stakingProvider } =
-          action.payload
+        const { stakingProvider } = action.payload
 
         const { address } = state
 
