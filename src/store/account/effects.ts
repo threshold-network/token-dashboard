@@ -65,6 +65,13 @@ export const getStakingProviderOperatorInfo = async (
       })
     )
 
+    listenerApi.dispatch(
+      setMappedOperator({
+        appName: "pre",
+        operator: mappedOperators.pre,
+      })
+    )
+
     listenerApi.dispatch(operatorMappingInitialFetchDone())
   } catch (error) {
     listenerApi.dispatch(

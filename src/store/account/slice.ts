@@ -19,6 +19,7 @@ interface AccountState {
     mappedOperators: {
       tbtc: string
       randomBeacon: string
+      pre: string
     }
   }>
 }
@@ -33,6 +34,7 @@ export const accountSlice = createSlice({
         mappedOperators: {
           tbtc: AddressZero,
           randomBeacon: AddressZero,
+          pre: AddressZero,
         },
       },
       isFetching: false,
@@ -52,7 +54,7 @@ export const accountSlice = createSlice({
     setMappedOperator: (
       state: AccountState,
       action: PayloadAction<{
-        appName: StakingAppName
+        appName: StakingAppName | "pre"
         operator: string
       }>
     ) => {
