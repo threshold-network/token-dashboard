@@ -1,6 +1,5 @@
-import { isZeroAddress } from "ethereumjs-util"
 import { StakeData } from "../../types"
-import { isSameETHAddress } from "../../web3/utils"
+import { isAddressZero, isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"
 import {
@@ -33,9 +32,9 @@ export const getStakingProviderOperatorInfo = async (
         await listenerApi.extra.threshold.staking.rolesOf(address)
 
       isUsedAsStakingProvider =
-        !isZeroAddress(owner) &&
-        !isZeroAddress(authorizer) &&
-        !isZeroAddress(beneficiary)
+        !isAddressZero(owner) &&
+        !isAddressZero(authorizer) &&
+        !isAddressZero(beneficiary)
     }
 
     if (!isUsedAsStakingProvider) return
