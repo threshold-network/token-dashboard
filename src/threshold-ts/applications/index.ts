@@ -389,3 +389,5 @@ export class Application implements IApplication {
     return await this._application.operatorToStakingProvider(operator)
   }
 }
+
+export * from "./preApplication"
