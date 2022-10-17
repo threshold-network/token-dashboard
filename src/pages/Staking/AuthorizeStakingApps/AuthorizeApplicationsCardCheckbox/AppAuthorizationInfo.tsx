@@ -1,25 +1,27 @@
 import { InfoIcon, CheckCircleIcon } from "@chakra-ui/icons"
 import {
   LabelSm,
-  BoxLabel,
   VStack,
   HStack,
   Badge,
   StackProps,
-  Icon,
   BodyMd,
   BodyLg,
   H3,
+  BodySm,
+  Link,
 } from "@threshold-network/components"
 import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
-import { IoAlertCircle } from "react-icons/all"
 import InfoBox from "../../../../components/InfoBox"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { StakingAppName } from "../../../../store/staking-applications"
+import TooltipIcon from "../../../../components/TooltipIcon"
 
 interface CommonProps {
   label: string
   percentageAuthorized: number
+  stakingAppName: StakingAppName | "pre"
 }
 
 type ConditionalProps =
@@ -36,6 +38,29 @@ type ConditionalProps =
       hasPendingDeauthorization: boolean
     }
 
+// TODO: Use the Link component from: https://github.com/threshold-network/token-dashboard/pull/258
+const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
+  tbtc: (
+    <>
+      The tBTC application is the first decentralized bridge from Bitcoin to
+      Ethereum. Learn more <Link>here</Link>.
+    </>
+  ),
+  randomBeacon: (
+    <>
+      The Random Beacon application generates randomness for staker group
+      selection. Learn more <Link>here</Link>.
+    </>
+  ),
+  // TODO: updte the PRE app tooltip text.
+  pre: (
+    <>
+      The Random Beacon application generates randomness for staker group
+      selection. Learn more <Link>here</Link>.
+    </>
+  ),
+}
+
 export type AppAuthorizationInfoProps = CommonProps &
   ConditionalProps &
   StackProps
@@ -46,6 +71,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   isAuthorized,
   authorizedStake,
   hasPendingDeauthorization,
+  stakingAppName,
   isAuthorizationRequired = false,
   ...restProps
 }) => {
@@ -58,7 +84,8 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
         <LabelSm>
           {label} App -{" "}
           {formatPercentage(percentageAuthorized, undefined, true)}
-        </LabelSm>
+        </LabelSm>{" "}
+        <TooltipIcon label={<BodySm>{tooltipText[stakingAppName]}</BodySm>} />
         <InfoIcon color="gray.500" />
         {!isAuthorizationRequired && (
           <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
