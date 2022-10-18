@@ -7,7 +7,7 @@ import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import withBaseModal from "../withBaseModal"
 import { UnstakeType, ExternalHref } from "../../../enums"
-import ExternalLink from "../../ExternalLink"
+import Link from "../../Link"
 
 interface UnstakeSuccessProps extends BaseModalProps {
   transactionHash: string
@@ -26,16 +26,24 @@ const unstakeTypeToLegacyDappLink: Record<
   JSX.Element
 > = {
   [UnstakeType.LEGACY_KEEP]: (
-    <ExternalLink text="here" href={ExternalHref.keepDapp} />
+    <Link isExternal href={ExternalHref.keepDapp}>
+      here
+    </Link>
   ),
   [UnstakeType.LEGACY_NU]: (
-    <ExternalLink text="here" href={ExternalHref.nuDapp} />
+    <Link isExternal href={ExternalHref.nuDapp}>
+      here
+    </Link>
   ),
   [UnstakeType.ALL]: (
     <>
-      <ExternalLink text="KEEP dapp" href={ExternalHref.keepDapp} />
+      <Link isExternal href={ExternalHref.keepDapp}>
+        KEEP dapp
+      </Link>
       {" or "}
-      <ExternalLink text="NU dapp" href={ExternalHref.nuDapp} />
+      <Link isExternal href={ExternalHref.nuDapp}>
+        NU dapp
+      </Link>
     </>
   ),
 }
