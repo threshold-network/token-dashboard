@@ -2,9 +2,15 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { Alert, AlertIcon, Link, BodyXs } from "@threshold-network/components"
+import {
+  Alert,
+  AlertIcon,
+  BodyXs,
+  useColorModeValue,
+} from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import Link from "../../Link"
 
 export interface FormValues {
   stakingProvider: string
@@ -61,11 +67,11 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }
 
 const AddressHelper: FC<{ text: string }> = ({ text }) => {
+  const textColor = useColorModeValue("gray.500", "gray.300")
+
   return (
-    <BodyXs color="gray.500">
-      {text}{" "}
-      {/* TODO: use the `Link` component from https://github.com/threshold-network/token-dashboard/pull/258  */}
-      <Link>Learn more</Link>
+    <BodyXs color={textColor}>
+      {text} <Link to="/staking/how-it-works/overview">Learn more</Link>.
     </BodyXs>
   )
 }
