@@ -24,7 +24,7 @@ const StakingOverview: FC = () => {
           isLarge
         />
       </InfoBox>
-      <ButtonLink size="lg" isFullWidth mt={4} to="/something">
+      <ButtonLink size="lg" isFullWidth mt={4} to="/staking">
         Go to Staking
       </ButtonLink>
       <StakingContractLearnMore mt="4" />
