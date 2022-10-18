@@ -1,6 +1,6 @@
 import { Card, LabelSm } from "@threshold-network/components"
 import { ComponentProps, FC, useMemo } from "react"
-import { StakingContractLearnMore } from "../../components/ExternalLink"
+import { StakingContractLearnMore } from "../../components/Link"
 import { TokenAmountForm } from "../../components/Forms"
 import { Token, ModalType } from "../../enums"
 import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"

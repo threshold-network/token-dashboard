@@ -6,7 +6,7 @@ import {
   Card,
   ChecklistGroup,
 } from "@threshold-network/components"
-import ExternalLink from "../../../components/ExternalLink"
+import Link from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
 
 export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
@@ -52,7 +52,9 @@ export const DepositAddressCard: FC<ComponentProps<typeof Card>> = ({
         <BodyMd>
           Based on these two addresses the protocol will create using a P2SWH a
           unique BTC deposit address for each user.{" "}
-          <ExternalLink text="Read more" href={ExternalHref.nuDapp} withArrow />
+          <Link isExternal href={ExternalHref.nuDapp}>
+            Read more
+          </Link>
         </BodyMd>
       </Stack>
     </Card>

@@ -26,6 +26,7 @@ import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeTitle } from "../../../utils/getStakeTitle"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import ButtonLink from "../../ButtonLink"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()
@@ -108,16 +109,15 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button
+        <ButtonLink
           mr={2}
-          as={RouterLink}
           to={`/staking/${selectedProviderAddress}/authorize`}
           onClick={closeModal}
           disabled={!selectedProviderAddress}
           style={{ pointerEvents: selectedProviderAddress ? "auto" : "none" }}
         >
           Continue
-        </Button>
+        </ButtonLink>
       </ModalFooter>
     </>
   )

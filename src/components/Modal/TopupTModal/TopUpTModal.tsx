@@ -11,7 +11,7 @@ import {
   BodyLg,
   H5,
 } from "@threshold-network/components"
-import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
+import { StakingContractLearnMore } from "../../Link/SharedLinks"
 import InfoBox from "../../InfoBox"
 import StakingStats from "../../StakingStats"
 import { useModal } from "../../../hooks/useModal"
