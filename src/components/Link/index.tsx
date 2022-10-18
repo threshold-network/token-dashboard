@@ -13,15 +13,9 @@ interface CommonLinkProps {
   icon?: ReactElement
 }
 
-type LinkHrefProps =
-  | { isExternal?: false; href?: never }
-  | { isExternal: true; href: string }
-
-type LinkToProps =
-  | { isExternal?: false; to: string }
-  | { isExternal: true; to?: never }
-
-type ConditionalLinkProps = LinkHrefProps & LinkToProps
+type ConditionalLinkProps =
+  | { isExternal?: false; to: string; href?: never }
+  | { isExternal: true; to?: never; href: string }
 
 export type LinkProps = CommonLinkProps & ConditionalLinkProps
 
