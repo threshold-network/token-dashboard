@@ -33,7 +33,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
-import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppNameFromAddress"
+import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppLabel"
 import StakingTimeline from "../../StakingTimeline"
 
 export type StakingApplicationsAuthorizeProps = BaseModalProps & {
