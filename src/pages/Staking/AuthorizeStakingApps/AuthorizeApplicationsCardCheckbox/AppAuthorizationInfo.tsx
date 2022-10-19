@@ -1,4 +1,4 @@
-import { InfoIcon, CheckCircleIcon } from "@chakra-ui/icons"
+import { CheckCircleIcon } from "@chakra-ui/icons"
 import {
   LabelSm,
   VStack,
@@ -8,8 +8,6 @@ import {
   BodyMd,
   BodyLg,
   H3,
-  BodySm,
-  Link,
 } from "@threshold-network/components"
 import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
@@ -17,6 +15,7 @@ import InfoBox from "../../../../components/InfoBox"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { StakingAppName } from "../../../../store/staking-applications"
 import TooltipIcon from "../../../../components/TooltipIcon"
+import Link from "../../../../components/Link"
 
 interface CommonProps {
   label: string
@@ -38,25 +37,28 @@ type ConditionalProps =
       hasPendingDeauthorization: boolean
     }
 
-// TODO: Use the Link component from: https://github.com/threshold-network/token-dashboard/pull/258
+const TooltipLearnMoreLink = () => {
+  return <Link to="/staking/how-it-works/applications">here</Link>
+}
+
 const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
   tbtc: (
     <>
       The tBTC application is the first decentralized bridge from Bitcoin to
-      Ethereum. Learn more <Link>here</Link>.
+      Ethereum. Learn more <TooltipLearnMoreLink />.
     </>
   ),
   randomBeacon: (
     <>
       The Random Beacon application generates randomness for staker group
-      selection. Learn more <Link>here</Link>.
+      selection. Learn more <TooltipLearnMoreLink />.
     </>
   ),
   // TODO: updte the PRE app tooltip text.
   pre: (
     <>
       The Random Beacon application generates randomness for staker group
-      selection. Learn more <Link>here</Link>.
+      selection. Learn more <TooltipLearnMoreLink />.
     </>
   ),
 }
@@ -85,8 +87,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
           {label} App -{" "}
           {formatPercentage(percentageAuthorized, undefined, true)}
         </LabelSm>{" "}
-        <TooltipIcon label={<BodySm>{tooltipText[stakingAppName]}</BodySm>} />
-        <InfoIcon color="gray.500" />
+        <TooltipIcon label={tooltipText[stakingAppName]} />
         {!isAuthorizationRequired && (
           <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
             Authorization not required
