@@ -5,7 +5,7 @@ import { setStakes } from "../staking"
 import {
   accountUsedAsStakingProvider,
   accountSlice,
-  setFetchingOperatorMapping,
+  fetchingOperatorMapping,
   setMappedOperators,
 } from "./slice"
 
@@ -38,11 +38,8 @@ export const getStakingProviderOperatorInfo = async (
 
     if (!isStakingProvider) return
 
-    listenerApi.dispatch(
-      setFetchingOperatorMapping({
-        isFetching: true,
-      })
-    )
+    listenerApi.dispatch(fetchingOperatorMapping())
+
     listenerApi.dispatch(accountUsedAsStakingProvider())
 
     const mappedOperators =
@@ -56,10 +53,10 @@ export const getStakingProviderOperatorInfo = async (
         randomBeacon: mappedOperators.randomBeacon,
       })
     )
-  } catch (error) {
+  } catch (error: any) {
     listenerApi.dispatch(
-      accountSlice.actions.setFetchingOperatorMapping({
-        isFetching: false,
+      accountSlice.actions.setOperatorMappingError({
+        error,
       })
     )
     throw new Error("Could not load staking provider's operator info: " + error)

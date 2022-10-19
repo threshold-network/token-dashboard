@@ -56,12 +56,8 @@ export const accountSlice = createSlice({
       state.operatorMapping.isInitialFetchDone = true
       state.operatorMapping.error = ""
     },
-    setFetchingOperatorMapping: (
-      state: AccountState,
-      action: PayloadAction<{ isFetching: boolean }>
-    ) => {
-      const { isFetching } = action.payload
-      state.operatorMapping.isFetching = isFetching
+    fetchingOperatorMapping: (state: AccountState) => {
+      state.operatorMapping.isFetching = true
     },
     setOperatorMappingError: (
       state: AccountState,
@@ -113,7 +109,7 @@ export const {
   walletConnected,
   accountUsedAsStakingProvider,
   setMappedOperators,
-  setFetchingOperatorMapping,
+  fetchingOperatorMapping,
   setOperatorMappingError,
   operatorRegistered,
 } = accountSlice.actions
