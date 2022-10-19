@@ -5,9 +5,8 @@ import { setStakes } from "../staking"
 import {
   accountUsedAsStakingProvider,
   accountSlice,
-  operatorMappingInitialFetchDone,
   setFetchingOperatorMapping,
-  setMappedOperator,
+  setMappedOperators,
 } from "./slice"
 
 export const getStakingProviderOperatorInfo = async (
@@ -52,20 +51,11 @@ export const getStakingProviderOperatorInfo = async (
       )
 
     listenerApi.dispatch(
-      setMappedOperator({
-        appName: "tbtc",
-        operator: mappedOperators.tbtc,
+      setMappedOperators({
+        tbtc: mappedOperators.tbtc,
+        randomBeacon: mappedOperators.randomBeacon,
       })
     )
-
-    listenerApi.dispatch(
-      setMappedOperator({
-        appName: "randomBeacon",
-        operator: mappedOperators.randomBeacon,
-      })
-    )
-
-    listenerApi.dispatch(operatorMappingInitialFetchDone())
   } catch (error) {
     listenerApi.dispatch(
       accountSlice.actions.setFetchingOperatorMapping({

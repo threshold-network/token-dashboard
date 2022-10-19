@@ -42,15 +42,19 @@ export const accountSlice = createSlice({
     ) => {
       state.isStakingProvider = true
     },
-    setMappedOperator: (
+    setMappedOperators: (
       state: AccountState,
       action: PayloadAction<{
-        appName: StakingAppName
-        operator: string
+        tbtc: string
+        randomBeacon: string
       }>
     ) => {
-      const { appName, operator } = action.payload
-      state.operatorMapping.data[appName] = operator
+      const { tbtc, randomBeacon } = action.payload
+      state.operatorMapping.data.tbtc = tbtc
+      state.operatorMapping.data.randomBeacon = randomBeacon
+      state.operatorMapping.isFetching = false
+      state.operatorMapping.isInitialFetchDone = true
+      state.operatorMapping.error = ""
     },
     setFetchingOperatorMapping: (
       state: AccountState,
@@ -58,13 +62,6 @@ export const accountSlice = createSlice({
     ) => {
       const { isFetching } = action.payload
       state.operatorMapping.isFetching = isFetching
-    },
-    operatorMappingInitialFetchDone: (
-      state: AccountState,
-      action: PayloadAction
-    ) => {
-      state.operatorMapping.isFetching = false
-      state.operatorMapping.isInitialFetchDone = true
     },
     setOperatorMappingError: (
       state: AccountState,
@@ -115,9 +112,8 @@ registerAccountListeners()
 export const {
   walletConnected,
   accountUsedAsStakingProvider,
-  setMappedOperator,
+  setMappedOperators,
   setFetchingOperatorMapping,
-  operatorMappingInitialFetchDone,
   setOperatorMappingError,
   operatorRegistered,
 } = accountSlice.actions
