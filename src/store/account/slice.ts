@@ -14,8 +14,8 @@ import { getStakingProviderOperatorInfo } from "./effects"
 
 interface AccountState {
   address: string
+  isStakingProvider: boolean
   operatorMapping: FetchingState<{
-    isUsedAsStakingProvider: boolean
     mappedOperators: {
       tbtc: string
       randomBeacon: string
@@ -27,9 +27,9 @@ export const accountSlice = createSlice({
   name: "account",
   initialState: {
     address: "",
+    isStakingProvider: false,
     operatorMapping: {
       data: {
-        isUsedAsStakingProvider: false,
         mappedOperators: {
           tbtc: AddressZero,
           randomBeacon: AddressZero,
@@ -47,7 +47,7 @@ export const accountSlice = createSlice({
       state: AccountState,
       action: PayloadAction
     ) => {
-      state.operatorMapping.data.isUsedAsStakingProvider = true
+      state.isStakingProvider = true
     },
     setMappedOperator: (
       state: AccountState,
@@ -102,7 +102,7 @@ export const accountSlice = createSlice({
         const { address } = state
 
         if (isSameETHAddress(stakingProvider, address)) {
-          state.operatorMapping.data.isUsedAsStakingProvider = true
+          state.isStakingProvider = true
         }
       }
     )

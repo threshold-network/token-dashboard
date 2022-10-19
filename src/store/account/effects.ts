@@ -23,21 +23,21 @@ export const getStakingProviderOperatorInfo = async (
       isSameETHAddress(_.stakingProvider, address)
     )
 
-    let isUsedAsStakingProvider = false
+    let isStakingProvider = false
 
     if (stake) {
-      isUsedAsStakingProvider = true
+      isStakingProvider = true
     } else {
       const { owner, authorizer, beneficiary } =
         await listenerApi.extra.threshold.staking.rolesOf(address)
 
-      isUsedAsStakingProvider =
+      isStakingProvider =
         !isAddressZero(owner) &&
         !isAddressZero(authorizer) &&
         !isAddressZero(beneficiary)
     }
 
-    if (!isUsedAsStakingProvider) return
+    if (!isStakingProvider) return
 
     listenerApi.dispatch(
       setFetchingOperatorMapping({

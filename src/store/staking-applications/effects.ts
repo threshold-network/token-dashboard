@@ -188,11 +188,15 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
 
   listenerApi.unsubscribe()
   try {
-    const { isUsedAsStakingProvider, mappedOperators } =
-      account.operatorMapping.data
+    const {
+      isStakingProvider,
+      operatorMapping: {
+        data: { mappedOperators },
+      },
+    } = account
 
     if (
-      isUsedAsStakingProvider &&
+      isStakingProvider &&
       (isAddressZero(mappedOperators.tbtc) ||
         isAddressZero(mappedOperators.randomBeacon))
     ) {

@@ -47,9 +47,12 @@ const StakingPage: PageComponent = (props) => {
   const hasStakes = stakes.length > 0
 
   const {
-    isInitialFetchDone: isOperatorMappingInitialFetchDone,
-    data: { isUsedAsStakingProvider, mappedOperators },
-  } = useAppSelector((state) => state.account.operatorMapping)
+    isStakingProvider,
+    operatorMapping: {
+      isInitialFetchDone: isOperatorMappingInitialFetchDone,
+      data: { mappedOperators },
+    },
+  } = useAppSelector((state) => state.account)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
@@ -67,7 +70,7 @@ const StakingPage: PageComponent = (props) => {
           >
             Your Stake
           </H4>
-          {isUsedAsStakingProvider &&
+          {isStakingProvider &&
             isOperatorMappingInitialFetchDone &&
             (isAddressZero(mappedOperators.tbtc) ||
               isAddressZero(mappedOperators.randomBeacon)) && (
