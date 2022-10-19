@@ -1,7 +1,16 @@
 import { IoInformationCircleOutline } from "react-icons/all"
-import { Icon, IconProps, Tooltip, useColorModeValue } from "@chakra-ui/react"
+import {
+  Icon,
+  IconProps,
+  Popover,
+  useColorModeValue,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverBody,
+  BodySm,
+} from "@threshold-network/components"
 import { FC } from "react"
-import { ONE_SEC_IN_MILISECONDS } from "../utils/date"
 
 const TooltipIcon: FC<{ label: string | JSX.Element } & IconProps> = ({
   label,
@@ -11,22 +20,32 @@ const TooltipIcon: FC<{ label: string | JSX.Element } & IconProps> = ({
   const bgColor = useColorModeValue("white", "gray.300")
   const textColor = useColorModeValue("gray.700", "gray.900")
   const iconColor = useColorModeValue("gray.500", "gray.300")
+  const boxShadow = useColorModeValue("md", "none")
 
   return (
-    <Tooltip
-      label={label}
-      fontSize="md"
-      placement="top"
-      hasArrow
-      bg={bgColor}
-      color={textColor}
-      p="2"
-      closeDelay={ONE_SEC_IN_MILISECONDS}
-      borderRadius="1"
-      shouldWrapChildren
-    >
-      <Icon color={iconColor} as={IoInformationCircleOutline} {...iconProps} />
-    </Tooltip>
+    <Popover trigger="hover" placement="top">
+      <PopoverTrigger>
+        <span>
+          <Icon
+            color={iconColor}
+            as={IoInformationCircleOutline}
+            {...iconProps}
+          />
+        </span>
+      </PopoverTrigger>
+      <PopoverContent
+        bg={bgColor}
+        border="none"
+        color={textColor}
+        borderRadius="0.25rem"
+        boxShadow={boxShadow}
+      >
+        <PopoverArrow bg={bgColor} />
+        <BodySm as={PopoverBody} color={textColor}>
+          {label}
+        </BodySm>
+      </PopoverContent>
+    </Popover>
   )
 }
 
