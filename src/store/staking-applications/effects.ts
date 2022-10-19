@@ -190,9 +190,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
   try {
     const {
       isStakingProvider,
-      operatorMapping: {
-        data: { mappedOperators },
-      },
+      operatorMapping: { data: mappedOperators },
     } = account
 
     if (

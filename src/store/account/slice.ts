@@ -15,12 +15,7 @@ import { getStakingProviderOperatorInfo } from "./effects"
 interface AccountState {
   address: string
   isStakingProvider: boolean
-  operatorMapping: FetchingState<{
-    mappedOperators: {
-      tbtc: string
-      randomBeacon: string
-    }
-  }>
+  operatorMapping: FetchingState<Record<StakingAppName, string>>
 }
 
 export const accountSlice = createSlice({
@@ -30,10 +25,8 @@ export const accountSlice = createSlice({
     isStakingProvider: false,
     operatorMapping: {
       data: {
-        mappedOperators: {
-          tbtc: AddressZero,
-          randomBeacon: AddressZero,
-        },
+        tbtc: AddressZero,
+        randomBeacon: AddressZero,
       },
       isFetching: false,
       isInitialFetchDone: false,
@@ -57,7 +50,7 @@ export const accountSlice = createSlice({
       }>
     ) => {
       const { appName, operator } = action.payload
-      state.operatorMapping.data.mappedOperators[appName] = operator
+      state.operatorMapping.data[appName] = operator
     },
     setFetchingOperatorMapping: (
       state: AccountState,
@@ -89,7 +82,7 @@ export const accountSlice = createSlice({
       }>
     ) => {
       const { appName, operator } = action.payload
-      state.operatorMapping.data.mappedOperators[appName] = operator
+      state.operatorMapping.data[appName] = operator
     },
   },
   extraReducers: (builder) => {

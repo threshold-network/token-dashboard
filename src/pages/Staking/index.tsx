@@ -50,7 +50,7 @@ const StakingPage: PageComponent = (props) => {
     isStakingProvider,
     operatorMapping: {
       isInitialFetchDone: isOperatorMappingInitialFetchDone,
-      data: { mappedOperators },
+      data: mappedOperators,
     },
   } = useAppSelector((state) => state.account)
 
