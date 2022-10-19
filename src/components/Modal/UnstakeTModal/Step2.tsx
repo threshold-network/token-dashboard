@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react"
 import { BodyLg, H5 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
 import { useModal } from "../../../hooks/useModal"
 import useUnstakeTransaction from "../../../web3/hooks/useUnstakeTransaction"
