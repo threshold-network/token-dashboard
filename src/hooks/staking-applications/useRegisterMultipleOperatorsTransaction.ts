@@ -7,14 +7,16 @@ import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 import { useAppDispatch, useAppSelector } from "../store"
+import { selectMappedOperatorsAndAdditionalData } from "../../store/account"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
-  const mappedOperatorTbtc = useAppSelector(
-    (state) => state.account.operatorMapping.data.tbtc
-  )
-  const mappedOperatorRandomBeacon = useAppSelector(
-    (state) => state.account.operatorMapping.data.randomBeacon
-  )
+  const {
+    mappedOperatorTbtc,
+    mappedOperatorRandomBeacon,
+    isOperatorMappedInBothApps,
+    isOperatorMappedOnlyInRandomBeacon,
+    isOperatorMappedOnlyInTbtc,
+  } = useAppSelector((state) => selectMappedOperatorsAndAdditionalData(state))
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
   const dispatch = useAppDispatch()
@@ -35,19 +37,8 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           throw new Error("Connect to the staking provider account first!")
         }
 
-        if (
-          !isAddressZero(mappedOperatorRandomBeacon) &&
-          !isAddressZero(mappedOperatorTbtc)
-        )
+        if (isOperatorMappedInBothApps)
           throw new Error("Both apps already have mapped operator!")
-
-        const isOperatorMappedOnlyInTbtc =
-          !isAddressZero(mappedOperatorTbtc) &&
-          isAddressZero(mappedOperatorRandomBeacon)
-
-        const isOperatorMappedOnlyInRandomBeacon =
-          isAddressZero(mappedOperatorTbtc) &&
-          !isAddressZero(mappedOperatorRandomBeacon)
 
         if (isOperatorMappedOnlyInRandomBeacon)
           throw new Error("Random beacon app already has mapped operator!")

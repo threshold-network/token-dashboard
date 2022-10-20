@@ -59,8 +59,8 @@ const MapOperatorToStakingProviderModal: FC<
     if (account) {
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,
-        mappedOperatorTbtc,
-        mappedOperatorRandomBeacon,
+        isOperatorMappedOnlyInTbtc,
+        isOperatorMappedOnlyInRandomBeacon,
       })
     }
   }

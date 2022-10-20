@@ -12,7 +12,7 @@ import {
 import { StakingAppName } from "../staking-applications"
 import { getStakingProviderOperatorInfo } from "./effects"
 
-interface AccountState {
+export interface AccountState {
   address: string
   isStakingProvider: boolean
   operatorMapping: FetchingState<Record<StakingAppName, string>>

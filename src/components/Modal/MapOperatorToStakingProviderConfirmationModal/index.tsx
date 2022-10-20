@@ -21,7 +21,6 @@ import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
 import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
 import { BaseModalProps } from "../../../types"
-import { isAddressZero } from "../../../web3/utils"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
 
@@ -54,27 +53,19 @@ const OperatorMappingConfirmation: FC<
 const MapOperatorToStakingProviderConfirmationModal: FC<
   BaseModalProps & {
     operator: string
-    mappedOperatorTbtc: string
-    mappedOperatorRandomBeacon: string
+    isOperatorMappedOnlyInTbtc: boolean
+    isOperatorMappedOnlyInRandomBeacon: boolean
   }
 > = ({
   operator,
-  mappedOperatorTbtc,
-  mappedOperatorRandomBeacon,
+  isOperatorMappedOnlyInTbtc,
+  isOperatorMappedOnlyInRandomBeacon,
   closeModal,
 }) => {
   const { account } = useWeb3React()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
   const dispatch = useAppDispatch()
-
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
 
   const { openModal } = useModal()
   const onSuccess = useCallback(
