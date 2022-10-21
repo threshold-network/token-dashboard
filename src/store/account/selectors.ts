@@ -9,13 +9,18 @@ export const selectMappedOperatorsAndAdditionalData = createSelector(
   [selectAccountState],
   (accountState: AccountState) => {
     const { randomBeacon, tbtc } = accountState.operatorMapping.data
+    const isOperatorMappedOnlyInTbtc =
+      !isAddressZero(tbtc) && isAddressZero(randomBeacon)
+    const isOperatorMappedOnlyInRandomBeacon =
+      isAddressZero(tbtc) && !isAddressZero(randomBeacon)
+
     return {
       mappedOperatorTbtc: tbtc,
       mappedOperatorRandomBeacon: randomBeacon,
-      isOperatorMappedOnlyInTbtc:
-        !isAddressZero(tbtc) && isAddressZero(randomBeacon),
-      isOperatorMappedOnlyInRandomBeacon:
-        isAddressZero(tbtc) && !isAddressZero(randomBeacon),
+      isOperatorMappedOnlyInTbtc,
+      isOperatorMappedOnlyInRandomBeacon,
+      isOneOfTheAppsNotMapped:
+        isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc,
       isOperatorMappedInBothApps:
         !isAddressZero(randomBeacon) && !isAddressZero(tbtc),
     }

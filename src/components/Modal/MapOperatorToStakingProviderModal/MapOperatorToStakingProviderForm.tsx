@@ -3,7 +3,6 @@ import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
-import { extractOperatorMappingAdditionalData } from "../../../utils/operatorMapping"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
@@ -32,16 +31,10 @@ const validateInputtedOperatorAddress = async (
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>,
-  mappedOperatorRandomBeacon: string,
-  mappedOperatorTbtc: string
+  mappedOperatorTbtc: string,
+  mappedOperatorRandomBeacon: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
-
-  const { isOperatorMappedOnlyInTbtc, isOperatorMappedOnlyInRandomBeacon } =
-    extractOperatorMappingAdditionalData(
-      mappedOperatorTbtc,
-      mappedOperatorRandomBeacon
-    )
 
   try {
     const isOperatorMappedToAnotherStakingProvider =
@@ -50,6 +43,15 @@ const validateInputtedOperatorAddress = async (
     if (isOperatorMappedToAnotherStakingProvider) {
       validationMsg = "Operator is already mapped to another staking provider."
     }
+
+    const isOperatorMappedOnlyInTbtc =
+      !isAddressZero(mappedOperatorTbtc) &&
+      isAddressZero(mappedOperatorRandomBeacon)
+
+    const isOperatorMappedOnlyInRandomBeacon =
+      isAddressZero(mappedOperatorTbtc) &&
+      !isAddressZero(mappedOperatorRandomBeacon)
+
     if (
       isOperatorMappedOnlyInRandomBeacon &&
       !isSameETHAddress(operator, mappedOperatorRandomBeacon)
@@ -103,8 +105,8 @@ const MapOperatorToStakingProviderForm = withFormik<
       errors.operator = await validateInputtedOperatorAddress(
         values.operator,
         checkIfOperatorIsMappedToAnotherStakingProvider,
-        mappedOperatorRandomBeacon,
-        mappedOperatorTbtc
+        mappedOperatorTbtc,
+        mappedOperatorRandomBeacon
       )
     }
 

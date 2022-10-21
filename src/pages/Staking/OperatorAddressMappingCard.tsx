@@ -10,26 +10,19 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { ModalType } from "../../enums"
+import { useAppSelector } from "../../hooks/store"
 import { useModal } from "../../hooks/useModal"
-import { extractOperatorMappingAdditionalData } from "../../utils/operatorMapping"
-import { isAddressZero } from "../../web3/utils"
+import { selectMappedOperatorsAndAdditionalData } from "../../store/account/selectors"
 
-const OperatorAddressMappingCard: FC<{
-  mappedOperatorTbtc: string
-  mappedOperatorRandomBeacon: string
-}> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
+const OperatorAddressMappingCard: FC = () => {
   const { openModal } = useModal()
 
-  const { isOneOfTheAppsNotMapped } = extractOperatorMappingAdditionalData(
-    mappedOperatorTbtc,
-    mappedOperatorRandomBeacon
+  const { isOneOfTheAppsNotMapped } = useAppSelector(
+    selectMappedOperatorsAndAdditionalData
   )
 
   const onStartMappingClick = () => {
-    openModal(ModalType.MapOperatorToStakingProvider, {
-      mappedOperatorTbtc,
-      mappedOperatorRandomBeacon,
-    })
+    openModal(ModalType.MapOperatorToStakingProvider)
   }
 
   return (
