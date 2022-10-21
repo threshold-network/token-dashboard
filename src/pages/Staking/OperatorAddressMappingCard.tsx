@@ -11,6 +11,7 @@ import {
 import { FC } from "react"
 import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
+import { extractOperatorMappingAdditionalData } from "../../utils/operatorMapping"
 import { isAddressZero } from "../../web3/utils"
 
 const OperatorAddressMappingCard: FC<{
@@ -18,16 +19,11 @@ const OperatorAddressMappingCard: FC<{
   mappedOperatorRandomBeacon: string
 }> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { openModal } = useModal()
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
 
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOneOfTheAppsNotMapped =
-    isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+  const { isOneOfTheAppsNotMapped } = extractOperatorMappingAdditionalData(
+    mappedOperatorTbtc,
+    mappedOperatorRandomBeacon
+  )
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider, {

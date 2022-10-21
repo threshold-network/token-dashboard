@@ -3,6 +3,7 @@ import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
+import { extractOperatorMappingAdditionalData } from "../../../utils/operatorMapping"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
@@ -36,13 +37,11 @@ const validateInputtedOperatorAddress = async (
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
 
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
+  const { isOperatorMappedOnlyInTbtc, isOperatorMappedOnlyInRandomBeacon } =
+    extractOperatorMappingAdditionalData(
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon
+    )
 
   try {
     const isOperatorMappedToAnotherStakingProvider =

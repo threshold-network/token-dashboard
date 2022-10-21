@@ -30,6 +30,7 @@ import {
   isSameETHAddress,
   AddressZero,
 } from "../../../web3/utils"
+import { extractOperatorMappingAdditionalData } from "../../../utils/operatorMapping"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
@@ -45,13 +46,11 @@ const MapOperatorToStakingProviderModal: FC<
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
 
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
+  const { isOperatorMappedOnlyInTbtc, isOperatorMappedOnlyInRandomBeacon } =
+    extractOperatorMappingAdditionalData(
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon
+    )
 
   const onSubmit = async ({
     operator,
