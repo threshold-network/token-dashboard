@@ -30,7 +30,7 @@ import {
   isSameETHAddress,
   AddressZero,
 } from "../../../web3/utils"
-import { selectMappedOperatorsAndAdditionalData } from "../../../store/account/selectors"
+import { selectMappedOperators } from "../../../store/account/selectors"
 import { useAppSelector } from "../../../hooks/store"
 
 export interface MapOperatorToStakingProviderModalProps {
@@ -52,7 +52,7 @@ const MapOperatorToStakingProviderModal: FC<
     mappedOperatorRandomBeacon,
     isOperatorMappedOnlyInRandomBeacon,
     isOperatorMappedOnlyInTbtc,
-  } = useAppSelector(selectMappedOperatorsAndAdditionalData)
+  } = useAppSelector(selectMappedOperators)
 
   const onSubmit = async ({
     operator,

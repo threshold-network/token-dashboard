@@ -5,7 +5,7 @@ import { AccountState } from "./slice"
 
 export const selectAccountState = (state: RootState) => state.account
 
-export const selectMappedOperatorsAndAdditionalData = createSelector(
+export const selectMappedOperators = createSelector(
   [selectAccountState],
   (accountState: AccountState) => {
     const { randomBeacon, tbtc } = accountState.operatorMapping.data

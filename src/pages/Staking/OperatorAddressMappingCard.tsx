@@ -12,14 +12,12 @@ import { FC } from "react"
 import { ModalType } from "../../enums"
 import { useAppSelector } from "../../hooks/store"
 import { useModal } from "../../hooks/useModal"
-import { selectMappedOperatorsAndAdditionalData } from "../../store/account/selectors"
+import { selectMappedOperators } from "../../store/account/selectors"
 
 const OperatorAddressMappingCard: FC = () => {
   const { openModal } = useModal()
 
-  const { isOneOfTheAppsNotMapped } = useAppSelector(
-    selectMappedOperatorsAndAdditionalData
-  )
+  const { isOneOfTheAppsNotMapped } = useAppSelector(selectMappedOperators)
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider)

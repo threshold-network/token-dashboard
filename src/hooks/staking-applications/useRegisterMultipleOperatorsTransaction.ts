@@ -7,7 +7,7 @@ import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 import { useAppDispatch, useAppSelector } from "../store"
-import { selectMappedOperatorsAndAdditionalData } from "../../store/account"
+import { selectMappedOperators } from "../../store/account"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const {
@@ -16,7 +16,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     isOperatorMappedInBothApps,
     isOperatorMappedOnlyInRandomBeacon,
     isOperatorMappedOnlyInTbtc,
-  } = useAppSelector((state) => selectMappedOperatorsAndAdditionalData(state))
+  } = useAppSelector((state) => selectMappedOperators(state))
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
   const dispatch = useAppDispatch()
