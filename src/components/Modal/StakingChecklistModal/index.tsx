@@ -17,7 +17,7 @@ import { BaseModalProps } from "../../../types"
 import { ModalType } from "../../../enums"
 import StakingTimeline from "../../StakingTimeline"
 import InfoBox from "../../InfoBox"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../Link"
 
 const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
   closeModal,

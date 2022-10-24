@@ -32,9 +32,13 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
     },
     subTitle: {
       color: mode("gray.500", "white")(props),
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
     },
     link: {
       color: mode("gray.700", "white")(props),
+      ml: { sm: "2" },
     },
     imageFallback: {
       w: "48px",

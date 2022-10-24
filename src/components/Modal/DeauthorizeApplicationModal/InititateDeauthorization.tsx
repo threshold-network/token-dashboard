@@ -24,6 +24,7 @@ import shortenAddress from "../../../utils/shortenAddress"
 import TokenBalance from "../../TokenBalance"
 import { StakingAppName } from "../../../store/staking-applications"
 import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
+import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
 
 const InitiateDeauthorization: FC<{
   closeModal: () => void
@@ -44,7 +45,8 @@ const InitiateDeauthorization: FC<{
       <ModalBody>
         <InfoBox variant="modal">
           <H5 mb={4}>
-            You're about to initiate the decrease of your TBTC authoriation.
+            You're about to initiate the decrease of your{" "}
+            {getSakingAppLabel(stakingAppName)} authorization.
           </H5>
           <BodyLg>
             Initiation and confirmation of deauthorization is a two step action.

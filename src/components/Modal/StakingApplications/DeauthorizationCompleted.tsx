@@ -36,12 +36,12 @@ const DeauthorizationCompletedBase: FC<DeauthorizationCompletedProps> = ({
 }) => {
   return (
     <>
-      <ModalHeader>Deatuhorization Successful</ModalHeader>
+      <ModalHeader>Deauthorization Successful</ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <Alert status="success" mb={4}>
           <AlertIcon />
-          Your deauthorization increase was successful!
+          Your deauthorization was successful!
         </Alert>
         <List spacing="2.5" my="6">
           <ListItem>

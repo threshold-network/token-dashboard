@@ -33,7 +33,7 @@ import {
 import withBaseModal from "../withBaseModal"
 import { TokenAmountForm } from "../../Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../Link"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
 

@@ -16,7 +16,7 @@ import {
   ListItem,
 } from "@threshold-network/components"
 import { useDispatch, useSelector } from "react-redux"
-import { StakingContractLearnMore } from "../../ExternalLink/SharedLinks"
+import { StakingContractLearnMore } from "../../Link/SharedLinks"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"

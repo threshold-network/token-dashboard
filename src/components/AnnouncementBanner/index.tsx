@@ -1,10 +1,8 @@
 import { FC } from "react"
-import { Link as RouterLink } from "react-router-dom"
 import {
   Card,
   H4,
   LabelMd,
-  Button,
   CloseButton,
   Stack,
   useDisclosure,
@@ -12,6 +10,7 @@ import {
   BoxProps,
   useMultiStyleConfig,
 } from "@threshold-network/components"
+import ButtonLink from "../ButtonLink"
 
 interface AnnouncementBannerProps {
   imgSrc: any
@@ -59,9 +58,9 @@ const AnnouncementBanner: FC<AnnouncementBannerProps & BoxProps> = ({
           {preTitle && <LabelMd sx={styles.preTitle}>{preTitle}</LabelMd>}
           <H4 sx={styles.title}>{title}</H4>
         </Stack>
-        <Button as={RouterLink} to={href} sx={styles.ctaButton}>
+        <ButtonLink to={href} sx={styles.ctaButton}>
           {buttonText}
-        </Button>
+        </ButtonLink>
       </Stack>
     </Card>
   )

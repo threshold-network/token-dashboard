@@ -2,27 +2,31 @@ import { FC } from "react"
 import {
   BoxLabel,
   BodySm,
-  Button,
   HStack,
   Progress,
   StackProps,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
-import { Link as RouterLink } from "react-router-dom"
 import { formatPercentage } from "../../../../utils/percentage"
+import ButtonLink from "../../../../components/ButtonLink"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
-  appAuthData: AppAuthDataProps
+  label: string
+  isAuthorized: boolean
+  percentage: number
   stakingProvider: string
 }
 
 const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
-  appAuthData,
+  label,
+  isAuthorized,
+  percentage,
   stakingProvider,
   ...restProps
 }) => {
-  const { label, isAuthorized, percentage } = appAuthData
+  const iconColor = useColorModeValue("green.500", "green.300")
+
   return (
     <HStack justify="space-between" {...restProps}>
       <BoxLabel
@@ -30,7 +34,7 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
         status="secondary"
         icon={
           isAuthorized ? (
-            <CheckCircleIcon w={4} h={4} color="green.500" />
+            <CheckCircleIcon w={4} h={4} color={iconColor} />
           ) : null
         }
       >
@@ -48,14 +52,13 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
           <BodySm>{formatPercentage(percentage, undefined, true)}</BodySm>
         </HStack>
       ) : (
-        <Button
-          as={RouterLink}
-          to={`/staking/${stakingProvider}/authorize`}
+        <ButtonLink
           size="sm"
           variant="outline"
+          to={`/staking/${stakingProvider}/authorize`}
         >
           Authorize Application
-        </Button>
+        </ButtonLink>
       )}
     </HStack>
   )
