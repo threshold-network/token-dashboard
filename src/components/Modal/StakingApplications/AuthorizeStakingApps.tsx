@@ -30,6 +30,7 @@ import {
   selectStakingAppByStakingProvider,
   StakingAppName,
 } from "../../../store/staking-applications"
+import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
@@ -108,11 +109,6 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
   )
 }
 
-const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
-  tbtc: "tBTC",
-  randomBeacon: "Random Beacon",
-}
-
 const StakingApplicationToAuth: FC<{
   appName: StakingAppName
   authorizationAmount: string
@@ -129,7 +125,7 @@ const StakingApplicationToAuth: FC<{
     <Card>
       <LabelSm mb="4">
         <CheckCircleIcon color="green.500" verticalAlign="top" mr="2" />
-        {stakingAppNameToAppLabel[appName]} app - {percentage}
+        {getSakingAppLabel(appName)} app - {percentage}
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
       <TokenBalance
