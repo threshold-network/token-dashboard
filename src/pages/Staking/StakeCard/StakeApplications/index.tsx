@@ -22,7 +22,7 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
     (state) => state.applications.randomBeacon.stakingProviders.isFetching
   )
 
-  const { isPRESet } = useStakeCardContext()
+  const { isInactiveStake } = useStakeCardContext()
 
   return (
     <Box>
@@ -48,8 +48,8 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         <AuthorizeApplicationRow
           as="li"
           label="PRE"
-          isAuthorized={isPRESet}
-          percentage={100}
+          isAuthorized={true}
+          percentage={isInactiveStake ? 0 : 100}
           stakingProvider={stakingProvider}
         />
       </List>
