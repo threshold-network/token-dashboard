@@ -16,6 +16,7 @@ import {
   BodySm,
   Divider,
   FlowStepStatus,
+  ButtonProps,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import Link from "../../Link"
@@ -57,6 +58,8 @@ const StakingApplicationsAuthorizedBase: FC<
     navigate(`/staking/${stakingProvider}/authorize`)
   }
 
+  const numberOfAuthorizedApps = authorizedStakingApplications.length
+
   return (
     <>
       <ModalHeader>Step 2 Completed</ModalHeader>
@@ -88,7 +91,9 @@ const StakingApplicationsAuthorizedBase: FC<
         </List>
         <InfoBox variant="modal">
           <H5>
-            You can authorize more apps, or continue to Step 3 to set up nodes.
+            {numberOfAuthorizedApps === 2
+              ? "Continue to Step 3 to set up nodes."
+              : "You can authorize more apps, or continue to Step 3 to set up nodes."}
           </H5>
           <BodyLg mt="4">
             You can adjust the authorization amount at any time from the{" "}
@@ -104,7 +109,7 @@ const StakingApplicationsAuthorizedBase: FC<
           ]}
         />
         <BodySm align="center" mt="12">
-          {authorizedStakingApplications.length === 1 ? (
+          {numberOfAuthorizedApps === 1 ? (
             <>
               <ViewInBlockExplorer
                 text="View"
@@ -123,9 +128,7 @@ const StakingApplicationsAuthorizedBase: FC<
                     id={_.txHash}
                     type={ExplorerDataType.TRANSACTION}
                   />
-                  {index + 1 === authorizedStakingApplications.length
-                    ? " "
-                    : " and "}
+                  {index + 1 === numberOfAuthorizedApps ? " " : " and "}
                 </Fragment>
               ))}
               on Etherscan
@@ -135,19 +138,33 @@ const StakingApplicationsAuthorizedBase: FC<
         <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
-        <ButtonLink
-          variant="outline"
-          isExternal
-          mr={2}
-          href={ExternalHref.setupNodes}
-        >
-          Node Setup Doc
-        </ButtonLink>
-        <Button onClick={onAuthorizeOtherApps} mr={2}>
-          Authorize Other Apps
-        </Button>
+        {numberOfAuthorizedApps === 2 ? (
+          <>
+            <Button variant={"outline"} onClick={closeModal} mr="2">
+              Dismiss
+            </Button>
+            <SetupNodesButton />
+          </>
+        ) : (
+          <>
+            <SetupNodesButton variant={"outline"} />
+            <Button onClick={onAuthorizeOtherApps} ml={2}>
+              Authorize Other Apps
+            </Button>
+          </>
+        )}
       </ModalFooter>
     </>
+  )
+}
+
+const SetupNodesButton: FC<{ variant?: ButtonProps["variant"] }> = ({
+  variant,
+}) => {
+  return (
+    <ButtonLink variant={variant} href={ExternalHref.setupNodes} isExternal>
+      Node Setup Doc
+    </ButtonLink>
   )
 }
 
