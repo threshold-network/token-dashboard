@@ -17,11 +17,10 @@ import {
   stakingApplicationsSlice,
 } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
-import { connectedAccountSlice } from "./connected-account"
-import { modalQueueSlice } from "./modalQueue"
+import { accountSlice, registerAccountListeners } from "./account"
 
 const combinedReducer = combineReducers({
-  connectedAccount: connectedAccountSlice.reducer,
+  account: accountSlice.reducer,
   modal: modalSlice.reducer,
   token: tokenSlice.reducer,
   sidebar: sidebarSlice.reducer,
@@ -31,7 +30,6 @@ const combinedReducer = combineReducers({
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
   applications: stakingApplicationsSlice.reducer,
-  modalQueue: modalQueueSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"
@@ -45,6 +43,7 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
     listenerMiddleware.clearListeners()
     registerStakingListeners()
     registerStakingAppsListeners()
+    registerAccountListeners()
     state = {
       eth: { ...state.eth },
       token: {
@@ -52,6 +51,15 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
         NU: { ...state.token.NU, balance: 0 },
         T: { ...state.token.T, balance: 0 },
         TBTC: { ...state.token.TBTC, balance: 0 },
+      },
+      // we don't display successful login modal when changin account so we are
+      // setting the isSuccessfulLoginModalClosed flag to true and also
+      // isMappingOperatorToStakingProviderModalClosed flag back to false
+      modal: {
+        modalQueue: {
+          isSuccessfulLoginModalClosed: true,
+          isMappingOperatorToStakingProviderModalClosed: false,
+        },
       },
     } as RootState
   }

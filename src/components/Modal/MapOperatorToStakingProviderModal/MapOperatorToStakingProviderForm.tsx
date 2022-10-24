@@ -2,7 +2,7 @@ import { FC, Ref } from "react"
 import { FormikProps, FormikErrors, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { OperatorMappedToStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
@@ -26,10 +26,58 @@ const MapOperatorToStakingProviderFormBase: FC<
   )
 }
 
+const validateInputtedOperatorAddress = async (
+  operator: string,
+  checkIfOperatorIsMappedToAnotherStakingProvider: (
+    operator: string
+  ) => Promise<boolean>,
+  mappedOperatorRandomBeacon: string,
+  mappedOperatorTbtc: string
+): Promise<string | undefined> => {
+  let validationMsg: string | undefined = ""
+
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
+
+  try {
+    const isOperatorMappedToAnotherStakingProvider =
+      await checkIfOperatorIsMappedToAnotherStakingProvider(operator)
+    validationMsg = undefined
+    if (isOperatorMappedToAnotherStakingProvider) {
+      validationMsg = "Operator is already mapped to another staking provider."
+    }
+    if (
+      isOperatorMappedOnlyInRandomBeacon &&
+      !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+    ) {
+      validationMsg =
+        "The operator address doesn't match the one used in random beacon app"
+    }
+    if (
+      isOperatorMappedOnlyInTbtc &&
+      !isSameETHAddress(operator, mappedOperatorTbtc)
+    ) {
+      validationMsg =
+        "The operator address doesn't match the one used in tbtc app"
+    }
+  } catch (error) {
+    console.error("`MapOperatorToStakingProviderForm` validation error.", error)
+    validationMsg = (error as Error)?.message
+  }
+
+  return validationMsg
+}
+
 type MapOperatorToStakingProviderFormProps = {
   initialAddress: string
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
-  operatorMappedToStakingProviderHelpers: OperatorMappedToStakingProviderHelpers
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>
@@ -45,50 +93,20 @@ const MapOperatorToStakingProviderForm = withFormik<
   }),
   validate: async (values, props) => {
     const {
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon,
       checkIfOperatorIsMappedToAnotherStakingProvider,
-      operatorMappedToStakingProviderHelpers,
     } = props
-    const {
-      operatorMappedRandomBeacon,
-      operatorMappedTbtc,
-      isOperatorMappedOnlyInRandomBeacon,
-      isOperatorMappedOnlyInTbtc,
-    } = operatorMappedToStakingProviderHelpers
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
     if (!errors.operator) {
-      let validationMsg: string | undefined = ""
-      try {
-        const isOperatorMappedToAnotherStakingProvider =
-          await checkIfOperatorIsMappedToAnotherStakingProvider(values.operator)
-        validationMsg = undefined
-        if (isOperatorMappedToAnotherStakingProvider) {
-          validationMsg =
-            "Operator is already mapped to another staking provider."
-        }
-        if (
-          isOperatorMappedOnlyInRandomBeacon &&
-          values.operator !== operatorMappedRandomBeacon
-        ) {
-          validationMsg =
-            "The operator address doesn't match the one used in tbtc app"
-        }
-        if (
-          isOperatorMappedOnlyInTbtc &&
-          values.operator !== operatorMappedTbtc
-        ) {
-          validationMsg =
-            "The operator address doesn't match the one used in random beacon app"
-        }
-      } catch (error) {
-        console.error(
-          "`MapOperatorToStakingProviderForm` validation error.",
-          error
-        )
-        validationMsg = (error as Error)?.message
-      }
-      errors.operator = validationMsg
+      errors.operator = await validateInputtedOperatorAddress(
+        values.operator,
+        checkIfOperatorIsMappedToAnotherStakingProvider,
+        mappedOperatorRandomBeacon,
+        mappedOperatorTbtc
+      )
     }
 
     return getErrorsObj(errors)

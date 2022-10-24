@@ -99,4 +99,42 @@ describe("Multi app staking test", () => {
       randomBeacon: randomBeaconAuthParams,
     })
   })
+
+  test("should return mapped operators for given staking provider", async () => {
+    const mockStakingProvider = "0x3"
+    const mockOperator = "0x4"
+    const mappedOperatorTbtc = mockOperator
+    const mappedOperatorRandomBeacon = mockOperator
+
+    const mulitcallMockResult = [
+      [mappedOperatorTbtc],
+      [mappedOperatorRandomBeacon],
+    ]
+    const spyOnMulticall = jest
+      .spyOn(multicall, "aggregate")
+      .mockResolvedValue(mulitcallMockResult)
+
+    const result = await mas.getMappedOperatorsForStakingProvider(
+      mockStakingProvider
+    )
+
+    expect(spyOnMulticall).toHaveBeenCalledWith([
+      {
+        interface: mas.ecdsa.contract.interface,
+        address: mas.ecdsa.address,
+        method: "stakingProviderToOperator",
+        args: [mockStakingProvider],
+      },
+      {
+        interface: mas.randomBeacon.contract.interface,
+        address: mas.randomBeacon.address,
+        method: "stakingProviderToOperator",
+        args: [mockStakingProvider],
+      },
+    ])
+    expect(result).toEqual({
+      tbtc: mappedOperatorTbtc,
+      randomBeacon: mappedOperatorRandomBeacon,
+    })
+  })
 })

@@ -6,21 +6,34 @@ import {
   Button,
   Card,
   HStack,
+  LabelSm,
 } from "@threshold-network/components"
-import { LabelSm } from "@threshold-network/components"
+import { FC } from "react"
 import { ModalType } from "../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useModal } from "../../hooks/useModal"
+import { isAddressZero } from "../../web3/utils"
 
-const OperatorAddressMappingCard = () => {
+const OperatorAddressMappingCard: FC<{
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
+}> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
   const { openModal } = useModal()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    useOperatorMappedtoStakingProviderHelpers()
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
+
   const isOneOfTheAppsNotMapped =
     isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
 
   const onStartMappingClick = () => {
-    openModal(ModalType.MapOperatorToStakingProvider)
+    openModal(ModalType.MapOperatorToStakingProvider, {
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon,
+    })
   }
 
   return (
@@ -45,7 +58,7 @@ const OperatorAddressMappingCard = () => {
         </BodyXs>
       </Alert>
       <Button size="lg" w="100%" mt="5" onClick={onStartMappingClick}>
-        Start mapping
+        Start Mapping
       </Button>
     </Card>
   )
