@@ -58,7 +58,7 @@ const StakingApplicationsAuthorizedBase: FC<
     navigate(`/staking/${stakingProvider}/authorize`)
   }
 
-  const numberOfApps = authorizedStakingApplications.length
+  const numberOfAuthorizedApps = authorizedStakingApplications.length
 
   return (
     <>
@@ -91,7 +91,7 @@ const StakingApplicationsAuthorizedBase: FC<
         </List>
         <InfoBox variant="modal">
           <H5>
-            {numberOfApps === 2
+            {numberOfAuthorizedApps === 2
               ? "Continue to Step 3 to set up nodes."
               : "You can authorize more apps, or continue to Step 3 to set up nodes."}
           </H5>
@@ -109,7 +109,7 @@ const StakingApplicationsAuthorizedBase: FC<
           ]}
         />
         <BodySm align="center" mt="12">
-          {numberOfApps === 1 ? (
+          {numberOfAuthorizedApps === 1 ? (
             <>
               <ViewInBlockExplorer
                 text="View"
@@ -128,7 +128,7 @@ const StakingApplicationsAuthorizedBase: FC<
                     id={_.txHash}
                     type={ExplorerDataType.TRANSACTION}
                   />
-                  {index + 1 === numberOfApps ? " " : " and "}
+                  {index + 1 === numberOfAuthorizedApps ? " " : " and "}
                 </Fragment>
               ))}
               on Etherscan
@@ -138,7 +138,7 @@ const StakingApplicationsAuthorizedBase: FC<
         <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
-        {numberOfApps === 2 ? (
+        {numberOfAuthorizedApps === 2 ? (
           <>
             <Button variant={"outline"} onClick={closeModal} mr="2">
               Dismiss
