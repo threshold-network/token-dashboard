@@ -1,4 +1,3 @@
-export * from "./useOperatorsMappedToStakingProvider"
 export * from "./useStakingAppContract"
 export * from "./useStakingAppDataByStakingProvider"
 export * from "./useStakingApplicationState"

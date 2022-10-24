@@ -20,7 +20,7 @@ import { BaseModalProps } from "../../../types"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
-import ExternalLink from "../../ExternalLink"
+import Link from "../../Link"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
@@ -89,11 +89,13 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             {isOpen && (
               <AlertDescription maxWidth="100%">
                 <BodySm mb={8}>{error?.stack?.toString()}</BodySm>
-                <ExternalLink
+                <Link
+                  isExternal
                   href={ExternalHref.thresholdDiscord}
-                  text="Get help on discord"
                   fontWeight="bold"
-                />
+                >
+                  Get help on discord
+                </Link>
               </AlertDescription>
             )}
           </Alert>
