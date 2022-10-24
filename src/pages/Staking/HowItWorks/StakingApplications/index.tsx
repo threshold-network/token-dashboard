@@ -124,14 +124,14 @@ const StakingApplications: PageComponent = () => {
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
-          preTitle="TBTC APP"
+          preTitle="tBTC APP"
           title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
           description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
           imgSrc={iconMap.tbtc[colorMode]}
           ctaButtons={
             <VStack mb={6}>
               <ButtonLink to="/staking" isFullWidth>
-                Authorize TBTC
+                Authorize tBTC
               </ButtonLink>
               <ButtonLink
                 isExternal
@@ -139,7 +139,7 @@ const StakingApplications: PageComponent = () => {
                 isFullWidth
                 variant="outline"
               >
-                TBTC Node Docs
+                tBTC Node Docs
               </ButtonLink>
             </VStack>
           }

@@ -117,11 +117,11 @@ const MapOperatorToStakingProviderModal: FC<
           mb={"5"}
         >
           {isOperatorMappedOnlyInRandomBeacon ? (
-            <LabelSm>tbtc app</LabelSm>
+            <LabelSm>tBTC app</LabelSm>
           ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>random beacon app</LabelSm>
           ) : (
-            <LabelSm>TBTC + Random Beacon apps (requires 2txs)</LabelSm>
+            <LabelSm>tBTC + Random Beacon apps (requires 2txs)</LabelSm>
           )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm

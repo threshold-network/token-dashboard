@@ -117,7 +117,7 @@ const StakeDetailsPage: FC = () => {
           <StakeDetailRow label="PRE Node Status">
             <NodeStatusLabel isAuthorized />
           </StakeDetailRow>
-          <StakeDetailRow label="TBTC Node Status">
+          <StakeDetailRow label="tBTC Node Status">
             <NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />
           </StakeDetailRow>
           <StakeDetailRow label="Random Beacon Node Status">
