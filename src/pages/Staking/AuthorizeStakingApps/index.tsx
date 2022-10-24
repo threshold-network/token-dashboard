@@ -123,7 +123,11 @@ const AuthorizeStakingAppsPage: FC = () => {
     }
 
     if (randomBeaconApp.isAuthorized) {
-      selectedApps.filter(({ stakingAppId }) => stakingAppId !== "randomBeacon")
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(
+          ({ stakingAppId }) => stakingAppId !== "randomBeacon"
+        )
+      )
     }
   }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized])
 
