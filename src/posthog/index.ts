@@ -1,11 +1,17 @@
 import posthog from "posthog-js"
-
-const POSTHOG_API_KEY = "phc_5XMnBAeMVxZQhmBm6G0Kee5ujBOiUhGYIakUKfDhgs5"
-const POSTHOG_API_HOST = "https://app.posthog.com"
+import { EnvVariable } from "../enums"
+import { getEnvVariable } from "../utils/getEnvVariable"
 
 export const init = () => {
-  posthog.init(POSTHOG_API_KEY, {
-    api_host: POSTHOG_API_HOST,
+  const apiKey = getEnvVariable(EnvVariable.POSTHOG_API_KEY)
+  const apiHost = getEnvVariable(EnvVariable.POSTHOG_API_HOST)
+
+  if (!apiKey || !apiHost) {
+    throw new Error("Could not initilize posthog.")
+  }
+
+  posthog.init(apiKey, {
+    api_host: apiHost,
     // T dapp is a single page app so we need to make a `pageview` call
     // manually. It also prevents sending the `pageview` event on postohog
     // initialization.
