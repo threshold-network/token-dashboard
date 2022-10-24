@@ -1,11 +1,5 @@
-import { FC } from "react"
-import {
-  BodyMd,
-  BodySm,
-  HStack,
-  List,
-  ListItem,
-} from "@threshold-network/components"
+import { FC, Fragment } from "react"
+import { BodySm, HStack, List, ListItem } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import { StakingAppName } from "../../../store/staking-applications"
@@ -13,7 +7,6 @@ import TransactionSuccessModal from "../TransactionSuccessModal"
 import shortenAddress from "../../../utils/shortenAddress"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { camelCaseToNormal } from "../../../utils/text"
 
 export type OperatorMappedSuccessTx = {
   application: {
@@ -36,44 +29,51 @@ const MapOperatorToStakingProviderSuccessBase: FC<
       subTitle="You successfully mapped your Operator Address."
       body={
         <>
-          <List spacing="2" mb={"4rem"}>
-            <ListItem key="map_operator_succes_modal__operator">
+          <List spacing="2" mb={"16"}>
+            <ListItem>
               <HStack justify="space-between">
-                <BodySm>Operator</BodySm>
-                <BodySm>
-                  {shortenAddress(transactions[0].application.operator)}
-                </BodySm>
-              </HStack>
-            </ListItem>
-            <ListItem key="map_operator_succes_modal__staking_provider">
-              <HStack justify="space-between">
-                <BodySm>Staking Provider</BodySm>
+                <BodySm>Provider Address</BodySm>
                 <BodySm>
                   {shortenAddress(transactions[0].application.stakingProvider)}
                 </BodySm>
               </HStack>
             </ListItem>
+            <ListItem>
+              <HStack justify="space-between">
+                <BodySm>Operator Address</BodySm>
+                <BodySm>
+                  {shortenAddress(transactions[0].application.operator)}
+                </BodySm>
+              </HStack>
+            </ListItem>
           </List>
-          {transactions.map((transaction, i) => {
-            const text = `${camelCaseToNormal(
-              transaction.application.appName
-            )} transaction`
-            return (
-              <BodySm
-                align="center"
-                mt={1}
-                key={`map_operator_transaction_${i}`}
-              >
-                View{" "}
+          <BodySm align="center" mt={"1"}>
+            {transactions.length === 1 ? (
+              <>
                 <ViewInBlockExplorer
-                  text={text}
-                  id={transaction.txHash}
+                  text="View"
+                  id={transactions[0].txHash}
                   type={ExplorerDataType.TRANSACTION}
                 />{" "}
+                transaction on Etherscan
+              </>
+            ) : (
+              <>
+                View{" "}
+                {transactions.map((_, index) => (
+                  <Fragment key={_.txHash}>
+                    <ViewInBlockExplorer
+                      text={`transaction ${index + 1}`}
+                      id={_.txHash}
+                      type={ExplorerDataType.TRANSACTION}
+                    />
+                    {index + 1 === transactions.length ? " " : " and "}
+                  </Fragment>
+                ))}
                 on Etherscan
-              </BodySm>
-            )
-          })}
+              </>
+            )}
+          </BodySm>
         </>
       }
     />
