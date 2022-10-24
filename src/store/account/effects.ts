@@ -5,9 +5,8 @@ import { setStakes } from "../staking"
 import {
   accountUsedAsStakingProvider,
   accountSlice,
-  operatorMappingInitialFetchDone,
-  setFetchingOperatorMapping,
-  setMappedOperator,
+  fetchingOperatorMapping,
+  setMappedOperators,
 } from "./slice"
 
 export const getStakingProviderOperatorInfo = async (
@@ -23,27 +22,24 @@ export const getStakingProviderOperatorInfo = async (
       isSameETHAddress(_.stakingProvider, address)
     )
 
-    let isUsedAsStakingProvider = false
+    let isStakingProvider = false
 
     if (stake) {
-      isUsedAsStakingProvider = true
+      isStakingProvider = true
     } else {
       const { owner, authorizer, beneficiary } =
         await listenerApi.extra.threshold.staking.rolesOf(address)
 
-      isUsedAsStakingProvider =
+      isStakingProvider =
         !isAddressZero(owner) &&
         !isAddressZero(authorizer) &&
         !isAddressZero(beneficiary)
     }
 
-    if (!isUsedAsStakingProvider) return
+    if (!isStakingProvider) return
 
-    listenerApi.dispatch(
-      setFetchingOperatorMapping({
-        isFetching: true,
-      })
-    )
+    listenerApi.dispatch(fetchingOperatorMapping())
+
     listenerApi.dispatch(accountUsedAsStakingProvider())
 
     const mappedOperators =
@@ -52,24 +48,15 @@ export const getStakingProviderOperatorInfo = async (
       )
 
     listenerApi.dispatch(
-      setMappedOperator({
-        appName: "tbtc",
-        operator: mappedOperators.tbtc,
+      setMappedOperators({
+        tbtc: mappedOperators.tbtc,
+        randomBeacon: mappedOperators.randomBeacon,
       })
     )
-
+  } catch (error: any) {
     listenerApi.dispatch(
-      setMappedOperator({
-        appName: "randomBeacon",
-        operator: mappedOperators.randomBeacon,
-      })
-    )
-
-    listenerApi.dispatch(operatorMappingInitialFetchDone())
-  } catch (error) {
-    listenerApi.dispatch(
-      accountSlice.actions.setFetchingOperatorMapping({
-        isFetching: false,
+      accountSlice.actions.setOperatorMappingError({
+        error,
       })
     )
     throw new Error("Could not load staking provider's operator info: " + error)

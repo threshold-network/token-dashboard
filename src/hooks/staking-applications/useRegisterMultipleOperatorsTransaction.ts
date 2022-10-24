@@ -10,10 +10,10 @@ import { useAppDispatch, useAppSelector } from "../store"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const mappedOperatorTbtc = useAppSelector(
-    (state) => state.account.operatorMapping.data.mappedOperators.tbtc
+    (state) => state.account.operatorMapping.data.tbtc
   )
   const mappedOperatorRandomBeacon = useAppSelector(
-    (state) => state.account.operatorMapping.data.mappedOperators.randomBeacon
+    (state) => state.account.operatorMapping.data.randomBeacon
   )
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
