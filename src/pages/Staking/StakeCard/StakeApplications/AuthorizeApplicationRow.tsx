@@ -2,15 +2,14 @@ import { FC } from "react"
 import {
   BoxLabel,
   BodySm,
-  Button,
   HStack,
   Progress,
   StackProps,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
-import { Link as RouterLink } from "react-router-dom"
 import { formatPercentage } from "../../../../utils/percentage"
+import ButtonLink from "../../../../components/ButtonLink"
 
 export interface AuthorizeApplicationRowProps extends StackProps {
   appAuthData: AppAuthDataProps
@@ -48,14 +47,13 @@ const AuthorizeApplicationRow: FC<AuthorizeApplicationRowProps> = ({
           <BodySm>{formatPercentage(percentage, undefined, true)}</BodySm>
         </HStack>
       ) : (
-        <Button
-          as={RouterLink}
-          to={`/staking/${stakingProvider}/authorize`}
+        <ButtonLink
           size="sm"
           variant="outline"
+          to={`/staking/${stakingProvider}/authorize`}
         >
           Authorize Application
-        </Button>
+        </ButtonLink>
       )}
     </HStack>
   )

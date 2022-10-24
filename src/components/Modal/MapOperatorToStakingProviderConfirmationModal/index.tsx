@@ -9,25 +9,19 @@ import {
   ModalHeader,
 } from "@chakra-ui/react"
 import { AddressZero } from "@ethersproject/constants"
-import {
-  BodyLg,
-  BodyMd,
-  BodySm,
-  H5,
-  LabelSm,
-} from "@threshold-network/components"
+import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { ContractTransaction } from "ethers"
 import { FC, useCallback } from "react"
-import { useDispatch } from "react-redux"
 import { ModalType } from "../../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
 import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
+import { useAppDispatch } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
-import { mapOperatorToStakingProviderModalClosed } from "../../../store/modalQueue"
+import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
 import { BaseModalProps } from "../../../types"
+import { isAddressZero } from "../../../web3/utils"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
 
@@ -60,17 +54,27 @@ const OperatorMappingConfirmation: FC<
 const MapOperatorToStakingProviderConfirmationModal: FC<
   BaseModalProps & {
     operator: string
+    mappedOperatorTbtc: string
+    mappedOperatorRandomBeacon: string
   }
-> = ({ operator, closeModal }) => {
+> = ({
+  operator,
+  mappedOperatorTbtc,
+  mappedOperatorRandomBeacon,
+  closeModal,
+}) => {
   const { account } = useWeb3React()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const operatorMappedToStakingProviderHelpers =
-    useOperatorMappedtoStakingProviderHelpers()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    operatorMappedToStakingProviderHelpers
+  const isOperatorMappedOnlyInTbtc =
+    !isAddressZero(mappedOperatorTbtc) &&
+    isAddressZero(mappedOperatorRandomBeacon)
+
+  const isOperatorMappedOnlyInRandomBeacon =
+    isAddressZero(mappedOperatorTbtc) &&
+    !isAddressZero(mappedOperatorRandomBeacon)
 
   const { openModal } = useModal()
   const onSuccess = useCallback(

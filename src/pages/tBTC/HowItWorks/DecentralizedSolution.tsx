@@ -5,7 +5,7 @@ import {
   Card,
   ChecklistGroup,
 } from "@threshold-network/components"
-import ExternalLink from "../../../components/ExternalLink"
+import Link from "../../../components/Link"
 
 export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
   ...props
@@ -26,11 +26,9 @@ export const DecentralizedSolution: FC<ComponentProps<typeof Card>> = ({
               <BodyMd>
                 The group of independent operators works together to secure your
                 deposited Bitcoin through{" "}
-                <ExternalLink
-                  text="threshold cryptography"
-                  href="NEED_URL"
-                  withArrow
-                />
+                <Link isExternal href="NEED_URL">
+                  threshold cryptography
+                </Link>
               </BodyMd>
             ),
           },

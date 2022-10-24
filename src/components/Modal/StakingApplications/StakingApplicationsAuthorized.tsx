@@ -1,5 +1,5 @@
 import { FC, Fragment } from "react"
-import { Link as RouterLink, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import {
   HStack,
   BodyLg,
@@ -15,12 +15,11 @@ import {
   AlertIcon,
   BodySm,
   Divider,
-  Link,
   FlowStepStatus,
   ButtonProps,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import ExternalLink from "../../ExternalLink"
+import Link from "../../Link"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import withBaseModal from "../withBaseModal"
 import { useAppSelector } from "../../../hooks/store"
@@ -34,8 +33,9 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
-import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppNameFromAddress"
+import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppLabel"
 import StakingTimeline from "../../StakingTimeline"
+import ButtonLink from "../../ButtonLink"
 
 export type StakingApplicationsAuthorizeProps = BaseModalProps & {
   stakingProvider: string
@@ -97,10 +97,7 @@ const StakingApplicationsAuthorizedBase: FC<
           </H5>
           <BodyLg mt="4">
             You can adjust the authorization amount at any time from the{" "}
-            <Link as={RouterLink} to="/staking" color="brand.500">
-              Staking page
-            </Link>
-            .
+            <Link to="/staking">Staking page</Link>.
           </BodyLg>
         </InfoBox>
         <StakingTimeline
@@ -165,13 +162,9 @@ const SetupNodesButton: FC<{ variant?: ButtonProps["variant"] }> = ({
   variant,
 }) => {
   return (
-    <Button
-      variant={variant}
-      as={ExternalLink}
-      href={ExternalHref.setupNodes}
-      text="Node Setup Doc"
-      withArrow
-    />
+    <ButtonLink variant={variant} href={ExternalHref.setupNodes} isExternal>
+      Node Setup Doc
+    </ButtonLink>
   )
 }
 
