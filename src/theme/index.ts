@@ -1,4 +1,5 @@
 import { extendTheme } from "@chakra-ui/react"
+import { mode } from "@chakra-ui/theme-tools"
 import { defaultTheme } from "@threshold-network/components"
 import { InfoBox } from "./InfoBox"
 import { NotificationPill } from "./NotificationPill"
@@ -12,6 +13,13 @@ import { AnnouncementBanner } from "./AnnouncementBanner"
 
 const index = extendTheme({
   ...defaultTheme,
+  textStyles: {
+    bodyLg: {
+      fontWeight: "400",
+      fontSize: "18px",
+      lineHeight: "28px",
+    },
+  },
   components: {
     ...defaultTheme.components,
     AnnouncementBanner,
