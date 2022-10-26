@@ -23,21 +23,12 @@ import { selectMappedOperators } from "../../store/account/selectors"
 import shortenAddress from "../../utils/shortenAddress"
 import { isAddressZero } from "../../web3/utils"
 import { FcCheckmark, FiLink2 } from "react-icons/all"
-import { MappedOperatorsForStakingProvider } from "../../threshold-ts/mas"
-
-interface AppLabels {
-  tbtc: string
-  randomBeacon: string
-}
+import { getSakingAppLabel } from "../../utils/getStakingAppLabel"
+import { StakingAppName } from "../../store/staking-applications"
 
 const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
   stakingProvider,
 }) => {
-  const appLabels: AppLabels = {
-    tbtc: "tBTC",
-    randomBeacon: "Random Beacon",
-  }
-
   const { openModal } = useModal()
   const {
     mappedOperatorTbtc,
@@ -72,7 +63,7 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
             <Box key={`mapped_operator_${appName}_${operator}`}>
               <HStack mt={5}>
                 <BoxLabel status="secondary" size={"sm"}>
-                  {appLabels[appName as keyof AppLabels]} App
+                  {getSakingAppLabel(appName as StakingAppName)} App
                 </BoxLabel>
                 <Badge variant="subtle" size={"md"} bgColor={"green.50"} py={1}>
                   <HStack>
