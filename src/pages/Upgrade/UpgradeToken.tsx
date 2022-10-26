@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { Stack, SimpleGrid } from "@threshold-network/components"
+import { Stack } from "@threshold-network/components"
 import UpgradeCard from "../../components/UpgradeCard"
 import TokenBalanceCard from "../../components/TokenBalanceCard"
 import { useModal } from "../../hooks/useModal"
@@ -19,13 +19,18 @@ const UpgradeToken: FC<RouteProps & { token: UpgredableToken }> = ({
   }
 
   return (
-    <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
+    <Stack
+      direction={{ base: "column-reverse", md: "row" }}
+      spacing={4}
+      w="100%"
+      align="flex-start"
+    >
       <UpgradeCard token={token} onSubmit={onSubmit} />
-      <Stack spacing={4}>
+      <Stack spacing={4} w={{ base: "100%", md: "50%" }}>
         <TokenBalanceCard token={token} />
         <TokenBalanceCard token={Token.T} />
       </Stack>
-    </SimpleGrid>
+    </Stack>
   )
 }
 
