@@ -30,6 +30,8 @@ import {
   isSameETHAddress,
   AddressZero,
 } from "../../../web3/utils"
+import { selectMappedOperators } from "../../../store/account/selectors"
+import { useAppSelector } from "../../../hooks/store"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
@@ -38,20 +40,19 @@ export interface MapOperatorToStakingProviderModalProps {
 
 const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
-> = ({ mappedOperatorTbtc, mappedOperatorRandomBeacon }) => {
+> = () => {
   const { account } = useWeb3React()
   const formRef =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
 
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
+  const {
+    mappedOperatorTbtc,
+    mappedOperatorRandomBeacon,
+    isOperatorMappedOnlyInRandomBeacon,
+    isOperatorMappedOnlyInTbtc,
+  } = useAppSelector(selectMappedOperators)
 
   const onSubmit = async ({
     operator,
@@ -59,8 +60,8 @@ const MapOperatorToStakingProviderModal: FC<
     if (account) {
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,
-        mappedOperatorTbtc,
-        mappedOperatorRandomBeacon,
+        isOperatorMappedOnlyInTbtc,
+        isOperatorMappedOnlyInRandomBeacon,
       })
     }
   }

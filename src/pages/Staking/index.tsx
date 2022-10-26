@@ -82,10 +82,7 @@ const StakingPage: PageComponent = (props) => {
             isOperatorMappingInitialFetchDone &&
             (isAddressZero(mappedOperators.tbtc) ||
               isAddressZero(mappedOperators.randomBeacon)) && (
-              <OperatorAddressMappingCard
-                mappedOperatorTbtc={mappedOperators.tbtc}
-                mappedOperatorRandomBeacon={mappedOperators.randomBeacon}
-              />
+              <OperatorAddressMappingCard />
             )}
           {hasStakes ? (
             stakes.map((stake) => (
