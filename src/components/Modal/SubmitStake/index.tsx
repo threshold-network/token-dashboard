@@ -15,7 +15,7 @@ import { useStakingState } from "../../../hooks/useStakingState"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {

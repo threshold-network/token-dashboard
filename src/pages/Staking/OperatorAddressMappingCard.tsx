@@ -6,18 +6,18 @@ import {
   Button,
   Card,
   HStack,
+  LabelSm,
 } from "@threshold-network/components"
-import { LabelSm } from "@threshold-network/components"
+import { FC } from "react"
 import { ModalType } from "../../enums"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
+import { useAppSelector } from "../../hooks/store"
 import { useModal } from "../../hooks/useModal"
+import { selectMappedOperators } from "../../store/account/selectors"
 
-const OperatorAddressMappingCard = () => {
+const OperatorAddressMappingCard: FC = () => {
   const { openModal } = useModal()
-  const { isOperatorMappedOnlyInRandomBeacon, isOperatorMappedOnlyInTbtc } =
-    useOperatorMappedtoStakingProviderHelpers()
-  const isOneOfTheAppsNotMapped =
-    isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+
+  const { isOneOfTheAppsNotMapped } = useAppSelector(selectMappedOperators)
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider)
@@ -45,7 +45,7 @@ const OperatorAddressMappingCard = () => {
         </BodyXs>
       </Alert>
       <Button size="lg" w="100%" mt="5" onClick={onStartMappingClick}>
-        Start mapping
+        Start Mapping
       </Button>
     </Card>
   )

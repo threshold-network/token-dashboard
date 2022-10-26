@@ -11,7 +11,7 @@ const InfoBox: FC<{ text?: string; variant?: any } & StackProps> = ({
   const styles = useStyleConfig("InfoBox", { variant })
 
   return (
-    <Stack sx={styles} {...props}>
+    <Stack __css={styles} {...props}>
       {text && <H3>{text}</H3>}
       {children}
     </Stack>

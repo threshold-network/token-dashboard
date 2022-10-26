@@ -10,6 +10,7 @@ import {
   AlertDescription,
   BodySm,
   AlertIcon,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { TokenAmountForm, FormValues } from "../../../components/Forms"
 import { useTokenBalance } from "../../../hooks/useTokenBalance"
@@ -106,16 +107,17 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
       })
     }
   }
+  const dividerColor = useColorModeValue("gray.300", "gray.700")
 
   return (
     <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
       <StakeCardHeader stakeType={stake.stakeType} onTabClick={onTabClick} />
       <StakeRewards stakingProvider={stake.stakingProvider} />
-      <LineDivider />
+      <LineDivider borderColor={dividerColor} />
       {featureFlags.MULTI_APP_STAKING && (
         <>
           <StakeApplications stakingProvider={stake.stakingProvider} />
-          <LineDivider mb="0" />
+          <LineDivider mb="0" borderColor={dividerColor} />
         </>
       )}
       {!isOwner && (
@@ -143,6 +145,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
               canTopUpNu ? TopUpType.LEGACY_NU : TopUpType.LEGACY_KEEP
             )
           }
+          variant="outline"
           isFullWidth
           isDisabled={!isOwner}
         >
@@ -152,24 +155,21 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
-          label={`${isStakeAction ? "Stake" : "Unstake"} Amount`}
+          label="Amount"
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
           shouldDisplayMaxAmountInLabel
           isDisabled={!isOwner}
+          submitButtonVariant="outline"
         />
       ) : (
         <Button
           onClick={onSubmitUnstakeOrTopupBtn}
           isFullWidth
           isDisabled={!isOwner}
+          variant="outline"
         >
           {submitButtonText}
-        </Button>
-      )}
-      {!isPRESet && (
-        <Button as="a" mt="4" href={ExternalHref.preNodeSetup} isFullWidth>
-          Set PRE
         </Button>
       )}
     </Card>

@@ -28,9 +28,9 @@ import stakingApplicationsIllustrationDark from "../../../../static/images/Staki
 import { PageComponent } from "../../../../types"
 import { ExternalHref } from "../../../../enums"
 import { featureFlags } from "../../../../constants"
-import ExternalLink from "../../../../components/ExternalLink"
 import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
+import ButtonLink from "../../../../components/ButtonLink"
 
 const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
 const randomBeaconNodeSteps = [
@@ -117,32 +117,30 @@ const StakingApplications: PageComponent = () => {
             </ListItem>
           </List>
         </Stack>
-        <Image maxW="528px" src={iconMap.stakingApps[colorMode]} />
+        <Image
+          maxW={{ base: "100%", xl: "528px" }}
+          src={iconMap.stakingApps[colorMode]}
+        />
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
-          preTitle="TBTC APP"
+          preTitle="tBTC APP"
           title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
           description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
           imgSrc={iconMap.tbtc[colorMode]}
           ctaButtons={
             <VStack mb={6}>
-              <Button
-                as={RouterLink}
-                textDecoration="none"
-                to="/staking"
-                width="full"
-              >
-                Authorize TBTC
-              </Button>
-              <Button
-                as={ExternalLink}
-                textDecoration="none"
+              <ButtonLink to="/staking" isFullWidth>
+                Authorize tBTC
+              </ButtonLink>
+              <ButtonLink
+                isExternal
                 href={ExternalHref.tbtcNodeDocs}
-                width="full"
+                isFullWidth
                 variant="outline"
-                text="TBTC Node Docs"
-              />
+              >
+                tBTC Node Docs
+              </ButtonLink>
             </VStack>
           }
           rewardSteps={tbtcNodeSteps}
@@ -154,23 +152,17 @@ const StakingApplications: PageComponent = () => {
           imgSrc={iconMap.randomBeacon[colorMode]}
           ctaButtons={
             <VStack mb={6}>
-              <Button
-                as={RouterLink}
-                textDecoration="none"
-                to="/staking"
-                width="full"
-              >
+              <ButtonLink as={RouterLink} to="/staking" isFullWidth>
                 Authorize Random Beacon
-              </Button>
-
-              <Button
-                as={ExternalLink}
-                textDecoration="none"
+              </ButtonLink>
+              <ButtonLink
+                isExternal
                 href={ExternalHref.randomBeaconNodeDocs}
-                width="full"
+                isFullWidth
                 variant="outline"
-                text="Random Beacon Node Docs"
-              />
+              >
+                Random Beacon Node Docs
+              </ButtonLink>
             </VStack>
           }
           rewardSteps={randomBeaconNodeSteps}
@@ -181,15 +173,15 @@ const StakingApplications: PageComponent = () => {
           description="PRE is a scalable end-to-end encryption protocol that allows a proxy entity to transform (or re-encrypt) encrypted data from one encryption key to another, without revealing the plaintext data. The nodes on the Threshold Network act as these proxy entities and use threshold cryptography to securely and cooperatively re-encrypt data for recipients based on access conditions defined by the data owner. "
           imgSrc={iconMap.pre[colorMode]}
           ctaButtons={
-            <Button
-              as={ExternalLink}
+            <ButtonLink
+              isExternal
               href={ExternalHref.preNodeSetup}
-              textDecoration="none"
               mb={6}
-              width="full"
+              isFullWidth
               variant="outline"
-              text="PRE Node Docs"
-            />
+            >
+              PRE Node Docs
+            </ButtonLink>
           }
           rewardSteps={preNodeSteps}
         />
