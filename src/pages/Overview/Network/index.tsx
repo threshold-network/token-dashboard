@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Box, Stack, VStack } from "@chakra-ui/react"
+import { SimpleGrid, Stack } from "@threshold-network/components"
 import TotalValueLocked from "./TotalValueLocked"
 import WalletBalances from "./WalletBalances"
 import StakingOverview from "./StakingOverview"
@@ -14,17 +14,13 @@ const Network: PageComponent = () => {
   }, [fetchtTvlData])
 
   return (
-    <VStack spacing={4} mt={4}>
-      <Stack direction={{ base: "column", xl: "row" }} w="100%">
-        <Box w={{ base: "100%", xl: "50%" }}>
-          <WalletBalances />
-        </Box>
-        <Stack w={{ base: "100%", xl: "50%" }} spacing={4}>
-          <StakingOverview />
-          <TotalValueLocked totalValueLocked={data.total} />
-        </Stack>
+    <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
+      <WalletBalances />
+      <Stack spacing={4}>
+        <StakingOverview />
+        <TotalValueLocked totalValueLocked={data.total} />
       </Stack>
-    </VStack>
+    </SimpleGrid>
   )
 }
 

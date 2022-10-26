@@ -58,7 +58,7 @@ const HowItWorksPage: PageComponent = () => {
         buttonText="Start Staking"
         size="lg"
         hideCloseBtn
-        mb={8}
+        mb={4}
       />
       {featureFlags.MULTI_APP_STAKING && (
         <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
