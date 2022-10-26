@@ -19,7 +19,7 @@ export const FormikInput: FC<
     name: string
     label: string
     secondaryLabel?: string
-    helperText?: string
+    helperText?: string | JSX.Element
     placeholder?: string
     tooltip?: string
   }

@@ -31,18 +31,10 @@ const validateInputtedOperatorAddress = async (
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>,
-  mappedOperatorRandomBeacon: string,
-  mappedOperatorTbtc: string
+  mappedOperatorTbtc: string,
+  mappedOperatorRandomBeacon: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
-
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
 
   try {
     const isOperatorMappedToAnotherStakingProvider =
@@ -51,6 +43,15 @@ const validateInputtedOperatorAddress = async (
     if (isOperatorMappedToAnotherStakingProvider) {
       validationMsg = "Operator is already mapped to another staking provider."
     }
+
+    const isOperatorMappedOnlyInTbtc =
+      !isAddressZero(mappedOperatorTbtc) &&
+      isAddressZero(mappedOperatorRandomBeacon)
+
+    const isOperatorMappedOnlyInRandomBeacon =
+      isAddressZero(mappedOperatorTbtc) &&
+      !isAddressZero(mappedOperatorRandomBeacon)
+
     if (
       isOperatorMappedOnlyInRandomBeacon &&
       !isSameETHAddress(operator, mappedOperatorRandomBeacon)
@@ -104,8 +105,8 @@ const MapOperatorToStakingProviderForm = withFormik<
       errors.operator = await validateInputtedOperatorAddress(
         values.operator,
         checkIfOperatorIsMappedToAnotherStakingProvider,
-        mappedOperatorRandomBeacon,
-        mappedOperatorTbtc
+        mappedOperatorTbtc,
+        mappedOperatorRandomBeacon
       )
     }
 

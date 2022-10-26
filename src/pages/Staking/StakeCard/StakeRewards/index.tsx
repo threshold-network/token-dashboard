@@ -12,14 +12,11 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useSelector } from "react-redux"
 import { RootState } from "../../../../store"
 import { selectRewardsByStakingProvider } from "../../../../store/rewards"
-import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
 
 const StakeRewards: FC<{ stakingProvider: string }> = ({ stakingProvider }) => {
   const { total, bonus } = useSelector((state: RootState) =>
     selectRewardsByStakingProvider(state, stakingProvider)
   )
-
-  const { isPRESet } = useStakeCardContext()
 
   return (
     <Box>
@@ -33,13 +30,7 @@ const StakeRewards: FC<{ stakingProvider: string }> = ({ stakingProvider }) => {
       </HStack>
       <Flex alignItems="end" justifyContent="space-between">
         <TokenBalance tokenAmount={total} withSymbol tokenSymbol="T" isLarge />
-        {!isPRESet ? (
-          <Badge colorScheme="red" variant="solid" size="medium" ml="3">
-            missing PRE
-          </Badge>
-        ) : (
-          bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>
-        )}
+        {bonus !== "0" && <BodyLg>{formatTokenAmount(bonus)} T</BodyLg>}
       </Flex>
     </Box>
   )

@@ -374,7 +374,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
                 />
                 <BodySm mt="2">
                   {!isDeauthorizationReqestActive &&
-                    "Deauthroziation request not activated"}
+                    "Deauthorization request not activated"}
                   {isDeauthorizationReqestActive &&
                     remainingAuthorizationDecreaseDelay === "0" &&
                     "Completed"}

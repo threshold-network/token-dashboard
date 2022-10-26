@@ -1,9 +1,8 @@
 import { FC } from "react"
-import { IoAlertCircle, MdCheckCircle } from "react-icons/all"
+import { MdCheckCircle } from "react-icons/all"
 import {
   BodyMd,
   Box,
-  BoxLabel,
   Card,
   H5,
   HStack,
@@ -14,7 +13,7 @@ import {
   useColorModeValue,
   List,
   ListItem,
-  SimpleGrid,
+  Grid,
 } from "@threshold-network/components"
 import InfoBox from "../../../../components/InfoBox"
 
@@ -35,20 +34,33 @@ const ApplicationDetailsCard: FC<Props> = ({
   ctaButtons,
   rewardSteps,
 }) => {
-  const infoBoxBg = useColorModeValue("gray.50", "gray.900")
+  const infoBoxBg = useColorModeValue("gray.50", "blackAlpha.300")
 
   return (
     <Card boxShadow="none" as="section">
       <LabelSm mb={6}>{preTitle}</LabelSm>
-      <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={10}>
-        <Stack spacing={6}>
+      <Grid
+        gridAutoColumns="minmax(0, 1fr)"
+        gridAutoFlow="column"
+        gridTemplate={{
+          base: `
+          "app-details"
+          "cta-buttons"
+        `,
+          xl: `
+            "app-details    app-details    cta-buttons"
+          `,
+        }}
+        gridGap="8"
+      >
+        <Stack spacing={6} gridArea="app-details">
           <H5>{title}</H5>
           <BodyMd>{description}</BodyMd>
           <InfoBox bg={infoBoxBg}>
             <Image m="auto" maxH="180px" maxW="360px" w="100%" src={imgSrc} />
           </InfoBox>
         </Stack>
-        <Box>
+        <Box gridArea="cta-buttons">
           {ctaButtons}
           <LabelSm mb={6}>How to earn rewards</LabelSm>
           <List mb={6} as={Stack} spacing={2}>
@@ -62,7 +74,7 @@ const ApplicationDetailsCard: FC<Props> = ({
             })}
           </List>
         </Box>
-      </SimpleGrid>
+      </Grid>
     </Card>
   )
 }

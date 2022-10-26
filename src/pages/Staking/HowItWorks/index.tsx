@@ -51,6 +51,7 @@ const HowItWorksPage: PageComponent = () => {
   return (
     <Box>
       <AnnouncementBanner
+        variant="secondary"
         imgSrc={howItWorksIllustration}
         title="Find more information about staking below, then go to the staking page."
         href="/staking"

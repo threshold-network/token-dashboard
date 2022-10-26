@@ -17,7 +17,9 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { ModalType } from "../../enums"
+import { useAppSelector } from "../../hooks/store"
 import { useModal } from "../../hooks/useModal"
+import { selectMappedOperators } from "../../store/account/selectors"
 import shortenAddress from "../../utils/shortenAddress"
 import { isAddressZero } from "../../web3/utils"
 import { FcCheckmark, FiLink2 } from "react-icons/all"
@@ -28,39 +30,32 @@ interface AppLabels {
   randomBeacon: string
 }
 
-const OperatorAddressMappingCard: FC<{
-  stakingProvider: string
-  mappedOperators: MappedOperatorsForStakingProvider
-}> = ({ stakingProvider, mappedOperators }) => {
-  const { tbtc: mappedOperatorTbtc, randomBeacon: mappedOperatorRandomBeacon } =
-    mappedOperators
-
+const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
+  stakingProvider,
+}) => {
   const appLabels: AppLabels = {
     tbtc: "tBTC",
     randomBeacon: "Random Beacon",
   }
 
   const { openModal } = useModal()
-  const isOperatorMappedOnlyInTbtc =
-    !isAddressZero(mappedOperatorTbtc) &&
-    isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOperatorMappedOnlyInRandomBeacon =
-    isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
-
-  const isOneOfTheAppsNotMapped =
-    isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
+  const {
+    mappedOperatorTbtc,
+    mappedOperatorRandomBeacon,
+    isOneOfTheAppsNotMapped,
+  } = useAppSelector(selectMappedOperators)
 
   const shoudlDisplaySuccessState =
     !isAddressZero(mappedOperatorTbtc) &&
     !isAddressZero(mappedOperatorRandomBeacon)
 
   const onStartMappingClick = () => {
-    openModal(ModalType.MapOperatorToStakingProvider, {
-      mappedOperatorTbtc,
-      mappedOperatorRandomBeacon,
-    })
+    openModal(ModalType.MapOperatorToStakingProvider)
+  }
+
+  const mappedOperators = {
+    tbtc: mappedOperatorTbtc,
+    randomBeacon: mappedOperatorRandomBeacon,
   }
 
   return (
