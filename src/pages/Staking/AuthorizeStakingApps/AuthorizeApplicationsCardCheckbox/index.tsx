@@ -238,6 +238,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
     return (
       <Card {...restProps} boxShadow="none">
         <AppAuthorizationInfo
+          stakingAppName={appAuthData.stakingAppId}
           label={appAuthData.label}
           percentageAuthorized={100}
         />
@@ -281,6 +282,7 @@ export const AuthorizeApplicationsCardCheckbox: FC<
           />
         )}
         <AppAuthorizationInfo
+          stakingAppName={appAuthData.stakingAppId}
           gridArea="app-info"
           authorizedStake={appAuthData.authorizedStake}
           isAuthorized={appAuthData.isAuthorized}

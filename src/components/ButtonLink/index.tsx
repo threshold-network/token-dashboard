@@ -8,7 +8,15 @@ const style = {
 
 const ButtonLink: FC<ButtonProps & LinkProps> = forwardRef(
   ({ ...props }, ref) => {
-    return <Button as={Link} ref={ref} style={style} {...props} />
+    return (
+      <Button
+        as={Link}
+        ref={ref}
+        textDecoration="none"
+        _hover={style}
+        {...props}
+      />
+    )
   }
 )
 
