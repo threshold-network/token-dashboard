@@ -54,11 +54,10 @@ const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
       selection. Learn more <TooltipLearnMoreLink />.
     </>
   ),
-  // TODO: updte the PRE app tooltip text.
   pre: (
     <>
-      The Random Beacon application generates randomness for staker group
-      selection. Learn more <TooltipLearnMoreLink />.
+      The PRE application is cryptographic middleware for developing
+      privacy-preserving applications. Learn more <TooltipLearnMoreLink />. .
     </>
   ),
 }
