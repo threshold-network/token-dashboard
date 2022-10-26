@@ -55,6 +55,7 @@ const StakingPage: PageComponent = (props) => {
   const hasStakes = stakes.length > 0
 
   const {
+    address,
     isStakingProvider,
     operatorMapping: {
       isInitialFetchDone: isOperatorMappingInitialFetchDone,
@@ -78,11 +79,12 @@ const StakingPage: PageComponent = (props) => {
           >
             Your Stake
           </H4>
-          {isStakingProvider &&
+          {address &&
+            isStakingProvider &&
             isOperatorMappingInitialFetchDone &&
             (isAddressZero(mappedOperators.tbtc) ||
               isAddressZero(mappedOperators.randomBeacon)) && (
-              <OperatorAddressMappingCard />
+              <OperatorAddressMappingCard stakingProvider={address} />
             )}
           {hasStakes ? (
             stakes.map((stake) => (
@@ -91,6 +93,13 @@ const StakingPage: PageComponent = (props) => {
           ) : (
             <NewStakeCard />
           )}
+          {address &&
+            isStakingProvider &&
+            isOperatorMappingInitialFetchDone &&
+            !isAddressZero(mappedOperators.tbtc) &&
+            !isAddressZero(mappedOperators.randomBeacon) && (
+              <OperatorAddressMappingCard stakingProvider={address} />
+            )}
         </VStack>
 
         <VStack w={"100%"} spacing={5}>
