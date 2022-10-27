@@ -215,6 +215,9 @@ const AuthorizeStakingAppsPage: FC = () => {
 
   const alertTextColor = useColorModeValue("gray.900", "white")
 
+  if (active && !stake)
+    return <div>No Stake found for address: {stakingProviderAddress} </div>
+
   return active ? (
     <>
       <Card>
