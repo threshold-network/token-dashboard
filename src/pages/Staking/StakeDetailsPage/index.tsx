@@ -2,6 +2,7 @@ import { StakeData } from "../../../types"
 import { FC, useEffect } from "react"
 import {
   Badge,
+  BodyLg,
   BodyMd,
   Box,
   Card,
@@ -28,7 +29,7 @@ import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-appli
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
-import { isAddress } from "web3-utils"
+import { isAddress } from "../../../web3/utils"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -44,7 +45,7 @@ const StakeDetailsPage: FC = () => {
     dispatch(
       requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
     )
-  }, [stakingProviderAddress, account])
+  }, [stakingProviderAddress, account, dispatch])
 
   const stake = useAppSelector((state) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -67,7 +68,7 @@ const StakeDetailsPage: FC = () => {
   )
 
   if (active && !stake)
-    return <div>No Stake found for address: {stakingProviderAddress} </div>
+    return <BodyLg>No Stake found for address: {stakingProviderAddress}</BodyLg>
 
   return active ? (
     <Card>
