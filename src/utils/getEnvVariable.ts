@@ -19,8 +19,8 @@ const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.FEATURE_FLAG_POSTHOG]: process.env[
     "REACT_APP_FEATURE_FLAG_POSTHOG"
   ] as string,
-  [EnvVariable.POSTHOG_API_HOST]: process.env[
-    "REACT_APP_POSTHOG_API_HOST"
+  [EnvVariable.POSTHOG_HOSTNAME_HTTP]: process.env[
+    "REACT_APP_POSTHOG_HOSTNAME_HTTP"
   ] as string,
   [EnvVariable.POSTHOG_API_KEY]: process.env[
     "REACT_APP_POSTHOG_API_KEY"

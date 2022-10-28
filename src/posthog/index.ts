@@ -4,7 +4,7 @@ import { getEnvVariable } from "../utils/getEnvVariable"
 
 export const init = () => {
   const apiKey = getEnvVariable(EnvVariable.POSTHOG_API_KEY)
-  const apiHost = getEnvVariable(EnvVariable.POSTHOG_API_HOST)
+  const apiHost = getEnvVariable(EnvVariable.POSTHOG_HOSTNAME_HTTP)
 
   if (!apiKey || !apiHost) {
     throw new Error("Could not initilize posthog.")
