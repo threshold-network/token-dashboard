@@ -51,13 +51,14 @@ const HowItWorksPage: PageComponent = () => {
   return (
     <Box>
       <AnnouncementBanner
+        variant="secondary"
         imgSrc={howItWorksIllustration}
         title="Find more information about staking below, then go to the staking page."
         href="/staking"
         buttonText="Start Staking"
         size="lg"
         hideCloseBtn
-        mb={8}
+        mb={4}
       />
       {featureFlags.MULTI_APP_STAKING && (
         <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">

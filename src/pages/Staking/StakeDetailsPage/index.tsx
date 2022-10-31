@@ -1,7 +1,8 @@
 import { StakeData } from "../../../types"
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import {
   Badge,
+  BodyLg,
   BodyMd,
   Box,
   Card,
@@ -17,15 +18,34 @@ import InfoBox from "../../../components/InfoBox"
 import TokenBalance from "../../../components/TokenBalance"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
-import { useParams } from "react-router-dom"
-import { selectStakeByStakingProvider } from "../../../store/staking"
+import { useNavigate, useParams } from "react-router-dom"
+import {
+  requestStakeByStakingProvider,
+  selectStakeByStakingProvider,
+} from "../../../store/staking"
 import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import NodeStatusLabel from "./NodeStatusLabel"
 import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-applications"
-import { useAppSelector } from "../../../hooks/store"
+import { useAppDispatch, useAppSelector } from "../../../hooks/store"
+import { useWeb3React } from "@web3-react/core"
+import { AddressZero } from "@ethersproject/constants"
+import { isAddress } from "../../../web3/utils"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
+  const { account, active } = useWeb3React()
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+  }, [stakingProviderAddress, navigate])
+
+  useEffect(() => {
+    dispatch(
+      requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
+    )
+  }, [stakingProviderAddress, account, dispatch])
 
   const stake = useAppSelector((state) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -33,24 +53,24 @@ const StakeDetailsPage: FC = () => {
 
   const tbtcApp = useStakingAppDataByStakingProvider(
     "tbtc",
-    stake.stakingProvider
+    stakingProviderAddress || AddressZero
   )
 
   const randomBeaconApp = useStakingAppDataByStakingProvider(
     "randomBeacon",
-    stake.stakingProvider
+    stakingProviderAddress || AddressZero
   )
 
   const isInActiveStake = BigNumber.from(stake?.totalInTStake ?? "0").isZero()
 
   const { total: rewardsForStake } = useAppSelector((state) =>
-    selectRewardsByStakingProvider(state, stake.stakingProvider)
+    selectRewardsByStakingProvider(state, stakingProviderAddress!)
   )
 
-  if (!stake)
-    return <div>No Stake found for address: {stakingProviderAddress} </div>
+  if (active && !stake)
+    return <BodyLg>No Stake found for address: {stakingProviderAddress}</BodyLg>
 
-  return (
+  return active ? (
     <Card>
       <HStack justify="space-between">
         <H5>Stake Details</H5>
@@ -117,7 +137,7 @@ const StakeDetailsPage: FC = () => {
           <StakeDetailRow label="PRE Node Status">
             <NodeStatusLabel isAuthorized />
           </StakeDetailRow>
-          <StakeDetailRow label="TBTC Node Status">
+          <StakeDetailRow label="tBTC Node Status">
             <NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />
           </StakeDetailRow>
           <StakeDetailRow label="Random Beacon Node Status">
@@ -126,6 +146,8 @@ const StakeDetailsPage: FC = () => {
         </Stack>
       </SimpleGrid>
     </Card>
+  ) : (
+    <H5>{`Please connect your wallet.`}</H5>
   )
 }
 

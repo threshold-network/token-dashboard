@@ -26,13 +26,17 @@ import {
 import { BaseModalProps } from "../../../types"
 import { useAuthorizeMultipleAppsTransaction } from "../../../hooks/staking-applications"
 import { useAppSelector } from "../../../hooks/store"
-import { selectStakingAppByStakingProvider } from "../../../store/staking-applications"
+import {
+  selectStakingAppByStakingProvider,
+  StakingAppName,
+} from "../../../store/staking-applications"
+import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
   totalInTStake: string
   applications: {
-    appName: string
+    appName: StakingAppName
     address: string
     authorizationAmount: string
   }[]
@@ -106,7 +110,7 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
 }
 
 const StakingApplicationToAuth: FC<{
-  appName: string
+  appName: StakingAppName
   authorizationAmount: string
   stakingProvider: string
   totalInTStake: string
@@ -121,10 +125,15 @@ const StakingApplicationToAuth: FC<{
     <Card>
       <LabelSm mb="4">
         <CheckCircleIcon color="green.500" verticalAlign="top" mr="2" />
-        {appName} - {percentage}
+        {getSakingAppLabel(appName)} app - {percentage}
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
-      <TokenBalance tokenAmount={authorizationAmount} isLarge />
+      <TokenBalance
+        tokenAmount={authorizationAmount}
+        isLarge
+        withSymbol
+        tokenSymbol="T"
+      />
       <StakeAddressInfo stakingProvider={stakingProvider} mb="0" />
     </Card>
   )

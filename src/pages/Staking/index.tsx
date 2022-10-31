@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react"
-import { HStack, Stack, VStack } from "@chakra-ui/react"
 import StakingTVLCard from "./StakingTVLCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
@@ -18,18 +17,26 @@ import AuthorizeStakingAppsPage from "./AuthorizeStakingApps"
 import {
   FilterTabs,
   FilterTab,
-  BodyLg,
   H4,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  HStack,
+  VStack,
+  useColorModeValue,
 } from "@threshold-network/components"
-import { Link, Outlet, useLocation, useParams } from "react-router-dom"
-import { Link as RouterLink } from "react-router-dom"
+import {
+  Link as RouterLink,
+  Outlet,
+  useLocation,
+  useParams,
+} from "react-router-dom"
 import { stakingApplicationsSlice } from "../../store/staking-applications/slice"
 import StakeDetailsPage from "./StakeDetailsPage"
 import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
-import { useRolesOf } from "../../hooks/useRolesOf"
-import { useOperatorMappedtoStakingProviderHelpers } from "../../hooks/staking-applications/useOperatorMappedToStakingProviderHelpers"
-import { isEmptyOrZeroAddress } from "../../web3/utils"
+import { isAddressZero } from "../../web3/utils"
+import { useAppSelector } from "../../hooks/store"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -47,32 +54,14 @@ const StakingPage: PageComponent = (props) => {
   const totalBonusBalance = useSelector(selectTotalBonusBalance)
   const hasStakes = stakes.length > 0
 
-  const { owner, authorizer, beneficiary } = useRolesOf()
-  const { operatorMappedRandomBeacon, operatorMappedTbtc, isInitialFetchDone } =
-    useOperatorMappedtoStakingProviderHelpers()
-
-  const shouldDisplayOperatorAddressMappingCard = useMemo(() => {
-    const isStakingProviderUsed =
-      !isEmptyOrZeroAddress(owner) ||
-      !isEmptyOrZeroAddress(authorizer) ||
-      !isEmptyOrZeroAddress(beneficiary)
-
-    const isOperatorMappedInAllApps =
-      !isEmptyOrZeroAddress(operatorMappedRandomBeacon) &&
-      !isEmptyOrZeroAddress(operatorMappedTbtc)
-
-    return (
-      isInitialFetchDone && isStakingProviderUsed && !isOperatorMappedInAllApps
-    )
-  }, [
-    owner,
-    authorizer,
-    beneficiary,
-    operatorMappedRandomBeacon,
-    operatorMappedTbtc,
-    isInitialFetchDone,
-    isEmptyOrZeroAddress,
-  ])
+  const {
+    address,
+    isStakingProvider,
+    operatorMapping: {
+      isInitialFetchDone: isOperatorMappingInitialFetchDone,
+      data: mappedOperators,
+    },
+  } = useAppSelector((state) => state.account)
 
   return (
     <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
@@ -80,19 +69,19 @@ const StakingPage: PageComponent = (props) => {
         alignItems={{ base: "flex-end", lg: "flex-start" }}
         w={"100%"}
         flexDirection={{ base: "column", lg: "row" }}
-        spacing={5}
+        spacing={4}
       >
-        <VStack w={"100%"} spacing={5} mb={{ base: "5", lg: "0" }}>
-          <H4
-            alignSelf={"flex-start"}
-            display={{ sm: "none", xl: "block" }}
-            mb={10}
-          >
+        <VStack w={"100%"} spacing={4} mb={{ base: 10, xl: 0 }}>
+          <H4 alignSelf={"flex-start"} mb={10}>
             Your Stake
           </H4>
-          {shouldDisplayOperatorAddressMappingCard && (
-            <OperatorAddressMappingCard />
-          )}
+          {address &&
+            isStakingProvider &&
+            isOperatorMappingInitialFetchDone &&
+            (isAddressZero(mappedOperators.tbtc) ||
+              isAddressZero(mappedOperators.randomBeacon)) && (
+              <OperatorAddressMappingCard stakingProvider={address} />
+            )}
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />
@@ -100,14 +89,16 @@ const StakingPage: PageComponent = (props) => {
           ) : (
             <NewStakeCard />
           )}
+          {address &&
+            isStakingProvider &&
+            isOperatorMappingInitialFetchDone &&
+            !isAddressZero(mappedOperators.tbtc) &&
+            !isAddressZero(mappedOperators.randomBeacon) && (
+              <OperatorAddressMappingCard stakingProvider={address} />
+            )}
         </VStack>
-
-        <VStack w={"100%"} spacing={5}>
-          <H4
-            alignSelf={"flex-start"}
-            display={{ sm: "none", lg: "block" }}
-            mb={10}
-          >
+        <VStack w={"100%"} spacing={4}>
+          <H4 alignSelf={"flex-start"} mb={10}>
             Overview
           </H4>
           <RewardsCard
@@ -115,7 +106,7 @@ const StakingPage: PageComponent = (props) => {
             totalRewardsBalance={totalRewardsBalance}
           />
           <StakedPortfolioCard />
-          <StakingTVLCard tvl={data.total} pb={"3rem"} />
+          <StakingTVLCard tvl={data.total} />
           {hasStakes && <NewStakeCard />}
         </VStack>
       </HStack>
@@ -137,16 +128,29 @@ const StakingProviderDetails: PageComponent = (props) => {
     }
   }, [pathname])
 
+  const breadcrumbColor = useColorModeValue("gray.700", "gray.300")
+
   return (
     <>
-      <BodyLg mb={5}>
-        <Link to={"/staking"}>Staking</Link>
-        {" > "}
-        <Link to={pathname}>
-          Stake{" "}
-          {lastElementOfTheUrl === "authorize" ? "applications" : "details"}
-        </Link>
-      </BodyLg>
+      <Breadcrumb
+        separator=">"
+        textStyle="bodyLg"
+        color={breadcrumbColor}
+        mb="10"
+      >
+        <BreadcrumbItem>
+          <BreadcrumbLink as={RouterLink} to="/staking">
+            Staking
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink as={RouterLink} to={pathname}>
+            {lastElementOfTheUrl === "authorize"
+              ? "Authorize Applications"
+              : "Stake Details"}
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+      </Breadcrumb>
       <FilterTabs selectedTabId={selectedTabId} mb="5" size="lg">
         <FilterTab
           tabId={"1"}
@@ -160,7 +164,7 @@ const StakingProviderDetails: PageComponent = (props) => {
           as={RouterLink}
           to={`/staking/${stakingProviderAddress}/authorize`}
         >
-          Authorize Application
+          Authorize Applications
         </FilterTab>
       </FilterTabs>
       <Outlet />

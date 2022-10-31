@@ -21,7 +21,7 @@ import {
   LineDividerCenterElement,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import { StakingContractLearnMore } from "../../ExternalLink"
+import { StakingContractLearnMore } from "../../Link"
 import { TokenAmountForm } from "../../Forms"
 import KeepCircleBrand from "../../../static/icons/KeepCircleBrand"
 import NuCircleBrand from "../../..//static/icons/NuCircleBrand"

@@ -77,15 +77,11 @@ const AuthorizeStakingAppsPage: FC = () => {
     dispatch(
       requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
     )
-  }, [stakingProviderAddress, account])
+  }, [stakingProviderAddress, account, dispatch])
 
   useEffect(() => {
     dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
   }, [dispatch, account])
-
-  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
-  const randomBeaconMinAuthAmount =
-    useStakingAppMinAuthorizationAmount("randomBeacon")
 
   const tbtcApp = useStakingAppDataByStakingProvider(
     "tbtc",
@@ -95,17 +91,6 @@ const AuthorizeStakingAppsPage: FC = () => {
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )
-
-  const stake = useSelector((state: RootState) =>
-    selectStakeByStakingProvider(state, stakingProviderAddress!)
-  ) as StakeData
-
-  const isLoggedInAsAuthorizer =
-    stake && account ? isSameETHAddress(stake.authorizer, account) : false
-
-  const isInactiveStake = stake
-    ? BigNumber.from(stake?.totalInTStake).isZero()
-    : false
 
   const appsAuthData: {
     [appName: string]: AppAuthDataProps & { address?: string }
@@ -129,6 +114,37 @@ const AuthorizeStakingAppsPage: FC = () => {
       label: "PRE",
     },
   }
+
+  useEffect(() => {
+    if (tbtcApp.isAuthorized) {
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(({ stakingAppId }) => stakingAppId !== "tbtc")
+      )
+    }
+
+    if (randomBeaconApp.isAuthorized) {
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(
+          ({ stakingAppId }) => stakingAppId !== "randomBeacon"
+        )
+      )
+    }
+  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized])
+
+  const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
+  const randomBeaconMinAuthAmount =
+    useStakingAppMinAuthorizationAmount("randomBeacon")
+
+  const stake = useSelector((state: RootState) =>
+    selectStakeByStakingProvider(state, stakingProviderAddress!)
+  ) as StakeData
+
+  const isLoggedInAsAuthorizer =
+    stake && account ? isSameETHAddress(stake.authorizer, account) : false
+
+  const isInactiveStake = stake
+    ? BigNumber.from(stake?.totalInTStake).isZero()
+    : false
 
   const isAppSelected = (stakingAppName: AppAuthDataProps["stakingAppId"]) => {
     return selectedApps.map((app) => app.stakingAppId).includes(stakingAppName)
@@ -162,7 +178,7 @@ const AuthorizeStakingAppsPage: FC = () => {
         stakingProvider: stakingProviderAddress!,
         totalInTStake: stake.totalInTStake,
         applications: selectedApps.map((_) => ({
-          appName: _.label,
+          appName: _.stakingAppId,
           address: stakinAppNameToAddress[_.stakingAppId],
           authorizationAmount:
             stakinAppNameToFormRef[_.stakingAppId].current?.values.tokenAmount,
@@ -198,6 +214,11 @@ const AuthorizeStakingAppsPage: FC = () => {
   }
 
   const alertTextColor = useColorModeValue("gray.900", "white")
+
+  if (active && !stake)
+    return (
+      <BodyLg>No stake found for address: {stakingProviderAddress} </BodyLg>
+    )
 
   return active ? (
     <>
@@ -275,15 +296,17 @@ const AuthorizeStakingAppsPage: FC = () => {
             />
           </>
         )}
-        <Button
-          disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
-          variant="outline"
-          width="100%"
-          mt={5}
-          onClick={onAuthorizeApps}
-        >
-          Authorize selected apps
-        </Button>
+        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+          <Button
+            disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
+            variant="outline"
+            width="100%"
+            mt={5}
+            onClick={onAuthorizeApps}
+          >
+            Authorize Selected Apps
+          </Button>
+        )}
       </Card>
     </>
   ) : (

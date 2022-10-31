@@ -4,8 +4,6 @@ import { BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTStakingContract } from "../../web3/hooks"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"
-import { ExternalHref } from "../../enums"
-import ExternalLink from "."
 
 type StakingContractLearnMoreProps = ComponentProps<typeof BodySm>
 
@@ -29,18 +27,4 @@ export const StakingContractLearnMore: FC<StakingContractLearnMoreProps> = (
   }
 
   return null
-}
-
-type StakingBonusReadMoreProps = ComponentProps<typeof BodySm>
-
-export const StakingBonusReadMore: FC<StakingBonusReadMoreProps> = (props) => {
-  return (
-    <BodySm mt="16" textAlign="center" {...props}>
-      Read more about the{" "}
-      <ExternalLink
-        href={ExternalHref.stakingBonusDocs}
-        text="Staking Bonus."
-      />
-    </BodySm>
-  )
 }

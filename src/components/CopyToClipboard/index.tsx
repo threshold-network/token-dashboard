@@ -33,6 +33,7 @@ const CopyToClipboard: FC<CopyToClipboardProps> = ({
       >
         <IconButton
           icon={<CopyIcon />}
+          color="gray.500"
           onClick={onCopy}
           aria-label={copyTextMsg}
           variant="ghost"
@@ -54,7 +55,7 @@ export const CopyAddressToClipboard: FC<CopyAddressToClipboardProps> = ({
   address,
   ...restProps
 }) => {
-  const addressColor = useColorModeValue("brand.500", "brand.550")
+  const addressColor = useColorModeValue("brand.500", "brand.100")
   return (
     <CopyToClipboard textToCopy={address}>
       <BodyMd color={addressColor} {...restProps}>

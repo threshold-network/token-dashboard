@@ -13,7 +13,10 @@ import {
 } from "@threshold-network/components"
 import { Field, FieldProps, useField } from "formik"
 import { BigNumber } from "ethers"
-import { AppAuthorizationInfo } from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
+import {
+  AppAuthorizationInfo,
+  AppAuthorizationInfoProps,
+} from "../../../pages/Staking/AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox/AppAuthorizationInfo"
 import ThresholdCircleBrand from "../../../static/icons/ThresholdCircleBrand"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { FormikTokenBalanceInput } from "../../Forms/FormikTokenBalanceInput"
@@ -25,11 +28,20 @@ export interface NewStakerAuthorizationCardProps extends BoxProps {
   inputId: string
   checkBoxId: string
   label: string
+  stakingAppName: AppAuthorizationInfoProps["stakingAppName"]
 }
 
 export const NewStakerAuthorizationCard: FC<
   NewStakerAuthorizationCardProps
-> = ({ max, min, inputId, checkBoxId, label, ...restProps }) => {
+> = ({
+  max,
+  min,
+  inputId,
+  checkBoxId,
+  label,
+  stakingAppName,
+  ...restProps
+}) => {
   const [, { value: inputValue }, { setValue }] = useField(inputId)
   const [, { value: checkboxValue }] = useField(checkBoxId)
 
@@ -94,6 +106,7 @@ export const NewStakerAuthorizationCard: FC<
           }}
         </Field>
         <AppAuthorizationInfo
+          stakingAppName={stakingAppName}
           isAuthorized={false}
           gridArea="app-info"
           label={label}

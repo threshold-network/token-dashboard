@@ -79,6 +79,7 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
       <Box bg="brand.50" p={4} borderRadius={6} mb={6}>
         <BodyMd mb={4}>tBTC + Random Beacon Rewards Bundle</BodyMd>
         <NewStakerAuthorizationCard
+          stakingAppName="tbtc"
           min={tbtcInputConstraints.min}
           max={tbtcInputConstraints.max}
           inputId="tbtcAmountToAuthorize"
@@ -87,6 +88,7 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
           mb={6}
         />
         <NewStakerAuthorizationCard
+          stakingAppName="randomBeacon"
           min={randomBeaconInputConstraints.min}
           max={randomBeaconInputConstraints.max}
           inputId="randomBeaconAmountToAuthorize"

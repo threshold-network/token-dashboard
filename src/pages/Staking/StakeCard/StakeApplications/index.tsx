@@ -1,11 +1,11 @@
 import { FC } from "react"
-import { BodyMd, Box, Button } from "@threshold-network/components"
+import { BodyMd, Box, List } from "@threshold-network/components"
 import AuthorizeApplicationRow from "./AuthorizeApplicationRow"
-import { Link as RouterLink } from "react-router-dom"
-import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
-import { AppAuthDataProps } from "../../AuthorizeStakingApps/AuthorizeApplicationsCardCheckbox"
 import BundledRewardsAlert from "../../../../components/BundledRewardsAlert"
+import { useStakingAppDataByStakingProvider } from "../../../../hooks/staking-applications"
 import { useAppSelector } from "../../../../hooks/store"
+import { useStakeCardContext } from "../../../../hooks/useStakeCardContext"
+import ButtonLink from "../../../../components/ButtonLink"
 
 const StakeApplications: FC<{ stakingProvider: string }> = ({
   stakingProvider,
@@ -22,51 +22,44 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
     (state) => state.applications.randomBeacon.stakingProviders.isFetching
   )
 
-  const appsAuthData: {
-    [appName: string]: AppAuthDataProps
-  } = {
-    tbtc: {
-      ...tbtcApp,
-      stakingAppId: "tbtc",
-      label: "tBTC",
-      isAuthRequired: true,
-    },
-    randomBeacon: {
-      ...randomBeaconApp,
-      stakingAppId: "randomBeacon",
-      label: "Random Beacon",
-      isAuthRequired: true,
-    },
-    pre: {
-      stakingAppId: "pre",
-      label: "PRE",
-      isAuthRequired: false,
-    },
-  }
+  const { isInactiveStake } = useStakeCardContext()
 
   return (
     <Box>
-      <BodyMd>Applications</BodyMd>
+      <BodyMd mb="4">Applications</BodyMd>
       {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) &&
         !isTbtcFetching &&
         !isRandomBeaconFetching && <BundledRewardsAlert mb="4" />}
-      <AuthorizeApplicationRow
-        mb={"3"}
-        appAuthData={appsAuthData.tbtc}
-        stakingProvider={stakingProvider}
-      />
-      <AuthorizeApplicationRow
-        appAuthData={appsAuthData.randomBeacon}
-        stakingProvider={stakingProvider}
-      />
-      <Button
+      <List spacing={4}>
+        <AuthorizeApplicationRow
+          as="li"
+          label="tBTC"
+          isAuthorized={tbtcApp.isAuthorized}
+          percentage={tbtcApp.percentage}
+          stakingProvider={stakingProvider}
+        />
+        <AuthorizeApplicationRow
+          as="li"
+          label="Random Beacon"
+          isAuthorized={randomBeaconApp.isAuthorized}
+          percentage={randomBeaconApp.percentage}
+          stakingProvider={stakingProvider}
+        />
+        <AuthorizeApplicationRow
+          as="li"
+          label="PRE"
+          isAuthorized={true}
+          percentage={isInactiveStake ? 0 : 100}
+          stakingProvider={stakingProvider}
+        />
+      </List>
+      <ButtonLink
         mt="5"
-        width="100%"
-        as={RouterLink}
+        isFullWidth
         to={`/staking/${stakingProvider}/authorize`}
       >
         Configure Apps
-      </Button>
+      </ButtonLink>
     </Box>
   )
 }

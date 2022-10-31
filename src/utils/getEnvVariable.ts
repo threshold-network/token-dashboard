@@ -16,6 +16,15 @@ const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.FEATURE_FLAG_MULTI_APP_STAKING]: process.env[
     "REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING"
   ] as string,
+  [EnvVariable.FEATURE_FLAG_POSTHOG]: process.env[
+    "REACT_APP_FEATURE_FLAG_POSTHOG"
+  ] as string,
+  [EnvVariable.POSTHOG_HOSTNAME_HTTP]: process.env[
+    "REACT_APP_POSTHOG_HOSTNAME_HTTP"
+  ] as string,
+  [EnvVariable.POSTHOG_API_KEY]: process.env[
+    "REACT_APP_POSTHOG_API_KEY"
+  ] as string,
 }
 
 export const getEnvVariable = (envVar: EnvVariable) => {

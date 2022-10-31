@@ -46,6 +46,7 @@ import {
   useSubscribeToOperatorRegisteredEvent,
 } from "./hooks/staking-applications"
 import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
+import { usePosthog } from "./hooks/posthog"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -137,6 +138,7 @@ const AppBody = () => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
 
+  usePosthog()
   useCheckBonusEligibility()
   useFetchStakingRewards()
   useSaveConnectedAddressToStore()

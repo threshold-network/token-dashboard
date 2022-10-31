@@ -1,25 +1,26 @@
-import { InfoIcon, CheckCircleIcon } from "@chakra-ui/icons"
+import { CheckCircleIcon } from "@chakra-ui/icons"
 import {
   LabelSm,
-  BoxLabel,
   VStack,
   HStack,
   Badge,
   StackProps,
-  Icon,
   BodyMd,
   BodyLg,
   H3,
 } from "@threshold-network/components"
 import { FC } from "react"
 import { formatPercentage } from "../../../../utils/percentage"
-import { IoAlertCircle } from "react-icons/all"
 import InfoBox from "../../../../components/InfoBox"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { StakingAppName } from "../../../../store/staking-applications"
+import TooltipIcon from "../../../../components/TooltipIcon"
+import Link from "../../../../components/Link"
 
 interface CommonProps {
   label: string
   percentageAuthorized: number
+  stakingAppName: StakingAppName | "pre"
 }
 
 type ConditionalProps =
@@ -36,6 +37,31 @@ type ConditionalProps =
       hasPendingDeauthorization: boolean
     }
 
+const TooltipLearnMoreLink = () => {
+  return <Link to="/staking/how-it-works/applications">here</Link>
+}
+
+const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
+  tbtc: (
+    <>
+      The tBTC application is the first decentralized bridge from Bitcoin to
+      Ethereum. Learn more <TooltipLearnMoreLink />.
+    </>
+  ),
+  randomBeacon: (
+    <>
+      The Random Beacon application generates randomness for staker group
+      selection. Learn more <TooltipLearnMoreLink />.
+    </>
+  ),
+  pre: (
+    <>
+      The PRE application is cryptographic middleware for developing
+      privacy-preserving applications. Learn more <TooltipLearnMoreLink />. .
+    </>
+  ),
+}
+
 export type AppAuthorizationInfoProps = CommonProps &
   ConditionalProps &
   StackProps
@@ -46,6 +72,7 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   isAuthorized,
   authorizedStake,
   hasPendingDeauthorization,
+  stakingAppName,
   isAuthorizationRequired = false,
   ...restProps
 }) => {
@@ -58,8 +85,8 @@ export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
         <LabelSm>
           {label} App -{" "}
           {formatPercentage(percentageAuthorized, undefined, true)}
-        </LabelSm>
-        <InfoIcon color="gray.500" />
+        </LabelSm>{" "}
+        <TooltipIcon label={tooltipText[stakingAppName]} />
         {!isAuthorizationRequired && (
           <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
             Authorization not required

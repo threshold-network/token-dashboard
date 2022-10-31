@@ -55,6 +55,14 @@ const fetchStake = async (
       stakingProvider
     )
 
+  if (
+    isAddressZero(stake.owner) ||
+    isAddressZero(stake.beneficiary) ||
+    isAddressZero(stake.authorizer)
+  ) {
+    return
+  }
+
   listenerApi.dispatch(
     setStakes([
       {
