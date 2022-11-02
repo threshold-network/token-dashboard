@@ -4,7 +4,7 @@ import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
 
 const UpgradePage: PageComponent = (props) => {
-  return <PageLayout {...props} />
+  return <PageLayout title={props.title} pages={props.pages} />
 }
 
 UpgradePage.route = {
