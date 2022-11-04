@@ -45,6 +45,7 @@ export interface RolesOf {
 
 export interface IStaking {
   stakingContract: Contract
+  STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
   /**
    * Returns the authorized stake amount of the staking provider for the application.
    * @param stakingProvider Staking provider address.
