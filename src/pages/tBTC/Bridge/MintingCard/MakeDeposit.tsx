@@ -96,22 +96,8 @@ export const MakeDeposit: FC = () => {
           </Box>
         </Flex>
 
-        <HStack
-          bg="white"
-          borderRadius="lg"
-          px={4}
-          py={2}
-          maxH={"10"}
-          alignItems={"initial"}
-          overflow="hidden"
-          mb={"2"}
-        >
-          <BodyMd
-            color="brand.500"
-            maxW={"100%"}
-            overflow="hidden"
-            wordBreak={"normal"}
-          >
+        <HStack bg="white" borderRadius="lg" px={2} mb={"2"}>
+          <BodyMd color="brand.500" isTruncated>
             {isLargerThan1280
               ? btcDepositAddress
               : shortenAddress(btcDepositAddress)}
