@@ -1,19 +1,17 @@
-import numeral from "numeral"
-import axios from "axios"
-import { FixedNumber } from "@ethersproject/bignumber"
-import { formatUnits } from "@ethersproject/units"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { CoingeckoID, Token } from "../../enums/token"
 import {
   TokenState,
   SetTokenBalanceActionPayload,
-  SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import Icon from "../../enums/icon"
 import getUsdBalance from "../../utils/getUsdBalance"
+import { startAppListening } from "../listener"
+import { walletConnected } from "../account"
+import { fetchTokenBalances } from "./effects"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -30,7 +28,6 @@ export const tokenSlice = createSlice({
     [Token.Keep]: {
       loading: false,
       balance: 0,
-      conversionRate: 4.87,
       text: Token.Keep,
       icon: Icon.KeepCircleBrand,
       usdConversion: 0,
@@ -39,7 +36,6 @@ export const tokenSlice = createSlice({
     [Token.Nu]: {
       loading: false,
       balance: 0,
-      conversionRate: 2.66,
       text: Token.Nu,
       icon: Icon.NuCircleBrand,
       usdConversion: 0,
@@ -48,7 +44,6 @@ export const tokenSlice = createSlice({
     [Token.T]: {
       loading: false,
       balance: 0,
-      conversionRate: 1,
       text: Token.T,
       icon: Icon.TCircleBrand,
       usdConversion: 0,
@@ -72,30 +67,19 @@ export const tokenSlice = createSlice({
       state,
       action: PayloadAction<SetTokenLoadingActionPayload>
     ) => {
-      state[action.payload.token].loading = action.payload.loading
+      state[action.payload.token].loading = true
     },
     setTokenBalance: (
       state,
       action: PayloadAction<SetTokenBalanceActionPayload>
     ) => {
       const { token, balance } = action.payload
+      state[token].loading = false
       state[token].balance = balance
       state[token].usdBalance = getUsdBalance(
         state[token].balance,
         state[token].usdConversion
       )
-    },
-    setTokenConversionRate: (
-      state,
-      action: PayloadAction<SetTokenConversionRateActionPayload>
-    ) => {
-      const { token, conversionRate } = action.payload
-
-      const formattedConversionRate = numeral(
-        +conversionRate / 10 ** 15
-      ).format("0.0000")
-
-      state[token].conversionRate = formattedConversionRate
     },
   },
   extraReducers: (builder) => {
@@ -111,5 +95,12 @@ export const tokenSlice = createSlice({
   },
 })
 
-export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
-  tokenSlice.actions
+export const { setTokenBalance, setTokenLoading } = tokenSlice.actions
+
+export const registerTokensListeners = () => {
+  startAppListening({
+    actionCreator: walletConnected,
+    effect: fetchTokenBalances,
+  })
+}
+registerTokensListeners()

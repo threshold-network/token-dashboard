@@ -1,33 +1,26 @@
-import { useSelector, useDispatch } from "react-redux"
 import {
   setTokenBalance as setTokenBalanceAction,
   setTokenLoading as setTokenLoadingAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
-  setTokenConversionRate as setTokenConversionRateAction,
 } from "../store/tokens"
-import { RootState } from "../store"
+import { useAppDispatch, useAppSelector } from "./store"
 import { Token } from "../enums"
 import { UseTokenState } from "../types/token"
 
 export const useTokenState: UseTokenState = () => {
-  const keep = useSelector((state: RootState) => state.token[Token.Keep])
-  const nu = useSelector((state: RootState) => state.token[Token.Nu])
-  const t = useSelector((state: RootState) => state.token[Token.T])
-  const tbtc = useSelector((state: RootState) => state.token[Token.TBTC])
-  const tbtcv2 = useSelector((state: RootState) => state.token[Token.TBTCV2])
+  const keep = useAppSelector((state) => state.token[Token.Keep])
+  const nu = useAppSelector((state) => state.token[Token.Nu])
+  const t = useAppSelector((state) => state.token[Token.T])
+  const tbtc = useAppSelector((state) => state.token[Token.TBTC])
+  const tbtcv2 = useAppSelector((state) => state.token[Token.TBTCV2])
 
-  const dispatch = useDispatch()
-
-  const setTokenConversionRate = (
-    token: Token,
-    conversionRate: number | string
-  ) => dispatch(setTokenConversionRateAction({ token, conversionRate }))
+  const dispatch = useAppDispatch()
 
   const setTokenBalance = (token: Token, balance: number | string) =>
     dispatch(setTokenBalanceAction({ token, balance }))
 
-  const setTokenLoading = (token: Token, loading: boolean) =>
-    dispatch(setTokenLoadingAction({ token, loading }))
+  const setTokenLoading = (token: Token) =>
+    dispatch(setTokenLoadingAction({ token }))
 
   const fetchTokenPriceUSD = (token: Token) =>
     dispatch(fetchTokenPriceAction({ token }))
@@ -41,6 +34,5 @@ export const useTokenState: UseTokenState = () => {
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
-    setTokenConversionRate,
   }
 }
