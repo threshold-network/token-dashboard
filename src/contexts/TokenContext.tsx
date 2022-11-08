@@ -44,10 +44,6 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     tbtcv2: tbtcv2Data,
   } = useTokenState()
 
-  const tokenContracts = [keep.contract!, nu.contract!, t.contract!]
-
-  if (!!tbtcv2) tokenContracts.push(tbtcv2.contract)
-
   // fetch user stakes when they connect their wallet
   React.useEffect(() => {
     fetchOwnerStakes(account!)

@@ -5,6 +5,7 @@ import {
   TokenState,
   SetTokenBalanceActionPayload,
   SetTokenLoadingActionPayload,
+  SetTokenBalanceErrorActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import Icon from "../../enums/icon"
@@ -81,6 +82,13 @@ export const tokenSlice = createSlice({
         state[token].usdConversion
       )
     },
+    setTokenBalanceError: (
+      state,
+      action: PayloadAction<SetTokenBalanceErrorActionPayload>
+    ) => {
+      const { token } = action.payload
+      state[token].loading = false
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchTokenPriceUSD.fulfilled, (state, action) => {
@@ -95,7 +103,8 @@ export const tokenSlice = createSlice({
   },
 })
 
-export const { setTokenBalance, setTokenLoading } = tokenSlice.actions
+export const { setTokenBalance, setTokenLoading, setTokenBalanceError } =
+  tokenSlice.actions
 
 export const registerTokensListeners = () => {
   startAppListening({

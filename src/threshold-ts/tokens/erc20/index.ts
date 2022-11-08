@@ -6,6 +6,7 @@ export interface IERC20 {
   contract: Contract
   balanceOf: (account: string) => Promise<BigNumber>
   allowance: (owner: string, spender: string) => Promise<BigNumber>
+  approve: (spender: string, amount: string) => Promise<ContractTransaction>
   totalSupply: () => Promise<BigNumber>
 }
 
@@ -38,6 +39,10 @@ export class BaseERC20Token implements IERC20 {
 
   totalSupply = (): Promise<BigNumber> => {
     return this._contract.totalSupply()
+  }
+
+  approve = (spender: string, amount: string): Promise<ContractTransaction> => {
+    return this._contract.approve(spender, amount)
   }
 
   get contract() {

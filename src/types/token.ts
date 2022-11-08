@@ -2,6 +2,7 @@ import { Contract } from "@ethersproject/contracts"
 import { Token } from "../enums"
 import { TransactionType } from "../enums/transactionType"
 import Icon from "../enums/icon"
+import { IERC20, IERC20WithApproveAndCall } from "../threshold-ts/tokens/erc20"
 
 export interface TokenState {
   loading: boolean
@@ -16,6 +17,10 @@ export interface TokenState {
 export interface SetTokenBalanceActionPayload {
   token: Token
   balance: number | string
+}
+
+export interface SetTokenBalanceErrorActionPayload {
+  token: Token
 }
 
 export interface SetTokenLoadingActionPayload {
@@ -45,6 +50,7 @@ export interface UseTokenState {
     ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void
+    setTokenBalanceError: (token: Token) => TokenActionTypes
   }
 }
 
@@ -53,13 +59,13 @@ export interface BalanceOf {
 }
 
 export interface Approve {
-  (transactionType: TransactionType): any
+  (spender: string, amount: string): any
 }
 
 export interface UseErc20Interface {
-  (tokenAddress: string, withSignerIfPossible?: boolean, abi?: any): {
-    approve: Approve
+  (token: IERC20WithApproveAndCall | IERC20, tokenName: Token): {
     balanceOf: BalanceOf
+    wrapper: IERC20 | IERC20WithApproveAndCall
     contract: Contract | null
   }
 }

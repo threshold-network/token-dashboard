@@ -2,10 +2,12 @@ import {
   setTokenBalance as setTokenBalanceAction,
   setTokenLoading as setTokenLoadingAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
+  setTokenBalanceError as setTokenBalanceErrorAction,
 } from "../store/tokens"
 import { useAppDispatch, useAppSelector } from "./store"
 import { Token } from "../enums"
 import { UseTokenState } from "../types/token"
+import { useCallback } from "react"
 
 export const useTokenState: UseTokenState = () => {
   const keep = useAppSelector((state) => state.token[Token.Keep])
@@ -16,14 +18,26 @@ export const useTokenState: UseTokenState = () => {
 
   const dispatch = useAppDispatch()
 
-  const setTokenBalance = (token: Token, balance: number | string) =>
-    dispatch(setTokenBalanceAction({ token, balance }))
+  const setTokenBalance = useCallback(
+    (token: Token, balance: number | string) =>
+      dispatch(setTokenBalanceAction({ token, balance })),
+    [dispatch]
+  )
 
-  const setTokenLoading = (token: Token) =>
-    dispatch(setTokenLoadingAction({ token }))
+  const setTokenLoading = useCallback(
+    (token: Token) => dispatch(setTokenLoadingAction({ token })),
+    [dispatch]
+  )
 
-  const fetchTokenPriceUSD = (token: Token) =>
-    dispatch(fetchTokenPriceAction({ token }))
+  const fetchTokenPriceUSD = useCallback(
+    (token: Token) => dispatch(fetchTokenPriceAction({ token })),
+    [dispatch]
+  )
+
+  const setTokenBalanceError = useCallback(
+    (token: Token) => dispatch(setTokenBalanceErrorAction({ token })),
+    [dispatch]
+  )
 
   return {
     keep,
@@ -34,5 +48,6 @@ export const useTokenState: UseTokenState = () => {
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
+    setTokenBalanceError,
   }
 }
