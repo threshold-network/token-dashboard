@@ -218,10 +218,10 @@ describe("Staking test", () => {
     ])
 
     expect(vendingMachines.keep.convertToT).toHaveBeenCalledWith(
-      eligibleKeepStake
+      eligibleKeepStake.toString()
     )
     expect(vendingMachines.nu.convertToT).toHaveBeenCalledWith(
-      nuStakerInfo.value
+      nuStakerInfo.value.toString()
     )
 
     expect(result).toEqual({

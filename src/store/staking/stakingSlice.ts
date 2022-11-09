@@ -12,7 +12,11 @@ import { StakeType, TopUpType, UnstakeType } from "../../enums"
 import { AddressZero } from "../../web3/utils"
 import { UpdateStateActionPayload } from "../../types/state"
 import { startAppListening } from "../listener"
-import { fetchStakeByStakingProviderEffect } from "./effects"
+import { walletConnected } from "../account"
+import {
+  fetchStakeByStakingProviderEffect,
+  fetchOwnerStakesEffect,
+} from "./effects"
 
 interface StakingState {
   stakingProvider: string
@@ -188,9 +192,12 @@ export const {
 
 export const registerStakingListeners = () => {
   startAppListening({
+    actionCreator: walletConnected,
+    effect: fetchOwnerStakesEffect,
+  })
+
+  startAppListening({
     actionCreator: requestStakeByStakingProvider,
     effect: fetchStakeByStakingProviderEffect,
   })
 }
-
-registerStakingListeners()

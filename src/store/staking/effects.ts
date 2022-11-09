@@ -1,5 +1,7 @@
+import { Stake } from "../../threshold-ts/staking"
 import { StakeData } from "../../types"
 import { AddressZero, isAddress, isAddressZero } from "../../web3/utils"
+import { walletConnected } from "../account"
 import { AppListenerEffectAPI } from "../listener"
 import { selectStakeByStakingProvider } from "./selectors"
 import { requestStakeByStakingProvider, setStakes } from "./stakingSlice"
@@ -81,4 +83,40 @@ const fetchStake = async (
       } as StakeData,
     ])
   )
+}
+
+export const fetchOwnerStakesEffect = async (
+  actionCreator: ReturnType<typeof walletConnected>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const address = actionCreator.payload
+  if (!isAddress(address)) return
+
+  listenerApi.unsubscribe()
+
+  try {
+    const stakes = await listenerApi.extra.threshold.staking.getOwnerStakes(
+      address
+    )
+
+    listenerApi.dispatch(
+      setStakes(
+        stakes.map(
+          (stake) =>
+            ({
+              ...stake,
+              tStake: stake.tStake.toString(),
+              nuInTStake: stake.tStake.toString(),
+              keepInTStake: stake.keepInTStake.toString(),
+              totalInTStake: stake.totalInTStake.toString(),
+              possibleKeepTopUpInT: stake.possibleKeepTopUpInT.toString(),
+              possibleNuTopUpInT: stake.possibleNuTopUpInT.toString(),
+            } as Stake<string>)
+        )
+      )
+    )
+  } catch (error) {
+    console.log("Could not fetch owner stakes", error)
+    listenerApi.subscribe()
+  }
 }
