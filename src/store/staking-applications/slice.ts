@@ -282,4 +282,3 @@ export const registerStakingAppsListeners = () => {
     })
   }
 }
-registerStakingAppsListeners()

@@ -6,6 +6,10 @@ import {
 import { AppDispatch, RootState } from "."
 import { Threshold } from "../threshold-ts"
 import { threshold } from "../utils/getThresholdLib"
+import { registerTokensListeners } from "./tokens"
+import { registerStakingListeners } from "./staking"
+import { registerStakingAppsListeners } from "./staking-applications/slice"
+import { registerAccountListeners } from "./account"
 
 export const listenerMiddleware = createListenerMiddleware({
   extra: { threshold },
@@ -29,3 +33,10 @@ export type AppListenerEffectAPI = ListenerEffectAPI<
 
 export const startAppListening =
   listenerMiddleware.startListening as AppStartListening
+
+export const registerListeners = () => {
+  registerAccountListeners()
+  registerTokensListeners()
+  registerStakingListeners()
+  registerStakingAppsListeners()
+}
