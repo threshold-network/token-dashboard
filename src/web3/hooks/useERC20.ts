@@ -28,7 +28,7 @@ export const useErc20TokenContract: UseErc20Interface = (
         )
       }
     },
-    [token, setTokenLoading, setTokenBalanceError]
+    [token, tokenName, setTokenLoading, setTokenBalanceError]
   )
 
   return { balanceOf, contract: token.contract, wrapper: token }

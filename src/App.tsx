@@ -17,7 +17,6 @@ import {
 } from "react-router-dom"
 import { BigNumberish } from "@ethersproject/bignumber"
 import { Event } from "@ethersproject/contracts"
-import { TokenContextProvider } from "./contexts/TokenContext"
 import theme from "./theme"
 import reduxStore, { resetStoreAction } from "./store"
 import ModalRoot from "./components/Modal"
@@ -204,11 +203,9 @@ const App: FC = () => {
         <ThresholdProvider>
           <ReduxProvider store={reduxStore}>
             <ChakraProvider theme={theme}>
-              <TokenContextProvider>
-                <Web3EventHandlerComponent />
-                <ModalRoot />
-                <AppBody />
-              </TokenContextProvider>
+              <Web3EventHandlerComponent />
+              <ModalRoot />
+              <AppBody />
             </ChakraProvider>
           </ReduxProvider>
         </ThresholdProvider>

@@ -23,6 +23,8 @@ export const fetchTokenPriceUSD = createAsyncThunk(
   }
 )
 
+export type TokensState = Record<Token, TokenState>
+
 export const tokenSlice = createSlice({
   name: "tokens",
   initialState: {
@@ -62,7 +64,7 @@ export const tokenSlice = createSlice({
       usdConversion: 0,
       usdBalance: "0",
     },
-  } as Record<Token, TokenState>,
+  } as TokensState,
   reducers: {
     setTokenLoading: (
       state,
