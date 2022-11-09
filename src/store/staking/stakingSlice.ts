@@ -75,12 +75,6 @@ export const stakingSlice = createSlice({
       newStake.possibleKeepTopUpInT = "0"
       newStake.possibleNuTopUpInT = "0"
 
-      newStake.preConfig = {
-        operator: AddressZero,
-        isOperatorConfirmed: false,
-        operatorStartTimestamp: "0",
-      }
-
       state.stakes = [newStake, ...state.stakes]
       state.stakedBalance = calculateStakedBalance(state.stakes)
     },

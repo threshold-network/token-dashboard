@@ -108,7 +108,7 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 <Button
                   as={Link}
                   isExternal
-                  href={stakeTypeToDappHref[stake.stakeType]}
+                  href={stakeTypeToDappHref[stake.stakeType ?? StakeType.KEEP]}
                   isFullWidth
                   mb="3"
                 >

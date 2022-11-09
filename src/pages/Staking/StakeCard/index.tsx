@@ -41,9 +41,9 @@ const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
-  const isPRESet =
-    !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.isOperatorConfirmed
+  const isPRESet = true
+  // !isAddressZero(stake.preConfig.operator) &&
+  // stake.preConfig.isOperatorConfirmed
 
   return (
     <StakeCardContext.Provider
