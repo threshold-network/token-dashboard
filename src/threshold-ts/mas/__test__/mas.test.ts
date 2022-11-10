@@ -6,10 +6,16 @@ import { Application } from "../../applications"
 import { IMulticall } from "../../multicall"
 import { IStaking } from "../../staking"
 import { EthereumConfig } from "../../types"
+import { IPRE, PRE } from "../../applications/pre"
 
 jest.mock("../../applications", () => ({
   ...(jest.requireActual("../../applications") as {}),
   Application: jest.fn(),
+}))
+
+jest.mock("../../applications/pre", () => ({
+  ...(jest.requireActual("../../applications/pre") as {}),
+  PRE: jest.fn(),
 }))
 
 jest.mock("@keep-network/random-beacon/artifacts/RandomBeacon.json", () => ({
@@ -27,6 +33,8 @@ describe("Multi app staking test", () => {
   let multicall: IMulticall
   let config: EthereumConfig
   let mas: MultiAppStaking
+  let pre: IPRE
+
   const app1 = {
     address: WalletRegistry.address,
     contract: { interface: {} },
@@ -38,9 +46,11 @@ describe("Multi app staking test", () => {
 
   beforeEach(() => {
     staking = {} as IStaking
-    multicall = { aggregate: jest.fn() } as IMulticall
+    multicall = { aggregate: jest.fn() } as unknown as IMulticall
+    pre = {} as unknown as IPRE
     ;(Application as unknown as jest.Mock).mockReturnValueOnce(app1)
     ;(Application as unknown as jest.Mock).mockReturnValueOnce(app2)
+    ;(PRE as unknown as jest.Mock).mockResolvedValue(pre)
     config = { chainId: 1, providerOrSigner: {} as providers.Provider }
     mas = new MultiAppStaking(staking, multicall, config)
   })
@@ -57,8 +67,10 @@ describe("Multi app staking test", () => {
       abi: WalletRegistry.abi,
       ...config,
     })
+    expect(PRE).toHaveBeenCalledWith(config)
     expect(mas.randomBeacon).toBeDefined()
     expect(mas.ecdsa).toBeDefined()
+    expect(mas.pre).toBeDefined()
   })
 
   test("should return the supported apps authroziation parameters", async () => {
