@@ -3,7 +3,7 @@ import SimplePREApplicationABI from "./abi.json"
 import { AddressZero, isAddressZero, getContract } from "../../utils"
 import { EthereumConfig } from "../../types"
 
-const PRE_ADDRESSESS = {
+export const PRE_ADDRESSESS = {
   // https://etherscan.io/address/0x7E01c9c03FD3737294dbD7630a34845B0F70E5Dd
   1: "0x7E01c9c03FD3737294dbD7630a34845B0F70E5Dd",
   // https://goerli.etherscan.io/address/0x829fdCDf6Be747FEA37518fBd83dF70EE371fCf2
