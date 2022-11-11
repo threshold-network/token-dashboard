@@ -89,10 +89,8 @@ export const MakeDeposit: FC = () => {
         />
 
         <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <BodySm color="brand.500">
-            {isLargerThan1280
-              ? btcDepositAddress
-              : shortenAddress(btcDepositAddress)}
+          <BodySm color="brand.500" maxW={"xs"} isTruncated>
+            {btcDepositAddress}
           </BodySm>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
