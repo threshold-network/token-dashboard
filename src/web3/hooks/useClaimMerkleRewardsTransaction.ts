@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { ContractTransaction } from "@ethersproject/contracts"
 import { useMerkleDropContract } from "./useMerkleDropContract"
-import rewardsData from "../../merkle-drop/rewards.json"
+import rewardsData from "../../threshold-ts/rewards/interim/rewards.json"
 import { useSendTransaction } from "./useSendTransaction"
 import { RewardsJSONData } from "../../types"
 
