@@ -1,7 +1,6 @@
 import { BigNumber } from "ethers"
 import { IRewards } from ".."
 import { MerkleDropContract } from "../merkle-drop-contract"
-import { EthereumConfig } from "../../types"
 import { getAddress, getContractPastEvents, ZERO } from "../../utils"
 import rewardsData from "./rewards.json"
 
@@ -21,8 +20,8 @@ export type Rewards = string
 export class InterimStakingRewards implements IRewards<Rewards> {
   private readonly _merkleDropContract: MerkleDropContract
 
-  constructor(config: EthereumConfig) {
-    this._merkleDropContract = new MerkleDropContract(config)
+  constructor(merkleDropContract: MerkleDropContract) {
+    this._merkleDropContract = merkleDropContract
   }
 
   /**

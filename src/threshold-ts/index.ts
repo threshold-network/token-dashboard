@@ -1,5 +1,6 @@
 import { MultiAppStaking } from "./mas"
 import { IMulticall, Multicall } from "./multicall"
+import { Rewards } from "./rewards"
 import { IStaking, Staking } from "./staking"
 import { ITokens, Tokens } from "./tokens"
 import { ThresholdConfig } from "./types"
@@ -11,6 +12,7 @@ export class Threshold {
   multiAppStaking!: MultiAppStaking
   vendingMachines!: IVendingMachines
   tokens!: ITokens
+  rewards!: Rewards
 
   constructor(config: ThresholdConfig) {
     this._initialize(config)
@@ -29,6 +31,11 @@ export class Threshold {
       this.staking,
       this.multicall,
       config.ethereum
+    )
+    this.rewards = new Rewards(
+      config.ethereum,
+      this.staking,
+      this.multiAppStaking.pre
     )
   }
 

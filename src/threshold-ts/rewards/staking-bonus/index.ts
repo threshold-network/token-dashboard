@@ -2,7 +2,6 @@ import { BigNumber, BigNumberish, Event, FixedNumber } from "ethers"
 import { IRewards } from ".."
 import { IPRE } from "../../applications/pre"
 import { IStaking } from "../../staking"
-import { EthereumConfig } from "../../types"
 import {
   getAddress,
   getContractPastEvents,
@@ -59,8 +58,12 @@ export class StakingBonusRewards implements IRewards<Rewards> {
   private _pre: IPRE
   private _staking: IStaking
 
-  constructor(config: EthereumConfig, staking: IStaking, pre: IPRE) {
-    this._merkleDropContract = new MerkleDropContract(config)
+  constructor(
+    merkleDropContract: MerkleDropContract,
+    staking: IStaking,
+    pre: IPRE
+  ) {
+    this._merkleDropContract = merkleDropContract
     this._staking = staking
     this._pre = pre
   }
