@@ -1,19 +1,13 @@
 import { Rewards as StakingBonusRewardsType } from "../threshold-ts/rewards/staking-bonus"
+import {
+  RewardsJSONData as ThresholdRewardsJSONData,
+  Rewards as InterimStakingRewardsType,
+} from "../threshold-ts/rewards/interim"
 
-export interface RewardsJSONData {
-  totalAmount: string
-  merkleRoot: string
-  claims: {
-    [stakingProvider: string]: {
-      amount: string
-      proof: string[]
-      beneficiary: string
-    }
-  }
-}
+export type RewardsJSONData = ThresholdRewardsJSONData
 
 export interface InterimRewards {
-  [stakingProvider: string]: string
+  [stakingProvider: string]: InterimStakingRewardsType
 }
 
 export type BonusEligibility = StakingBonusRewardsType
