@@ -23,7 +23,7 @@ import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import QRCode from "react-qr-code"
+import { QRCode } from "../../../../components/QRCode"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
