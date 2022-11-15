@@ -86,19 +86,19 @@ export const ProvideData: FC = () => {
       // if so...
       const depositScriptParameters = createDepositScriptParameters(
         values.ethAddress,
-        values.btcRecoveryAddress
+        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9"
       )
 
-      // const depositAddress = await TBTC.calculateDepositAddress(
-      //   depositScriptParameters,
-      //   "testnet",
-      //   true
-      // )
+      const depositAddress = await TBTC.calculateDepositAddress(
+        depositScriptParameters,
+        "main",
+        true
+      )
 
-      const depositAddress =
-        "14934b98637ca318a4d6e7ca6ffd1690b8e77df6377508f9f0c90d000395237576a9148" +
-        "db50eb52063ea9d98b3eac91489a90f738986f68763ac6776a91428e081f285138ccbe3" +
-        "89c1eb8985716230129f89880460bcea61b175ac68"
+      // const depositAddress =
+      //   "14934b98637ca318a4d6e7ca6ffd1690b8e77df6377508f9f0c90d000395237576a9148" +
+      //   "db50eb52063ea9d98b3eac91489a90f738986f68763ac6776a91428e081f285138ccbe3" +
+      //   "89c1eb8985716230129f89880460bcea61b175ac68"
 
       // update state,
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)

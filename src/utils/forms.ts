@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { WeiPerEther } from "@ethersproject/constants"
+import { isCompressedPublicKey } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import {
   Network,
   validate as isValidBtcAddress,
@@ -83,7 +84,8 @@ export const validateBTCAddress = (
 ) => {
   if (!address) {
     return "Required."
-  } else if (!isValidBtcAddress(address, network)) {
-    return "Invalid btc address."
   }
+  // } else if (!isValidBtcAddress(address, network)) {
+  //   return "Invalid btc address."
+  // }
 }
