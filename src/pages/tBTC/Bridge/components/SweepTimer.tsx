@@ -27,7 +27,7 @@ export const SweepTimer: FC = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       const currentTimeInSeconds = Math.floor(Date.now() / 1000)
-      updateState("nextBridgeCrossingInUnix", currentTimeInSeconds + 10)
+      updateState("nextBridgeCrossingInUnix", currentTimeInSeconds + 21600)
     }, 3000)
     return () => clearTimeout(timer)
   }, [])
