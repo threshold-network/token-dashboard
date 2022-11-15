@@ -8,3 +8,5 @@ export const MULTI_APP_STAKING =
 export const POSTHOG =
   getEnvVariable(EnvVariable.FEATURE_FLAG_POSTHOG) === "true" &&
   supportedChainId === ChainID.Ethereum.toString()
+export const FEEDBACK_MODULE =
+  getEnvVariable(EnvVariable.FEATURE_FLAG_FEEDBACK_MODULE) === "true"

@@ -51,6 +51,15 @@ const Sidebar = () => {
       } as NavItemDetail)
     }
 
+    if (featureFlags.FEEDBACK_MODULE) {
+      navItems.push({
+        text: "Feedback",
+        activeIcon: IoLockClosedSharp,
+        passiveIcon: IoLockClosedOutline,
+        href: "/feedback/usability-survey",
+      })
+    }
+
     return navItems
   }, [pathname, upgradeHref])
 
