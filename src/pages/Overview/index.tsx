@@ -9,8 +9,6 @@ import { AuthorizeApplicationsBanner } from "./AuthorizeApplicationsBanner"
 import { featureFlags } from "../../constants"
 import AnalyticsBanner from "./AnalyticsBanner"
 
-const FEEDBACK_MODULE = true
-
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
 
@@ -18,7 +16,7 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      {FEEDBACK_MODULE && <AnalyticsBanner />}
+      {featureFlags.FEEDBACK_MODULE && <AnalyticsBanner />}
       {featureFlags.MULTI_APP_STAKING && <AuthorizeApplicationsBanner />}
       <Outlet />
     </Container>
