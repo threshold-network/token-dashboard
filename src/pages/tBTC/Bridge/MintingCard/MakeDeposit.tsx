@@ -9,7 +9,6 @@ import {
   Flex,
   HStack,
   Stack,
-  useMediaQuery,
   Divider,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -45,7 +44,6 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
-  const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)")
   const { updateState } = useTbtcState()
 
   const handleSubmit = () => {
