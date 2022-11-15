@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import {
   BodyMd,
   BodySm,
@@ -8,12 +8,10 @@ import {
   ChecklistGroup,
   Flex,
   HStack,
-  Image,
   Stack,
-  Tag,
-  useMediaQuery,
+  Divider,
+  useColorModeValue,
 } from "@threshold-network/components"
-import btcQrTmp from "./BTC_QA_TMP.png"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import InfoBox from "../../../../components/InfoBox"
@@ -22,10 +20,9 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
-
-import { Divider, useColorModeValue } from "@chakra-ui/react"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { QRCode } from "../../../../components/QRCode"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -47,7 +44,6 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
-  const [isLargerThan1280] = useMediaQuery("(min-width: 1280px)")
   const { updateState } = useTbtcState()
 
   const handleSubmit = () => {
@@ -77,16 +73,25 @@ export const MakeDeposit: FC = () => {
           <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
 
-        {/* TODO: Generate this QR Code */}
-        <Image
-          my={6}
-          mx="auto"
-          bg="white"
-          borderRadius="lg"
-          maxW="145px"
-          maxH="145px"
-          src={btcQrTmp}
-        />
+        <Box
+          my={5}
+          p={3}
+          backgroundColor={"white"}
+          width={"100%"}
+          maxW={"128px"}
+          margin={"5 0"}
+          borderRadius="sm"
+          border={"1px solid"}
+          borderColor={"brand.500"}
+          alignSelf="center"
+        >
+          <QRCode
+            size={256}
+            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+            value={btcDepositAddress}
+            viewBox={`0 0 256 256`}
+          />
+        </Box>
 
         <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
           <BodySm color="brand.500" maxW={"xs"} isTruncated>
