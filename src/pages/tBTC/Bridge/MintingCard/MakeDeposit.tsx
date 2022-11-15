@@ -75,26 +75,25 @@ export const MakeDeposit: FC = () => {
           <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
 
-        <Flex direction={"column"} alignItems={"center"}>
-          <Box
-            my={5}
-            p={3}
-            backgroundColor={"white"}
-            width={"100%"}
-            maxW={"128px"}
-            margin={"5 0"}
-            borderRadius="sm"
-            border={"1px solid"}
-            borderColor={"brand.500"}
-          >
-            <QRCode
-              size={256}
-              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-              value={btcDepositAddress}
-              viewBox={`0 0 256 256`}
-            />
-          </Box>
-        </Flex>
+        <Box
+          my={5}
+          p={3}
+          backgroundColor={"white"}
+          width={"100%"}
+          maxW={"128px"}
+          margin={"5 0"}
+          borderRadius="sm"
+          border={"1px solid"}
+          borderColor={"brand.500"}
+          alignSelf="center"
+        >
+          <QRCode
+            size={256}
+            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+            value={btcDepositAddress}
+            viewBox={`0 0 256 256`}
+          />
+        </Box>
 
         <HStack bg="white" borderRadius="lg" px={2} mb={"2"}>
           <BodyMd color="brand.500" isTruncated>
