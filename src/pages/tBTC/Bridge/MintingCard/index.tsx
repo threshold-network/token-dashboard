@@ -7,11 +7,36 @@ import { MintingFlowRouter } from "./MintingFlowRouter"
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   return (
     <Card {...props}>
-      <Stack direction="row" divider={<StackDivider />} h="100%" spacing={8}>
-        <Box maxW="66%" width="100%">
+      <Stack
+        direction={{
+          base: "column",
+          md: "row",
+          lg: "column",
+          xl: "row",
+        }}
+        divider={<StackDivider />}
+        h="100%"
+        spacing={8}
+      >
+        <Box
+          w={{
+            base: "100%",
+            md: "66%",
+            lg: "100%",
+            xl: "66%",
+          }}
+        >
           <MintingFlowRouter />
         </Box>
-        <Box maxW="33%" minW={"216px"} w="100%">
+        <Box
+          w={{
+            base: "100%",
+            md: "33%",
+            lg: "100%",
+            xl: "33%",
+          }}
+          minW={"216px"}
+        >
           <MintingTimeline />
         </Box>
       </Stack>

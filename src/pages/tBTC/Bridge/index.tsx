@@ -1,4 +1,4 @@
-import { Grid, useMediaQuery } from "@threshold-network/components"
+import { HStack, useMediaQuery, VStack } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
@@ -26,34 +26,26 @@ const TBTCBridge: PageComponent = (props) => {
   }, [isSmallerThan1280])
 
   return (
-    <Grid
-      maxW="1040px"
-      gridAutoColumns="minmax(0, 1fr)"
-      gridAutoFlow="column"
-      gridTemplate={{
-        base: `
-            "tbtc-balance           mint-nav      mint-nav      mint-nav"
-            "tbtc-balance           mint-card     mint-card     mint-card"
-            "transaction-history    mint-card     mint-card     mint-card"
-          `,
-        xl: `
-            "tbtc-balance           mint-nav      mint-nav      mint-nav"
-            "tbtc-balance           mint-card     mint-card     mint-card"
-            "transaction-history    mint-card     mint-card     mint-card"
-          `,
-      }}
-      gridGap="4"
+    <HStack
+      alignItems={{ base: "flex-end", lg: "flex-start" }}
+      w={"100%"}
+      flexDirection={{ base: "column", lg: "row" }}
+      spacing={4}
     >
-      <TbtcBalanceCard gridArea="tbtc-balance" />
-      <MintUnmintNav gridArea="mint-nav" />
-      <TransactionHistory gridArea="transaction-history" />
-      {mintingType === TbtcMintingType.mint && (
-        <MintingCard gridArea="mint-card" />
-      )}
-      {mintingType === TbtcMintingType.unmint && (
-        <UnmintingCard gridArea="mint-card" />
-      )}
-    </Grid>
+      <VStack
+        spacing={4}
+        mb={{ base: 10, xl: 0 }}
+        w={{ base: "100%", lg: "40%", xl: "25%" }}
+      >
+        <TbtcBalanceCard />
+        <TransactionHistory />
+      </VStack>
+      <VStack spacing={4} w={{ base: "100%", lg: "60%", xl: "75%" }}>
+        <MintUnmintNav w={"100%"} />
+        {mintingType === TbtcMintingType.mint && <MintingCard p={35} />}
+        {mintingType === TbtcMintingType.unmint && <UnmintingCard p={35} />}
+      </VStack>
+    </HStack>
   )
 }
 
