@@ -34,4 +34,5 @@ export enum ModalType {
   ConfirmDeauthorization = "CONFIRM_DEAUTHORIZATION",
   DeauthorizationCompleted = "DEAUTHORIZATION_COMPLETED",
   DeauthorizationInitiated = "DeauthorizationInitiated",
+  Analytics = "ANALYTICS",
 }
