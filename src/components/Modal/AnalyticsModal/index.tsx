@@ -1,29 +1,21 @@
-import { FC } from "react"
-import {
-  Button,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  ModalHeader,
-  Stack,
-} from "@threshold-network/components"
+import { FC, useState } from "react"
+import { ModalCloseButton, ModalHeader } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import AnalyticsConfirmation from "./AnalyticsConfirmation"
+import AnalyticsAccepted from "./AnalyticsAccepted"
+import AnalyticsRejected from "./AnalyticsRejected"
 
 const AnalyticsModalBase: FC<BaseModalProps> = ({ closeModal }) => {
+  const [stage, setStage] = useState<"CONFIRM" | "ACCEPT" | "REJECT">("CONFIRM")
+
   return (
     <>
-      <ModalHeader>Claiming Rewards</ModalHeader>
+      <ModalHeader>Analytics</ModalHeader>
       <ModalCloseButton />
-      <ModalBody>
-        <Stack spacing={6}>HEre is the content</Stack>
-      </ModalBody>
-      <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
-          Cancel
-        </Button>
-        <Button>Confirm</Button>
-      </ModalFooter>
+      {stage === "CONFIRM" && <AnalyticsConfirmation setStage={setStage} />}
+      {stage === "ACCEPT" && <AnalyticsAccepted />}
+      {stage === "REJECT" && <AnalyticsRejected />}
     </>
   )
 }
