@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers"
+import { BigNumber, ContractTransaction } from "ethers"
 import { IRewards } from ".."
 import { MerkleDropContract } from "../merkle-drop-contract"
 import { getAddress, getContractPastEvents, ZERO } from "../../utils"
@@ -22,6 +22,36 @@ export class InterimStakingRewards implements IRewards<Rewards> {
 
   constructor(merkleDropContract: MerkleDropContract) {
     this._merkleDropContract = merkleDropContract
+  }
+
+  claim = (stakingProviders: string[]): Promise<ContractTransaction> => {
+    if (!stakingProviders || stakingProviders.length === 0) {
+      throw new Error("Staking providers not found.")
+    }
+    const availableRewardsToClaim = []
+
+    for (const stakingProvider of stakingProviders) {
+      if (!rewardsData.claims.hasOwnProperty(stakingProvider)) continue
+
+      const { amount, beneficiary, proof } = (rewardsData as RewardsJSONData)
+        .claims[stakingProvider]
+      availableRewardsToClaim.push([
+        stakingProvider,
+        beneficiary,
+        amount,
+        proof,
+      ])
+    }
+
+    if (availableRewardsToClaim.length === 0) {
+      throw new Error("No rewards to claim.")
+    }
+
+    const { merkleRoot } = rewardsData
+    return this._merkleDropContract.instance.batchClaim(
+      merkleRoot,
+      availableRewardsToClaim
+    )
   }
 
   /**

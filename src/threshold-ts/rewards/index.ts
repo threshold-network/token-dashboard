@@ -1,3 +1,4 @@
+import { ContractTransaction } from "ethers"
 import { IPRE } from "../applications/pre"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
@@ -15,6 +16,8 @@ export interface IRewards<RewardsDataType> {
   calculateRewards: (
     stakingProviders: string[]
   ) => Promise<{ [stakingProvider: string]: RewardsDataType }>
+
+  claim?: (stakingProviders: string[]) => Promise<ContractTransaction>
 }
 
 export class Rewards {
