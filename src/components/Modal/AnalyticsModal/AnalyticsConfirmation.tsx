@@ -15,8 +15,11 @@ import {
 import analyticsImageLight from "../../../static/images/AnalyticsIllustration.png"
 import analyticsImageDark from "../../../static/images/AnalyticsIllustrationDark.png"
 import sunglassesLight from "../../../static/images/SunglassesLight.png"
+import sunglassesDark from "../../../static/images/SunglassesDark.png"
 import diagonalPillLight from "../../../static/images/DiagonalPillLight.png"
+import diagonalPillDark from "../../../static/images/DiagonalPillDark.png"
 import diagonalArrowLight from "../../../static/images/DiagonalArrowLight.png"
+import diagonalArrowDark from "../../../static/images/DiagonalArrowDark.png"
 import FeedbackInfoItem from "./FeedbackInfoItem"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
@@ -24,23 +27,26 @@ import { ExternalHref } from "../../../enums"
 const AnalyticsConfirmation: FC<{
   setStage: (stage: "CONFIRM" | "ACCEPT" | "REJECT") => void
 }> = ({ setStage }) => {
-  const imgSrc = useColorModeValue(analyticsImageLight, analyticsImageDark)
+  const headerImgSrc = useColorModeValue(
+    analyticsImageLight,
+    analyticsImageDark
+  )
 
   const feedbackDetails = [
     {
       title: "Anonymous",
       subTitle: "We do not collect any personally identifiable information.",
-      imgSrc: sunglassesLight,
+      imgSrc: useColorModeValue(sunglassesLight, sunglassesDark),
     },
     {
       title: "Opt In analytics",
       subTitle: "We collect data only when you accept the analytics setting.",
-      imgSrc: diagonalPillLight,
+      imgSrc: useColorModeValue(diagonalPillLight, diagonalPillDark),
     },
     {
       title: "usage metrics",
       subTitle: "Usage metrics (e.g. click rate) help to improve the product.",
-      imgSrc: diagonalArrowLight,
+      imgSrc: useColorModeValue(diagonalArrowLight, diagonalArrowDark),
     },
   ]
 
@@ -48,7 +54,7 @@ const AnalyticsConfirmation: FC<{
   return (
     <>
       <ModalBody>
-        <Image mx="auto" mb={8} maxW="104px" src={imgSrc} />
+        <Image mx="auto" mb={8} maxW="104px" src={headerImgSrc} />
         <H5 mb={2}>
           Will you provide anonymous data to help improve the product?
         </H5>
