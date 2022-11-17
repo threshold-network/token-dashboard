@@ -1,5 +1,5 @@
 import React from "react"
-import { Box } from "@chakra-ui/react"
+import { Box } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 
 const BugReport: PageComponent = () => {
