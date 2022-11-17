@@ -24,8 +24,8 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
     },
     closeButton: {
       position: { base: "absolute", xl: "inherit" },
-      right: "14px",
-      top: "12px",
+      right: 3.5,
+      top: 3,
     },
     subContainer: {
       display: "flex",
@@ -44,7 +44,6 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       mb: { base: 4, xl: 0 },
       textAlign: { base: "center", xl: "unset" },
       color: mode(undefined, "white")(props),
-      // maxW: "460px",
     },
     ctaButton: {
       mr: 2,
@@ -53,20 +52,7 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
   }
 }
 
-const secondaryVariant: PartsStyleFunction<typeof parts> = (props) => ({
-  container: {
-    bg: mode("brand.50", "#2B3036")(props),
-    border: mode("none", "1px solid")(props),
-    borderColor: "brand.300",
-  },
-})
-
-const variants = {
-  secondary: secondaryVariant,
-}
-
 export const SecondaryAnnouncementBanner = {
   parts: parts.keys,
   baseStyle,
-  variants,
 }

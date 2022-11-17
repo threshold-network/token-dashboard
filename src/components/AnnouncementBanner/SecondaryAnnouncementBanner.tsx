@@ -9,10 +9,11 @@ import {
   Image,
   Stack,
   TextProps,
+  BoxProps,
+  useMultiStyleConfig,
   useColorModeValue,
   useDisclosure,
 } from "@threshold-network/components"
-import { BoxProps, useMultiStyleConfig } from "@chakra-ui/react"
 
 // TODO pull this from components repo when it's merged
 export const H6: FC<TextProps> = (props) => {

@@ -63,7 +63,7 @@ const AnalyticsConfirmation: FC<{
         </BodyLg>
         <Stack spacing={8} m="auto" maxW="330px" mb={16}>
           {feedbackDetails.map((detail) => (
-            <FeedbackInfoItem {...detail} />
+            <FeedbackInfoItem key={detail.title} {...detail} />
           ))}
         </Stack>
         <VStack mb={4}>
