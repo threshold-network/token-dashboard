@@ -5,7 +5,6 @@ import {
   Card,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   LabelSm,
@@ -31,6 +30,7 @@ import {
   StakingAppName,
 } from "../../../store/staking-applications"
 import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
+import ModalCloseButton from "../ModalCloseButton"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string

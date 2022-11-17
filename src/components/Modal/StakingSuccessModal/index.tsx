@@ -10,7 +10,6 @@ import {
   FlowStepStatus,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -25,6 +24,7 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import InfoBox from "../../InfoBox"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
+import ModalCloseButton from "../ModalCloseButton"
 
 const simpleStakingTimelineFlowSteps = [
   {

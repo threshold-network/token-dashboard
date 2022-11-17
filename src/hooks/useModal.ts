@@ -8,6 +8,7 @@ import {
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
+import { capture } from "../posthog"
 
 export const useModal: UseModal = () => {
   const modalType = useSelector((state: RootState) => state.modal.modalType)
@@ -18,6 +19,7 @@ export const useModal: UseModal = () => {
     dispatch(openModalAction({ modalType, props }))
 
   const closeModal = () => {
+    capture(`Closed Modal`, { modalType })
     dispatch(closeModalAction())
     if (modalType === ModalType.SelectWallet) {
       dispatch(successfullLoginModalClosed())

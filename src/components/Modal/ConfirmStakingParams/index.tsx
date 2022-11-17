@@ -9,7 +9,6 @@ import {
   Button,
   Divider,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   List,
@@ -30,6 +29,7 @@ import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplic
 import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
+import ModalCloseButton from "../ModalCloseButton"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }

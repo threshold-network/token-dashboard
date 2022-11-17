@@ -35,3 +35,7 @@ export const capturePageview = () => {
 export const reset = () => {
   posthog.reset()
 }
+
+export const capture = (event: string, params?: any) => {
+  posthog.capture(event, params)
+}
