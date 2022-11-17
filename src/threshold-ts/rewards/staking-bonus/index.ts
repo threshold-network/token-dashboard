@@ -231,7 +231,7 @@ export class StakingBonusRewards implements IRewards<Rewards> {
     return stakingProviderToAmount
   }
 
-  _getStakingProviderToUnstake = (
+  private _getStakingProviderToUnstake = (
     events: Event[]
   ): StakingProviderToUnstake => {
     const stakingProviderToUnstake: StakingProviderToUnstake = {}
