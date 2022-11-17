@@ -1,6 +1,11 @@
-import { BigNumber, Contract } from "ethers"
+import { BigNumber, Contract, Event } from "ethers"
 import SimplePREApplicationABI from "./abi.json"
-import { AddressZero, isAddressZero, getContract } from "../../utils"
+import {
+  AddressZero,
+  isAddressZero,
+  getContract,
+  getContractPastEvents,
+} from "../../utils"
 import { EthereumConfig } from "../../types"
 
 export const PRE_ADDRESSESS = {
@@ -51,13 +56,21 @@ export interface IPRE {
    */
   contract: Contract
 
+  deploymentBlock: number
+
   getStakingProviderAppInfo: (
     stakingProvider: string
   ) => Promise<StakingProviderInfo>
+
+  getOperatorConfirmedEvents: (
+    stakingProvider?: string | string[],
+    operator?: string | string[]
+  ) => Promise<Event[]>
 }
 
 export class PRE implements IPRE {
   private _application: Contract
+  private readonly _deploymentBlock: number
 
   constructor(config: EthereumConfig) {
     const address = PRE_ADDRESSESS[config.chainId]
@@ -71,6 +84,7 @@ export class PRE implements IPRE {
       config.providerOrSigner,
       config.account
     )
+    this._deploymentBlock = config.chainId === 1 ? 14141140 : 0
   }
   getStakingProviderAppInfo = async (
     stakingProvider: string
@@ -97,5 +111,20 @@ export class PRE implements IPRE {
   }
   get contract() {
     return this._application
+  }
+
+  get deploymentBlock() {
+    return this._deploymentBlock
+  }
+
+  getOperatorConfirmedEvents = async (
+    stakingProvider?: string | string[],
+    operator?: string | string[]
+  ): Promise<Event[]> => {
+    return await getContractPastEvents(this._application, {
+      eventName: "OperatorConfirmed",
+      fromBlock: this._deploymentBlock,
+      filterParams: [stakingProvider, operator],
+    })
   }
 }

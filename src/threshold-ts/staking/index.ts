@@ -1,7 +1,13 @@
 import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
 import NuCypherStakingEscrow from "@threshold-network/solidity-contracts/artifacts/NuCypherStakingEscrow.json"
 import KeepTokenStaking from "@keep-network/keep-core/artifacts/TokenStaking.json"
-import { BigNumber, BigNumberish, Contract, ContractTransaction } from "ethers"
+import {
+  BigNumber,
+  BigNumberish,
+  Contract,
+  ContractTransaction,
+  Event,
+} from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
 import {
@@ -99,6 +105,12 @@ export interface IStaking {
    * @returns All stakes for a given owner address.
    */
   getOwnerStakes(owner: string): Promise<Array<Stake>>
+
+  getStakedEvents(stakingProvider?: string | string[]): Promise<Event[]>
+
+  getToppedUpEvents(stakingProvider?: string | string[]): Promise<Event[]>
+
+  getUnstakedEvents(stakingProvider?: string | string[]): Promise<Event[]>
 }
 
 export class Staking implements IStaking {
@@ -264,5 +276,33 @@ export class Staking implements IStaking {
         )
       )
     )
+  }
+
+  getStakedEvents = async (
+    stakingProvider?: string | string[] | undefined
+  ): Promise<Event[]> => {
+    return await getContractPastEvents(this._staking, {
+      eventName: "Staked",
+      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      filterParams: [null, null, stakingProvider],
+    })
+  }
+  getToppedUpEvents = async (
+    stakingProvider?: string | string[] | undefined
+  ): Promise<Event[]> => {
+    return await getContractPastEvents(this._staking, {
+      eventName: "ToppedUp",
+      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      filterParams: [stakingProvider],
+    })
+  }
+  getUnstakedEvents = async (
+    stakingProvider?: string | string[] | undefined
+  ): Promise<Event[]> => {
+    return await getContractPastEvents(this._staking, {
+      eventName: "Unstaked",
+      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      filterParams: [stakingProvider],
+    })
   }
 }

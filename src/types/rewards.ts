@@ -1,32 +1,16 @@
-export interface RewardsJSONData {
-  totalAmount: string
-  merkleRoot: string
-  claims: {
-    [stakingProvider: string]: {
-      amount: string
-      proof: string[]
-      beneficiary: string
-    }
-  }
-}
+import { Rewards as StakingBonusRewardsType } from "../threshold-ts/rewards/staking-bonus"
+import {
+  RewardsJSONData as ThresholdRewardsJSONData,
+  Rewards as InterimStakingRewardsType,
+} from "../threshold-ts/rewards/interim"
 
-export interface BonusEligibility {
-  hasPREConfigured: boolean
-  hasActiveStake: boolean
-  // No unstaking after the bonus deadline and until mid-July (not even partial
-  // amounts).
-  hasUnstakeAfterBonusDeadline: boolean
-  // Only total staked amount before bonus deadline is taking
-  // into account.
-  eligibleStakeAmount: string
-  reward: string
-  isRewardClaimed: boolean
-  isEligible: boolean
-}
+export type RewardsJSONData = ThresholdRewardsJSONData
 
 export interface InterimRewards {
-  [stakingProvider: string]: string
+  [stakingProvider: string]: InterimStakingRewardsType
 }
+
+export type BonusEligibility = StakingBonusRewardsType
 
 export interface StakingBonusRewards {
   [stakingProvider: string]: BonusEligibility

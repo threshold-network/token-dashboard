@@ -1,49 +1,16 @@
-import { useCallback } from "react"
 import { ContractTransaction } from "@ethersproject/contracts"
-import { useMerkleDropContract } from "./useMerkleDropContract"
-import rewardsData from "../../merkle-drop/rewards.json"
-import { useSendTransaction } from "./useSendTransaction"
-import { RewardsJSONData } from "../../types"
+import { useSendTransactionFromFn } from "./useSendTransaction"
+import { useThreshold } from "../../contexts/ThresholdContext"
+import { InterimStakingRewards } from "../../threshold-ts/rewards/interim"
 
 export const useClaimMerkleRewardsTransaction = (
   onSuccess?: (tx: ContractTransaction) => void
 ) => {
-  const merkleDropContract = useMerkleDropContract()
-  const { sendTransaction, status } = useSendTransaction(
-    merkleDropContract!,
-    "batchClaim",
+  const threshold = useThreshold()
+  const { sendTransaction, status } = useSendTransactionFromFn(
+    (threshold.rewards.interim as InterimStakingRewards).claim,
     onSuccess
   )
 
-  const claim = useCallback(
-    (stakingProviders: string[]) => {
-      if (!stakingProviders || stakingProviders.length === 0) {
-        throw new Error("Staking providers not found.")
-      }
-      const availableRewardsToClaim = []
-
-      for (const stakingProvider of stakingProviders) {
-        if (!rewardsData.claims.hasOwnProperty(stakingProvider)) continue
-
-        const { amount, beneficiary, proof } = (rewardsData as RewardsJSONData)
-          .claims[stakingProvider]
-        availableRewardsToClaim.push([
-          stakingProvider,
-          beneficiary,
-          amount,
-          proof,
-        ])
-      }
-
-      if (availableRewardsToClaim.length === 0) {
-        throw new Error("No rewards to claim.")
-      }
-
-      const { merkleRoot } = rewardsData
-      sendTransaction(merkleRoot, availableRewardsToClaim)
-    },
-    [merkleDropContract]
-  )
-
-  return { claim, status }
+  return { claim: sendTransaction, status }
 }
