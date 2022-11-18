@@ -1,6 +1,7 @@
 import posthog from "posthog-js"
 import { EnvVariable } from "../enums"
 import { getEnvVariable } from "../utils/getEnvVariable"
+import { posthogEvent } from "../types/types"
 
 export const init = () => {
   const apiKey = getEnvVariable(EnvVariable.POSTHOG_API_KEY)
@@ -21,6 +22,7 @@ export const init = () => {
 }
 
 export const identify = (ethAddress: string) => {
+  console.log("identifying the eth address: ", ethAddress)
   posthog.identify(ethAddress)
 }
 
@@ -36,6 +38,6 @@ export const reset = () => {
   posthog.reset()
 }
 
-export const capture = (event: string, params?: any) => {
+export const capture = (event: posthogEvent, params: any) => {
   posthog.capture(event, params)
 }
