@@ -3,9 +3,18 @@ import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifa
 import { BigNumber, BigNumberish, Contract } from "ethers"
 import { EthereumConfig } from "../types"
 import { getContract, STANDARD_ERC20_DECIMALS } from "../utils"
-
+/**
+ * An interface representing the T token amount and the reminder that can't be
+ * upgraded.
+ */
 export interface ConversionToT<NumberType extends BigNumberish = BigNumber> {
+  /**
+   * The amount of T tokens obtained from the amount of wrapped tokens.
+   */
   tAmount: NumberType
+  /**
+   * Amount of wrapped token that can't be upgraded.
+   */
   wrappedRemainder: NumberType
 }
 
