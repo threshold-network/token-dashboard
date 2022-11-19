@@ -1,7 +1,9 @@
 import posthog from "posthog-js"
-import { EnvVariable } from "../enums"
-import { getEnvVariable } from "../utils/getEnvVariable"
+import { ChainID, EnvVariable } from "../enums"
+import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
 import { posthogEvent } from "../types/types"
+
+const isDevelopment = supportedChainId !== ChainID.Ethereum.toString()
 
 export const init = () => {
   const apiKey = getEnvVariable(EnvVariable.POSTHOG_API_KEY)
@@ -22,8 +24,7 @@ export const init = () => {
 }
 
 export const identify = (ethAddress: string) => {
-  console.log("identifying the eth address: ", ethAddress)
-  posthog.identify(ethAddress)
+  posthog.identify(isDevelopment ? "DEVELOPMENT" : ethAddress)
 }
 
 // Posthog automatically sends pageview events whenever it gets loaded. For a
@@ -31,13 +32,18 @@ export const identify = (ethAddress: string) => {
 // loads. To make sure any navigating a user does within your app gets captured,
 // you must make a `pageview` call manually.
 export const capturePageview = () => {
-  posthog.capture("$pageview")
+  posthog.capture("$pageview", {
+    isDevelopment,
+  })
 }
 
 export const reset = () => {
   posthog.reset()
 }
 
-export const capture = (event: posthogEvent, params: any) => {
-  posthog.capture(event, params)
+export const capture = (
+  event: posthogEvent,
+  params: { [key: string]: unknown }
+) => {
+  posthog.capture(event, { isDevelopment, ...params })
 }

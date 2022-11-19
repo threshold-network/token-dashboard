@@ -6,5 +6,4 @@ export const TBTC_V2 =
 export const MULTI_APP_STAKING =
   getEnvVariable(EnvVariable.FEATURE_FLAG_MULTI_APP_STAKING) === "true"
 export const POSTHOG =
-  getEnvVariable(EnvVariable.FEATURE_FLAG_POSTHOG) === "true" &&
-  supportedChainId === ChainID.Ethereum.toString()
+  getEnvVariable(EnvVariable.FEATURE_FLAG_POSTHOG) === "true"
