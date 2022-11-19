@@ -8,13 +8,13 @@ import {
 } from "../store/modal"
 import { RootState } from "../store"
 import { ModalType } from "../enums"
-import { posthogEvent } from "../types/types"
-import { useCapture } from "./posthog/useCapture"
+import { PosthogEvent } from "../types/posthog"
+import { useCapture } from "./posthog"
 
 export const useModal: UseModal = () => {
   const modalType = useSelector((state: RootState) => state.modal.modalType)
   const modalProps = useSelector((state: RootState) => state.modal.props)
-  const captureModalCloseEvent = useCapture(posthogEvent.ClosedModal)
+  const captureModalCloseEvent = useCapture(PosthogEvent.ClosedModal)
   const dispatch = useDispatch()
 
   const openModal = (modalType: ModalType, props: any) =>

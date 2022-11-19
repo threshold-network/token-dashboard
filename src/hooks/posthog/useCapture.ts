@@ -1,9 +1,9 @@
 import { useCallback } from "react"
-import { posthogEvent } from "../../types/types"
+import { PosthogEvent } from "../../types/posthog"
 import { featureFlags } from "../../constants"
 import * as posthog from "../../posthog"
 
-export const useCapture = (eventName: posthogEvent) => {
+export const useCapture = (eventName: PosthogEvent) => {
   return useCallback(
     (params) => {
       if (!featureFlags.POSTHOG) return

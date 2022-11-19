@@ -1,7 +1,7 @@
 import posthog from "posthog-js"
 import { ChainID, EnvVariable } from "../enums"
 import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
-import { posthogEvent } from "../types/types"
+import { PosthogEvent } from "../types/posthog"
 
 const isDevelopment = supportedChainId !== ChainID.Ethereum.toString()
 
@@ -42,7 +42,7 @@ export const reset = () => {
 }
 
 export const capture = (
-  event: posthogEvent,
+  event: PosthogEvent,
   params: { [key: string]: unknown }
 ) => {
   posthog.capture(event, { isDevelopment, ...params })

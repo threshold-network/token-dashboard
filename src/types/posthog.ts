@@ -1,3 +1,3 @@
-export enum posthogEvent {
+export enum PosthogEvent {
   ClosedModal = "Closed Modal",
 }
