@@ -1,6 +1,6 @@
-import { JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
-import { Contract, ContractInterface, providers, Signer } from "ethers"
-import { getAddress, isAddressZero } from "./address"
+import { JsonRpcSigner, Web3Provider, BlockTag } from "@ethersproject/providers"
+import { Contract, ContractInterface, providers, Signer, Event } from "ethers"
+import { AddressZero, getAddress, isAddressZero } from "./address"
 
 // account is not optional
 export function getSigner(
@@ -32,4 +32,37 @@ export const getContract = (
     abi,
     getProviderOrSigner(providerOrSigner as any, account) as any
   )
+}
+
+interface EventFilterOptions {
+  fromBlock?: BlockTag
+  toBlock?: BlockTag
+  filterParams: any[]
+  eventName: string
+}
+
+export const getContractPastEvents = async (
+  contract: Contract,
+  options: EventFilterOptions
+): Promise<Array<Event>> => {
+  const filter = contract.filters[options.eventName](...options.filterParams)
+
+  return await contract.queryFilter(filter, options.fromBlock, options.toBlock)
+}
+
+export function getContractAddressFromTruffleArtifact(
+  truffleArtifact: { networks: { [chainID: string]: { address: string } } },
+  chainID: string | undefined = undefined
+) {
+  const networks = Object.keys(truffleArtifact.networks) as Array<
+    keyof typeof truffleArtifact.networks
+  >
+
+  return networks && networks.length > 0
+    ? (
+        truffleArtifact.networks[chainID ? chainID : networks[0]] as {
+          address: string
+        }
+      ).address
+    : AddressZero
 }

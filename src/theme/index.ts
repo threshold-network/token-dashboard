@@ -10,6 +10,7 @@ import { DetailedLinkListItem } from "./DetailedLinkListItem"
 import { Checkbox } from "./Checkbox"
 import { Radio } from "./Radio"
 import { AnnouncementBanner } from "./AnnouncementBanner"
+import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -23,6 +24,7 @@ const index = extendTheme({
   components: {
     ...defaultTheme.components,
     AnnouncementBanner,
+    SecondaryAnnouncementBanner,
     InfoBox,
     NotificationPill,
     Tree,

@@ -7,6 +7,7 @@ import {
   Box,
   Button,
   HStack,
+  Stack,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -69,8 +70,8 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
               <AlertIcon />
               <AlertTitle display="flex">
                 {isExpandableError ? (
-                  <HStack>
-                    <BodySm>{errorTitle}</BodySm>
+                  <Stack>
+                    <BodySm wordBreak="break-word">{errorTitle}</BodySm>
                     <BodySm
                       onClick={onToggle}
                       ml={4}
@@ -80,7 +81,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                     >
                       Show {isOpen ? "Less" : "More"}
                     </BodySm>
-                  </HStack>
+                  </Stack>
                 ) : (
                   errorTitle
                 )}
