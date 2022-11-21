@@ -13,29 +13,25 @@ import {
 } from "bitcoin-address-validation"
 import { unprefixedAndUncheckedAddress } from "../utils"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { BigNumber } from "ethers"
+import { BigNumber, Signer } from "ethers"
 import { ITBTC } from "./tbtc.interface"
 import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import { EthereumConfig } from "../types"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 
 export class TBTC implements ITBTC {
-  // private _bridge: EthereumBridge
+  private _bridge: EthereumBridge
 
-  constructor(config: EthereumConfig) {
-    // this._bridge = new EthereumBridge({
-    //   address: BridgeArtifact.address,
-    //   signer: "test",
-    // })
+  constructor(signer: Signer) {
+    this._bridge = new EthereumBridge({
+      address: BridgeArtifact.address,
+      signer: signer,
+    })
   }
 
   //TODO: implement proper functionality
   async suggestDepositWallet(): Promise<string | undefined> {
-    return new Promise<string>((resolve) => {
-      resolve(
-        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9"
-      )
-    })
+    return await this._bridge.activeWalletPublicKey()
   }
 
   async createDepositScriptParameters(
@@ -105,5 +101,6 @@ export class TBTC implements ITBTC {
     deposit: Deposit
   ): Promise<void> {
     // await revealDeposit(utxo, deposit, null, null)
+    await this._bridge.revealDeposit()
   }
 }

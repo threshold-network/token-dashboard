@@ -1,4 +1,5 @@
 import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
+import { providers, Signer } from "ethers"
 import { MultiAppStaking } from "./mas"
 import { IMulticall, Multicall } from "./multicall"
 import { IStaking, Staking } from "./staking"
@@ -23,7 +24,8 @@ export class Threshold {
       this.multicall,
       config.ethereum
     )
-    this.tbtc = new TBTC(config.ethereum)
+    // TODO: we should pass a signer here
+    // this.tbtc = new TBTC(config.ethereum)
   }
 
   updateConfig = (config: ThresholdConfig) => {
