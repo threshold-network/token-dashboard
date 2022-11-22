@@ -23,10 +23,22 @@ import diagonalArrowDark from "../../../static/images/DiagonalArrowDark.png"
 import FeedbackInfoItem from "./FeedbackInfoItem"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
+import { useAppDispatch } from "../../../hooks/store"
+import { analyticsSlice } from "../../../store/analytics"
 
 const AnalyticsConfirmation: FC<{
   setStage: (stage: "CONFIRM" | "ACCEPT" | "REJECT") => void
 }> = ({ setStage }) => {
+  const dispatch = useAppDispatch()
+  const handleAccept = () => {
+    dispatch(analyticsSlice.actions.optIn())
+    setStage("ACCEPT")
+  }
+  const handleDecline = () => {
+    dispatch(analyticsSlice.actions.optOut())
+    setStage("REJECT")
+  }
+
   const headerImgSrc = useColorModeValue(
     analyticsImageLight,
     analyticsImageDark
@@ -51,6 +63,7 @@ const AnalyticsConfirmation: FC<{
   ]
 
   const subduedTextColor = useColorModeValue("gray.500", "gray.400")
+
   return (
     <>
       <ModalBody>
@@ -80,10 +93,10 @@ const AnalyticsConfirmation: FC<{
         </VStack>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={() => setStage("REJECT")} variant="outline" mr={2}>
+        <Button onClick={handleDecline} variant="outline" mr={2}>
           Decline
         </Button>
-        <Button onClick={() => setStage("ACCEPT")}>Accept</Button>
+        <Button onClick={handleAccept}>Accept</Button>
       </ModalFooter>
     </>
   )
