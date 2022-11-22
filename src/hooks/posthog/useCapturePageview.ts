@@ -12,5 +12,5 @@ export const useCapturePageview = () => {
 
   useEffect(() => {
     if (featureFlags.POSTHOG && shouldEnableAnalytics) posthog.capturePageview()
-  }, [location])
+  }, [location, shouldEnableAnalytics])
 }
