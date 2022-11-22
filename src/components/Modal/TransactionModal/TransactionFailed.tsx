@@ -9,7 +9,6 @@ import {
   HStack,
   Stack,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   useDisclosure,
@@ -22,6 +21,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import Link from "../../Link"
+import ModalCloseButton from "../ModalCloseButton"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string

@@ -12,7 +12,6 @@ import {
   LabelSm,
   Link,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Radio,
@@ -27,6 +26,7 @@ import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeTitle } from "../../../utils/getStakeTitle"
 import { isAddress, isSameETHAddress } from "../../../web3/utils"
 import ButtonLink from "../../ButtonLink"
+import ModalCloseButton from "../ModalCloseButton"
 
 const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
   const { stakes } = useStakingState()

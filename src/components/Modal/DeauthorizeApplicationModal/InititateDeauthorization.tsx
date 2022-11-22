@@ -12,7 +12,6 @@ import {
   Button,
   Flex,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -25,6 +24,7 @@ import TokenBalance from "../../TokenBalance"
 import { StakingAppName } from "../../../store/staking-applications"
 import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
 import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
+import ModalCloseButton from "../ModalCloseButton"
 
 const InitiateDeauthorization: FC<{
   closeModal: () => void

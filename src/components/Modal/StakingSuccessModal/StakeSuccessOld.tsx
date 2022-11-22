@@ -6,7 +6,6 @@ import {
   Button,
   Divider,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -21,6 +20,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import InfoBox from "../../InfoBox"
 import { PreSetupSteps } from "../../StakingTimeline"
+import ModalCloseButton from "../ModalCloseButton"
 
 const StakeSuccessOld: FC<BaseModalProps & { transactionHash: string }> = ({
   closeModal,

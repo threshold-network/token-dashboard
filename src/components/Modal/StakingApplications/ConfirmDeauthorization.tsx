@@ -4,7 +4,6 @@ import {
   Button,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   List,
@@ -21,6 +20,7 @@ import withBaseModal from "../withBaseModal"
 import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
 import { useConfirmDeatuhorizationTransaction } from "../../../hooks/staking-applications"
+import ModalCloseButton from "../ModalCloseButton"
 
 export type ConfirmDeauthorizationProps = BaseModalProps & {
   stakingProvider: string
