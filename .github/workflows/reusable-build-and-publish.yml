@@ -104,15 +104,15 @@ jobs:
         id: set-packages-versions
         run: |
           if [ ${{ inputs.useUpstreamBuilds }} = 'false' ]; then
-            echo "::set-output name=threshold-contracts-version::${{ inputs.dependentPackagesTag }}"
-            echo "::set-output name=random-beacon-contracts-version::${{ inputs.dependentPackagesTag }}"
-            echo "::set-output name=ecdsa-contracts-version::${{ inputs.dependentPackagesTag }}"
-            echo "::set-output name=tbtc-v2-contracts-version::${{ inputs.dependentPackagesTag }}"
+            echo "threshold-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
+            echo "random-beacon-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
+            echo "ecdsa-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
+            echo "tbtc-v2-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=threshold-contracts-version::${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}"
-            echo "::set-output name=random-beacon-contracts-version::${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}"
-            echo "::set-output name=ecdsa-contracts-version::${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}"
-            echo "::set-output name=tbtc-v2-contracts-version::${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}"
+            echo "threshold-contracts-version=${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}" >> $GITHUB_OUTPUT
+            echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
+            echo "ecdsa-contracts-version=${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}" >> $GITHUB_OUTPUT
+            echo "tbtc-v2-contracts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}" >> $GITHUB_OUTPUT
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
