@@ -140,6 +140,7 @@ const getKeepStakingAppStakingProvidersData = async (
       (reducer, stakingProvider, index) => {
         const _appData = appData[index]
         reducer[stakingProvider] = {
+          ..._appData,
           authorizedStake: _appData.authorizedStake.toString(),
           pendingAuthorizationDecrease:
             _appData.pendingAuthorizationDecrease.toString(),
