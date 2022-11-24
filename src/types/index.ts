@@ -7,6 +7,7 @@ export * from "./eth"
 export * from "./page"
 export * from "./rewards"
 export * from "./staking"
+export * from "./staking-applications"
 
 export type FetchingState<DataType> = {
   isInitialFetchDone?: boolean

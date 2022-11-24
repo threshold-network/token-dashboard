@@ -16,6 +16,7 @@ import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { StakingAppName } from "../../../../store/staking-applications"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import Link from "../../../../components/Link"
+import { AuthorizationStatus } from "../../../../types"
 
 interface CommonProps {
   label: string
@@ -25,16 +26,16 @@ interface CommonProps {
 
 type ConditionalProps =
   | {
-      isAuthorizationRequired?: false
-      isAuthorized?: never
+      status?: Extract<AuthorizationStatus, "authorization-not-required">
       authorizedStake?: never
-      hasPendingDeauthorization?: never
     }
   | {
-      isAuthorizationRequired: true
-      isAuthorized: boolean
-      authorizedStake?: string
-      hasPendingDeauthorization: boolean
+      status: Extract<AuthorizationStatus, "to-authorize">
+      authorizedStake?: never
+    }
+  | {
+      status: Exclude<AuthorizationStatus, "authorization-not-required">
+      authorizedStake: string
     }
 
 const TooltipLearnMoreLink = () => {
@@ -66,44 +67,61 @@ export type AppAuthorizationInfoProps = CommonProps &
   ConditionalProps &
   StackProps
 
+const statusToBadge: Record<
+  Exclude<AuthorizationStatus, "to-authorize">,
+  { props: any; label: string }
+> = {
+  "authorization-not-required": {
+    props: {
+      colorScheme: "gray",
+      color: "gray.500",
+    },
+    label: "authorization not required",
+  },
+  authorized: {
+    props: {
+      colorScheme: "green",
+    },
+    label: "authorized",
+  },
+  "pending-deauthorization": {
+    props: {
+      colorScheme: "yellow",
+    },
+    label: "pending deauthorization",
+  },
+  "deauthorization-initiation-needed": {
+    props: {
+      colorScheme: "red",
+    },
+    label: "deauthorization initiation needed",
+  },
+}
+
 export const AppAuthorizationInfo: FC<AppAuthorizationInfoProps> = ({
   label,
   percentageAuthorized,
-  isAuthorized,
   authorizedStake,
-  hasPendingDeauthorization,
   stakingAppName,
-  isAuthorizationRequired = false,
+  status,
   ...restProps
 }) => {
   return (
     <VStack alignItems={"flex-start"} {...restProps}>
       <HStack mb="1rem !important">
-        {isAuthorized && !hasPendingDeauthorization && (
-          <CheckCircleIcon color="green.400" />
-        )}
+        {status === "authorized" && <CheckCircleIcon color="green.400" />}
         <LabelSm>
           {label} App -{" "}
           {formatPercentage(percentageAuthorized, undefined, true)}
         </LabelSm>{" "}
         <TooltipIcon label={tooltipText[stakingAppName]} />
-        {!isAuthorizationRequired && (
-          <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
-            Authorization not required
-          </Badge>
-        )}
-        {isAuthorizationRequired && isAuthorized && !hasPendingDeauthorization && (
-          <Badge variant={"subtle"} colorScheme="green" size="small">
-            Authorized
-          </Badge>
-        )}
-        {hasPendingDeauthorization && (
-          <Badge variant={"subtle"} colorScheme="yellow" size="small">
-            pending deauthorization
+        {status && status !== "to-authorize" && (
+          <Badge variant="subtle" {...statusToBadge[status].props}>
+            {statusToBadge[status].label}
           </Badge>
         )}
       </HStack>
-      {isAuthorizationRequired && isAuthorized && authorizedStake && (
+      {authorizedStake && authorizedStake !== "0" && (
         <>
           <BodyMd mt="2.5rem !important">Total Authorized Balance</BodyMd>
           <InfoBox pr="44">
