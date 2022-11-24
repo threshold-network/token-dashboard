@@ -6,7 +6,7 @@ import {
   StakingAppName,
 } from "./slice"
 import { selectStakeByStakingProvider } from "../staking"
-import { StakeData } from "../../types"
+import { AuthorizationStatus, StakeData } from "../../types"
 import { calculatePercenteage } from "../../utils/percentage"
 import { BigNumber } from "ethers"
 import { Zero } from "@ethersproject/constants"
@@ -36,19 +36,37 @@ export const selectStakingAppByStakingProvider = createSelector(
   ) => {
     const authData = appState.stakingProviders.data[stakingProvider] || {}
     const minAuth = appState.parameters.data.minimumAuthorization
+
+    const isAuthorized = BigNumber.from(authData?.authorizedStake || "0").gte(
+      BigNumber.from(minAuth || 0)
+    )
+
+    const hasPendingDeauthorization = Boolean(
+      authData.pendingAuthorizationDecrease &&
+        BigNumber.from(authData.pendingAuthorizationDecrease).gt(Zero)
+    )
+
+    let status: AuthorizationStatus = "to-authorize"
+    if (isAuthorized && !hasPendingDeauthorization) {
+      status = "authorized"
+    } else if (
+      hasPendingDeauthorization &&
+      !authData?.isDeauthorizationReqestActive
+    ) {
+      status = "pending-deauthorization"
+    } else if (!authData?.isDeauthorizationReqestActive) {
+      status = "deauthorization-initiation-needed"
+    }
+
     return {
       ...authData,
-      isAuthorized: BigNumber.from(authData?.authorizedStake || "0").gte(
-        BigNumber.from(minAuth || 0)
-      ),
+      isAuthorized,
       percentage: calculatePercenteage(
         authData?.authorizedStake,
         stake?.totalInTStake
       ),
-      hasPendingDeauthorization: Boolean(
-        authData.pendingAuthorizationDecrease &&
-          BigNumber.from(authData.pendingAuthorizationDecrease).gt(Zero)
-      ),
+      hasPendingDeauthorization,
+      status,
     }
   }
 )
