@@ -5,7 +5,7 @@ import {
   StakingProviderAppInfo,
   AuthorizationParameters,
 } from "../../threshold-ts/applications"
-import { MAX_UINT64 } from "../../threshold-ts/utils"
+import { AddressZero, MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
 import { providerStaked, setStakes } from "../staking"
@@ -234,6 +234,8 @@ export const stakingApplicationsSlice = createSlice({
           remainingAuthorizationDecreaseDelay: "0",
           isDeauthorizationReqestActive: false,
           deauthorizationCreatedAt: undefined,
+          isOperatorInPool: undefined,
+          operator: AddressZero,
         }
 
         state.randomBeacon.stakingProviders.data[stakingProvider] = {
