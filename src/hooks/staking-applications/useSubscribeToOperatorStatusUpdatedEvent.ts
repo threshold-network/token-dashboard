@@ -1,3 +1,4 @@
+import { Event } from "ethers"
 import {
   stakingApplicationsSlice,
   StakingAppName,
@@ -16,8 +17,8 @@ export const useSubscribeToOperatorStatusUpdatedEvent = (
     contract,
     "OperatorStatusUpdated",
     // @ts-ignore
-    async (stakingProvider: string) => {
-      const txHash = ""
+    async (stakingProvider: string, operator: string, event: Event) => {
+      const txHash = event.transactionHash
       dispatch(
         stakingApplicationsSlice.actions.operatorStatusUpdated({
           stakingProvider,
