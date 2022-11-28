@@ -8,7 +8,7 @@ import { useToken } from "../../hooks/useToken"
 import { tBTCFillBlack } from "../../static/icons/tBTCFillBlack"
 
 export interface TokenBalanceCardProps {
-  token: Exclude<Token, Token.TBTC>
+  token: Exclude<Token, Token.TBTCV1>
   title?: string
   tokenSymbol?: string
   withSymbol?: boolean
@@ -18,7 +18,7 @@ const tokenToIconMap = {
   [Token.Keep]: KeepCircleBrand,
   [Token.Nu]: NuCircleBrand,
   [Token.T]: T,
-  [Token.TBTCV2]: tBTCFillBlack,
+  [Token.TBTC]: tBTCFillBlack,
 }
 
 const TokenBalanceCard: FC<TokenBalanceCardProps> = ({

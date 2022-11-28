@@ -13,8 +13,8 @@ export const useTokenState: UseTokenState = () => {
   const keep = useAppSelector((state) => state.token[Token.Keep])
   const nu = useAppSelector((state) => state.token[Token.Nu])
   const t = useAppSelector((state) => state.token[Token.T])
+  const tbtcv1 = useAppSelector((state) => state.token[Token.TBTCV1])
   const tbtc = useAppSelector((state) => state.token[Token.TBTC])
-  const tbtcv2 = useAppSelector((state) => state.token[Token.TBTCV2])
 
   const dispatch = useAppDispatch()
 
@@ -43,8 +43,8 @@ export const useTokenState: UseTokenState = () => {
     keep,
     nu,
     t,
-    tbtc,
-    tbtcv2,
+    tbtc: tbtcv1,
+    tbtcv2: tbtc,
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,

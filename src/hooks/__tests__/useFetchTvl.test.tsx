@@ -60,7 +60,7 @@ describe("Test `useFetchTvl` hook", () => {
     <TokenContext.Provider
       value={{
         [Token.Keep]: keepContext,
-        [Token.TBTC]: tbtcContext,
+        [Token.TBTCV1]: tbtcContext,
         [Token.T]: tContext,
         [Token.Nu]: nuContext,
       }}
@@ -145,7 +145,7 @@ describe("Test `useFetchTvl` hook", () => {
     // then
     expect(useETHData).toHaveBeenCalled()
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.Keep)
-    expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTC)
+    expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTCV1)
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.T)
     expect(useKeepBondingContract).toHaveBeenCalled()
     expect(useMulticallContract).toHaveBeenCalled()

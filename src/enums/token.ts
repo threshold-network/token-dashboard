@@ -2,8 +2,8 @@ export enum Token {
   Keep = "KEEP",
   Nu = "NU",
   T = "T",
+  TBTCV1 = "TBTCV1",
   TBTC = "TBTC",
-  TBTCV2 = "TBTCV2",
 }
 
 export enum CoingeckoID {
@@ -11,9 +11,9 @@ export enum CoingeckoID {
   NU = "nucypher",
   T = "threshold-network-token",
   ETH = "ethereum",
-  TBTC = "tbtc",
+  TBTCV1 = "tbtc",
   // TODO: add prope tbtc-v2 id when it lands on coingecko
-  TBTCV2 = "tbtc",
+  TBTC = "tbtc",
 }
 
 export enum TConversionRates {

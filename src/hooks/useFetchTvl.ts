@@ -51,7 +51,7 @@ export const useFetchTvl = (): [TVLData, () => Promise<TVLRawData>] => {
 
   const eth = useETHData()
   const keep = useToken(Token.Keep)
-  const tbtc = useToken(Token.TBTC)
+  const tbtc = useToken(Token.TBTCV1)
   const t = useToken(Token.T)
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()

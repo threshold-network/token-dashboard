@@ -52,13 +52,13 @@ export const tokenSlice = createSlice({
       usdConversion: 0,
       usdBalance: "0",
     },
-    [Token.TBTC]: {
+    [Token.TBTCV1]: {
       loading: false,
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
     },
-    [Token.TBTCV2]: {
+    [Token.TBTC]: {
       loading: false,
       balance: 0,
       usdConversion: 0,

@@ -24,12 +24,12 @@ export const fetchTokenBalances = async (
     { token: keep, name: Token.Keep },
     { token: nu, name: Token.Nu },
     { token: t, name: Token.T },
-    { token: tbtcv1, name: Token.TBTC },
-    { token: tbtc, name: Token.TBTCV2 },
+    { token: tbtcv1, name: Token.TBTCV1 },
+    { token: tbtc, name: Token.TBTC },
   ]
 
   if (featureFlags.TBTC_V2) {
-    tokens.push({ token: tbtc, name: Token.TBTCV2 })
+    tokens.push({ token: tbtc, name: Token.TBTC })
   }
 
   listenerApi.unsubscribe()

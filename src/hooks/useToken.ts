@@ -13,15 +13,15 @@ const useSupportedTokens = () => {
   const keep = useKeep()
   const nu = useNu()
   const t = useT()
-  const tbtc = useTBTCTokenContract()
-  const tbtcv2 = useTBTCv2TokenContract()
+  const tbtcv1 = useTBTCTokenContract()
+  const tbtc = useTBTCv2TokenContract()
 
   return {
     [Token.Keep]: keep,
     [Token.Nu]: nu,
     [Token.T]: t,
+    [Token.TBTCV1]: tbtcv1,
     [Token.TBTC]: tbtc,
-    [Token.TBTCV2]: tbtcv2,
   }
 }
 

@@ -8,7 +8,7 @@ export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = ({
 }) => {
   return (
     <TokenBalanceCard
-      token={Token.TBTCV2}
+      token={Token.TBTC}
       title={"TBTC Balance"}
       tokenSymbol={"TBTC"}
       withSymbol={true}
