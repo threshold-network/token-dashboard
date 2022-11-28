@@ -4,5 +4,5 @@ import { Token } from "../../enums"
 
 export const useTBTCTokenContract = () => {
   const threshold = useThreshold()
-  return useErc20TokenContract(threshold.tokens.tbtcv1, Token.TBTC)
+  return useErc20TokenContract(threshold.token.tbtcv1, Token.TBTC)
 }

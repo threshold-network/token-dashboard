@@ -18,7 +18,7 @@ export const fetchTokenBalances = async (
   const address = actionCreator.payload
   if (!isAddress(address)) return
 
-  const { keep, nu, t, tbtc, tbtcv1 } = listenerApi.extra.threshold.tokens
+  const { keep, nu, t, tbtc, tbtcv1 } = listenerApi.extra.threshold.token
 
   const tokens = [
     { token: keep, name: Token.Keep },

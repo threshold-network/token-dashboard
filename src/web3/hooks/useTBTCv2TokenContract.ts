@@ -4,5 +4,5 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const useTBTCv2TokenContract = () => {
   const threshold = useThreshold()
-  return useErc20TokenContract(threshold.tokens.tbtc, Token.TBTCV2)
+  return useErc20TokenContract(threshold.token.tbtc, Token.TBTCV2)
 }

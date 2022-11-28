@@ -10,7 +10,7 @@ export class Threshold {
   staking!: IStaking
   multiAppStaking!: MultiAppStaking
   vendingMachines!: IVendingMachines
-  tokens!: ITokens
+  token!: ITokens
 
   constructor(config: ThresholdConfig) {
     this._initialize(config)
@@ -18,7 +18,7 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.multicall = new Multicall(config.ethereum)
-    this.tokens = new Tokens(config.ethereum)
+    this.token = new Tokens(config.ethereum)
     this.vendingMachines = new VendingMachines(config.ethereum)
     this.staking = new Staking(
       config.ethereum,

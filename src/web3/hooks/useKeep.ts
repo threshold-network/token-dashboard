@@ -5,5 +5,5 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 export const useKeep = () => {
   const threshold = useThreshold()
 
-  return useErc20TokenContract(threshold.tokens.keep, Token.Keep)
+  return useErc20TokenContract(threshold.token.keep, Token.Keep)
 }
