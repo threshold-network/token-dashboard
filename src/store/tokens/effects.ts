@@ -5,10 +5,10 @@ import { isAddress } from "../../web3/utils"
 import { walletConnected } from "../account"
 import { AppListenerEffectAPI } from "../listener"
 import {
-  setTokenBalance,
-  setTokenLoading,
+  tokenBalanceFetched,
+  tokenBalanceFetching,
   fetchTokenPriceUSD,
-  setTokenBalanceError,
+  tokenBalanceFetchFailed,
 } from "./tokenSlice"
 
 export const fetchTokenBalances = async (
@@ -36,7 +36,7 @@ export const fetchTokenBalances = async (
   try {
     tokens.forEach((_) => {
       listenerApi.dispatch(
-        setTokenLoading({
+        tokenBalanceFetching({
           token: _.name,
         })
       )
@@ -56,7 +56,10 @@ export const fetchTokenBalances = async (
 
     tokens.forEach((_, index) => {
       listenerApi.dispatch(
-        setTokenBalance({ token: _.name, balance: balances[index].toString() })
+        tokenBalanceFetched({
+          token: _.name,
+          balance: balances[index].toString(),
+        })
       )
     })
 
@@ -70,7 +73,14 @@ export const fetchTokenBalances = async (
     tokens
       .map((_) => _.name)
       .forEach((tokenName) =>
-        listenerApi.dispatch(setTokenBalanceError({ token: tokenName }))
+        listenerApi.dispatch(
+          tokenBalanceFetchFailed({
+            token: tokenName,
+            error: `Could not fetch token balances. Error: ${(
+              error as Error
+            )?.toString()}`,
+          })
+        )
       )
     listenerApi.subscribe()
   }

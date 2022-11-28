@@ -21,7 +21,8 @@ export const useErc20TokenContract: UseErc20Interface = (
         const balance = await token.balanceOf(address)
         setTokenBalance(tokenName, balance.toString())
       } catch (error) {
-        setTokenBalanceError(tokenName)
+        const errorMessage = `Error: Fetching ${token} balance failed for ${address}`
+        setTokenBalanceError(tokenName, errorMessage)
         console.log(
           `Error: Fetching ${token} balance failed for ${address}`,
           error

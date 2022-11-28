@@ -1,8 +1,8 @@
 import {
-  setTokenBalance as setTokenBalanceAction,
-  setTokenLoading as setTokenLoadingAction,
+  tokenBalanceFetched as setTokenBalanceAction,
+  tokenBalanceFetching as setTokenLoadingAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
-  setTokenBalanceError as setTokenBalanceErrorAction,
+  tokenBalanceFetchFailed as setTokenBalanceErrorAction,
 } from "../store/tokens"
 import { useAppDispatch, useAppSelector } from "./store"
 import { Token } from "../enums"
@@ -35,7 +35,8 @@ export const useTokenState: UseTokenState = () => {
   )
 
   const setTokenBalanceError = useCallback(
-    (token: Token) => dispatch(setTokenBalanceErrorAction({ token })),
+    (token: Token, error: string) =>
+      dispatch(setTokenBalanceErrorAction({ token, error })),
     [dispatch]
   )
 

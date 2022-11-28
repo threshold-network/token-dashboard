@@ -35,6 +35,7 @@ export const tokenSlice = createSlice({
       icon: Icon.KeepCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
+      error: "",
     },
     [Token.Nu]: {
       loading: false,
@@ -43,6 +44,7 @@ export const tokenSlice = createSlice({
       icon: Icon.NuCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
+      error: "",
     },
     [Token.T]: {
       loading: false,
@@ -51,28 +53,31 @@ export const tokenSlice = createSlice({
       icon: Icon.TCircleBrand,
       usdConversion: 0,
       usdBalance: "0",
+      error: "",
     },
     [Token.TBTCV1]: {
       loading: false,
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
+      error: "",
     },
     [Token.TBTC]: {
       loading: false,
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
+      error: "",
     },
   } as TokensState,
   reducers: {
-    setTokenLoading: (
+    tokenBalanceFetching: (
       state,
       action: PayloadAction<SetTokenLoadingActionPayload>
     ) => {
       state[action.payload.token].loading = true
     },
-    setTokenBalance: (
+    tokenBalanceFetched: (
       state,
       action: PayloadAction<SetTokenBalanceActionPayload>
     ) => {
@@ -83,13 +88,15 @@ export const tokenSlice = createSlice({
         state[token].balance,
         state[token].usdConversion
       )
+      state[token].error = ""
     },
-    setTokenBalanceError: (
+    tokenBalanceFetchFailed: (
       state,
       action: PayloadAction<SetTokenBalanceErrorActionPayload>
     ) => {
-      const { token } = action.payload
+      const { token, error } = action.payload
       state[token].loading = false
+      state[token].error = error
     },
   },
   extraReducers: (builder) => {
@@ -105,8 +112,11 @@ export const tokenSlice = createSlice({
   },
 })
 
-export const { setTokenBalance, setTokenLoading, setTokenBalanceError } =
-  tokenSlice.actions
+export const {
+  tokenBalanceFetched,
+  tokenBalanceFetching,
+  tokenBalanceFetchFailed,
+} = tokenSlice.actions
 
 export const registerTokensListeners = () => {
   startAppListening({

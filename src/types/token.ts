@@ -12,6 +12,7 @@ export interface TokenState {
   usdConversion: number
   usdBalance: string
   decimals?: number
+  error: string
 }
 
 export interface SetTokenBalanceActionPayload {
@@ -21,6 +22,7 @@ export interface SetTokenBalanceActionPayload {
 
 export interface SetTokenBalanceErrorActionPayload {
   token: Token
+  error: string
 }
 
 export interface SetTokenLoadingActionPayload {
@@ -50,7 +52,7 @@ export interface UseTokenState {
     ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void
-    setTokenBalanceError: (token: Token) => TokenActionTypes
+    setTokenBalanceError: (token: Token, error: string) => TokenActionTypes
   }
 }
 
