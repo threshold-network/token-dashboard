@@ -29,20 +29,24 @@ export class BaseERC20Token implements IERC20 {
       config.account
     )
   }
-  balanceOf = (account: string): Promise<BigNumber> => {
-    return this._contract.balanceOf(account)
+
+  balanceOf = async (account: string): Promise<BigNumber> => {
+    return await this._contract.balanceOf(account)
   }
 
-  allowance = (owner: string, spender: string): Promise<BigNumber> => {
-    return this._contract.allowance(owner, spender)
+  allowance = async (owner: string, spender: string): Promise<BigNumber> => {
+    return await this._contract.allowance(owner, spender)
   }
 
-  totalSupply = (): Promise<BigNumber> => {
-    return this._contract.totalSupply()
+  totalSupply = async (): Promise<BigNumber> => {
+    return await this._contract.totalSupply()
   }
 
-  approve = (spender: string, amount: string): Promise<ContractTransaction> => {
-    return this._contract.approve(spender, amount)
+  approve = async (
+    spender: string,
+    amount: string
+  ): Promise<ContractTransaction> => {
+    return await this._contract.approve(spender, amount)
   }
 
   get contract() {
