@@ -16,6 +16,7 @@ import {
   ModalHeader,
   Stack,
   useColorModeValue,
+  Box,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
@@ -25,17 +26,32 @@ import { StakingAppName } from "../../../store/staking-applications"
 import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
 import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
 import ModalCloseButton from "../ModalCloseButton"
+import { StakingProviderAppInfo } from "../../../threshold-ts/applications"
 
-const InitiateDeauthorization: FC<{
-  closeModal: () => void
-  stakingProvider: string
-  decreaseAmount: string
-  stakingAppName: StakingAppName
-}> = ({ closeModal, stakingProvider, decreaseAmount, stakingAppName }) => {
-  const { sendTransaction } = useInitiateDeauthorization(stakingAppName)
+const InitiateDeauthorization: FC<
+  {
+    closeModal: () => void
+    stakingProvider: string
+    decreaseAmount: string
+    stakingAppName: StakingAppName
+  } & Pick<StakingProviderAppInfo, "isOperatorInPool" | "operator">
+> = ({
+  closeModal,
+  stakingProvider,
+  decreaseAmount,
+  stakingAppName,
+  isOperatorInPool,
+  operator,
+}) => {
+  const shouldUpdateOperatorStatusAfterInitiation =
+    isOperatorInPool !== undefined && !isOperatorInPool
+  const { sendTransaction } = useInitiateDeauthorization(
+    stakingAppName,
+    shouldUpdateOperatorStatusAfterInitiation
+  )
 
   const handleInitiateClick = async () => {
-    await sendTransaction(stakingProvider, decreaseAmount)
+    await sendTransaction(stakingProvider, decreaseAmount, operator)
   }
 
   return (
@@ -51,6 +67,9 @@ const InitiateDeauthorization: FC<{
           <BodyLg>
             Initiation and confirmation of deauthorization is a two step action.
           </BodyLg>
+          {shouldUpdateOperatorStatusAfterInitiation && (
+            <BodyLg>Initiation is comprised of 2 transactions.</BodyLg>
+          )}
         </InfoBox>
         <StakingApplicationOperationIcon
           stakingApplication={stakingAppName}
@@ -89,7 +108,14 @@ const InitiateDeauthorization: FC<{
             status={FlowStepStatus.active}
             size="sm"
           >
-            This is 1 transaction
+            {shouldUpdateOperatorStatusAfterInitiation ? (
+              <>
+                1 transaction- Deauthorization Request.
+                <Box as="p">1 transaction- Deauthorization Initiation.</Box>
+              </>
+            ) : (
+              "This is 1 transaction."
+            )}
           </FlowStep>
           <FlowStep
             preTitle="Step 2"

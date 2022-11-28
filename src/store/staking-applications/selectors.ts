@@ -51,11 +51,13 @@ export const selectStakingAppByStakingProvider = createSelector(
       status = "authorized"
     } else if (
       hasPendingDeauthorization &&
-      !authData?.isDeauthorizationReqestActive
+      !authData?.isDeauthorizationReqestActive &&
+      authData.isOperatorInPool !== undefined &&
+      !authData.isOperatorInPool
     ) {
-      status = "pending-deauthorization"
-    } else if (!authData?.isDeauthorizationReqestActive) {
       status = "deauthorization-initiation-needed"
+    } else if (hasPendingDeauthorization) {
+      status = "pending-deauthorization"
     }
 
     return {
