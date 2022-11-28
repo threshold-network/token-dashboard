@@ -309,11 +309,11 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay,
       requestTimestamp,
       { authorizationDecreaseDelay },
-      operator,
+      [operator],
     ] = await this._multicall.aggregate(calls)
 
     let isOperatorInPool = undefined
-    if (!isAddressZero(operator)) {
+    if (operator && !isAddressZero(operator)) {
       isOperatorInPool = await this._application.isOperatorInPool(operator)
     }
 
