@@ -11,8 +11,7 @@ import {
 } from "../../web3/hooks"
 import { useETHData } from "../useETHData"
 import { useFetchTvl } from "../useFetchTvl"
-import * as useTokenModule from "../useToken"
-import { TokenContext } from "../../contexts/TokenContext"
+import { useToken } from "../useToken"
 import * as usdUtils from "../../utils/getUsdBalance"
 
 jest.mock("../../web3/hooks", () => ({
@@ -28,6 +27,11 @@ jest.mock("../../web3/hooks", () => ({
 jest.mock("../useETHData", () => ({
   ...(jest.requireActual("../useETHData") as {}),
   useETHData: jest.fn(),
+}))
+
+jest.mock("../useToken", () => ({
+  ...(jest.requireActual("../useToken") as {}),
+  useToken: jest.fn(),
 }))
 
 describe("Test `useFetchTvl` hook", () => {
@@ -56,18 +60,7 @@ describe("Test `useFetchTvl` hook", () => {
   const mockedMultiCallContract = { interface: {}, address: "0x3" }
   const mockedKeepAssetPoolContract = { interface: {}, address: "0x4" }
 
-  const wrapper = ({ children }) => (
-    <TokenContext.Provider
-      value={{
-        [Token.Keep]: keepContext,
-        [Token.TBTCV1]: tbtcContext,
-        [Token.T]: tContext,
-        [Token.Nu]: nuContext,
-      }}
-    >
-      {children}
-    </TokenContext.Provider>
-  )
+  const wrapper = ({ children }) => <>{children}</>
 
   const multicallRequest = jest.fn()
   const mockedETHData = { usdPrice: 20 }
@@ -88,6 +81,16 @@ describe("Test `useFetchTvl` hook", () => {
     ;(useKeepTokenStakingContract as jest.Mock).mockReturnValue(
       mockedKeepTokenStakingContract
     )
+    ;(useToken as jest.Mock).mockImplementation((token: Token) => {
+      switch (token) {
+        case Token.Keep:
+          return keepContext
+        case Token.T:
+          return tContext
+        case Token.TBTCV1:
+          return tbtcContext
+      }
+    })
   })
 
   test("should fetch tvl data correctly.", async () => {
@@ -110,7 +113,6 @@ describe("Test `useFetchTvl` hook", () => {
 
     const spyOnFormatUnits = jest.spyOn(ethersUnits, "formatUnits")
     const spyOnToUsdBalance = jest.spyOn(usdUtils, "toUsdBalance")
-    const spyOnUseToken = jest.spyOn(useTokenModule, "useToken")
 
     const _expectedResult = {
       ecdsa: ethInKeepBonding.format * mockedETHData.usdPrice,
@@ -144,9 +146,9 @@ describe("Test `useFetchTvl` hook", () => {
 
     // then
     expect(useETHData).toHaveBeenCalled()
-    expect(spyOnUseToken).toHaveBeenCalledWith(Token.Keep)
-    expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTCV1)
-    expect(spyOnUseToken).toHaveBeenCalledWith(Token.T)
+    expect(useToken).toHaveBeenCalledWith(Token.Keep)
+    expect(useToken).toHaveBeenCalledWith(Token.TBTCV1)
+    expect(useToken).toHaveBeenCalledWith(Token.T)
     expect(useKeepBondingContract).toHaveBeenCalled()
     expect(useMulticallContract).toHaveBeenCalled()
     expect(useKeepAssetPoolContract).toHaveBeenCalled()
