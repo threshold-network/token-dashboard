@@ -1,45 +1,10 @@
 import React, { useState } from "react"
-import {
-  Button,
-  Divider,
-  Table,
-  Th,
-  Thead,
-  Tbody,
-  Tr,
-  Td,
-  Card,
-  H5,
-} from "@threshold-network/components"
+import { Button, Divider, Card, H5 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
-import { Radio, RadioGroup } from "@chakra-ui/react"
-
-interface Row {
-  id: RowID
-  text: string
-  value?: RowValue
-}
-
-enum RowValue {
-  StrongDisagree = "STRONGLY_DISAGREE",
-  Disagree = "DISAGREE",
-  Neutral = "NEUTRAL",
-  Agree = "AGREE",
-  StronglyAgree = "STRONGLY_AGREE",
-}
-
-enum RowID {
-  FrequentUsage = "FREQUENT_USAGE",
-  UnnecessarilyComplex = "UNNECESSARILY_COMPLEX",
-  EasyToUse = "EASY_TO_USE",
-  NeedTechnicalSupportPerson = "NEED_TECHNICAL_SUPPORT_PERSON",
-  WellIntegratedFunctions = "WELL_INTEGRATED_FUNCTIONS",
-  TooMuchInconsistency = "TOO_MUCH_INCONSISTENCY",
-  QuickToLearn = "QUICK_TO_LEARN",
-  InconvenientToUse = "INCONVENIENT_TO_USE",
-  Confident = "CONFIDENT",
-  HighLearningCurve = "HIGH_LEARNING_CURVE",
-}
+import { Row, RowID, RowValue } from "./types"
+import TableSurvey from "./TableSurvey"
+import MobileSurvey from "./MobileSurvey"
+import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 
 const UsabilitySurvey: PageComponent = () => {
   const [rows, setRows] = useState<Row[]>([
@@ -119,72 +84,20 @@ const UsabilitySurvey: PageComponent = () => {
     // TODO: Implement post to survey data tracking source
   }
 
-  const s = {
-    py: 6,
-    borderColor: "gray.50",
-  }
-
-  const firstColWidth = {
-    base: "200px",
-    xl: "300px",
-  }
+  const isSmallScreen = useChakraBreakpoint("xl")
 
   return (
     <Card>
       <H5 mb={8}>Overall Product Usability Score</H5>
       <Divider mb={4} />
-      <Table sx={{ tableLayout: "fixed" }}>
-        <Thead>
-          <Tr>
-            <Th {...s} width={firstColWidth}>
-              Question
-            </Th>
-            <Th {...s}>Strongly Disagree</Th>
-            <Th {...s}>Disagree</Th>
-            <Th {...s}>Neutral</Th>
-            <Th {...s}>Agree</Th>
-            <Th {...s}>Strongly Agree</Th>
-          </Tr>
-        </Thead>
-      </Table>
+      {isSmallScreen ? (
+        <MobileSurvey rows={rows} handleRadioClick={handleRadioClick} />
+      ) : (
+        <TableSurvey rows={rows} handleRadioClick={handleRadioClick} />
+      )}
 
-      {/* TODO: Implement pagination */}
-      {rows.map((row, i) => {
-        return (
-          <RadioGroup
-            key={row.id}
-            onChange={(value: RowValue) => handleRadioClick(row.id, value)}
-            value={row.value}
-          >
-            <Table sx={{ tableLayout: "fixed" }} key={row.text}>
-              <Tbody>
-                <Tr bg={i % 2 == 0 ? "gray.50" : undefined} {...s}>
-                  <Td {...s} width={firstColWidth}>
-                    {row.text}
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.StrongDisagree}>1</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Disagree}>2</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Neutral}>3</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Agree}>4</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.StronglyAgree}>5</Radio>
-                  </Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </RadioGroup>
-        )
-      })}
-      <Button mt={4} onClick={handleSubmit}>
-        Submit
+      <Button mt={4} onClick={handleSubmit} isFullWidth={isSmallScreen}>
+        Submit Survey
       </Button>
     </Card>
   )
