@@ -23,6 +23,7 @@ import { MintingStep } from "../../../../types/tbtc"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -44,13 +45,23 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
-  const { updateState } = useTbtcState()
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
+    useTbtcState()
+  const threshold = useThreshold()
 
-  const handleSubmit = () => {
-    updateState("mintingStep", MintingStep.InitiateMinting)
+  const handleSubmit = async () => {
+    // we should probably call this function with some kind of a timeout and
+    // block the "i sent the btc" button until there are any unspent transaction
+    // output for a given deposit address
+    threshold.tbtc.mockDepositTransaction(btcDepositAddress)
+    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+      btcDepositAddress
+    )
+    // TODO: Check if any of the utxo's is not revealed
+    if (utxos.length > 0) {
+      updateState("mintingStep", MintingStep.InitiateMinting)
+    }
   }
-
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
     <Box>
