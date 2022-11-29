@@ -8,7 +8,7 @@ import {
   Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Link as RouterLink, useLocation, useMatch } from "react-router-dom"
+import { Link as RouterLink, useMatch } from "react-router-dom"
 import { useSidebar } from "../../hooks/useSidebar"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
