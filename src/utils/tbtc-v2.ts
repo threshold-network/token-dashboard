@@ -36,9 +36,9 @@ export const createDepositScriptParameters = (
       identifierHex,
     },
     blindingFactor,
-    walletPublicKey:
+    walletPublicKeyHash:
       "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
-    refundPublicKey:
+    refundPublicKeyHash:
       "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
     refundLocktime,
   }
