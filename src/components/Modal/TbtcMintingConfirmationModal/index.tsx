@@ -19,20 +19,31 @@ import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
 import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { Deposit } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
+import { BigNumber } from "ethers"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
     updateState,
+    btcDepositAddress,
     tBTCMintAmount,
     isLoadingTbtcMintAmount,
     isLoadingBitcoinMinerFee,
+    btcRecoveryAddress,
+    ethAddress,
+    refundLocktime,
+    walletPublicKey,
+    blindingFactor,
   } = useTbtcState()
+  const threshold = useThreshold()
 
   const { mint } = useTbtcMintTransaction((tx) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
   })
 
-  const initiateMintTransaction = () => {
+  const initiateMintTransaction = async () => {
     // TODO: implement this
     // mint({})
 
@@ -41,7 +52,23 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     // 2. the sweep will mint automatically
     // 3. minting will happen behind the scenes
 
-    // TODO: this is a shortcut for now. We need to implement this properly
+    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+      btcDepositAddress
+    )
+    const deposit: Deposit = {
+      depositor: {
+        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
+      },
+      // TODO: we should first check if the utxo is not revealed and reveal the
+      // deposit for each unrevealed utxo
+      amount: BigNumber.from(utxos[0].value),
+      blindingFactor,
+      walletPublicKey,
+      refundPublicKey:
+        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      refundLocktime,
+    }
+    await threshold.tbtc.revealDeposit(utxos[0], deposit)
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }
