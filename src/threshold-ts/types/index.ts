@@ -9,5 +9,6 @@ export interface EthereumConfig {
 export interface ThresholdConfig {
   ethereum: EthereumConfig
   // TODO: Define the bitcoin config for the tbtc v2 lib.
+  mockTbtc: boolean
   // bitcoin: {}
 }
