@@ -122,6 +122,9 @@ export const ProvideData: FC = () => {
 
       // create a new deposit address,
       updateState("btcDepositAddress", depositAddress)
+      updateState("blindingFactor", depositScriptParameters.blindingFactor)
+      updateState("refundLocktime", depositScriptParameters.refundLocktime)
+      updateState("walletPublicKey", depositScriptParameters.walletPublicKey)
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       openModal(ModalType.TbtcRecoveryJson, {
