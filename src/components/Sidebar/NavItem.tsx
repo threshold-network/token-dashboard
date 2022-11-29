@@ -8,7 +8,7 @@ import {
   Tooltip,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { Link as RouterLink, useMatch } from "react-router-dom"
+import { Link as RouterLink, useLocation, useMatch } from "react-router-dom"
 import { useSidebar } from "../../hooks/useSidebar"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 
@@ -29,7 +29,9 @@ const NavItem: FC<NavItemDetail> = ({
 }) => {
   const { isOpen, closeSidebar } = useSidebar()
   const isMobileDevice = useChakraBreakpoint("md")
-  const isActive = useMatch(`${href}/*`)
+  const subrouteWildcard = `${href.split("/")[1]}/*`
+  const match = subrouteWildcard === "/*" ? "" : subrouteWildcard
+  const isActive = useMatch(match)
   const brandColor = useColorModeValue("brand.500", "brand.50")
   const tooltipBtnColor = useColorModeValue("gray.700", "brand.50")
   const tooltipBgColor = useColorModeValue("gray.800", "white")
