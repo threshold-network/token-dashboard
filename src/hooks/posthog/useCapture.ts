@@ -2,19 +2,17 @@ import { useCallback } from "react"
 import { PosthogEvent } from "../../types/posthog"
 import { featureFlags } from "../../constants"
 import * as posthog from "../../posthog"
-import { useAppSelector } from "../store"
+import { useAnalytics } from "../useAnalytics"
 
 export const useCapture = (eventName: PosthogEvent) => {
-  const shouldEnableAnalytics = useAppSelector(
-    (state) => state.analytics.shouldEnableAnalytics
-  )
+  const { isAnalyticsEnabled } = useAnalytics()
 
   return useCallback(
     (params) => {
       if (!featureFlags.POSTHOG) return
-      if (!shouldEnableAnalytics) return
+      if (!isAnalyticsEnabled) return
       posthog.capture(eventName, params)
     },
-    [eventName, shouldEnableAnalytics]
+    [eventName, isAnalyticsEnabled]
   )
 }

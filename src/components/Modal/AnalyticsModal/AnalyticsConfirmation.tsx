@@ -23,19 +23,19 @@ import diagonalArrowDark from "../../../static/images/DiagonalArrowDark.png"
 import FeedbackInfoItem from "./FeedbackInfoItem"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
-import { useAppDispatch } from "../../../hooks/store"
-import { analyticsSlice } from "../../../store/analytics"
+import { useAnalytics } from "../../../hooks/useAnalytics"
 
 const AnalyticsConfirmation: FC<{
   setStage: (stage: "CONFIRM" | "ACCEPT" | "REJECT") => void
 }> = ({ setStage }) => {
-  const dispatch = useAppDispatch()
+  const { enableAnalytics, disableAnalytics } = useAnalytics()
+
   const handleAccept = () => {
-    dispatch(analyticsSlice.actions.optIn())
+    enableAnalytics()
     setStage("ACCEPT")
   }
   const handleDecline = () => {
-    dispatch(analyticsSlice.actions.optOut())
+    disableAnalytics()
     setStage("REJECT")
   }
 

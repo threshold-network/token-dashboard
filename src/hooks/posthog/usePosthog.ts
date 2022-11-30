@@ -3,16 +3,17 @@ import { featureFlags } from "../../constants"
 import * as posthog from "../../posthog"
 import { useCapturePageview } from "./useCapturePageview"
 import { useIdentify } from "./useIdentify"
-import { useAppSelector } from "../store"
+import { useAnalytics } from "../useAnalytics"
 
 export const usePosthog = () => {
-  const shouldEnableAnalytics = useAppSelector(
-    (state) => state.analytics.shouldEnableAnalytics
-  )
+  const { isAnalyticsEnabled } = useAnalytics()
 
   useEffect(() => {
-    if (featureFlags.POSTHOG && shouldEnableAnalytics) posthog.init()
-  }, [shouldEnableAnalytics])
+    if (featureFlags.POSTHOG && isAnalyticsEnabled) {
+      console.log(" init pothog !!!!")
+      posthog.init()
+    }
+  }, [isAnalyticsEnabled])
 
   useCapturePageview()
   useIdentify()
