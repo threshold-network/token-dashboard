@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import {
+  Box,
   BodyLg,
   Button,
   Card,
@@ -7,7 +8,9 @@ import {
   FileUploader,
   H5,
   Select,
+  Stack,
   Textarea,
+  BodySm,
 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import useGCloudStorage from "../../../hooks/useGCloudStorage"
@@ -24,6 +27,7 @@ const Suggestions: PageComponent = () => {
   const [file, setFile] = useState<File | null>(null)
   const uploadToGCP = useGCloudStorage()
   const [featureCategory, setFeatureCategory] = useState("")
+  console.log("setFeatureCategory", featureCategory)
   const [suggestionText, setSuggestionText] = useState("")
 
   const handleSubmit = async () => {
@@ -41,33 +45,61 @@ const Suggestions: PageComponent = () => {
 
   return (
     <Card>
-      <H5>What suggestions do you have?</H5>
-      <Divider />
-      <BodyLg>
-        Submit your suggestions for product improvements by using this form. To
-        discuss ideas with other Threshold users and DAO members, consider
-        posting it in the{" "}
-        <Link href={ExternalHref.thresholdDiscord} isExternal>
-          Discord
-        </Link>
-      </BodyLg>
-      <Select
-        placeholder="Select option"
-        value={featureCategory}
-        onChange={(e) => setFeatureCategory(e.target.value)}
-      >
-        {featureCategoryOptions.map((opt) => (
-          <option value={opt} key={opt}>
-            {opt}
-          </option>
-        ))}
-      </Select>
-      <Textarea
-        value={suggestionText}
-        onChange={(e) => setSuggestionText(e.target.value)}
-      />
-      <FileUploader onFileUpload={(file) => setFile(file)} />
-      <Button onClick={handleSubmit}>Submit Suggestion</Button>
+      <Stack spacing={8}>
+        <H5>What suggestions do you have?</H5>
+        <Divider />
+        <BodyLg>
+          Submit your suggestions for product improvements by using this form.
+          To discuss ideas with other Threshold users and DAO members, consider
+          posting it in the{" "}
+          <Link href={ExternalHref.thresholdDiscord} isExternal>
+            Discord
+          </Link>
+        </BodyLg>
+
+        <Box>
+          <BodySm mb={2} fontWeight="bold">
+            Feature Category:
+          </BodySm>
+          <Select
+            placeholder="Select option"
+            value={featureCategory}
+            onChange={(e) => setFeatureCategory(e.target.value)}
+          >
+            {featureCategoryOptions.map((opt) => (
+              <option value={opt} key={opt}>
+                {opt}
+              </option>
+            ))}
+          </Select>
+        </Box>
+        <Box>
+          <BodySm mb={2} fontWeight="bold">
+            Suggestions
+          </BodySm>
+          <Textarea
+            value={suggestionText}
+            onChange={(e) => setSuggestionText(e.target.value)}
+            placeholder="Enter text"
+            minH="220px"
+          />
+        </Box>
+        <FileUploader
+          onFileUpload={(file) => setFile(file)}
+          headerHelperText="Optional"
+          footerHelperText="File can be video or photo. Must be less than 2MB"
+          accept="image/*"
+          m="auto"
+          w="full"
+          maxW="full"
+        />
+        <Button
+          disabled={suggestionText === "" || featureCategory === ""}
+          onClick={handleSubmit}
+        >
+          Submit Suggestion
+        </Button>
+      </Stack>
     </Card>
   )
 }
