@@ -3,23 +3,26 @@ import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import InfoBox from "../../InfoBox"
 import Link from "../../Link"
-
 import {
   Alert,
-  ModalCloseButton,
-  ModalHeader,
-  Button,
+  AlertIcon,
   BodyLg,
   BodyMd,
+  Button,
   H5,
-  AlertIcon,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
+  ModalHeader,
 } from "@threshold-network/components"
+import { ExternalHref } from "../../../enums"
 
 export enum FeedbackSubmissionType {
   AcceptAnalytics = "AcceptAnalytics",
   RejectAnalytics = "RejectAnalytics",
+  BugReport = "BugReport",
+  Suggestion = "Suggestion",
+  Usability = "Usability",
 }
 
 const feedbackSubmissionContent: Record<
@@ -48,6 +51,40 @@ const feedbackSubmissionContent: Record<
         <Link to="/feedback/settings">Feedback Settings</Link>.
       </BodyLg>
     ),
+  },
+  [FeedbackSubmissionType.BugReport]: {
+    header: "Success",
+    alert: "Response Submitted.",
+    title: "Thank you for your bug report.",
+    body: (
+      <BodyLg>
+        You can ask other Threshold users and DAO members questions by joining
+        the{" "}
+        <Link isExternal href={ExternalHref.thresholdDiscord}>
+          Discord
+        </Link>
+      </BodyLg>
+    ),
+  },
+  [FeedbackSubmissionType.Suggestion]: {
+    header: "Success",
+    alert: "Response Submitted.",
+    title: "Thank you for your suggestion.",
+    body: (
+      <BodyLg>
+        You can discuss your idea with other Threshold users and the DAO by
+        joining the
+        <Link isExternal href={ExternalHref.thresholdDiscord}>
+          Discord
+        </Link>
+      </BodyLg>
+    ),
+  },
+  [FeedbackSubmissionType.Usability]: {
+    header: "Success",
+    alert: "Response Submitted.",
+    title: "Thank you for your feedback.",
+    body: "This information will help us to improve the user experience of our products.",
   },
 }
 
