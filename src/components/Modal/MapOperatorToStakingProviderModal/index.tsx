@@ -9,7 +9,6 @@ import {
   H5,
   LabelSm,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
@@ -32,6 +31,7 @@ import {
 } from "../../../web3/utils"
 import { selectMappedOperators } from "../../../store/account/selectors"
 import { useAppSelector } from "../../../hooks/store"
+import ModalCloseButton from "../ModalCloseButton"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string

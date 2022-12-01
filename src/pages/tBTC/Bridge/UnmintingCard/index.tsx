@@ -8,11 +8,36 @@ export const UnmintingCard: FC<ComponentProps<typeof Card>> = ({
 }) => {
   return (
     <Card {...props}>
-      <Stack direction="row" divider={<StackDivider />} h="100%" spacing={8}>
-        <Box maxW="66%" width="100%">
+      <Stack
+        direction={{
+          base: "column",
+          md: "row",
+          lg: "column",
+          xl: "row",
+        }}
+        divider={<StackDivider />}
+        h="100%"
+        spacing={8}
+      >
+        <Box
+          w={{
+            base: "100%",
+            md: "66%",
+            lg: "100%",
+            xl: "66%",
+          }}
+        >
           <UnmintingFlowRouter />
         </Box>
-        <Box maxW="33%" minW={"216px"} w="100%">
+        <Box
+          w={{
+            base: "100%",
+            md: "33%",
+            lg: "100%",
+            xl: "33%",
+          }}
+          minW={"216px"}
+        >
           <UnmintingTimeline />
         </Box>
       </Stack>

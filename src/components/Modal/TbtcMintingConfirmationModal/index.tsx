@@ -5,7 +5,6 @@ import {
   Button,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
@@ -19,6 +18,7 @@ import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
 import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
+import ModalCloseButton from "../ModalCloseButton"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {

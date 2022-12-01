@@ -5,7 +5,6 @@ import {
   Box,
   Icon,
   ModalBody,
-  ModalCloseButton,
   ModalHeader,
   ModalFooter,
   Button,
@@ -17,6 +16,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useModal } from "../../../hooks/useModal"
 import InfoBox from "../../InfoBox"
+import ModalCloseButton from "../ModalCloseButton"
 
 interface SuccessModalProps {
   title?: string

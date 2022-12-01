@@ -3,7 +3,6 @@ import {
   HStack,
   Button,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   List,
@@ -23,6 +22,7 @@ import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { BaseModalProps } from "../../../types"
+import ModalCloseButton from "../ModalCloseButton"
 
 export type DeauthorizationInitiatedProps = BaseModalProps & {
   stakingProvider: string

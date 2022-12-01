@@ -2,7 +2,6 @@ import { FC, useState, useMemo } from "react"
 import {
   Button,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   UnorderedList,
@@ -30,6 +29,7 @@ import { BaseModalProps, UpgredableToken } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import { ModalType, Token, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
+import ModalCloseButton from "../ModalCloseButton"
 
 const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
   stake,
