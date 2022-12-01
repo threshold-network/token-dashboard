@@ -4,36 +4,34 @@ import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
 import * as posthog from "../../posthog"
 import { getAddress, isSameETHAddress } from "../../web3/utils"
 import { featureFlags } from "../../constants"
-import { useAppSelector } from "../store"
-import hashString from "../../utils/hashString"
+import { hashString } from "../../utils/crypto"
+import { useAnalytics } from "../useAnalytics"
 
 export const useIdentify = () => {
+  const { isAnalyticsEnabled } = useAnalytics()
   const { connector, account } = useWeb3React()
-  const shouldEnableAnalytics = useAppSelector(
-    (state) => state.analytics.shouldEnableAnalytics
-  )
 
   useEffect(() => {
     if (!featureFlags.POSTHOG) return
-    if (!shouldEnableAnalytics) return
+    if (!isAnalyticsEnabled) return
 
     const onLogin = async () => {
       const account = await connector?.getAccount()
 
       if (account) {
         const hashedAccount = await hashString({
-          string: getAddress(account).toUpperCase(),
+          value: getAddress(account).toUpperCase(),
         })
 
         posthog.identify(hashedAccount)
       }
     }
     onLogin()
-  }, [connector, shouldEnableAnalytics])
+  }, [connector, isAnalyticsEnabled])
 
   useEffect(() => {
     if (!featureFlags.POSTHOG) return
-    if (!shouldEnableAnalytics) return
+    if (!isAnalyticsEnabled) return
 
     const updateHandler = (update: ConnectorUpdate) => {
       if (!update.account) {
@@ -58,5 +56,5 @@ export const useIdentify = () => {
       connector?.removeListener(ConnectorEvent.Update, updateHandler)
       connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
     }
-  }, [connector, account, shouldEnableAnalytics])
+  }, [connector, account, isAnalyticsEnabled])
 }

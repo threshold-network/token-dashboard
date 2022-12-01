@@ -18,7 +18,6 @@ import {
 } from "./staking-applications/slice"
 import { listenerMiddleware } from "./listener"
 import { accountSlice, registerAccountListeners } from "./account"
-import { analyticsSlice } from "./analytics"
 
 const combinedReducer = combineReducers({
   account: accountSlice.reducer,
@@ -31,7 +30,6 @@ const combinedReducer = combineReducers({
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
   applications: stakingApplicationsSlice.reducer,
-  analytics: analyticsSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"

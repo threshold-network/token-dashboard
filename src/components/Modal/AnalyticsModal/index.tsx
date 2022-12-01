@@ -15,28 +15,27 @@ import {
 } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import { useAppDispatch } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
-import { analyticsSlice } from "../../../store/analytics"
 import { ExternalHref, ModalType } from "../../../enums"
 import { FeedbackSubmissionType } from "../FeedbackSubmissionModal"
 import FeedbackAnalyticsInfo from "../../FeedbackAnalyticsInfo"
 import Link from "../../Link"
 import analyticsImageLight from "../../../static/images/AnalyticsIllustration.png"
 import analyticsImageDark from "../../../static/images/AnalyticsIllustrationDark.png"
+import { useAnalytics } from "../../../hooks/useAnalytics"
 
 const AnalyticsModal: FC<BaseModalProps> = () => {
-  const dispatch = useAppDispatch()
   const { openModal } = useModal()
+  const { enableAnalytics, disableAnalytics } = useAnalytics()
 
   const handleAccept = () => {
-    dispatch(analyticsSlice.actions.optIn())
+    enableAnalytics()
     openModal(ModalType.FeedbackSubmission, {
       type: FeedbackSubmissionType.AcceptAnalytics,
     })
   }
   const handleDecline = () => {
-    dispatch(analyticsSlice.actions.optOut())
+    disableAnalytics()
     openModal(ModalType.FeedbackSubmission, {
       type: FeedbackSubmissionType.RejectAnalytics,
     })
