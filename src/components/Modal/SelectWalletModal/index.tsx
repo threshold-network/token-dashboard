@@ -1,4 +1,4 @@
-import { ModalCloseButton, ModalHeader } from "@chakra-ui/react"
+import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
@@ -16,6 +16,7 @@ import coinbaseConnector from "../../../web3/connectors/coinbaseWallet"
 import ConnectCoinbase from "./ConnectCoinbase"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
+import ModalCloseButton from "../ModalCloseButton"
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
   const { activate, deactivate } = useWeb3React()
@@ -84,7 +85,7 @@ const SelectWalletModal: FC<BaseModalProps> = () => {
       <ModalHeader>
         <H5>Connect a Wallet</H5>
       </ModalHeader>
-      <ModalCloseButton onClick={closeModal} />
+      <ModalCloseButton />
       {walletToConnect === null && (
         <InitialWalletSelection walletOptions={walletOptions} />
       )}

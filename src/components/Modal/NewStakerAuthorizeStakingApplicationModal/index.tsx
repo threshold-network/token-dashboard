@@ -5,7 +5,6 @@ import {
   H5,
   HStack,
   ModalBody,
-  ModalCloseButton,
   ModalHeader,
   Stack,
 } from "@threshold-network/components"
@@ -23,6 +22,7 @@ import {
 } from "../../../hooks/staking-applications"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
+import ModalCloseButton from "../ModalCloseButton"
 
 const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
   const { openModal } = useModal()

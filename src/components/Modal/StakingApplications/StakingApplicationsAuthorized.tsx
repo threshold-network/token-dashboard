@@ -6,7 +6,6 @@ import {
   Button,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   List,
@@ -36,6 +35,7 @@ import { BaseModalProps } from "../../../types"
 import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppLabel"
 import StakingTimeline from "../../StakingTimeline"
 import ButtonLink from "../../ButtonLink"
+import ModalCloseButton from "../ModalCloseButton"
 
 export type StakingApplicationsAuthorizeProps = BaseModalProps & {
   stakingProvider: string

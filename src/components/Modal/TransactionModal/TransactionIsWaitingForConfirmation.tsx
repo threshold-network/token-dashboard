@@ -1,10 +1,11 @@
 import { FC } from "react"
-import { ModalBody, ModalCloseButton, ModalHeader } from "@chakra-ui/react"
+import { ModalBody, ModalHeader } from "@chakra-ui/react"
 import { BodyLg } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import { ThresholdSpinner } from "../../ThresholdSpinner/ThresholdSpinner"
+import ModalCloseButton from "../ModalCloseButton"
 
 interface Props extends BaseModalProps {
   pendingText?: string
