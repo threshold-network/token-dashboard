@@ -41,7 +41,7 @@ export const useInitiateDeauthorization = (
     },
     [
       requestAuthorizationDecrease,
-      updateOperatorStatus.toString,
+      updateOperatorStatus,
       shouldUpdateOperatorStatusAfterInitiation,
     ]
   )
