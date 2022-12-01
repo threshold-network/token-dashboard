@@ -9,7 +9,7 @@ import { useUpdateOperatorStatus } from "./useUpdateOperatorStatus"
 
 export const useInitiateDeauthorization = (
   appName: StakingAppName,
-  shouldUpdateOperatorStatusAfterInitiation: boolean,
+  shouldUpdateOperatorStatusAfterInitiation?: boolean,
   onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
