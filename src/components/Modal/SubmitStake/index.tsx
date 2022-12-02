@@ -2,7 +2,6 @@ import { FC } from "react"
 import {
   Button,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Divider,
@@ -17,6 +16,7 @@ import { ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
+import ModalCloseButton from "../ModalCloseButton"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()

@@ -3,7 +3,6 @@ import {
   Button,
   ListItem,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   UnorderedList,
@@ -36,6 +35,7 @@ import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { StakingContractLearnMore } from "../../Link"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
+import ModalCloseButton from "../ModalCloseButton"
 
 const stakeTypeToDappHref: Record<StakeType.KEEP | StakeType.NU, ExternalHref> =
   {

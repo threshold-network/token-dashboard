@@ -3,7 +3,6 @@ import {
   Button,
   Divider,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -20,6 +19,7 @@ import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
+import ModalCloseButton from "../ModalCloseButton"
 
 const TopupTModal: FC<
   BaseModalProps & {

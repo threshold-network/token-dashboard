@@ -7,8 +7,8 @@ import {
   Box,
   Button,
   HStack,
+  Stack,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   useDisclosure,
@@ -21,6 +21,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import Link from "../../Link"
+import ModalCloseButton from "../ModalCloseButton"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
@@ -69,8 +70,8 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
               <AlertIcon />
               <AlertTitle display="flex">
                 {isExpandableError ? (
-                  <HStack>
-                    <BodySm>{errorTitle}</BodySm>
+                  <Stack>
+                    <BodySm wordBreak="break-word">{errorTitle}</BodySm>
                     <BodySm
                       onClick={onToggle}
                       ml={4}
@@ -80,7 +81,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
                     >
                       Show {isOpen ? "Less" : "More"}
                     </BodySm>
-                  </HStack>
+                  </Stack>
                 ) : (
                   errorTitle
                 )}

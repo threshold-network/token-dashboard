@@ -4,7 +4,6 @@ import {
   Divider,
   Flex,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -18,6 +17,7 @@ import { ModalType } from "../../../enums"
 import StakingTimeline from "../../StakingTimeline"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
+import ModalCloseButton from "../ModalCloseButton"
 
 const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
   closeModal,
