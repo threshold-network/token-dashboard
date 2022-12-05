@@ -5,7 +5,6 @@ import {
   Button,
   Divider,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   Stack,
@@ -30,6 +29,7 @@ import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
+import ModalCloseButton from "../ModalCloseButton"
 
 const ClaimingRewardsBase: FC<
   BaseModalProps & {

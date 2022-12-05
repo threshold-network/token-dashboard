@@ -1,3 +1,4 @@
+import { Client } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { providers, Signer } from "ethers"
 
 export interface EthereumConfig {
@@ -6,9 +7,16 @@ export interface EthereumConfig {
   account?: string
 }
 
+export interface BitcoinConfig {
+  // TODO: electrum credentials
+
+  /**
+   * If we want to mock client then we should pass the mock here
+   */
+  client?: Client
+}
+
 export interface ThresholdConfig {
   ethereum: EthereumConfig
-  // TODO: Define the bitcoin config for the tbtc v2 lib.
-  mockTbtc: boolean
-  // bitcoin: {}
+  bitcoin: BitcoinConfig
 }

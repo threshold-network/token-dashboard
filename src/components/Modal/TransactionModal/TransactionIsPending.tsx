@@ -1,11 +1,5 @@
 import { FC } from "react"
-import {
-  Box,
-  ModalBody,
-  ModalCloseButton,
-  ModalHeader,
-  ModalFooter,
-} from "@chakra-ui/react"
+import { Box, ModalBody, ModalHeader, ModalFooter } from "@chakra-ui/react"
 import { BodyLg, BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
@@ -13,6 +7,7 @@ import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import { ThresholdSpinner } from "../../ThresholdSpinner/ThresholdSpinner"
+import ModalCloseButton from "../ModalCloseButton"
 
 interface TransactionIsPendingProps extends BaseModalProps {
   pendingText?: string

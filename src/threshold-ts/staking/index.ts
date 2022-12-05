@@ -1,10 +1,30 @@
 import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
+import NuCypherStakingEscrow from "@threshold-network/solidity-contracts/artifacts/NuCypherStakingEscrow.json"
+import KeepTokenStaking from "@keep-network/keep-core/artifacts/TokenStaking.json"
 import { BigNumber, BigNumberish, Contract, ContractTransaction } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
-import { getContract } from "../utils"
+import {
+  getContract,
+  getContractAddressFromTruffleArtifact,
+  getContractPastEvents,
+  isAddress,
+  isSameETHAddress,
+  ZERO,
+} from "../utils"
+import { IVendingMachines } from "../vending-machine"
+
+// Note: Must be in the same order as here:
+// https://github.com/threshold-network/solidity-contracts/blob/main/contracts/staking/IStaking.sol#L30-L
+// because solidity eg. for `StakeType.NU` returns 0.
+export enum StakeType {
+  NU,
+  KEEP,
+  T,
+}
 
 export interface Stake<NumberType extends BigNumberish = BigNumber> {
+  stakeType?: StakeType
   owner: string
   stakingProvider: string
   beneficiary: string
@@ -13,7 +33,8 @@ export interface Stake<NumberType extends BigNumberish = BigNumber> {
   keepInTStake: NumberType
   tStake: NumberType
   totalInTStake: NumberType
-  // TODO: add `possibleKeepTopUpInT` and `possibleNuTopUpInT`.
+  possibleKeepTopUpInT: NumberType
+  possibleNuTopUpInT: NumberType
 }
 
 export interface RolesOf {
@@ -24,6 +45,7 @@ export interface RolesOf {
 
 export interface IStaking {
   stakingContract: Contract
+  STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
   /**
    * Returns the authorized stake amount of the staking provider for the application.
    * @param stakingProvider Staking provider address.
@@ -71,21 +93,48 @@ export interface IStaking {
    */
   rolesOf(stakingProvider: string): Promise<RolesOf>
 
-  // TODO: move other functions here eg fetching all owner stakes.
+  /**
+   * Returns all stakes for the given owner address.
+   * @param owner The stake owner address
+   * @returns All stakes for a given owner address.
+   */
+  getOwnerStakes(owner: string): Promise<Array<Stake>>
 }
 
 export class Staking implements IStaking {
   private _staking: Contract
   private _multicall: IMulticall
+  private _legacyKeepStaking: Contract
+  private _legacyNuStaking: Contract
+  private _vendingMachines: IVendingMachines
+  public readonly STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
 
-  constructor(config: EthereumConfig, multicall: IMulticall) {
+  constructor(
+    config: EthereumConfig,
+    multicall: IMulticall,
+    vendingMachines: IVendingMachines
+  ) {
+    this.STAKING_CONTRACT_DEPLOYMENT_BLOCK = config.chainId === 1 ? 14113768 : 0
     this._staking = getContract(
       TokenStaking.address,
       TokenStaking.abi,
       config.providerOrSigner,
       config.account
     )
+    this._legacyKeepStaking = getContract(
+      getContractAddressFromTruffleArtifact(KeepTokenStaking),
+      KeepTokenStaking.abi,
+      config.providerOrSigner,
+      config.account
+    )
+    this._legacyNuStaking = getContract(
+      NuCypherStakingEscrow.address,
+      NuCypherStakingEscrow.abi,
+      config.providerOrSigner,
+      config.account
+    )
     this._multicall = multicall
+    this._vendingMachines = vendingMachines
   }
 
   async authorizedStake(
@@ -112,7 +161,8 @@ export class Staking implements IStaking {
   }
 
   getStakeByStakingProvider = async (
-    stakingProvider: string
+    stakingProvider: string,
+    stakeType?: StakeType
   ): Promise<Stake> => {
     const multicalls: ContractCall[] = [
       {
@@ -127,16 +177,43 @@ export class Staking implements IStaking {
         method: "stakes",
         args: [stakingProvider],
       },
+      {
+        interface: this._legacyKeepStaking.interface,
+        address: this._legacyKeepStaking.address,
+        method: "eligibleStake",
+        args: [stakingProvider, this._staking.address],
+      },
     ]
 
-    const [rolesOf, stakes] = await this._multicall.aggregate(multicalls)
+    const [rolesOf, stakes, eligibleKeepStake] =
+      await this._multicall.aggregate(multicalls)
 
     const { owner, authorizer, beneficiary } = rolesOf
 
     const { tStake, keepInTStake, nuInTStake } = stakes
+
+    // The NU staker can have only one stake.
+    const { stakingProvider: nuStakingProvider, value: nuStake } =
+      await this._legacyNuStaking.stakerInfo(owner)
+    const possibleNuTopUpInT =
+      isAddress(nuStakingProvider) &&
+      isSameETHAddress(stakingProvider, nuStakingProvider)
+        ? BigNumber.from(
+            (await this._vendingMachines.nu.convertToT(nuStake)).tAmount
+          ).sub(BigNumber.from(nuInTStake))
+        : ZERO
+
+    const keepEligableStakeInT = (
+      await this._vendingMachines.keep.convertToT(eligibleKeepStake)
+    ).tAmount
+    const possibleKeepTopUpInT = BigNumber.from(keepEligableStakeInT).sub(
+      BigNumber.from(keepInTStake)
+    )
+
     const totalInTStake = tStake.add(keepInTStake).add(nuInTStake)
 
     return {
+      stakeType,
       owner,
       authorizer,
       beneficiary,
@@ -145,6 +222,8 @@ export class Staking implements IStaking {
       keepInTStake,
       nuInTStake,
       totalInTStake,
+      possibleKeepTopUpInT,
+      possibleNuTopUpInT,
     }
   }
 
@@ -165,5 +244,24 @@ export class Staking implements IStaking {
       beneficiary: rolesOf.beneficiary,
       authorizer: rolesOf.authorizer,
     }
+  }
+
+  getOwnerStakes = async (owner: string): Promise<Array<Stake>> => {
+    const stakedEvents = (
+      await getContractPastEvents(this._staking, {
+        eventName: "Staked",
+        fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        filterParams: [undefined, owner],
+      })
+    ).reverse()
+
+    return await Promise.all(
+      stakedEvents.map((stakedEvent) =>
+        this.getStakeByStakingProvider(
+          stakedEvent.args?.stakingProvider,
+          stakedEvent.args?.stakeType
+        )
+      )
+    )
   }
 }

@@ -5,7 +5,6 @@ import {
   Button,
   H5,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   List,
@@ -24,6 +23,7 @@ import { BaseModalProps } from "../../../types"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
+import ModalCloseButton from "../ModalCloseButton"
 
 export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
