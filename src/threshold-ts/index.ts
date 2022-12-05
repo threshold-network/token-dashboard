@@ -7,6 +7,7 @@ import { ThresholdConfig } from "./types"
 import { IVendingMachines, VendingMachines } from "./vending-machine"
 
 export class Threshold {
+  config!: ThresholdConfig
   multicall!: IMulticall
   staking!: IStaking
   multiAppStaking!: MultiAppStaking
@@ -18,6 +19,7 @@ export class Threshold {
   }
 
   private _initialize = (config: ThresholdConfig) => {
+    this.config = config
     this.multicall = new Multicall(config.ethereum)
     this.vendingMachines = new VendingMachines(config.ethereum)
     this.staking = new Staking(

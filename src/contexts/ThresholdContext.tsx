@@ -5,7 +5,6 @@ import {
   threshold,
 } from "../utils/getThresholdLib"
 import { supportedChainId } from "../utils/getEnvVariable"
-import { MockBitcoinClient } from "../threshold-ts/tbtc/mock-bitcoin-client"
 
 const ThresholdContext = createContext(threshold)
 
@@ -25,9 +24,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           providerOrSigner: library,
           account,
         },
-        bitcoin: {
-          client: new MockBitcoinClient(),
-        },
+        bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
@@ -38,9 +35,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           chainId: supportedChainId,
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
-        bitcoin: {
-          client: new MockBitcoinClient(),
-        },
+        bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }
