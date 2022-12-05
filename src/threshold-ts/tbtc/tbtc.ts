@@ -20,7 +20,7 @@ import { BigNumber, providers, Signer, VoidSigner } from "ethers"
 import { ITBTC } from "./tbtc.interface"
 import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
-import { MockBitcoinClient } from "./mock-bitcoin-client"
+import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 import { BitcoinConfig, EthereumConfig } from "../types"
 
 export class TBTC implements ITBTC {
