@@ -24,7 +24,7 @@ const NumberButtonSequence: FC<NumberButtonSequenceProps> = ({
         <Button
           size={size}
           variant="sequence"
-          isSelected={n === selectedButtonNum}
+          isActive={n === selectedButtonNum}
           onClick={() => setSelectedButtonNum(n)}
         >
           {n}
