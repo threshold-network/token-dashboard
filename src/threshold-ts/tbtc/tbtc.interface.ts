@@ -23,5 +23,11 @@ export interface ITBTC {
 
   revealDeposit(utxo: UnspentTransactionOutput, deposit: Deposit): Promise<void>
 
-  mockDepositTransaction(depositAddress: string): void
+  mockDepositTransaction(
+    deposit: Deposit,
+    depositAddress: string
+  ): Promise<{
+    transactionHash: string
+    depositUtxo: UnspentTransactionOutput
+  }>
 }

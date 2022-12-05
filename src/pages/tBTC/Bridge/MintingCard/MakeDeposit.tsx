@@ -24,6 +24,9 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { Deposit } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { BigNumber } from "ethers"
+import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -45,20 +48,42 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
-    useTbtcState()
+  const {
+    btcDepositAddress,
+    ethAddress,
+    btcRecoveryAddress,
+    blindingFactor,
+    walletPublicKey,
+    refundLocktime,
+    updateState,
+  } = useTbtcState()
   const threshold = useThreshold()
 
   const handleSubmit = async () => {
     // we should probably call this function with some kind of a timeout and
     // block the "i sent the btc" button until there are any unspent transaction
     // output for a given deposit address
-    threshold.tbtc.mockDepositTransaction(btcDepositAddress)
+    console.log("mocking deposit tranaction!")
+    const deposit: Deposit = {
+      depositor: {
+        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
+      },
+      amount: BigNumber.from("1000"),
+      blindingFactor: blindingFactor,
+      // TODO: pass proper values for walletPubKey and refundPubKey
+      walletPublicKey:
+        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      refundPublicKey:
+        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      refundLocktime: refundLocktime,
+    }
+    const { transactionHash, depositUtxo } =
+      await threshold.tbtc.mockDepositTransaction(deposit, btcDepositAddress)
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       btcDepositAddress
     )
     // TODO: Check if any of the utxo's is not revealed
-    if (utxos.length > 0) {
+    if (utxos && utxos.length > 0) {
       updateState("mintingStep", MintingStep.InitiateMinting)
     }
   }

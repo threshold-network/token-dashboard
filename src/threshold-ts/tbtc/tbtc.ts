@@ -4,6 +4,7 @@ import {
   Deposit,
   DepositScriptParameters,
   revealDeposit,
+  submitDepositTransaction,
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
@@ -113,10 +114,15 @@ export class TBTC implements ITBTC {
     await revealDeposit(utxo, deposit, this._bitcoinClient, this._bridge)
   }
 
-  mockDepositTransaction(depositAddress: string): void {
+  async mockDepositTransaction(
+    deposit: Deposit,
+    depositAddress: string
+  ): Promise<{
+    transactionHash: string
+    depositUtxo: UnspentTransactionOutput
+  }> {
     const testnetTransactionHash =
       "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
-
     const testnetTransaction: RawTransaction = {
       transactionHex:
         "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +
@@ -127,20 +133,26 @@ export class TBTC implements ITBTC {
         "f68e65aa2727cd4208b5012102ee067a0273f2e3ba88d23140a24fdb290f27bbcd0f94" +
         "117a9c65be3911c5c04e00000000",
     }
-
     const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
       transactionHash: testnetTransactionHash,
       outputIndex: 1,
       value: BigNumber.from(3933200),
       ...testnetTransaction,
     }
-
     const utxos = new Map<string, UnspentTransactionOutput[]>()
     utxos.set(depositAddress, [testnetUTXO])
     this._bitcoinClient.unspentTransactionOutputs = utxos
-
     const rawTransactions = new Map<string, RawTransaction>()
     rawTransactions.set(testnetTransactionHash, testnetTransaction)
     this._bitcoinClient.rawTransactions = rawTransactions
+
+    // TODO: submitting deposit transaction returns an error because we are
+    // providing testnet address
+    return await submitDepositTransaction(
+      deposit,
+      "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt",
+      this._bitcoinClient,
+      true
+    )
   }
 }
