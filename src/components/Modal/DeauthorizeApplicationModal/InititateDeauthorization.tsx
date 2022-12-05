@@ -110,8 +110,8 @@ const InitiateDeauthorization: FC<
           >
             {shouldUpdateOperatorStatusAfterInitiation ? (
               <>
-                1 transaction- Deauthorization Request.
-                <Box as="p">1 transaction- Deauthorization Initiation.</Box>
+                1 transaction - Deauthorization Request.
+                <Box as="p">1 transaction - Deauthorization Initiation.</Box>
               </>
             ) : (
               "This is 1 transaction."
