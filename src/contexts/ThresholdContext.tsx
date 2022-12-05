@@ -2,10 +2,10 @@ import { createContext, FC, useContext, useEffect, useRef } from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
   getDefaultThresholdLibProvider,
-  shouldMockThresholdTBTCWrapper,
   threshold,
 } from "../utils/getThresholdLib"
 import { supportedChainId } from "../utils/getEnvVariable"
+import { MockBitcoinClient } from "../threshold-ts/tbtc/mock-bitcoin-client"
 
 const ThresholdContext = createContext(threshold)
 
@@ -25,7 +25,9 @@ export const ThresholdProvider: FC = ({ children }) => {
           providerOrSigner: library,
           account,
         },
-        mockTbtc: shouldMockThresholdTBTCWrapper,
+        bitcoin: {
+          client: new MockBitcoinClient(),
+        },
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
@@ -36,7 +38,9 @@ export const ThresholdProvider: FC = ({ children }) => {
           chainId: supportedChainId,
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
-        mockTbtc: shouldMockThresholdTBTCWrapper,
+        bitcoin: {
+          client: new MockBitcoinClient(),
+        },
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }

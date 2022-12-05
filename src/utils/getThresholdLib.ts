@@ -3,6 +3,7 @@ import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { EnvVariable } from "../enums"
 import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
+import { MockBitcoinClient } from "../threshold-ts/tbtc/mock-bitcoin-client"
 
 export const getDefaultThresholdLibProvider = () => {
   return new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
@@ -17,7 +18,9 @@ export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
       chainId: supportedChainId,
       providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
     },
-    mockTbtc: shouldMockThresholdTBTCWrapper,
+    bitcoin: {
+      client: new MockBitcoinClient(),
+    },
   })
 }
 
