@@ -24,7 +24,10 @@ import { FeedbackSubmissionType } from "../../../components/Modal/FeedbackSubmis
 const featureCategoryOptions = ["Upgrade", "Staking"]
 
 const Suggestions: PageComponent = () => {
-  const captureSuggestionSubmit = useCapture(PosthogEvent.SuggestionSubmit)
+  const captureSuggestionSubmit = useCapture(
+    PosthogEvent.SuggestionSubmit,
+    true
+  )
   const [file, setFile] = useState<File | null>(null)
   const { openModal } = useModal()
   const [isLoading, setIsLoading] = useState(false)
