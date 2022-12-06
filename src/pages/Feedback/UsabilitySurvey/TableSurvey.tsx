@@ -1,12 +1,15 @@
 import React, { FC } from "react"
-import { Table, Th, Thead, Tbody, Tr, Td } from "@threshold-network/components"
-import { Radio, RadioGroup } from "@chakra-ui/react"
+import {
+  Button,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@threshold-network/components"
 import { Row, RowID, RowValue } from "./types"
-
-const s = {
-  py: 6,
-  borderColor: "gray.50",
-}
+import { useColorModeValue } from "@chakra-ui/react"
 
 const firstColWidth = {
   base: "200px",
@@ -17,6 +20,19 @@ const TableSurvey: FC<{
   rows: Row[]
   handleRadioClick: (rowId: RowID, value: RowValue) => void
 }> = ({ rows, handleRadioClick }) => {
+  const s = {
+    py: 6,
+    borderColor: useColorModeValue("gray.50", "gray.700"),
+  }
+
+  const columns = [
+    RowValue.StrongDisagree,
+    RowValue.Disagree,
+    RowValue.Neutral,
+    RowValue.Agree,
+    RowValue.StronglyAgree,
+  ]
+
   return (
     <>
       <Table sx={{ tableLayout: "fixed" }}>
@@ -37,36 +53,33 @@ const TableSurvey: FC<{
       {/* TODO: Implement pagination */}
       {rows.map((row, i) => {
         return (
-          <RadioGroup
-            key={row.id}
-            onChange={(value: RowValue) => handleRadioClick(row.id, value)}
-            value={row.value}
-          >
-            <Table sx={{ tableLayout: "fixed" }} key={row.text}>
-              <Tbody>
-                <Tr bg={i % 2 == 0 ? "gray.50" : undefined} {...s}>
-                  <Td {...s} width={firstColWidth}>
-                    {row.text}
-                  </Td>
+          <Table sx={{ tableLayout: "fixed" }} key={row.text}>
+            <Tbody>
+              <Tr
+                bg={
+                  i % 2 == 0
+                    ? useColorModeValue("gray.50", "gray.700")
+                    : undefined
+                }
+                {...s}
+              >
+                <Td {...s} width={firstColWidth}>
+                  {row.text}
+                </Td>
+                {columns.map((value, i) => (
                   <Td {...s}>
-                    <Radio value={RowValue.StrongDisagree}>1</Radio>
+                    <Button
+                      variant="sequence"
+                      isActive={row.value === value}
+                      onClick={() => handleRadioClick(row.id, value)}
+                    >
+                      {i + 1}
+                    </Button>
                   </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Disagree}>2</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Neutral}>3</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.Agree}>4</Radio>
-                  </Td>
-                  <Td {...s}>
-                    <Radio value={RowValue.StronglyAgree}>5</Radio>
-                  </Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </RadioGroup>
+                ))}
+              </Tr>
+            </Tbody>
+          </Table>
         )
       })}
     </>
