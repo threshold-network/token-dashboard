@@ -47,7 +47,7 @@ const FeedbackRoutesButton: FC = () => (
         </BodyMd>
         {feedbackRoutes.map(({ text, url }) => (
           <Link key={text} to={url} as={RouterLink}>
-            <MenuItem>{text}</MenuItem>
+            <MenuItem as="span">{text}</MenuItem>
           </Link>
         ))}
       </MenuList>
