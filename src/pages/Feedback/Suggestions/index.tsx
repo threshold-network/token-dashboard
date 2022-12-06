@@ -1,7 +1,8 @@
 import React, { useState } from "react"
 import {
-  Box,
   BodyLg,
+  BodySm,
+  Box,
   Button,
   Card,
   Divider,
@@ -10,27 +11,29 @@ import {
   Select,
   Stack,
   Textarea,
-  BodySm,
 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import useGCloudStorage from "../../../hooks/useGCloudStorage"
 import Link from "../../../components/Link"
-import { ExternalHref } from "../../../enums"
+import { ExternalHref, ModalType } from "../../../enums"
 import { useCapture } from "../../../hooks/posthog"
 import { PosthogEvent } from "../../../types/posthog"
+import { useModal } from "../../../hooks/useModal"
+import { FeedbackSubmissionType } from "../../../components/Modal/FeedbackSubmissionModal"
 
 const featureCategoryOptions = ["Upgrade", "Staking"]
 
 const Suggestions: PageComponent = () => {
   const captureSuggestionSubmit = useCapture(PosthogEvent.SuggestionSubmit)
-
   const [file, setFile] = useState<File | null>(null)
+  const { openModal } = useModal()
+  const [isLoading, setIsLoading] = useState(false)
   const uploadToGCP = useGCloudStorage()
   const [featureCategory, setFeatureCategory] = useState("")
-  console.log("setFeatureCategory", featureCategory)
   const [suggestionText, setSuggestionText] = useState("")
 
   const handleSubmit = async () => {
+    setIsLoading(true)
     let fileLink = ""
     if (file) {
       fileLink = await uploadToGCP(file)
@@ -40,6 +43,11 @@ const Suggestions: PageComponent = () => {
       file: fileLink,
       category: featureCategory,
       suggestion: suggestionText,
+    })
+
+    setIsLoading(false)
+    openModal(ModalType.FeedbackSubmission, {
+      type: FeedbackSubmissionType.Suggestion,
     })
   }
 
@@ -56,7 +64,6 @@ const Suggestions: PageComponent = () => {
             Discord
           </Link>
         </BodyLg>
-
         <Box>
           <BodySm mb={2} fontWeight="bold">
             Feature Category:
@@ -94,6 +101,7 @@ const Suggestions: PageComponent = () => {
           maxW="full"
         />
         <Button
+          isLoading={isLoading}
           disabled={suggestionText === "" || featureCategory === ""}
           onClick={handleSubmit}
         >
