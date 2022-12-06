@@ -44,6 +44,7 @@ import {
   useSubscribeToAuthorizationDecreaseApprovedEvent,
   useSubscribeToAuthorizationDecreaseRequestedEvent,
   useSubscribeToOperatorRegisteredEvent,
+  useSubscribeToOperatorStatusUpdatedEvent,
 } from "./hooks/staking-applications"
 import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
 import { usePosthog } from "./hooks/posthog"
@@ -64,6 +65,8 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToAuthorizationDecreaseRequestedEvent("randomBeacon")
   useSubscribeToOperatorRegisteredEvent("tbtc")
   useSubscribeToOperatorRegisteredEvent("randomBeacon")
+  useSubscribeToOperatorStatusUpdatedEvent("randomBeacon")
+  useSubscribeToOperatorStatusUpdatedEvent("tbtc")
 
   return <></>
 }
