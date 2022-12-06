@@ -29,7 +29,9 @@ const NavItem: FC<NavItemDetail> = ({
 }) => {
   const { isOpen, closeSidebar } = useSidebar()
   const isMobileDevice = useChakraBreakpoint("md")
-  const isActive = useMatch(`${href}/*`)
+  const subrouteWildcard = `${href.split("/")[1]}/*`
+  const match = subrouteWildcard === "/*" ? "" : subrouteWildcard
+  const isActive = useMatch(match)
   const brandColor = useColorModeValue("brand.500", "brand.50")
   const tooltipBtnColor = useColorModeValue("gray.700", "brand.50")
   const tooltipBgColor = useColorModeValue("gray.800", "white")
