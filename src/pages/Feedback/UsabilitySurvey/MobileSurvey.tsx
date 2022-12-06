@@ -1,13 +1,8 @@
 import React, { FC } from "react"
-import {
-  BodyMd,
-  LabelSm,
-  Box,
-  Radio,
-  RadioGroup,
-} from "@threshold-network/components"
-
+import { BodyMd, LabelSm, Box } from "@threshold-network/components"
 import { Row, RowID, RowValue } from "./types"
+import NumberButtonSequence from "../../../components/NumberButtonSequence"
+import { columns } from "./index"
 
 const MobileSurvey: FC<{
   rows: Row[]
@@ -30,23 +25,14 @@ const MobileSurvey: FC<{
         return (
           <Box bg={i % 2 == 0 ? "gray.50" : undefined} px={8} py={6}>
             <BodyMd mb={6}>{row.text}</BodyMd>
-            <RadioGroup
-              key={row.id}
-              onChange={(value: RowValue) => handleRadioClick(row.id, value)}
-              value={row.value}
-              display="flex"
+            <NumberButtonSequence
               justifyContent="space-between"
-            >
-              <Radio value={RowValue.StrongDisagree}>1</Radio>
-
-              <Radio value={RowValue.Disagree}>2</Radio>
-
-              <Radio value={RowValue.Neutral}>3</Radio>
-
-              <Radio value={RowValue.Agree}>4</Radio>
-
-              <Radio value={RowValue.StronglyAgree}>5</Radio>
-            </RadioGroup>
+              numberOfButtons={columns.length}
+              selectedButtonNum={columns.findIndex((v) => v === row.value) + 1}
+              onButtonClick={(value) =>
+                handleRadioClick(row.id, columns[value - 1])
+              }
+            />
           </Box>
         )
       })}

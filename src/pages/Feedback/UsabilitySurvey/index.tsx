@@ -6,6 +6,14 @@ import TableSurvey from "./TableSurvey"
 import MobileSurvey from "./MobileSurvey"
 import useChakraBreakpoint from "../../../hooks/useChakraBreakpoint"
 
+export const columns: RowValue[] = [
+  RowValue.StrongDisagree,
+  RowValue.Disagree,
+  RowValue.Neutral,
+  RowValue.Agree,
+  RowValue.StronglyAgree,
+]
+
 const UsabilitySurvey: PageComponent = () => {
   const [rows, setRows] = useState<Row[]>([
     {

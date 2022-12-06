@@ -10,6 +10,7 @@ import {
 } from "@threshold-network/components"
 import { Row, RowID, RowValue } from "./types"
 import { useColorModeValue } from "@chakra-ui/react"
+import { columns } from "./index"
 
 const firstColWidth = {
   base: "200px",
@@ -24,14 +25,6 @@ const TableSurvey: FC<{
     py: 6,
     borderColor: useColorModeValue("gray.50", "gray.700"),
   }
-
-  const columns = [
-    RowValue.StrongDisagree,
-    RowValue.Disagree,
-    RowValue.Neutral,
-    RowValue.Agree,
-    RowValue.StronglyAgree,
-  ]
 
   return (
     <>

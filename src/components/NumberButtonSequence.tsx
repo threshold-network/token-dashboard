@@ -6,15 +6,15 @@ import { ThemeTypings } from "@chakra-ui/styled-system"
 
 interface NumberButtonSequenceProps extends StackProps {
   numberOfButtons: number
-  selectedButtonNum: number
-  setSelectedButtonNum: (n: number) => void
+  selectedButtonNum?: number
+  onButtonClick: (n: number) => void
   size?: ThemeTypings["components"]["Button"]["sizes"]
 }
 
 const NumberButtonSequence: FC<NumberButtonSequenceProps> = ({
   numberOfButtons,
   selectedButtonNum,
-  setSelectedButtonNum,
+  onButtonClick,
   size,
   ...props
 }) => {
@@ -25,7 +25,7 @@ const NumberButtonSequence: FC<NumberButtonSequenceProps> = ({
           size={size}
           variant="sequence"
           isActive={n === selectedButtonNum}
-          onClick={() => setSelectedButtonNum(n)}
+          onClick={() => onButtonClick(n)}
         >
           {n}
         </Button>
