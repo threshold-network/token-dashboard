@@ -1,10 +1,9 @@
-import { useLocalStorage } from "./useLocalStorage"
+import { useLocalStorage } from "@rehooks/local-storage"
 
 export const useAnalytics = () => {
-  const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useLocalStorage(
-    "isAnalyticsEnabled",
-    false
-  )
+  const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useLocalStorage<
+    boolean | undefined
+  >("isAnalyticsEnabled")
 
   const enableAnalytics = () => {
     setIsAnalyticsEnabled(true)
@@ -16,6 +15,7 @@ export const useAnalytics = () => {
 
   return {
     isAnalyticsEnabled,
+    hasUserResponded: typeof isAnalyticsEnabled === "boolean",
     enableAnalytics,
     disableAnalytics,
   }
