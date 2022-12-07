@@ -69,16 +69,8 @@ const UsabilitySurvey: PageComponent = () => {
   ])
 
   const handleRadioClick = (rowId: RowID, value: RowValue) => {
-    setRows(
-      rows.map((row) => {
-        if (row.id === rowId) {
-          return {
-            ...row,
-            value,
-          }
-        }
-        return row
-      })
+    setRows((rows) =>
+      rows.map((row) => (row.id === rowId ? { ...row, value } : row))
     )
   }
 
