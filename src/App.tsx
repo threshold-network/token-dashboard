@@ -47,6 +47,8 @@ import {
 } from "./hooks/staking-applications"
 import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
 import { usePosthog } from "./hooks/posthog"
+import { featureFlags } from "./constants"
+import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -160,6 +162,7 @@ const Layout = () => {
           <Outlet />
         </Box>
       </Box>
+      {featureFlags.FEEDBACK_MODULE && <FeedbackRoutesButton />}
     </Box>
   )
 }
