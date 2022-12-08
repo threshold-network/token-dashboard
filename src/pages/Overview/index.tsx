@@ -14,7 +14,6 @@ const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
 
   const { isAnalyticsEnabled, hasUserResponded } = useAnalytics()
-  console.log("hasUserResponded", hasUserResponded)
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>

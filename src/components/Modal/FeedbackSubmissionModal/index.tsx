@@ -31,7 +31,7 @@ const feedbackSubmissionContent: Record<
 > = {
   [FeedbackSubmissionType.AcceptAnalytics]: {
     header: "Analytics",
-    alert: "Analytics are turned on",
+    alert: "Analytics are turned on.",
     title: "Thanks for opting in!",
     body: (
       <BodyLg>
@@ -43,8 +43,8 @@ const feedbackSubmissionContent: Record<
   },
   [FeedbackSubmissionType.RejectAnalytics]: {
     header: "Analytics",
-    alert: "Analytics are turned off",
-    title: "You have opted out of analytics",
+    alert: "Analytics are turned off.",
+    title: "You have opted out of analytics.",
     body: (
       <BodyLg>
         If you change your mind, you can turn analytics on at any time in{" "}

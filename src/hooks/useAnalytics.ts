@@ -1,17 +1,18 @@
-import { useLocalStorage } from "../hooks/useLocalStorage"
+import { useLocalStorage } from "./useLocalStorage"
+import { useCallback } from "react"
 
 export const useAnalytics = () => {
   const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useLocalStorage<
     boolean | undefined
   >("isAnalyticsEnabled", undefined)
 
-  const enableAnalytics = () => {
+  const enableAnalytics = useCallback(() => {
     setIsAnalyticsEnabled(true)
-  }
+  }, [setIsAnalyticsEnabled])
 
-  const disableAnalytics = () => {
+  const disableAnalytics = useCallback(() => {
     setIsAnalyticsEnabled(false)
-  }
+  }, [setIsAnalyticsEnabled])
 
   return {
     isAnalyticsEnabled,
