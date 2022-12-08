@@ -10,7 +10,6 @@ export const usePosthog = () => {
 
   useEffect(() => {
     if (featureFlags.POSTHOG && isAnalyticsEnabled) {
-      console.log(" init pothog !!!!")
       posthog.init()
     }
   }, [isAnalyticsEnabled])

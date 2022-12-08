@@ -6,6 +6,7 @@ import {
   BodySm,
   Stack,
   useColorModeValue,
+  StackProps,
 } from "@threshold-network/components"
 import sunglassesLight from "../static/images/SunglassesLight.png"
 import sunglassesDark from "../static/images/SunglassesDark.png"
@@ -34,7 +35,7 @@ const FeedbackInfoItem: FC<Props> = ({ imgSrc, subTitle, title }) => {
   )
 }
 
-const FeedbackAnalyticsInfo = () => {
+const FeedbackAnalyticsInfo: FC<StackProps> = (props) => {
   const feedbackDetails = [
     {
       title: "Anonymous",
@@ -54,7 +55,7 @@ const FeedbackAnalyticsInfo = () => {
   ]
 
   return (
-    <Stack spacing={8} m="auto" maxW="330px" mb={16}>
+    <Stack spacing={8} m="auto" maxW="330px" mb={16} {...props}>
       {feedbackDetails.map((detail) => (
         <FeedbackInfoItem key={detail.title} {...detail} />
       ))}
