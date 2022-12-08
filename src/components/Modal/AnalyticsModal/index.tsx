@@ -11,6 +11,7 @@ import {
   VStack,
   ModalCloseButton,
   ModalHeader,
+  Divider,
 } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
@@ -65,6 +66,7 @@ const AnalyticsModal: FC<BaseModalProps> = () => {
             setting.
           </BodyXs>
         </VStack>
+        <Divider />
       </ModalBody>
       <ModalFooter>
         <Button onClick={handleDecline} variant="outline" mr={2}>
