@@ -29,7 +29,6 @@ describe("Test `useLocalStorage` hook", () => {
 
     expect(result.current[0]).toEqual(value)
     expect(getItemSpy).toHaveBeenCalledWith(key)
-    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
   })
 
   test("should save data in local storage and return updated value", () => {
@@ -76,15 +75,13 @@ describe("Test `useLocalStorage` hook", () => {
     const { result } = renderHook(() => useLocalStorage(key, value))
 
     expect(result.current[0]).toEqual(value)
-    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
   })
 
   test("can have a string default value", () => {
     const value = "string"
-    const key = "numeric-value"
+    const key = "string-value"
     const { result } = renderHook(() => useLocalStorage(key, value))
 
     expect(result.current[0]).toEqual(value)
-    expect(mockedLocalStorageState[key]).toEqual(JSON.stringify(value))
   })
 })
