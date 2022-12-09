@@ -1,27 +1,38 @@
 import React from "react"
 import { PageComponent } from "../../../types"
 import {
+  BodyMd,
+  Box,
   Card,
   Divider,
   H5,
-  BodyMd,
-  Box,
   LabelLg,
 } from "@threshold-network/components"
 import FeedbackAnalyticsInfo from "../../../components/FeedbackAnalyticsInfo"
 import Link from "../../../components/Link"
 import { Switch, useColorModeValue } from "@chakra-ui/react"
 import { useAnalytics } from "../../../hooks/useAnalytics"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
+import { FeedbackSubmissionType } from "../../../components/Modal/FeedbackSubmissionModal"
 
 const Settings: PageComponent = () => {
   const { isAnalyticsEnabled, enableAnalytics, disableAnalytics } =
     useAnalytics()
 
+  const { openModal } = useModal()
+
   const toggleAnalytics = () => {
     if (isAnalyticsEnabled) {
       disableAnalytics()
+      openModal(ModalType.FeedbackSubmission, {
+        type: FeedbackSubmissionType.RejectAnalytics,
+      })
     } else {
       enableAnalytics()
+      openModal(ModalType.FeedbackSubmission, {
+        type: FeedbackSubmissionType.AcceptAnalytics,
+      })
     }
   }
 
