@@ -7,7 +7,7 @@ import { Contract } from "@ethersproject/contracts"
 
 interface Props {
   icon: any
-  title: string
+  title: string | JSX.Element
   tokenBalance: number | string
   usdBalance: string
   contract: Contract | null
