@@ -1,6 +1,11 @@
 import { FC } from "react"
-import { HStack, Icon, Stack } from "@chakra-ui/react"
-import { BodySm, Card } from "@threshold-network/components"
+import {
+  HStack,
+  Icon,
+  Stack,
+  Card,
+  LabelSm,
+} from "@threshold-network/components"
 import TokenBalance from "../TokenBalance"
 // import AddToMetamaskButton from "../AddToMetamaskButton"
 import { Contract } from "@ethersproject/contracts"
@@ -30,7 +35,7 @@ const TokenBalanceCardTemplate: FC<Props> = ({
       <Stack>
         <HStack>
           <Icon boxSize="16px" as={icon} />
-          <BodySm>{title}</BodySm>
+          <LabelSm>{title}</LabelSm>
         </HStack>
         <TokenBalance
           tokenAmount={tokenBalance}
