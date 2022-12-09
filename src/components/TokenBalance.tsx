@@ -1,16 +1,18 @@
 import { FC, useMemo } from "react"
 import {
+  BodyLg,
+  BodySm,
+  H3,
+  H5,
   Box,
   HStack,
   Stack,
   TextProps,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { formatUnits } from "@ethersproject/units"
-import numeral from "numeral"
+} from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { BodyLg, BodySm, H3, H5 } from "@threshold-network/components"
 import Icon from "./Icon"
+import { formatTokenAmount } from "../utils/formatAmount"
 
 interface TokenBalanceProps {
   tokenAmount: string | number
@@ -36,14 +38,11 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   isLarge,
   ...restProps
 }) => {
-  const { account, active } = useWeb3React()
-  const shouldRenderTokenAmount = useMemo(
-    () => tokenAmount && account && active,
-    [tokenAmount, account, active]
-  )
+  const { active } = useWeb3React()
+  const shouldRenderTokenAmount = active
 
   const _tokenAmount = useMemo(() => {
-    return numeral(formatUnits(tokenAmount, tokenDecimals)).format("0,0.00")
+    return formatTokenAmount(tokenAmount)
   }, [tokenAmount])
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.
