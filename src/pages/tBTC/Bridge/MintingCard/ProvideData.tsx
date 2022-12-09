@@ -18,7 +18,9 @@ import { ModalType } from "../../../../enums"
 import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
 import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { downloadFile } from "../../../../web3/utils"
+import { AddressZero, downloadFile } from "../../../../web3/utils"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 
 export interface FormValues {
   ethAddress: string
@@ -76,6 +78,7 @@ export const ProvideData: FC = () => {
   const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal, closeModal } = useModal()
+  const threshold = useThreshold()
 
   const handleJsonDownload = (data: DepositScriptParameters) => {
     downloadFile(
@@ -92,6 +95,8 @@ export const ProvideData: FC = () => {
     updateState("mintingStep", MintingStep.Deposit)
     closeModal()
   }
+
+  const bridgeContractAddress = useTBTCBridgeContractAddress()
 
   const onSubmit = async (values: FormValues) => {
     // check if the user has changed the eth or btc address from the previous attempt
@@ -156,7 +161,7 @@ export const ProvideData: FC = () => {
       </Box>
       <Flex justifyContent="center">
         <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
+          id={bridgeContractAddress}
           type={ExplorerDataType.ADDRESS}
           text="Bridge Contract"
         />
