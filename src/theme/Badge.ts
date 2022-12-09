@@ -23,9 +23,19 @@ const variants = {
     const { colorScheme: c, theme } = props
     const whiteAlpha200 = "rgba(255, 255, 255, 0.08);"
 
+    const bgVariant = c === "brand" ? "75" : "50"
+    // The `brand.75` color is already defined in the default theme but for some
+    // reason chakra can't find the `brand.75` color.
+    const brand75 = "#F2EDFF"
+    const bgBrand = mode(brand75, whiteAlpha200)(props)
+    const colorVariant = c === "brand" ? "100" : "200"
+
     return {
-      bg: mode(`${c}.50`, whiteAlpha200)(props),
-      color: mode(`${c}.500`, `${c}.200`)(props),
+      bg:
+        c === "brand"
+          ? bgBrand
+          : mode(`${c}.${bgVariant}`, whiteAlpha200)(props),
+      color: mode(`${c}.500`, `${c}.${colorVariant}`)(props),
     }
   },
 }
@@ -43,8 +53,13 @@ const sizes: Record<string, SystemStyleObject> = {
   },
 }
 
+const defaultProps = {
+  colorScheme: "brand",
+}
+
 export const Badge = {
   ...defaultTheme.components.Badge,
+  defaultProps,
   variants,
   sizes,
 }
