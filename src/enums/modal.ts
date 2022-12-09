@@ -36,4 +36,5 @@ export enum ModalType {
   DeauthorizationInitiated = "DEAUTHORIZATION_INITIATED",
   Analytics = "ANALYTICS",
   FeedbackSubmission = "FEEDBACK_SUBMIT",
+  StakingBounceSurvey = "STAKING_BOUNCE_SURVEY",
 }
