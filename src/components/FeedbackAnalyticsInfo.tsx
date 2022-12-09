@@ -14,13 +14,17 @@ import diagonalPillDark from "../static/images/DiagonalPillDark.png"
 import diagonalArrowLight from "../static/images/DiagonalArrowLight.png"
 import diagonalArrowDark from "../static/images/DiagonalArrowDark.png"
 
-interface Props {
+interface FeedbackInfoItemProps {
   imgSrc: any
   title: string
   subTitle: string
 }
 
-const FeedbackInfoItem: FC<Props> = ({ imgSrc, subTitle, title }) => {
+const FeedbackInfoItem: FC<FeedbackInfoItemProps> = ({
+  imgSrc,
+  subTitle,
+  title,
+}) => {
   return (
     <HStack>
       <Image w="70px" src={imgSrc} mr={8} />
@@ -34,7 +38,7 @@ const FeedbackInfoItem: FC<Props> = ({ imgSrc, subTitle, title }) => {
   )
 }
 
-const FeedbackAnalyticsInfo = () => {
+const FeedbackAnalyticsInfo: FC = () => {
   const feedbackDetails = [
     {
       title: "Anonymous",
