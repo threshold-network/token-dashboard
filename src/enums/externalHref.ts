@@ -21,5 +21,4 @@ export enum ExternalHref {
   setupNodes = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   tbtcNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   randomBeaconNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
-  analyticsReports = "SOME_URL",
 }

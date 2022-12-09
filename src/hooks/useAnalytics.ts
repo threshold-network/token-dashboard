@@ -1,17 +1,18 @@
-import { useLocalStorage } from "@rehooks/local-storage"
+import { useLocalStorage } from "./useLocalStorage"
+import { useCallback } from "react"
 
 export const useAnalytics = () => {
   const [isAnalyticsEnabled, setIsAnalyticsEnabled] = useLocalStorage<
     boolean | undefined
-  >("isAnalyticsEnabled")
+  >("isAnalyticsEnabled", undefined)
 
-  const enableAnalytics = () => {
+  const enableAnalytics = useCallback(() => {
     setIsAnalyticsEnabled(true)
-  }
+  }, [setIsAnalyticsEnabled])
 
-  const disableAnalytics = () => {
+  const disableAnalytics = useCallback(() => {
     setIsAnalyticsEnabled(false)
-  }
+  }, [setIsAnalyticsEnabled])
 
   return {
     isAnalyticsEnabled,
