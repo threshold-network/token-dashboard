@@ -30,11 +30,16 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import tbtcSuccess from "../../../../static/images/tbtc-success.png"
 import TransactionDetailsTable from "../components/TransactionDetailsTable"
+import Link from "../../../../components/Link"
+import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
+import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 
 export const MintingSuccess: FC = () => {
   const { updateState } = useTbtcState()
 
   const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
+  const tbtcTokenAddress = useTBTCTokenAddress()
+  const bridgeContractAddress = useTBTCBridgeContractAddress()
 
   return (
     <Box>
@@ -47,17 +52,31 @@ export const MintingSuccess: FC = () => {
         <Image src={tbtcSuccess} />
       </InfoBox>
       <Stack spacing={4} mb={8}>
-        <BodyLg>You should receive 1.2 tBTC in about 2h 42m</BodyLg>
-        <BodySm>Add the tBTC token address to your Ethererum wallet</BodySm>
+        <BodyLg>
+          You should receive 1.2 tBTC in aroung{" "}
+          <Box as="span" color="brand.500">
+            1-3 hours
+          </Box>
+          .
+        </BodyLg>
+        <BodySm>
+          Add the tBTC{" "}
+          <ViewInBlockExplorer
+            id={tbtcTokenAddress}
+            type={ExplorerDataType.ADDRESS}
+            text="token address"
+          />{" "}
+          to your Ethererum wallet.
+        </BodySm>
       </Stack>
       <TransactionDetailsTable />
 
-      <Button onClick={() => {}} isFullWidth mb={6}>
+      <Button onClick={() => {}} isFullWidth mb={6} mt="10">
         Dismiss
       </Button>
       <Flex justifyContent="center">
         <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
+          id={bridgeContractAddress}
           type={ExplorerDataType.ADDRESS}
           text="Bridge Contract"
         />
