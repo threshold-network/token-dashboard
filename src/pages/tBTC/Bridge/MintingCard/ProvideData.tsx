@@ -110,16 +110,9 @@ export const ProvideData: FC = () => {
         values.btcRecoveryAddress
       )
 
-      // const depositAddress = await TBTC.calculateDepositAddress(
-      //   depositScriptParameters,
-      //   "testnet",
-      //   true
-      // )
-
-      const depositAddress =
-        "14934b98637ca318a4d6e7ca6ffd1690b8e77df6377508f9f0c90d000395237576a9148" +
-        "db50eb52063ea9d98b3eac91489a90f738986f68763ac6776a91428e081f285138ccbe3" +
-        "89c1eb8985716230129f89880460bcea61b175ac68"
+      // TODO: calculate the deposit address using threshold-ts lib based on the
+      // `depositScriptParameters`.
+      const depositAddress = "3P14159f73E4gFr7JterCCQh9QjiTjiZrG"
 
       // update state,
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
