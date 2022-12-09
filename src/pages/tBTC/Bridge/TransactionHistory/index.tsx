@@ -1,8 +1,10 @@
 import { ComponentProps, FC } from "react"
 import {
   Badge,
+  BodyMd,
   BodySm,
   Card,
+  Image,
   LabelSm,
   Table,
   Tbody,
@@ -10,8 +12,11 @@ import {
   Th,
   Thead,
   Tr,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { TbtcTransactionResult } from "../../../../types/tbtc"
+import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-history-dark.svg"
+import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
 
 const TbtcActionBadge: FC<{ result: TbtcTransactionResult }> = ({ result }) => {
   switch (result) {
@@ -46,36 +51,47 @@ const TbtcActionBadge: FC<{ result: TbtcTransactionResult }> = ({ result }) => {
 export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
   ...props
 }) => {
-  // TODO: this should be pulled from a central store
-  const TbtcTransactionsHistory: {
+  const epmtyHistoryImg = useColorModeValue(
+    emptyHistoryImageSrcLight,
+    emptyHistoryImageSrcDark
+  )
+  // // TODO: this should be pulled from a central store
+  // const TbtcTransactionsHistory: {
+  //   amount: number
+  //   action: TbtcTransactionResult
+  // }[] = [
+  //   {
+  //     amount: 0.4,
+  //     action: TbtcTransactionResult.PENDING,
+  //   },
+  //   {
+  //     amount: 1.2,
+  //     action: TbtcTransactionResult.UNMINTED,
+  //   },
+  //   {
+  //     amount: 15,
+  //     action: TbtcTransactionResult.ERROR,
+  //   },
+  //   {
+  //     amount: 13.54,
+  //     action: TbtcTransactionResult.MINTED,
+  //   },
+  //   {
+  //     amount: 23.45,
+  //     action: TbtcTransactionResult.MINTED,
+  //   },
+  //   {
+  //     amount: 11.2,
+  //     action: TbtcTransactionResult.MINTED,
+  //   },
+  //   ]
+
+  const history: {
     amount: number
     action: TbtcTransactionResult
-  }[] = [
-    {
-      amount: 0.4,
-      action: TbtcTransactionResult.PENDING,
-    },
-    {
-      amount: 1.2,
-      action: TbtcTransactionResult.UNMINTED,
-    },
-    {
-      amount: 15,
-      action: TbtcTransactionResult.ERROR,
-    },
-    {
-      amount: 13.54,
-      action: TbtcTransactionResult.MINTED,
-    },
-    {
-      amount: 23.45,
-      action: TbtcTransactionResult.MINTED,
-    },
-    {
-      amount: 11.2,
-      action: TbtcTransactionResult.MINTED,
-    },
-  ]
+  }[] = []
+
+  const isHistoryEmpty = history.length === 0
 
   return (
     <Card {...props} minH="530px">
@@ -88,18 +104,53 @@ export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
           </Tr>
         </Thead>
         <Tbody>
-          {TbtcTransactionsHistory.map((tx, index) => (
-            <Tr key={index}>
-              <Td py={4} px={2}>
-                {tx.amount}
-              </Td>
-              <Td py={4} px={2} isNumeric>
-                <TbtcActionBadge result={tx.action} />
-              </Td>
-            </Tr>
-          ))}
+          {isHistoryEmpty ? (
+            <EmptyHistoryTableBody />
+          ) : (
+            history.map((tx, index) => (
+              <Tr key={index}>
+                <Td py={4} px={2}>
+                  {tx.amount}
+                </Td>
+                <Td py={4} px={2} isNumeric>
+                  <TbtcActionBadge result={tx.action} />
+                </Td>
+              </Tr>
+            ))
+          )}
         </Tbody>
       </Table>
+
+      {isHistoryEmpty && (
+        <>
+          <Image
+            alt="no-history"
+            src={epmtyHistoryImg}
+            mx="auto"
+            mt={16}
+            mb={4}
+          />
+          <BodyMd textAlign="center">You have no history yet.</BodyMd>
+        </>
+      )}
     </Card>
+  )
+}
+
+const EmptyRow = () => (
+  <Tr>
+    <Td py={4} px={2}>
+      -.--
+    </Td>
+    <Td py={4} px={2} isNumeric></Td>
+  </Tr>
+)
+
+const EmptyHistoryTableBody = () => {
+  return (
+    <>
+      <EmptyRow />
+      <EmptyRow />
+    </>
   )
 }
