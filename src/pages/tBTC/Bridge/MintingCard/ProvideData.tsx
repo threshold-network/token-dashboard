@@ -15,10 +15,10 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
-import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { downloadFile } from "../../../../web3/utils"
+import { Network } from "bitcoin-address-validation"
+import { threshold } from "../../../../utils/getThresholdLib"
 
 export interface FormValues {
   ethAddress: string
@@ -58,12 +58,16 @@ type MintingProcessFormProps = {
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   mapPropsToValues: ({ initialEthAddress }) => ({
     ethAddress: initialEthAddress,
-    btcRecoveryAddress: "17VZNX1SN5NtKa8UQFxwQbFeFc3iqRYhem",
+    btcRecoveryAddress: "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m",
   }),
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
     errors.ethAddress = validateETHAddress(values.ethAddress)
-    errors.btcRecoveryAddress = validateBTCAddress(values.btcRecoveryAddress)
+    // TODO: check network
+    errors.btcRecoveryAddress = validateBTCAddress(
+      values.btcRecoveryAddress,
+      Network.testnet
+    )
     return getErrorsObj(errors)
   },
   handleSubmit: (values, { props }) => {
@@ -100,21 +104,16 @@ export const ProvideData: FC = () => {
       btcRecoveryAddress !== values.btcRecoveryAddress
     ) {
       // if so...
-      const depositScriptParameters = createDepositScriptParameters(
-        values.ethAddress,
-        values.btcRecoveryAddress
+      const depositScriptParameters =
+        await threshold.tbtc.createDepositScriptParameters(
+          values.ethAddress,
+          values.btcRecoveryAddress
+        )
+
+      const depositAddress = await threshold.tbtc.calculateDepositAddress(
+        depositScriptParameters,
+        "testnet"
       )
-
-      // const depositAddress = await TBTC.calculateDepositAddress(
-      //   depositScriptParameters,
-      //   "testnet",
-      //   true
-      // )
-
-      const depositAddress =
-        "14934b98637ca318a4d6e7ca6ffd1690b8e77df6377508f9f0c90d000395237576a9148" +
-        "db50eb52063ea9d98b3eac91489a90f738986f68763ac6776a91428e081f285138ccbe3" +
-        "89c1eb8985716230129f89880460bcea61b175ac68"
 
       // update state,
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)

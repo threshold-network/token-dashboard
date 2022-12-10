@@ -14,6 +14,8 @@ import {
 } from "bitcoin-address-validation"
 import { unprefixedAndUncheckedAddress } from "../utils"
 import {
+  computeHash160,
+  decodeBitcoinAddress,
   RawTransaction,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
@@ -47,8 +49,13 @@ export class TBTC implements ITBTC {
     )
   }
 
-  //TODO: implement proper functionality
   async suggestDepositWallet(): Promise<string | undefined> {
+    // TODO: Remove this and use this._bridge.activeWalletPublicKey()
+    return new Promise((resolve) => {
+      resolve(
+        "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
+      )
+    })
     return await this._bridge.activeWalletPublicKey()
   }
 
@@ -57,7 +64,7 @@ export class TBTC implements ITBTC {
     btcRecoveryAddress: string
   ): Promise<DepositScriptParameters> {
     // TODO: check network
-    if (isValidBtcAddress(btcRecoveryAddress, Network.testnet)) {
+    if (!isValidBtcAddress(btcRecoveryAddress, Network.testnet)) {
       throw new Error(
         "Wrong bitcoin address passed to createDepositScriptParameters function"
       )
@@ -67,11 +74,15 @@ export class TBTC implements ITBTC {
     const blindingFactor = CryptoJS.lib.WordArray.random(8).toString(
       CryptoJS.enc.Hex
     )
-    const walletPublicKeyHash = await this.suggestDepositWallet()
+    const walletPublicKey = await this.suggestDepositWallet()
 
-    if (!walletPublicKeyHash) {
+    if (!walletPublicKey) {
       throw new Error("Couldn't get active wallet public key!")
     }
+
+    const walletPublicKeyHash = computeHash160(walletPublicKey)
+
+    const refundPublicKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
 
     const refundLocktime = calculateDepositRefundLocktime(currentTimestamp)
     const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
@@ -82,9 +93,7 @@ export class TBTC implements ITBTC {
       },
       blindingFactor,
       walletPublicKeyHash,
-      // TODO: decode `btcRecoveryAddress` and pass it as refund public key
-      refundPublicKeyHash:
-        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      refundPublicKeyHash,
       refundLocktime,
     }
 
@@ -95,10 +104,14 @@ export class TBTC implements ITBTC {
     depositScriptParameters: DepositScriptParameters,
     network = "main"
   ): Promise<string> {
+    // TODO: we should probalby mock it somewhere else
+    await this._bitcoinClient.mockDepositTransaction(
+      depositScriptParameters,
+      "2500"
+    )
     return await calculateDepositAddress(depositScriptParameters, network, true)
   }
 
-  //TODO: implement proper functionality
   async findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]> {
@@ -112,47 +125,5 @@ export class TBTC implements ITBTC {
   ): Promise<void> {
     // TODO: Fix reveal deposit
     await revealDeposit(utxo, deposit, this._bitcoinClient, this._bridge)
-  }
-
-  async mockDepositTransaction(
-    deposit: Deposit,
-    depositAddress: string
-  ): Promise<{
-    transactionHash: string
-    depositUtxo: UnspentTransactionOutput
-  }> {
-    const testnetTransactionHash =
-      "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
-    const testnetTransaction: RawTransaction = {
-      transactionHex:
-        "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +
-        "4c9bc7390100000000ffffffff02102700000000000017a914867120d5480a9cc0c11c" +
-        "1193fa59b3a92e852da78710043c00000000001600147ac2d9378a1c47e589dfb8095c" +
-        "a95ed2140d272602483045022100b70bd9b7f5d230444a542c7971bea79786b4ebde67" +
-        "03cee7b6ee8cd16e115ebf02204d50ea9d1ee08de9741498c2cc64266e40d52c4adb9e" +
-        "f68e65aa2727cd4208b5012102ee067a0273f2e3ba88d23140a24fdb290f27bbcd0f94" +
-        "117a9c65be3911c5c04e00000000",
-    }
-    const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
-      transactionHash: testnetTransactionHash,
-      outputIndex: 1,
-      value: BigNumber.from(3933200),
-      ...testnetTransaction,
-    }
-    const utxos = new Map<string, UnspentTransactionOutput[]>()
-    utxos.set(depositAddress, [testnetUTXO])
-    this._bitcoinClient.unspentTransactionOutputs = utxos
-    const rawTransactions = new Map<string, RawTransaction>()
-    rawTransactions.set(testnetTransactionHash, testnetTransaction)
-    this._bitcoinClient.rawTransactions = rawTransactions
-
-    // TODO: submitting deposit transaction returns an error because we are
-    // providing testnet address
-    return await submitDepositTransaction(
-      deposit,
-      "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt",
-      this._bitcoinClient,
-      true
-    )
   }
 }

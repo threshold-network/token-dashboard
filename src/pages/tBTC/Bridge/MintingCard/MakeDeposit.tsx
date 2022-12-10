@@ -24,9 +24,9 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { Deposit } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { BigNumber } from "ethers"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
+import { computeHash160 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -60,28 +60,25 @@ export const MakeDeposit: FC = () => {
   const threshold = useThreshold()
 
   const handleSubmit = async () => {
-    // we should probably call this function with some kind of a timeout and
-    // block the "i sent the btc" button until there are any unspent transaction
-    // output for a given deposit address
-    console.log("mocking deposit tranaction!")
-    const deposit: Deposit = {
+    const depositScriptParameters: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
-      amount: BigNumber.from("1000"),
       blindingFactor: blindingFactor,
       // TODO: pass proper values for walletPubKey and refundPubKey
-      walletPublicKey:
-        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
-      refundPublicKey:
-        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      walletPublicKeyHash: walletPublicKey,
+      refundPublicKeyHash: computeHash160(btcRecoveryAddress),
       refundLocktime: refundLocktime,
     }
-    const { transactionHash, depositUtxo } =
-      await threshold.tbtc.mockDepositTransaction(deposit, btcDepositAddress)
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      btcDepositAddress
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(
+      depositScriptParameters,
+      "testnet"
     )
+    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+      depositAddress
+    )
+    // TODO: remove console log
+    console.log("UTXOS: ", utxos)
     // TODO: Check if any of the utxo's is not revealed
     if (utxos && utxos.length > 0) {
       updateState("mintingStep", MintingStep.InitiateMinting)
