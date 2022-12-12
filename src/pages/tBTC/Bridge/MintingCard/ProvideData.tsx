@@ -11,14 +11,11 @@ import {
   validateETHAddress,
 } from "../../../../utils/forms"
 import { MintingStep } from "../../../../types/tbtc"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { createDepositScriptParameters } from "../../../../utils/tbtc-v2"
-import { TBTC } from "@keep-network/tbtc-v2.ts"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { AddressZero, downloadFile } from "../../../../web3/utils"
+import { downloadFile } from "../../../../web3/utils"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 
@@ -134,31 +131,22 @@ export const ProvideData: FC = () => {
   }
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" h="100%">
-      <Box>
-        <TbtcMintingCardTitle />
-        <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
-        <BodyMd color="gray.500" mb={12}>
-          Based on these two addresses, the system will generate for you an
-          unique BTC deposit address. There is no minting limit
-        </BodyMd>
-        <MintingProcessForm
-          innerRef={formRef}
-          formId="tbtc-minting-data-form"
-          initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
-          onSubmitForm={onSubmit}
-        />
-        <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
-          Generate Deposit Address
-        </Button>
-      </Box>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id={bridgeContractAddress}
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Flex>
+    <Box>
+      <TbtcMintingCardTitle />
+      <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
+      <BodyMd color="gray.500" mb={12}>
+        Based on these two addresses, the system will generate for you an unique
+        BTC deposit address. There is no minting limit
+      </BodyMd>
+      <MintingProcessForm
+        innerRef={formRef}
+        formId="tbtc-minting-data-form"
+        initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
+        onSubmitForm={onSubmit}
+      />
+      <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
+        Generate Deposit Address
+      </Button>
+    </Box>
   )
 }

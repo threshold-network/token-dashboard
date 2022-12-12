@@ -1,12 +1,10 @@
 import { FC } from "react"
 import {
   BodyMd,
-  BodySm,
   Box,
   BoxLabel,
   Button,
   ChecklistGroup,
-  Flex,
   HStack,
   Stack,
   Divider,
@@ -20,8 +18,6 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -125,13 +121,6 @@ export const MakeDeposit: FC = () => {
       >
         I sent the BTC
       </Button>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
     </Box>
   )
 }

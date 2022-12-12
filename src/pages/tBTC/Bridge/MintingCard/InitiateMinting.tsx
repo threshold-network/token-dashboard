@@ -5,15 +5,12 @@ import {
   BodyMd,
   Box,
   Button,
-  Flex,
 } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 
@@ -48,19 +45,11 @@ export const InitiateMinting: FC = () => {
         This step requires you to sign a transaction in your Ethereum wallet.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        Your tBTC will be arriving in your wallet within the next bridge
-        crossing.
+        Your tBTC will arrive in your wallet in around 1-3 hours.
       </BodyMd>
       <Button onClick={confirmDespotAndMint} isFullWidth mb={6}>
         Confirm deposit & mint
       </Button>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
     </Box>
   )
 }
