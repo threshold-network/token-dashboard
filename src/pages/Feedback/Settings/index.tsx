@@ -7,10 +7,12 @@ import {
   Divider,
   H5,
   LabelLg,
+  Stack,
+  Switch,
+  useColorModeValue,
 } from "@threshold-network/components"
 import FeedbackAnalyticsInfo from "../../../components/FeedbackAnalyticsInfo"
 import Link from "../../../components/Link"
-import { Switch, useColorModeValue } from "@chakra-ui/react"
 import { useAnalytics } from "../../../hooks/useAnalytics"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
@@ -60,9 +62,15 @@ const Settings: PageComponent = () => {
         </Box>
       </Box>
       <Divider mb={4} />
-      <Box display="flex" justifyContent="space-between">
-        <FeedbackAnalyticsInfo m={0} mb={0} />
-        <Box w="50%">
+      <Stack
+        justifyContent="space-between"
+        direction={{ base: "column", xl: "row" }}
+      >
+        <FeedbackAnalyticsInfo
+          m={{ base: "auto", xl: 0 }}
+          mb={{ base: 12, xl: 0 }}
+        />
+        <Box w={{ base: "full", xl: "50%" }}>
           <BodyMd mb={6}>
             In order to improve our user experience, Threshold is using an
             opt-in version of{" "}
@@ -78,7 +86,7 @@ const Settings: PageComponent = () => {
             data analytics.
           </BodyMd>
         </Box>
-      </Box>
+      </Stack>
     </Card>
   )
 }
