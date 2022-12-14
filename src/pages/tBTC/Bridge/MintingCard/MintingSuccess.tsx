@@ -36,7 +36,7 @@ export const MintingSuccess: FC = () => {
       </InfoBox>
       <Stack spacing={4} mb={8}>
         <BodyLg>
-          You should receive 1.2 tBTC in aroung{" "}
+          You should receive 1.2 tBTC in around{" "}
           <Box as="span" color="brand.500">
             1-3 hours
           </Box>
