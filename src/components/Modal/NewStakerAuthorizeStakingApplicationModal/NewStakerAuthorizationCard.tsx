@@ -107,12 +107,10 @@ export const NewStakerAuthorizationCard: FC<
         </Field>
         <AppAuthorizationInfo
           stakingAppName={stakingAppName}
-          isAuthorized={false}
           gridArea="app-info"
           label={label}
+          status={"to-authorize"}
           percentageAuthorized={percentToBeAuthorized}
-          isAuthorizationRequired={true}
-          hasPendingDeauthorization={false}
         />
         <GridItem gridArea="token-amount-form" mt={5}>
           <FormikTokenBalanceInput
