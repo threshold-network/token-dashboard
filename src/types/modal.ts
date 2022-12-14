@@ -46,6 +46,7 @@ import MapOperatorToStakingProviderConfirmationModal from "../components/Modal/M
 import { MapOperatorToStakingProviderSuccess } from "../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import AnalyticsModal from "../components/Modal/AnalyticsModal"
 import FeedbackSubmissionModal from "../components/Modal/FeedbackSubmissionModal"
+import StakingBounceSurveyModal from "../components/Modal/StakingBounceSurveyModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.SelectWallet]: SelectWalletModal,
@@ -82,7 +83,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
-  [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.NewStakerAuthorizeStakingApplication]:
     NewStakerAuthorizeStakingApplicationModal,
   [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
@@ -90,6 +90,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.DeauthorizationInitiated]: DeauthorizationInitiated,
   [ModalType.Analytics]: AnalyticsModal,
   [ModalType.FeedbackSubmission]: FeedbackSubmissionModal,
+  [ModalType.StakingBounceSurvey]: StakingBounceSurveyModal,
 }
 
 export interface BaseModalProps {
