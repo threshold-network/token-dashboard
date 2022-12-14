@@ -48,7 +48,7 @@ export const MintingTimeline: FC = () => {
         stepText="Step 3"
         helperLabelText="ACTION ON ETHEREUM NETWORK"
         title="Initiate minting"
-        description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive around 1 to 3 hours."
+        description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
         imageSrc={tbtcMintingStep3}
       />
       <Badge size="sm" colorScheme="yellow" variant="solid">
