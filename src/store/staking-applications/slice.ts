@@ -1,11 +1,16 @@
-import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
+import {
+  AnyAction,
+  createSlice,
+  isAnyOf,
+  PayloadAction,
+} from "@reduxjs/toolkit"
 import { BigNumber } from "ethers"
 import { featureFlags } from "../../constants"
 import {
   StakingProviderAppInfo,
   AuthorizationParameters,
 } from "../../threshold-ts/applications"
-import { MAX_UINT64 } from "../../threshold-ts/utils"
+import { AddressZero, MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
 import { providerStaked, setStakes } from "../staking"
@@ -19,6 +24,7 @@ import {
   displayDeauthrizationInitiatedModalEffect,
 } from "./effects"
 import { setMappedOperators } from "../account"
+import { dateToUnixTimestamp } from "../../utils/date"
 
 type StakingApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
@@ -214,11 +220,39 @@ export const stakingApplicationsSlice = createSlice({
 
       state[appName].stakingProviders.data[stakingProvider] = {
         ...stakingProviderData,
+        isDeauthorizationReqestActive,
         pendingAuthorizationDecrease: decreaseAmount,
         remainingAuthorizationDecreaseDelay: isDeauthorizationReqestActive
           ? "0"
           : MAX_UINT64.toString(),
         deauthorizationCreatedAt: undefined,
+      }
+    },
+    operatorStatusUpdated: (
+      state: StakingApplicationsState,
+      action: PayloadAction<{
+        stakingProvider: string
+        appName: StakingAppName
+        txHash: string
+      }>
+    ) => {
+      const { stakingProvider, appName } = action.payload
+      const stakingProviderData =
+        state[appName].stakingProviders.data[stakingProvider]
+
+      if (!stakingProviderData) return
+
+      const deauthorizationCreatedAt =
+        !stakingProviderData.isDeauthorizationReqestActive
+          ? dateToUnixTimestamp().toString()
+          : stakingProviderData.deauthorizationCreatedAt
+
+      state[appName].stakingProviders.data[stakingProvider] = {
+        ...stakingProviderData,
+        remainingAuthorizationDecreaseDelay:
+          state[appName].parameters.data.authorizationDecreaseDelay,
+        isDeauthorizationReqestActive: true,
+        deauthorizationCreatedAt,
       }
     },
   },
@@ -234,6 +268,8 @@ export const stakingApplicationsSlice = createSlice({
           remainingAuthorizationDecreaseDelay: "0",
           isDeauthorizationReqestActive: false,
           deauthorizationCreatedAt: undefined,
+          isOperatorInPool: undefined,
+          operator: AddressZero,
         }
 
         state.randomBeacon.stakingProviders.data[stakingProvider] = {
@@ -271,8 +307,12 @@ export const registerStakingAppsListeners = () => {
     })
 
     startAppListening({
-      actionCreator:
+      // @ts-ignore
+      matcher: isAnyOf(
         stakingApplicationsSlice.actions.authorizationDecreaseRequested,
+        stakingApplicationsSlice.actions.operatorStatusUpdated
+      ),
+      // @ts-ignore
       effect: displayDeauthrizationInitiatedModalEffect,
     })
 
@@ -282,4 +322,5 @@ export const registerStakingAppsListeners = () => {
     })
   }
 }
+
 registerStakingAppsListeners()

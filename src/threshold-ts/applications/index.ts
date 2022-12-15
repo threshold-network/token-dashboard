@@ -65,6 +65,15 @@ export interface StakingProviderAppInfo<
    * value if it cannot be estimated
    */
   deauthorizationCreatedAt: undefined | NumberType
+  /**
+   * Operator address that will operate application node.
+   */
+  operator: string
+  /**
+   * Determines if the operator is in the sortition pool. If this is `undefined`
+   * it means that the operator for a given staking provider is not set.
+   */
+  isOperatorInPool: boolean | undefined
 }
 
 /**
@@ -193,6 +202,8 @@ export interface IApplication {
    * @param operator Operator address
    */
   operatorToStakingProvider(operator: string): Promise<string>
+
+  updateOperatorStatus(operator: string): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -256,7 +267,9 @@ export class Application implements IApplication {
     }
   }
 
-  getStakingProviderAppInfo = async (stakingProvider: string): Promise<any> => {
+  getStakingProviderAppInfo = async (
+    stakingProvider: string
+  ): Promise<StakingProviderAppInfo> => {
     const calls: ContractCall[] = [
       {
         interface: this._staking.stakingContract.interface,
@@ -282,6 +295,12 @@ export class Application implements IApplication {
         address: this.contract.address,
         method: "authorizationParameters",
       },
+      {
+        interface: this.contract.interface,
+        address: this.contract.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
     ]
 
     const [
@@ -290,7 +309,13 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay,
       requestTimestamp,
       { authorizationDecreaseDelay },
+      [operator],
     ] = await this._multicall.aggregate(calls)
+
+    let isOperatorInPool = undefined
+    if (operator && !isAddressZero(operator)) {
+      isOperatorInPool = await this._application.isOperatorInPool(operator)
+    }
 
     const _remainingAuthorizationDecreaseDelay = BigNumber.from(
       remainingAuthorizationDecreaseDelay.toString()
@@ -323,6 +348,8 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay,
       isDeauthorizationReqestActive,
       deauthorizationCreatedAt,
+      isOperatorInPool,
+      operator,
     }
   }
 
@@ -387,5 +414,11 @@ export class Application implements IApplication {
 
   operatorToStakingProvider = async (operator: string): Promise<string> => {
     return await this._application.operatorToStakingProvider(operator)
+  }
+
+  updateOperatorStatus = async (
+    operator: string
+  ): Promise<ContractTransaction> => {
+    return await this._application.updateOperatorStatus(operator)
   }
 }

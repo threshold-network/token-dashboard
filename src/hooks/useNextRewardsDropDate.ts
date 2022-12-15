@@ -11,6 +11,8 @@ const rewardsDistributionDates = [
   1667260800,
   // 1 December 2022 00:00:00 GTM
   1669852800,
+  // 1 January 2023 00:00:00 GTM
+  1672531200,
 ]
 
 export const useNextRewardsDropDate = () => {
