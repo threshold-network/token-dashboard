@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+      # DO NOT MERGE
+      - test-node-v16-ci
   pull_request:
   workflow_dispatch:
     inputs:
@@ -29,7 +31,8 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          # DO NOT MERGE
+          node-version: "16"
           cache: "yarn"
 
       # This step forces Git to download dependencies using `https://` protocol,
@@ -58,7 +61,8 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          # DO NOT MERGE
+          node-version: "16"
           cache: "yarn"
 
       # We need this step because the `@keep-network/tbtc` which we update in
@@ -151,23 +155,24 @@ jobs:
       ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
 
-  # This job will be triggered after merges of PRs to the `main` branch. As the
-  # triggering is not related to the changes in the contracts / client code, we
-  # don't need to rotate the pods and hence don't need to wait with the
-  # execution of workflow for the manual approval.
-  # The code will be published to https://dashboard.test.threshold.network/index.html.
-  build-and-deploy-testnet-on-push:
-    name: Deploy to testnet
-    needs: build-and-test
-    if: github.event_name == 'push'
-    uses: ./.github/workflows/reusable-build-and-publish.yml
-    with:
-      environment: goerli
-      useUpstreamBuilds: false
-      dependentPackagesTag: goerli
-      gcpBucketName: dashboard.test.threshold.network
-      preview: false
-    secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+  # DO NOT MERGE - THIS CODE SHOULD BE UNCOMMENTED ON `main``
+  # # This job will be triggered after merges of PRs to the `main` branch. As the
+  # # triggering is not related to the changes in the contracts / client code, we
+  # # don't need to rotate the pods and hence don't need to wait with the
+  # # execution of workflow for the manual approval.
+  # # The code will be published to https://dashboard.test.threshold.network/index.html.
+  # build-and-deploy-testnet-on-push:
+  #   name: Deploy to testnet
+  #   needs: build-and-test
+  #   if: github.event_name == 'push'
+  #   uses: ./.github/workflows/reusable-build-and-publish.yml
+  #   with:
+  #     environment: goerli
+  #     useUpstreamBuilds: false
+  #     dependentPackagesTag: goerli
+  #     gcpBucketName: dashboard.test.threshold.network
+  #     preview: false
+  #   secrets:
+  #     ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+  #     ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+  #     gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
