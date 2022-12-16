@@ -7,9 +7,9 @@ import {
   Th,
   Thead,
   Tr,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { Row, RowID, RowValue } from "./types"
-import { useColorModeValue } from "@chakra-ui/react"
 import { columns } from "./index"
 
 const firstColWidth = {

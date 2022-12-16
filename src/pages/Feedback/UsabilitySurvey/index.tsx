@@ -75,12 +75,10 @@ const UsabilitySurvey: PageComponent = () => {
   }
 
   const handleSubmit = () => {
-    const payload = rows.map(({ id, value }) => ({
-      id,
-      value,
-    }))
-
-    console.log("Payload ", payload)
+    // const payload = rows.map(({ id, value }) => ({
+    //   id,
+    //   value,
+    // }))
     // TODO: Implement post to survey data tracking source
   }
 

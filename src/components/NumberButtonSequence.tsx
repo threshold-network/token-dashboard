@@ -1,14 +1,13 @@
 import { FC } from "react"
-import { Button, HStack } from "@threshold-network/components"
+import { Button, HStack, StackProps } from "@threshold-network/components"
 import { range } from "../utils/range"
-import { StackProps } from "@chakra-ui/react"
-import { ThemeTypings } from "@chakra-ui/styled-system"
+import { ButtonProps } from "@chakra-ui/react"
 
 interface NumberButtonSequenceProps extends StackProps {
   numberOfButtons: number
   selectedButtonNum?: number
   onButtonClick: (n: number) => void
-  size?: ThemeTypings["components"]["Button"]["sizes"]
+  size?: ButtonProps["size"]
 }
 
 const NumberButtonSequence: FC<NumberButtonSequenceProps> = ({
