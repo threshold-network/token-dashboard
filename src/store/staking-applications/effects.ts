@@ -1,5 +1,10 @@
 import { AnyAction } from "@reduxjs/toolkit"
-import { stakingApplicationsSlice, StakingAppName } from "./slice"
+import {
+  AllStakinApps,
+  AuthorizationNotRequiredApps,
+  stakingApplicationsSlice,
+  StakingAppName,
+} from "./slice"
 import { AppListenerEffectAPI } from "../listener"
 import {
   selectStakeByStakingProvider,
@@ -22,6 +27,11 @@ import {
   selectStakingAppStateByAppName,
 } from "./selectors"
 import { isAddressZero } from "../../web3/utils"
+import {
+  IPRE,
+  StakingProviderInfo as PREStakingProviderInfo,
+} from "../../threshold-ts/applications/pre"
+import { BigNumber, BigNumberish } from "ethers"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -115,17 +125,26 @@ export const getSupportedAppsStakingProvidersData = async (
       "randomBeacon",
       listenerApi
     )
+
+    await getPREAppStakingProvidersData(
+      stakingProviders,
+      listenerApi.extra.threshold.multiAppStaking.pre,
+      "pre",
+      listenerApi
+    )
   } catch (error) {
     console.log("Could not fetch apps data for staking providers ", error)
     listenerApi.subscribe()
   }
 }
 
-const getKeepStakingAppStakingProvidersData = async (
+const getStakingAppStakingProivdersData = async <DataType, MappedDataType>(
   stakingProviders: string[],
-  application: IApplication,
-  appName: StakingAppName,
-  listenerApi: AppListenerEffectAPI
+  application: IPRE | IApplication,
+  appName: AllStakinApps,
+  listenerApi: AppListenerEffectAPI,
+  mapResultTo: (data: DataType) => MappedDataType,
+  dispatchFn: (data: { [stakingProvider: string]: MappedDataType }) => AnyAction
 ) => {
   try {
     listenerApi.dispatch(
@@ -133,32 +152,27 @@ const getKeepStakingAppStakingProvidersData = async (
         appName,
       })
     )
-    const appData = await Promise.all(
-      stakingProviders.map(application.getStakingProviderAppInfo)
+
+    const appData: DataType[] = await Promise.all(
+      stakingProviders.map(
+        (stakingProvider) =>
+          application.getStakingProviderAppInfo(
+            stakingProvider
+          ) as unknown as Promise<DataType>
+      )
     )
+
     const appDataByStakingProvider = stakingProviders.reduce(
       (reducer, stakingProvider, index) => {
         const _appData = appData[index]
-        reducer[stakingProvider] = {
-          authorizedStake: _appData.authorizedStake.toString(),
-          pendingAuthorizationDecrease:
-            _appData.pendingAuthorizationDecrease.toString(),
-          remainingAuthorizationDecreaseDelay:
-            _appData.remainingAuthorizationDecreaseDelay.toString(),
-          isDeauthorizationReqestActive: _appData.isDeauthorizationReqestActive,
-          deauthorizationCreatedAt:
-            _appData.deauthorizationCreatedAt?.toString(),
-        }
+        reducer[stakingProvider] = mapResultTo(_appData)
+
         return reducer
       },
-      {} as { [stakingProvider: string]: StakingProviderAppInfo<string> }
+      {} as { [stakingProvider: string]: MappedDataType }
     )
-    listenerApi.dispatch(
-      stakingApplicationsSlice.actions.setStakingProvidersAppData({
-        appName,
-        data: appDataByStakingProvider,
-      })
-    )
+
+    listenerApi.dispatch(dispatchFn(appDataByStakingProvider))
   } catch (error) {
     listenerApi.dispatch(
       stakingApplicationsSlice.actions.setStakingProvidersAppDataError({
@@ -168,6 +182,56 @@ const getKeepStakingAppStakingProvidersData = async (
     )
     throw error
   }
+}
+
+const getKeepStakingAppStakingProvidersData = async (
+  stakingProviders: string[],
+  application: IApplication,
+  appName: StakingAppName,
+  listenerApi: AppListenerEffectAPI
+) => {
+  type MappedDataType = StakingProviderAppInfo<string>
+  const mapToResult = (data: StakingProviderAppInfo): MappedDataType => {
+    return {
+      authorizedStake: data.authorizedStake.toString(),
+      pendingAuthorizationDecrease:
+        data.pendingAuthorizationDecrease.toString(),
+      remainingAuthorizationDecreaseDelay:
+        data.remainingAuthorizationDecreaseDelay.toString(),
+      isDeauthorizationReqestActive: data.isDeauthorizationReqestActive,
+      deauthorizationCreatedAt: data.deauthorizationCreatedAt?.toString(),
+    }
+  }
+
+  await getStakingAppStakingProivdersData<
+    StakingProviderAppInfo,
+    MappedDataType
+  >(stakingProviders, application, appName, listenerApi, mapToResult, (data) =>
+    stakingApplicationsSlice.actions.setStakingProvidersAppData({
+      appName,
+      data,
+    })
+  )
+}
+
+const getPREAppStakingProvidersData = async (
+  stakingProviders: string[],
+  application: IPRE,
+  appName: AuthorizationNotRequiredApps,
+  listenerApi: AppListenerEffectAPI
+) => {
+  type MappedDataType = PREStakingProviderInfo
+  const mapToResult = (data: PREStakingProviderInfo): MappedDataType => data
+
+  await getStakingAppStakingProivdersData<
+    PREStakingProviderInfo,
+    MappedDataType
+  >(stakingProviders, application, appName, listenerApi, mapToResult, (data) =>
+    stakingApplicationsSlice.actions.setStakingProvidersAppData({
+      appName,
+      data,
+    })
+  )
 }
 
 export const displayMapOperatorToStakingProviderModalEffect = async (

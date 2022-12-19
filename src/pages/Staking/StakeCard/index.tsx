@@ -24,7 +24,7 @@ import {
   TopUpType,
   UnstakeType,
 } from "../../../enums"
-import { AddressZero, isAddressZero } from "../../../web3/utils"
+import { AddressZero } from "../../../web3/utils"
 import StakeApplications from "./StakeApplications"
 import StakeCardHeader from "./Header"
 import StakeRewards from "./StakeRewards"
@@ -35,15 +35,17 @@ import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
 import { isSameETHAddress } from "../../../threshold-ts/utils"
 import { useWeb3React } from "@web3-react/core"
+import { useAppSelector } from "../../../hooks/store"
+import { selectPREAppDataByStakingProvider } from "../../../store/staking-applications"
 
 const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
-  const isPRESet =
-    !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.isOperatorConfirmed
+  const { isOperatorMapped: isPRESet } = useAppSelector((state) =>
+    selectPREAppDataByStakingProvider(state, stake.stakingProvider)
+  )
 
   return (
     <StakeCardContext.Provider

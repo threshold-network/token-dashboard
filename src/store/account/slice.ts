@@ -103,7 +103,6 @@ export const registerAccountListeners = () => {
     })
   }
 }
-registerAccountListeners()
 
 export const {
   walletConnected,

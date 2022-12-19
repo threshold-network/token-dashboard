@@ -52,3 +52,13 @@ export const selectStakingAppByStakingProvider = createSelector(
     }
   }
 )
+
+export const selectPREAppDataByStakingProvider = createSelector(
+  [
+    selectStakingAppState,
+    (_: RootState, stakingProvider: string) => stakingProvider,
+  ],
+  (applicationState: StakingApplicationsState, stakingProvider: string) => {
+    return applicationState.pre.stakingProviders.data[stakingProvider] ?? {}
+  }
+)

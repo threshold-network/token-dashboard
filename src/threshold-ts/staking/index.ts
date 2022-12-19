@@ -199,12 +199,13 @@ export class Staking implements IStaking {
       isAddress(nuStakingProvider) &&
       isSameETHAddress(stakingProvider, nuStakingProvider)
         ? BigNumber.from(
-            (await this._vendingMachines.nu.convertToT(nuStake)).tAmount
+            (await this._vendingMachines.nu.convertToT(nuStake.toString()))
+              .tAmount
           ).sub(BigNumber.from(nuInTStake))
         : ZERO
 
     const keepEligableStakeInT = (
-      await this._vendingMachines.keep.convertToT(eligibleKeepStake)
+      await this._vendingMachines.keep.convertToT(eligibleKeepStake.toString())
     ).tAmount
     const possibleKeepTopUpInT = BigNumber.from(keepEligableStakeInT).sub(
       BigNumber.from(keepInTStake)

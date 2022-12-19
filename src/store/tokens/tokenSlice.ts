@@ -124,4 +124,3 @@ export const registerTokensListeners = () => {
     effect: fetchTokenBalances,
   })
 }
-registerTokensListeners()

@@ -8,6 +8,7 @@ import {
 import { IMulticall, ContractCall } from "../multicall"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
+import { IPRE, PRE } from "../applications/pre"
 
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
@@ -24,6 +25,7 @@ export class MultiAppStaking {
   private _multicall: IMulticall
   public readonly randomBeacon: IApplication
   public readonly ecdsa: IApplication
+  public readonly pre: IPRE
 
   constructor(
     staking: IStaking,
@@ -42,6 +44,7 @@ export class MultiAppStaking {
       abi: WalletRegistry.abi,
       ...config,
     })
+    this.pre = new PRE(config)
   }
 
   async getSupportedAppsAuthParameters(): Promise<SupportedAppAuthorizationParameters> {

@@ -5,19 +5,16 @@ import {
   Reducer,
 } from "@reduxjs/toolkit"
 import { modalSlice } from "./modal"
-import { registerTokensListeners, tokenSlice } from "./tokens"
+import { tokenSlice } from "./tokens"
 import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
-import { registerStakingListeners, stakingSlice } from "./staking"
+import { stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
 import { tbtcSlice } from "./tbtc"
-import {
-  registerStakingAppsListeners,
-  stakingApplicationsSlice,
-} from "./staking-applications/slice"
-import { listenerMiddleware } from "./listener"
-import { accountSlice, registerAccountListeners } from "./account"
+import { stakingApplicationsSlice } from "./staking-applications/slice"
+import { listenerMiddleware, registerListeners } from "./listener"
+import { accountSlice } from "./account"
 
 const combinedReducer = combineReducers({
   account: accountSlice.reducer,
@@ -41,10 +38,7 @@ export const resetStoreAction = () => ({
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
   if (action.type === APP_RESET_STORE) {
     listenerMiddleware.clearListeners()
-    registerStakingListeners()
-    registerStakingAppsListeners()
-    registerAccountListeners()
-    registerTokensListeners()
+    registerListeners()
     state = {
       eth: { ...state.eth },
       token: {
@@ -92,6 +86,8 @@ const store = configureStore({
       },
     }).prepend(listenerMiddleware.middleware),
 })
+
+registerListeners()
 
 export type RootState = ReturnType<
   typeof store.getState & typeof combinedReducer

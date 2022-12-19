@@ -5,6 +5,7 @@ import {
   StakingProviderAppInfo,
   AuthorizationParameters,
 } from "../../threshold-ts/applications"
+import { StakingProviderInfo as PREStakingProviderInfo } from "../../threshold-ts/applications/pre"
 import { MAX_UINT64 } from "../../threshold-ts/utils"
 import { FetchingState } from "../../types"
 import { startAppListening } from "../listener"
@@ -24,6 +25,17 @@ type StakingApplicationDataByStakingProvider = {
   [stakingProvider: string]: StakingProviderAppInfo<string>
 }
 
+type PREApplicationDataByStakingProvider = {
+  [stakingProvider: string]: PREStakingProviderInfo
+}
+
+type SetStakingProvidersAppDataPayload = PayloadAction<{
+  appName: AllStakinApps
+  data:
+    | StakingApplicationDataByStakingProvider
+    | PREApplicationDataByStakingProvider
+}>
+
 export type StakingApplicationState = {
   parameters: FetchingState<AuthorizationParameters<string>>
   stakingProviders: FetchingState<StakingApplicationDataByStakingProvider>
@@ -32,9 +44,12 @@ export type StakingApplicationState = {
 export interface StakingApplicationsState {
   tbtc: StakingApplicationState
   randomBeacon: StakingApplicationState
+  pre: { stakingProviders: FetchingState<PREApplicationDataByStakingProvider> }
 }
 
 export type StakingAppName = "tbtc" | "randomBeacon"
+export type AuthorizationNotRequiredApps = "pre"
+export type AllStakinApps = StakingAppName | AuthorizationNotRequiredApps
 
 export const stakingApplicationsSlice = createSlice({
   name: "staking-applications",
@@ -65,6 +80,13 @@ export const stakingApplicationsSlice = createSlice({
           authorizationDecreaseDelay: "0",
         },
       },
+      stakingProviders: {
+        isFetching: false,
+        error: "",
+        data: {},
+      },
+    },
+    pre: {
       stakingProviders: {
         isFetching: false,
         error: "",
@@ -105,12 +127,15 @@ export const stakingApplicationsSlice = createSlice({
     },
     setStakingProvidersAppData: (
       state: StakingApplicationsState,
-      action: PayloadAction<{
-        appName: StakingAppName
-        data: StakingApplicationDataByStakingProvider
-      }>
+      action: SetStakingProvidersAppDataPayload
     ) => {
-      const { appName, data } = action.payload
+      const { appName, data } = action.payload as {
+        appName: AllStakinApps
+        data: typeof action.payload.appName extends AuthorizationNotRequiredApps
+          ? PREApplicationDataByStakingProvider
+          : StakingApplicationDataByStakingProvider
+      }
+
       state[appName].stakingProviders = {
         isFetching: false,
         error: "",
@@ -120,7 +145,7 @@ export const stakingApplicationsSlice = createSlice({
     fetchingStakingProvidersAppData: (
       state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: StakingAppName
+        appName: AllStakinApps
       }>
     ) => {
       const { appName } = action.payload
@@ -129,7 +154,7 @@ export const stakingApplicationsSlice = createSlice({
     setStakingProvidersAppDataError: (
       state: StakingApplicationsState,
       action: PayloadAction<{
-        appName: StakingAppName
+        appName: AllStakinApps
         error: string
       }>
     ) => {
@@ -282,4 +307,3 @@ export const registerStakingAppsListeners = () => {
     })
   }
 }
-registerStakingAppsListeners()
