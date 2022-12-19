@@ -4,6 +4,7 @@ import { PartsStyleFunction } from "@chakra-ui/theme-tools"
 const baseStyle: PartsStyleFunction<typeof radioAnatomy> = () => {
   return {
     control: {
+      backgroundColor: "white",
       _checked: {
         backgroundColor: "brand.500",
         _hover: {
