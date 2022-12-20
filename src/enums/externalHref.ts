@@ -22,4 +22,12 @@ export enum ExternalHref {
   tbtcNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   randomBeaconNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   analyticsReports = "SOME_URL",
+  // TODO: add correct URL address.
+  btcRecoveryAddress = "SOME_URL",
+  // TODO: add correct URL address.
+  tbtcBridgeGithub = "SOME_URL",
+  // TODO: add correct URL address.
+  tBTCBrdigeAudit = "SOME_URL",
+  // TODO: add correct URL address.
+  spearbitAudit = "SOME_URL",
 }

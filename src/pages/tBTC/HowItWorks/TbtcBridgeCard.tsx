@@ -24,10 +24,9 @@ export const TbtcBridgeCard: FC<ComponentProps<typeof Card>> = ({
       {...props}
       display="flex"
       flexDirection={{ base: "column", xl: "row" }}
-      p="8"
     >
-      <Box mr={{ base: "none", lg: "20" }}>
-        <LabelSm mb={5} textTransform="none">
+      <Box mr={{ base: "none", lg: "20" }} alignSelf="start">
+        <LabelSm mb={8} textTransform="none">
           tBTC BRIDGE
         </LabelSm>
         <BodyMd mb="5">
@@ -39,7 +38,6 @@ export const TbtcBridgeCard: FC<ComponentProps<typeof Card>> = ({
           expanding web3 universe.
         </BodyMd>
       </Box>
-
       <Image src={tbtcAppImg} />
     </Card>
   )
