@@ -34,7 +34,7 @@ const TimelineItem: FC<Props> = ({
           {helperLabelText}
         </Badge>
       )}
-      <Box display="flex" mb={4} minW="216px">
+      <Box display="flex" mb={4}>
         <Box
           bg={isActive || isComplete ? "brand.500" : "gray.300"}
           w="4px"

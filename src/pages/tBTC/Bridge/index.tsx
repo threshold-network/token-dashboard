@@ -1,4 +1,4 @@
-import { HStack, useMediaQuery, VStack } from "@threshold-network/components"
+import { Grid } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
@@ -7,45 +7,36 @@ import { UnmintingCard } from "./UnmintingCard"
 import { TransactionHistory } from "./TransactionHistory"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingType } from "../../../types/tbtc"
-import { useEffect } from "react"
-import { ModalType } from "../../../enums"
-import { useModal } from "../../../hooks/useModal"
+
+const gridTemplateAreas = {
+  base: `
+            "nav"
+            "main-card"
+            "balance-card"
+            "tx-history"
+          `,
+  xl: `
+              "balance-card           nav"
+              "balance-card     main-card"
+              "tx-history       main-card"
+            `,
+}
 
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
-  const { openModal, closeModal } = useModal()
-
-  const [isSmallerThan1280] = useMediaQuery("(max-width: 1280px)")
-
-  useEffect(() => {
-    if (isSmallerThan1280) {
-      openModal(ModalType.UseDesktop)
-    } else {
-      closeModal()
-    }
-  }, [isSmallerThan1280])
 
   return (
-    <HStack
-      alignItems={{ base: "flex-end", lg: "flex-start" }}
-      w={"100%"}
-      flexDirection={{ base: "column", lg: "row" }}
-      spacing={4}
-    >
-      <VStack
-        spacing={4}
-        mb={{ base: 10, xl: 0 }}
-        w={{ base: "100%", lg: "40%", xl: "25%" }}
-      >
-        <TbtcBalanceCard />
-        <TransactionHistory />
-      </VStack>
-      <VStack spacing={4} w={{ base: "100%", lg: "60%", xl: "75%" }}>
-        <MintUnmintNav w={"100%"} />
-        {mintingType === TbtcMintingType.mint && <MintingCard p={35} />}
-        {mintingType === TbtcMintingType.unmint && <UnmintingCard p={35} />}
-      </VStack>
-    </HStack>
+    <Grid gridTemplateAreas={gridTemplateAreas} gap="5" alignItems="flex-start">
+      <MintUnmintNav w="100%" gridArea="nav" />
+      <TbtcBalanceCard gridArea="balance-card" alignSelf="stretch" />
+      <TransactionHistory gridArea="tx-history" />
+      {mintingType === TbtcMintingType.mint && (
+        <MintingCard gridArea="main-card" p={35} />
+      )}
+      {mintingType === TbtcMintingType.unmint && (
+        <UnmintingCard gridArea="main-card" p={35} />
+      )}
+    </Grid>
   )
 }
 
