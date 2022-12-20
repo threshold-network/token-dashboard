@@ -8,6 +8,7 @@ import {
   ListItem,
   ListIcon,
 } from "@threshold-network/components"
+import { BsFillArrowRightCircleFill } from "react-icons/all"
 import {
   MintingTimelineStep1,
   MintingTimelineStep2,
@@ -28,7 +29,13 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       </BoxLabel>
       <List>
         <ListItem>
-          <ListIcon />
+          <ListIcon
+            color="brand.500"
+            verticalAlign="sub"
+            as={BsFillArrowRightCircleFill}
+            w="16px"
+            h="16px"
+          />
           <BodyMd as="span">
             This is where your tBTC (ERC20) will be sent after minting
             initiation.
@@ -40,7 +47,13 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       </BoxLabel>
       <List mb="8">
         <ListItem>
-          <ListIcon />
+          <ListIcon
+            verticalAlign="sub"
+            color="brand.500"
+            as={BsFillArrowRightCircleFill}
+            w="16px"
+            h="16px"
+          />
           <BodyMd as="span">
             Providing a BTC refund address means your bitcoin will be safe, even
             in the unlikely case of an error minting.{" "}
