@@ -52,7 +52,7 @@ export const MintingTimeline: FC = () => {
         imageSrc={tbtcMintingStep3}
       />
       <Badge size="sm" colorScheme="yellow" variant="solid">
-        <Icon as={TimeIcon} alignSelf="center" /> 1-3 hours minting time
+        <Icon as={TimeIcon} alignSelf="center" /> ~1-3 hours minting time
       </Badge>
     </Box>
   )
