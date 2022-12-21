@@ -1,11 +1,5 @@
 import { FC } from "react"
-import {
-  HStack,
-  Icon,
-  Stack,
-  Card,
-  LabelSm,
-} from "@threshold-network/components"
+import { HStack, Icon, Card, LabelSm } from "@threshold-network/components"
 import TokenBalance from "../TokenBalance"
 // import AddToMetamaskButton from "../AddToMetamaskButton"
 import { Contract } from "@ethersproject/contracts"
@@ -31,21 +25,19 @@ const TokenBalanceCardTemplate: FC<Props> = ({
   ...restProps
 }) => {
   return (
-    <Card {...restProps}>
-      <Stack>
-        <HStack>
-          <Icon boxSize="16px" as={icon} />
-          <LabelSm>{title}</LabelSm>
-        </HStack>
-        <TokenBalance
-          tokenAmount={tokenBalance}
-          usdBalance={usdBalance}
-          tokenSymbol={tokenSymbol}
-          withSymbol={withSymbol}
-          withUSDBalance
-        />
-        {/* <AddToMetamaskButton contract={contract} /> */}
-      </Stack>
+    <Card {...restProps} as="section">
+      <HStack as="header" mb="4">
+        <Icon boxSize="16px" as={icon} />
+        <LabelSm>{title}</LabelSm>
+      </HStack>
+      <TokenBalance
+        tokenAmount={tokenBalance}
+        usdBalance={usdBalance}
+        tokenSymbol={tokenSymbol}
+        withSymbol={withSymbol}
+        withUSDBalance
+      />
+      {/* <AddToMetamaskButton contract={contract} /> */}
     </Card>
   )
 }
