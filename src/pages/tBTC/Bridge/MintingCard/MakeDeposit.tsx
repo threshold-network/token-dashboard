@@ -45,7 +45,7 @@ export const MakeDeposit: FC = () => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
-    <Box>
+    <>
       <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
@@ -121,6 +121,6 @@ export const MakeDeposit: FC = () => {
       >
         I sent the BTC
       </Button>
-    </Box>
+    </>
   )
 }

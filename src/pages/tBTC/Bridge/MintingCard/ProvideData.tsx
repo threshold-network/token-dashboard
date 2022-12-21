@@ -1,6 +1,6 @@
 import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Box, Button, Flex, BodyMd } from "@threshold-network/components"
+import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -131,7 +131,7 @@ export const ProvideData: FC = () => {
   }
 
   return (
-    <Box>
+    <>
       <TbtcMintingCardTitle />
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
       <BodyMd color="gray.500" mb={12}>
@@ -147,6 +147,6 @@ export const ProvideData: FC = () => {
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
         Generate Deposit Address
       </Button>
-    </Box>
+    </>
   )
 }

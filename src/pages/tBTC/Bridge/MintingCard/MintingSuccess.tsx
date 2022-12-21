@@ -25,7 +25,7 @@ export const MintingSuccess: FC = () => {
   const tbtcTokenAddress = useTBTCTokenAddress()
 
   return (
-    <Box>
+    <>
       <TbtcMintingCardTitle previousStep={MintingStep.InitiateMinting} />
       <TbtcMintingCardSubTitle
         stepText="Success"
@@ -57,6 +57,6 @@ export const MintingSuccess: FC = () => {
       <Button onClick={() => {}} isFullWidth mb={6} mt="10">
         Dismiss
       </Button>
-    </Box>
+    </>
   )
 }

@@ -1,11 +1,5 @@
 import { FC } from "react"
-import {
-  Alert,
-  AlertIcon,
-  BodyMd,
-  Box,
-  Button,
-} from "@threshold-network/components"
+import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
@@ -31,7 +25,7 @@ export const InitiateMinting: FC = () => {
   }
 
   return (
-    <Box>
+    <>
       <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
@@ -50,6 +44,6 @@ export const InitiateMinting: FC = () => {
       <Button onClick={confirmDespotAndMint} isFullWidth mb={6}>
         Confirm deposit & mint
       </Button>
-    </Box>
+    </>
   )
 }
