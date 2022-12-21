@@ -6,7 +6,6 @@ import {
   H5,
   Box,
   HStack,
-  Stack,
   TextProps,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -42,39 +41,30 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   const shouldRenderTokenAmount = active
 
   const _tokenAmount = useMemo(() => {
-    return formatTokenAmount(tokenAmount)
+    return formatTokenAmount(tokenAmount || 0)
   }, [tokenAmount])
+
+  const BalanceTag = isLarge ? H3 : H5
+  const SymbolTag = isLarge ? BodyLg : BodySm
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.
   return (
-    <HStack>
-      {icon && <Icon as={icon} boxSize={iconSize} alignSelf="center" />}
-      <Box>
-        <Stack direction="row">
-          {isLarge ? (
-            <H3 {...restProps}>
-              {shouldRenderTokenAmount ? _tokenAmount : "--"}
-            </H3>
-          ) : (
-            <H5 {...restProps}>
-              {shouldRenderTokenAmount ? _tokenAmount : "--"}
-            </H5>
+    <Box>
+      <HStack alignItems="center">
+        {icon && <Icon as={icon} boxSize={iconSize} />}{" "}
+        <BalanceTag {...restProps}>
+          {shouldRenderTokenAmount ? _tokenAmount : "--"}
+          {withSymbol && tokenSymbol && (
+            <SymbolTag as="span"> {tokenSymbol}</SymbolTag>
           )}
-          {withSymbol &&
-            tokenSymbol &&
-            (isLarge ? (
-              <BodyLg alignSelf="flex-end">{tokenSymbol}</BodyLg>
-            ) : (
-              <BodySm alignSelf="flex-end">{tokenSymbol}</BodySm>
-            ))}
-        </Stack>
-        {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
-          <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-            {usdBalance}
-          </BodySm>
-        )}
-      </Box>
-    </HStack>
+        </BalanceTag>
+      </HStack>
+      {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
+        <BodySm mt="2" color={useColorModeValue("gray.500", "gray.300")}>
+          {usdBalance} USD
+        </BodySm>
+      )}
+    </Box>
   )
 }
 
