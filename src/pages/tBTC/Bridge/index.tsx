@@ -1,4 +1,4 @@
-import { Grid } from "@threshold-network/components"
+import { Grid, Box } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
@@ -10,32 +10,34 @@ import { TbtcMintingType } from "../../../types/tbtc"
 
 const gridTemplateAreas = {
   base: `
-            "nav"
-            "main-card"
-            "balance-card"
-            "tx-history"
-          `,
-  xl: `
-              "balance-card           nav"
-              "balance-card     main-card"
-              "tx-history       main-card"
-            `,
+    "main"
+    "aside"
+    `,
+  xl: `"aside main"`,
 }
 
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
 
   return (
-    <Grid gridTemplateAreas={gridTemplateAreas} gap="5" alignItems="flex-start">
-      <MintUnmintNav w="100%" gridArea="nav" />
-      <TbtcBalanceCard gridArea="balance-card" alignSelf="stretch" />
-      <TransactionHistory gridArea="tx-history" />
-      {mintingType === TbtcMintingType.mint && (
-        <MintingCard gridArea="main-card" p={35} />
-      )}
-      {mintingType === TbtcMintingType.unmint && (
-        <UnmintingCard gridArea="main-card" p={35} />
-      )}
+    <Grid
+      gridTemplateAreas={gridTemplateAreas}
+      gridTemplateColumns={{ base: "1fr", xl: "25% 1fr" }}
+      gap="5"
+    >
+      <Box gridArea="main">
+        <MintUnmintNav w="100%" gridArea="nav" mb="5" />
+        {mintingType === TbtcMintingType.mint && (
+          <MintingCard gridArea="main-card" p={35} />
+        )}
+        {mintingType === TbtcMintingType.unmint && (
+          <UnmintingCard gridArea="main-card" p={35} />
+        )}
+      </Box>
+      <Box gridArea="aside">
+        <TbtcBalanceCard gridArea="balance-card" mb="5" />
+        <TransactionHistory gridArea="tx-history" mb="5" />
+      </Box>
     </Grid>
   )
 }
