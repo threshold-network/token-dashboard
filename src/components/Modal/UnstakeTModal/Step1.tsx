@@ -1,5 +1,10 @@
 import { FC, useState, useMemo } from "react"
 import {
+  BodySm,
+  H5,
+  LabelSm,
+  LineDivider,
+  LineDividerCenterElement,
   Button,
   ModalBody,
   ModalFooter,
@@ -11,13 +16,7 @@ import {
   TabPanel,
   TabList,
   Tab,
-} from "@chakra-ui/react"
-import {
-  BodySm,
-  H5,
-  LabelSm,
-  LineDivider,
-  LineDividerCenterElement,
+  BodyLg,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
@@ -29,6 +28,7 @@ import { BaseModalProps, UpgredableToken } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import { ModalType, Token, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
+import { DeauthorizeInfo } from "./DeauthorizeInfo"
 import ModalCloseButton from "../ModalCloseButton"
 
 const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
@@ -99,10 +99,11 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
               </UnorderedList>
             </>
           ) : (
-            <BodySm>
+            <BodyLg>
               You can partially or totally unstake depending on your needs.
-            </BodySm>
+            </BodyLg>
           )}
+          <DeauthorizeInfo stakingProvider={stake.stakingProvider} />
         </InfoBox>
         <Tabs isFitted>
           <TabList mb="8">
