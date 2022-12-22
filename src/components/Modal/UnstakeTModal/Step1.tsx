@@ -29,6 +29,8 @@ import { StakeData } from "../../../types/staking"
 import { ModalType, Token, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import { DeauthorizeInfo } from "./DeauthorizeInfo"
+import { useAppSelector } from "../../../hooks/store"
+import { selectAvailableAmountToUnstakeByStakingProvider } from "../../../store/staking"
 import ModalCloseButton from "../ModalCloseButton"
 
 const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
@@ -67,6 +69,13 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
       hasNuStake && hasKeepStake ? "KEEP + NU" : hasKeepStake ? "KEEP" : "NU"
     return `Unstakes max of both native tokens and legacy tokens (${suffix} + T)`
   }, [hasNuStake, hasKeepStake])
+
+  const availableAmountToUnstake = useAppSelector((state) =>
+    selectAvailableAmountToUnstakeByStakingProvider(
+      state,
+      stake.stakingProvider
+    )
+  )
 
   return (
     <>
@@ -127,7 +136,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 onSubmitForm={onSubmitForm}
                 label="Unstake amount"
                 submitButtonText="Unstake"
-                maxTokenAmount={stake.tStake}
+                maxTokenAmount={availableAmountToUnstake.t}
                 shouldDisplayMaxAmountInLabel
               />
             </TabPanel>
@@ -138,7 +147,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                   initialTokenAmount={stake.keepInTStake}
                   label="Unstake amount"
                   submitButtonText="Unstake"
-                  maxTokenAmount={stake.keepInTStake}
+                  maxTokenAmount={availableAmountToUnstake.keepInT}
                   icon={KeepCircleBrand}
                   helperText="The legacy tokens can be only unstaked in full amount"
                   isDisabled
@@ -151,7 +160,7 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                   onSubmitForm={onSubmitForm}
                   label="Unstake amount"
                   submitButtonText="Unstake"
-                  maxTokenAmount={stake.nuInTStake}
+                  maxTokenAmount={availableAmountToUnstake.nuInT}
                   icon={NuCircleBrand}
                   shouldDisplayMaxAmountInLabel
                 />
@@ -166,7 +175,12 @@ const UnstakeTModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 <LabelSm>OR</LabelSm>
               </LineDividerCenterElement>
             </LineDivider>
-            <Button variant="outline" isFullWidth onClick={onUnstakeAllBtn}>
+            <Button
+              variant="outline"
+              isFullWidth
+              onClick={onUnstakeAllBtn}
+              isDisabled={!availableAmountToUnstake.canUnstakeAll}
+            >
               Unstake All
             </Button>
             <BodySm mt="2">{unstakeAllBtnHelperText}</BodySm>
