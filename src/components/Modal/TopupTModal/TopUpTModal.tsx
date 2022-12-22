@@ -53,9 +53,13 @@ const TopupTModal: FC<
             <H5 mb={4} color={useColorModeValue("gray.800", "white")}>
               You are about to top up your stake
             </H5>
-            <BodyLg>
+            <BodyLg mb="6">
               By topping up your stake you will add a new deposit of tokens to
               your initial stake.
+            </BodyLg>
+            <BodyLg>
+              If you want to put your new topped-up tokens at work, make sure to
+              increase the authorization to your applications.
             </BodyLg>
           </InfoBox>
           <StakingStats
