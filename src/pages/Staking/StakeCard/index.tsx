@@ -35,6 +35,8 @@ import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
 import { isSameETHAddress } from "../../../threshold-ts/utils"
 import { useWeb3React } from "@web3-react/core"
+import { useAppSelector } from "../../../hooks/store"
+import { selectAvailableAmountToUnstakeByStakingProvider } from "../../../store/staking"
 
 const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -68,6 +70,12 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const { isInactiveStake, canTopUpKepp, canTopUpNu, isPRESet } =
     useStakeCardContext()
   const { account } = useWeb3React()
+  const availableAmountToUnstake = useAppSelector((state) =>
+    selectAvailableAmountToUnstakeByStakingProvider(
+      state,
+      stake.stakingProvider
+    )
+  )
 
   const isOwner = isSameETHAddress(account ?? AddressZero, stake.owner)
 
@@ -157,7 +165,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
           onSubmitForm={onSubmitForm}
           label="Amount"
           submitButtonText={submitButtonText}
-          maxTokenAmount={isStakeAction ? tBalance : stake.tStake}
+          maxTokenAmount={isStakeAction ? tBalance : availableAmountToUnstake.t}
           shouldDisplayMaxAmountInLabel
           isDisabled={!isOwner}
           submitButtonVariant="outline"
