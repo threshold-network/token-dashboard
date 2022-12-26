@@ -1,8 +1,7 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Button,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   BodyLg,
@@ -18,17 +17,34 @@ import withBaseModal from "../withBaseModal"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { MintingStep } from "../../../types/tbtc"
+import { downloadFile } from "../../../web3/utils"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
-    jsonData: any
-    handleDownloadClick: any
-    handleDoubleReject: () => void
+    depositScriptParameters: DepositScriptParameters
   }
-> = ({ closeModal, jsonData, handleDownloadClick, handleDoubleReject }) => {
+> = ({ closeModal, depositScriptParameters }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
   const { updateState } = useTbtcState()
+
+  const handleDoubleReject = () => {
+    updateState("mintingStep", MintingStep.Deposit)
+    closeModal()
+  }
+
+  const handleJsonDownload = (data: DepositScriptParameters) => {
+    downloadFile(
+      JSON.stringify(data),
+      "deposit-script-parameters.json",
+      "text/json"
+    )
+
+    closeModal()
+    updateState("mintingStep", MintingStep.Deposit)
+  }
 
   const titleText = isOnConfirmStep
     ? "Are you sure you do not want to download the .JSON file?"
@@ -78,7 +94,9 @@ const TbtcRecoveryFileModalModal: FC<
             Cancel
           </Button>
         )}
-        <Button onClick={() => handleDownloadClick(jsonData)}>Download</Button>
+        <Button onClick={() => handleJsonDownload(depositScriptParameters)}>
+          Download
+        </Button>
       </ModalFooter>
     </>
   )

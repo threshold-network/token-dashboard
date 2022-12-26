@@ -15,8 +15,6 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { downloadFile } from "../../../../web3/utils"
 import { Network } from "bitcoin-address-validation"
 import { threshold } from "../../../../utils/getThresholdLib"
 
@@ -79,23 +77,7 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 export const ProvideData: FC = () => {
   const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
-  const { openModal, closeModal } = useModal()
-
-  const handleJsonDownload = (data: DepositScriptParameters) => {
-    downloadFile(
-      JSON.stringify(data),
-      "deposit-script-parameters.json",
-      "text/json"
-    )
-
-    closeModal()
-    updateState("mintingStep", MintingStep.Deposit)
-  }
-
-  const handleDoubleReject = () => {
-    updateState("mintingStep", MintingStep.Deposit)
-    closeModal()
-  }
+  const { openModal } = useModal()
 
   const onSubmit = async (values: FormValues) => {
     // check if the user has changed the eth or btc address from the previous attempt
@@ -129,9 +111,7 @@ export const ProvideData: FC = () => {
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       openModal(ModalType.TbtcRecoveryJson, {
-        jsonData: depositScriptParameters,
-        handleDownloadClick: handleJsonDownload,
-        handleDoubleReject,
+        depositScriptParameters,
       })
     }
 
