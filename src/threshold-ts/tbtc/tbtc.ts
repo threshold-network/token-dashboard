@@ -1,10 +1,8 @@
 import {
   calculateDepositAddress,
   calculateDepositRefundLocktime,
-  Deposit,
   DepositScriptParameters,
-  revealDeposit,
-  submitDepositTransaction,
+  revealDeposit as tBTCRevealDeposit,
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
@@ -12,14 +10,13 @@ import {
   Network,
   validate as isValidBtcAddress,
 } from "bitcoin-address-validation"
-import { unprefixedAndUncheckedAddress } from "../utils"
+import { getProviderOrSigner, unprefixedAndUncheckedAddress } from "../utils"
 import {
   computeHash160,
   decodeBitcoinAddress,
-  RawTransaction,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { BigNumber, providers, Signer, VoidSigner } from "ethers"
+import { providers, Signer, VoidSigner } from "ethers"
 import { ITBTC } from "./tbtc.interface"
 import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
@@ -31,13 +28,12 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: MockBitcoinClient
 
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
-    const signer: Signer =
-      ethereumConfig.providerOrSigner instanceof Signer
-        ? ethereumConfig.providerOrSigner
-        : this._getSignerFromProvider(ethereumConfig.providerOrSigner)
     this._bridge = new EthereumBridge({
       address: BridgeArtifact.address,
-      signer: signer,
+      signerOrProvider: getProviderOrSigner(
+        ethereumConfig.providerOrSigner as any,
+        ethereumConfig.account
+      ) as any,
     })
     this._bitcoinClient = new MockBitcoinClient()
   }
@@ -50,13 +46,13 @@ export class TBTC implements ITBTC {
   }
 
   async suggestDepositWallet(): Promise<string | undefined> {
-    // TODO: Remove this and use this._bridge.activeWalletPublicKey()
-    return new Promise((resolve) => {
-      resolve(
-        "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
-      )
-    })
-    return await this._bridge.activeWalletPublicKey()
+    const walletPublicKey = await this._bridge.activeWalletPublicKey()
+    // TODO: Remove this if
+    if (walletPublicKey) {
+      const walletPubKeyHash = computeHash160(walletPublicKey)
+      console.log("walletPublicKeyHash", walletPubKeyHash)
+    }
+    return walletPublicKey
   }
 
   async createDepositScriptParameters(
@@ -80,9 +76,9 @@ export class TBTC implements ITBTC {
       throw new Error("Couldn't get active wallet public key!")
     }
 
-    const walletPublicKeyHash = computeHash160(walletPublicKey)
+    const walletPubKeyHash = computeHash160(walletPublicKey)
 
-    const refundPublicKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
+    const refundPubKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
 
     const refundLocktime = calculateDepositRefundLocktime(currentTimestamp)
     const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
@@ -92,8 +88,8 @@ export class TBTC implements ITBTC {
         identifierHex,
       },
       blindingFactor,
-      walletPublicKeyHash,
-      refundPublicKeyHash,
+      walletPubKeyHash,
+      refundPubKeyHash,
       refundLocktime,
     }
 
@@ -107,7 +103,7 @@ export class TBTC implements ITBTC {
     // TODO: we should probalby mock it somewhere else
     await this._bitcoinClient.mockDepositTransaction(
       depositScriptParameters,
-      "2500"
+      "1000000"
     )
     return await calculateDepositAddress(depositScriptParameters, network, true)
   }
@@ -121,9 +117,21 @@ export class TBTC implements ITBTC {
   //TODO: implement reveal deposit functionality
   async revealDeposit(
     utxo: UnspentTransactionOutput,
-    deposit: Deposit
-  ): Promise<void> {
-    // TODO: Fix reveal deposit
-    await revealDeposit(utxo, deposit, this._bitcoinClient, this._bridge)
+    deposit: DepositScriptParameters,
+    bitcoinClient: MockBitcoinClient,
+    bridge: EthereumBridge
+  ): Promise<string> {
+    // TODO: remove `bitcoinClient` and `bridge` parameters from this function
+    console.log("THIS!!", this)
+
+    return await tBTCRevealDeposit(utxo, deposit, bitcoinClient, bridge)
+  }
+
+  getBitcoinClient(): MockBitcoinClient {
+    return this._bitcoinClient
+  }
+
+  getBridge(): EthereumBridge {
+    return this._bridge
   }
 }

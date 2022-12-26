@@ -1,8 +1,7 @@
+import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import {
-  DepositScriptParameters,
-  Deposit,
-} from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 
 export interface ITBTC {
   suggestDepositWallet(): Promise<string | undefined>
@@ -21,5 +20,14 @@ export interface ITBTC {
     address: string
   ): Promise<UnspentTransactionOutput[]>
 
-  revealDeposit(utxo: UnspentTransactionOutput, deposit: Deposit): Promise<void>
+  revealDeposit(
+    utxo: UnspentTransactionOutput,
+    deposit: DepositScriptParameters,
+    bitcoinClient: MockBitcoinClient,
+    bridge: EthereumBridge
+  ): Promise<string>
+
+  getBitcoinClient(): MockBitcoinClient
+
+  getBridge(): EthereumBridge
 }

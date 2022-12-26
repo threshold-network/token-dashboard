@@ -20,9 +20,10 @@ import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/Trans
 import { MintingStep } from "../../../types/tbtc"
 import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { Deposit } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
-import { BigNumber } from "ethers"
+import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { useRevealDepositTransaction } from "../../../hooks/tbtc/useRevealDepositTransaction"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -38,6 +39,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     blindingFactor,
   } = useTbtcState()
   const threshold = useThreshold()
+  const { sendTransaction } = useRevealDepositTransaction()
 
   const { mint } = useTbtcMintTransaction((tx) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -52,23 +54,38 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     // 2. the sweep will mint automatically
     // 3. minting will happen behind the scenes
 
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      btcDepositAddress
-    )
-    const deposit: Deposit = {
+    const deposit: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
-      // TODO: we should first check if the utxo is not revealed and reveal the
-      // deposit for each unrevealed utxo
-      amount: BigNumber.from(utxos[0].value),
       blindingFactor,
-      walletPublicKey,
-      refundPublicKey:
-        "0300d6f28a2f6bf9836f57fcda5d284c9a8f849316119779f0d6090830d97763a9",
+      walletPubKeyHash: walletPublicKey,
+      refundPubKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime,
     }
-    await threshold.tbtc.revealDeposit(utxos[0], deposit)
+
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(
+      deposit,
+      "testnet"
+    )
+
+    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+      depositAddress
+    )
+
+    await sendTransaction(
+      utxos[0],
+      deposit,
+      threshold.tbtc.getBitcoinClient(),
+      threshold.tbtc.getBridge()
+    )
+
+    // await threshold.tbtc.revealDeposit(
+    //   utxos[0],
+    //   deposit,
+    //   threshold.tbtc.getBitcoinClient(),
+    //   threshold.tbtc.getBridge()
+    // )
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }

@@ -5,7 +5,9 @@ import { ModalType, TransactionStatus } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 
-export type ContractTransactionFunction = Promise<ContractTransaction>
+export type ContractTransactionFunction =
+  | Promise<ContractTransaction>
+  | Promise<string>
 
 export const useSendTransactionFromFn = <
   F extends (...args: never[]) => ContractTransactionFunction
@@ -14,7 +16,7 @@ export const useSendTransactionFromFn = <
   onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
   const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
@@ -31,14 +33,28 @@ export const useSendTransactionFromFn = <
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = await fn(...args)
-        openModal(ModalType.TransactionIsPending, { transactionHash: tx.hash })
-        setTransactionStatus(TransactionStatus.PendingOnChain)
-        await tx.wait()
+        let returnedTransaction: ContractTransaction
+
+        if (typeof tx === "string") {
+          openModal(ModalType.TransactionIsPending, {
+            transactionHash: tx,
+          })
+          setTransactionStatus(TransactionStatus.PendingOnChain)
+          await library.waitForTransaction(tx)
+          returnedTransaction = await library.getTransaction(tx)
+        } else {
+          openModal(ModalType.TransactionIsPending, {
+            transactionHash: tx.hash,
+          })
+          setTransactionStatus(TransactionStatus.PendingOnChain)
+          await tx.wait()
+          returnedTransaction = tx
+        }
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
-          onSuccess(tx)
+          onSuccess(returnedTransaction)
         }
-        return tx
+        return returnedTransaction
       } catch (error: any) {
         setTransactionStatus(
           isWalletRejectionError(error)

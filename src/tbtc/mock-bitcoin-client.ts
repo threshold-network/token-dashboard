@@ -9,6 +9,7 @@ import {
 import {
   assembleDepositTransaction,
   calculateDepositAddress,
+  Deposit,
   DepositScriptParameters,
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BigNumber } from "ethers"
@@ -107,13 +108,17 @@ export class MockBitcoinClient implements Client {
       true
     )
 
+    const deposit: Deposit = {
+      ...depositScriptParameters,
+      amount: BigNumber.from(amount),
+    }
+
     const {
       transactionHash,
       depositUtxo,
       rawTransaction: transaction,
     } = await assembleDepositTransaction(
-      depositScriptParameters,
-      BigNumber.from(amount),
+      deposit,
       [testnetUTXO],
       testnetPrivateKey,
       true
