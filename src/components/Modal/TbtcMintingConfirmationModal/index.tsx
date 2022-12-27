@@ -73,12 +73,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       depositAddress
     )
 
-    await sendTransaction(
-      utxos[0],
-      deposit,
-      threshold.tbtc.getBitcoinClient(),
-      threshold.tbtc.getBridge()
-    )
+    await sendTransaction(utxos[0], deposit)
 
     // await threshold.tbtc.revealDeposit(
     //   utxos[0],

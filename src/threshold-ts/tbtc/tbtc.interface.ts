@@ -22,12 +22,6 @@ export interface ITBTC {
 
   revealDeposit(
     utxo: UnspentTransactionOutput,
-    deposit: DepositScriptParameters,
-    bitcoinClient: MockBitcoinClient,
-    bridge: EthereumBridge
+    deposit: DepositScriptParameters
   ): Promise<string>
-
-  getBitcoinClient(): MockBitcoinClient
-
-  getBridge(): EthereumBridge
 }
