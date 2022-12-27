@@ -16,7 +16,6 @@ import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { providers, Signer, VoidSigner } from "ethers"
 import { ITBTC } from "./tbtc.interface"
 import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
@@ -36,13 +35,6 @@ export class TBTC implements ITBTC {
       ) as any,
     })
     this._bitcoinClient = new MockBitcoinClient()
-  }
-
-  private _getSignerFromProvider(provider: providers.Provider): Signer {
-    return new VoidSigner(
-      "0x3c5d0B515C993D2E8b5044e3E5cBAE3B08796A01",
-      provider
-    )
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
