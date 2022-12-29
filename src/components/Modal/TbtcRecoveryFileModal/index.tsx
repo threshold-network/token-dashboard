@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Button,
   ModalBody,
@@ -31,7 +31,7 @@ const TbtcRecoveryFileModalModal: FC<
 
   const titleText = isOnConfirmStep
     ? "Are you sure you do not want to download the .JSON file?"
-    : "Download this JSON file"
+    : "Download this .JSON file"
 
   const bodyContent = isOnConfirmStep ? (
     <BodyLg>
@@ -40,9 +40,7 @@ const TbtcRecoveryFileModalModal: FC<
   ) : (
     <>
       <BodyLg mb={6}>
-        Please save this file. This file is important in case you will need to
-        make a fast recovery. Without it you will be required to wait for 30
-        days.
+        This file is important to save in case you need to make a fast recovery.
       </BodyLg>
       <BodyLg>
         This file contains a wallet public key, a refund public key and a refund
@@ -54,7 +52,7 @@ const TbtcRecoveryFileModalModal: FC<
   return (
     <>
       <ModalHeader>
-        {isOnConfirmStep ? "Take note" : "Recovery JSON file"}
+        {isOnConfirmStep ? "Take note" : "Recovery .JSON file"}
       </ModalHeader>
       <ModalBody>
         <InfoBox variant="modal" mb="6">
@@ -75,7 +73,7 @@ const TbtcRecoveryFileModalModal: FC<
       <ModalFooter>
         {isOnConfirmStep ? (
           <Button onClick={handleDoubleReject} variant="outline" mr={2}>
-            Dismiss anyway
+            Dismiss Anyway
           </Button>
         ) : (
           <Button onClick={setIsOnConfirmStep} variant="outline" mr={2}>
