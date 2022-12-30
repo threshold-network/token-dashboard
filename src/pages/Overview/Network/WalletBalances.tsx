@@ -19,6 +19,7 @@ import InfoBox from "../../../components/InfoBox"
 import Link from "../../../components/Link"
 import useUpgradeHref from "../../../hooks/useUpgradeHref"
 import ButtonLink from "../../../components/ButtonLink"
+import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 
 const BalanceStat: FC<{
   balance: string | number
@@ -39,7 +40,7 @@ const BalanceStat: FC<{
       />
       {conversionRate && (
         <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-          1 {text} = {conversionRate} T
+          1 {text} = {formatTokenAmount(conversionRate, "0.0000")} T
         </BodySm>
       )}
     </HStack>
@@ -86,6 +87,8 @@ const WalletBalances: FC = () => {
 
   const { amount: keepToT } = useTConvertedAmount(Token.Keep, keep.balance)
   const { amount: nuToT } = useTConvertedAmount(Token.Nu, nu.balance)
+  const { amount: keepToTConversionRate } = useTExchangeRate(Token.Keep)
+  const { amount: nuToTConversionRate } = useTExchangeRate(Token.Nu)
 
   const conversionToTAmount = useMemo(() => {
     return BigNumber.from(keepToT).add(nuToT).toString()
@@ -105,14 +108,14 @@ const WalletBalances: FC = () => {
           <BalanceStat balance={t.balance} icon={t.icon} text={t.text} />
         )}
         <BalanceStat
-          conversionRate={keep.conversionRate}
+          conversionRate={keepToTConversionRate}
           balance={keep.balance}
           icon={keep.icon}
           text={keep.text}
           tokenDecimals={keep.decimals}
         />
         <BalanceStat
-          conversionRate={nu.conversionRate}
+          conversionRate={nuToTConversionRate}
           balance={nu.balance}
           icon={nu.icon}
           text={nu.text}

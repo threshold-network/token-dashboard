@@ -1,46 +1,54 @@
-import { useSelector, useDispatch } from "react-redux"
 import {
-  setTokenBalance as setTokenBalanceAction,
-  setTokenLoading as setTokenLoadingAction,
+  tokenBalanceFetched as setTokenBalanceAction,
+  tokenBalanceFetching as setTokenLoadingAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
-  setTokenConversionRate as setTokenConversionRateAction,
+  tokenBalanceFetchFailed as setTokenBalanceErrorAction,
 } from "../store/tokens"
-import { RootState } from "../store"
+import { useAppDispatch, useAppSelector } from "./store"
 import { Token } from "../enums"
 import { UseTokenState } from "../types/token"
+import { useCallback } from "react"
 
 export const useTokenState: UseTokenState = () => {
-  const keep = useSelector((state: RootState) => state.token[Token.Keep])
-  const nu = useSelector((state: RootState) => state.token[Token.Nu])
-  const t = useSelector((state: RootState) => state.token[Token.T])
-  const tbtc = useSelector((state: RootState) => state.token[Token.TBTC])
-  const tbtcv2 = useSelector((state: RootState) => state.token[Token.TBTCV2])
+  const keep = useAppSelector((state) => state.token[Token.Keep])
+  const nu = useAppSelector((state) => state.token[Token.Nu])
+  const t = useAppSelector((state) => state.token[Token.T])
+  const tbtcv1 = useAppSelector((state) => state.token[Token.TBTCV1])
+  const tbtc = useAppSelector((state) => state.token[Token.TBTC])
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const setTokenConversionRate = (
-    token: Token,
-    conversionRate: number | string
-  ) => dispatch(setTokenConversionRateAction({ token, conversionRate }))
+  const setTokenBalance = useCallback(
+    (token: Token, balance: number | string) =>
+      dispatch(setTokenBalanceAction({ token, balance })),
+    [dispatch]
+  )
 
-  const setTokenBalance = (token: Token, balance: number | string) =>
-    dispatch(setTokenBalanceAction({ token, balance }))
+  const setTokenLoading = useCallback(
+    (token: Token) => dispatch(setTokenLoadingAction({ token })),
+    [dispatch]
+  )
 
-  const setTokenLoading = (token: Token, loading: boolean) =>
-    dispatch(setTokenLoadingAction({ token, loading }))
+  const fetchTokenPriceUSD = useCallback(
+    (token: Token) => dispatch(fetchTokenPriceAction({ token })),
+    [dispatch]
+  )
 
-  const fetchTokenPriceUSD = (token: Token) =>
-    dispatch(fetchTokenPriceAction({ token }))
+  const setTokenBalanceError = useCallback(
+    (token: Token, error: string) =>
+      dispatch(setTokenBalanceErrorAction({ token, error })),
+    [dispatch]
+  )
 
   return {
     keep,
     nu,
     t,
-    tbtc,
-    tbtcv2,
+    tbtc: tbtcv1,
+    tbtcv2: tbtc,
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
-    setTokenConversionRate,
+    setTokenBalanceError,
   }
 }

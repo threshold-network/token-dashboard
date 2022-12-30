@@ -3,6 +3,7 @@ import { setTransactionStatus as setTransactionStatusAction } from "../store/tra
 import { RootState } from "../store"
 import { UseTransaction } from "../types/transaction"
 import { TransactionStatus, TransactionType } from "../enums/transactionType"
+import { useCallback } from "react"
 
 export const useTransaction: UseTransaction = () => {
   const keepApproval = useSelector(
@@ -20,10 +21,11 @@ export const useTransaction: UseTransaction = () => {
 
   const dispatch = useDispatch()
 
-  const setTransactionStatus = (
-    type: TransactionType,
-    status: TransactionStatus
-  ) => dispatch(setTransactionStatusAction({ type, status }))
+  const setTransactionStatus = useCallback(
+    (type: TransactionType, status: TransactionStatus) =>
+      dispatch(setTransactionStatusAction({ type, status })),
+    [dispatch]
+  )
 
   return {
     setTransactionStatus,

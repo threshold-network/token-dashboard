@@ -5,7 +5,7 @@ import {
   Reducer,
 } from "@reduxjs/toolkit"
 import { modalSlice } from "./modal"
-import { tokenSlice } from "./tokens"
+import { registerTokensListeners, tokenSlice } from "./tokens"
 import { sidebarSlice } from "./sidebar"
 import { transactionSlice } from "./transactions"
 import { registerStakingListeners, stakingSlice } from "./staking"
@@ -44,6 +44,7 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
     registerStakingListeners()
     registerStakingAppsListeners()
     registerAccountListeners()
+    registerTokensListeners()
     state = {
       eth: { ...state.eth },
       token: {
