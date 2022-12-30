@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Grid, Box } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
@@ -7,6 +8,8 @@ import { UnmintingCard } from "./UnmintingCard"
 import { TransactionHistory } from "./TransactionHistory"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingType } from "../../../types/tbtc"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
 
 const gridTemplateAreas = {
   base: `
@@ -18,6 +21,12 @@ const gridTemplateAreas = {
 
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
+  const { openModal } = useModal()
+
+  // TODO: use local storage to determain if this modal has already been opened.
+  useEffect(() => {
+    openModal(ModalType.NewTBTCApp)
+  }, [])
 
   return (
     <Grid

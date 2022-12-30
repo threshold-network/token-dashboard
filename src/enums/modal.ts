@@ -35,4 +35,5 @@ export enum ModalType {
   DeauthorizationCompleted = "DEAUTHORIZATION_COMPLETED",
   DeauthorizationInitiated = "DeauthorizationInitiated",
   Analytics = "ANALYTICS",
+  NewTBTCApp = "NEW_TBTC_APP",
 }
