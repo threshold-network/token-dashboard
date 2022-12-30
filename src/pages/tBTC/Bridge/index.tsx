@@ -10,12 +10,28 @@ import { TbtcMintingType } from "../../../types/tbtc"
 import { useEffect } from "react"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
+import { useAppDispatch, useAppSelector } from "../../../hooks/store"
+import { selectBridgeTransacionHistory, tbtcSlice } from "../../../store/tbtc"
+import { useWeb3React } from "@web3-react/core"
 
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
   const { openModal, closeModal } = useModal()
+  const dispatch = useAppDispatch()
+  const bridgeTransactionHistory = useAppSelector(selectBridgeTransacionHistory)
+  const { account } = useWeb3React()
 
   const [isSmallerThan1280] = useMediaQuery("(max-width: 1280px)")
+
+  useEffect(() => {
+    if (!account) return
+
+    dispatch(
+      tbtcSlice.actions.requestBridgeTransactionHistory({
+        depositor: account,
+      })
+    )
+  }, [dispatch, account])
 
   useEffect(() => {
     if (isSmallerThan1280) {
@@ -38,7 +54,7 @@ const TBTCBridge: PageComponent = (props) => {
         w={{ base: "100%", lg: "40%", xl: "25%" }}
       >
         <TbtcBalanceCard />
-        <TransactionHistory />
+        <TransactionHistory data={bridgeTransactionHistory} />
       </VStack>
       <VStack spacing={4} w={{ base: "100%", lg: "60%", xl: "75%" }}>
         <MintUnmintNav w={"100%"} />
