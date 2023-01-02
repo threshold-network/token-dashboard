@@ -73,7 +73,7 @@ jobs:
         run: |
           yarn upgrade \
             @threshold-network/solidity-contracts \
-            @keep-network/keep-core \
+            @keep-network/keep-core@1.8.1-goerli.0 \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
             @keep-network/coverage-pools \
