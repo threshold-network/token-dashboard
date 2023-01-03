@@ -111,7 +111,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
     "react-error-overlay": "6.0.9",
-    "@types/react": "17.0.30"
+    "@types/react": "17.0.30",
+    "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
   },
   "devDependencies": {
     "@chakra-ui/cli": "0.0.0-pr-20211126153854",
