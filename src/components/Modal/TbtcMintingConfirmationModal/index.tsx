@@ -24,6 +24,7 @@ import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { useRevealDepositTransaction } from "../../../hooks/tbtc/useRevealDepositTransaction"
+import { useModal } from "../../../hooks/useModal"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -39,11 +40,12 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     blindingFactor,
   } = useTbtcState()
   const threshold = useThreshold()
-  const { sendTransaction } = useRevealDepositTransaction()
 
   const { mint } = useTbtcMintTransaction((tx) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
   })
+
+  const { sendTransaction } = useRevealDepositTransaction()
 
   const initiateMintTransaction = async () => {
     // TODO: implement this
@@ -73,16 +75,12 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       depositAddress
     )
 
-    await sendTransaction(utxos[0], deposit)
+    const txHash = await sendTransaction(utxos[0], deposit)
 
-    // await threshold.tbtc.revealDeposit(
-    //   utxos[0],
-    //   deposit,
-    //   threshold.tbtc.getBitcoinClient(),
-    //   threshold.tbtc.getBridge()
-    // )
-    updateState("mintingStep", MintingStep.MintingSuccess)
-    closeModal()
+    if (txHash) {
+      updateState("mintingStep", MintingStep.MintingSuccess)
+      closeModal()
+    }
   }
 
   // TODO: this is just to mock the loading state for the UI
