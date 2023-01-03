@@ -72,8 +72,9 @@ const RewardsCard: FC<{
           </>
         ) : (
           <BodyMd>
-            Rewards are released at the end of each month and can be claimed
-            retroactively for March and April.
+            Monthly staking rewards are distributed retroactively by the
+            Threshold Council and are claimable on or about the beginning of the
+            subsequent month.
           </BodyMd>
         )}
       </InfoBox>
