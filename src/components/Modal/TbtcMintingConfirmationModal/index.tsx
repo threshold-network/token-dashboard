@@ -18,13 +18,11 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
-import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { useRevealDepositTransaction } from "../../../hooks/tbtc/useRevealDepositTransaction"
-import { useModal } from "../../../hooks/useModal"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -40,10 +38,6 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     blindingFactor,
   } = useTbtcState()
   const threshold = useThreshold()
-
-  const { mint } = useTbtcMintTransaction((tx) => {
-    updateState("mintingStep", MintingStep.MintingSuccess)
-  })
 
   const { sendTransaction } = useRevealDepositTransaction()
 
