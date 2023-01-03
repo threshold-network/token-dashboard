@@ -1,22 +1,11 @@
-import { dateToUnixTimestamp } from "../utils/date"
-
-const rewardsDistributionDates = [
-  // 15 July 2022 00:00:00 GTM
-  1657843200,
-  // 1 September 2022 00:00:00 GTM
-  1661990400,
-  // 1 October 2022 00:00:00 GTM
-  1664582400,
-  // 1 November 2022 00:00:00 GTM
-  1667260800,
-  // 1 December 2022 00:00:00 GTM
-  1669852800,
-  // 1 January 2023 00:00:00 GTM
-  1672531200,
-]
+import { dateToUnixTimestamp } from "@threshold-network/components"
 
 export const useNextRewardsDropDate = () => {
-  return rewardsDistributionDates.find(
-    (nextDate) => dateToUnixTimestamp() < nextDate
-  ) as number
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = today.getMonth()
+
+  return dateToUnixTimestamp(
+    month === 11 ? new Date(year + 1, 0, 1) : new Date(year, month + 1, 1)
+  )
 }
