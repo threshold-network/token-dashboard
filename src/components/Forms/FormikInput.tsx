@@ -4,8 +4,6 @@ import {
   FormControlProps,
   FormLabel,
   Input,
-  FormHelperText,
-  FormErrorMessage,
   Stack,
   useColorModeValue,
   BodySm,
@@ -36,7 +34,8 @@ export const FormikInput: FC<
 
   const isError = Boolean(meta.touched && meta.error)
 
-  const secondaryLabelColor = useColorModeValue("gray.700", "white")
+  const secondaryLabelColor = "gray.500"
+  const labelColor = useColorModeValue("gray.700", "gray.300")
 
   return (
     <FormControl isInvalid={isError} {...restProps}>
@@ -47,10 +46,21 @@ export const FormikInput: FC<
         alignItems="center"
       >
         <Stack direction="row" alignItems="center">
-          <FormLabel m={0} htmlFor={name}>
-            {label}
+          <FormLabel m={0} htmlFor={name} color={labelColor}>
+            {label}{" "}
+            {tooltip && (
+              <TooltipIcon
+                // Unset color to get the same color as label.
+                color="unset"
+                label={tooltip}
+                width="20px"
+                height="20px"
+                alignSelf="center"
+                m="auto"
+                verticalAlign="text-top"
+              />
+            )}
           </FormLabel>
-          {tooltip && <TooltipIcon label={tooltip} />}
         </Stack>
         {secondaryLabel && (
           // @ts-ignore - htmlFor is not a valid prop for BodySm but we're setting to label here

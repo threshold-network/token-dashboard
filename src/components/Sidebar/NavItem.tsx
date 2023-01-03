@@ -32,10 +32,21 @@ const NavItem: FC<NavItemDetail> = ({
   const subrouteWildcard = `${href.split("/")[1]}/*`
   const match = subrouteWildcard === "/*" ? "" : subrouteWildcard
   const isActive = useMatch(match)
-  const brandColor = useColorModeValue("brand.500", "brand.50")
   const tooltipBtnColor = useColorModeValue("gray.700", "brand.50")
   const tooltipBgColor = useColorModeValue("gray.800", "white")
   const tooltipTextColor = useColorModeValue("white", "gray.700")
+  const iconColor = useColorModeValue("gray.500", "gray.300")
+  const activeIconColor = useColorModeValue("brand.500", "brand.50")
+  const iconTransparentElementColor = useColorModeValue("white", "gray.800")
+
+  const iconStyle = {
+    "path.fill": {
+      fill: isActive ? activeIconColor : iconColor,
+    },
+    "path.transparent": {
+      fill: iconTransparentElementColor,
+    },
+  }
 
   return (
     <Box position="relative" my={2}>
@@ -46,7 +57,7 @@ const NavItem: FC<NavItemDetail> = ({
           top="-8px"
           height="calc(100% + 16px)"
           width="4px"
-          bg={brandColor}
+          bg={activeIconColor}
           position="absolute"
           right={0}
           borderRadius="4px 0 0 4px"
@@ -68,7 +79,9 @@ const NavItem: FC<NavItemDetail> = ({
           as={isFooter ? undefined : RouterLink}
           to={href}
           href={href}
-          _hover={{ textDecoration: "none" }}
+          _hover={{
+            textDecoration: "none",
+          }}
           tabIndex={-1}
           rel={isFooter ? "noopener noreferrer" : undefined}
           target={isFooter ? "_blank" : undefined}
@@ -88,7 +101,8 @@ const NavItem: FC<NavItemDetail> = ({
                 <Icon
                   boxSize="32px"
                   as={isActive ? activeIcon : passiveIcon}
-                  color={isActive ? brandColor : undefined}
+                  color={isActive ? activeIconColor : iconColor}
+                  sx={iconStyle}
                 />
               }
               color={isActive ? tooltipBtnColor : undefined}
@@ -104,7 +118,8 @@ const NavItem: FC<NavItemDetail> = ({
                 <Icon
                   boxSize="32px"
                   as={isActive ? activeIcon : passiveIcon}
-                  color={isActive ? brandColor : undefined}
+                  color={isActive ? activeIconColor : iconColor}
+                  sx={iconStyle}
                 />
               }
             />

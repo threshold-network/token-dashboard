@@ -1,12 +1,10 @@
 import { FC } from "react"
 import {
   BodyMd,
-  BodySm,
   Box,
   BoxLabel,
   Button,
   ChecklistGroup,
-  Flex,
   HStack,
   Stack,
   Divider,
@@ -20,8 +18,6 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -30,11 +26,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }) => {
   return (
     <HStack justify="space-between">
-      <BoxLabel
-      // colorScheme="brand"
-      >
-        {text}
-      </BoxLabel>
+      <BoxLabel>{text}</BoxLabel>
       <HStack>
         <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
         <CopyToClipboard textToCopy={address} />
@@ -53,7 +45,7 @@ export const MakeDeposit: FC = () => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
-    <Box>
+    <>
       <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
@@ -78,9 +70,9 @@ export const MakeDeposit: FC = () => {
           p={3}
           backgroundColor={"white"}
           width={"100%"}
-          maxW={"128px"}
-          margin={"5 0"}
-          borderRadius="sm"
+          maxW={"145px"}
+          marginY="4"
+          borderRadius="4"
           border={"1px solid"}
           borderColor={"brand.500"}
           alignSelf="center"
@@ -93,14 +85,14 @@ export const MakeDeposit: FC = () => {
           />
         </Box>
 
-        <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <BodySm color="brand.500" maxW={"xs"} isTruncated>
+        <HStack bg="white" borderRadius="lg" justify="center" mb="5" p="1">
+          <BodyMd color="brand.500" isTruncated>
             {btcDepositAddress}
-          </BodySm>
+          </BodyMd>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
       </InfoBox>
-      <Stack spacing={4} mb={8}>
+      <Stack spacing={4} mt="5" mb={8}>
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow text="BTC Recovery Address" address={btcRecoveryAddress} />
@@ -113,10 +105,10 @@ export const MakeDeposit: FC = () => {
             itemId: "staking_deposit__0",
             itemTitle: "",
             itemSubTitle: (
-              <BodySm color={useColorModeValue("gray.500", "gray.300")}>
+              <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
                 Send the funds and come back to this dApp. You do not need to
                 wait for the BTC transaction to be mined
-              </BodySm>
+              </BodyMd>
             ),
           },
         ]}
@@ -129,13 +121,6 @@ export const MakeDeposit: FC = () => {
       >
         I sent the BTC
       </Button>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Box>
+    </>
   )
 }

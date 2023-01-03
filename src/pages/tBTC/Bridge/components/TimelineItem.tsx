@@ -30,11 +30,11 @@ const TimelineItem: FC<Props> = ({
   return (
     <Box>
       {isActive && (
-        <Badge mb={4} fontSize="xs" variant="subtle" colorScheme="brand">
+        <Badge mb={4} size="sm" variant="subtle">
           {helperLabelText}
         </Badge>
       )}
-      <Box display="flex" mb={4} minW="216px">
+      <Box display="flex" mb={4}>
         <Box
           bg={isActive || isComplete ? "brand.500" : "gray.300"}
           w="4px"

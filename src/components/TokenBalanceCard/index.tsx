@@ -9,7 +9,7 @@ import { tBTCFillBlack } from "../../static/icons/tBTCFillBlack"
 
 export interface TokenBalanceCardProps {
   token: Exclude<Token, Token.TBTC>
-  title?: string
+  title?: string | JSX.Element
   tokenSymbol?: string
   withSymbol?: boolean
 }
