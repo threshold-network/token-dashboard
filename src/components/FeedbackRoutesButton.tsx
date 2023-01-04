@@ -22,37 +22,35 @@ const feedbackRoutes = [
 ]
 
 const FeedbackRoutesButton: FC = () => (
-  <Box position="relative">
-    <Menu placement="top" offset={[-85, 15]}>
-      <MenuButton
-        as={IconButton}
-        position="fixed"
-        right={8}
-        bottom={8}
-        borderRadius="full"
-        size="lg"
-        variant="outline"
-        bg={useColorModeValue("white", "gray.800")}
-        icon={
-          <Icon
-            as={IoChatbubbleEllipsesSharp}
-            boxSize="24px"
-            color={useColorModeValue("gray.500", "gray.50")}
-          />
-        }
-      />
-      <MenuList>
-        <BodyMd fontWeight="bold" ml={3} mb={3} mt={2}>
-          Feedback
-        </BodyMd>
-        {feedbackRoutes.map(({ text, url }) => (
-          <Link key={text} to={url} as={RouterLink}>
-            <MenuItem as="span">{text}</MenuItem>
-          </Link>
-        ))}
-      </MenuList>
-    </Menu>
-  </Box>
+  <Menu placement="top" offset={[-85, 15]}>
+    <MenuButton
+      as={IconButton}
+      position="fixed"
+      right={8}
+      bottom={8}
+      borderRadius="full"
+      size="lg"
+      variant="outline"
+      bg={useColorModeValue("white", "gray.800")}
+      icon={
+        <Icon
+          as={IoChatbubbleEllipsesSharp}
+          boxSize="24px"
+          color={useColorModeValue("gray.500", "gray.50")}
+        />
+      }
+    />
+    <MenuList>
+      <BodyMd fontWeight="bold" ml={3} mb={3} mt={2}>
+        Feedback
+      </BodyMd>
+      {feedbackRoutes.map(({ text, url }) => (
+        <Link key={text} to={url} as={RouterLink}>
+          <MenuItem as="span">{text}</MenuItem>
+        </Link>
+      ))}
+    </MenuList>
+  </Menu>
 )
 
 export default FeedbackRoutesButton

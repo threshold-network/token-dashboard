@@ -100,18 +100,17 @@ const AuthorizeStakingAppsPage: FC = () => {
       stakingAppId: "tbtc",
       address: tbtcAppAddress,
       label: "tBTC",
-      isAuthRequired: true,
     },
     randomBeacon: {
       ...randomBeaconApp,
       stakingAppId: "randomBeacon",
       address: randomBeaconAddress,
       label: "Random Beacon",
-      isAuthRequired: true,
     },
     pre: {
       stakingAppId: "pre",
       label: "PRE",
+      status: "authorization-not-required",
     },
   }
 

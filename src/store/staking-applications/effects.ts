@@ -22,6 +22,8 @@ import {
   selectStakingAppStateByAppName,
 } from "./selectors"
 import { isAddressZero } from "../../web3/utils"
+import { BigNumber } from "ethers"
+import { MAX_UINT64 } from "../../threshold-ts/utils"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -140,6 +142,7 @@ const getKeepStakingAppStakingProvidersData = async (
       (reducer, stakingProvider, index) => {
         const _appData = appData[index]
         reducer[stakingProvider] = {
+          ..._appData,
           authorizedStake: _appData.authorizedStake.toString(),
           pendingAuthorizationDecrease:
             _appData.pendingAuthorizationDecrease.toString(),
@@ -299,17 +302,46 @@ export const displayDeauthrizationCompletedModalEffect = (
 
 export const displayDeauthrizationInitiatedModalEffect = (
   action: ReturnType<
-    typeof stakingApplicationsSlice.actions.authorizationDecreaseRequested
+    | typeof stakingApplicationsSlice.actions.authorizationDecreaseRequested
+    | typeof stakingApplicationsSlice.actions.operatorStatusUpdated
   >,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { stakingProvider, txHash, decreaseAmount } = action.payload
+  const { stakingProvider, txHash, appName } = action.payload
 
   const stake = selectStakeByStakingProvider(
     listenerApi.getOriginalState(),
     stakingProvider
   )
   if (!stake) return
+
+  const appData = selectStakingAppByStakingProvider(
+    listenerApi.getOriginalState(),
+    appName,
+    stakingProvider
+  )
+
+  const isAuthorizationDecreaseRequestedAction =
+    stakingApplicationsSlice.actions.authorizationDecreaseRequested.match(
+      action
+    )
+
+  const decreasingAt = isAuthorizationDecreaseRequestedAction
+    ? action.payload.decreasingAt
+    : undefined
+
+  if (
+    isAuthorizationDecreaseRequestedAction &&
+    !appData.isOperatorInPool &&
+    decreasingAt &&
+    BigNumber.from(decreasingAt).eq(MAX_UINT64)
+  ) {
+    return
+  }
+
+  const decreaseAmount = isAuthorizationDecreaseRequestedAction
+    ? action.payload.decreaseAmount
+    : appData.pendingAuthorizationDecrease
 
   listenerApi.dispatch(
     modalSlice.actions.openModal({
