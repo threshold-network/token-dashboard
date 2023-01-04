@@ -23,7 +23,7 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
   return (
     <Card {...props}>
       <LabelSm mb="8">Minting Timeline</LabelSm>
-      <MintingTimelineStep1 isActive={true} isComplete={false} />
+      <MintingTimelineStep1 isActive={true} isComplete={false} size="md" />
       <BoxLabel status="secondary" mb="4" mt="8">
         ETH Address
       </BoxLabel>
@@ -63,8 +63,18 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
           </BodyMd>
         </ListItem>
       </List>
-      <MintingTimelineStep2 isActive={true} isComplete={false} />
-      <MintingTimelineStep3 isActive={true} isComplete={false} />
+      <MintingTimelineStep2
+        isActive={true}
+        isComplete={false}
+        mb="8"
+        size="md"
+      />
+      <MintingTimelineStep3
+        isActive={true}
+        isComplete={false}
+        mb="8"
+        size="md"
+      />
     </Card>
   )
 }
