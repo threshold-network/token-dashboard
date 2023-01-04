@@ -45,7 +45,7 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       <BoxLabel status="secondary" mb="4" mt="4">
         Recovery BTC Address
       </BoxLabel>
-      <List mb="8">
+      <List mb="4">
         <ListItem>
           <ListIcon
             verticalAlign="sub"
@@ -63,6 +63,13 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
           </BodyMd>
         </ListItem>
       </List>
+      <BodyMd mb="8">
+        Based on these two addresses, the protocol will create a unique BTC
+        deposit address using a P2SWH for each user.{" "}
+        <Link isExternal href={ExternalHref.btcRecoveryAddress}>
+          Read more
+        </Link>
+      </BodyMd>
       <MintingTimelineStep2
         isActive={true}
         isComplete={false}
