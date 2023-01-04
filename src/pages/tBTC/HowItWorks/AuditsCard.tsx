@@ -10,15 +10,15 @@ export const AuditsCard: FC<ComponentProps<typeof Card>> = (props) => {
     <Card {...props}>
       <LabelSm mb={8}>Audit Reports</LabelSm>
       <List spacing="2">
-        {contracts.map((contract) => (
-          <DetailedLinkListItem {...contract} />
+        {audits.map((audit) => (
+          <DetailedLinkListItem key={audit.title} {...audit} />
         ))}
       </List>
     </Card>
   )
 }
 
-const contracts = [
+const audits = [
   {
     title: "Audit Bridge",
     href: ExternalHref.tBTCBrdigeAudit,
