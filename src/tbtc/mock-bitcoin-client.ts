@@ -124,11 +124,36 @@ export class MockBitcoinClient implements Client {
       true
     )
 
+    // mock second deposit transaction
+
+    const testnetUtxo2 = {
+      ...depositUtxo,
+      outputIndex: 1,
+      ...transaction,
+    }
+
+    const deposit2: Deposit = {
+      ...depositScriptParameters,
+      amount: BigNumber.from("1000001"),
+    }
+
+    const {
+      transactionHash: transactionHash2,
+      depositUtxo: depositUtxo2,
+      rawTransaction: transaction2,
+    } = await assembleDepositTransaction(
+      deposit2,
+      [testnetUtxo2],
+      testnetPrivateKey,
+      true
+    )
+
     const utxos = new Map<string, UnspentTransactionOutput[]>()
-    utxos.set(depositAddress, [depositUtxo])
+    utxos.set(depositAddress, [depositUtxo, depositUtxo2])
     this.unspentTransactionOutputs = utxos
     const rawTransactions = new Map<string, RawTransaction>()
     rawTransactions.set(transactionHash, transaction)
+    rawTransactions.set(transactionHash2, transaction2)
     this.rawTransactions = rawTransactions
 
     this.isDepositTransactionMocked = true

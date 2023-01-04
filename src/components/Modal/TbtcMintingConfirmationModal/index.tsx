@@ -22,7 +22,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealDepositTransaction } from "../../../hooks/tbtc/useRevealDepositTransaction"
+import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc/useRevealMultipleDepositsTransaction"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -39,7 +39,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const { sendTransaction } = useRevealDepositTransaction()
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction()
 
   const initiateMintTransaction = async () => {
     // TODO: implement this
@@ -68,10 +68,9 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       depositAddress
     )
+    const depositRevealed = await revealMultipleDeposits(utxos, deposit)
 
-    const txHash = await sendTransaction(utxos[0], deposit)
-
-    if (txHash) {
+    if (depositRevealed) {
       updateState("mintingStep", MintingStep.MintingSuccess)
       closeModal()
     }
