@@ -12,7 +12,7 @@
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/hardware-wallets": "^5.5.0",
     "@fontsource/inter": "^4.5.10",
-    "@keep-network/coverage-pools": "development",
+    "@keep-network/coverage-pools": "1.1.0-dev.7",
     "@keep-network/ecdsa": ">2.1.0-dev <2.1.0-goerli",
     "@keep-network/keep-core": "development",
     "@keep-network/keep-ecdsa": "development",
