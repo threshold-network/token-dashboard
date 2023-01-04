@@ -3411,7 +3411,7 @@
   resolved "https://registry.yarnpkg.com/@keep-network/bitcoin-spv-sol/-/bitcoin-spv-sol-3.4.0-solc-0.8.tgz#8b44c246ffab8ea993efe196f6bf385b1a3b84dc"
   integrity sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==
 
-"@keep-network/coverage-pools@development":
+"@keep-network/coverage-pools@1.1.0-dev.7":
   version "1.1.0-dev.7"
   resolved "https://registry.yarnpkg.com/@keep-network/coverage-pools/-/coverage-pools-1.1.0-dev.7.tgz#9973de59f5117d2f9165d82d5b5c16624276780d"
   integrity sha512-KTFpg3mUTD7NIG2yCTFRAyE2jTMe9gamegjxUmXDCq9kLRk1a9n5T5jW33hi4K4ujHgOuPGGMh9HnKj+yXQLOQ==
