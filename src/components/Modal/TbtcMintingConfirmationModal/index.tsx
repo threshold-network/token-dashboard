@@ -55,8 +55,8 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
       blindingFactor,
-      walletPubKeyHash: walletPublicKey,
-      refundPubKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      walletPublicKeyHash: walletPublicKey,
+      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime,
     }
 

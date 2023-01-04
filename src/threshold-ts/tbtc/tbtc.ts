@@ -68,9 +68,9 @@ export class TBTC implements ITBTC {
       throw new Error("Couldn't get active wallet public key!")
     }
 
-    const walletPubKeyHash = computeHash160(walletPublicKey)
+    const walletPublicKeyHash = computeHash160(walletPublicKey)
 
-    const refundPubKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
+    const refundPublicKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
 
     const refundLocktime = calculateDepositRefundLocktime(currentTimestamp)
     const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
@@ -80,8 +80,8 @@ export class TBTC implements ITBTC {
         identifierHex,
       },
       blindingFactor,
-      walletPubKeyHash,
-      refundPubKeyHash,
+      walletPublicKeyHash,
+      refundPublicKeyHash,
       refundLocktime,
     }
 

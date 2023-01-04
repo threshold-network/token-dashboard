@@ -107,7 +107,10 @@ export const ProvideData: FC = () => {
       updateState("refundLocktime", depositScriptParameters.refundLocktime)
       // TODO: Either change the name in store to `wallePubKeyHash` or save
       // walletPublicKey here
-      updateState("walletPublicKey", depositScriptParameters.walletPubKeyHash)
+      updateState(
+        "walletPublicKey",
+        depositScriptParameters.walletPublicKeyHash
+      )
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       openModal(ModalType.TbtcRecoveryJson, {

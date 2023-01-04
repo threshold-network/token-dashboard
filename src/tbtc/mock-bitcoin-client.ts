@@ -14,8 +14,9 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BigNumber } from "ethers"
 
-const testnetTransactionHash =
+const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
+)
 const testnetTransaction: RawTransaction = {
   transactionHex:
     "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +
@@ -152,8 +153,8 @@ export class MockBitcoinClient implements Client {
     utxos.set(depositAddress, [depositUtxo, depositUtxo2])
     this.unspentTransactionOutputs = utxos
     const rawTransactions = new Map<string, RawTransaction>()
-    rawTransactions.set(transactionHash, transaction)
-    rawTransactions.set(transactionHash2, transaction2)
+    rawTransactions.set(transactionHash.toString(), transaction)
+    rawTransactions.set(transactionHash2.toString(), transaction2)
     this.rawTransactions = rawTransactions
 
     this.isDepositTransactionMocked = true
@@ -161,13 +162,15 @@ export class MockBitcoinClient implements Client {
 
   getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
     return new Promise<Transaction>((resolve, _) => {
-      resolve(this._transactions.get(transactionHash) as Transaction)
+      resolve(this._transactions.get(transactionHash.toString()) as Transaction)
     })
   }
 
   getRawTransaction(transactionHash: TransactionHash): Promise<RawTransaction> {
     return new Promise<RawTransaction>((resolve, _) => {
-      resolve(this._rawTransactions.get(transactionHash) as RawTransaction)
+      resolve(
+        this._rawTransactions.get(transactionHash.toString()) as RawTransaction
+      )
     })
   }
 
@@ -175,7 +178,7 @@ export class MockBitcoinClient implements Client {
     transactionHash: TransactionHash
   ): Promise<number> {
     return new Promise<number>((resolve, _) => {
-      resolve(this._confirmations.get(transactionHash) as number)
+      resolve(this._confirmations.get(transactionHash.toString()) as number)
     })
   }
 

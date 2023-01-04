@@ -66,8 +66,8 @@ export const MakeDeposit: FC = () => {
       },
       blindingFactor: blindingFactor,
       // TODO: pass proper values for walletPubKey and refundPubKey
-      walletPubKeyHash: walletPublicKey,
-      refundPubKeyHash: computeHash160(btcRecoveryAddress),
+      walletPublicKeyHash: walletPublicKey,
+      refundPublicKeyHash: computeHash160(btcRecoveryAddress),
       refundLocktime: refundLocktime,
     }
     const depositAddress = await threshold.tbtc.calculateDepositAddress(
