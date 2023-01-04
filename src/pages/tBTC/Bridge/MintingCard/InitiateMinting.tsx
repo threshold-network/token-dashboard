@@ -41,7 +41,7 @@ export const InitiateMinting: FC = () => {
       <BodyMd color="gray.500" mb={6}>
         Your tBTC will arrive in your wallet in around 1-3 hours.
       </BodyMd>
-      <Button onClick={confirmDespotAndMint} isFullWidth mb={6}>
+      <Button onClick={confirmDespotAndMint} isFullWidth>
         Confirm deposit & mint
       </Button>
     </>

@@ -113,12 +113,7 @@ export const MakeDeposit: FC = () => {
           },
         ]}
       />
-      <Button
-        onClick={handleSubmit}
-        form="tbtc-minting-data-form"
-        isFullWidth
-        mb={6}
-      >
+      <Button onClick={handleSubmit} form="tbtc-minting-data-form" isFullWidth>
         I sent the BTC
       </Button>
     </>
