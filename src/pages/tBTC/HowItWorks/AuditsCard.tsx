@@ -20,13 +20,21 @@ export const AuditsCard: FC<ComponentProps<typeof Card>> = (props) => {
 
 const audits = [
   {
-    title: "Audit Bridge",
+    title: "Least Authority Report",
+    subtitle: "tBTC Bridge v2 Security",
     href: ExternalHref.tBTCBrdigeAudit,
     icon: IoDocument,
   },
   {
-    title: "Spearbit",
-    href: ExternalHref.spearbitAudit,
+    title: "CertiK Report",
+    subtitle: "Vending Machine Security",
+    href: ExternalHref.vendingMachineAudit,
+    icon: IoDocument,
+  },
+  {
+    title: "ChainSecurity Report",
+    subtitle: "Staking Contract, T Token, Vending Machine Security",
+    href: ExternalHref.thresholdStakingAudit,
     icon: IoDocument,
   },
 ]

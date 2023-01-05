@@ -24,8 +24,7 @@ export enum ExternalHref {
   analyticsReports = "SOME_URL",
   btcRecoveryAddress = "https://github.com/keep-network/tbtc-v2/blob/main/docs/rfc/rfc-1.adoc",
   tbtcBridgeGithub = "https://github.com/keep-network/tbtc-v2/blob/853bc8ff0601c82bb02cfaa0c904ba98d7d92fe5/solidity/contracts/bridge/Bridge.sol",
-  // TODO: add correct URL address.
-  tBTCBrdigeAudit = "SOME_URL",
-  // TODO: add correct URL address.
-  spearbitAudit = "SOME_URL",
+  tBTCBrdigeAudit = "https://leastauthority.com/blog/audits/audit-of-keep-network-tbtc-bridge-v2/",
+  vendingMachineAudit = "https://www.certik.com/projects/threshold-network",
+  thresholdStakingAudit = "https://chainsecurity.com/security-audit/threshold-network/",
 }
