@@ -1,4 +1,9 @@
-import { anatomy, mode, PartsStyleFunction } from "@chakra-ui/theme-tools"
+import {
+  anatomy,
+  mode,
+  PartsStyleFunction,
+  SystemStyleObject,
+} from "@chakra-ui/theme-tools"
 
 const parts = anatomy("AnnouncementBanner").parts(
   "container",
@@ -14,7 +19,6 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
   return {
     container: {
       w: "100%",
-      display: props.isOpen ? "block" : "none",
       position: "relative",
       px: "16",
       mb: 4,
@@ -31,7 +35,7 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       bg: "inherit",
     },
     image: {
-      maxW: props.size == "sm" ? "146px" : "280px",
+      maxW: "280px",
     },
     preTitle: {
       color: mode(undefined, "brand.300")(props),
@@ -66,8 +70,20 @@ const variants = {
   secondary: secondaryVariant,
 }
 
+const sizes: Record<string, SystemStyleObject> = {
+  sm: {
+    image: {
+      maxW: "146px",
+    },
+  },
+}
+
 export const AnnouncementBanner = {
   parts: parts.keys,
   baseStyle,
   variants,
+  sizes,
+  defaultProps: {
+    size: "sm",
+  },
 }
