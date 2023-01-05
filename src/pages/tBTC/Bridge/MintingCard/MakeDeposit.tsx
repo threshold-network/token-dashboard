@@ -22,7 +22,7 @@ import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
-import { computeHash160 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -59,13 +59,15 @@ export const MakeDeposit: FC = () => {
       blindingFactor: blindingFactor,
       // TODO: pass proper values for walletPubKey and refundPubKey
       walletPublicKeyHash: walletPublicKey,
-      refundPublicKeyHash: computeHash160(btcRecoveryAddress),
+      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime: refundLocktime,
     }
+
     const depositAddress = await threshold.tbtc.calculateDepositAddress(
       depositScriptParameters,
       "testnet"
     )
+
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       depositAddress
     )

@@ -21,7 +21,8 @@ export const useRevealMultipleDepositsTransaction = () => {
       deposit: DepositScriptParameters
     ) => {
       try {
-        if (utxos.length === 0) throw new Error("No utxos passed.")
+        if (!utxos || utxos.length === 0)
+          throw new Error("No utxos passed to revealMultipleDeposits.")
 
         const successfullTxs: {
           txHash: string
