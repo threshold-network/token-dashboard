@@ -1,16 +1,17 @@
 import { FC, useMemo } from "react"
 import {
+  BodyLg,
+  BodySm,
+  H3,
+  H5,
   Box,
   HStack,
-  Stack,
   TextProps,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { formatUnits } from "@ethersproject/units"
-import numeral from "numeral"
+} from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { BodyLg, BodySm, H3, H5 } from "@threshold-network/components"
 import Icon from "./Icon"
+import { formatTokenAmount } from "../utils/formatAmount"
 
 interface TokenBalanceProps {
   tokenAmount: string | number
@@ -36,46 +37,34 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   isLarge,
   ...restProps
 }) => {
-  const { account, active } = useWeb3React()
-  const shouldRenderTokenAmount = useMemo(
-    () => tokenAmount && account && active,
-    [tokenAmount, account, active]
-  )
+  const { active } = useWeb3React()
+  const shouldRenderTokenAmount = active
 
   const _tokenAmount = useMemo(() => {
-    return numeral(formatUnits(tokenAmount, tokenDecimals)).format("0,0.00")
+    return formatTokenAmount(tokenAmount || 0)
   }, [tokenAmount])
+
+  const BalanceTag = isLarge ? H3 : H5
+  const SymbolTag = isLarge ? BodyLg : BodySm
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.
   return (
-    <HStack>
-      {icon && <Icon as={icon} boxSize={iconSize} alignSelf="center" />}
-      <Box>
-        <Stack direction="row">
-          {isLarge ? (
-            <H3 {...restProps}>
-              {shouldRenderTokenAmount ? _tokenAmount : "--"}
-            </H3>
-          ) : (
-            <H5 {...restProps}>
-              {shouldRenderTokenAmount ? _tokenAmount : "--"}
-            </H5>
+    <Box>
+      <HStack alignItems="center">
+        {icon && <Icon as={icon} boxSize={iconSize} />}{" "}
+        <BalanceTag {...restProps}>
+          {shouldRenderTokenAmount ? _tokenAmount : "--"}
+          {withSymbol && tokenSymbol && (
+            <SymbolTag as="span"> {tokenSymbol}</SymbolTag>
           )}
-          {withSymbol &&
-            tokenSymbol &&
-            (isLarge ? (
-              <BodyLg alignSelf="flex-end">{tokenSymbol}</BodyLg>
-            ) : (
-              <BodySm alignSelf="flex-end">{tokenSymbol}</BodySm>
-            ))}
-        </Stack>
-        {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
-          <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-            {usdBalance}
-          </BodySm>
-        )}
-      </Box>
-    </HStack>
+        </BalanceTag>
+      </HStack>
+      {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
+        <BodySm mt="2" color={useColorModeValue("gray.500", "gray.300")}>
+          {usdBalance} USD
+        </BodySm>
+      )}
+    </Box>
   )
 }
 

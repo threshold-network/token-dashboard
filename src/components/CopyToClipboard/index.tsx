@@ -5,9 +5,9 @@ import {
   IconButton,
   useColorModeValue,
   Tooltip,
-} from "@chakra-ui/react"
+  BodyMd,
+} from "@threshold-network/components"
 import { CopyIcon } from "@chakra-ui/icons"
-import { BodyMd } from "@threshold-network/components"
 import shortenAddress from "../../utils/shortenAddress"
 
 type CopyToClipboardProps = {
@@ -37,6 +37,12 @@ const CopyToClipboard: FC<CopyToClipboardProps> = ({
           onClick={onCopy}
           aria-label={copyTextMsg}
           variant="ghost"
+          width="none"
+          height="none"
+          minW="unset"
+          paddingInlineStart="unset"
+          paddingInlineEnd="unset"
+          p="2"
         />
       </Tooltip>
       {children}

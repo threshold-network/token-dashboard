@@ -6,7 +6,7 @@ import { MintingFlowRouter } from "./MintingFlowRouter"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   return (
-    <Card {...props}>
+    <Card {...props} minW="0">
       <Stack
         direction={{
           base: "column",

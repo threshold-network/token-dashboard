@@ -105,11 +105,11 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
             tBTC
           </H5>
           <BodyLg>
-            Minting tBTC is a process that requires two transactions.
+            Minting tBTC is a process that requires one transaction.
           </BodyLg>
         </InfoBox>
         <TransactionDetailsTable />
-        <BodySm textAlign="center">
+        <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
           <ViewInBlockExplorer
             id="NEED BRIDGE CONTRACT ADDRESS"

@@ -1,12 +1,16 @@
 import { FC } from "react"
+import { Box, Flex } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
+import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 
-export const MintingFlowRouter: FC = () => {
+const MintingFlowRouterBase = () => {
   const { mintingStep } = useTbtcState()
 
   switch (mintingStep) {
@@ -25,4 +29,21 @@ export const MintingFlowRouter: FC = () => {
     default:
       return null
   }
+}
+
+export const MintingFlowRouter: FC = () => {
+  const brdigeContractAddress = useTBTCBridgeContractAddress()
+
+  return (
+    <Flex flexDirection="column">
+      <MintingFlowRouterBase />
+      <Box as="p" textAlign="center" mt="6">
+        <ViewInBlockExplorer
+          id={brdigeContractAddress}
+          type={ExplorerDataType.ADDRESS}
+          text="Bridge Contract"
+        />
+      </Box>
+    </Flex>
+  )
 }

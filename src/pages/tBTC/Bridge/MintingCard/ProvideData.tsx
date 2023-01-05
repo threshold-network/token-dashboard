@@ -1,6 +1,6 @@
 import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Box, Button, Flex, BodyMd } from "@threshold-network/components"
+import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -11,12 +11,10 @@ import {
   validateETHAddress,
 } from "../../../../utils/forms"
 import { MintingStep } from "../../../../types/tbtc"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { Network } from "bitcoin-address-validation"
-import { threshold } from "../../../../utils/getThresholdLib"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
 
 export interface FormValues {
   ethAddress: string
@@ -78,6 +76,7 @@ export const ProvideData: FC = () => {
   const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
+  const threshold = useThreshold()
 
   const onSubmit = async (values: FormValues) => {
     // check if the user has changed the eth or btc address from the previous attempt
@@ -123,31 +122,22 @@ export const ProvideData: FC = () => {
   }
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" h="100%">
-      <Box>
-        <TbtcMintingCardTitle />
-        <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
-        <BodyMd color="gray.500" mb={12}>
-          Based on these two addresses, the system will generate for you an
-          unique BTC deposit address. There is no minting limit
-        </BodyMd>
-        <MintingProcessForm
-          innerRef={formRef}
-          formId="tbtc-minting-data-form"
-          initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
-          onSubmitForm={onSubmit}
-        />
-        <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
-          Generate Deposit Address
-        </Button>
-      </Box>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Flex>
+    <>
+      <TbtcMintingCardTitle />
+      <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
+      <BodyMd color="gray.500" mb={12}>
+        Based on these two addresses, the system will generate for you an unique
+        BTC deposit address. There is no minting limit
+      </BodyMd>
+      <MintingProcessForm
+        innerRef={formRef}
+        formId="tbtc-minting-data-form"
+        initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
+        onSubmitForm={onSubmit}
+      />
+      <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
+        Generate Deposit Address
+      </Button>
+    </>
   )
 }
