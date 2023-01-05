@@ -1,46 +1,26 @@
 import { ComponentProps, FC } from "react"
-import { Card, Box, StackDivider, Stack } from "@threshold-network/components"
-import { UnmintingTimeline } from "./UnmintingTimeline"
-import { UnmintingFlowRouter } from "./UnmintingFlowRouter"
+import {
+  Card,
+  Image,
+  useColorModeValue,
+  BodyMd,
+} from "@threshold-network/components"
+import unmintingEmptyState from "../../../../static/images/unminting-empty-state.svg"
+import unmintingEmptyStateDark from "../../../../static/images/unminting-empty-state-dark.svg"
 
 export const UnmintingCard: FC<ComponentProps<typeof Card>> = ({
   ...props
 }) => {
+  const illustration = useColorModeValue(
+    unmintingEmptyState,
+    unmintingEmptyStateDark
+  )
   return (
     <Card {...props}>
-      <Stack
-        direction={{
-          base: "column",
-          md: "row",
-          lg: "column",
-          xl: "row",
-        }}
-        divider={<StackDivider />}
-        h="100%"
-        spacing={8}
-      >
-        <Box
-          w={{
-            base: "100%",
-            md: "66%",
-            lg: "100%",
-            xl: "66%",
-          }}
-        >
-          <UnmintingFlowRouter />
-        </Box>
-        <Box
-          w={{
-            base: "100%",
-            md: "33%",
-            lg: "100%",
-            xl: "33%",
-          }}
-          minW={"216px"}
-        >
-          <UnmintingTimeline />
-        </Box>
-      </Stack>
+      <Image src={illustration} m="auto" />
+      <BodyMd textAlign="center" mt="6">
+        Unminting feature is under construction.
+      </BodyMd>
     </Card>
   )
 }

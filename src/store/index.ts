@@ -51,6 +51,7 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
         NU: { ...state.token.NU, balance: 0 },
         T: { ...state.token.T, balance: 0 },
         TBTC: { ...state.token.TBTC, balance: 0 },
+        TBTCV2: { ...state.token.TBTCV2, balance: 0 },
       },
       // we don't display successful login modal when changin account so we are
       // setting the isSuccessfulLoginModalClosed flag to true and also

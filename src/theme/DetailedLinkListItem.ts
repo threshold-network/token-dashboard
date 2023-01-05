@@ -26,6 +26,11 @@ const baseStyle: PartsStyleFunction<typeof parts> = (props) => {
       borderRadius: "6px",
       mr: { sm: "4" },
     },
+    icon: {
+      w: "32px",
+      h: "32px",
+      color: "white",
+    },
     title: {
       alignSelf: { base: "center", sm: "unset" },
       color: mode("gray.700", "white")(props),

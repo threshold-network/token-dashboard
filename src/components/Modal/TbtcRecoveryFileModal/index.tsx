@@ -1,8 +1,7 @@
-import { FC, useState } from "react"
+import { FC } from "react"
 import {
   Button,
   ModalBody,
-  ModalCloseButton,
   ModalFooter,
   ModalHeader,
   BodyLg,
@@ -17,7 +16,7 @@ import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
-import { useTbtcState } from "../../../hooks/useTbtcState"
+import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -25,14 +24,14 @@ const TbtcRecoveryFileModalModal: FC<
     handleDownloadClick: any
     handleDoubleReject: () => void
   }
-> = ({ closeModal, jsonData, handleDownloadClick, handleDoubleReject }) => {
+> = ({ jsonData, handleDownloadClick, handleDoubleReject }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
-  const { updateState } = useTbtcState()
+  const bridgeContractAddress = useTBTCBridgeContractAddress()
 
   const titleText = isOnConfirmStep
     ? "Are you sure you do not want to download the .JSON file?"
-    : "Download this JSON file"
+    : "Download this .JSON file"
 
   const bodyContent = isOnConfirmStep ? (
     <BodyLg>
@@ -41,7 +40,7 @@ const TbtcRecoveryFileModalModal: FC<
   ) : (
     <>
       <BodyLg mb={6}>
-        Please save this file as a measure of safety and precaution.
+        This file is important to save in case you need to make a fast recovery.
       </BodyLg>
       <BodyLg>
         This file contains a wallet public key, a refund public key and a refund
@@ -52,29 +51,32 @@ const TbtcRecoveryFileModalModal: FC<
 
   return (
     <>
-      <ModalHeader>Recovery JSON file</ModalHeader>
+      <ModalHeader>
+        {isOnConfirmStep ? "Take note" : "Recovery .JSON file"}
+      </ModalHeader>
       <ModalBody>
         <InfoBox variant="modal" mb="6">
           <H5 mb={4}>{titleText}</H5>
           {bodyContent}
         </InfoBox>
-        <Image margin="40px auto" maxW="210px" src={btcJsonFile} />
+        <Image mt="14" mb="16" mx="auto" maxW="210px" src={btcJsonFile} />
         <BodySm textAlign="center">
           Read more about the&nbsp;
           <ViewInBlockExplorer
-            id="NEED BRIDGE CONTRACT ADDRESS"
+            id={bridgeContractAddress}
             type={ExplorerDataType.ADDRESS}
-            text="bridge contract."
+            text="bridge contract"
           />
+          .
         </BodySm>
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
           <Button onClick={handleDoubleReject} variant="outline" mr={2}>
-            Dismiss anyway
+            Dismiss Anyway
           </Button>
         ) : (
-          <Button onClick={() => setIsOnConfirmStep()} variant="outline" mr={2}>
+          <Button onClick={setIsOnConfirmStep} variant="outline" mr={2}>
             Cancel
           </Button>
         )}
