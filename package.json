@@ -12,8 +12,8 @@
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/hardware-wallets": "^5.5.0",
     "@fontsource/inter": "^4.5.10",
-    "@keep-network/coverage-pools": "development",
-    "@keep-network/ecdsa": "development",
+    "@keep-network/coverage-pools": "1.1.0-dev.7",
+    "@keep-network/ecdsa": ">2.1.0-dev <2.1.0-goerli",
     "@keep-network/keep-core": "development",
     "@keep-network/keep-ecdsa": "development",
     "@keep-network/random-beacon": "development",
@@ -25,6 +25,7 @@
     "@ledgerhq/hw-transport-webhid": "^6.7.0",
     "@ledgerhq/hw-transport-webusb": "^6.11.2",
     "@reduxjs/toolkit": "^1.6.1",
+    "@rehooks/local-storage": "^2.4.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -112,7 +113,8 @@
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
     "react-error-overlay": "6.0.9",
-    "@types/react": "17.0.30"
+    "@types/react": "17.0.30",
+    "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
   },
   "devDependencies": {
     "@chakra-ui/cli": "0.0.0-pr-20211126153854",

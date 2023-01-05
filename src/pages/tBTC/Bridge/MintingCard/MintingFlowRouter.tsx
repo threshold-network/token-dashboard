@@ -35,9 +35,9 @@ export const MintingFlowRouter: FC = () => {
   const brdigeContractAddress = useTBTCBridgeContractAddress()
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" h="100%">
+    <Flex flexDirection="column">
       <MintingFlowRouterBase />
-      <Box as="p" textAlign="center">
+      <Box as="p" textAlign="center" mt="6">
         <ViewInBlockExplorer
           id={brdigeContractAddress}
           type={ExplorerDataType.ADDRESS}

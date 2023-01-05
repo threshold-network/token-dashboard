@@ -34,7 +34,7 @@ const TBTCBridge: PageComponent = (props) => {
       gridTemplateColumns={{ base: "1fr", xl: "25% 1fr" }}
       gap="5"
     >
-      <Box gridArea="main">
+      <Box gridArea="main" minW="0">
         <MintUnmintNav w="100%" gridArea="nav" mb="5" />
         {mintingType === TbtcMintingType.mint && (
           <MintingCard gridArea="main-card" p={35} />
