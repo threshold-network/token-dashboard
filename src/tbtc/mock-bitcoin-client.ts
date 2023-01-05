@@ -1,5 +1,6 @@
 import {
   Client,
+  computeHash160,
   RawTransaction,
   Transaction,
   TransactionHash,
@@ -13,6 +14,7 @@ import {
   DepositScriptParameters,
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BigNumber } from "ethers"
+import store from "../store"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -90,6 +92,32 @@ export class MockBitcoinClient implements Client {
   async findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]> {
+    // TODO: Get the deposit data either from redux store or local storage
+
+    // console.log("store", store)
+    // const { tbtc } = store.getState()
+
+    // const {
+    //   ethAddress,
+    //   btcRecoveryAddress,
+    //   walletPublicKey,
+    //   refundLocktime,
+    //   blindingFactor,
+    // } = tbtc
+
+    // const depositScriptParameters: DepositScriptParameters = {
+    //   depositor: {
+    //     identifierHex: unprefixedAndUncheckedAddress(ethAddress),
+    //   },
+    //   blindingFactor: blindingFactor,
+    //   // TODO: pass proper values for walletPubKey and refundPubKey
+    //   walletPublicKeyHash: walletPublicKey,
+    //   refundPublicKeyHash: computeHash160(btcRecoveryAddress),
+    //   refundLocktime: refundLocktime,
+    // }
+
+    // await this.mockDepositTransaction(depositScriptParameters, "10000")
+
     return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
       resolve(
         this._unspentTransactionOutputs.get(
@@ -210,3 +238,9 @@ export class MockBitcoinClient implements Client {
     })
   }
 }
+
+// const mapStateToProps = (state: RootState) => ({
+//   tbtc: state.tbtc,
+// })
+
+// export default connect(mapStateToProps)(MockBitcoinClient)

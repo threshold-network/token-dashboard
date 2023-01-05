@@ -12,21 +12,27 @@ import {
 } from "bitcoin-address-validation"
 import { getProviderOrSigner, unprefixedAndUncheckedAddress } from "../utils"
 import {
+  Client,
   computeHash160,
   decodeBitcoinAddress,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { ITBTC } from "./tbtc.interface"
-import { EthereumBridge } from "@keep-network/tbtc-v2.ts"
+import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 import { BitcoinConfig, EthereumConfig } from "../types"
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
-  private _bitcoinClient: MockBitcoinClient
+  private _bitcoinClient: Client
 
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
+    if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
+      throw new Error(
+        "Neither bitcoin client nor bitcoin credentials are specified"
+      )
+    }
     this._bridge = new EthereumBridge({
       address: BridgeArtifact.address,
       signerOrProvider: getProviderOrSigner(
@@ -34,7 +40,11 @@ export class TBTC implements ITBTC {
         ethereumConfig.account
       ) as any,
     })
-    this._bitcoinClient = new MockBitcoinClient()
+    this._bitcoinClient =
+      bitcoinConfig.client ||
+      (!!bitcoinConfig.credentials
+        ? new ElectrumClient(bitcoinConfig.credentials)
+        : new MockBitcoinClient())
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -92,11 +102,6 @@ export class TBTC implements ITBTC {
     depositScriptParameters: DepositScriptParameters,
     network = "main"
   ): Promise<string> => {
-    // TODO: we should probalby mock it somewhere else
-    await this._bitcoinClient.mockDepositTransaction(
-      depositScriptParameters,
-      "1000000"
-    )
     return await calculateDepositAddress(depositScriptParameters, network, true)
   }
 
@@ -106,7 +111,6 @@ export class TBTC implements ITBTC {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
   }
 
-  //TODO: implement reveal deposit functionality
   revealDeposit = async (
     utxo: UnspentTransactionOutput,
     deposit: DepositScriptParameters
