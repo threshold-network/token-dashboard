@@ -52,7 +52,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
             <BodyComponent>
               Your BTC funds will be locked for{" "}
               <Box as="span" color="brand.500">
-                6 months
+                9 months
               </Box>
               .
             </BodyComponent>
