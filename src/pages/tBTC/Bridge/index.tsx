@@ -10,6 +10,7 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingType } from "../../../types/tbtc"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
+import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 
 const gridTemplateAreas = {
   base: `
@@ -22,11 +23,11 @@ const gridTemplateAreas = {
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
   const { openModal } = useModal()
+  const { hasUserResponded } = useTBTCTerms()
 
-  // TODO: use local storage to determain if this modal has already been opened.
   useEffect(() => {
-    openModal(ModalType.NewTBTCApp)
-  }, [])
+    if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
+  }, [hasUserResponded])
 
   return (
     <Grid

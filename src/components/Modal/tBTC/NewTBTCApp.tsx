@@ -1,3 +1,4 @@
+import { FC } from "react"
 import {
   Button,
   Divider,
@@ -14,8 +15,12 @@ import ModalCloseButton from "../ModalCloseButton"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBanner.svg"
+import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
+import { BaseModalProps } from "../../../types"
 
-const NewTBTCAppBase = () => {
+const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
+  const { accept } = useTBTCTerms()
+
   return (
     <>
       <ModalHeader>Take note</ModalHeader>
@@ -43,7 +48,8 @@ const NewTBTCAppBase = () => {
       <ModalFooter>
         <Button
           onClick={() => {
-            console.log("TODO: on click")
+            accept()
+            closeModal()
           }}
         >
           I Agree, Let's Go!
