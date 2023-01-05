@@ -26,6 +26,11 @@ import { BitcoinConfig, EthereumConfig } from "../types"
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
   private _bitcoinClient: Client
+  /**
+   * Deposit refund locktime duration in seconds.
+   * This is 9 month in seconds assuming 1 month = 30 days
+   */
+  private depositRefundLocktimDuration = 23328000
 
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
@@ -82,7 +87,10 @@ export class TBTC implements ITBTC {
 
     const refundPublicKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
 
-    const refundLocktime = calculateDepositRefundLocktime(currentTimestamp)
+    const refundLocktime = calculateDepositRefundLocktime(
+      currentTimestamp,
+      this.depositRefundLocktimDuration
+    )
     const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
     const depositScriptParameters: DepositScriptParameters = {
