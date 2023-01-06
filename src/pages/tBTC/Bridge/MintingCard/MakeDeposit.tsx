@@ -9,6 +9,7 @@ import {
   Stack,
   Divider,
   useColorModeValue,
+  H5,
 } from "@threshold-network/components"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -23,6 +24,7 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { useWeb3React } from "@web3-react/core"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -50,6 +52,11 @@ export const MakeDeposit: FC = () => {
     updateState,
   } = useTbtcState()
   const threshold = useThreshold()
+  const { account, active } = useWeb3React()
+
+  if (!active || !account) {
+    return <H5 align={"center"}>Wallet not connected</H5>
+  }
 
   const handleSubmit = async () => {
     const depositScriptParameters: DepositScriptParameters = {

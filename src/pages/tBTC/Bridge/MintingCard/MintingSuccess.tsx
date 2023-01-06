@@ -4,6 +4,7 @@ import {
   BodySm,
   Box,
   Button,
+  H5,
   Image,
   Stack,
 } from "@threshold-network/components"
@@ -17,12 +18,19 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import tbtcSuccess from "../../../../static/images/tbtc-success.png"
 import TransactionDetailsTable from "../components/TransactionDetailsTable"
 import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
+import { useWeb3React } from "@web3-react/core"
 
 export const MintingSuccess: FC = () => {
   const { updateState } = useTbtcState()
 
   const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
   const tbtcTokenAddress = useTBTCTokenAddress()
+
+  const { account, active } = useWeb3React()
+
+  if (!active || !account) {
+    return <H5 align={"center"}>Wallet not connected</H5>
+  }
 
   return (
     <>

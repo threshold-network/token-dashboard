@@ -1,6 +1,6 @@
 import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Button, BodyMd } from "@threshold-network/components"
+import { Button, BodyMd, H5 } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -15,6 +15,7 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { Network } from "bitcoin-address-validation"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { useWeb3React } from "@web3-react/core"
 
 export interface FormValues {
   ethAddress: string
@@ -77,6 +78,11 @@ export const ProvideData: FC = () => {
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
+  const { account, active } = useWeb3React()
+
+  if (!active || !account) {
+    return <H5 align={"center"}>Wallet not connected</H5>
+  }
 
   const onSubmit = async (values: FormValues) => {
     // check if the user has changed the eth or btc address from the previous attempt
@@ -132,7 +138,7 @@ export const ProvideData: FC = () => {
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
+        initialEthAddress={account}
         onSubmitForm={onSubmit}
       />
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>

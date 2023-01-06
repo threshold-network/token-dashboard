@@ -116,7 +116,7 @@ export class MockBitcoinClient implements Client {
         refundLocktime: refundLocktime,
       }
 
-      await this.mockDepositTransaction(depositScriptParameters, "10000")
+      await this.mockDepositTransaction(depositScriptParameters)
     }
 
     return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
@@ -129,8 +129,7 @@ export class MockBitcoinClient implements Client {
   }
 
   async mockDepositTransaction(
-    depositScriptParameters: DepositScriptParameters,
-    amount: string
+    depositScriptParameters: DepositScriptParameters
   ): Promise<void> {
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
@@ -140,7 +139,7 @@ export class MockBitcoinClient implements Client {
 
     const deposit: Deposit = {
       ...depositScriptParameters,
-      amount: BigNumber.from(amount),
+      amount: BigNumber.from("1000000"),
     }
 
     const {
