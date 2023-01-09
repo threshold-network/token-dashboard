@@ -4,7 +4,7 @@ import { Threshold } from "../threshold-ts"
 import { EnvVariable } from "../enums"
 import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
-import { BitcoinNetwork } from "../types"
+import { BitcoinNetwork } from "../threshold-ts/types"
 
 export const getDefaultThresholdLibProvider = () => {
   return new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))

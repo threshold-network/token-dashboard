@@ -18,8 +18,7 @@ import { ITBTC } from "./tbtc.interface"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
-import { BitcoinConfig, EthereumConfig } from "../types"
-import { BitcoinNetwork } from "../../types"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge

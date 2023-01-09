@@ -1,7 +1,11 @@
 import { Client } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { Credentials } from "@keep-network/tbtc-v2.ts/dist/electrum"
 import { providers, Signer } from "ethers"
-import { BitcoinNetwork } from "../../types"
+
+export enum BitcoinNetwork {
+  mainnet = "mainnet",
+  testnet = "testnet",
+}
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer

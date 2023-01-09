@@ -1,6 +1,6 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { BitcoinNetwork } from "../../types"
+import { BitcoinNetwork } from "../types"
 
 export interface ITBTC {
   bitcoinNetwork: BitcoinNetwork

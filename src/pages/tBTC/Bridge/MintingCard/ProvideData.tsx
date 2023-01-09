@@ -15,7 +15,7 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
-import { BitcoinNetwork } from "../../../../types"
+import { BitcoinNetwork } from "../../../../threshold-ts/types"
 
 export interface FormValues {
   ethAddress: string
