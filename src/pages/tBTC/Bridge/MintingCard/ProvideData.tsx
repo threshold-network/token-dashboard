@@ -13,13 +13,14 @@ import {
 import { MintingStep } from "../../../../types/tbtc"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { Network } from "bitcoin-address-validation"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
+import { BitcoinNetwork } from "../../../../types"
 
 export interface FormValues {
   ethAddress: string
   btcRecoveryAddress: string
+  bitcoinNetwork: BitcoinNetwork
 }
 
 type ComponentProps = {
@@ -48,14 +49,21 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 
 type MintingProcessFormProps = {
   initialEthAddress: string
+  btcRecoveryAddress: string
+  bitcoinNetwork: BitcoinNetwork
   innerRef: Ref<FormikProps<FormValues>>
   onSubmitForm: (values: FormValues) => void
 } & ComponentProps
 
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
-  mapPropsToValues: ({ initialEthAddress }) => ({
+  mapPropsToValues: ({
+    initialEthAddress,
+    btcRecoveryAddress,
+    bitcoinNetwork,
+  }) => ({
     ethAddress: initialEthAddress,
-    btcRecoveryAddress: "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m",
+    btcRecoveryAddress: btcRecoveryAddress,
+    bitcoinNetwork: bitcoinNetwork,
   }),
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
@@ -63,7 +71,7 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     // TODO: check network
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
-      Network.testnet
+      values.bitcoinNetwork as any
     )
     return getErrorsObj(errors)
   },
@@ -98,8 +106,7 @@ export const ProvideData: FC = () => {
         )
 
       const depositAddress = await threshold.tbtc.calculateDepositAddress(
-        depositScriptParameters,
-        "testnet"
+        depositScriptParameters
       )
 
       // update state,
@@ -139,6 +146,8 @@ export const ProvideData: FC = () => {
         innerRef={formRef}
         formId="tbtc-minting-data-form"
         initialEthAddress={account}
+        btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
+        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>

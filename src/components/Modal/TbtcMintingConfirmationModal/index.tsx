@@ -27,7 +27,6 @@ import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc/useRev
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
     updateState,
-    btcDepositAddress,
     tBTCMintAmount,
     isLoadingTbtcMintAmount,
     isLoadingBitcoinMinerFee,
@@ -60,10 +59,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      deposit,
-      "testnet"
-    )
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(deposit)
 
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       depositAddress

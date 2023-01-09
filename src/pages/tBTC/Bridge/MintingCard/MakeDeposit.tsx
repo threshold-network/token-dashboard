@@ -71,8 +71,7 @@ export const MakeDeposit: FC = () => {
     }
 
     const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters,
-      "testnet"
+      depositScriptParameters
     )
 
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(

@@ -6,10 +6,7 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
-import {
-  Network,
-  validate as isValidBtcAddress,
-} from "bitcoin-address-validation"
+import { validate as isValidBtcAddress } from "bitcoin-address-validation"
 import { getProviderOrSigner, unprefixedAndUncheckedAddress } from "../utils"
 import {
   Client,
@@ -22,6 +19,7 @@ import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 import { BitcoinConfig, EthereumConfig } from "../types"
+import { BitcoinNetwork } from "../../types"
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
@@ -30,7 +28,8 @@ export class TBTC implements ITBTC {
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
    */
-  private depositRefundLocktimDuration = 23328000
+  private _depositRefundLocktimDuration = 23328000
+  bitcoinNetwork: BitcoinNetwork
 
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
@@ -50,6 +49,14 @@ export class TBTC implements ITBTC {
       (!!bitcoinConfig.credentials
         ? new ElectrumClient(bitcoinConfig.credentials)
         : new MockBitcoinClient())
+    this.bitcoinNetwork = bitcoinConfig.network
+  }
+
+  private _getBitcoinNetworkForTBTCLib = (): string => {
+    if (this.bitcoinNetwork === BitcoinNetwork.mainnet) {
+      return "main"
+    }
+    return this.bitcoinNetwork
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -66,8 +73,7 @@ export class TBTC implements ITBTC {
     ethAddress: string,
     btcRecoveryAddress: string
   ): Promise<DepositScriptParameters> => {
-    // TODO: check network
-    if (!isValidBtcAddress(btcRecoveryAddress, Network.testnet)) {
+    if (!isValidBtcAddress(btcRecoveryAddress, this.bitcoinNetwork as any)) {
       throw new Error(
         "Wrong bitcoin address passed to createDepositScriptParameters function"
       )
@@ -89,7 +95,7 @@ export class TBTC implements ITBTC {
 
     const refundLocktime = calculateDepositRefundLocktime(
       currentTimestamp,
-      this.depositRefundLocktimDuration
+      this._depositRefundLocktimDuration
     )
     const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
@@ -107,9 +113,9 @@ export class TBTC implements ITBTC {
   }
 
   calculateDepositAddress = async (
-    depositScriptParameters: DepositScriptParameters,
-    network = "main"
+    depositScriptParameters: DepositScriptParameters
   ): Promise<string> => {
+    const network = this._getBitcoinNetworkForTBTCLib()
     return await calculateDepositAddress(depositScriptParameters, network, true)
   }
 
