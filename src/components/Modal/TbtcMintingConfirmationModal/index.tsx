@@ -22,7 +22,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc/useRevealMultipleDepositsTransaction"
+import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -33,7 +33,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     btcRecoveryAddress,
     ethAddress,
     refundLocktime,
-    walletPublicKey,
+    walletPublicKeyHash,
     blindingFactor,
   } = useTbtcState()
   const threshold = useThreshold()
@@ -54,7 +54,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
       blindingFactor,
-      walletPublicKeyHash: walletPublicKey,
+      walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime,
     }

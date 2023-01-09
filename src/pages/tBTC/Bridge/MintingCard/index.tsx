@@ -1,10 +1,34 @@
-import { ComponentProps, FC } from "react"
+import { ComponentProps, FC, useEffect } from "react"
 import { Card } from "@threshold-network/components"
 import { MintingTimeline } from "./MintingTimeline"
 import { Box, StackDivider, Stack } from "@chakra-ui/react"
 import { MintingFlowRouter } from "./MintingFlowRouter"
+import { useTbtcState } from "../../../../hooks/useTbtcState"
+import { MintingStep } from "../../../../types/tbtc"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
+  const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
+  const { btcDepositAddress, updateState } = useTbtcState()
+
+  useEffect(() => {
+    console.log("nosacz pan")
+    if (
+      tBTCDepositData &&
+      tBTCDepositData.btcDepositAddress !== btcDepositAddress
+    ) {
+      console.log("if nosacza", tBTCDepositData)
+      updateState("btcDepositAddress", tBTCDepositData.btcDepositAddress)
+
+      updateState("ethAddress", tBTCDepositData.ethAddress)
+      updateState("blindingFactor", tBTCDepositData.blindingFactor)
+      updateState("btcRecoveryAddress", tBTCDepositData.btcRecoveryAddress)
+      updateState("walletPublicKeyHash", tBTCDepositData.walletPublicKeyHash)
+      updateState("refundLocktime", tBTCDepositData.refundLocktime)
+
+      updateState("mintingStep", MintingStep.Deposit)
+    }
+  }, [])
   return (
     <Card {...props} minW="0">
       <Stack
