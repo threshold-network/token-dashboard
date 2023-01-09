@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Grid, Box } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
@@ -7,6 +8,9 @@ import { UnmintingCard } from "./UnmintingCard"
 import { TransactionHistory } from "./TransactionHistory"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingType } from "../../../types/tbtc"
+import { useModal } from "../../../hooks/useModal"
+import { ModalType } from "../../../enums"
+import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 
 const gridTemplateAreas = {
   base: `
@@ -18,6 +22,12 @@ const gridTemplateAreas = {
 
 const TBTCBridge: PageComponent = (props) => {
   const { mintingType } = useTbtcState()
+  const { openModal } = useModal()
+  const { hasUserResponded } = useTBTCTerms()
+
+  useEffect(() => {
+    if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
+  }, [hasUserResponded])
 
   return (
     <Grid
