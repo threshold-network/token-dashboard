@@ -32,7 +32,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
   return (
     <List spacing="4">
       <ListItem>
-        <LabelComponent>minting duration</LabelComponent>
+        <LabelComponent mb="2">minting duration</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent as="span">
@@ -46,7 +46,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
         </List>
       </ListItem>
       <ListItem>
-        <LabelComponent>funds time lock</LabelComponent>
+        <LabelComponent mb="2">funds time lock</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent>
@@ -60,7 +60,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
         </List>
       </ListItem>
       <ListItem>
-        <LabelComponent>unminting tbtc</LabelComponent>
+        <LabelComponent mb="2">unminting tbtc</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent>

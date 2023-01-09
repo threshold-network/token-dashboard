@@ -39,7 +39,7 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         <Flex justifyContent="center">
           <TakeNoteList size="sm" />
         </Flex>
-        <BodySm mt="4.5rem" textAlign="center" color="gray.500">
+        <BodySm mt="4.5rem" px="4" textAlign="center" color="gray.500">
           By clicking the button below, you agree with the terms and you are
           aware of the results.
         </BodySm>
