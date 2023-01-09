@@ -1,4 +1,3 @@
-import { FC } from "react"
 import {
   SimpleGrid,
   Image,
@@ -6,33 +5,13 @@ import {
   Box,
   LabelSm,
   Divider,
-  List,
-  ListItem,
-  LabelMd,
-  BodyMd,
-  ListIcon,
 } from "@threshold-network/components"
-import { BsFillArrowRightCircleFill } from "react-icons/all"
 import {
   AnnouncementBannerContainer,
   AnnouncementBannerTitle,
 } from "../../../components/AnnouncementBanner"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBanner.svg"
-
-const ListItemWithIcon: FC = ({ children }) => {
-  return (
-    <ListItem display={"flex"} justifyItems="center">
-      <ListIcon
-        color="brand.500"
-        my="auto"
-        as={BsFillArrowRightCircleFill}
-        w="16px"
-        h="16px"
-      />
-      {children}
-    </ListItem>
-  )
-}
+import { TakeNoteList } from "../../../components/tBTC"
 
 export const Banner = () => {
   return (
@@ -63,44 +42,7 @@ export const Banner = () => {
           <LabelSm color="brand.500" mb="2">
             take note:
           </LabelSm>
-          <List spacing="4">
-            <ListItem>
-              <LabelMd>minting duration</LabelMd>
-              <List spacing="2">
-                <ListItemWithIcon>
-                  <BodyMd as="span">
-                    Mint tBTC in around{" "}
-                    <Box as="span" color="brand.500">
-                      ~1 to 3 hours
-                    </Box>
-                    .
-                  </BodyMd>
-                </ListItemWithIcon>
-              </List>
-            </ListItem>
-            <ListItem>
-              <LabelMd>funds time lock</LabelMd>
-              <List spacing="2">
-                <ListItemWithIcon>
-                  <BodyMd>
-                    Your BTC funds will be locked for{" "}
-                    <Box as="span" color="brand.500">
-                      6 months
-                    </Box>
-                    .
-                  </BodyMd>
-                </ListItemWithIcon>
-              </List>
-            </ListItem>
-            <ListItem>
-              <LabelMd>unminting tbtc</LabelMd>
-              <List spacing="2">
-                <ListItemWithIcon>
-                  <BodyMd>Unminting is currently under construction.</BodyMd>
-                </ListItemWithIcon>
-              </List>
-            </ListItem>
-          </List>
+          <TakeNoteList />
         </Box>
       </SimpleGrid>
     </AnnouncementBannerContainer>
