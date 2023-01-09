@@ -14,7 +14,7 @@ import {
 import ModalCloseButton from "../ModalCloseButton"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
-import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBanner.svg"
+import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { BaseModalProps } from "../../../types"
 
