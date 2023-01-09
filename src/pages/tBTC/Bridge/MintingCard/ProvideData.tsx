@@ -117,10 +117,8 @@ export const ProvideData: FC = () => {
       updateState("btcDepositAddress", depositAddress)
       updateState("blindingFactor", depositScriptParameters.blindingFactor)
       updateState("refundLocktime", depositScriptParameters.refundLocktime)
-      // TODO: Either change the name in store to `wallePubKeyHash` or save
-      // walletPublicKey here
       updateState(
-        "walletPublicKey",
+        "walletPublicKeyHash",
         depositScriptParameters.walletPublicKeyHash
       )
 

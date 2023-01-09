@@ -20,7 +20,7 @@ interface TbtcState {
   //deposit data
   ethAddress: string
   btcRecoveryAddress: string
-  walletPublicKey: string
+  walletPublicKeyHash: string
   refundLocktime: string
   blindingFactor: string
 

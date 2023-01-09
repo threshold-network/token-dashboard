@@ -100,7 +100,7 @@ export class MockBitcoinClient implements Client {
       const {
         ethAddress,
         btcRecoveryAddress,
-        walletPublicKey,
+        walletPublicKeyHash,
         refundLocktime,
         blindingFactor,
       } = tbtc
@@ -111,7 +111,7 @@ export class MockBitcoinClient implements Client {
         },
         blindingFactor: blindingFactor,
         // TODO: pass proper values for walletPubKey and refundPubKey
-        walletPublicKeyHash: walletPublicKey,
+        walletPublicKeyHash: walletPublicKeyHash,
         refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
         refundLocktime: refundLocktime,
       }

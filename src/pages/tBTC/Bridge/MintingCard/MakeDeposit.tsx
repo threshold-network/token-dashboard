@@ -47,7 +47,7 @@ export const MakeDeposit: FC = () => {
     ethAddress,
     btcRecoveryAddress,
     blindingFactor,
-    walletPublicKey,
+    walletPublicKeyHash,
     refundLocktime,
     updateState,
   } = useTbtcState()
@@ -65,7 +65,7 @@ export const MakeDeposit: FC = () => {
       },
       blindingFactor: blindingFactor,
       // TODO: pass proper values for walletPubKey and refundPubKey
-      walletPublicKeyHash: walletPublicKey,
+      walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime: refundLocktime,
     }

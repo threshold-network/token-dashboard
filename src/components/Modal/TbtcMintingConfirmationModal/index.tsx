@@ -33,7 +33,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     btcRecoveryAddress,
     ethAddress,
     refundLocktime,
-    walletPublicKey,
+    walletPublicKeyHash,
     blindingFactor,
   } = useTbtcState()
   const threshold = useThreshold()
@@ -54,7 +54,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
       blindingFactor,
-      walletPublicKeyHash: walletPublicKey,
+      walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime,
     }
