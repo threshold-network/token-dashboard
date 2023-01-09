@@ -16,7 +16,7 @@ import { ModalType } from "../../../../enums"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc/useTBTCDepositDataFromLocalStorage"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
 export interface FormValues {
   ethAddress: string

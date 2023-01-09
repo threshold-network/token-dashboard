@@ -3,9 +3,9 @@ import { Card } from "@threshold-network/components"
 import { MintingTimeline } from "./MintingTimeline"
 import { Box, StackDivider, Stack } from "@chakra-ui/react"
 import { MintingFlowRouter } from "./MintingFlowRouter"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc/useTBTCDepositDataFromLocalStorage"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()

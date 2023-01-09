@@ -5,7 +5,7 @@ import { LabelSm } from "@threshold-network/components"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc/useTBTCDepositDataFromLocalStorage"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
 export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
   previousStep,

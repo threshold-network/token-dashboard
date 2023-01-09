@@ -1,14 +1,10 @@
 import { useCallback } from "react"
-import { useThreshold } from "../../contexts/ThresholdContext"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
-import { useRevealDepositTransaction } from "./useRevealDepositTransaction"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import {
-  Deposit,
-  DepositScriptParameters,
-} from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BigNumber } from "ethers"
+import { useRevealDepositTransaction } from "."
 
 export const useRevealMultipleDepositsTransaction = () => {
   const { openModal } = useModal()
