@@ -16,6 +16,7 @@ import { ModalType } from "../../../../enums"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc/useTBTCDepositDataFromLocalStorage"
 
 export interface FormValues {
   ethAddress: string
@@ -87,46 +88,50 @@ export const ProvideData: FC = () => {
   const { openModal } = useModal()
   const threshold = useThreshold()
   const { account, active } = useWeb3React()
+  const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
 
   if (!active || !account) {
     return <H5 align={"center"}>Wallet not connected</H5>
   }
 
   const onSubmit = async (values: FormValues) => {
-    // check if the user has changed the eth or btc address from the previous attempt
-    if (
-      ethAddress !== values.ethAddress ||
-      btcRecoveryAddress !== values.btcRecoveryAddress
-    ) {
-      // if so...
-      const depositScriptParameters =
-        await threshold.tbtc.createDepositScriptParameters(
-          values.ethAddress,
-          values.btcRecoveryAddress
-        )
-
-      const depositAddress = await threshold.tbtc.calculateDepositAddress(
-        depositScriptParameters
+    const depositScriptParameters =
+      await threshold.tbtc.createDepositScriptParameters(
+        values.ethAddress,
+        values.btcRecoveryAddress
       )
 
-      // update state,
-      updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-      updateState("ethAddress", values.ethAddress)
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(
+      depositScriptParameters
+    )
 
-      // create a new deposit address,
-      updateState("btcDepositAddress", depositAddress)
-      updateState("blindingFactor", depositScriptParameters.blindingFactor)
-      updateState("refundLocktime", depositScriptParameters.refundLocktime)
-      updateState(
-        "walletPublicKeyHash",
-        depositScriptParameters.walletPublicKeyHash
-      )
+    // update state,
+    updateState("ethAddress", values.ethAddress)
+    updateState("blindingFactor", depositScriptParameters.blindingFactor)
+    updateState("btcRecoveryAddress", values.btcRecoveryAddress)
+    updateState(
+      "walletPublicKeyHash",
+      depositScriptParameters.walletPublicKeyHash
+    )
+    updateState("refundLocktime", depositScriptParameters.refundLocktime)
 
-      // if the user has NOT declined the json file, ask the user if they want to accept the new file
-      openModal(ModalType.TbtcRecoveryJson, {
-        depositScriptParameters,
-      })
-    }
+    // create a new deposit address,
+    updateState("btcDepositAddress", depositAddress)
+
+    console.log("setting broooo!!!!!!!!")
+    setDepositDataInLocalStorage({
+      ethAddress: values.ethAddress,
+      blindingFactor: depositScriptParameters.blindingFactor,
+      btcRecoveryAddress: values.btcRecoveryAddress,
+      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
+      refundLocktime: depositScriptParameters.refundLocktime,
+      btcDepositAddress: depositAddress,
+    })
+
+    // if the user has NOT declined the json file, ask the user if they want to accept the new file
+    openModal(ModalType.TbtcRecoveryJson, {
+      depositScriptParameters,
+    })
 
     // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
     updateState("mintingStep", MintingStep.Deposit)
