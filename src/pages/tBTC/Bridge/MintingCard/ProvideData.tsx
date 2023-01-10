@@ -118,7 +118,6 @@ export const ProvideData: FC = () => {
     // create a new deposit address,
     updateState("btcDepositAddress", depositAddress)
 
-    console.log("setting broooo!!!!!!!!")
     setDepositDataInLocalStorage({
       ethAddress: values.ethAddress,
       blindingFactor: depositScriptParameters.blindingFactor,

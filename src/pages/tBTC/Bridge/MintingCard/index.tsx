@@ -12,12 +12,10 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { btcDepositAddress, updateState } = useTbtcState()
 
   useEffect(() => {
-    console.log("nosacz pan")
     if (
       tBTCDepositData &&
       tBTCDepositData.btcDepositAddress !== btcDepositAddress
     ) {
-      console.log("if nosacza", tBTCDepositData)
       updateState("btcDepositAddress", tBTCDepositData.btcDepositAddress)
 
       updateState("ethAddress", tBTCDepositData.ethAddress)
