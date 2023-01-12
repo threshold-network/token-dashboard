@@ -27,7 +27,6 @@ export const useRevealMultipleDepositsTransaction = () => {
         for (const utxo of utxos) {
           const tx = await sendTransaction(utxo, deposit)
           if (tx) {
-            console.log("tx", tx)
             successfullTxs.push({ txHash: tx.hash, amount: utxo.value })
           }
         }

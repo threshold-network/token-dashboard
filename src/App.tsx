@@ -50,6 +50,7 @@ import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressT
 import { usePosthog } from "./hooks/posthog"
 import { featureFlags } from "./constants"
 import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
+import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -69,6 +70,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToOperatorRegisteredEvent("randomBeacon")
   useSubscribeToOperatorStatusUpdatedEvent("randomBeacon")
   useSubscribeToOperatorStatusUpdatedEvent("tbtc")
+  useSubscribeToDepositRevealedEvent()
 
   return <></>
 }

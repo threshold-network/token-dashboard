@@ -7,7 +7,11 @@ import {
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import { validate as isValidBtcAddress } from "bitcoin-address-validation"
-import { getProviderOrSigner, unprefixedAndUncheckedAddress } from "../utils"
+import {
+  getContract,
+  getProviderOrSigner,
+  unprefixedAndUncheckedAddress,
+} from "../utils"
 import {
   Client,
   computeHash160,
@@ -19,9 +23,12 @@ import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import TBTCVault from "../../../node_modules/@keep-network/tbtc-v2/artifacts/TBTCVault.json"
+import { Contract } from "ethers"
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
+  private _tbtcVault: Contract
   private _bitcoinClient: Client
   /**
    * Deposit refund locktime duration in seconds.
@@ -43,6 +50,12 @@ export class TBTC implements ITBTC {
         ethereumConfig.account
       ) as any,
     })
+    this._tbtcVault = getContract(
+      TBTCVault.address,
+      TBTCVault.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
     this._bitcoinClient =
       bitcoinConfig.client ||
       (!!bitcoinConfig.credentials
@@ -132,7 +145,10 @@ export class TBTC implements ITBTC {
       utxo,
       deposit,
       this._bitcoinClient,
-      this._bridge
+      this._bridge,
+      {
+        identifierHex: unprefixedAndUncheckedAddress(this._tbtcVault.address),
+      }
     )
   }
 }
