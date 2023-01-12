@@ -8,6 +8,10 @@ const envVariables = [
   "FEATURE_FLAG_FEEDBACK_MODULE",
   "POSTHOG_HOSTNAME_HTTP",
   "POSTHOH_API_KEY",
+  "BITCOIN_CLIENT_HOST",
+  "BITCOIN_CLIENT_PORT",
+  "BITCOIN_CLIENT_PROTOCOL",
+  "MOCK_BITCOIN_CLIENT",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]
