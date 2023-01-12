@@ -7,10 +7,7 @@ import {
 import { FC, useEffect, useMemo, useState } from "react"
 import isSupportedNetwork from "../../utils/isSupportedNetwork"
 import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
-import { getEnvVariable } from "../../utils/getEnvVariable"
-import { EnvVariable } from "../../enums"
-
-const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
+import { supportedChainId } from "../../utils/getEnvVariable"
 
 const WalletConnectionAlert: FC<{
   account?: string | null
