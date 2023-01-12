@@ -4,7 +4,7 @@ import { getEnvVariable } from "../utils/getEnvVariable"
 import { PosthogEvent } from "../types/posthog"
 
 export const init = () => {
-  const apiKey = getEnvVariable(EnvVariable.POSTHOH_API_KEY)
+  const apiKey = getEnvVariable(EnvVariable.POSTHOG_API_KEY)
   const apiHost = getEnvVariable(EnvVariable.POSTHOG_HOSTNAME_HTTP)
 
   if (!apiKey || !apiHost) {
