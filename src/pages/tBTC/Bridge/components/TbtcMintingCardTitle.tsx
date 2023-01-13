@@ -16,7 +16,6 @@ export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (previousStep === MintingStep.ProvideData) {
-      console.log("removing deposit data from local storage...")
       removeDepositDataFromLocalStorage()
 
       // remove deposit data from the state,
