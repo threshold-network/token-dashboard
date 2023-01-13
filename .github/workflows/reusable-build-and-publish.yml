@@ -59,6 +59,15 @@ on:
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
         required: true
+      electrumProtocol:
+        description: Protocol used by the Electrum server.
+        required: true
+      electrumHost:
+        description: Host pointing to the Electrum server.
+        required: true
+      electrumPort:
+        description: Port the Electrum server listens on.
+        required: true
 
 jobs:
   build-and-publish:
@@ -157,6 +166,9 @@ jobs:
           ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
           ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
           NODE_OPTIONS: --max_old_space_size=4096
+          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
+          ELECTRUM_HOST: ${{ secrets.electrumHost }}
+          ELECTRUM_PORT: ${{ secrets.electrumPort }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -168,6 +180,9 @@ jobs:
           ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
           ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
           NODE_OPTIONS: --max_old_space_size=4096
+          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
+          ELECTRUM_HOST: ${{ secrets.electrumHost }}
+          ELECTRUM_PORT: ${{ secrets.electrumPort }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0
