@@ -6,10 +6,10 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
-import { validate as isValidBtcAddress } from "bitcoin-address-validation"
 import {
   getContract,
   getProviderOrSigner,
+  isValidBtcAddress,
   unprefixedAndUncheckedAddress,
 } from "../utils"
 import {

@@ -1,9 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { WeiPerEther } from "@ethersproject/constants"
-import {
-  Network,
-  validate as isValidBtcAddress,
-} from "bitcoin-address-validation"
+import { Network } from "bitcoin-address-validation"
+import { isValidBtcAddress } from "../threshold-ts/utils"
 import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 
