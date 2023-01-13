@@ -49,7 +49,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     // 2. the sweep will mint automatically
     // 3. minting will happen behind the scenes
 
-    const deposit: DepositScriptParameters = {
+    const depositScriptParameters: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
@@ -59,12 +59,17 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(deposit)
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(
+      depositScriptParameters
+    )
 
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       depositAddress
     )
-    const depositRevealed = await revealMultipleDeposits(utxos, deposit)
+    const depositRevealed = await revealMultipleDeposits(
+      utxos,
+      depositScriptParameters
+    )
 
     if (depositRevealed) {
       updateState("mintingStep", MintingStep.MintingSuccess)
