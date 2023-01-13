@@ -238,9 +238,3 @@ export class MockBitcoinClient implements Client {
     })
   }
 }
-
-// const mapStateToProps = (state: RootState) => ({
-//   tbtc: state.tbtc,
-// })
-
-// export default connect(mapStateToProps)(MockBitcoinClient)
