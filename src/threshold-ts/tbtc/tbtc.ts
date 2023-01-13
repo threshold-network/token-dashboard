@@ -21,7 +21,6 @@ import {
 import { ITBTC } from "./tbtc.interface"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
-import { MockBitcoinClient } from "../../tbtc/mock-bitcoin-client"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "../../../node_modules/@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import { Contract } from "ethers"
@@ -35,7 +34,7 @@ export class TBTC implements ITBTC {
    * This is 9 month in seconds assuming 1 month = 30 days
    */
   private _depositRefundLocktimDuration = 23328000
-  bitcoinNetwork: BitcoinNetwork
+  private _bitcoinConfig: BitcoinConfig
 
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
@@ -58,14 +57,19 @@ export class TBTC implements ITBTC {
     )
     this._bitcoinClient =
       bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
-    this.bitcoinNetwork = bitcoinConfig.network
+    this._bitcoinConfig = bitcoinConfig
   }
 
   private _getBitcoinNetworkForTBTCLib = (): string => {
-    if (this.bitcoinNetwork === BitcoinNetwork.mainnet) {
+    const { network } = this._bitcoinConfig
+    if (network === BitcoinNetwork.mainnet) {
       return "main"
     }
-    return this.bitcoinNetwork
+    return network
+  }
+
+  getBitcoinNetwork = (): BitcoinNetwork => {
+    return this._bitcoinConfig.network
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -82,7 +86,8 @@ export class TBTC implements ITBTC {
     ethAddress: string,
     btcRecoveryAddress: string
   ): Promise<DepositScriptParameters> => {
-    if (!isValidBtcAddress(btcRecoveryAddress, this.bitcoinNetwork as any)) {
+    const { network } = this._bitcoinConfig
+    if (!isValidBtcAddress(btcRecoveryAddress, network as any)) {
       throw new Error(
         "Wrong bitcoin address passed to createDepositScriptParameters function"
       )

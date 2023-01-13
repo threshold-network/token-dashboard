@@ -3,7 +3,7 @@ import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BitcoinNetwork } from "../types"
 
 export interface ITBTC {
-  bitcoinNetwork: BitcoinNetwork
+  getBitcoinNetwork(): BitcoinNetwork
 
   suggestDepositWallet(): Promise<string | undefined>
 

@@ -149,7 +149,7 @@ export const ProvideData: FC = () => {
         formId="tbtc-minting-data-form"
         initialEthAddress={account}
         btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
-        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        bitcoinNetwork={threshold.tbtc.getBitcoinNetwork()}
         onSubmitForm={onSubmit}
       />
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
