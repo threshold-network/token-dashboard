@@ -1,5 +1,5 @@
 import { useCallback } from "react"
-import { ContractTransaction } from "@ethersproject/contracts"
+import { TransactionReceipt } from "@ethersproject/providers"
 import { useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
 import { ModalType } from "../../enums"
@@ -21,7 +21,7 @@ enum CommonStakingErrors {
 }
 
 export const useStakeTransaction = (
-  onSuccess: (tx: ContractTransaction) => void
+  onSuccess: (tx: TransactionReceipt) => void
 ) => {
   const stakingContract = useTStakingContract()
   const { openModal } = useModal()

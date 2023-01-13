@@ -49,7 +49,7 @@ export const useAuthorizeMultipleAppsTransaction = () => {
             stakingApp.amount
           )
           if (tx) {
-            successfullTxs.push({ ...stakingApp, txHash: tx.hash })
+            successfullTxs.push({ ...stakingApp, txHash: tx.transactionHash })
           }
         }
         if (successfullTxs.length > 0) {

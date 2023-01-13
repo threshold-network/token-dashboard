@@ -22,6 +22,7 @@ import { StakeData } from "../../../types/staking"
 import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 const UnstakeTModal: FC<
   BaseModalProps & {
@@ -39,9 +40,9 @@ const UnstakeTModal: FC<
       : amountToUnstake
 
   const onSuccess = useCallback(
-    (tx) =>
+    (tx: TransactionReceipt) =>
       openModal(ModalType.UnstakeSuccess, {
-        transactionHash: tx.hash,
+        transactionHash: tx.transactionHash,
         stake,
         unstakeAmount: _amountToUnstake,
         unstakeType,

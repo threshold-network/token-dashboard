@@ -57,7 +57,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
               operator: operator,
               stakingProvider: account,
             },
-            txHash: tbtcTx.hash,
+            txHash: tbtcTx.transactionHash,
           })
         }
         const randomBeaconTx =
@@ -69,7 +69,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
               operator: operator,
               stakingProvider: account,
             },
-            txHash: randomBeaconTx.hash,
+            txHash: randomBeaconTx.transactionHash,
           })
         }
 

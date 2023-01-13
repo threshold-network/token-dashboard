@@ -1,5 +1,5 @@
 import { FC, useCallback } from "react"
-import { ContractTransaction } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
 import {
   BodyLg,
   Button,
@@ -39,9 +39,9 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
 }) => {
   const { openModal } = useModal()
   const onSuccess = useCallback(
-    (tx: ContractTransaction) => {
+    (tx: TransactionReceipt) => {
       openModal(ModalType.IncreaseAuthorizationSuccess, {
-        txHash: tx.hash,
+        txHash: tx.transactionHash,
         stakingProvider,
         increaseAmount,
       })

@@ -1,9 +1,9 @@
-import { ContractTransaction } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useSendTransactionFromFn } from "../../web3/hooks"
 
 export const useRevealDepositTransaction = (
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
+  onSuccess?: (tx: TransactionReceipt) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
   const threshold = useThreshold()

@@ -20,6 +20,7 @@ import { StakeData } from "../../../types/staking"
 import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 const TopupTModal: FC<
   BaseModalProps & {
@@ -31,9 +32,9 @@ const TopupTModal: FC<
   const { closeModal, openModal } = useModal()
 
   const onSuccess = useCallback(
-    (tx) => {
+    (tx: TransactionReceipt) => {
       openModal(ModalType.TopupTSuccess, {
-        transactionHash: tx.hash,
+        transactionHash: tx.transactionHash,
         stakeAmount: amountTopUp,
         stake,
       })

@@ -46,11 +46,11 @@ const ConfirmStakingParamsModal: FC<
   const { stake } = useStakeTransaction((tx) => {
     if (featureFlags.MULTI_APP_STAKING) {
       openModal(ModalType.StakeSuccess, {
-        transactionHash: tx.hash,
+        transactionHash: tx.transactionHash,
       })
     } else {
       openModal(ModalType.StakeSuccessOLD, {
-        transactionHash: tx.hash,
+        transactionHash: tx.transactionHash,
       })
     }
   })

@@ -1,4 +1,4 @@
-import { ContractTransaction } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
 import { useCallback } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { ModalType } from "../../enums"
@@ -12,7 +12,7 @@ import { useUpdateOperatorStatus } from "./useUpdateOperatorStatus"
 export const useInitiateDeauthorization = (
   appName: StakingAppName,
   shouldUpdateOperatorStatusAfterInitiation?: boolean,
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
+  onSuccess?: (tx: TransactionReceipt) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
   const { openModal } = useModal()

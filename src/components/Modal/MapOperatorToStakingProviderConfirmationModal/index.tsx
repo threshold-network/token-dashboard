@@ -11,7 +11,7 @@ import {
 import { AddressZero } from "@ethersproject/constants"
 import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { ContractTransaction } from "ethers"
+import { TransactionReceipt } from "@ethersproject/providers"
 import { FC, useCallback } from "react"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
@@ -69,7 +69,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
 
   const { openModal } = useModal()
   const onSuccess = useCallback(
-    (tx: ContractTransaction) => {
+    (tx: TransactionReceipt) => {
       openModal(ModalType.MapOperatorToStakingProviderSuccess, {
         transactions: [
           {

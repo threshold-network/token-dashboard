@@ -24,7 +24,7 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((tx) =>
     openModal(ModalType.StakeSuccess, {
-      transactionHash: tx.hash,
+      transactionHash: tx.transactionHash,
     })
   )
 
