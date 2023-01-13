@@ -123,19 +123,9 @@ export class MockBitcoinClient implements Client {
       await this.mockDepositTransaction(depositScriptParameters)
     }
 
-    // console.log('utx')
-
     return this._unspentTransactionOutputs.get(
       address
     ) as UnspentTransactionOutput[]
-
-    // return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
-    //   resolve(
-    //     this._unspentTransactionOutputs.get(
-    //       address
-    //     ) as UnspentTransactionOutput[]
-    //   )
-    // })
   }
 
   async mockDepositTransaction(
