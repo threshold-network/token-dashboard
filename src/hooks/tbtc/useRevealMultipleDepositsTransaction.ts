@@ -30,9 +30,7 @@ export const useRevealMultipleDepositsTransaction = () => {
             successfullTxs.push({ txHash: tx.hash, amount: utxo.value })
           }
         }
-        if (successfullTxs.length > 0) {
-          return true
-        }
+        return successfullTxs
       } catch (error) {
         openModal(ModalType.TransactionFailed, {
           error: "Error: Couldn't reveal deposits",

@@ -66,12 +66,12 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
       depositAddress
     )
-    const depositRevealed = await revealMultipleDeposits(
+    const successfulTransactions = await revealMultipleDeposits(
       utxos,
       depositScriptParameters
     )
 
-    if (depositRevealed) {
+    if (successfulTransactions && successfulTransactions.length > 0) {
       updateState("mintingStep", MintingStep.MintingSuccess)
       closeModal()
     }
