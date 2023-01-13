@@ -48,7 +48,7 @@ export class TBTC implements ITBTC {
       signerOrProvider: getProviderOrSigner(
         ethereumConfig.providerOrSigner as any,
         ethereumConfig.account
-      ) as any,
+      ),
     })
     this._tbtcVault = getContract(
       TBTCVault.address,
