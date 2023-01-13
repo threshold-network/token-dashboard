@@ -57,10 +57,7 @@ export class TBTC implements ITBTC {
       ethereumConfig.account
     )
     this._bitcoinClient =
-      bitcoinConfig.client ||
-      (!!bitcoinConfig.credentials
-        ? new ElectrumClient(bitcoinConfig.credentials)
-        : new MockBitcoinClient())
+      bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
     this.bitcoinNetwork = bitcoinConfig.network
   }
 
