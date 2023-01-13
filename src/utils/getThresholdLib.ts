@@ -20,10 +20,10 @@ function getBitcoinConfig(): BitcoinConfig {
     getEnvVariable(EnvVariable.MOCK_BITCOIN_CLIENT) === "true"
 
   const credentials: BitcoinClientCredentials = {
-    host: getEnvVariable(EnvVariable.BITCOIN_CLIENT_HOST),
-    port: +getEnvVariable(EnvVariable.BITCOIN_CLIENT_PORT),
+    host: getEnvVariable(EnvVariable.ELECTRUM_HOST),
+    port: +getEnvVariable(EnvVariable.ELECTRUM_PORT),
     protocol: getEnvVariable(
-      EnvVariable.BITCOIN_CLIENT_PROTOCOL
+      EnvVariable.ELECTRUM_PROTOCOL
     ) as BitcoinClientCredentials["protocol"],
   }
 
