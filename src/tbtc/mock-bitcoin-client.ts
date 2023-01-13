@@ -15,6 +15,7 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { BigNumber } from "ethers"
 import { unprefixedAndUncheckedAddress } from "../threshold-ts/utils"
+import { delay } from "../utils/helpers"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -53,6 +54,7 @@ export class MockBitcoinClient implements Client {
     position: 0,
   }
   private _broadcastLog: RawTransaction[] = []
+  private _isMockingDepositTransactionInProgress = false
 
   set unspentTransactionOutputs(
     value: Map<string, UnspentTransactionOutput[]>
@@ -98,7 +100,10 @@ export class MockBitcoinClient implements Client {
     const isDepositTransactionMocked = !utxos || utxos.length === 0
 
     // Mocks deposit transaction only once for specific deposit address
-    if (isDepositTransactionMocked) {
+    if (
+      isDepositTransactionMocked &&
+      !this._isMockingDepositTransactionInProgress
+    ) {
       const store = (await import("../store")).default
       const { tbtc } = store.getState()
 
@@ -120,9 +125,10 @@ export class MockBitcoinClient implements Client {
         refundLocktime: refundLocktime,
       }
 
-      await this.mockDepositTransaction(depositScriptParameters)
+      this.mockDepositTransaction(depositScriptParameters)
     }
 
+    console.log("reutrning utxos bro")
     return this._unspentTransactionOutputs.get(
       address
     ) as UnspentTransactionOutput[]
@@ -131,6 +137,12 @@ export class MockBitcoinClient implements Client {
   async mockDepositTransaction(
     depositScriptParameters: DepositScriptParameters
   ): Promise<void> {
+    // Since we are using a delay function we don't want to mock multiple
+    // deposit transactions here when calling `findAllUnspentTransactionOutputs`
+    // method. This is why we embrace `_isMockingDepositTransactionInProgress`
+    // flag
+    this._isMockingDepositTransactionInProgress = true
+    await delay(30000)
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
       "testnet",
@@ -184,6 +196,8 @@ export class MockBitcoinClient implements Client {
     rawTransactions.set(transactionHash.toString(), transaction)
     rawTransactions.set(transactionHash2.toString(), transaction2)
     this.rawTransactions = rawTransactions
+
+    this._isMockingDepositTransactionInProgress = false
   }
 
   getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
