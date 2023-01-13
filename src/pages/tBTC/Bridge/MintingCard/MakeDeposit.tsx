@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import {
   BodyMd,
   Box,
@@ -21,9 +21,7 @@ import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
-import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { useWeb3React } from "@web3-react/core"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -42,42 +40,37 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 export const MakeDeposit: FC = () => {
-  const {
-    btcDepositAddress,
-    ethAddress,
-    btcRecoveryAddress,
-    blindingFactor,
-    walletPublicKeyHash,
-    refundLocktime,
-    updateState,
-  } = useTbtcState()
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
+    useTbtcState()
   const threshold = useThreshold()
   const { account, active } = useWeb3React()
+  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
+    undefined
+  )
 
   if (!active || !account) {
     return <H5 align={"center"}>Wallet not connected</H5>
   }
 
-  const handleSubmit = async () => {
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
-      },
-      blindingFactor: blindingFactor,
-      walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
-      refundLocktime: refundLocktime,
+  useEffect(() => {
+    const findUtxos = async () => {
+      const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+        btcDepositAddress
+      )
+      if (utxos && utxos.length > 0) setUtxos(utxos)
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters
-    )
+    findUtxos()
+    const interval = setInterval(async () => {
+      await findUtxos()
+    }, 10000)
 
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      depositAddress
-    )
-    // TODO: remove console log
-    console.log("UTXOS: ", utxos)
+    return () => clearInterval(interval)
+  }, [btcDepositAddress])
+
+  useEffect(() => {})
+
+  const handleSubmit = async () => {
     // TODO: Check if any of the utxo's is not revealed
     if (utxos && utxos.length > 0) {
       updateState("mintingStep", MintingStep.InitiateMinting)
@@ -153,7 +146,12 @@ export const MakeDeposit: FC = () => {
           },
         ]}
       />
-      <Button onClick={handleSubmit} form="tbtc-minting-data-form" isFullWidth>
+      <Button
+        onClick={handleSubmit}
+        form="tbtc-minting-data-form"
+        isDisabled={!utxos}
+        isFullWidth
+      >
         I sent the BTC
       </Button>
     </>
