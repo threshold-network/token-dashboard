@@ -73,13 +73,7 @@ export class TBTC implements ITBTC {
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
-    const walletPublicKey = await this._bridge.activeWalletPublicKey()
-    // TODO: Remove this if
-    if (walletPublicKey) {
-      const walletPubKeyHash = computeHash160(walletPublicKey)
-      console.log("walletPublicKeyHash", walletPubKeyHash)
-    }
-    return walletPublicKey
+    return await this._bridge.activeWalletPublicKey()
   }
 
   createDepositScriptParameters = async (
