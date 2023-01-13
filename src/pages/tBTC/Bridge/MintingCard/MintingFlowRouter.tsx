@@ -10,8 +10,7 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
-import { ModalType } from "../../../../enums"
-import { useModal } from "../../../../hooks/useModal"
+import SubmitTxButton from "../../../../components/SubmitTxButton"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep } = useTbtcState()
@@ -37,7 +36,6 @@ const MintingFlowRouterBase = () => {
 export const MintingFlowRouter: FC = () => {
   const brdigeContractAddress = useTBTCBridgeContractAddress()
   const { active } = useWeb3React()
-  const { openModal } = useModal()
 
   return (
     <Flex flexDirection="column">
@@ -46,14 +44,7 @@ export const MintingFlowRouter: FC = () => {
       ) : (
         <>
           <H5 align={"center"}>Connect wallet to mint tBTC</H5>
-          <Button
-            mt={6}
-            isFullWidth
-            onClick={() => openModal(ModalType.SelectWallet)}
-            type="button"
-          >
-            Connect Wallet
-          </Button>
+          <SubmitTxButton />
         </>
       )}
       <Box as="p" textAlign="center" mt="6">
