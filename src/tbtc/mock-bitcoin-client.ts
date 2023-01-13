@@ -38,7 +38,6 @@ const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
 
 export class MockBitcoinClient implements Client {
-  private isDepositTransactionMocked = false
   private _unspentTransactionOutputs = new Map<
     string,
     UnspentTransactionOutput[]
@@ -92,8 +91,14 @@ export class MockBitcoinClient implements Client {
   async findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]> {
-    // Mocks deposit transaction only once
-    if (!this.isDepositTransactionMocked) {
+    const utxos = this._unspentTransactionOutputs.get(
+      address
+    ) as UnspentTransactionOutput[]
+
+    const isDepositTransactionMocked = !utxos || utxos.length === 0
+
+    // Mocks deposit transaction only once for specific deposit address
+    if (isDepositTransactionMocked) {
       const store = (await import("../store")).default
       const { tbtc } = store.getState()
 
@@ -110,7 +115,6 @@ export class MockBitcoinClient implements Client {
           identifierHex: unprefixedAndUncheckedAddress(ethAddress),
         },
         blindingFactor: blindingFactor,
-        // TODO: pass proper values for walletPubKey and refundPubKey
         walletPublicKeyHash: walletPublicKeyHash,
         refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
         refundLocktime: refundLocktime,
@@ -119,13 +123,19 @@ export class MockBitcoinClient implements Client {
       await this.mockDepositTransaction(depositScriptParameters)
     }
 
-    return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
-      resolve(
-        this._unspentTransactionOutputs.get(
-          address
-        ) as UnspentTransactionOutput[]
-      )
-    })
+    // console.log('utx')
+
+    return this._unspentTransactionOutputs.get(
+      address
+    ) as UnspentTransactionOutput[]
+
+    // return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
+    //   resolve(
+    //     this._unspentTransactionOutputs.get(
+    //       address
+    //     ) as UnspentTransactionOutput[]
+    //   )
+    // })
   }
 
   async mockDepositTransaction(
@@ -184,8 +194,6 @@ export class MockBitcoinClient implements Client {
     rawTransactions.set(transactionHash.toString(), transaction)
     rawTransactions.set(transactionHash2.toString(), transaction2)
     this.rawTransactions = rawTransactions
-
-    this.isDepositTransactionMocked = true
   }
 
   getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
@@ -202,12 +210,10 @@ export class MockBitcoinClient implements Client {
     })
   }
 
-  getTransactionConfirmations(
+  async getTransactionConfirmations(
     transactionHash: TransactionHash
   ): Promise<number> {
-    return new Promise<number>((resolve, _) => {
-      resolve(this._confirmations.get(transactionHash.toString()) as number)
-    })
+    return this._confirmations.get(transactionHash.toString()) as number
   }
 
   latestBlockHeight(): Promise<number> {

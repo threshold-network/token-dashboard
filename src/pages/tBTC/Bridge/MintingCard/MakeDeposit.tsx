@@ -64,7 +64,6 @@ export const MakeDeposit: FC = () => {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
       blindingFactor: blindingFactor,
-      // TODO: pass proper values for walletPubKey and refundPubKey
       walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime: refundLocktime,
