@@ -1,4 +1,3 @@
-import { deleteFromStorage } from "@rehooks/local-storage"
 import { useLocalStorage } from "../useLocalStorage"
 
 export type TBTCDepositDataLocalStorage = {
@@ -11,9 +10,14 @@ export type TBTCDepositDataLocalStorage = {
 }
 
 export const useTBTCDepositDataFromLocalStorage = () => {
-  const [tBTCDepositData, setTBTCDepositData] = useLocalStorage<
-    TBTCDepositDataLocalStorage | undefined
-  >("tBTCDepositData", undefined)
+  const [
+    tBTCDepositData,
+    setTBTCDepositData,
+    removeTBTCDepositDataFromLocalStorage,
+  ] = useLocalStorage<TBTCDepositDataLocalStorage | undefined>(
+    "tBTCDepositData",
+    undefined
+  )
 
   const setDepositDataInLocalStorage = (
     depositData: TBTCDepositDataLocalStorage
@@ -22,7 +26,7 @@ export const useTBTCDepositDataFromLocalStorage = () => {
   }
 
   const removeDepositDataFromLocalStorage = () => {
-    deleteFromStorage("tBTCDepositData")
+    removeTBTCDepositDataFromLocalStorage()
   }
 
   return {
