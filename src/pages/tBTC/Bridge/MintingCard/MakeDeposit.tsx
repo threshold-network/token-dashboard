@@ -9,7 +9,6 @@ import {
   Stack,
   Divider,
   useColorModeValue,
-  H5,
 } from "@threshold-network/components"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -22,7 +21,7 @@ import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useWeb3React } from "@web3-react/core"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -39,18 +38,13 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   )
 }
 
-export const MakeDeposit: FC = () => {
+const MakeDepositComponent: FC = () => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
-  const { account, active } = useWeb3React()
   const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
     undefined
   )
-
-  if (!active || !account) {
-    return <H5 align={"center"}>Wallet not connected</H5>
-  }
 
   useEffect(() => {
     const findUtxos = async () => {
@@ -157,3 +151,5 @@ export const MakeDeposit: FC = () => {
     </>
   )
 }
+
+export const MakeDeposit = withOnlyConnectedWallet(MakeDepositComponent)

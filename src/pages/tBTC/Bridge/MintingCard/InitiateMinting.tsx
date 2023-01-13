@@ -13,16 +13,11 @@ import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { useWeb3React } from "@web3-react/core"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-export const InitiateMinting: FC = () => {
+const InitiateMintingComponent: FC = () => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
-  const { account, active } = useWeb3React()
-
-  if (!active || !account) {
-    return <H5 align={"center"}>Wallet not connected</H5>
-  }
 
   const confirmDespotAndMint = () => {
     // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
@@ -60,3 +55,5 @@ export const InitiateMinting: FC = () => {
     </>
   )
 }
+
+export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)

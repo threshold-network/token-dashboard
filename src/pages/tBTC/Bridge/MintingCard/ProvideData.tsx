@@ -1,6 +1,6 @@
 import { FC, Ref, useRef } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Button, BodyMd, H5 } from "@threshold-network/components"
+import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -17,6 +17,7 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 export interface FormValues {
   ethAddress: string
@@ -82,17 +83,13 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   displayName: "MintingProcessForm",
 })(MintingProcessFormBase)
 
-export const ProvideData: FC = () => {
+export const ProvideDataComponent: FC = () => {
   const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
-  const { account, active } = useWeb3React()
+  const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
-
-  if (!active || !account) {
-    return <H5 align={"center"}>Wallet not connected</H5>
-  }
 
   const onSubmit = async (values: FormValues) => {
     const depositScriptParameters =
@@ -147,7 +144,7 @@ export const ProvideData: FC = () => {
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={account}
+        initialEthAddress={account!}
         btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
         bitcoinNetwork={threshold.tbtc.getBitcoinNetwork()}
         onSubmitForm={onSubmit}
@@ -158,3 +155,5 @@ export const ProvideData: FC = () => {
     </>
   )
 }
+
+export const ProvideData = withOnlyConnectedWallet(ProvideDataComponent)
