@@ -6,14 +6,19 @@ import { MintingFlowRouter } from "./MintingFlowRouter"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useWeb3React } from "@web3-react/core"
+import { isSameETHAddress } from "../../../../web3/utils"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
+  const { account } = useWeb3React()
 
   useEffect(() => {
     if (
       tBTCDepositData &&
+      account &&
+      isSameETHAddress(tBTCDepositData.ethAddress, account) &&
       tBTCDepositData.btcDepositAddress !== btcDepositAddress
     ) {
       updateState("btcDepositAddress", tBTCDepositData.btcDepositAddress)
@@ -26,7 +31,8 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
 
       updateState("mintingStep", MintingStep.Deposit)
     }
-  }, [])
+  }, [account])
+
   return (
     <Card {...props} minW="0">
       <Stack
