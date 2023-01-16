@@ -24,8 +24,15 @@ import { ExternalHref } from "../../../enums"
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
     depositScriptParameters: DepositScriptParameters
+    ethAddress: string
+    btcDepositAddress: string
   }
-> = ({ closeModal, depositScriptParameters }) => {
+> = ({
+  closeModal,
+  depositScriptParameters,
+  ethAddress,
+  btcDepositAddress,
+}) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
   const { updateState } = useTbtcState()
@@ -36,11 +43,14 @@ const TbtcRecoveryFileModalModal: FC<
   }
 
   const handleDownloadClick = (data: DepositScriptParameters) => {
-    downloadFile(
-      JSON.stringify(data),
-      "deposit-script-parameters.json",
-      "text/json"
-    )
+    const date = new Date()
+    const fileName = `
+    ${ethAddress}-
+    ${btcDepositAddress}-
+    ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
+    `
+
+    downloadFile(JSON.stringify(data), fileName, "text/json")
 
     closeModal()
     updateState("mintingStep", MintingStep.Deposit)
