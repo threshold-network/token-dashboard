@@ -6,8 +6,7 @@ export const InfoBox = {
   },
   baseStyle: {
     mt: 4,
-    px: 6,
-    py: 2,
+    p: 4,
     borderRadius: "md",
     mb: 2,
   },

@@ -87,7 +87,15 @@ const MakeDepositComponent: FC = () => {
         provided.
       </BodyMd>
       <InfoBox>
-        <HStack>
+        <HStack
+          alignItems="center"
+          // To center the tooltip icon. The tooltip icon is wrapped by `span`
+          // because of: If you're wrapping an icon from `react-icons`, you need
+          // to also wrap the icon in a `span` element as `react-icons` icons do
+          // not use forwardRef. See
+          // https://chakra-ui.com/docs/components/tooltip#with-an-icon.
+          sx={{ ">span": { display: "flex" } }}
+        >
           <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
           <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
@@ -112,7 +120,15 @@ const MakeDepositComponent: FC = () => {
           />
         </Box>
 
-        <HStack bg="white" borderRadius="lg" justify="center" mb="5" p="1">
+        <HStack
+          bg="white"
+          borderRadius="lg"
+          justify="center"
+          mb="2"
+          p="1"
+          pl="2"
+          sx={{ ">div": { marginInlineStart: "0 !important" } }}
+        >
           <BodyMd color="brand.500" isTruncated>
             {btcDepositAddress}
           </BodyMd>
