@@ -6,14 +6,13 @@ export const InfoBox = {
   },
   baseStyle: {
     mt: 4,
-    p: 4,
+    p: 6,
     borderRadius: "md",
     mb: 2,
   },
   variants: {
     modal: (props: any) => ({
       background: mode("gray.50", "gray.800")(props),
-      padding: 4,
       marginTop: 0,
     }),
     base: (props: any) => ({

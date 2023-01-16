@@ -86,7 +86,7 @@ const MakeDepositComponent: FC = () => {
         This address is an unique generated address based on the data you
         provided.
       </BodyMd>
-      <InfoBox>
+      <InfoBox p="4">
         <HStack
           alignItems="center"
           // To center the tooltip icon. The tooltip icon is wrapped by `span`
