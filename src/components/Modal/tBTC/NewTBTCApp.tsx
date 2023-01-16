@@ -24,7 +24,6 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   return (
     <>
       <ModalHeader>Take note</ModalHeader>
-      <ModalCloseButton />
       <ModalBody>
         <Image
           src={tbtcAppBannerIllustration}
