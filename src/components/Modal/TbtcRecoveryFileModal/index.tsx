@@ -14,13 +14,12 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
-import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
-import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
+import Link from "../../Link"
+import { ExternalHref } from "../../../enums"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -29,7 +28,6 @@ const TbtcRecoveryFileModalModal: FC<
 > = ({ closeModal, depositScriptParameters }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
-  const bridgeContractAddress = useTBTCBridgeContractAddress()
   const { updateState } = useTbtcState()
 
   const handleDoubleReject = () => {
@@ -81,11 +79,9 @@ const TbtcRecoveryFileModalModal: FC<
         <Image mt="14" mb="16" mx="auto" maxW="210px" src={btcJsonFile} />
         <BodySm textAlign="center">
           Read more about the&nbsp;
-          <ViewInBlockExplorer
-            id={bridgeContractAddress}
-            type={ExplorerDataType.ADDRESS}
-            text="bridge contract"
-          />
+          <Link isExternal href={ExternalHref.tbtcBridgeGithub}>
+            bridge contract
+          </Link>
           .
         </BodySm>
       </ModalBody>
