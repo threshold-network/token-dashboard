@@ -7,27 +7,11 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
-export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
-  previousStep,
-}) => {
-  const { mintingType, updateState } = useTbtcState()
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
-
-  const onPreviousStepClick = (previousStep?: MintingStep) => {
-    if (previousStep === MintingStep.ProvideData) {
-      removeDepositDataFromLocalStorage()
-
-      // remove deposit data from the state,
-      updateState("ethAddress", undefined)
-      updateState("blindingFactor", undefined)
-      updateState("btcRecoveryAddress", undefined)
-      updateState("walletPublicKeyHash", undefined)
-      updateState("refundLocktime", undefined)
-      updateState("btcDepositAddress", undefined)
-    }
-    updateState("mintingStep", previousStep)
-  }
+export const TbtcMintingCardTitle: FC<{
+  previousStep?: MintingStep
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ previousStep, onPreviousStepClick }) => {
+  const { mintingType } = useTbtcState()
 
   return (
     <Stack direction="row" mb={8} align={"center"}>

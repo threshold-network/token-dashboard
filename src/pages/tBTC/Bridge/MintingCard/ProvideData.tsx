@@ -70,7 +70,6 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
     errors.ethAddress = validateETHAddress(values.ethAddress)
-    // TODO: check network
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
       values.bitcoinNetwork as any
@@ -83,7 +82,9 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   displayName: "MintingProcessForm",
 })(MintingProcessFormBase)
 
-export const ProvideDataComponent: FC = () => {
+export const ProvideDataComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -137,7 +138,7 @@ export const ProvideDataComponent: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle />
+      <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
       <BodyMd color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you an unique

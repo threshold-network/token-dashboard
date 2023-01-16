@@ -38,7 +38,9 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   )
 }
 
-const MakeDepositComponent: FC = () => {
+const MakeDepositComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
@@ -73,7 +75,10 @@ const MakeDepositComponent: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
