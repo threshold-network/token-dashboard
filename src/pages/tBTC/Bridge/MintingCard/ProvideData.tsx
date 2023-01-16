@@ -1,4 +1,4 @@
-import { FC, Ref, useRef } from "react"
+import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
@@ -84,7 +84,8 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 })(MintingProcessFormBase)
 
 export const ProvideDataComponent: FC = () => {
-  const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
+  const { updateState } = useTbtcState()
+  const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
@@ -92,6 +93,7 @@ export const ProvideDataComponent: FC = () => {
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
 
   const onSubmit = async (values: FormValues) => {
+    setSubmitButtonLoading(true)
     const depositScriptParameters =
       await threshold.tbtc.createDepositScriptParameters(
         values.ethAddress,
@@ -149,7 +151,12 @@ export const ProvideDataComponent: FC = () => {
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
-      <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
+      <Button
+        isLoading={isSubmitButtonLoading}
+        type="submit"
+        form="tbtc-minting-data-form"
+        isFullWidth
+      >
         Generate Deposit Address
       </Button>
     </>
