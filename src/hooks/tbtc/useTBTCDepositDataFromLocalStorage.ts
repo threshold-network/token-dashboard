@@ -1,3 +1,4 @@
+import { useWeb3React } from "@web3-react/core"
 import { useLocalStorage } from "../useLocalStorage"
 
 export type TBTCDepositDataLocalStorage = {
@@ -10,12 +11,14 @@ export type TBTCDepositDataLocalStorage = {
 }
 
 export const useTBTCDepositDataFromLocalStorage = () => {
+  const { account } = useWeb3React()
+
   const [
     tBTCDepositData,
     setTBTCDepositData,
     removeTBTCDepositDataFromLocalStorage,
   ] = useLocalStorage<TBTCDepositDataLocalStorage | undefined>(
-    "tBTCDepositData",
+    `tBTCDepositData-${account}`,
     undefined
   )
 
