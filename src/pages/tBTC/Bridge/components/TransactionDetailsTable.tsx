@@ -38,10 +38,6 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.700">{thresholdNetworkFee} BTC</BodySm>
       </HStack>
       <HStack justifyContent="space-between">
-        <BodySm color="gray.500">tBTC</BodySm>
-        <BodySm color="gray.700">1 BTC</BodySm>
-      </HStack>
-      <HStack justifyContent="space-between">
         <BodySm color="gray.500">ETH address</BodySm>
         <BodySm color="gray.700">{shortenAddress(ethAddress)}</BodySm>
       </HStack>
