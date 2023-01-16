@@ -27,7 +27,7 @@ const MintingSuccessComponent: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.InitiateMinting} />
+      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
       <TbtcMintingCardSubTitle
         stepText="Success"
         subTitle="Your tBTC is on its way!"
