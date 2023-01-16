@@ -35,6 +35,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
+    btcDepositAddress,
   } = useTbtcState()
   const threshold = useThreshold()
 
@@ -59,12 +60,8 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters
-    )
-
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      depositAddress
+      btcDepositAddress
     )
     const successfulTransactions = await revealMultipleDeposits(
       utxos,
