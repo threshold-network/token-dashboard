@@ -97,11 +97,11 @@ export class MockBitcoinClient implements Client {
       address
     ) as UnspentTransactionOutput[]
 
-    const isDepositTransactionMocked = !utxos || utxos.length === 0
+    const isDepositTransactionMocked = utxos && utxos.length > 0
 
     // Mocks deposit transaction only once for specific deposit address
     if (
-      isDepositTransactionMocked &&
+      !isDepositTransactionMocked &&
       !this._isMockingDepositTransactionInProgress
     ) {
       const store = (await import("../store")).default
