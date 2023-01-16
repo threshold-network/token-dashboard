@@ -146,7 +146,7 @@ export const ProvideDataComponent: FC = () => {
         formId="tbtc-minting-data-form"
         initialEthAddress={account!}
         btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
-        bitcoinNetwork={threshold.tbtc.getBitcoinNetwork()}
+        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
       <Button type="submit" form="tbtc-minting-data-form" isFullWidth>

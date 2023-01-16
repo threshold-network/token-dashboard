@@ -26,11 +26,11 @@ import { Contract } from "ethers"
 
 export interface ITBTC {
   /**
-   * Gets Bitcoin network specified in the bitcoin config that we pass to the
+   * Bitcoin network specified in the bitcoin config that we pass to the
    * threshold lib
    * @returns {BitcoinNetwork}
    */
-  getBitcoinNetwork(): BitcoinNetwork
+  readonly bitcoinNetwork: BitcoinNetwork
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -96,6 +96,15 @@ export class TBTC implements ITBTC {
   private _depositRefundLocktimDuration = 23328000
   private _bitcoinConfig: BitcoinConfig
 
+  /**
+   * Maps the network that is currently used for bitcoin, so that it use "main"
+   * instead of "mainnet". This is specific to the tbtc-v2.ts lib.
+   */
+  private tbtcLibNetworkMap: Record<BitcoinNetwork, "main" | "testnet"> = {
+    testnet: "testnet",
+    mainnet: "main",
+  }
+
   constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
@@ -120,20 +129,7 @@ export class TBTC implements ITBTC {
     this._bitcoinConfig = bitcoinConfig
   }
 
-  /**
-   * Returns the network that is currently used for bitcoin, but instead of
-   * "mainnet" it returns "main". It is specific to the tbtc-v2.ts lib.
-   * @return {string} Network that can be used in tbtc-v2.ts lib
-   */
-  private _getBitcoinNetworkForTBTCLib = (): string => {
-    const { network } = this._bitcoinConfig
-    if (network === BitcoinNetwork.mainnet) {
-      return "main"
-    }
-    return network
-  }
-
-  getBitcoinNetwork = (): BitcoinNetwork => {
+  get bitcoinNetwork(): BitcoinNetwork {
     return this._bitcoinConfig.network
   }
 
@@ -188,7 +184,7 @@ export class TBTC implements ITBTC {
   calculateDepositAddress = async (
     depositScriptParameters: DepositScriptParameters
   ): Promise<string> => {
-    const network = this._getBitcoinNetworkForTBTCLib()
+    const network = this.tbtcLibNetworkMap[this.bitcoinNetwork]
     return await calculateDepositAddress(depositScriptParameters, network, true)
   }
 
