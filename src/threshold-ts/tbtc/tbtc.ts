@@ -3,6 +3,8 @@ import {
   calculateDepositRefundLocktime,
   DepositScriptParameters,
   revealDeposit as tBTCRevealDeposit,
+  getRevealedDeposit as tBTCgetRevealedDeposit,
+  RevealedDeposit,
 } from "@keep-network/tbtc-v2.ts/dist/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
@@ -83,6 +85,13 @@ export interface ITBTC {
     utxo: UnspentTransactionOutput,
     depositScriptParameters: DepositScriptParameters
   ): Promise<string>
+
+  /**
+   * Gets a revealed deposit from the bridge.
+   * @param utxo Deposit UTXO of the revealed deposit
+   * @returns Revealed deposit data.
+   */
+  getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
 }
 
 export class TBTC implements ITBTC {
@@ -207,5 +216,11 @@ export class TBTC implements ITBTC {
         identifierHex: unprefixedAndUncheckedAddress(this._tbtcVault.address),
       }
     )
+  }
+
+  getRevealedDeposit = async (
+    utxo: UnspentTransactionOutput
+  ): Promise<RevealedDeposit> => {
+    return await tBTCgetRevealedDeposit(utxo, this._bridge)
   }
 }

@@ -47,6 +47,8 @@ const MakeDepositComponent: FC<{
   const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
     undefined
   )
+  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
+    useState(false)
 
   useEffect(() => {
     const findUtxos = async () => {
@@ -64,11 +66,23 @@ const MakeDepositComponent: FC<{
     return () => clearInterval(interval)
   }, [btcDepositAddress])
 
-  useEffect(() => {})
+  useEffect(() => {
+    const checkIfAnyUtxosAreNotRevealed = async () => {
+      if (utxos && utxos.length > 0) {
+        for (const utxo of utxos) {
+          const revealedDeposit = await threshold.tbtc.getRevealedDeposit(utxo)
+          if (revealedDeposit.revealedAt === 0) {
+            setHasAnyUnrevealedDeposits(true)
+            break
+          }
+        }
+      }
+    }
+    checkIfAnyUtxosAreNotRevealed()
+  }, [utxos?.length])
 
   const handleSubmit = async () => {
-    // TODO: Check if any of the utxo's is not revealed
-    if (utxos && utxos.length > 0) {
+    if (hasAnyUnrevealedDeposits) {
       updateState("mintingStep", MintingStep.InitiateMinting)
     }
   }
@@ -146,6 +160,8 @@ const MakeDepositComponent: FC<{
         ]}
       />
       <Button
+        isLoading={!hasAnyUnrevealedDeposits}
+        loadingText={"Checking if funds have been sent"}
         onClick={handleSubmit}
         form="tbtc-minting-data-form"
         isDisabled={!utxos}
