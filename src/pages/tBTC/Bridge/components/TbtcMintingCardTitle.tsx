@@ -5,27 +5,14 @@ import { LabelSm } from "@threshold-network/components"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 
-export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
-  previousStep,
-}) => {
+export const TbtcMintingCardTitle: FC<{
+  previousStep?: MintingStep
+  onPreviousStepClick?: () => void
+}> = ({ previousStep, onPreviousStepClick }) => {
   const { mintingType, updateState } = useTbtcState()
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
 
-  const onPreviousStepClick = (previousStep?: MintingStep) => {
-    if (previousStep === MintingStep.ProvideData) {
-      removeDepositDataFromLocalStorage()
-
-      // remove deposit data from the state,
-      updateState("ethAddress", undefined)
-      updateState("blindingFactor", undefined)
-      updateState("btcRecoveryAddress", undefined)
-      updateState("walletPublicKeyHash", undefined)
-      updateState("refundLocktime", undefined)
-      updateState("btcDepositAddress", undefined)
-    }
+  const defaultOnPreviousStepClick = () => {
     updateState("mintingStep", previousStep)
   }
 
@@ -34,7 +21,7 @@ export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
       {previousStep && (
         <Icon
           cursor="pointer"
-          onClick={() => onPreviousStepClick(previousStep)}
+          onClick={onPreviousStepClick ?? defaultOnPreviousStepClick}
           mt="4px"
           as={HiArrowNarrowLeft}
         />

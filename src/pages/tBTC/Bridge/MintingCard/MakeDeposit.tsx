@@ -22,6 +22,8 @@ import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -39,6 +41,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC = () => {
+  const { openModal } = useModal()
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
@@ -71,9 +74,16 @@ const MakeDepositComponent: FC = () => {
     }
   }
 
+  const onPreviousStepClick = () => {
+    openModal(ModalType.GenerateNewDepositAddress)
+  }
+
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
