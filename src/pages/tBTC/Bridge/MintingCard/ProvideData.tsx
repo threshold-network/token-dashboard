@@ -43,7 +43,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="btcRecoveryAddress"
         label="BTC Recovery Address"
-        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. The funds can be claimed."
+        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. The funds can be claimed by using the JSON file."
       />
     </Form>
   )
@@ -139,7 +139,7 @@ export const ProvideDataComponent: FC = () => {
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
       <BodyMd color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you an unique
-        BTC deposit address. There is no minting limit
+        BTC deposit address. There is no minting limit.
       </BodyMd>
       <MintingProcessForm
         innerRef={formRef}
