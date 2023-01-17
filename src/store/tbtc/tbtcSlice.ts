@@ -27,11 +27,11 @@ interface TbtcState {
   nextBridgeCrossingInUnix?: number
 
   // TODO: These may be incorrect types
-  tBTCMintAmount: number
+  tBTCMintAmount: string
   isLoadingTbtcMintAmount: boolean
   ethGasCost: number
-  thresholdNetworkFee: number
-  bitcoinMinerFee: number
+  thresholdNetworkFee: string
+  bitcoinMinerFee: string
   isLoadingBitcoinMinerFee: boolean
 }
 

@@ -26,6 +26,7 @@ import {
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
+import { BigNumber } from "ethers"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -81,15 +82,21 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
     }
   }
 
-  // TODO: this is just to mock the loading state for the UI
   useEffect(() => {
-    const timer = setTimeout(() => {
-      updateState("tBTCMintAmount", 1.2)
-      updateState("bitcoinMinerFee", 0.001)
-      updateState("isLoadingTbtcMintAmount", false)
-      updateState("isLoadingBitcoinMinerFee", false)
-    }, 3000)
-    return () => clearTimeout(timer)
+    const getEstimatedFees = async () => {
+      const amount = utxos.reduce(
+        (accumulator, currentValue) =>
+          BigNumber.from(accumulator).add(currentValue.value),
+        BigNumber.from(0)
+      )
+      updateState("tBTCMintAmount", amount.toString())
+
+      const { treasuryFee, optimisticMintFee } =
+        await threshold.tbtc.getEstimatedFees(amount.toString())
+      updateState("bitcoinMinerFee", treasuryFee)
+      updateState("thresholdNetworkFee", optimisticMintFee)
+    }
+    getEstimatedFees()
   }, [])
 
   return (
@@ -101,7 +108,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
           <H5 mb={4}>
             You will initiate the minting of{" "}
             <Skeleton
-              isLoaded={!isLoadingTbtcMintAmount}
+              isLoaded={!!tBTCMintAmount}
               w={isLoadingTbtcMintAmount ? "105px" : undefined}
               display="inline-block"
             >

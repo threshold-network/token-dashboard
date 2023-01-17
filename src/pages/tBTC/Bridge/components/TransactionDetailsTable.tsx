@@ -6,18 +6,17 @@ import shortenAddress from "../../../../utils/shortenAddress"
 const TransactionDetailsTable = () => {
   const {
     tBTCMintAmount,
-    isLoadingTbtcMintAmount,
     ethGasCost,
     bitcoinMinerFee,
-    isLoadingBitcoinMinerFee,
     thresholdNetworkFee,
     ethAddress,
   } = useTbtcState()
+
   return (
     <Stack spacing={2} mb={6}>
       <HStack justifyContent="space-between" alignItems="center">
         <BodySm color="gray.500">Minted Amount</BodySm>
-        <Skeleton isLoaded={!isLoadingTbtcMintAmount}>
+        <Skeleton isLoaded={!!tBTCMintAmount}>
           <BodySm color="gray.700">{tBTCMintAmount} tBTC</BodySm>
         </Skeleton>
       </HStack>
@@ -27,7 +26,7 @@ const TransactionDetailsTable = () => {
       </HStack>
       <HStack justifyContent="space-between">
         <BodySm color="gray.500">Bitcoin Miner Fee</BodySm>
-        <Skeleton isLoaded={!isLoadingBitcoinMinerFee}>
+        <Skeleton isLoaded={!!bitcoinMinerFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
             {bitcoinMinerFee} BTC
           </BodySm>
@@ -35,7 +34,11 @@ const TransactionDetailsTable = () => {
       </HStack>
       <HStack justifyContent="space-between" alignItems="center">
         <BodySm color="gray.500">Threshold Network Fee</BodySm>
-        <BodySm color="gray.700">{thresholdNetworkFee} BTC</BodySm>
+        <Skeleton isLoaded={!!thresholdNetworkFee}>
+          <BodySm color="gray.700" display="flex" alignItems="center">
+            {thresholdNetworkFee} BTC
+          </BodySm>
+        </Skeleton>
       </HStack>
       <HStack justifyContent="space-between">
         <BodySm color="gray.500">tBTC</BodySm>
