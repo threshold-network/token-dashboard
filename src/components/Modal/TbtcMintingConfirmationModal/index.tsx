@@ -21,10 +21,20 @@ import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
-import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import {
+  decodeBitcoinAddress,
+  UnspentTransactionOutput,
+} from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
 
-const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
+export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
+  utxos: UnspentTransactionOutput[]
+}
+
+const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
+  utxos,
+  closeModal,
+}) => {
   const {
     updateState,
     tBTCMintAmount,
@@ -60,9 +70,6 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      btcDepositAddress
-    )
     const successfulTransactions = await revealMultipleDeposits(
       utxos,
       depositScriptParameters

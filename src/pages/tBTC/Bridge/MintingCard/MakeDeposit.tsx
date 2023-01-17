@@ -22,6 +22,7 @@ import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { BigNumber } from "ethers"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -39,32 +40,14 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC<{
+  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ onPreviousStepClick }) => {
+}> = ({ utxos, onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
-  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
-    undefined
-  )
   const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
     useState(false)
-
-  useEffect(() => {
-    const findUtxos = async () => {
-      const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-        btcDepositAddress
-      )
-      if (utxos && utxos.length > 0) setUtxos(utxos)
-    }
-
-    findUtxos()
-    const interval = setInterval(async () => {
-      await findUtxos()
-    }, 10000)
-
-    return () => clearInterval(interval)
-  }, [btcDepositAddress])
 
   useEffect(() => {
     const checkIfAnyUtxosAreNotRevealed = async () => {
@@ -73,7 +56,6 @@ const MakeDepositComponent: FC<{
           const revealedDeposit = await threshold.tbtc.getRevealedDeposit(utxo)
           if (revealedDeposit.revealedAt === 0) {
             setHasAnyUnrevealedDeposits(true)
-            break
           }
         }
       }
