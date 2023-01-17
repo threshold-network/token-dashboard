@@ -7,7 +7,6 @@ import {
   Image,
   LabelSm,
   Table,
-  TableContainer,
   Tbody,
   Td,
   Th,
@@ -15,28 +14,48 @@ import {
   Tr,
   useColorModeValue,
 } from "@threshold-network/components"
-import { TbtcTransactionResult } from "../../../../types/tbtc"
 import { BridgeHistoryStatus } from "../../../../threshold-ts/tbtc"
+import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-history-dark.svg"
+import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
+import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { formatTokenAmount } from "../../../../utils/formatAmount"
 
-// TODO: we refactored the `TbtcActionBadge` component in
-// https://github.com/threshold-network/token-dashboard/pull/329, once we merge
-// this PR we should update it to render status based on the
-// `BridgeHistoryStatus` enum.
-const TbtcActionBadge: FC<{ result: TbtcTransactionResult }> = ({ result }) => {
+const txResultToBadgeProps: Record<
+  BridgeHistoryStatus,
+  { colorScheme: string }
+> = {
+  [BridgeHistoryStatus.MINTED]: {
+    colorScheme: "green",
+  },
+  [BridgeHistoryStatus.PENDING]: {
+    colorScheme: "yellow",
+  },
+  [BridgeHistoryStatus.ERROR]: {
+    colorScheme: "red",
+  },
+}
+
+const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
   return (
-    <Badge variant="subtle" {...txResultToBadgeProps[result]} size="sm">
-      {result}
+    <Badge variant="subtle" {...txResultToBadgeProps[status]} size="sm">
+      {status}
     </Badge>
   )
 }
 
-// TODO: Add a new TX column and render link to a block explorer once we merge
-// https://github.com/threshold-network/token-dashboard/pull/329.
 export const TransactionHistory: FC<
   ComponentProps<typeof Card> & {
     data: { amount: string; status: BridgeHistoryStatus; txHash: string }[]
   }
 > = ({ data, ...props }) => {
+  const epmtyHistoryImg = useColorModeValue(
+    emptyHistoryImageSrcLight,
+    emptyHistoryImageSrcDark
+  )
+
+  const isHistoryEmpty = data.length === 0
+
   return (
     <Card {...props} minH="530px">
       <LabelSm mb="5">tx history</LabelSm>
@@ -47,29 +66,43 @@ export const TransactionHistory: FC<
             <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
               TBTC
             </LabelSm>
+            <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
+              TX
+            </LabelSm>
             <LabelSm
               as={Th}
               textAlign="right"
               paddingInlineStart="2"
               paddingInlineEnd="2"
             >
-              Action
+              STATE
             </LabelSm>
           </Tr>
         </Thead>
-        <Tbody>
-          {data.map((_data) => (
-            <Tr key={_data.txHash}>
-              <Td py={4} px={2}>
-                {_data.amount}
-              </Td>
-              <Td py={4} px={2} isNumeric>
-                {_data.status}
-                {/* <TbtcActionBadge result={_data.status} /> */}
-              </Td>
-            </Tr>
-          ))}
-        </Tbody>
+        <BodySm as={Tbody}>
+          {isHistoryEmpty ? (
+            <EmptyHistoryTableBody />
+          ) : (
+            data.map((_) => (
+              <Tr key={_.txHash}>
+                <Td py={4} px={2}>
+                  {formatTokenAmount(_.amount, undefined, 8)}
+                </Td>
+                <Td py={4} px={2}>
+                  <ViewInBlockExplorer
+                    id={_.txHash}
+                    type={ExplorerDataType.TRANSACTION}
+                    isTruncated
+                    text={`${_.txHash.slice(0, 4)}...`}
+                  />
+                </Td>
+                <Td py={4} px={2}>
+                  <TbtcActionBadge status={_.status} />
+                </Td>
+              </Tr>
+            ))
+          )}
+        </BodySm>
       </Table>
 
       {isHistoryEmpty && (
@@ -93,7 +126,8 @@ const EmptyRow = () => (
     <Td py={4} px={2}>
       -.--
     </Td>
-    <Td py={4} px={2} isNumeric></Td>
+    <Td py={4} px={2} />
+    <Td py={4} px={2} />
   </Tr>
 )
 
