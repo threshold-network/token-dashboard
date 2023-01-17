@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { LabelSm, Box, Divider } from "@threshold-network/components"
 import TimelineItem from "../components/TimelineItem"
-import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.png"
+import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.svg"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { SweepTimer } from "../components/SweepTimer"

@@ -1,12 +1,50 @@
-import { ComponentProps, FC } from "react"
+import { ComponentProps, FC, useEffect } from "react"
 import { Card } from "@threshold-network/components"
 import { MintingTimeline } from "./MintingTimeline"
 import { Box, StackDivider, Stack } from "@chakra-ui/react"
 import { MintingFlowRouter } from "./MintingFlowRouter"
+import { useTbtcState } from "../../../../hooks/useTbtcState"
+import { MintingStep } from "../../../../types/tbtc"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useWeb3React } from "@web3-react/core"
+import { isSameETHAddress } from "../../../../web3/utils"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
+  const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
+  const { btcDepositAddress, updateState } = useTbtcState()
+  const { account } = useWeb3React()
+
+  useEffect(() => {
+    if (
+      tBTCDepositData &&
+      account &&
+      tBTCDepositData[account] &&
+      isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
+      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
+    ) {
+      const {
+        btcDepositAddress,
+        ethAddress,
+        blindingFactor,
+        btcRecoveryAddress,
+        walletPublicKeyHash,
+        refundLocktime,
+      } = tBTCDepositData[account]
+
+      updateState("btcDepositAddress", btcDepositAddress)
+
+      updateState("ethAddress", ethAddress)
+      updateState("blindingFactor", blindingFactor)
+      updateState("btcRecoveryAddress", btcRecoveryAddress)
+      updateState("walletPublicKeyHash", walletPublicKeyHash)
+      updateState("refundLocktime", refundLocktime)
+
+      updateState("mintingStep", MintingStep.Deposit)
+    }
+  }, [account])
+
   return (
-    <Card {...props}>
+    <Card {...props} minW="0">
       <Stack
         direction={{
           base: "column",

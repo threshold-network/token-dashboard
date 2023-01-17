@@ -67,7 +67,7 @@ export const useSendTransactionFromFn = <
         } else {
           openModal(ModalType.TransactionFailed, {
             transactionHash: error?.transaction?.hash,
-            error,
+            error: error?.message,
             // TODO: how to check if an error is expandable?
             isExpandableError: true,
           })

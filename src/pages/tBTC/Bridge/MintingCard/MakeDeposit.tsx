@@ -1,12 +1,10 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import {
   BodyMd,
-  BodySm,
   Box,
   BoxLabel,
   Button,
   ChecklistGroup,
-  Flex,
   HStack,
   Stack,
   Divider,
@@ -20,13 +18,10 @@ import CopyToClipboard from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
-import { unprefixedAndUncheckedAddress } from "../../../../threshold-ts/utils"
-import { computeHash160 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -34,11 +29,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }) => {
   return (
     <HStack justify="space-between">
-      <BoxLabel
-      // colorScheme="brand"
-      >
-        {text}
-      </BoxLabel>
+      <BoxLabel>{text}</BoxLabel>
       <HStack>
         <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
         <CopyToClipboard textToCopy={address} />
@@ -47,47 +38,61 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   )
 }
 
-export const MakeDeposit: FC = () => {
-  const {
-    btcDepositAddress,
-    ethAddress,
-    btcRecoveryAddress,
-    blindingFactor,
-    walletPublicKey,
-    refundLocktime,
-    updateState,
-  } = useTbtcState()
+const MakeDepositComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
+    useTbtcState()
   const threshold = useThreshold()
+  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
+    undefined
+  )
+  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
+    useState(false)
+
+  useEffect(() => {
+    const findUtxos = async () => {
+      const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+        btcDepositAddress
+      )
+      if (utxos && utxos.length > 0) setUtxos(utxos)
+    }
+
+    findUtxos()
+    const interval = setInterval(async () => {
+      await findUtxos()
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [btcDepositAddress])
+
+  useEffect(() => {
+    const checkIfAnyUtxosAreNotRevealed = async () => {
+      if (!utxos) return
+
+      const deposits = await Promise.all(
+        utxos.map(threshold.tbtc.getRevealedDeposit)
+      )
+
+      setHasAnyUnrevealedDeposits(
+        deposits.some((deposit) => deposit.revealedAt === 0)
+      )
+    }
+    checkIfAnyUtxosAreNotRevealed()
+  }, [utxos?.length])
 
   const handleSubmit = async () => {
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
-      },
-      blindingFactor: blindingFactor,
-      // TODO: pass proper values for walletPubKey and refundPubKey
-      walletPubKeyHash: walletPublicKey,
-      refundPubKeyHash: computeHash160(btcRecoveryAddress),
-      refundLocktime: refundLocktime,
-    }
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters,
-      "testnet"
-    )
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      depositAddress
-    )
-    // TODO: remove console log
-    console.log("UTXOS: ", utxos)
-    // TODO: Check if any of the utxo's is not revealed
-    if (utxos && utxos.length > 0) {
+    if (hasAnyUnrevealedDeposits) {
       updateState("mintingStep", MintingStep.InitiateMinting)
     }
   }
 
   return (
-    <Box>
-      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
+    <>
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
@@ -111,9 +116,9 @@ export const MakeDeposit: FC = () => {
           p={3}
           backgroundColor={"white"}
           width={"100%"}
-          maxW={"128px"}
-          margin={"5 0"}
-          borderRadius="sm"
+          maxW={"145px"}
+          marginY="4"
+          borderRadius="4"
           border={"1px solid"}
           borderColor={"brand.500"}
           alignSelf="center"
@@ -126,14 +131,14 @@ export const MakeDeposit: FC = () => {
           />
         </Box>
 
-        <HStack bg="white" borderRadius="lg" justify="space-between" px={4}>
-          <BodySm color="brand.500" maxW={"xs"} isTruncated>
+        <HStack bg="white" borderRadius="lg" justify="center" mb="5" p="1">
+          <BodyMd color="brand.500" isTruncated>
             {btcDepositAddress}
-          </BodySm>
+          </BodyMd>
           <CopyToClipboard textToCopy={btcDepositAddress} />
         </HStack>
       </InfoBox>
-      <Stack spacing={4} mb={8}>
+      <Stack spacing={4} mt="5" mb={8}>
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow text="BTC Recovery Address" address={btcRecoveryAddress} />
@@ -146,29 +151,26 @@ export const MakeDeposit: FC = () => {
             itemId: "staking_deposit__0",
             itemTitle: "",
             itemSubTitle: (
-              <BodySm color={useColorModeValue("gray.500", "gray.300")}>
+              <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
                 Send the funds and come back to this dApp. You do not need to
                 wait for the BTC transaction to be mined
-              </BodySm>
+              </BodyMd>
             ),
           },
         ]}
       />
       <Button
+        isLoading={!hasAnyUnrevealedDeposits}
+        loadingText={"Checking if funds have been sent..."}
         onClick={handleSubmit}
         form="tbtc-minting-data-form"
+        isDisabled={!utxos}
         isFullWidth
-        mb={6}
       >
         I sent the BTC
       </Button>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Box>
+    </>
   )
 }
+
+export const MakeDeposit = withOnlyConnectedWallet(MakeDepositComponent)

@@ -1,15 +1,19 @@
 import { ComponentProps, FC } from "react"
 import {
   Badge,
+  BodyMd,
   BodySm,
   Card,
+  Image,
   LabelSm,
   Table,
+  TableContainer,
   Tbody,
   Td,
   Th,
   Thead,
   Tr,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { TbtcTransactionResult } from "../../../../types/tbtc"
 import { BridgeHistoryStatus } from "../../../../threshold-ts/tbtc"
@@ -19,33 +23,11 @@ import { BridgeHistoryStatus } from "../../../../threshold-ts/tbtc"
 // this PR we should update it to render status based on the
 // `BridgeHistoryStatus` enum.
 const TbtcActionBadge: FC<{ result: TbtcTransactionResult }> = ({ result }) => {
-  switch (result) {
-    case TbtcTransactionResult.MINTED:
-      return (
-        <Badge variant="subtle" colorScheme="green">
-          MINTED
-        </Badge>
-      )
-    case TbtcTransactionResult.UNMINTED:
-      return (
-        <Badge variant="subtle" colorScheme="green">
-          UNMINTED
-        </Badge>
-      )
-    case TbtcTransactionResult.ERROR:
-      return (
-        <Badge variant="subtle" colorScheme="red">
-          ERROR
-        </Badge>
-      )
-    case TbtcTransactionResult.PENDING:
-      return (
-        <Badge variant="subtle" colorScheme="yellow">
-          PENDING
-        </Badge>
-      )
-  }
-  return <BodySm>--</BodySm>
+  return (
+    <Badge variant="subtle" {...txResultToBadgeProps[result]} size="sm">
+      {result}
+    </Badge>
+  )
 }
 
 // TODO: Add a new TX column and render link to a block explorer once we merge
@@ -58,11 +40,21 @@ export const TransactionHistory: FC<
   return (
     <Card {...props} minH="530px">
       <LabelSm mb="5">tx history</LabelSm>
+
       <Table>
         <Thead>
-          <Tr>
-            <Th>TBTC</Th>
-            <Th>Action</Th>
+          <Tr color="gray.500">
+            <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
+              TBTC
+            </LabelSm>
+            <LabelSm
+              as={Th}
+              textAlign="right"
+              paddingInlineStart="2"
+              paddingInlineEnd="2"
+            >
+              Action
+            </LabelSm>
           </Tr>
         </Thead>
         <Tbody>
@@ -79,6 +71,37 @@ export const TransactionHistory: FC<
           ))}
         </Tbody>
       </Table>
+
+      {isHistoryEmpty && (
+        <>
+          <Image
+            alt="no-history"
+            src={epmtyHistoryImg}
+            mx="auto"
+            mt={16}
+            mb={4}
+          />
+          <BodyMd textAlign="center">You have no history yet.</BodyMd>
+        </>
+      )}
     </Card>
+  )
+}
+
+const EmptyRow = () => (
+  <Tr>
+    <Td py={4} px={2}>
+      -.--
+    </Td>
+    <Td py={4} px={2} isNumeric></Td>
+  </Tr>
+)
+
+const EmptyHistoryTableBody = () => {
+  return (
+    <>
+      <EmptyRow />
+      <EmptyRow />
+    </>
   )
 }

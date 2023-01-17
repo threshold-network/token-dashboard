@@ -13,7 +13,7 @@ export type TbtcStateKey =
   | "bitcoinMinerFee"
   | "isLoadingBitcoinMinerFee"
   | "nextBridgeCrossingInUnix"
-  | "walletPublicKey"
+  | "walletPublicKeyHash"
   | "blindingFactor"
   | "refundLocktime"
 
@@ -64,7 +64,7 @@ export interface UseTbtcState {
     ethAddress: string
     refundLocktime: string
     blindingFactor: string
-    walletPublicKey: string
+    walletPublicKeyHash: string
 
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
     nextBridgeCrossingInUnix?: number

@@ -1,25 +1,20 @@
 import { FC } from "react"
-import {
-  Alert,
-  AlertIcon,
-  BodyMd,
-  Box,
-  Button,
-  Flex,
-} from "@threshold-network/components"
+import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-export const InitiateMinting: FC = () => {
+const InitiateMintingComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
+
   const confirmDespotAndMint = () => {
     // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
 
@@ -34,8 +29,11 @@ export const InitiateMinting: FC = () => {
   }
 
   return (
-    <Box>
-      <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
+    <>
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.Deposit}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
         <AlertIcon />
@@ -48,19 +46,13 @@ export const InitiateMinting: FC = () => {
         This step requires you to sign a transaction in your Ethereum wallet.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        Your tBTC will be arriving in your wallet within the next bridge
-        crossing.
+        Your tBTC will arrive in your wallet in around 1-3 hours.
       </BodyMd>
-      <Button onClick={confirmDespotAndMint} isFullWidth mb={6}>
+      <Button onClick={confirmDespotAndMint} isFullWidth>
         Confirm deposit & mint
       </Button>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Box>
+    </>
   )
 }
+
+export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)

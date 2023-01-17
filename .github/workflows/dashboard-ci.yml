@@ -80,7 +80,7 @@ jobs:
             @keep-network/tbtc-v2 \
             @keep-network/tbtc-v2.ts \
             @keep-network/ecdsa \
-            @keep-network/random-beacon
+            @keep-network/random-beacon --ignore-scripts
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.

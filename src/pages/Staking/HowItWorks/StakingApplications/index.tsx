@@ -1,7 +1,6 @@
 import {
   BodyMd,
   BodyXs,
-  Button,
   Card,
   Divider,
   H5,
@@ -11,8 +10,8 @@ import {
   VStack,
 } from "@threshold-network/components"
 import ApplicationDetailsCard from "./ApplicationDetailsCard"
-import tbtcAppIllustrationLight from "../../../../static/images/tbtcAppIllustrationLight.png"
-import tbtcAppIllustrationDark from "../../../../static/images/tbtcAppIllustrationDark.png"
+import tbtcAppIllustrationLight from "../../../../static/images/tbtcAppIllustrationLight.svg"
+import tbtcAppIllustrationDark from "../../../../static/images/tbtcAppIllustrationDark.svg"
 import randomBeaconAppIllustrationLight from "../../../../static/images/randomBeaconAppIllustrationLight.png"
 import randomBeaconAppIllustrationDark from "../../../../static/images/randomBeaconAppIllustrationDark.png"
 import preAppIllustrationLight from "../../../../static/images/preAppIllustrationLight.png"

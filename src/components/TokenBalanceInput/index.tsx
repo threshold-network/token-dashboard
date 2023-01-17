@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useRef } from "react"
+import { FC, useEffect, useRef } from "react"
 import {
   Button,
   Icon,
@@ -8,18 +8,15 @@ import {
   InputRightElement,
   FormControl,
   FormLabel,
-  FormErrorMessage,
-  FormHelperText,
-} from "@chakra-ui/react"
-import { createIcon } from "@chakra-ui/icons"
-import { formatUnits, parseUnits } from "@ethersproject/units"
-import { Zero } from "@ethersproject/constants"
-import { BigNumber } from "@ethersproject/bignumber"
-import {
+  useColorModeValue,
   NumberFormatInput,
   NumberFormatInputValues,
   NumberFormatInputProps,
 } from "@threshold-network/components"
+import { createIcon } from "@chakra-ui/icons"
+import { formatUnits, parseUnits } from "@ethersproject/units"
+import { Zero } from "@ethersproject/constants"
+import { BigNumber } from "@ethersproject/bignumber"
 import { web3 as web3Constants } from "../../constants"
 import HelperErrorText from "../Forms/HelperErrorText"
 
@@ -49,6 +46,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
 }) => {
   const inputRef = useRef<HTMLInputElement>()
   const valueRef = useRef<string | number | undefined>(amount)
+  const labelColor = useColorModeValue("gray.700", "gray.300")
 
   useEffect(() => {
     if (amount === "" && inputRef.current) {
@@ -89,7 +87,11 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
 
   return (
     <FormControl isInvalid={hasError} isDisabled={inputProps.isDisabled}>
-      {label && <FormLabel htmlFor={inputProps.name}>{label}</FormLabel>}
+      {label && (
+        <FormLabel htmlFor={inputProps.name} color={labelColor}>
+          {label}
+        </FormLabel>
+      )}
       <InputGroup size="md">
         <InputLeftElement>
           <Icon boxSize="20px" as={icon} />

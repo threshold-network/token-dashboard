@@ -1,3 +1,4 @@
 export * from "./address"
-export * from "./contract"
+export * from "./bitcoin"
 export * from "./constants"
+export * from "./contract"

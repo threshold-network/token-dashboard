@@ -18,71 +18,57 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
-import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealDepositTransaction } from "../../../hooks/tbtc/useRevealDepositTransaction"
+import {
+  RevealDepositSuccessTx,
+  useRevealMultipleDepositsTransaction,
+} from "../../../hooks/tbtc"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
     updateState,
-    btcDepositAddress,
     tBTCMintAmount,
     isLoadingTbtcMintAmount,
     isLoadingBitcoinMinerFee,
     btcRecoveryAddress,
     ethAddress,
     refundLocktime,
-    walletPublicKey,
+    walletPublicKeyHash,
     blindingFactor,
+    btcDepositAddress,
   } = useTbtcState()
   const threshold = useThreshold()
-  const { sendTransaction } = useRevealDepositTransaction()
 
-  const { mint } = useTbtcMintTransaction((tx) => {
+  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
-  })
+    closeModal()
+  }
+
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+    onSuccessfulDepositReveal
+  )
 
   const initiateMintTransaction = async () => {
-    // TODO: implement this
-    // mint({})
-
-    // 1. reveal deposit to the bridge
-
-    // 2. the sweep will mint automatically
-    // 3. minting will happen behind the scenes
-
-    const deposit: DepositScriptParameters = {
+    const depositScriptParameters: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
       },
       blindingFactor,
-      walletPubKeyHash: walletPublicKey,
-      refundPubKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      walletPublicKeyHash: walletPublicKeyHash,
+      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
       refundLocktime,
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      deposit,
-      "testnet"
-    )
-
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      depositAddress
+      btcDepositAddress
     )
-
-    await sendTransaction(utxos[0], deposit)
-
-    // await threshold.tbtc.revealDeposit(
-    //   utxos[0],
-    //   deposit,
-    //   threshold.tbtc.getBitcoinClient(),
-    //   threshold.tbtc.getBridge()
-    // )
-    updateState("mintingStep", MintingStep.MintingSuccess)
-    closeModal()
+    const successfulTransactions = await revealMultipleDeposits(
+      utxos,
+      depositScriptParameters
+    )
   }
 
   // TODO: this is just to mock the loading state for the UI
@@ -114,11 +100,11 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
             tBTC
           </H5>
           <BodyLg>
-            Minting tBTC is a process that requires two transactions.
+            Minting tBTC is a process that requires one transaction.
           </BodyLg>
         </InfoBox>
         <TransactionDetailsTable />
-        <BodySm textAlign="center">
+        <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
           <ViewInBlockExplorer
             id="NEED BRIDGE CONTRACT ADDRESS"

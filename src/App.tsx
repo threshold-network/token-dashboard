@@ -44,9 +44,13 @@ import {
   useSubscribeToAuthorizationDecreaseApprovedEvent,
   useSubscribeToAuthorizationDecreaseRequestedEvent,
   useSubscribeToOperatorRegisteredEvent,
+  useSubscribeToOperatorStatusUpdatedEvent,
 } from "./hooks/staking-applications"
 import { useSaveConnectedAddressToStore } from "./hooks/useSaveConnectedAddressToStore"
 import { usePosthog } from "./hooks/posthog"
+import { featureFlags } from "./constants"
+import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
+import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -64,6 +68,9 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToAuthorizationDecreaseRequestedEvent("randomBeacon")
   useSubscribeToOperatorRegisteredEvent("tbtc")
   useSubscribeToOperatorRegisteredEvent("randomBeacon")
+  useSubscribeToOperatorStatusUpdatedEvent("randomBeacon")
+  useSubscribeToOperatorStatusUpdatedEvent("tbtc")
+  useSubscribeToDepositRevealedEvent()
 
   return <></>
 }
@@ -160,6 +167,7 @@ const Layout = () => {
           <Outlet />
         </Box>
       </Box>
+      {featureFlags.FEEDBACK_MODULE && <FeedbackRoutesButton />}
     </Box>
   )
 }

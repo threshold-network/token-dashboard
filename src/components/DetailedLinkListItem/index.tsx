@@ -8,6 +8,7 @@ import {
   Square,
   Stack,
   useMultiStyleConfig,
+  Icon,
 } from "@threshold-network/components"
 import Link from "../Link"
 import ButtonLink from "../ButtonLink"
@@ -20,9 +21,11 @@ export interface DetailedLinkListItemProps extends BoxProps {
   linkText?: string
   href: string
   isExternal?: boolean
+  icon?: any
 }
 
 const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
+  icon,
   imgSrc,
   imgFallback,
   title,
@@ -38,8 +41,14 @@ const DetailedLinkListItem: FC<DetailedLinkListItemProps> = ({
 
   return (
     <Flex sx={styles.container} as="li">
-      {imgSrc ? (
-        <Image sx={styles.image} src={imgSrc} />
+      {imgSrc || icon ? (
+        imgSrc ? (
+          <Image sx={styles.image} src={imgSrc} />
+        ) : (
+          <Square sx={styles.imageFallback}>
+            <Icon sx={styles.icon} as={icon} />
+          </Square>
+        )
       ) : (
         <Square sx={styles.imageFallback}>
           {imgFallback && imgFallback.slice(0, 3).toUpperCase()}

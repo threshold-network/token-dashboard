@@ -1,6 +1,6 @@
-import { FC, Ref, useRef } from "react"
+import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Box, Button, Flex, BodyMd } from "@threshold-network/components"
+import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -11,16 +11,18 @@ import {
   validateETHAddress,
 } from "../../../../utils/forms"
 import { MintingStep } from "../../../../types/tbtc"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { Network } from "bitcoin-address-validation"
-import { threshold } from "../../../../utils/getThresholdLib"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { useWeb3React } from "@web3-react/core"
+import { BitcoinNetwork } from "../../../../threshold-ts/types"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 export interface FormValues {
   ethAddress: string
   btcRecoveryAddress: string
+  bitcoinNetwork: BitcoinNetwork
 }
 
 type ComponentProps = {
@@ -49,22 +51,28 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 
 type MintingProcessFormProps = {
   initialEthAddress: string
+  btcRecoveryAddress: string
+  bitcoinNetwork: BitcoinNetwork
   innerRef: Ref<FormikProps<FormValues>>
   onSubmitForm: (values: FormValues) => void
 } & ComponentProps
 
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
-  mapPropsToValues: ({ initialEthAddress }) => ({
+  mapPropsToValues: ({
+    initialEthAddress,
+    btcRecoveryAddress,
+    bitcoinNetwork,
+  }) => ({
     ethAddress: initialEthAddress,
-    btcRecoveryAddress: "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m",
+    btcRecoveryAddress: btcRecoveryAddress,
+    bitcoinNetwork: bitcoinNetwork,
   }),
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
     errors.ethAddress = validateETHAddress(values.ethAddress)
-    // TODO: check network
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
-      Network.testnet
+      values.bitcoinNetwork as any
     )
     return getErrorsObj(errors)
   },
@@ -74,77 +82,87 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   displayName: "MintingProcessForm",
 })(MintingProcessFormBase)
 
-export const ProvideData: FC = () => {
-  const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
+export const ProvideDataComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
+  const { updateState } = useTbtcState()
+  const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
+  const threshold = useThreshold()
+  const { account } = useWeb3React()
+  const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
 
   const onSubmit = async (values: FormValues) => {
-    // check if the user has changed the eth or btc address from the previous attempt
-    if (
-      ethAddress !== values.ethAddress ||
-      btcRecoveryAddress !== values.btcRecoveryAddress
-    ) {
-      // if so...
-      const depositScriptParameters =
-        await threshold.tbtc.createDepositScriptParameters(
-          values.ethAddress,
-          values.btcRecoveryAddress
-        )
-
-      const depositAddress = await threshold.tbtc.calculateDepositAddress(
-        depositScriptParameters,
-        "testnet"
+    setSubmitButtonLoading(true)
+    const depositScriptParameters =
+      await threshold.tbtc.createDepositScriptParameters(
+        values.ethAddress,
+        values.btcRecoveryAddress
       )
 
-      // update state,
-      updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-      updateState("ethAddress", values.ethAddress)
+    const depositAddress = await threshold.tbtc.calculateDepositAddress(
+      depositScriptParameters
+    )
 
-      // create a new deposit address,
-      updateState("btcDepositAddress", depositAddress)
-      updateState("blindingFactor", depositScriptParameters.blindingFactor)
-      updateState("refundLocktime", depositScriptParameters.refundLocktime)
-      // TODO: Either change the name in store to `wallePubKeyHash` or save
-      // walletPublicKey here
-      updateState("walletPublicKey", depositScriptParameters.walletPubKeyHash)
+    // update state,
+    updateState("ethAddress", values.ethAddress)
+    updateState("blindingFactor", depositScriptParameters.blindingFactor)
+    updateState("btcRecoveryAddress", values.btcRecoveryAddress)
+    updateState(
+      "walletPublicKeyHash",
+      depositScriptParameters.walletPublicKeyHash
+    )
+    updateState("refundLocktime", depositScriptParameters.refundLocktime)
 
-      // if the user has NOT declined the json file, ask the user if they want to accept the new file
-      openModal(ModalType.TbtcRecoveryJson, {
-        depositScriptParameters,
-      })
-    }
+    // create a new deposit address,
+    updateState("btcDepositAddress", depositAddress)
+
+    setDepositDataInLocalStorage({
+      ethAddress: values.ethAddress,
+      blindingFactor: depositScriptParameters.blindingFactor,
+      btcRecoveryAddress: values.btcRecoveryAddress,
+      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
+      refundLocktime: depositScriptParameters.refundLocktime,
+      btcDepositAddress: depositAddress,
+    })
+
+    // if the user has NOT declined the json file, ask the user if they want to accept the new file
+    openModal(ModalType.TbtcRecoveryJson, {
+      depositScriptParameters,
+    })
 
     // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
     updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (
-    <Flex flexDirection="column" justifyContent="space-between" h="100%">
-      <Box>
-        <TbtcMintingCardTitle />
-        <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
-        <BodyMd color="gray.500" mb={12}>
-          Based on these two addresses, the system will generate for you an
-          unique BTC deposit address. There is no minting limit
-        </BodyMd>
-        <MintingProcessForm
-          innerRef={formRef}
-          formId="tbtc-minting-data-form"
-          initialEthAddress="0xdad30fd9D55Fe12E3435Fb32705242bc1b42a520"
-          onSubmitForm={onSubmit}
-        />
-        <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
-          Generate Deposit Address
-        </Button>
-      </Box>
-      <Flex justifyContent="center">
-        <ViewInBlockExplorer
-          id="NEED BRIDGE CONTRACT ADDRESS"
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
-      </Flex>
-    </Flex>
+    <>
+      <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
+      <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
+      <BodyMd color="gray.500" mb={12}>
+        Based on these two addresses, the system will generate for you an unique
+        BTC deposit address. There is no minting limit
+      </BodyMd>
+      <MintingProcessForm
+        innerRef={formRef}
+        formId="tbtc-minting-data-form"
+        initialEthAddress={account!}
+        btcRecoveryAddress={""}
+        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        onSubmitForm={onSubmit}
+      />
+      <Button
+        isLoading={isSubmitButtonLoading}
+        loadingText={"Generating deposit address..."}
+        type="submit"
+        form="tbtc-minting-data-form"
+        isFullWidth
+      >
+        Generate Deposit Address
+      </Button>
+    </>
   )
 }
+
+export const ProvideData = withOnlyConnectedWallet(ProvideDataComponent)
