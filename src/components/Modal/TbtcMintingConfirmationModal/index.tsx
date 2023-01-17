@@ -5,6 +5,7 @@ import {
   Button,
   H5,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
@@ -17,8 +18,14 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
-import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
-import ModalCloseButton from "../ModalCloseButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
+import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import {
+  RevealDepositSuccessTx,
+  useRevealMultipleDepositsTransaction,
+} from "../../../hooks/tbtc"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -26,24 +33,42 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     tBTCMintAmount,
     isLoadingTbtcMintAmount,
     isLoadingBitcoinMinerFee,
+    btcRecoveryAddress,
+    ethAddress,
+    refundLocktime,
+    walletPublicKeyHash,
+    blindingFactor,
+    btcDepositAddress,
   } = useTbtcState()
+  const threshold = useThreshold()
 
-  const { mint } = useTbtcMintTransaction((tx) => {
-    updateState("mintingStep", MintingStep.MintingSuccess)
-  })
-
-  const initiateMintTransaction = () => {
-    // TODO: implement this
-    // mint({})
-
-    // 1. reveal deposit to the bridge
-
-    // 2. the sweep will mint automatically
-    // 3. minting will happen behind the scenes
-
-    // TODO: this is a shortcut for now. We need to implement this properly
+  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
+  }
+
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+    onSuccessfulDepositReveal
+  )
+
+  const initiateMintTransaction = async () => {
+    const depositScriptParameters: DepositScriptParameters = {
+      depositor: {
+        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
+      },
+      blindingFactor,
+      walletPublicKeyHash: walletPublicKeyHash,
+      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      refundLocktime,
+    }
+
+    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+      btcDepositAddress
+    )
+    const successfulTransactions = await revealMultipleDeposits(
+      utxos,
+      depositScriptParameters
+    )
   }
 
   // TODO: this is just to mock the loading state for the UI

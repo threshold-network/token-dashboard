@@ -4,6 +4,14 @@ import {
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 
+export const unprefixedAndUncheckedAddress = (address: string): string => {
+  const prefix = address.substring(0, 2)
+  if (prefix === "0x") {
+    address = address.slice(2)
+  }
+  return address.toLowerCase()
+}
+
 export const getAddress = (address: string) => ethersGetAddress(address)
 
 export const isAddress = (address: string): boolean => ethersIsAddress(address)

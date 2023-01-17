@@ -24,6 +24,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           providerOrSigner: library,
           account,
         },
+        bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
@@ -34,6 +35,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           chainId: supportedChainId,
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
+        bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }

@@ -15,9 +15,14 @@ interface TbtcState {
   unmintingStep: UnmintingStep
   btcWithdrawAddress: string
   unmintAmount: string
+  btcDepositAddress: string
+
+  //deposit data
   ethAddress: string
   btcRecoveryAddress: string
-  btcDepositAddress: string
+  walletPublicKeyHash: string
+  refundLocktime: string
+  blindingFactor: string
 
   nextBridgeCrossingInUnix?: number
 

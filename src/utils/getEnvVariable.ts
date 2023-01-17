@@ -28,6 +28,9 @@ const envMap: { [key in EnvVariable]: string } = {
   [EnvVariable.POSTHOG_API_KEY]: process.env[
     "REACT_APP_POSTHOG_API_KEY"
   ] as string,
+  [EnvVariable.THRESHOLD_MOCK_TBTC]: process.env[
+    "REACT_APP_THRESHOLD_MOCK_TBTC"
+  ] as string,
 }
 
 export const getEnvVariable = (envVar: EnvVariable) => {

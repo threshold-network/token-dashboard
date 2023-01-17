@@ -25,7 +25,7 @@ import ModalCloseButton from "../ModalCloseButton"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
-  error: Error
+  error: string
   isExpandableError?: boolean
 }
 
@@ -37,7 +37,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
 }) => {
   const { isOpen, onToggle } = useDisclosure()
 
-  const errorTitle = error?.message || error.name || "Error"
+  const errorTitle = "Error"
 
   return (
     <>
@@ -89,7 +89,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             </HStack>
             {isOpen && (
               <AlertDescription maxWidth="100%">
-                <BodySm mb={8}>{error?.stack?.toString()}</BodySm>
+                <BodySm mb={8}>{error}</BodySm>
                 <Link
                   isExternal
                   href={ExternalHref.thresholdDiscord}

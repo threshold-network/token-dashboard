@@ -13,6 +13,9 @@ export type TbtcStateKey =
   | "bitcoinMinerFee"
   | "isLoadingBitcoinMinerFee"
   | "nextBridgeCrossingInUnix"
+  | "walletPublicKeyHash"
+  | "blindingFactor"
+  | "refundLocktime"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -55,8 +58,14 @@ export interface UseTbtcState {
     btcWithdrawAddress: string
     unmintAmount: string
     btcDepositAddress: string
+
+    // deposit data
     btcRecoveryAddress: string
     ethAddress: string
+    refundLocktime: string
+    blindingFactor: string
+    walletPublicKeyHash: string
+
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
     nextBridgeCrossingInUnix?: number
 

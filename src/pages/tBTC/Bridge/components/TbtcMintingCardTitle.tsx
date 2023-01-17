@@ -6,16 +6,18 @@ import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
 
-export const TbtcMintingCardTitle: FC<{ previousStep?: MintingStep }> = ({
-  previousStep,
-}) => {
-  const { mintingType, updateState } = useTbtcState()
+export const TbtcMintingCardTitle: FC<{
+  previousStep?: MintingStep
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ previousStep, onPreviousStepClick }) => {
+  const { mintingType } = useTbtcState()
+
   return (
     <Stack direction="row" mb={8} align={"center"}>
       {previousStep && (
         <Icon
           cursor="pointer"
-          onClick={() => updateState("mintingStep", previousStep)}
+          onClick={() => onPreviousStepClick(previousStep)}
           mt="4px"
           as={HiArrowNarrowLeft}
         />
