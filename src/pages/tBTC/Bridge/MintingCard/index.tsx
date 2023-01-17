@@ -18,16 +18,26 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
     if (
       tBTCDepositData &&
       account &&
-      isSameETHAddress(tBTCDepositData.ethAddress, account) &&
-      tBTCDepositData.btcDepositAddress !== btcDepositAddress
+      tBTCDepositData[account] &&
+      isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
+      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
     ) {
-      updateState("btcDepositAddress", tBTCDepositData.btcDepositAddress)
+      const {
+        btcDepositAddress,
+        ethAddress,
+        blindingFactor,
+        btcRecoveryAddress,
+        walletPublicKeyHash,
+        refundLocktime,
+      } = tBTCDepositData[account]
 
-      updateState("ethAddress", tBTCDepositData.ethAddress)
-      updateState("blindingFactor", tBTCDepositData.blindingFactor)
-      updateState("btcRecoveryAddress", tBTCDepositData.btcRecoveryAddress)
-      updateState("walletPublicKeyHash", tBTCDepositData.walletPublicKeyHash)
-      updateState("refundLocktime", tBTCDepositData.refundLocktime)
+      updateState("btcDepositAddress", btcDepositAddress)
+
+      updateState("ethAddress", ethAddress)
+      updateState("blindingFactor", blindingFactor)
+      updateState("btcRecoveryAddress", btcRecoveryAddress)
+      updateState("walletPublicKeyHash", walletPublicKeyHash)
+      updateState("refundLocktime", refundLocktime)
 
       updateState("mintingStep", MintingStep.Deposit)
     }
