@@ -148,7 +148,7 @@ export const ProvideDataComponent: FC<{
         innerRef={formRef}
         formId="tbtc-minting-data-form"
         initialEthAddress={account!}
-        btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
+        btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
