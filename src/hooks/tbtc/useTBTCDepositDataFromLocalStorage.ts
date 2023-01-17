@@ -26,7 +26,6 @@ export const useTBTCDepositDataFromLocalStorage = () => {
         ...tBTCDepositData,
         [account]: depositData,
       }
-      console.log("new local storage data!!!", newLocalStorageData)
       setTBTCDepositData(newLocalStorageData)
     }
   }
