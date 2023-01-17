@@ -117,7 +117,7 @@ export const ProvideData: FC = () => {
   return (
     <Flex flexDirection="column" justifyContent="space-between" h="100%">
       <Box>
-        <TbtcMintingCardTitle />
+        {/* <TbtcMintingCardTitle /> */}
         <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
         <BodyMd color="gray.500" mb={12}>
           Based on these two addresses, the system will generate for you an

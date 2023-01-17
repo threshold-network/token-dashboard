@@ -7,10 +7,14 @@ import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-export const InitiateMinting: FC = () => {
+const InitiateMintingComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
+
   const confirmDespotAndMint = () => {
     // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
 
@@ -26,7 +30,10 @@ export const InitiateMinting: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.Deposit}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
         <AlertIcon />
@@ -47,3 +54,5 @@ export const InitiateMinting: FC = () => {
     </>
   )
 }
+
+export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)

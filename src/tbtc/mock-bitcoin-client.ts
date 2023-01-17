@@ -1,11 +1,42 @@
 import {
   Client,
+  decodeBitcoinAddress,
   RawTransaction,
   Transaction,
   TransactionHash,
   TransactionMerkleBranch,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import {
+  assembleDepositTransaction,
+  calculateDepositAddress,
+  Deposit,
+  DepositScriptParameters,
+} from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { BigNumber } from "ethers"
+import { unprefixedAndUncheckedAddress } from "../threshold-ts/utils"
+import { delay } from "../utils/helpers"
+
+const testnetTransactionHash = TransactionHash.from(
+  "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
+)
+const testnetTransaction: RawTransaction = {
+  transactionHex:
+    "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +
+    "4c9bc7390100000000ffffffff02102700000000000017a914867120d5480a9cc0c11c" +
+    "1193fa59b3a92e852da78710043c00000000001600147ac2d9378a1c47e589dfb8095c" +
+    "a95ed2140d272602483045022100b70bd9b7f5d230444a542c7971bea79786b4ebde67" +
+    "03cee7b6ee8cd16e115ebf02204d50ea9d1ee08de9741498c2cc64266e40d52c4adb9e" +
+    "f68e65aa2727cd4208b5012102ee067a0273f2e3ba88d23140a24fdb290f27bbcd0f94" +
+    "117a9c65be3911c5c04e00000000",
+}
+const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
+  transactionHash: testnetTransactionHash,
+  outputIndex: 1,
+  value: BigNumber.from(3933200),
+  ...testnetTransaction,
+}
+const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
 
 export class MockBitcoinClient implements Client {
   private _unspentTransactionOutputs = new Map<
@@ -23,6 +54,7 @@ export class MockBitcoinClient implements Client {
     position: 0,
   }
   private _broadcastLog: RawTransaction[] = []
+  private _isMockingDepositTransactionInProgress = false
 
   set unspentTransactionOutputs(
     value: Map<string, UnspentTransactionOutput[]>
@@ -58,63 +90,153 @@ export class MockBitcoinClient implements Client {
     return this._broadcastLog
   }
 
-  findAllUnspentTransactionOutputs(
+  async findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]> {
-    return new Promise<UnspentTransactionOutput[]>((resolve, _) => {
-      resolve(
-        this._unspentTransactionOutputs.get(
-          address
-        ) as UnspentTransactionOutput[]
-      )
-    })
+    const utxos = this._unspentTransactionOutputs.get(
+      address
+    ) as UnspentTransactionOutput[]
+
+    const isDepositTransactionMocked = utxos && utxos.length > 0
+
+    // Mocks deposit transaction only once for specific deposit address
+    if (
+      !isDepositTransactionMocked &&
+      !this._isMockingDepositTransactionInProgress
+    ) {
+      const store = (await import("../store")).default
+      const { tbtc } = store.getState()
+
+      const {
+        ethAddress,
+        btcRecoveryAddress,
+        walletPublicKeyHash,
+        refundLocktime,
+        blindingFactor,
+      } = tbtc
+
+      const depositScriptParameters: DepositScriptParameters = {
+        depositor: {
+          identifierHex: unprefixedAndUncheckedAddress(ethAddress),
+        },
+        blindingFactor: blindingFactor,
+        walletPublicKeyHash: walletPublicKeyHash,
+        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+        refundLocktime: refundLocktime,
+      }
+
+      this.mockDepositTransaction(depositScriptParameters)
+    }
+
+    return this._unspentTransactionOutputs.get(
+      address
+    ) as UnspentTransactionOutput[]
   }
 
-  getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
-    return new Promise<Transaction>((resolve, _) => {
-      resolve(this._transactions.get(transactionHash) as Transaction)
-    })
+  async mockDepositTransaction(
+    depositScriptParameters: DepositScriptParameters
+  ): Promise<void> {
+    // Since we are using a delay function we don't want to mock multiple
+    // deposit transactions here when calling `findAllUnspentTransactionOutputs`
+    // method. This is why we embrace `_isMockingDepositTransactionInProgress`
+    // flag
+    this._isMockingDepositTransactionInProgress = true
+    await delay(5000)
+    const depositAddress = await calculateDepositAddress(
+      depositScriptParameters,
+      "testnet",
+      true
+    )
+
+    const deposit: Deposit = {
+      ...depositScriptParameters,
+      amount: BigNumber.from("1000000"),
+    }
+
+    const {
+      transactionHash,
+      depositUtxo,
+      rawTransaction: transaction,
+    } = await assembleDepositTransaction(
+      deposit,
+      [testnetUTXO],
+      testnetPrivateKey,
+      true
+    )
+
+    // mock second deposit transaction
+
+    const testnetUtxo2 = {
+      ...depositUtxo,
+      outputIndex: 1,
+      ...transaction,
+    }
+
+    const deposit2: Deposit = {
+      ...depositScriptParameters,
+      amount: BigNumber.from("1000001"),
+    }
+
+    const {
+      transactionHash: transactionHash2,
+      depositUtxo: depositUtxo2,
+      rawTransaction: transaction2,
+    } = await assembleDepositTransaction(
+      deposit2,
+      [testnetUtxo2],
+      testnetPrivateKey,
+      true
+    )
+
+    const utxos = new Map<string, UnspentTransactionOutput[]>()
+    utxos.set(depositAddress, [depositUtxo, depositUtxo2])
+    this.unspentTransactionOutputs = utxos
+    const rawTransactions = new Map<string, RawTransaction>()
+    rawTransactions.set(transactionHash.toString(), transaction)
+    rawTransactions.set(transactionHash2.toString(), transaction2)
+    this.rawTransactions = rawTransactions
+
+    this._isMockingDepositTransactionInProgress = false
   }
 
-  getRawTransaction(transactionHash: TransactionHash): Promise<RawTransaction> {
-    return new Promise<RawTransaction>((resolve, _) => {
-      resolve(this._rawTransactions.get(transactionHash) as RawTransaction)
-    })
+  async getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
+    return this._transactions.get(transactionHash.toString()) as Transaction
   }
 
-  getTransactionConfirmations(
+  async getRawTransaction(
+    transactionHash: TransactionHash
+  ): Promise<RawTransaction> {
+    return this._rawTransactions.get(
+      transactionHash.toString()
+    ) as RawTransaction
+  }
+
+  async getTransactionConfirmations(
     transactionHash: TransactionHash
   ): Promise<number> {
-    return new Promise<number>((resolve, _) => {
-      resolve(this._confirmations.get(transactionHash) as number)
-    })
+    return this._confirmations.get(transactionHash.toString()) as number
   }
 
-  latestBlockHeight(): Promise<number> {
-    return new Promise<number>((resolve, _) => {
-      resolve(this._latestHeight)
-    })
+  async latestBlockHeight(): Promise<number> {
+    return this._latestHeight
   }
 
-  getHeadersChain(blockHeight: number, chainLength: number): Promise<string> {
-    return new Promise<string>((resolve, _) => {
-      resolve(this._headersChain)
-    })
+  async getHeadersChain(
+    blockHeight: number,
+    chainLength: number
+  ): Promise<string> {
+    return this._headersChain
   }
 
-  getTransactionMerkle(
+  async getTransactionMerkle(
     transactionHash: TransactionHash,
     blockHeight: number
   ): Promise<TransactionMerkleBranch> {
-    return new Promise<TransactionMerkleBranch>((resolve, _) => {
-      resolve(this._transactionMerkle)
-    })
+    return this._transactionMerkle
   }
 
-  broadcast(transaction: RawTransaction): Promise<void> {
+  async broadcast(transaction: RawTransaction): Promise<void> {
     this._broadcastLog.push(transaction)
-    return new Promise<void>((resolve, _) => {
-      resolve()
-    })
+    return
   }
 }

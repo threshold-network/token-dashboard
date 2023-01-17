@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import {
   BodyMd,
   Box,
@@ -19,6 +19,9 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -35,18 +38,61 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   )
 }
 
-export const MakeDeposit: FC = () => {
-  const { updateState } = useTbtcState()
+const MakeDepositComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
+  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
+    useTbtcState()
+  const threshold = useThreshold()
+  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
+    undefined
+  )
+  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
+    useState(false)
 
-  const handleSubmit = () => {
-    updateState("mintingStep", MintingStep.InitiateMinting)
+  useEffect(() => {
+    const findUtxos = async () => {
+      const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+        btcDepositAddress
+      )
+      if (utxos && utxos.length > 0) setUtxos(utxos)
+    }
+
+    findUtxos()
+    const interval = setInterval(async () => {
+      await findUtxos()
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [btcDepositAddress])
+
+  useEffect(() => {
+    const checkIfAnyUtxosAreNotRevealed = async () => {
+      if (!utxos) return
+
+      const deposits = await Promise.all(
+        utxos.map(threshold.tbtc.getRevealedDeposit)
+      )
+
+      setHasAnyUnrevealedDeposits(
+        deposits.some((deposit) => deposit.revealedAt === 0)
+      )
+    }
+    checkIfAnyUtxosAreNotRevealed()
+  }, [utxos?.length])
+
+  const handleSubmit = async () => {
+    if (hasAnyUnrevealedDeposits) {
+      updateState("mintingStep", MintingStep.InitiateMinting)
+    }
   }
-
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.ProvideData} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
@@ -113,9 +159,18 @@ export const MakeDeposit: FC = () => {
           },
         ]}
       />
-      <Button onClick={handleSubmit} form="tbtc-minting-data-form" isFullWidth>
+      <Button
+        isLoading={!hasAnyUnrevealedDeposits}
+        loadingText={"Checking if funds have been sent..."}
+        onClick={handleSubmit}
+        form="tbtc-minting-data-form"
+        isDisabled={!utxos}
+        isFullWidth
+      >
         I sent the BTC
       </Button>
     </>
   )
 }
+
+export const MakeDeposit = withOnlyConnectedWallet(MakeDepositComponent)

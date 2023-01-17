@@ -11,7 +11,7 @@ export function getSigner(
 }
 
 // account is optional
-function getProviderOrSigner(
+export function getProviderOrSigner(
   library: Web3Provider,
   account?: string
 ): Web3Provider | JsonRpcSigner {
