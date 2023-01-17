@@ -39,14 +39,13 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   const {
     updateState,
     tBTCMintAmount,
-    isLoadingTbtcMintAmount,
-    isLoadingBitcoinMinerFee,
     btcRecoveryAddress,
     ethAddress,
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
-    btcDepositAddress,
+    bitcoinMinerFee,
+    thresholdNetworkFee,
   } = useTbtcState()
   const threshold = useThreshold()
 
@@ -109,7 +108,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             You will initiate the minting of{" "}
             <Skeleton
               isLoaded={!!tBTCMintAmount}
-              w={isLoadingTbtcMintAmount ? "105px" : undefined}
+              w={!!tBTCMintAmount ? "105px" : undefined}
               display="inline-block"
             >
               {tBTCMintAmount}
@@ -135,7 +134,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
           Cancel
         </Button>
         <Button
-          disabled={isLoadingTbtcMintAmount || isLoadingBitcoinMinerFee}
+          disabled={!tBTCMintAmount || !bitcoinMinerFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
         >
           Start minting

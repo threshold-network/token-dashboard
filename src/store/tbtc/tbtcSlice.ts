@@ -28,11 +28,9 @@ interface TbtcState {
 
   // TODO: These may be incorrect types
   tBTCMintAmount: string
-  isLoadingTbtcMintAmount: boolean
   ethGasCost: number
   thresholdNetworkFee: string
   bitcoinMinerFee: string
-  isLoadingBitcoinMinerFee: boolean
 }
 
 export const tbtcSlice = createSlice({

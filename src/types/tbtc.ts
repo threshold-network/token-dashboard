@@ -7,11 +7,9 @@ export type TbtcStateKey =
   | "ethAddress"
   | "btcDepositAddress"
   | "tBTCMintAmount"
-  | "isLoadingTbtcMintAmount"
   | "ethGasCost"
   | "thresholdNetworkFee"
   | "bitcoinMinerFee"
-  | "isLoadingBitcoinMinerFee"
   | "nextBridgeCrossingInUnix"
   | "walletPublicKeyHash"
   | "blindingFactor"
@@ -71,11 +69,9 @@ export interface UseTbtcState {
 
     // TODO: These may be incorrect types
     tBTCMintAmount: string
-    isLoadingTbtcMintAmount: boolean
     ethGasCost: number
     thresholdNetworkFee: string
     bitcoinMinerFee: string
-    isLoadingBitcoinMinerFee: boolean
   }
 }
 
