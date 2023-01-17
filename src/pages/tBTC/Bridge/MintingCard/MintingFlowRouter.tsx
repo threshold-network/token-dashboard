@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { Box, Button, Flex, H5 } from "@threshold-network/components"
+import { Box, Flex, H5 } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { ProvideData } from "./ProvideData"

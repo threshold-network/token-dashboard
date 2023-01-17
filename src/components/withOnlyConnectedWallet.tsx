@@ -1,4 +1,4 @@
-import { ComponentType, FC } from "react"
+import { ComponentType } from "react"
 import { H5 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 

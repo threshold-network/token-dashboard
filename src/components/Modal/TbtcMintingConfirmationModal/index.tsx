@@ -52,14 +52,6 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction()
 
   const initiateMintTransaction = async () => {
-    // TODO: implement this
-    // mint({})
-
-    // 1. reveal deposit to the bridge
-
-    // 2. the sweep will mint automatically
-    // 3. minting will happen behind the scenes
-
     const depositScriptParameters: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
