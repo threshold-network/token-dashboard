@@ -154,6 +154,7 @@ export const ProvideDataComponent: FC<{
       />
       <Button
         isLoading={isSubmitButtonLoading}
+        loadingText={"Generating deposit address..."}
         type="submit"
         form="tbtc-minting-data-form"
         isFullWidth
