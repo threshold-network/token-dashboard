@@ -1,11 +1,5 @@
 import { FC } from "react"
-import {
-  Alert,
-  AlertIcon,
-  BodyMd,
-  Button,
-  H5,
-} from "@threshold-network/components"
+import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
@@ -13,16 +7,13 @@ import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
-import { useWeb3React } from "@web3-react/core"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-export const InitiateMinting: FC = () => {
+const InitiateMintingComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
-  const { account, active } = useWeb3React()
-
-  if (!active || !account) {
-    return <H5 align={"center"}>Wallet not connected</H5>
-  }
 
   const confirmDespotAndMint = () => {
     // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
@@ -39,7 +30,10 @@ export const InitiateMinting: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.Deposit}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
         <AlertIcon />
@@ -60,3 +54,5 @@ export const InitiateMinting: FC = () => {
     </>
   )
 }
+
+export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)

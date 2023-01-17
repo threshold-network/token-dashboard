@@ -14,7 +14,7 @@ export const useRevealMultipleDepositsTransaction = () => {
   const revealMultipleDeposits = useCallback(
     async (
       utxos: UnspentTransactionOutput[],
-      deposit: DepositScriptParameters
+      depositScriptParameters: DepositScriptParameters
     ) => {
       try {
         if (!utxos || utxos.length === 0)
@@ -25,7 +25,7 @@ export const useRevealMultipleDepositsTransaction = () => {
           amount: BigNumber
         }[] = []
         for (const utxo of utxos) {
-          const tx = await sendTransaction(utxo, deposit)
+          const tx = await sendTransaction(utxo, depositScriptParameters)
           if (tx) {
             successfullTxs.push({
               txHash: tx.transactionHash,
@@ -33,9 +33,7 @@ export const useRevealMultipleDepositsTransaction = () => {
             })
           }
         }
-        if (successfullTxs.length > 0) {
-          return true
-        }
+        return successfullTxs
       } catch (error) {
         openModal(ModalType.TransactionFailed, {
           error: "Error: Couldn't reveal deposits",
