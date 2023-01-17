@@ -25,7 +25,10 @@ import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
+import {
+  RevealDepositSuccessTx,
+  useRevealMultipleDepositsTransaction,
+} from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
@@ -49,7 +52,14 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction()
+  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
+    updateState("mintingStep", MintingStep.MintingSuccess)
+    closeModal()
+  }
+
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+    onSuccessfulDepositReveal
+  )
 
   const initiateMintTransaction = async () => {
     const depositScriptParameters: DepositScriptParameters = {
@@ -66,11 +76,6 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       utxos,
       depositScriptParameters
     )
-
-    if (successfulTransactions && successfulTransactions.length > 0) {
-      updateState("mintingStep", MintingStep.MintingSuccess)
-      closeModal()
-    }
   }
 
   useEffect(() => {

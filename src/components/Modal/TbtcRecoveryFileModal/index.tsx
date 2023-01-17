@@ -37,9 +37,9 @@ const TbtcRecoveryFileModalModal: FC<
     closeModal()
   }
 
-  const handleDownloadClick = (data: DepositScriptParameters) => {
+  const handleDownloadClick = () => {
     downloadFile(
-      JSON.stringify(data),
+      JSON.stringify(depositScriptParameters),
       "deposit-script-parameters.json",
       "text/json"
     )
@@ -99,9 +99,7 @@ const TbtcRecoveryFileModalModal: FC<
             Cancel
           </Button>
         )}
-        <Button onClick={() => handleDownloadClick(depositScriptParameters)}>
-          Download
-        </Button>
+        <Button onClick={handleDownloadClick}>Download</Button>
       </ModalFooter>
     </>
   )
