@@ -24,7 +24,9 @@ import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "../../../node_modules/@keep-network/tbtc-v2/artifacts/TBTCVault.json"
-import { Contract } from "ethers"
+import { BigNumber, Contract } from "ethers"
+import { ContractCall, IMulticall } from "../multicall"
+import { Interface } from "ethers/lib/utils"
 
 export interface ITBTC {
   /**
@@ -76,6 +78,16 @@ export interface ITBTC {
   ): Promise<UnspentTransactionOutput[]>
 
   /**
+   * Gets estimated fees that will be payed during a reveal
+   * @param depositAmount - summed amount of all utxos that will be revealed
+   * @returns treasury fee and optitimistic mint fee
+   */
+  getEstimatedFees(depositAmount: string): Promise<{
+    treasuryFee: string
+    optimisticMintFee: string
+  }>
+
+  /**
    * Reveals the given deposit to the on-chain Bridge contract.
    * @param utxo Deposit UTXO of the revealed deposit
    * @param depositScriptParameters Deposit script parameters. You can get them
@@ -98,6 +110,7 @@ export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
   private _tbtcVault: Contract
   private _bitcoinClient: Client
+  private _multicall: IMulticall
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -114,7 +127,11 @@ export class TBTC implements ITBTC {
     mainnet: "main",
   }
 
-  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
+  constructor(
+    ethereumConfig: EthereumConfig,
+    bitcoinConfig: BitcoinConfig,
+    multicall: IMulticall
+  ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -135,6 +152,7 @@ export class TBTC implements ITBTC {
     )
     this._bitcoinClient =
       bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
+    this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
   }
 
@@ -201,6 +219,51 @@ export class TBTC implements ITBTC {
     address: string
   ): Promise<UnspentTransactionOutput[]> => {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
+  }
+
+  getEstimatedFees = async (depositAmount: string) => {
+    const calls: ContractCall[] = [
+      {
+        interface: new Interface(BridgeArtifact.abi),
+        address: BridgeArtifact.address,
+        method: "depositParameters",
+        args: [],
+      },
+      {
+        interface: this._tbtcVault.interface,
+        address: this._tbtcVault.address,
+        method: "optimisticMintingFeeDivisor",
+        args: [],
+      },
+    ]
+
+    const [depositParams, optimisticMintingFeeDivisor] =
+      await this._multicall.aggregate(calls)
+
+    const depositTreasuryFeeDivisor = depositParams.depositTreasuryFeeDivisor
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
+    const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
+      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor).toString()
+      : "0"
+
+    const amountToMint = BigNumber.from(depositAmount)
+      .sub(treasuryFee)
+      .toString()
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
+    const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor[0]).gt(
+      0
+    )
+      ? BigNumber.from(amountToMint)
+          .div(optimisticMintingFeeDivisor[0])
+          .toString()
+      : "0"
+
+    return {
+      treasuryFee: treasuryFee,
+      optimisticMintFee: optimisticMintFee,
+    }
   }
 
   revealDeposit = async (
