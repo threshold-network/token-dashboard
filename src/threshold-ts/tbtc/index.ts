@@ -260,8 +260,8 @@ export class TBTC implements ITBTC {
       : "0"
 
     return {
-      treasuryFee: treasuryFee,
-      optimisticMintFee: optimisticMintFee,
+      treasuryFee,
+      optimisticMintFee,
     }
   }
 
