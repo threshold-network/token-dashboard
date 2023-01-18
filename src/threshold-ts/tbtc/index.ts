@@ -19,6 +19,7 @@ import {
   Client,
   computeHash160,
   decodeBitcoinAddress,
+  TransactionHash,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
@@ -26,8 +27,7 @@ import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
-import { Contract, ethers } from "ethers"
-import { IMulticall } from "../multicall"
+import { Contract } from "ethers"
 
 export enum BridgeHistoryStatus {
   PENDING = "PENDING",
@@ -126,7 +126,6 @@ export class TBTC implements ITBTC {
   private _tbtcVault: Contract
   private _bitcoinClient: Client
   private _bridgeContract: Contract
-  private _multicall: IMulticall
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -143,11 +142,7 @@ export class TBTC implements ITBTC {
     mainnet: "main",
   }
 
-  constructor(
-    ethereumConfig: EthereumConfig,
-    bitcoinConfig: BitcoinConfig,
-    multicall: IMulticall
-  ) {
+  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -172,7 +167,6 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._multicall = multicall
     this._bitcoinClient =
       bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
     this._bitcoinConfig = bitcoinConfig
@@ -308,40 +302,26 @@ export class TBTC implements ITBTC {
       eventName: "DepositRevealed",
     })
 
-    const parsedDeposits = deposits.map((deposit) => {
-      const fundingTxHash = deposit.args?.fundingTxHash
-      const fundingOutputIndex = deposit.args?.fundingOutputIndex
+    return deposits
+      .map((deposit) => {
+        const fundingTxHash = deposit.args?.fundingTxHash
+        const fundingOutputIndex = deposit.args?.fundingOutputIndex
 
-      const depositKey = ethers.utils.solidityKeccak256(
-        ["bytes32", "uint32"],
-        [fundingTxHash, fundingOutputIndex]
-      )
+        const depositKey = EthereumBridge.buildDepositKey(
+          TransactionHash.from(fundingTxHash).reverse(),
+          fundingOutputIndex
+        )
 
-      return {
-        amount: "0",
-        walletPublicKeyHash: deposit.args?.walletPubKeyHash,
-        fundingTxHash,
-        fundingOutputIndex,
-        depositKey,
-        txHash: deposit.transactionHash,
-      }
-    })
-
-    const revealedDeposits = await this._multicall.aggregate(
-      parsedDeposits
-        .map((_) => _.depositKey)
-        .map((depositKey) => ({
-          address: this._bridgeContract.address,
-          interface: this._bridgeContract.interface,
-          method: "deposits",
-          args: [depositKey],
-        }))
-    )
-
-    return parsedDeposits.map((deposit, index) => {
-      const amount = revealedDeposits[index][0]?.amount?.toString()
-      return { ...deposit, amount }
-    })
+        return {
+          amount: deposit.args?.amount.toString(),
+          walletPublicKeyHash: deposit.args?.walletPubKeyHash,
+          fundingTxHash,
+          fundingOutputIndex,
+          depositKey,
+          txHash: deposit.transactionHash,
+        }
+      })
+      .reverse()
   }
 
   private _findAllMintedDeposits = async (

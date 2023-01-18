@@ -1,4 +1,3 @@
-import { providers, Signer, VoidSigner } from "ethers"
 import { MultiAppStaking } from "./mas"
 import { IMulticall, Multicall } from "./multicall"
 import { IStaking, Staking } from "./staking"
@@ -32,7 +31,7 @@ export class Threshold {
       this.multicall,
       config.ethereum
     )
-    this.tbtc = new TBTC(config.ethereum, config.bitcoin, this.multicall)
+    this.tbtc = new TBTC(config.ethereum, config.bitcoin)
   }
 
   updateConfig = (config: ThresholdConfig) => {
