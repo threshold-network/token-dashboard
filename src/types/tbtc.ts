@@ -72,5 +72,6 @@ export interface UseTbtcState {
     ethGasCost: number
     thresholdNetworkFee: string
     bitcoinMinerFee: string
+    resetDepositData: () => void
   }
 }

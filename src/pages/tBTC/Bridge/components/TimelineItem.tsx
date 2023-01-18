@@ -22,7 +22,7 @@ export type TimelineProps = {
   isActive: boolean
   isComplete: boolean
   title: string
-  description: string
+  description: string | JSX.Element
   imageSrc: any
   size?: Sizes
   withBadge?: boolean

@@ -14,6 +14,8 @@ import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
@@ -23,28 +25,14 @@ const MintingFlowRouterBase = () => {
   const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
     undefined
   )
+  const { openModal } = useModal()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (previousStep === MintingStep.ProvideData) {
-      clearDepositData()
+      openModal(ModalType.GenerateNewDepositAddress)
+      return
     }
     updateState("mintingStep", previousStep)
-  }
-
-  const clearDepositData = () => {
-    removeDepositDataFromLocalStorage()
-
-    // remove deposit data from the state,
-    updateState("ethAddress", undefined)
-    updateState("blindingFactor", undefined)
-    updateState("btcRecoveryAddress", undefined)
-    updateState("walletPublicKeyHash", undefined)
-    updateState("refundLocktime", undefined)
-    updateState("btcDepositAddress", undefined)
-
-    updateState("tBTCMintAmount", undefined)
-    updateState("thresholdNetworkFee", undefined)
-    updateState("bitcoinMinerFee", undefined)
   }
 
   useEffect(() => {

@@ -1,17 +1,35 @@
-import { useDispatch, useSelector } from "react-redux"
+import { useCallback } from "react"
 import { RootState } from "../store"
-import { TbtcStateKey, UseTbtcState } from "../types/tbtc"
 import { updateState as updateStateAction } from "../store/tbtc"
+import { useAppDispatch, useAppSelector } from "./store"
+import { MintingStep, TbtcStateKey, UseTbtcState } from "../types/tbtc"
 
 export const useTbtcState: UseTbtcState = () => {
-  const tbtcState = useSelector((state: RootState) => state.tbtc)
-  const dispatch = useDispatch()
+  const tbtcState = useAppSelector((state: RootState) => state.tbtc)
+  const dispatch = useAppDispatch()
 
-  const updateState = (key: TbtcStateKey, value: any) =>
-    dispatch(updateStateAction({ key, value }))
+  const updateState = useCallback(
+    (key: TbtcStateKey, value: any) =>
+      dispatch(updateStateAction({ key, value })),
+    [dispatch]
+  )
+
+  const resetDepositData = useCallback(() => {
+    updateState("ethAddress", undefined)
+    updateState("blindingFactor", undefined)
+    updateState("btcRecoveryAddress", undefined)
+    updateState("walletPublicKeyHash", undefined)
+    updateState("refundLocktime", undefined)
+    updateState("btcDepositAddress", undefined)
+    updateState("mintingStep", MintingStep.ProvideData)
+    updateState("tBTCMintAmount", undefined)
+    updateState("thresholdNetworkFee", undefined)
+    updateState("bitcoinMinerFee", undefined)
+  }, [dispatch, updateState])
 
   return {
     ...tbtcState,
     updateState,
+    resetDepositData,
   }
 }
