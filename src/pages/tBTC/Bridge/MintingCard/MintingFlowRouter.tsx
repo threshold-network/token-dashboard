@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import { Box, Flex, H5 } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
@@ -11,12 +11,21 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 
 const MintingFlowRouterBase = () => {
+  const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
+  const { removeDepositDataFromLocalStorage } =
+    useTBTCDepositDataFromLocalStorage()
+  const threshold = useThreshold()
+  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
+    undefined
+  )
   const { openModal } = useModal()
-  const { mintingStep, updateState } = useTbtcState()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (previousStep === MintingStep.ProvideData) {
@@ -26,15 +35,40 @@ const MintingFlowRouterBase = () => {
     updateState("mintingStep", previousStep)
   }
 
+  useEffect(() => {
+    const findUtxos = async () => {
+      if (btcDepositAddress) {
+        const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
+          btcDepositAddress
+        )
+        if (utxos && utxos.length > 0) setUtxos(utxos)
+      }
+    }
+
+    findUtxos()
+    const interval = setInterval(async () => {
+      await findUtxos()
+    }, 10000)
+
+    return () => clearInterval(interval)
+  }, [btcDepositAddress])
+
   switch (mintingStep) {
     case MintingStep.ProvideData: {
       return <ProvideData onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.Deposit: {
-      return <MakeDeposit onPreviousStepClick={onPreviousStepClick} />
+      return (
+        <MakeDeposit utxos={utxos} onPreviousStepClick={onPreviousStepClick} />
+      )
     }
     case MintingStep.InitiateMinting: {
-      return <InitiateMinting onPreviousStepClick={onPreviousStepClick} />
+      return (
+        <InitiateMinting
+          utxos={utxos}
+          onPreviousStepClick={onPreviousStepClick}
+        />
+      )
     }
     case MintingStep.MintingSuccess: {
       return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />

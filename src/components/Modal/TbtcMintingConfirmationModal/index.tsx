@@ -21,24 +21,35 @@ import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
-import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  decodeBitcoinAddress,
+  UnspentTransactionOutput,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   RevealDepositSuccessTx,
   useRevealMultipleDepositsTransaction,
 } from "../../../hooks/tbtc"
+import { BigNumber } from "ethers"
+import { formatTokenAmount } from "../../../utils/formatAmount"
 
-const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
+export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
+  utxos: UnspentTransactionOutput[]
+}
+
+const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
+  utxos,
+  closeModal,
+}) => {
   const {
     updateState,
     tBTCMintAmount,
-    isLoadingTbtcMintAmount,
-    isLoadingBitcoinMinerFee,
     btcRecoveryAddress,
     ethAddress,
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
-    btcDepositAddress,
+    bitcoinMinerFee,
+    thresholdNetworkFee,
   } = useTbtcState()
   const threshold = useThreshold()
 
@@ -62,24 +73,27 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      btcDepositAddress
-    )
     const successfulTransactions = await revealMultipleDeposits(
       utxos,
       depositScriptParameters
     )
   }
 
-  // TODO: this is just to mock the loading state for the UI
   useEffect(() => {
-    const timer = setTimeout(() => {
-      updateState("tBTCMintAmount", 1.2)
-      updateState("bitcoinMinerFee", 0.001)
-      updateState("isLoadingTbtcMintAmount", false)
-      updateState("isLoadingBitcoinMinerFee", false)
-    }, 3000)
-    return () => clearTimeout(timer)
+    const getEstimatedFees = async () => {
+      const amount = utxos.reduce(
+        (accumulator, currentValue) =>
+          BigNumber.from(accumulator).add(currentValue.value),
+        BigNumber.from(0)
+      )
+      updateState("tBTCMintAmount", amount.toString())
+
+      const { treasuryFee, optimisticMintFee } =
+        await threshold.tbtc.getEstimatedFees(amount.toString())
+      updateState("bitcoinMinerFee", treasuryFee)
+      updateState("thresholdNetworkFee", optimisticMintFee)
+    }
+    getEstimatedFees()
   }, [])
 
   return (
@@ -91,11 +105,13 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
           <H5 mb={4}>
             You will initiate the minting of{" "}
             <Skeleton
-              isLoaded={!isLoadingTbtcMintAmount}
-              w={isLoadingTbtcMintAmount ? "105px" : undefined}
+              isLoaded={!!tBTCMintAmount}
+              w={!tBTCMintAmount ? "105px" : undefined}
               display="inline-block"
             >
-              {tBTCMintAmount}
+              {!!tBTCMintAmount
+                ? formatTokenAmount(tBTCMintAmount, undefined, 8)
+                : "0"}
             </Skeleton>{" "}
             tBTC
           </H5>
@@ -118,7 +134,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
           Cancel
         </Button>
         <Button
-          disabled={isLoadingTbtcMintAmount || isLoadingBitcoinMinerFee}
+          disabled={!tBTCMintAmount || !bitcoinMinerFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
         >
           Start minting
