@@ -22,7 +22,10 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
+import {
+  RevealDepositSuccessTx,
+  useRevealMultipleDepositsTransaction,
+} from "../../../hooks/tbtc"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -35,20 +38,20 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
+    btcDepositAddress,
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction()
+  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
+    updateState("mintingStep", MintingStep.MintingSuccess)
+    closeModal()
+  }
+
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+    onSuccessfulDepositReveal
+  )
 
   const initiateMintTransaction = async () => {
-    // TODO: implement this
-    // mint({})
-
-    // 1. reveal deposit to the bridge
-
-    // 2. the sweep will mint automatically
-    // 3. minting will happen behind the scenes
-
     const depositScriptParameters: DepositScriptParameters = {
       depositor: {
         identifierHex: unprefixedAndUncheckedAddress(ethAddress),
@@ -59,22 +62,13 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       refundLocktime,
     }
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters
-    )
-
     const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-      depositAddress
+      btcDepositAddress
     )
     const successfulTransactions = await revealMultipleDeposits(
       utxos,
       depositScriptParameters
     )
-
-    if (successfulTransactions && successfulTransactions.length > 0) {
-      updateState("mintingStep", MintingStep.MintingSuccess)
-      closeModal()
-    }
   }
 
   // TODO: this is just to mock the loading state for the UI

@@ -1,11 +1,5 @@
 import { FC } from "react"
-import {
-  Alert,
-  AlertIcon,
-  BodyMd,
-  Button,
-  H5,
-} from "@threshold-network/components"
+import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
@@ -15,7 +9,9 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-const InitiateMintingComponent: FC = () => {
+const InitiateMintingComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
 
@@ -34,7 +30,10 @@ const InitiateMintingComponent: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.Deposit}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
         <AlertIcon />

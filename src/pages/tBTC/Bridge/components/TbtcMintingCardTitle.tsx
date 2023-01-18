@@ -8,20 +8,16 @@ import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
 
 export const TbtcMintingCardTitle: FC<{
   previousStep?: MintingStep
-  onPreviousStepClick?: () => void
+  onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ previousStep, onPreviousStepClick }) => {
-  const { mintingType, updateState } = useTbtcState()
-
-  const defaultOnPreviousStepClick = () => {
-    updateState("mintingStep", previousStep)
-  }
+  const { mintingType } = useTbtcState()
 
   return (
     <Stack direction="row" mb={8} align={"center"}>
       {previousStep && (
         <Icon
           cursor="pointer"
-          onClick={onPreviousStepClick ?? defaultOnPreviousStepClick}
+          onClick={() => onPreviousStepClick(previousStep)}
           mt="4px"
           as={HiArrowNarrowLeft}
         />

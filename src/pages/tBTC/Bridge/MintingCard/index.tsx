@@ -6,27 +6,43 @@ import { MintingFlowRouter } from "./MintingFlowRouter"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useWeb3React } from "@web3-react/core"
+import { isSameETHAddress } from "../../../../web3/utils"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
+  const { account } = useWeb3React()
 
   useEffect(() => {
     if (
       tBTCDepositData &&
-      tBTCDepositData.btcDepositAddress !== btcDepositAddress
+      account &&
+      tBTCDepositData[account] &&
+      isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
+      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
     ) {
-      updateState("btcDepositAddress", tBTCDepositData.btcDepositAddress)
+      const {
+        btcDepositAddress,
+        ethAddress,
+        blindingFactor,
+        btcRecoveryAddress,
+        walletPublicKeyHash,
+        refundLocktime,
+      } = tBTCDepositData[account]
 
-      updateState("ethAddress", tBTCDepositData.ethAddress)
-      updateState("blindingFactor", tBTCDepositData.blindingFactor)
-      updateState("btcRecoveryAddress", tBTCDepositData.btcRecoveryAddress)
-      updateState("walletPublicKeyHash", tBTCDepositData.walletPublicKeyHash)
-      updateState("refundLocktime", tBTCDepositData.refundLocktime)
+      updateState("btcDepositAddress", btcDepositAddress)
+
+      updateState("ethAddress", ethAddress)
+      updateState("blindingFactor", blindingFactor)
+      updateState("btcRecoveryAddress", btcRecoveryAddress)
+      updateState("walletPublicKeyHash", walletPublicKeyHash)
+      updateState("refundLocktime", refundLocktime)
 
       updateState("mintingStep", MintingStep.Deposit)
     }
-  }, [])
+  }, [account])
+
   return (
     <Card {...props} minW="0">
       <Stack

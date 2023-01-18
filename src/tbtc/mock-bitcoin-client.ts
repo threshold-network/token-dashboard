@@ -97,11 +97,11 @@ export class MockBitcoinClient implements Client {
       address
     ) as UnspentTransactionOutput[]
 
-    const isDepositTransactionMocked = !utxos || utxos.length === 0
+    const isDepositTransactionMocked = utxos && utxos.length > 0
 
     // Mocks deposit transaction only once for specific deposit address
     if (
-      isDepositTransactionMocked &&
+      !isDepositTransactionMocked &&
       !this._isMockingDepositTransactionInProgress
     ) {
       const store = (await import("../store")).default
@@ -128,7 +128,6 @@ export class MockBitcoinClient implements Client {
       this.mockDepositTransaction(depositScriptParameters)
     }
 
-    console.log("reutrning utxos bro")
     return this._unspentTransactionOutputs.get(
       address
     ) as UnspentTransactionOutput[]
@@ -142,7 +141,7 @@ export class MockBitcoinClient implements Client {
     // method. This is why we embrace `_isMockingDepositTransactionInProgress`
     // flag
     this._isMockingDepositTransactionInProgress = true
-    await delay(30000)
+    await delay(5000)
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
       "testnet",
@@ -200,18 +199,16 @@ export class MockBitcoinClient implements Client {
     this._isMockingDepositTransactionInProgress = false
   }
 
-  getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
-    return new Promise<Transaction>((resolve, _) => {
-      resolve(this._transactions.get(transactionHash.toString()) as Transaction)
-    })
+  async getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
+    return this._transactions.get(transactionHash.toString()) as Transaction
   }
 
-  getRawTransaction(transactionHash: TransactionHash): Promise<RawTransaction> {
-    return new Promise<RawTransaction>((resolve, _) => {
-      resolve(
-        this._rawTransactions.get(transactionHash.toString()) as RawTransaction
-      )
-    })
+  async getRawTransaction(
+    transactionHash: TransactionHash
+  ): Promise<RawTransaction> {
+    return this._rawTransactions.get(
+      transactionHash.toString()
+    ) as RawTransaction
   }
 
   async getTransactionConfirmations(
@@ -220,31 +217,26 @@ export class MockBitcoinClient implements Client {
     return this._confirmations.get(transactionHash.toString()) as number
   }
 
-  latestBlockHeight(): Promise<number> {
-    return new Promise<number>((resolve, _) => {
-      resolve(this._latestHeight)
-    })
+  async latestBlockHeight(): Promise<number> {
+    return this._latestHeight
   }
 
-  getHeadersChain(blockHeight: number, chainLength: number): Promise<string> {
-    return new Promise<string>((resolve, _) => {
-      resolve(this._headersChain)
-    })
+  async getHeadersChain(
+    blockHeight: number,
+    chainLength: number
+  ): Promise<string> {
+    return this._headersChain
   }
 
-  getTransactionMerkle(
+  async getTransactionMerkle(
     transactionHash: TransactionHash,
     blockHeight: number
   ): Promise<TransactionMerkleBranch> {
-    return new Promise<TransactionMerkleBranch>((resolve, _) => {
-      resolve(this._transactionMerkle)
-    })
+    return this._transactionMerkle
   }
 
-  broadcast(transaction: RawTransaction): Promise<void> {
+  async broadcast(transaction: RawTransaction): Promise<void> {
     this._broadcastLog.push(transaction)
-    return new Promise<void>((resolve, _) => {
-      resolve()
-    })
+    return
   }
 }

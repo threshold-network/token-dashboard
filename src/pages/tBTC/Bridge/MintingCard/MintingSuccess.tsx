@@ -19,15 +19,24 @@ import TransactionDetailsTable from "../components/TransactionDetailsTable"
 import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
-const MintingSuccessComponent: FC = () => {
+const MintingSuccessComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
 
   const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
   const tbtcTokenAddress = useTBTCTokenAddress()
 
+  const onDismissButtonClick = () => {
+    onPreviousStepClick(MintingStep.ProvideData)
+  }
+
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.InitiateMinting} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle
         stepText="Success"
         subTitle="Your tBTC is on its way!"
@@ -55,7 +64,7 @@ const MintingSuccessComponent: FC = () => {
       </Stack>
       <TransactionDetailsTable />
 
-      <Button onClick={() => {}} isFullWidth mb={6} mt="10">
+      <Button onClick={onDismissButtonClick} isFullWidth mb={6} mt="10">
         Dismiss
       </Button>
     </>

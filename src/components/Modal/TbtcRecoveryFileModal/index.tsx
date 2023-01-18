@@ -42,7 +42,7 @@ const TbtcRecoveryFileModalModal: FC<
     closeModal()
   }
 
-  const handleDownloadClick = (data: DepositScriptParameters) => {
+  const handleDownloadClick = () => {
     const date = new Date()
     const fileName = `
     ${ethAddress}-
@@ -50,7 +50,7 @@ const TbtcRecoveryFileModalModal: FC<
     ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
     `
 
-    downloadFile(JSON.stringify(data), fileName, "text/json")
+    downloadFile(JSON.stringify(depositScriptParameters), fileName, "text/json")
 
     closeModal()
     updateState("mintingStep", MintingStep.Deposit)
@@ -105,9 +105,7 @@ const TbtcRecoveryFileModalModal: FC<
             Cancel
           </Button>
         )}
-        <Button onClick={() => handleDownloadClick(depositScriptParameters)}>
-          Download
-        </Button>
+        <Button onClick={handleDownloadClick}>Download</Button>
       </ModalFooter>
     </>
   )

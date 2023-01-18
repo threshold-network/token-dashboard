@@ -22,8 +22,6 @@ import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { useModal } from "../../../../hooks/useModal"
-import { ModalType } from "../../../../enums"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
@@ -40,14 +38,17 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   )
 }
 
-const MakeDepositComponent: FC = () => {
-  const { openModal } = useModal()
+const MakeDepositComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
   const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
     undefined
   )
+  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
+    useState(false)
 
   useEffect(() => {
     const findUtxos = async () => {
@@ -65,17 +66,25 @@ const MakeDepositComponent: FC = () => {
     return () => clearInterval(interval)
   }, [btcDepositAddress])
 
-  useEffect(() => {})
+  useEffect(() => {
+    const checkIfAnyUtxosAreNotRevealed = async () => {
+      if (!utxos) return
+
+      const deposits = await Promise.all(
+        utxos.map(threshold.tbtc.getRevealedDeposit)
+      )
+
+      setHasAnyUnrevealedDeposits(
+        deposits.some((deposit) => deposit.revealedAt === 0)
+      )
+    }
+    checkIfAnyUtxosAreNotRevealed()
+  }, [utxos?.length])
 
   const handleSubmit = async () => {
-    // TODO: Check if any of the utxo's is not revealed
-    if (utxos && utxos.length > 0) {
+    if (hasAnyUnrevealedDeposits) {
       updateState("mintingStep", MintingStep.InitiateMinting)
     }
-  }
-
-  const onPreviousStepClick = () => {
-    openModal(ModalType.GenerateNewDepositAddress)
   }
 
   return (
@@ -167,6 +176,8 @@ const MakeDepositComponent: FC = () => {
         ]}
       />
       <Button
+        isLoading={!hasAnyUnrevealedDeposits}
+        loadingText={"Checking if funds have been sent..."}
         onClick={handleSubmit}
         form="tbtc-minting-data-form"
         isDisabled={!utxos}
