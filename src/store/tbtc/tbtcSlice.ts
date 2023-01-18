@@ -9,7 +9,7 @@ import {
 } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
 import { FetchingState } from "../../types"
-import { BridgeTxHistory } from "../../threshold-ts/tbtc"
+import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import { fetchBridgeTxHitoryEffect } from "./effects"
@@ -82,6 +82,22 @@ export const tbtcSlice = createSlice({
     ) => {
       state.transactionsHistory.isFetching = false
       state.transactionsHistory.error = action.payload.error
+    },
+    depositRevealed: (
+      state,
+      action: PayloadAction<{
+        fundingTxHash: string
+        fundingOutputIndex: number
+        amount: string
+        depositor: string
+        txHash: string
+      }>
+    ) => {
+      const { amount, txHash } = action.payload
+      state.transactionsHistory.data = [
+        { amount, txHash, status: BridgeHistoryStatus.PENDING },
+        ...state.transactionsHistory.data,
+      ]
     },
   },
 })

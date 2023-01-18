@@ -3,6 +3,8 @@ import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
 import { useBridgeContract } from "./useBridgeContract"
+import { tbtcSlice } from "../../store/tbtc"
+import { BigNumber, Event } from "ethers"
 
 export const useSubscribeToDepositRevealedEvent = () => {
   const contract = useBridgeContract()
@@ -16,14 +18,26 @@ export const useSubscribeToDepositRevealedEvent = () => {
     async (
       fundingTxHash: string,
       fundingOutputIndex: number,
-      depositor: string
+      depositor: string,
+      amount: BigNumber,
+      blindingFactor: any,
+      walletPubKeyHash: string,
+      refundPubKeyHash: any,
+      refundLocktime: any,
+      vault: string,
+      event: Event
     ) => {
-      if (account && isSameETHAddress(depositor, account)) {
-        console.log("Deposit revealed!!")
-        console.log("FUNDING TX HASH: ", fundingTxHash)
-        console.log("FUNDING TX OUTPUT: ", fundingOutputIndex)
-        console.log("depositor", account)
-      }
+      if (!account || !isSameETHAddress(depositor, account)) return
+
+      dispatch(
+        tbtcSlice.actions.depositRevealed({
+          fundingOutputIndex,
+          fundingTxHash,
+          amount: amount.toString(),
+          txHash: event.transactionHash,
+          depositor: depositor,
+        })
+      )
     },
     [null, null, account]
   )
