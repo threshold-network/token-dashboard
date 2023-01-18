@@ -296,9 +296,7 @@ export class TBTC implements ITBTC {
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
     const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
-      ? BigNumber.from(amountToMint)
-          .div(optimisticMintingFeeDivisor[0])
-          .toString()
+      ? BigNumber.from(amountToMint).div(optimisticMintingFeeDivisor).toString()
       : "0"
 
     return {
