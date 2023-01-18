@@ -1,8 +1,8 @@
 import { useCallback } from "react"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { useRevealDepositTransaction } from "."
 
 export type RevealDepositSuccessTx = {
