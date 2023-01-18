@@ -117,7 +117,12 @@ export interface ITBTC {
    */
   getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
 
-  // TODO: figure out a better name?
+  /**
+   * Returns the bridge transaction history by depositor in order from the
+   * newest revealed deposit to the oldest.
+   * @param depositor Depositor Ethereum address.
+   * @returns Bridge transaction history @see {@link BridgeTxHistory}.
+   */
   bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
 }
 
