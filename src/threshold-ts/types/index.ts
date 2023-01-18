@@ -1,5 +1,5 @@
-import { Client } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { Credentials } from "@keep-network/tbtc-v2.ts/dist/electrum"
+import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { Credentials } from "@keep-network/tbtc-v2.ts/dist/src/electrum"
 import { providers, Signer } from "ethers"
 
 export enum BitcoinNetwork {
