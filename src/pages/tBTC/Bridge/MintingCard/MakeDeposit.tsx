@@ -22,7 +22,6 @@ import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { BigNumber } from "ethers"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
   address,
