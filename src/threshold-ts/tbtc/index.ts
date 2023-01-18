@@ -237,10 +237,11 @@ export class TBTC implements ITBTC {
       },
     ]
 
-    const [depositParams, optimisticMintingFeeDivisor] =
+    const [depositParams, _optimisticMintingFeeDivisor] =
       await this._multicall.aggregate(calls)
 
     const depositTreasuryFeeDivisor = depositParams.depositTreasuryFeeDivisor
+    const optimisticMintingFeeDivisor = _optimisticMintingFeeDivisor[0]
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
     const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
@@ -252,9 +253,7 @@ export class TBTC implements ITBTC {
       .toString()
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
-    const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor[0]).gt(
-      0
-    )
+    const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
       ? BigNumber.from(amountToMint)
           .div(optimisticMintingFeeDivisor[0])
           .toString()
