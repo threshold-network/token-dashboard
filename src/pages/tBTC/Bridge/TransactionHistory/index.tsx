@@ -21,7 +21,7 @@ import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 
-const txResultToBadgeProps: Record<
+const bridgeTxHistoryStatusToBadgeProps: Record<
   BridgeHistoryStatus,
   { colorScheme: string }
 > = {
@@ -38,7 +38,11 @@ const txResultToBadgeProps: Record<
 
 const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
   return (
-    <Badge variant="subtle" {...txResultToBadgeProps[status]} size="sm">
+    <Badge
+      variant="subtle"
+      {...bridgeTxHistoryStatusToBadgeProps[status]}
+      size="sm"
+    >
       {status}
     </Badge>
   )
