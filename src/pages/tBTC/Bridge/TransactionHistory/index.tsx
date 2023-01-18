@@ -48,11 +48,21 @@ const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
   )
 }
 
-export const TransactionHistory: FC<
-  ComponentProps<typeof Card> & {
-    data: { amount: string; status: BridgeHistoryStatus; txHash: string }[]
-  }
-> = ({ data, ...props }) => {
+export const TransactionHistoryCard: FC<ComponentProps<typeof Card>> = ({
+  children,
+  ...props
+}) => {
+  return (
+    <Card {...props} minH="530px">
+      <LabelSm mb="5">tx history</LabelSm>
+      {children}
+    </Card>
+  )
+}
+
+export const TransactionHistoryTable: FC<{
+  data: { amount: string; status: BridgeHistoryStatus; txHash: string }[]
+}> = ({ data }) => {
   const epmtyHistoryImg = useColorModeValue(
     emptyHistoryImageSrcLight,
     emptyHistoryImageSrcDark
@@ -61,9 +71,7 @@ export const TransactionHistory: FC<
   const isHistoryEmpty = data.length === 0
 
   return (
-    <Card {...props} minH="530px">
-      <LabelSm mb="5">tx history</LabelSm>
-
+    <>
       <Table>
         <Thead>
           <Tr color="gray.500">
@@ -121,7 +129,7 @@ export const TransactionHistory: FC<
           <BodyMd textAlign="center">You have no history yet.</BodyMd>
         </>
       )}
-    </Card>
+    </>
   )
 }
 

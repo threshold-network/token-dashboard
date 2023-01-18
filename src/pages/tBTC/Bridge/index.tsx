@@ -1,11 +1,14 @@
 import { useEffect } from "react"
-import { Grid, Box } from "@threshold-network/components"
+import { Grid, Box, Skeleton, Stack } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
 import { MintingCard } from "./MintingCard"
 import { UnmintingCard } from "./UnmintingCard"
-import { TransactionHistory } from "./TransactionHistory"
+import {
+  TransactionHistoryCard,
+  TransactionHistoryTable,
+} from "./TransactionHistory"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingType } from "../../../types/tbtc"
 import { useModal } from "../../../hooks/useModal"
@@ -29,6 +32,9 @@ const TBTCBridge: PageComponent = (props) => {
   const { hasUserResponded } = useTBTCTerms()
   const dispatch = useAppDispatch()
   const bridgeTransactionHistory = useAppSelector(selectBridgeTransacionHistory)
+  const isBridgeTxHistoryFetching = useAppSelector(
+    (state) => state.tbtc.transactionsHistory.isFetching
+  )
   const { account } = useWeb3React()
 
   useEffect(() => {
@@ -62,7 +68,17 @@ const TBTCBridge: PageComponent = (props) => {
       </Box>
       <Box gridArea="aside">
         <TbtcBalanceCard gridArea="balance-card" mb="5" />
-        <TransactionHistory data={bridgeTransactionHistory} />
+        <TransactionHistoryCard>
+          {isBridgeTxHistoryFetching ? (
+            <Stack>
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+              <Skeleton height="20px" />
+            </Stack>
+          ) : (
+            <TransactionHistoryTable data={bridgeTransactionHistory} />
+          )}
+        </TransactionHistoryCard>
       </Box>
     </Grid>
   )
