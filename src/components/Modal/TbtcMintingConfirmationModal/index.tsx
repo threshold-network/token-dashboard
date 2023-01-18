@@ -30,6 +30,7 @@ import {
   useRevealMultipleDepositsTransaction,
 } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
+import { formatTokenAmount } from "../../../utils/formatAmount"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -105,10 +106,12 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             You will initiate the minting of{" "}
             <Skeleton
               isLoaded={!!tBTCMintAmount}
-              w={!!tBTCMintAmount ? "105px" : undefined}
+              w={!tBTCMintAmount ? "105px" : undefined}
               display="inline-block"
             >
-              {tBTCMintAmount}
+              {!!tBTCMintAmount
+                ? formatTokenAmount(tBTCMintAmount, undefined, 8)
+                : "0"}
             </Skeleton>{" "}
             tBTC
           </H5>

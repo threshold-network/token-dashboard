@@ -1,7 +1,8 @@
-import { BodySm, Box, HStack } from "@threshold-network/components"
+import { BodySm, HStack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { Skeleton, Stack } from "@chakra-ui/react"
 import shortenAddress from "../../../../utils/shortenAddress"
+import { formatTokenAmount } from "../../../../utils/formatAmount"
 
 const TransactionDetailsTable = () => {
   const {
@@ -17,7 +18,12 @@ const TransactionDetailsTable = () => {
       <HStack justifyContent="space-between" alignItems="center">
         <BodySm color="gray.500">Minted Amount</BodySm>
         <Skeleton isLoaded={!!tBTCMintAmount}>
-          <BodySm color="gray.700">{tBTCMintAmount} tBTC</BodySm>
+          <BodySm color="gray.700">
+            {!!tBTCMintAmount
+              ? formatTokenAmount(tBTCMintAmount, undefined, 8)
+              : "0"}{" "}
+            tBTC
+          </BodySm>
         </Skeleton>
       </HStack>
       <HStack justifyContent="space-between" alignItems="center">
@@ -28,7 +34,10 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.500">Bitcoin Miner Fee</BodySm>
         <Skeleton isLoaded={!!bitcoinMinerFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
-            {bitcoinMinerFee} BTC
+            {!!bitcoinMinerFee // TODO: remove trailing zeroes
+              ? formatTokenAmount(bitcoinMinerFee, "00,0.000000", 8)
+              : "0"}{" "}
+            BTC
           </BodySm>
         </Skeleton>
       </HStack>
@@ -36,7 +45,10 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.500">Threshold Network Fee</BodySm>
         <Skeleton isLoaded={!!thresholdNetworkFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
-            {thresholdNetworkFee} BTC
+            {!!thresholdNetworkFee // TODO: remove trailing zeroes
+              ? formatTokenAmount(thresholdNetworkFee, "00,0.000000", 8)
+              : "0"}{" "}
+            BTC
           </BodySm>
         </Skeleton>
       </HStack>
