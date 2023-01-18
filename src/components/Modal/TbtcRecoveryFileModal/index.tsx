@@ -43,12 +43,9 @@ const TbtcRecoveryFileModalModal: FC<
   }
 
   const handleDownloadClick = () => {
-    const date = new Date()
-    const fileName = `
-    ${ethAddress}-
-    ${btcDepositAddress}-
-    ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}
-    `
+    const date = new Date().toISOString().split("T")[0]
+
+    const fileName = `${ethAddress}_${btcDepositAddress}_${date}`
 
     downloadFile(JSON.stringify(depositScriptParameters), fileName, "text/json")
 
