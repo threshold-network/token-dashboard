@@ -30,7 +30,7 @@ export const MintingTimelineStep1: FC<MintingTimelineStepProps> = ({
       description={
         <>
           Provide an ETH address and a BTC Recovery address to generate an
-          unique BTC deposit address. {/* TODO: set correct link here */}
+          unique BTC deposit address.
           <Link isExternal href={ExternalHref.btcRecoveryAddress}>
             Read more
           </Link>
