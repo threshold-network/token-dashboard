@@ -6,13 +6,13 @@ import {
   TransactionHash,
   TransactionMerkleBranch,
   UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   assembleDepositTransaction,
   calculateDepositAddress,
   Deposit,
   DepositScriptParameters,
-} from "@keep-network/tbtc-v2.ts/dist/deposit"
+} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { BigNumber } from "ethers"
 import { unprefixedAndUncheckedAddress } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
