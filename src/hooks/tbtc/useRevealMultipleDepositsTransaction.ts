@@ -29,10 +29,10 @@ export const useRevealMultipleDepositsTransaction = (
 
         const successfullTxs: RevealDepositSuccessTx[] = []
         for (const utxo of utxos) {
-          const tx = await sendTransaction(utxo, depositScriptParameters)
-          if (tx) {
+          const receipt = await sendTransaction(utxo, depositScriptParameters)
+          if (receipt) {
             successfullTxs.push({
-              txHash: tx.transactionHash,
+              txHash: receipt.transactionHash,
               amount: utxo.value.toString(),
             })
           }

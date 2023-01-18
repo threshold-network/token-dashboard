@@ -23,6 +23,7 @@ import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
 import { TransactionReceipt } from "@ethersproject/providers"
+import { OnSuccessCallback } from "../../../web3/hooks"
 
 const UnstakeTModal: FC<
   BaseModalProps & {
@@ -39,14 +40,15 @@ const UnstakeTModal: FC<
       ? stake.keepInTStake
       : amountToUnstake
 
-  const onSuccess = useCallback(
-    (tx: TransactionReceipt) =>
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt: TransactionReceipt) => {
       openModal(ModalType.UnstakeSuccess, {
-        transactionHash: tx.transactionHash,
+        transactionHash: receipt.transactionHash,
         stake,
         unstakeAmount: _amountToUnstake,
         unstakeType,
-      }),
+      })
+    },
     [amountToUnstake, stake, openModal, unstakeType]
   )
   const { unstake } = useUnstakeTransaction(unstakeType, onSuccess)

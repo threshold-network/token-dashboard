@@ -17,16 +17,17 @@ import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
 import ModalCloseButton from "../ModalCloseButton"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
 
   // stake transaction, opens success modal on success callback
-  const { stake } = useStakeTransaction((tx) =>
+  const { stake } = useStakeTransaction((receipt: TransactionReceipt) => {
     openModal(ModalType.StakeSuccess, {
-      transactionHash: tx.transactionHash,
+      transactionHash: receipt.transactionHash,
     })
-  )
+  })
 
   const { stakingProvider, beneficiary, authorizer, stakeAmount } =
     useStakingState()

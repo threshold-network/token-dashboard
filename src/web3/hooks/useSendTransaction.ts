@@ -10,12 +10,18 @@ export type ContractTransactionFunction =
   | Promise<ContractTransaction>
   | Promise<string>
 
+export type OnSuccessCallback = (
+  receipt: TransactionReceipt
+) => void | Promise<void>
+
+export type OnErrorCallback = (error: any) => void | Promise<void>
+
 export const useSendTransactionFromFn = <
   F extends (...args: never[]) => ContractTransactionFunction
 >(
   fn: F,
-  onSuccess?: (tx: TransactionReceipt) => void | Promise<void>,
-  onError?: (error: any) => void | Promise<void>
+  onSuccess?: OnSuccessCallback,
+  onError?: OnErrorCallback
 ) => {
   const { account, library } = useWeb3React()
   const { openModal } = useModal()
@@ -34,7 +40,6 @@ export const useSendTransactionFromFn = <
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = await fn(...args)
-        let returnedTransaction: ContractTransaction
 
         const txHash = typeof tx === "string" ? tx : tx.hash
         openModal(ModalType.TransactionIsPending, {

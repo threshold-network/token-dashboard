@@ -24,6 +24,7 @@ import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
 import ModalCloseButton from "../ModalCloseButton"
+import { OnSuccessCallback } from "../../../web3/hooks"
 
 export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
@@ -38,10 +39,10 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   closeModal,
 }) => {
   const { openModal } = useModal()
-  const onSuccess = useCallback(
-    (tx: TransactionReceipt) => {
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt: TransactionReceipt) => {
       openModal(ModalType.IncreaseAuthorizationSuccess, {
-        txHash: tx.transactionHash,
+        txHash: receipt.transactionHash,
         stakingProvider,
         increaseAmount,
       })

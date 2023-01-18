@@ -24,12 +24,12 @@ import { useStakingState } from "../../../hooks/useStakingState"
 import { ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
-import StakingStats from "../../StakingStats"
 import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplicateProviderAddress"
 import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
+import { TransactionReceipt } from "@ethersproject/providers"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -43,14 +43,14 @@ const ConfirmStakingParamsModal: FC<
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
-  const { stake } = useStakeTransaction((tx) => {
+  const { stake } = useStakeTransaction((receipt: TransactionReceipt) => {
     if (featureFlags.MULTI_APP_STAKING) {
       openModal(ModalType.StakeSuccess, {
-        transactionHash: tx.transactionHash,
+        transactionHash: receipt.transactionHash,
       })
     } else {
       openModal(ModalType.StakeSuccessOLD, {
-        transactionHash: tx.transactionHash,
+        transactionHash: receipt.transactionHash,
       })
     }
   })

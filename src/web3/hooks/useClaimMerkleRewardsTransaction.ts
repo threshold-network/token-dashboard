@@ -1,12 +1,11 @@
 import { useCallback } from "react"
-import { TransactionReceipt } from "@ethersproject/providers"
 import { useMerkleDropContract } from "./useMerkleDropContract"
 import rewardsData from "../../merkle-drop/rewards.json"
-import { useSendTransaction } from "./useSendTransaction"
+import { OnSuccessCallback, useSendTransaction } from "./useSendTransaction"
 import { RewardsJSONData } from "../../types"
 
 export const useClaimMerkleRewardsTransaction = (
-  onSuccess?: (tx: TransactionReceipt) => void
+  onSuccess?: OnSuccessCallback
 ) => {
   const merkleDropContract = useMerkleDropContract()
   const { sendTransaction, status } = useSendTransaction(

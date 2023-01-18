@@ -1,6 +1,5 @@
 import { useCallback } from "react"
-import { TransactionReceipt } from "@ethersproject/providers"
-import { useSendTransaction } from "./useSendTransaction"
+import { OnSuccessCallback, useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
 import { useApproveTStaking } from "./useApproveTStaking"
 import { BigNumber } from "ethers"
@@ -19,7 +18,7 @@ const topUpTypeToContractFunctionName: Record<TopUpType, string> = {
 
 export const useTopupTransaction = (
   type: TopUpType,
-  onSuccess: (tx: TransactionReceipt) => void
+  onSuccess: OnSuccessCallback
 ) => {
   const stakingContract = useTStakingContract()
   const { approve } = useApproveTStaking()

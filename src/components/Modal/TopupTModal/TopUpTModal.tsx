@@ -21,6 +21,7 @@ import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
 import { TransactionReceipt } from "@ethersproject/providers"
+import { OnSuccessCallback } from "../../../web3/hooks"
 
 const TopupTModal: FC<
   BaseModalProps & {
@@ -31,10 +32,10 @@ const TopupTModal: FC<
 > = ({ stake, amountTopUp, topUpType }) => {
   const { closeModal, openModal } = useModal()
 
-  const onSuccess = useCallback(
-    (tx: TransactionReceipt) => {
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt: TransactionReceipt) => {
       openModal(ModalType.TopupTSuccess, {
-        transactionHash: tx.transactionHash,
+        transactionHash: receipt.transactionHash,
         stakeAmount: amountTopUp,
         stake,
       })

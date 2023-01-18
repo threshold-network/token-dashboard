@@ -23,6 +23,7 @@ import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
+import { OnSuccessCallback } from "../../../web3/hooks"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -68,12 +69,12 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   const dispatch = useAppDispatch()
 
   const { openModal } = useModal()
-  const onSuccess = useCallback(
-    (tx: TransactionReceipt) => {
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt: TransactionReceipt) => {
       openModal(ModalType.MapOperatorToStakingProviderSuccess, {
         transactions: [
           {
-            txHash: tx,
+            txHash: receipt.transactionHash,
             application: {
               appName: isOperatorMappedOnlyInRandomBeacon
                 ? "tbtc"
