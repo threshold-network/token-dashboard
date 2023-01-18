@@ -1,4 +1,3 @@
-import { providers, Signer, VoidSigner } from "ethers"
 import { MultiAppStaking } from "./mas"
 import { IMulticall, Multicall } from "./multicall"
 import { IStaking, Staking } from "./staking"
