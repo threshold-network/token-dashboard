@@ -8,7 +8,7 @@ import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const InitiateMintingComponent: FC<{
   utxos: UnspentTransactionOutput[] | undefined

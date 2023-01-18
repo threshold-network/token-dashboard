@@ -13,7 +13,7 @@ import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
