@@ -140,7 +140,7 @@ jobs:
             @keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
-            @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }}
+            @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }} \
             @keep-network/tbtc-v2.ts@development
 
       - name: Run postinstall script
