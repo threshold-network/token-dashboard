@@ -19,12 +19,12 @@ import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   RevealDepositSuccessTx,
   useRevealMultipleDepositsTransaction,

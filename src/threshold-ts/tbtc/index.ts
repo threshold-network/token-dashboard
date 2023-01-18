@@ -5,7 +5,7 @@ import {
   revealDeposit as tBTCRevealDeposit,
   getRevealedDeposit as tBTCgetRevealedDeposit,
   RevealedDeposit,
-} from "@keep-network/tbtc-v2.ts/dist/deposit"
+} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import {
@@ -19,8 +19,11 @@ import {
   computeHash160,
   decodeBitcoinAddress,
   UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  ElectrumClient,
+  EthereumBridge,
+} from "@keep-network/tbtc-v2.ts/dist/src"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "../../../node_modules/@keep-network/tbtc-v2/artifacts/TBTCVault.json"
