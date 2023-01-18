@@ -7,8 +7,7 @@ import {
   Stack,
 } from "@chakra-ui/react"
 import chainIdToNetworkName from "../../../../utils/chainIdToNetworkName"
-import { getEnvVariable } from "../../../../utils/getEnvVariable"
-import { EnvVariable } from "../../../../enums"
+import { supportedChainId } from "../../../../utils/getEnvVariable"
 
 const IncorrectNetworkAlert: FC = () => {
   return (
@@ -17,8 +16,7 @@ const IncorrectNetworkAlert: FC = () => {
       <Stack>
         <AlertTitle>Incorrect Network</AlertTitle>
         <AlertDescription mt={2}>
-          Please connect to{" "}
-          {chainIdToNetworkName(getEnvVariable(EnvVariable.SupportedChainId))}
+          Please connect to {chainIdToNetworkName(supportedChainId)}
         </AlertDescription>
       </Stack>
     </Alert>
