@@ -11,30 +11,19 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
 
 const MintingFlowRouterBase = () => {
+  const { openModal } = useModal()
   const { mintingStep, updateState } = useTbtcState()
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (previousStep === MintingStep.ProvideData) {
-      clearDepositData()
+      openModal(ModalType.GenerateNewDepositAddress)
+      return
     }
     updateState("mintingStep", previousStep)
-  }
-
-  const clearDepositData = () => {
-    removeDepositDataFromLocalStorage()
-
-    // remove deposit data from the state,
-    updateState("ethAddress", undefined)
-    updateState("blindingFactor", undefined)
-    updateState("btcRecoveryAddress", undefined)
-    updateState("walletPublicKeyHash", undefined)
-    updateState("refundLocktime", undefined)
-    updateState("btcDepositAddress", undefined)
   }
 
   switch (mintingStep) {

@@ -1,28 +1,30 @@
-import { Container, Image } from "@chakra-ui/react"
+import { H1, Container, Image } from "@threshold-network/components"
 import { Outlet } from "react-router-dom"
 import thresholdWordMark from "../../static/images/thresholdWordMark.svg"
-import { H1 } from "@threshold-network/components"
 import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
 import { PageComponent } from "../../types"
-import { AuthorizeApplicationsBanner } from "./AuthorizeApplicationsBanner"
 import { featureFlags } from "../../constants"
-import AnalyticsBanner from "./AnalyticsBanner"
-import { useAnalytics } from "../../hooks/useAnalytics"
+import AnnouncementBanner from "../../components/AnnouncementBanner"
+import tbtcAppBannerIllustration from "../../static/images/tBTCAppBanner.svg"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
-
-  const { isAnalyticsEnabled, hasUserResponded } = useAnalytics()
 
   return (
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      {featureFlags.FEEDBACK_MODULE &&
-        !isAnalyticsEnabled &&
-        !hasUserResponded && <AnalyticsBanner />}
-      {featureFlags.MULTI_APP_STAKING && <AuthorizeApplicationsBanner />}
+      {featureFlags.TBTC_V2 && (
+        <AnnouncementBanner
+          variant="primary"
+          imgSrc={tbtcAppBannerIllustration}
+          preTitle="get started"
+          title="The NEW tBTC dApp is here!"
+          href="/tBTC"
+          buttonText="Start Minting"
+        />
+      )}
       <Outlet />
     </Container>
   )

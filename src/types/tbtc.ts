@@ -76,5 +76,6 @@ export interface UseTbtcState {
     thresholdNetworkFee: number
     bitcoinMinerFee: number
     isLoadingBitcoinMinerFee: boolean
+    resetDepositData: () => void
   }
 }
