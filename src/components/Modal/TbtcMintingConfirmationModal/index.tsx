@@ -22,7 +22,10 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
 import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import { decodeBitcoinAddress } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { useRevealMultipleDepositsTransaction } from "../../../hooks/tbtc"
+import {
+  RevealDepositSuccessTx,
+  useRevealMultipleDepositsTransaction,
+} from "../../../hooks/tbtc"
 
 const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   const {
@@ -39,7 +42,14 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction()
+  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
+    updateState("mintingStep", MintingStep.MintingSuccess)
+    closeModal()
+  }
+
+  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+    onSuccessfulDepositReveal
+  )
 
   const initiateMintTransaction = async () => {
     const depositScriptParameters: DepositScriptParameters = {
@@ -59,11 +69,6 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       utxos,
       depositScriptParameters
     )
-
-    if (successfulTransactions && successfulTransactions.length > 0) {
-      updateState("mintingStep", MintingStep.MintingSuccess)
-      closeModal()
-    }
   }
 
   // TODO: this is just to mock the loading state for the UI

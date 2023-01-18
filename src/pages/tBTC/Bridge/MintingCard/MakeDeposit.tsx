@@ -68,15 +68,15 @@ const MakeDepositComponent: FC<{
 
   useEffect(() => {
     const checkIfAnyUtxosAreNotRevealed = async () => {
-      if (utxos && utxos.length > 0) {
-        for (const utxo of utxos) {
-          const revealedDeposit = await threshold.tbtc.getRevealedDeposit(utxo)
-          if (revealedDeposit.revealedAt === 0) {
-            setHasAnyUnrevealedDeposits(true)
-            break
-          }
-        }
-      }
+      if (!utxos) return
+
+      const deposits = await Promise.all(
+        utxos.map(threshold.tbtc.getRevealedDeposit)
+      )
+
+      setHasAnyUnrevealedDeposits(
+        deposits.some((deposit) => deposit.revealedAt === 0)
+      )
     }
     checkIfAnyUtxosAreNotRevealed()
   }, [utxos?.length])
@@ -161,7 +161,7 @@ const MakeDepositComponent: FC<{
       />
       <Button
         isLoading={!hasAnyUnrevealedDeposits}
-        loadingText={"Checking if funds have been sent"}
+        loadingText={"Checking if funds have been sent..."}
         onClick={handleSubmit}
         form="tbtc-minting-data-form"
         isDisabled={!utxos}
