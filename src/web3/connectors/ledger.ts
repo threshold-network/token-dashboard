@@ -16,7 +16,7 @@ import {
 } from "@0x/subproviders/lib/src/types"
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider"
 import { EnvVariable } from "../../enums"
-import { getEnvVariable } from "../../utils/getEnvVariable"
+import { supportedChainId, getEnvVariable } from "../../utils/getEnvVariable"
 
 interface LedgerConnectorArguments {
   chainId: number
@@ -119,7 +119,7 @@ export class LedgerConnector extends AbstractConnector {
   }
 }
 
-const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
+const chainId = +supportedChainId
 const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
 export const ledgerLiveConnectorFactory = () => {

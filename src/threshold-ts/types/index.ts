@@ -13,6 +13,8 @@ export interface EthereumConfig {
   account?: string
 }
 
+export type BitcoinClientCredentials = Credentials
+
 export interface BitcoinConfig {
   /**
    * Indicates for which network the addresses (eg deposit address) should be
@@ -29,7 +31,7 @@ export interface BitcoinConfig {
   /**
    * Credentials for electrum client
    */
-  credentials?: Credentials
+  credentials?: BitcoinClientCredentials
 }
 
 export interface ThresholdConfig {
