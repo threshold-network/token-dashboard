@@ -1,6 +1,6 @@
-import { FC, Ref, useRef } from "react"
+import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Button, BodyMd, H5 } from "@threshold-network/components"
+import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -17,6 +17,7 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 export interface FormValues {
   ethAddress: string
@@ -69,7 +70,6 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   validate: async (values) => {
     const errors: FormikErrors<FormValues> = {}
     errors.ethAddress = validateETHAddress(values.ethAddress)
-    // TODO: check network
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
       values.bitcoinNetwork as any
@@ -82,19 +82,19 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   displayName: "MintingProcessForm",
 })(MintingProcessFormBase)
 
-export const ProvideData: FC = () => {
-  const { updateState, ethAddress, btcRecoveryAddress } = useTbtcState()
+export const ProvideDataComponent: FC<{
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ onPreviousStepClick }) => {
+  const { updateState } = useTbtcState()
+  const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
-  const { account, active } = useWeb3React()
+  const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
 
-  if (!active || !account) {
-    return <H5 align={"center"}>Wallet not connected</H5>
-  }
-
   const onSubmit = async (values: FormValues) => {
+    setSubmitButtonLoading(true)
     const depositScriptParameters =
       await threshold.tbtc.createDepositScriptParameters(
         values.ethAddress,
@@ -118,7 +118,6 @@ export const ProvideData: FC = () => {
     // create a new deposit address,
     updateState("btcDepositAddress", depositAddress)
 
-    console.log("setting broooo!!!!!!!!")
     setDepositDataInLocalStorage({
       ethAddress: values.ethAddress,
       blindingFactor: depositScriptParameters.blindingFactor,
@@ -139,7 +138,7 @@ export const ProvideData: FC = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle />
+      <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
       <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
       <BodyMd color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you an unique
@@ -148,14 +147,22 @@ export const ProvideData: FC = () => {
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={account}
-        btcRecoveryAddress={"tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"}
+        initialEthAddress={account!}
+        btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
-      <Button type="submit" form="tbtc-minting-data-form" isFullWidth>
+      <Button
+        isLoading={isSubmitButtonLoading}
+        loadingText={"Generating deposit address..."}
+        type="submit"
+        form="tbtc-minting-data-form"
+        isFullWidth
+      >
         Generate Deposit Address
       </Button>
     </>
   )
 }
+
+export const ProvideData = withOnlyConnectedWallet(ProvideDataComponent)

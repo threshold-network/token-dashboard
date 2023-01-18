@@ -7,7 +7,6 @@ import {
   Image,
   LabelSm,
   Table,
-  TableContainer,
   Tbody,
   Td,
   Th,
@@ -15,84 +14,72 @@ import {
   Tr,
   useColorModeValue,
 } from "@threshold-network/components"
-import { TbtcTransactionResult } from "../../../../types/tbtc"
+import { BridgeHistoryStatus } from "../../../../threshold-ts/tbtc"
 import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
+import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { formatTokenAmount } from "../../../../utils/formatAmount"
 
-const txResultToBadgeProps: Record<
-  TbtcTransactionResult,
+const bridgeTxHistoryStatusToBadgeProps: Record<
+  BridgeHistoryStatus,
   { colorScheme: string }
 > = {
-  [TbtcTransactionResult.MINTED]: {
+  [BridgeHistoryStatus.MINTED]: {
     colorScheme: "green",
   },
-  [TbtcTransactionResult.UNMINTED]: {
-    colorScheme: "green",
-  },
-  [TbtcTransactionResult.PENDING]: {
+  [BridgeHistoryStatus.PENDING]: {
     colorScheme: "yellow",
   },
-  [TbtcTransactionResult.ERROR]: {
+  [BridgeHistoryStatus.ERROR]: {
     colorScheme: "red",
   },
 }
 
-const TbtcActionBadge: FC<{ result: TbtcTransactionResult }> = ({ result }) => {
+const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
   return (
-    <Badge variant="subtle" {...txResultToBadgeProps[result]} size="sm">
-      {result}
+    <Badge
+      variant="subtle"
+      {...bridgeTxHistoryStatusToBadgeProps[status]}
+      size="sm"
+    >
+      {status}
     </Badge>
   )
 }
 
-export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
+export const TransactionHistoryCard: FC<ComponentProps<typeof Card>> = ({
+  children,
   ...props
 }) => {
+  return (
+    <Card {...props} minH="530px">
+      <LabelSm mb="5">tx history</LabelSm>
+      {children}
+    </Card>
+  )
+}
+
+export const TransactionHistoryTable: FC<{
+  data: { amount: string; status: BridgeHistoryStatus; txHash: string }[]
+}> = ({ data }) => {
   const epmtyHistoryImg = useColorModeValue(
     emptyHistoryImageSrcLight,
     emptyHistoryImageSrcDark
   )
-  const history: {
-    amount: number
-    action: TbtcTransactionResult
-  }[] = [
-    // {
-    //   amount: 0.4,
-    //   action: TbtcTransactionResult.PENDING,
-    // },
-    // {
-    //   amount: 1.2,
-    //   action: TbtcTransactionResult.UNMINTED,
-    // },
-    // {
-    //   amount: 15,
-    //   action: TbtcTransactionResult.ERROR,
-    // },
-    // {
-    //   amount: 13.54,
-    //   action: TbtcTransactionResult.MINTED,
-    // },
-    // {
-    //   amount: 23.45,
-    //   action: TbtcTransactionResult.MINTED,
-    // },
-    // {
-    //   amount: 11.2,
-    //   action: TbtcTransactionResult.MINTED,
-    // },
-  ]
 
-  const isHistoryEmpty = history.length === 0
+  const isHistoryEmpty = data.length === 0
 
   return (
-    <Card {...props} minH="530px">
-      <LabelSm mb="5">tx history</LabelSm>
-
+    <>
       <Table>
         <Thead>
           <Tr color="gray.500">
             <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
               TBTC
+            </LabelSm>
+            <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
+              TX
             </LabelSm>
             <LabelSm
               as={Th}
@@ -100,7 +87,7 @@ export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
               paddingInlineStart="2"
               paddingInlineEnd="2"
             >
-              Action
+              STATE
             </LabelSm>
           </Tr>
         </Thead>
@@ -108,13 +95,21 @@ export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
           {isHistoryEmpty ? (
             <EmptyHistoryTableBody />
           ) : (
-            history.map((tx, index) => (
-              <Tr key={index}>
+            data.map((_) => (
+              <Tr key={_.txHash}>
                 <Td py={4} px={2}>
-                  {tx.amount}
+                  {formatTokenAmount(_.amount, undefined, 8)}
                 </Td>
-                <Td py={4} px={2} isNumeric>
-                  <TbtcActionBadge result={tx.action} />
+                <Td py={4} px={2}>
+                  <ViewInBlockExplorer
+                    id={_.txHash}
+                    type={ExplorerDataType.TRANSACTION}
+                    isTruncated
+                    text={`${_.txHash.slice(0, 4)}...`}
+                  />
+                </Td>
+                <Td py={4} px={2}>
+                  <TbtcActionBadge status={_.status} />
                 </Td>
               </Tr>
             ))
@@ -134,7 +129,7 @@ export const TransactionHistory: FC<ComponentProps<typeof Card>> = ({
           <BodyMd textAlign="center">You have no history yet.</BodyMd>
         </>
       )}
-    </Card>
+    </>
   )
 }
 
@@ -143,7 +138,8 @@ const EmptyRow = () => (
     <Td py={4} px={2}>
       -.--
     </Td>
-    <Td py={4} px={2} isNumeric></Td>
+    <Td py={4} px={2} />
+    <Td py={4} px={2} />
   </Tr>
 )
 

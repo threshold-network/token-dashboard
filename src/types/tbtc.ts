@@ -78,10 +78,3 @@ export interface UseTbtcState {
     isLoadingBitcoinMinerFee: boolean
   }
 }
-
-export enum TbtcTransactionResult {
-  PENDING = "PENDING",
-  UNMINTED = "UNMINTED",
-  ERROR = "ERROR",
-  MINTED = "MINTED",
-}

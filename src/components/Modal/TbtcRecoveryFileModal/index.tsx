@@ -17,7 +17,7 @@ import withBaseModal from "../withBaseModal"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/deposit"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
 import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
@@ -37,9 +37,9 @@ const TbtcRecoveryFileModalModal: FC<
     closeModal()
   }
 
-  const handleDownloadClick = (data: DepositScriptParameters) => {
+  const handleDownloadClick = () => {
     downloadFile(
-      JSON.stringify(data),
+      JSON.stringify(depositScriptParameters),
       "deposit-script-parameters.json",
       "text/json"
     )
@@ -99,9 +99,7 @@ const TbtcRecoveryFileModalModal: FC<
             Cancel
           </Button>
         )}
-        <Button onClick={() => handleDownloadClick(depositScriptParameters)}>
-          Download
-        </Button>
+        <Button onClick={handleDownloadClick}>Download</Button>
       </ModalFooter>
     </>
   )

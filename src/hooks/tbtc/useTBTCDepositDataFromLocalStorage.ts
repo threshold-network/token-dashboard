@@ -1,7 +1,7 @@
-import { deleteFromStorage } from "@rehooks/local-storage"
+import { useWeb3React } from "@web3-react/core"
 import { useLocalStorage } from "../useLocalStorage"
 
-export type TBTCDepositDataLocalStorage = {
+export type TBTCDepositData = {
   ethAddress: string
   blindingFactor: string
   btcRecoveryAddress: string
@@ -10,19 +10,32 @@ export type TBTCDepositDataLocalStorage = {
   btcDepositAddress: string
 }
 
-export const useTBTCDepositDataFromLocalStorage = () => {
-  const [tBTCDepositData, setTBTCDepositData] = useLocalStorage<
-    TBTCDepositDataLocalStorage | undefined
-  >("tBTCDepositData", undefined)
+export type TBTCLocalStorageDepositData = {
+  [address: string]: TBTCDepositData
+}
 
-  const setDepositDataInLocalStorage = (
-    depositData: TBTCDepositDataLocalStorage
-  ) => {
-    setTBTCDepositData(depositData)
+export const useTBTCDepositDataFromLocalStorage = () => {
+  const { account } = useWeb3React()
+
+  const [tBTCDepositData, setTBTCDepositData] =
+    useLocalStorage<TBTCLocalStorageDepositData>(`tBTCDepositData`, {})
+
+  const setDepositDataInLocalStorage = (depositData: TBTCDepositData) => {
+    if (account) {
+      const newLocalStorageData = {
+        ...tBTCDepositData,
+        [account]: depositData,
+      }
+      setTBTCDepositData(newLocalStorageData)
+    }
   }
 
   const removeDepositDataFromLocalStorage = () => {
-    deleteFromStorage("tBTCDepositData")
+    const newLocalStorageData = {
+      ...tBTCDepositData,
+    }
+    delete newLocalStorageData[`${account}`]
+    setTBTCDepositData(newLocalStorageData)
   }
 
   return {
