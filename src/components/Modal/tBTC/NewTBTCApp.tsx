@@ -11,7 +11,6 @@ import {
   Flex,
   Image,
 } from "@threshold-network/components"
-import ModalCloseButton from "../ModalCloseButton"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
@@ -24,7 +23,6 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   return (
     <>
       <ModalHeader>Take note</ModalHeader>
-      <ModalCloseButton />
       <ModalBody>
         <Image
           src={tbtcAppBannerIllustration}

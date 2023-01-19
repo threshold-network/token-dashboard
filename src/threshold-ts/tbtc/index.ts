@@ -5,7 +5,7 @@ import {
   revealDeposit as tBTCRevealDeposit,
   getRevealedDeposit as tBTCgetRevealedDeposit,
   RevealedDeposit,
-} from "@keep-network/tbtc-v2.ts/dist/deposit"
+} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import {
@@ -13,18 +13,47 @@ import {
   getProviderOrSigner,
   isValidBtcAddress,
   unprefixedAndUncheckedAddress,
+  getContractPastEvents,
 } from "../utils"
 import {
   Client,
   computeHash160,
   decodeBitcoinAddress,
+  TransactionHash,
   UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/bitcoin"
-import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  ElectrumClient,
+  EthereumBridge,
+} from "@keep-network/tbtc-v2.ts/dist/src"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
-import TBTCVault from "../../../node_modules/@keep-network/tbtc-v2/artifacts/TBTCVault.json"
-import { Contract } from "ethers"
+import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
+import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
+import { BigNumber, Contract } from "ethers"
+import { ContractCall, IMulticall } from "../multicall"
+import { Interface } from "ethers/lib/utils"
+
+export enum BridgeHistoryStatus {
+  PENDING = "PENDING",
+  MINTED = "MINTED",
+  ERROR = "ERROR",
+}
+
+export interface BridgeTxHistory {
+  status: BridgeHistoryStatus
+  txHash: string
+  amount: string
+}
+
+interface RevealedDepositEvent {
+  amount: string
+  walletPublicKeyHash: string
+  fundingTxHash: string
+  fundingOutputIndex: string
+  depositKey: string
+  txHash: string
+}
 
 export interface ITBTC {
   /**
@@ -76,6 +105,16 @@ export interface ITBTC {
   ): Promise<UnspentTransactionOutput[]>
 
   /**
+   * Gets estimated fees that will be payed during a reveal
+   * @param depositAmount - summed amount of all utxos that will be revealed
+   * @returns treasury fee and optitimistic mint fee
+   */
+  getEstimatedFees(depositAmount: string): Promise<{
+    treasuryFee: string
+    optimisticMintFee: string
+  }>
+
+  /**
    * Reveals the given deposit to the on-chain Bridge contract.
    * @param utxo Deposit UTXO of the revealed deposit
    * @param depositScriptParameters Deposit script parameters. You can get them
@@ -92,12 +131,22 @@ export interface ITBTC {
    * @returns Revealed deposit data.
    */
   getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
+
+  /**
+   * Returns the bridge transaction history by depositor in order from the
+   * newest revealed deposit to the oldest.
+   * @param depositor Depositor Ethereum address.
+   * @returns Bridge transaction history @see {@link BridgeTxHistory}.
+   */
+  bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
 }
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
   private _tbtcVault: Contract
   private _bitcoinClient: Client
+  private _multicall: IMulticall
+  private _bridgeContract: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -114,7 +163,11 @@ export class TBTC implements ITBTC {
     mainnet: "main",
   }
 
-  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
+  constructor(
+    ethereumConfig: EthereumConfig,
+    bitcoinConfig: BitcoinConfig,
+    multicall: IMulticall
+  ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -133,8 +186,15 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
+    this._bridgeContract = getContract(
+      Bridge.address,
+      Bridge.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
     this._bitcoinClient =
       bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
+    this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
   }
 
@@ -203,6 +263,48 @@ export class TBTC implements ITBTC {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
   }
 
+  getEstimatedFees = async (depositAmount: string) => {
+    const calls: ContractCall[] = [
+      {
+        interface: new Interface(BridgeArtifact.abi),
+        address: BridgeArtifact.address,
+        method: "depositParameters",
+        args: [],
+      },
+      {
+        interface: this._tbtcVault.interface,
+        address: this._tbtcVault.address,
+        method: "optimisticMintingFeeDivisor",
+        args: [],
+      },
+    ]
+
+    const [depositParams, _optimisticMintingFeeDivisor] =
+      await this._multicall.aggregate(calls)
+
+    const depositTreasuryFeeDivisor = depositParams.depositTreasuryFeeDivisor
+    const optimisticMintingFeeDivisor = _optimisticMintingFeeDivisor[0]
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
+    const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
+      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor).toString()
+      : "0"
+
+    const amountToMint = BigNumber.from(depositAmount)
+      .sub(treasuryFee)
+      .toString()
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
+    const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
+      ? BigNumber.from(amountToMint).div(optimisticMintingFeeDivisor).toString()
+      : "0"
+
+    return {
+      treasuryFee,
+      optimisticMintFee,
+    }
+  }
+
   revealDeposit = async (
     utxo: UnspentTransactionOutput,
     depositScriptParameters: DepositScriptParameters
@@ -222,5 +324,92 @@ export class TBTC implements ITBTC {
     utxo: UnspentTransactionOutput
   ): Promise<RevealedDeposit> => {
     return await tBTCgetRevealedDeposit(utxo, this._bridge)
+  }
+
+  bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
+    // We can assume that all revealed deposits have `PENDING` status.
+    const revealedDeposits = await this._findAllRevealedDeposits(depositor)
+    const depositKeys = revealedDeposits.map((_) => _.depositKey)
+
+    const mintedDeposits = new Map(
+      (await this._findAllMintedDeposits(depositor, depositKeys)).map((_) => [
+        _.args?.depositKey,
+        { txHash: _.transactionHash },
+      ])
+    )
+
+    const cancelledDeposits = new Map(
+      (await this._findAllCancelledDeposits(depositKeys)).map((_) => [
+        _.args?.depositKey,
+        { txHash: _.transactionHash },
+      ])
+    )
+
+    return revealedDeposits.map((deposit) => {
+      const { depositKey, amount, txHash: depositTxHash } = deposit
+      let status = BridgeHistoryStatus.PENDING
+      let txHash = depositTxHash
+      if (mintedDeposits.has(depositKey)) {
+        status = BridgeHistoryStatus.MINTED
+        txHash = mintedDeposits.get(depositKey)?.txHash!
+      } else if (cancelledDeposits.has(depositKey)) {
+        status = BridgeHistoryStatus.ERROR
+        txHash = cancelledDeposits.get(depositKey)?.txHash!
+      }
+
+      return { amount, txHash, status }
+    })
+  }
+
+  private _findAllRevealedDeposits = async (
+    depositor: string
+  ): Promise<RevealedDepositEvent[]> => {
+    const deposits = await getContractPastEvents(this._bridgeContract, {
+      fromBlock: Bridge.receipt.blockNumber,
+      filterParams: [null, null, depositor],
+      eventName: "DepositRevealed",
+    })
+
+    return deposits
+      .map((deposit) => {
+        const fundingTxHash = deposit.args?.fundingTxHash
+        const fundingOutputIndex = deposit.args?.fundingOutputIndex
+
+        const depositKey = EthereumBridge.buildDepositKey(
+          TransactionHash.from(fundingTxHash).reverse(),
+          fundingOutputIndex
+        )
+
+        return {
+          amount: deposit.args?.amount.toString(),
+          walletPublicKeyHash: deposit.args?.walletPubKeyHash,
+          fundingTxHash,
+          fundingOutputIndex,
+          depositKey,
+          txHash: deposit.transactionHash,
+        }
+      })
+      .reverse()
+  }
+
+  private _findAllMintedDeposits = async (
+    depositor: string,
+    depositKeys: string[] = []
+  ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    return await getContractPastEvents(this._tbtcVault, {
+      fromBlock: TBTCVault.receipt.blockNumber,
+      filterParams: [null, depositKeys, depositor],
+      eventName: "OptimisticMintingFinalized",
+    })
+  }
+
+  private _findAllCancelledDeposits = async (
+    depositKeys: string[]
+  ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    return getContractPastEvents(this._tbtcVault, {
+      fromBlock: TBTCVault.receipt.blockNumber,
+      filterParams: [null, depositKeys],
+      eventName: "OptimisticMintingCancelled",
+    })
   }
 }

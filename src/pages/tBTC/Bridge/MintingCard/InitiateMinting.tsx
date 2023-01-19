@@ -8,24 +8,17 @@ import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const InitiateMintingComponent: FC<{
+  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ onPreviousStepClick }) => {
+}> = ({ utxos, onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
 
-  const confirmDespotAndMint = () => {
-    // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
-
-    updateState("ethGasCost", 50)
-    updateState("thresholdNetworkFee", 0.0001)
-    updateState("isLoadingTbtcMintAmount", true)
-    updateState("isLoadingBitcoinMinerFee", true)
-    // updateState("tBTCMintAmount")
-    // updateState("bitcoinMinerFee")
-    // updateState("mintingStep", MintingStep.MintingSuccess)
-    openModal(ModalType.TbtcMintingConfirmation)
+  const confirmDespotAndMint = async () => {
+    openModal(ModalType.TbtcMintingConfirmation, { utxos: utxos })
   }
 
   return (

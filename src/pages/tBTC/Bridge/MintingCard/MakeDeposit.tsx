@@ -20,7 +20,7 @@ import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/bitcoin"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -39,32 +39,14 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC<{
+  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ onPreviousStepClick }) => {
+}> = ({ utxos, onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
   const threshold = useThreshold()
-  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
-    undefined
-  )
   const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
     useState(false)
-
-  useEffect(() => {
-    const findUtxos = async () => {
-      const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-        btcDepositAddress
-      )
-      if (utxos && utxos.length > 0) setUtxos(utxos)
-    }
-
-    findUtxos()
-    const interval = setInterval(async () => {
-      await findUtxos()
-    }, 10000)
-
-    return () => clearInterval(interval)
-  }, [btcDepositAddress])
 
   useEffect(() => {
     const checkIfAnyUtxosAreNotRevealed = async () => {
@@ -105,8 +87,16 @@ const MakeDepositComponent: FC<{
         This address is an unique generated address based on the data you
         provided.
       </BodyMd>
-      <InfoBox>
-        <HStack>
+      <InfoBox p="4">
+        <HStack
+          alignItems="center"
+          // To center the tooltip icon. The tooltip icon is wrapped by `span`
+          // because of: If you're wrapping an icon from `react-icons`, you need
+          // to also wrap the icon in a `span` element as `react-icons` icons do
+          // not use forwardRef. See
+          // https://chakra-ui.com/docs/components/tooltip#with-an-icon.
+          sx={{ ">span": { display: "flex" } }}
+        >
           <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
           <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
@@ -131,7 +121,15 @@ const MakeDepositComponent: FC<{
           />
         </Box>
 
-        <HStack bg="white" borderRadius="lg" justify="center" mb="5" p="1">
+        <HStack
+          bg="white"
+          borderRadius="lg"
+          justify="center"
+          mb="2"
+          p="1"
+          pl="2"
+          sx={{ ">div": { marginInlineStart: "0 !important" } }}
+        >
           <BodyMd color="brand.500" isTruncated>
             {btcDepositAddress}
           </BodyMd>

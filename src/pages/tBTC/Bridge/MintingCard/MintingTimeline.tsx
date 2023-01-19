@@ -7,6 +7,8 @@ import tbtcMintingStep2 from "../../../../static/images/minting-step-2.svg"
 import tbtcMintingStep3 from "../../../../static/images/minting-step-3.svg"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
+import Link from "../../../../components/Link"
+import { ExternalHref } from "../../../../enums"
 
 type MintingTimelineStepProps = Omit<
   TimelineProps,
@@ -25,7 +27,16 @@ export const MintingTimelineStep1: FC<MintingTimelineStepProps> = ({
       stepText="Step 1"
       helperLabelText="OFF-CHAIN ACTION"
       title="Provide Data"
-      description="Provide an ETH address and a BTC Recovery address to generate an unique BTC deposit address."
+      description={
+        <>
+          Provide an ETH address and a BTC Recovery address to generate an
+          unique BTC deposit address.
+          <Link isExternal href={ExternalHref.btcRecoveryAddress}>
+            Read more
+          </Link>
+          .
+        </>
+      }
       imageSrc={tbtcMintingStep1}
       {...restProps}
     />

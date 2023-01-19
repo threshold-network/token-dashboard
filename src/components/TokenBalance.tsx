@@ -46,6 +46,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
 
   const BalanceTag = isLarge ? H3 : H5
   const SymbolTag = isLarge ? BodyLg : BodySm
+  const usdBalanceColor = useColorModeValue("gray.500", "gray.300")
 
   // TODO: more flexible approach to style wrapper, token balance and USD balance.
   return (
@@ -60,7 +61,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
         </BalanceTag>
       </HStack>
       {withUSDBalance && usdBalance && shouldRenderTokenAmount && (
-        <BodySm mt="2" color={useColorModeValue("gray.500", "gray.300")}>
+        <BodySm mt="2" color={usdBalanceColor}>
           {usdBalance} USD
         </BodySm>
       )}
