@@ -151,7 +151,8 @@ export class TBTC implements ITBTC {
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
    */
-  private _depositRefundLocktimDuration = 23328000
+  // This 15min is set FOR TESTING PURPOSES ONLY. DO NOT MERGE.
+  private _depositRefundLocktimDuration = 900 // in sec
   private _bitcoinConfig: BitcoinConfig
 
   /**
