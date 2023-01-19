@@ -102,34 +102,35 @@ jobs:
       # - name: Test
       #   run: yarn test
 
-  # This job will be triggered for PR updates. It will build the dashboard
-  # using `dapp-development-goerli`-taggeed packages which contain contracts
-  # with values modified to help with the testing of dashboard. The code will be
-  # published to
-  # https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html
-  # and link to the deployment will be posted as a comment in the PR.
-  build-and-deploy-testnet-preview:
-    name: Deploy preview to testnet
-    needs: build-and-test
-    if: github.event_name == 'pull_request'
-    uses: ./.github/workflows/reusable-build-and-publish.yml
-    with:
-      environment: goerli
-      useUpstreamBuilds: false
-      # We use `dapp-development-goerli`-taggeed packages with modified
-      # contracts. They contain modifications that help with the testing of
-      # dashboard features.
-      dependentPackagesTag: dapp-development-goerli
-      gcpBucketName: preview.dashboard.test.threshold.network
-      gcpBucketPath: ${{ github.head_ref }}
-      preview: true
-    secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
-      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+  # WE SHOULDN'T HAVE THIS JOB COMMENTED OUT ON `MAIN`
+  # # This job will be triggered for PR updates. It will build the dashboard
+  # # using `dapp-development-goerli`-taggeed packages which contain contracts
+  # # with values modified to help with the testing of dashboard. The code will be
+  # # published to
+  # # https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html
+  # # and link to the deployment will be posted as a comment in the PR.
+  # build-and-deploy-testnet-preview:
+  #   name: Deploy preview to testnet
+  #   needs: build-and-test
+  #   if: github.event_name == 'pull_request'
+  #   uses: ./.github/workflows/reusable-build-and-publish.yml
+  #   with:
+  #     environment: goerli
+  #     useUpstreamBuilds: false
+  #     # We use `dapp-development-goerli`-taggeed packages with modified
+  #     # contracts. They contain modifications that help with the testing of
+  #     # dashboard features.
+  #     dependentPackagesTag: dapp-development-goerli
+  #     gcpBucketName: preview.dashboard.test.threshold.network
+  #     gcpBucketPath: ${{ github.head_ref }}
+  #     preview: true
+  #   secrets:
+  #     ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+  #     ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+  #     gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+  #     electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+  #     electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+  #     electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
   # CI flow, which gets triggered manually after changes in the contracts,
@@ -176,6 +177,27 @@ jobs:
       dependentPackagesTag: goerli
       gcpBucketName: dashboard.test.threshold.network
       preview: false
+    secrets:
+      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
+      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+
+  # WE SHOULD NOT MERGE TTHIS JOB TO MAIN!
+  build-and-deploy-uat-5-testnet-preview:
+    name: Deploy preview of `uat-5` branch to testnet
+    # needs: build-and-test
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/reusable-build-and-publish.yml
+    with:
+      environment: goerli
+      useUpstreamBuilds: false
+      dependentPackagesTag: goerli
+      gcpBucketName: preview.dashboard.test.threshold.network
+      gcpBucketPath: ${{ github.head_ref }}
+      preview: true
     secrets:
       ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
       ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
