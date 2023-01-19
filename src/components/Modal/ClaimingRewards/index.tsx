@@ -46,7 +46,7 @@ const ClaimingRewardsBase: FC<
   const rewards = useSelector(selectInterimRewards)
 
   const onClaimSuccess = useCallback<OnSuccessCallback>(
-    (receipt: TransactionReceipt) => {
+    (receipt) => {
       dispatch(interimRewardsClaimed())
       openModal(ModalType.ClaimingRewardsSuccess, {
         transactionHash: receipt.transactionHash,

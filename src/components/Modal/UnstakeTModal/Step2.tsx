@@ -41,7 +41,7 @@ const UnstakeTModal: FC<
       : amountToUnstake
 
   const onSuccess = useCallback<OnSuccessCallback>(
-    (receipt: TransactionReceipt) => {
+    (receipt) => {
       openModal(ModalType.UnstakeSuccess, {
         transactionHash: receipt.transactionHash,
         stake,

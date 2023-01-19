@@ -43,7 +43,7 @@ const ConfirmStakingParamsModal: FC<
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
-  const { stake } = useStakeTransaction((receipt: TransactionReceipt) => {
+  const { stake } = useStakeTransaction((receipt) => {
     if (featureFlags.MULTI_APP_STAKING) {
       openModal(ModalType.StakeSuccess, {
         transactionHash: receipt.transactionHash,

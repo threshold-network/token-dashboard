@@ -33,7 +33,7 @@ const TopupTModal: FC<
   const { closeModal, openModal } = useModal()
 
   const onSuccess = useCallback<OnSuccessCallback>(
-    (receipt: TransactionReceipt) => {
+    (receipt) => {
       openModal(ModalType.TopupTSuccess, {
         transactionHash: receipt.transactionHash,
         stakeAmount: amountTopUp,

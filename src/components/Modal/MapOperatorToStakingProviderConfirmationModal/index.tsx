@@ -70,7 +70,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
 
   const { openModal } = useModal()
   const onSuccess = useCallback<OnSuccessCallback>(
-    (receipt: TransactionReceipt) => {
+    (receipt) => {
       openModal(ModalType.MapOperatorToStakingProviderSuccess, {
         transactions: [
           {
