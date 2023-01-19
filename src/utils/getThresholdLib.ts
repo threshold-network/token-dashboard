@@ -31,6 +31,8 @@ function getBitcoinConfig(): BitcoinConfig {
     client: shouldMockBitcoinClient ? new MockBitcoinClient() : undefined,
     network,
     credentials: !shouldMockBitcoinClient ? credentials : undefined,
+    // FIXME: It's a temporary workaround to get the connection working.
+    clientOptions: { rejectUnauthorize: false },
   }
 }
 
