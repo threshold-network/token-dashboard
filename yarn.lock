@@ -3541,9 +3541,9 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.0.0-dev.24"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.24.tgz#2ae84528a1f48fa4a8ed7367533c626f98fa4f61"
-  integrity sha512-S99/wjf86Km0RRwmXWMavmOy9KJNsZbAqgRAJOQyyGZSiUWTNSrlGp6UO4n1OJMtIODSV3gmr6+06GxH77EnvA==
+  version "1.0.0-dev.25"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.25.tgz#f5d2cba613283310e200806139c1a220535fc469"
+  integrity sha512-6pLFZjcAPRzmnhoHNpfds7LxaSl55v/MuaYgW/IHB96cOXSmfh1U9JTNpub31FDzuDvTZ7t9TggPWYSM+DMwkQ==
   dependencies:
     "@keep-network/ecdsa" development
     "@keep-network/tbtc-v2" "1.0.1-dev.1"
@@ -8754,16 +8754,9 @@ bsert@~0.0.10:
   resolved "https://registry.yarnpkg.com/bsert/-/bsert-0.0.10.tgz#231ac82873a1418c6ade301ab5cd9ae385895597"
   integrity sha512-NHNwlac+WPy4t2LoNh8pXk8uaIGH3NSaIUbTTRXGpE2WEbq0te/tDykYHkFK57YKLPjv/aGHmbqvnGeVWDz57Q==
 
-"bsock@git+https://github.com/bcoin-org/bsock.git#semver:~0.1.9":
+"bsock@git+https://github.com/bcoin-org/bsock.git#semver:~0.1.9", bsock@~0.1.8, bsock@~0.1.9:
   version "0.1.9"
   resolved "git+https://github.com/bcoin-org/bsock.git#7cf76b3021ae7929c023d1170f789811e91ae528"
-  dependencies:
-    bsert "~0.0.10"
-
-bsock@~0.1.8, bsock@~0.1.9:
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/bsock/-/bsock-0.1.9.tgz#6aa14b8e4bda730e0f60ec73eb52a8a888ac22c8"
-  integrity sha512-/l9Kg/c5o+n/0AqreMxh2jpzDMl1ikl4gUxT7RFNe3A3YRIyZkiREhwcjmqxiymJSRI/Qhew357xGn1SLw/xEw==
   dependencies:
     bsert "~0.0.10"
 
