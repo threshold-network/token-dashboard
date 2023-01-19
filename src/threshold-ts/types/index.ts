@@ -15,7 +15,7 @@ export interface EthereumConfig {
 
 export type BitcoinClientCredentials = Credentials
 
-export type BitcoinClientConfig = object
+export type BitcoinClientOptions = object
 
 export interface BitcoinConfig {
   /**
@@ -38,7 +38,7 @@ export interface BitcoinConfig {
   /**
    * Additional options that can be passed to bitcoin client
    */
-  clientOptions?: BitcoinClientConfig
+  clientOptions?: BitcoinClientOptions
 }
 
 export interface ThresholdConfig {
