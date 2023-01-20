@@ -252,6 +252,8 @@ export class TBTC implements ITBTC {
       refundLocktime,
     }
 
+    console.log("depositScriptParameters!!!", depositScriptParameters)
+
     return depositScriptParameters
   }
 
