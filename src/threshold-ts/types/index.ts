@@ -1,5 +1,8 @@
 import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { Credentials } from "@keep-network/tbtc-v2.ts/dist/src/electrum"
+import {
+  ClientOptions,
+  Credentials,
+} from "@keep-network/tbtc-v2.ts/dist/src/electrum"
 import { providers, Signer } from "ethers"
 
 export enum BitcoinNetwork {
@@ -14,6 +17,8 @@ export interface EthereumConfig {
 }
 
 export type BitcoinClientCredentials = Credentials
+
+export type BitcoinClientOptions = ClientOptions
 
 export interface BitcoinConfig {
   /**
@@ -32,6 +37,11 @@ export interface BitcoinConfig {
    * Credentials for electrum client
    */
   credentials?: BitcoinClientCredentials
+
+  /**
+   * Additional options that can be passed to bitcoin client
+   */
+  clientOptions?: BitcoinClientOptions
 }
 
 export interface ThresholdConfig {
