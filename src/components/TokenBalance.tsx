@@ -13,7 +13,7 @@ import { useWeb3React } from "@web3-react/core"
 import Icon from "./Icon"
 import { formatTokenAmount } from "../utils/formatAmount"
 
-interface TokenBalanceProps {
+export interface TokenBalanceProps {
   tokenAmount: string | number
   usdBalance?: string
   tokenSymbol?: string
@@ -23,6 +23,7 @@ interface TokenBalanceProps {
   icon?: any
   iconSize?: string
   isLarge?: boolean
+  tokenFormat?: string
 }
 
 const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
@@ -35,14 +36,15 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   icon,
   iconSize = "32px",
   isLarge,
+  tokenFormat,
   ...restProps
 }) => {
   const { active } = useWeb3React()
   const shouldRenderTokenAmount = active
 
   const _tokenAmount = useMemo(() => {
-    return formatTokenAmount(tokenAmount || 0)
-  }, [tokenAmount])
+    return formatTokenAmount(tokenAmount || 0, tokenFormat, tokenDecimals)
+  }, [tokenAmount, tokenFormat, tokenDecimals])
 
   const BalanceTag = isLarge ? H3 : H5
   const SymbolTag = isLarge ? BodyLg : BodySm
