@@ -45,6 +45,7 @@ export interface BridgeTxHistory {
   status: BridgeHistoryStatus
   txHash: string
   amount: string
+  depositKey: string
 }
 
 interface RevealedDepositEvent {
@@ -146,6 +147,8 @@ export interface ITBTC {
    * @returns Bridge transaction history @see {@link BridgeTxHistory}.
    */
   bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
+
+  buildDepositKey(fundingOutputIndex: string, fundingTxHash: number): string
 }
 
 export class TBTC implements ITBTC {
@@ -347,14 +350,14 @@ export class TBTC implements ITBTC {
 
     const mintedDeposits = new Map(
       (await this._findAllMintedDeposits(depositor, depositKeys)).map((_) => [
-        _.args?.depositKey,
+        (_.args?.depositKey as BigNumber).toHexString(),
         { txHash: _.transactionHash },
       ])
     )
 
     const cancelledDeposits = new Map(
       (await this._findAllCancelledDeposits(depositKeys)).map((_) => [
-        _.args?.depositKey,
+        (_.args?.depositKey as BigNumber).toHexString(),
         { txHash: _.transactionHash },
       ])
     )
@@ -371,7 +374,7 @@ export class TBTC implements ITBTC {
         txHash = cancelledDeposits.get(depositKey)?.txHash!
       }
 
-      return { amount, txHash, status }
+      return { amount, txHash, status, depositKey }
     })
   }
 
@@ -389,8 +392,8 @@ export class TBTC implements ITBTC {
         const fundingTxHash = deposit.args?.fundingTxHash
         const fundingOutputIndex = deposit.args?.fundingOutputIndex
 
-        const depositKey = EthereumBridge.buildDepositKey(
-          TransactionHash.from(fundingTxHash).reverse(),
+        const depositKey = this.buildDepositKey(
+          fundingTxHash,
           fundingOutputIndex
         )
 
@@ -437,5 +440,15 @@ export class TBTC implements ITBTC {
 
   get tokenContract() {
     return this._token
+  }
+
+  buildDepositKey = (
+    fundingTxHash: string,
+    fundingOutputIndex: number
+  ): string => {
+    return EthereumBridge.buildDepositKey(
+      TransactionHash.from(fundingTxHash).reverse(),
+      fundingOutputIndex
+    )
   }
 }
