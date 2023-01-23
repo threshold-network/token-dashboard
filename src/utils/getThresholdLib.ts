@@ -44,12 +44,15 @@ export const getDefaultThresholdLibProvider = () => {
 }
 
 export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
+  const bitcoinConfig = getBitcoinConfig()
+  // TODO: this is only for testing purposes, remove this later
+  console.log("bitcoinConfig", bitcoinConfig)
   return new Threshold({
     ethereum: {
       chainId: supportedChainId,
       providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
     },
-    bitcoin: getBitcoinConfig(),
+    bitcoin: bitcoinConfig,
   })
 }
 
