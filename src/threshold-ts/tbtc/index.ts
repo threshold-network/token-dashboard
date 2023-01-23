@@ -30,6 +30,7 @@ import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
+import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { BigNumber, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
@@ -62,6 +63,12 @@ export interface ITBTC {
    * @returns {BitcoinNetwork}
    */
   readonly bitcoinNetwork: BitcoinNetwork
+
+  readonly bridgeContract: Contract
+
+  readonly vaultContract: Contract
+
+  readonly tokenContract: Contract
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -147,6 +154,7 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: Client
   private _multicall: IMulticall
   private _bridgeContract: Contract
+  private _token: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -196,6 +204,12 @@ export class TBTC implements ITBTC {
       bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
+    this._token = getContract(
+      TBTCToken.address,
+      TBTCToken.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -411,5 +425,17 @@ export class TBTC implements ITBTC {
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
+  }
+
+  get bridgeContract() {
+    return this._bridgeContract
+  }
+
+  get vaultContract() {
+    return this._tbtcVault
+  }
+
+  get tokenContract() {
+    return this._token
   }
 }
