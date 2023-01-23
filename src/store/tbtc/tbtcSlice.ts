@@ -86,14 +86,15 @@ export const tbtcSlice = createSlice({
       action: PayloadAction<{
         fundingTxHash: string
         fundingOutputIndex: number
+        depositKey: string
         amount: string
         depositor: string
         txHash: string
       }>
     ) => {
-      const { amount, txHash } = action.payload
+      const { amount, txHash, depositKey } = action.payload
       state.transactionsHistory.data = [
-        { amount, txHash, status: BridgeHistoryStatus.PENDING },
+        { amount, txHash, status: BridgeHistoryStatus.PENDING, depositKey },
         ...state.transactionsHistory.data,
       ]
     },
