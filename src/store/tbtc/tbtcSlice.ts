@@ -98,6 +98,28 @@ export const tbtcSlice = createSlice({
         ...state.transactionsHistory.data,
       ]
     },
+    optimisticMintingFinalized: (
+      state,
+      action: PayloadAction<{
+        depositKey: string
+      }>
+    ) => {
+      const { depositKey } = action.payload
+      const history = state.transactionsHistory.data
+      const historyIndexItemToUpdate = history.findIndex(
+        (item) => item.depositKey === depositKey
+      )
+
+      if (historyIndexItemToUpdate < 0) return
+
+      const historyItemToUpdate =
+        state.transactionsHistory.data[historyIndexItemToUpdate]
+
+      state.transactionsHistory.data[historyIndexItemToUpdate] = {
+        ...historyItemToUpdate,
+        status: BridgeHistoryStatus.MINTED,
+      }
+    },
   },
 })
 
