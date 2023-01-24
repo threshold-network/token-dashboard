@@ -238,6 +238,18 @@ export class TBTC implements ITBTC {
     return this._bitcoinConfig.network
   }
 
+  get bridgeContract() {
+    return this._bridgeContract
+  }
+
+  get vaultContract() {
+    return this._tbtcVault
+  }
+
+  get tokenContract() {
+    return this._token
+  }
+
   suggestDepositWallet = async (): Promise<string | undefined> => {
     return await this._bridge.activeWalletPublicKey()
   }
@@ -447,18 +459,6 @@ export class TBTC implements ITBTC {
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
-  }
-
-  get bridgeContract() {
-    return this._bridgeContract
-  }
-
-  get vaultContract() {
-    return this._tbtcVault
-  }
-
-  get tokenContract() {
-    return this._token
   }
 
   buildDepositKey = (
