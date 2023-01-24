@@ -31,7 +31,7 @@ export const useSubscribeToDepositRevealedEvent = () => {
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
-      const _fundingTxHash = fundingTxHash.toString()
+      const _fundingTxHash = fundingTxHash.toHexString()
 
       dispatch(
         tbtcSlice.actions.depositRevealed({

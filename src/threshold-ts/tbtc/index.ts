@@ -57,6 +57,8 @@ interface RevealedDepositEvent {
   txHash: string
 }
 
+type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
 export interface ITBTC {
   /**
    * Bitcoin network specified in the bitcoin config that we pass to the
@@ -148,7 +150,24 @@ export interface ITBTC {
    */
   bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
 
-  buildDepositKey(fundingOutputIndex: string, fundingTxHash: number): string
+  /**
+   * Builds the deposit key required to refer a revealed deposit.
+   * @param depositTxHash The revealed deposit transaction's hash.
+   * @param depositOutputIndex Index of the deposit transaction output that
+   * funds the revealed deposit.
+   * @param txHashByteOrder Determines the transaction hash byte order. Use
+   * `little-endian` to build the deposit key from transaction hash in native
+   * Bitcoin little-endian format- for example when using the `fundingTxHash`
+   * parameter from the `DepositRevealed` event. Use `big-endian` to build the
+   * deposit key from transaction hash in the same byte order as used by the
+   * Bitcoin block explorers. The `little-endian` is used as default.
+   * @returns Deposit key.
+   */
+  buildDepositKey(
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder?: BitcoinTransactionHashByteOrder
+  ): string
 }
 
 export class TBTC implements ITBTC {
@@ -443,12 +462,15 @@ export class TBTC implements ITBTC {
   }
 
   buildDepositKey = (
-    fundingTxHash: string,
-    fundingOutputIndex: number
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder: BitcoinTransactionHashByteOrder = "little-endian"
   ): string => {
+    const _txHash = TransactionHash.from(depositTxHash)
+
     return EthereumBridge.buildDepositKey(
-      TransactionHash.from(fundingTxHash).reverse(),
-      fundingOutputIndex
+      txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
+      depositOutputIndex
     )
   }
 }
