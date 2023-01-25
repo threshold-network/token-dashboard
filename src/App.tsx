@@ -51,12 +51,14 @@ import { usePosthog } from "./hooks/posthog"
 import { featureFlags } from "./constants"
 import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
 import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
+import { useSubscribeToOptimisticMintingFinalizedEvent } from "./hooks/tbtc"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
   useSubscribeToERC20TransferEvent(Token.Keep)
   useSubscribeToERC20TransferEvent(Token.Nu)
   useSubscribeToERC20TransferEvent(Token.T)
+  useSubscribeToERC20TransferEvent(Token.TBTCV2)
   useSubscribeToStakedEvent()
   useSubscribeToUnstakedEvent()
   useSubscribeToToppedUpEvent()
@@ -71,6 +73,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToOperatorStatusUpdatedEvent("randomBeacon")
   useSubscribeToOperatorStatusUpdatedEvent("tbtc")
   useSubscribeToDepositRevealedEvent()
+  useSubscribeToOptimisticMintingFinalizedEvent()
 
   return <></>
 }

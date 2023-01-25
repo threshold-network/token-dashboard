@@ -30,6 +30,7 @@ import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
+import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { BigNumber, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
@@ -44,6 +45,7 @@ export interface BridgeTxHistory {
   status: BridgeHistoryStatus
   txHash: string
   amount: string
+  depositKey: string
 }
 
 interface RevealedDepositEvent {
@@ -55,6 +57,8 @@ interface RevealedDepositEvent {
   txHash: string
 }
 
+type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
 export interface ITBTC {
   /**
    * Bitcoin network specified in the bitcoin config that we pass to the
@@ -62,6 +66,12 @@ export interface ITBTC {
    * @returns {BitcoinNetwork}
    */
   readonly bitcoinNetwork: BitcoinNetwork
+
+  readonly bridgeContract: Contract
+
+  readonly vaultContract: Contract
+
+  readonly tokenContract: Contract
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -139,6 +149,25 @@ export interface ITBTC {
    * @returns Bridge transaction history @see {@link BridgeTxHistory}.
    */
   bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
+
+  /**
+   * Builds the deposit key required to refer a revealed deposit.
+   * @param depositTxHash The revealed deposit transaction's hash.
+   * @param depositOutputIndex Index of the deposit transaction output that
+   * funds the revealed deposit.
+   * @param txHashByteOrder Determines the transaction hash byte order. Use
+   * `little-endian` to build the deposit key from transaction hash in native
+   * Bitcoin little-endian format- for example when using the `fundingTxHash`
+   * parameter from the `DepositRevealed` event. Use `big-endian` to build the
+   * deposit key from transaction hash in the same byte order as used by the
+   * Bitcoin block explorers. The `little-endian` is used as default.
+   * @returns Deposit key.
+   */
+  buildDepositKey(
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder?: BitcoinTransactionHashByteOrder
+  ): string
 }
 
 export class TBTC implements ITBTC {
@@ -147,6 +176,7 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: Client
   private _multicall: IMulticall
   private _bridgeContract: Contract
+  private _token: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -200,10 +230,28 @@ export class TBTC implements ITBTC {
       )
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
+    this._token = getContract(
+      TBTCToken.address,
+      TBTCToken.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
     return this._bitcoinConfig.network
+  }
+
+  get bridgeContract() {
+    return this._bridgeContract
+  }
+
+  get vaultContract() {
+    return this._tbtcVault
+  }
+
+  get tokenContract() {
+    return this._token
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -332,14 +380,14 @@ export class TBTC implements ITBTC {
 
     const mintedDeposits = new Map(
       (await this._findAllMintedDeposits(depositor, depositKeys)).map((_) => [
-        _.args?.depositKey,
+        (_.args?.depositKey as BigNumber).toHexString(),
         { txHash: _.transactionHash },
       ])
     )
 
     const cancelledDeposits = new Map(
       (await this._findAllCancelledDeposits(depositKeys)).map((_) => [
-        _.args?.depositKey,
+        (_.args?.depositKey as BigNumber).toHexString(),
         { txHash: _.transactionHash },
       ])
     )
@@ -356,7 +404,7 @@ export class TBTC implements ITBTC {
         txHash = cancelledDeposits.get(depositKey)?.txHash!
       }
 
-      return { amount, txHash, status }
+      return { amount, txHash, status, depositKey }
     })
   }
 
@@ -374,8 +422,8 @@ export class TBTC implements ITBTC {
         const fundingTxHash = deposit.args?.fundingTxHash
         const fundingOutputIndex = deposit.args?.fundingOutputIndex
 
-        const depositKey = EthereumBridge.buildDepositKey(
-          TransactionHash.from(fundingTxHash).reverse(),
+        const depositKey = this.buildDepositKey(
+          fundingTxHash,
           fundingOutputIndex
         )
 
@@ -410,5 +458,18 @@ export class TBTC implements ITBTC {
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
+  }
+
+  buildDepositKey = (
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder: BitcoinTransactionHashByteOrder = "little-endian"
+  ): string => {
+    const _txHash = TransactionHash.from(depositTxHash)
+
+    return EthereumBridge.buildDepositKey(
+      txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
+      depositOutputIndex
+    )
   }
 }

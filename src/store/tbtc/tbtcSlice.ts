@@ -86,23 +86,48 @@ export const tbtcSlice = createSlice({
       action: PayloadAction<{
         fundingTxHash: string
         fundingOutputIndex: number
+        depositKey: string
         amount: string
         depositor: string
         txHash: string
       }>
     ) => {
-      const { amount, txHash } = action.payload
+      const { amount, txHash, depositKey } = action.payload
       state.transactionsHistory.data = [
-        { amount, txHash, status: BridgeHistoryStatus.PENDING },
+        { amount, txHash, status: BridgeHistoryStatus.PENDING, depositKey },
         ...state.transactionsHistory.data,
       ]
+    },
+    optimisticMintingFinalized: (
+      state,
+      action: PayloadAction<{
+        depositKey: string
+        txHash: string
+      }>
+    ) => {
+      const { depositKey, txHash } = action.payload
+      const history = state.transactionsHistory.data
+      const historyIndexItemToUpdate = history.findIndex(
+        (item) => item.depositKey === depositKey
+      )
+
+      if (historyIndexItemToUpdate < 0) return
+
+      const historyItemToUpdate =
+        state.transactionsHistory.data[historyIndexItemToUpdate]
+
+      state.transactionsHistory.data[historyIndexItemToUpdate] = {
+        ...historyItemToUpdate,
+        status: BridgeHistoryStatus.MINTED,
+        txHash,
+      }
     },
   },
 })
 
 export const { updateState } = tbtcSlice.actions
 
-const registerTBTCListeners = () => {
+export const registerTBTCListeners = () => {
   if (!featureFlags.TBTC_V2) return
 
   startAppListening({
