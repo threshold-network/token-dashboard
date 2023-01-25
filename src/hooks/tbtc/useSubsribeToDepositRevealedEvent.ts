@@ -18,7 +18,7 @@ export const useSubscribeToDepositRevealedEvent = () => {
     "DepositRevealed",
     //@ts-ignore
     async (
-      fundingTxHash: BigNumber,
+      fundingTxHash: string,
       fundingOutputIndex: number,
       depositor: string,
       amount: BigNumber,
@@ -31,17 +31,15 @@ export const useSubscribeToDepositRevealedEvent = () => {
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
-      const _fundingTxHash = fundingTxHash.toHexString()
-
       dispatch(
         tbtcSlice.actions.depositRevealed({
           fundingOutputIndex,
-          fundingTxHash: _fundingTxHash,
+          fundingTxHash,
           amount: amount.toString(),
           txHash: event.transactionHash,
           depositor: depositor,
           depositKey: threshold.tbtc.buildDepositKey(
-            _fundingTxHash,
+            fundingTxHash,
             fundingOutputIndex
           ),
         })
