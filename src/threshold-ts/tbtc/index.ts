@@ -12,7 +12,6 @@ import {
   getContract,
   getProviderOrSigner,
   isValidBtcAddress,
-  unprefixedAndUncheckedAddress,
   getContractPastEvents,
 } from "../utils"
 import {
@@ -24,6 +23,7 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   ElectrumClient,
+  EthereumAddress,
   EthereumBridge,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
@@ -239,12 +239,9 @@ export class TBTC implements ITBTC {
       currentTimestamp,
       this._depositRefundLocktimDuration
     )
-    const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex,
-      },
+      depositor: EthereumAddress.from(ethAddress),
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
@@ -318,9 +315,7 @@ export class TBTC implements ITBTC {
       depositScriptParameters,
       this._bitcoinClient,
       this._bridge,
-      {
-        identifierHex: unprefixedAndUncheckedAddress(this._tbtcVault.address),
-      }
+      EthereumAddress.from(this._tbtcVault.address)
     )
   }
 

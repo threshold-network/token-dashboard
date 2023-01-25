@@ -1,3 +1,4 @@
+import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 import {
   Client,
   decodeBitcoinAddress,
@@ -14,7 +15,6 @@ import {
   DepositScriptParameters,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { BigNumber } from "ethers"
-import { unprefixedAndUncheckedAddress } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
 
 const testnetTransactionHash = TransactionHash.from(
@@ -116,9 +116,7 @@ export class MockBitcoinClient implements Client {
       } = tbtc
 
       const depositScriptParameters: DepositScriptParameters = {
-        depositor: {
-          identifierHex: unprefixedAndUncheckedAddress(ethAddress),
-        },
+        depositor: EthereumAddress.from(ethAddress),
         blindingFactor: blindingFactor,
         walletPublicKeyHash: walletPublicKeyHash,
         refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
