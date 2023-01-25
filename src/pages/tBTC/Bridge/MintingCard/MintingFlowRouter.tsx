@@ -11,7 +11,6 @@ import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useModal } from "../../../../hooks/useModal"
@@ -19,8 +18,6 @@ import { ModalType } from "../../../../enums"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
   const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
     undefined
