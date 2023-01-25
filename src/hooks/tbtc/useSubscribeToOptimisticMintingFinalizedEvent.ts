@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers"
+import { BigNumber, Event } from "ethers"
 import { useWeb3React } from "@web3-react/core"
 import { tbtcSlice } from "../../store/tbtc"
 import { useAppDispatch } from "../store"
@@ -14,10 +14,17 @@ export const useSubscribeToOptimisticMintingFinalizedEvent = () => {
     tbtcVaultContract,
     "OptimisticMintingFinalized",
     //@ts-ignore
-    (minter: string, depositKey: BigNumber) => {
+    (
+      minter: string,
+      depositKey: BigNumber,
+      depositor: string,
+      optimisticMintingDebt: BigNumber,
+      event: Event
+    ) => {
       dispatch(
         tbtcSlice.actions.optimisticMintingFinalized({
           depositKey: depositKey.toHexString(),
+          txHash: event.transactionHash,
         })
       )
     },

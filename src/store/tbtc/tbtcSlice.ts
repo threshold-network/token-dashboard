@@ -102,9 +102,10 @@ export const tbtcSlice = createSlice({
       state,
       action: PayloadAction<{
         depositKey: string
+        txHash: string
       }>
     ) => {
-      const { depositKey } = action.payload
+      const { depositKey, txHash } = action.payload
       const history = state.transactionsHistory.data
       const historyIndexItemToUpdate = history.findIndex(
         (item) => item.depositKey === depositKey
@@ -118,6 +119,7 @@ export const tbtcSlice = createSlice({
       state.transactionsHistory.data[historyIndexItemToUpdate] = {
         ...historyItemToUpdate,
         status: BridgeHistoryStatus.MINTED,
+        txHash,
       }
     },
   },
