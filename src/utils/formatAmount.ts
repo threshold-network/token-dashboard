@@ -20,3 +20,13 @@ export const formatFiatCurrencyAmount = (
 ) => {
   return formatNumeral(amount, `${currencySymbol}${format}`)
 }
+
+export const formatSatoshi = (amount: number | string, precision = 2) => {
+  let precisionFormat = ""
+  if (precision > 0) {
+    precisionFormat = `[0]${"0".repeat(precision - 1)}`
+  }
+  const format = `0,00.${precisionFormat}`
+
+  return formatTokenAmount(amount, format, 8)
+}
