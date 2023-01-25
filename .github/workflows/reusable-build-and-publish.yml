@@ -68,6 +68,12 @@ on:
       electrumPort:
         description: Port the Electrum server listens on.
         required: true
+      sentrySupport:
+        description: Enable Sentry telemetry
+        required: true
+      sentryDsn:
+        description: Sentry DSN endpoint
+        required: true
 
 jobs:
   build-and-publish:
@@ -175,6 +181,8 @@ jobs:
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          SENTRY_SUPPORT: ${{ secrets.sentrySupport }}
+          SENTRY_DSN: ${{ secrets.sentryDsn }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -189,6 +197,8 @@ jobs:
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          SENTRY_SUPPORT: ${{ secrets.sentrySupport }}
+          SENTRY_DSN: ${{ secrets.sentryDsn }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0

@@ -69,6 +69,8 @@ jobs:
           ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
           ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+          SENTRY_SUPPORT: ${{ secrets.MAINNET_SENTRY_SUPPORT }}
+          SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
 
       - uses: actions/upload-artifact@v3
         with:
