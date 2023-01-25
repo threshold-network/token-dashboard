@@ -51,6 +51,7 @@ import { usePosthog } from "./hooks/posthog"
 import { featureFlags } from "./constants"
 import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
 import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
+import { useSentry } from "./hooks/sentry"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -149,6 +150,7 @@ const AppBody = () => {
   useCheckBonusEligibility()
   useFetchStakingRewards()
   useSaveConnectedAddressToStore()
+  useSentry()
 
   return <Routing />
 }
