@@ -13,6 +13,7 @@ import {
   getProviderOrSigner,
   isValidBtcAddress,
   getContractPastEvents,
+  getChainIdentifier,
 } from "../utils"
 import {
   Client,
@@ -23,7 +24,6 @@ import {
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   ElectrumClient,
-  EthereumAddress,
   EthereumBridge,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
@@ -241,7 +241,7 @@ export class TBTC implements ITBTC {
     )
 
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: EthereumAddress.from(ethAddress),
+      depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
@@ -315,7 +315,7 @@ export class TBTC implements ITBTC {
       depositScriptParameters,
       this._bitcoinClient,
       this._bridge,
-      EthereumAddress.from(this._tbtcVault.address)
+      getChainIdentifier(this._tbtcVault.address)
     )
   }
 

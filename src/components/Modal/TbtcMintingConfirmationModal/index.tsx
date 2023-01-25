@@ -30,7 +30,7 @@ import {
 } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
 import { formatTokenAmount } from "../../../utils/formatAmount"
-import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { getChainIdentifier } from "../../../threshold-ts/utils"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -64,7 +64,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
 
   const initiateMintTransaction = async () => {
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: EthereumAddress.from(ethAddress),
+      depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),

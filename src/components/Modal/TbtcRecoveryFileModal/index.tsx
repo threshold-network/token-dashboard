@@ -20,7 +20,7 @@ import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
-import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
+import { getChainIdentifier } from "../../../threshold-ts/utils"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -50,7 +50,7 @@ const TbtcRecoveryFileModalModal: FC<
   }
 
   const depositScriptParameters: DepositScriptParameters = {
-    depositor: EthereumAddress.from(ethAddress),
+    depositor: getChainIdentifier(ethAddress),
     blindingFactor,
     walletPublicKeyHash,
     refundPublicKeyHash,
