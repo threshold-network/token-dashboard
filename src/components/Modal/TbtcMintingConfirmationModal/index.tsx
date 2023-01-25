@@ -20,7 +20,6 @@ import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/Trans
 import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import { unprefixedAndUncheckedAddress } from "../../../web3/utils"
 import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
@@ -31,6 +30,7 @@ import {
 } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
 import { formatTokenAmount } from "../../../utils/formatAmount"
+import { getChainIdentifier } from "../../../threshold-ts/utils"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -64,9 +64,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
 
   const initiateMintTransaction = async () => {
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex: unprefixedAndUncheckedAddress(ethAddress),
-      },
+      depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash: walletPublicKeyHash,
       refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
