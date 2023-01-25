@@ -127,7 +127,7 @@ export const tbtcSlice = createSlice({
 
 export const { updateState } = tbtcSlice.actions
 
-const registerTBTCListeners = () => {
+export const registerTBTCListeners = () => {
   if (!featureFlags.TBTC_V2) return
 
   startAppListening({
