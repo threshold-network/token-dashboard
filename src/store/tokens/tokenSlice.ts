@@ -71,7 +71,6 @@ export const tokenSlice = createSlice({
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
-      decimals: 8,
     },
   } as Record<Token, TokenState>,
   reducers: {
