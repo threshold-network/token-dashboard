@@ -12,8 +12,8 @@ import {
   getContract,
   getProviderOrSigner,
   isValidBtcAddress,
-  unprefixedAndUncheckedAddress,
   getContractPastEvents,
+  getChainIdentifier,
 } from "../utils"
 import {
   Client,
@@ -223,7 +223,11 @@ export class TBTC implements ITBTC {
       ethereumConfig.account
     )
     this._bitcoinClient =
-      bitcoinConfig.client ?? new ElectrumClient(bitcoinConfig.credentials!)
+      bitcoinConfig.client ??
+      new ElectrumClient(
+        bitcoinConfig.credentials!,
+        bitcoinConfig.clientOptions
+      )
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
     this._token = getContract(
@@ -283,12 +287,9 @@ export class TBTC implements ITBTC {
       currentTimestamp,
       this._depositRefundLocktimDuration
     )
-    const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex,
-      },
+      depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
@@ -362,9 +363,7 @@ export class TBTC implements ITBTC {
       depositScriptParameters,
       this._bitcoinClient,
       this._bridge,
-      {
-        identifierHex: unprefixedAndUncheckedAddress(this._tbtcVault.address),
-      }
+      getChainIdentifier(this._tbtcVault.address)
     )
   }
 
