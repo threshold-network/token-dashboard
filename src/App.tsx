@@ -51,6 +51,7 @@ import { usePosthog } from "./hooks/posthog"
 import { featureFlags } from "./constants"
 import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
 import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
+import { useSubscribeToOptimisticMintingFinalizedEvent } from "./hooks/tbtc"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -72,6 +73,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToOperatorStatusUpdatedEvent("randomBeacon")
   useSubscribeToOperatorStatusUpdatedEvent("tbtc")
   useSubscribeToDepositRevealedEvent()
+  useSubscribeToOptimisticMintingFinalizedEvent()
 
   return <></>
 }
