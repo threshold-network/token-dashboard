@@ -20,17 +20,24 @@ import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
+import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
-    depositScriptParameters: DepositScriptParameters
     ethAddress: string
+    blindingFactor: string
+    walletPublicKeyHash: string
+    refundPublicKeyHash: string
+    refundLocktime: string
     btcDepositAddress: string
   }
 > = ({
   closeModal,
-  depositScriptParameters,
   ethAddress,
+  blindingFactor,
+  walletPublicKeyHash,
+  refundPublicKeyHash,
+  refundLocktime,
   btcDepositAddress,
 }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
@@ -40,6 +47,14 @@ const TbtcRecoveryFileModalModal: FC<
   const handleDoubleReject = () => {
     updateState("mintingStep", MintingStep.Deposit)
     closeModal()
+  }
+
+  const depositScriptParameters: DepositScriptParameters = {
+    depositor: EthereumAddress.from(ethAddress),
+    blindingFactor,
+    walletPublicKeyHash,
+    refundPublicKeyHash,
+    refundLocktime,
   }
 
   const handleDownloadClick = () => {

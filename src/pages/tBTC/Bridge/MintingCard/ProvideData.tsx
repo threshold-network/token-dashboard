@@ -129,9 +129,12 @@ export const ProvideDataComponent: FC<{
 
     // if the user has NOT declined the json file, ask the user if they want to accept the new file
     openModal(ModalType.TbtcRecoveryJson, {
-      depositScriptParameters,
-      btcDepositAddress: depositAddress,
       ethAddress: values.ethAddress,
+      blindingFactor: depositScriptParameters.blindingFactor,
+      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
+      refundPublicKeyHash: depositScriptParameters.refundPublicKeyHash,
+      refundLocktime: depositScriptParameters.refundLocktime,
+      btcDepositAddress: depositAddress,
     })
 
     // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
