@@ -28,7 +28,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
   withSymbol = false,
   ...restProps
 }) => {
-  const { balance, usdBalance, contract } = useToken(token)
+  const { balance, usdBalance, contract, decimals } = useToken(token)
 
   return (
     <TokenBalanceCardTemplate
@@ -39,6 +39,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
       contract={contract}
       tokenSymbol={tokenSymbol}
       withSymbol={withSymbol}
+      tokenDecimals={decimals}
       {...restProps}
     />
   )

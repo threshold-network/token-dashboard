@@ -1,6 +1,7 @@
-import { useContract } from "../../web3/hooks"
-import BridgeContract from "@keep-network/tbtc-v2/artifacts/Bridge.json"
+import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const useBridgeContract = () => {
-  return useContract(BridgeContract.address, BridgeContract.abi)
+  const threshold = useThreshold()
+
+  return threshold.tbtc.bridgeContract
 }

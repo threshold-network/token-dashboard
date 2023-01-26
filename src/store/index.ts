@@ -11,7 +11,7 @@ import { transactionSlice } from "./transactions"
 import { registerStakingListeners, stakingSlice } from "./staking"
 import { ethSlice } from "./eth"
 import { rewardsSlice } from "./rewards"
-import { tbtcSlice } from "./tbtc"
+import { tbtcSlice, registerTBTCListeners } from "./tbtc"
 import {
   registerStakingAppsListeners,
   stakingApplicationsSlice,
@@ -44,6 +44,7 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
     registerStakingListeners()
     registerStakingAppsListeners()
     registerAccountListeners()
+    registerTBTCListeners()
     state = {
       eth: { ...state.eth },
       token: {

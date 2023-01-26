@@ -31,9 +31,6 @@ function getBitcoinConfig(): BitcoinConfig {
     client: shouldMockBitcoinClient ? new MockBitcoinClient() : undefined,
     network,
     credentials: !shouldMockBitcoinClient ? credentials : undefined,
-    // FIXME: It's a temporary workaround to get the wss connection working.
-    clientOptions:
-      credentials.protocol === "wss" ? { rejectUnauthorize: false } : undefined,
   }
 }
 

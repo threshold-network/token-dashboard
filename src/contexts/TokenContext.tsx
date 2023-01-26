@@ -55,7 +55,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   const tokenContracts = [keep.contract!, nu.contract!, t.contract!]
 
-  if (!!tbtcv2) tokenContracts.push(tbtcv2.contract)
+  if (featureFlags.TBTC_V2) tokenContracts.push(tbtcv2)
 
   const fetchBalances = useTokensBalanceCall(
     tokenContracts,
@@ -133,7 +133,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
           ...tbtcData,
         },
         [Token.TBTCV2]: {
-          ...tbtcv2,
+          contract: tbtcv2,
           ...tbtcv2Data,
         },
       }}
