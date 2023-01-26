@@ -130,7 +130,6 @@ jobs:
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
-      sentrySupport: ${{ secrets.TESTNET_SENTRY_SUPPORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
@@ -161,7 +160,6 @@ jobs:
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
-      sentrySupport: ${{ secrets.TESTNET_SENTRY_SUPPORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
@@ -187,5 +185,4 @@ jobs:
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
-      sentrySupport: ${{ secrets.TESTNET_SENTRY_SUPPORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}

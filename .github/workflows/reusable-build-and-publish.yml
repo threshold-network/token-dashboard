@@ -68,9 +68,6 @@ on:
       electrumPort:
         description: Port the Electrum server listens on.
         required: true
-      sentrySupport:
-        description: Enable Sentry telemetry
-        required: true
       sentryDsn:
         description: Sentry DSN endpoint
         required: true
@@ -181,7 +178,7 @@ jobs:
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
-          SENTRY_SUPPORT: ${{ secrets.sentrySupport }}
+          SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
 
       - name: Build
@@ -197,7 +194,7 @@ jobs:
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
-          SENTRY_SUPPORT: ${{ secrets.sentrySupport }}
+          SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
 
       - name: Deploy to GCP
