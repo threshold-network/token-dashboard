@@ -1,9 +1,7 @@
-import { useThreshold } from "../contexts/ThresholdContext"
-import { AddressZero } from "../web3/utils"
+import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
 
 export const useTBTCTokenAddress = () => {
-  const threshold = useThreshold()
+  const tbtcContract = useTBTCv2TokenContract()
 
-  // TODO: get the tbtc token address from threshold ts lib
-  return AddressZero
+  return tbtcContract.address
 }

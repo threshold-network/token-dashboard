@@ -3,7 +3,6 @@ import { List } from "@chakra-ui/react"
 import { Card, LabelSm } from "@threshold-network/components"
 import DetailedLinkListItem from "../../../components/DetailedLinkListItem"
 import { useTBTCTokenAddress } from "../../../hooks/useTBTCTokenAddress"
-import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../../../utils/createEtherscanLink"
@@ -13,7 +12,6 @@ import { ExternalHref } from "../../../enums"
 
 export const ContractsCard: FC<ComponentProps<typeof Card>> = (props) => {
   const tbtcTokenContractAddress = useTBTCTokenAddress()
-  const bridgeContractAddress = useTBTCBridgeContractAddress()
 
   return (
     <Card {...props}>

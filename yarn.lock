@@ -3541,12 +3541,12 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.0.0-dev.25"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.25.tgz#f5d2cba613283310e200806139c1a220535fc469"
-  integrity sha512-6pLFZjcAPRzmnhoHNpfds7LxaSl55v/MuaYgW/IHB96cOXSmfh1U9JTNpub31FDzuDvTZ7t9TggPWYSM+DMwkQ==
+  version "1.0.0-dev.29"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.29.tgz#bb9d80edaf0bb15527196015ff604996ea87567d"
+  integrity sha512-Qf0ms4ASW80ejaougMPSEY1yt+IXqqzDtsAX38e6fTvTBcVg7XJTptmo6rp+FAjrZd3WXQLzYjObYLJMAO2YMA==
   dependencies:
     "@keep-network/ecdsa" development
-    "@keep-network/tbtc-v2" "1.0.1-dev.1"
+    "@keep-network/tbtc-v2" "1.0.3-dev.0"
     bcoin "git+https://github.com/keep-network/bcoin.git#5accd32c63e6025a0d35d67739c4a6e84095a1f8"
     bcrypto "git+https://github.com/bcoin-org/bcrypto.git#semver:~5.5.0"
     bufio "^1.0.6"
@@ -3554,7 +3554,20 @@
     ethers "^5.5.2"
     wif "2.0.6"
 
-"@keep-network/tbtc-v2@1.0.1-dev.1", "@keep-network/tbtc-v2@development":
+"@keep-network/tbtc-v2@1.0.3-dev.0":
+  version "1.0.3-dev.0"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.0.3-dev.0.tgz#754eab80269ea5a616c92cb8c1f607ec21343e0b"
+  integrity sha512-RqIFZvJtbLgmPZvPgamIJoTc5UsosrPE2g3879RqU4XqntezF4gr95FIuUFmicjRy0OPsjCupU2HplxlWfQfdw==
+  dependencies:
+    "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
+    "@keep-network/ecdsa" "2.1.0-dev.6"
+    "@keep-network/random-beacon" "2.1.0-dev.5"
+    "@keep-network/tbtc" "1.1.2-dev.1"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+
+"@keep-network/tbtc-v2@development":
   version "1.0.1-dev.1"
   resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.0.1-dev.1.tgz#c5b661a386246915b33756cca6ae1f29d8c9a37e"
   integrity sha512-EbUEWu1RM76jjP5knpWDBvWxsdz1J94friT6sUJyhyVKKXNl/D6tw72Kj40+yq+To04pQNOZswROlhP8mfF5WQ==
@@ -8953,8 +8966,8 @@ builtin-status-codes@^3.0.0:
     bsert "~0.0.10"
 
 "bval@git+https://github.com/bcoin-org/bval.git#semver:~0.1.6":
-  version "0.1.6"
-  resolved "git+https://github.com/bcoin-org/bval.git#c8cd14419ca46f63610dc48b797b076835e86f48"
+  version "0.1.7"
+  resolved "git+https://github.com/bcoin-org/bval.git#5dcc923f24da9fb7eb96269ef8ce01540da983e7"
   dependencies:
     bsert "~0.0.10"
 
