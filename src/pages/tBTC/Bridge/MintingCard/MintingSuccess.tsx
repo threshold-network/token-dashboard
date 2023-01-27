@@ -18,7 +18,7 @@ import tbtcSuccess from "../../../../static/images/tbtc-success.png"
 import TransactionDetailsTable from "../components/TransactionDetailsTable"
 import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
 
 const MintingSuccessComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
@@ -46,7 +46,13 @@ const MintingSuccessComponent: FC<{
       </InfoBox>
       <Stack spacing={4} mb={8}>
         <BodyLg>
-          You should receive {formatTokenAmount(tBTCMintAmount)} tBTC in around{" "}
+          You should receive{" "}
+          <InlineTokenBalance
+            tokenAmount={tBTCMintAmount}
+            withSymbol
+            tokenSymbol="tBTC"
+          />{" "}
+          in around{" "}
           <Box as="span" color="brand.500">
             1-3 hours
           </Box>
