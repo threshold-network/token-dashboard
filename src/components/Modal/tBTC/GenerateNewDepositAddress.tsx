@@ -28,7 +28,6 @@ const GenerateNewDepositAddressBase: FC<BaseModalProps> = ({ closeModal }) => {
 
   const onConfirmClick = () => {
     removeDepositDataFromLocalStorage()
-    resetDepositData()
     closeModal()
   }
 
