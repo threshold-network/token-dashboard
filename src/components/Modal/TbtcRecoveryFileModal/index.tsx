@@ -41,7 +41,7 @@ const TbtcRecoveryFileModalModal: FC<
 }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
-  const { updateState } = useTbtcState()
+  const { btcRecoveryAddress, updateState } = useTbtcState()
 
   const handleDoubleReject = () => {
     updateState("mintingStep", MintingStep.Deposit)
@@ -61,7 +61,11 @@ const TbtcRecoveryFileModalModal: FC<
 
     const fileName = `${ethAddress}_${btcDepositAddress}_${date}`
 
-    downloadFile(JSON.stringify(depositScriptParameters), fileName, "text/json")
+    const finalData = {
+      ...depositScriptParameters,
+      btcRecoveryAddress: btcRecoveryAddress,
+    }
+    downloadFile(JSON.stringify(finalData), fileName, "text/json")
 
     closeModal()
     updateState("mintingStep", MintingStep.Deposit)
