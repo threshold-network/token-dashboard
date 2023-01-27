@@ -48,7 +48,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
-    bitcoinMinerFee,
+    mintingFee,
     thresholdNetworkFee,
   } = useTbtcState()
   const threshold = useThreshold()
@@ -76,23 +76,27 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       depositScriptParameters
     )
   }
+  // TODO: Pass only one utxo as a prop and amount should be `utxo.value`
+  const amount = utxos
+    .reduce(
+      (accumulator, currentValue) =>
+        BigNumber.from(accumulator).add(currentValue.value),
+      BigNumber.from(0)
+    )
+    .toString()
 
   useEffect(() => {
     const getEstimatedFees = async () => {
-      const amount = utxos.reduce(
-        (accumulator, currentValue) =>
-          BigNumber.from(accumulator).add(currentValue.value),
-        BigNumber.from(0)
-      )
-      updateState("tBTCMintAmount", amount.toString())
+      const { treasuryFee, optimisticMintFee, amountToMint } =
+        await threshold.tbtc.getEstimatedFees(amount)
 
-      const { treasuryFee, optimisticMintFee } =
-        await threshold.tbtc.getEstimatedFees(amount.toString())
-      updateState("bitcoinMinerFee", treasuryFee)
-      updateState("thresholdNetworkFee", optimisticMintFee)
+      updateState("mintingFee", optimisticMintFee)
+      updateState("thresholdNetworkFee", treasuryFee)
+      updateState("tBTCMintAmount", amountToMint)
     }
+
     getEstimatedFees()
-  }, [])
+  }, [amount, updateState, threshold])
 
   return (
     <>
@@ -107,9 +111,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
               w={!tBTCMintAmount ? "105px" : undefined}
               display="inline-block"
             >
-              {!!tBTCMintAmount
-                ? formatTokenAmount(tBTCMintAmount, undefined, 8)
-                : "0"}
+              {!!tBTCMintAmount ? formatTokenAmount(tBTCMintAmount) : "0"}
             </Skeleton>{" "}
             tBTC
           </H5>
@@ -132,7 +134,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
           Cancel
         </Button>
         <Button
-          disabled={!tBTCMintAmount || !bitcoinMinerFee || !thresholdNetworkFee}
+          disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
         >
           Start minting
