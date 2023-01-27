@@ -161,7 +161,7 @@ const MakeDepositComponent: FC<{
       />
       <Button
         isLoading={!hasAnyUnrevealedDeposits}
-        loadingText={"Checking if funds have been sent..."}
+        loadingText={"Waiting for funds to be sent..."}
         onClick={handleSubmit}
         form="tbtc-minting-data-form"
         isDisabled={!utxos}
