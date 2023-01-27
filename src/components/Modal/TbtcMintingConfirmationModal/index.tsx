@@ -68,7 +68,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       refundLocktime,
     }
 
-    const transaction = await revealDeposit(utxo, depositScriptParameters)
+    await revealDeposit(utxo, depositScriptParameters)
   }
 
   useEffect(() => {
