@@ -14,12 +14,10 @@ const InitiateMintingComponent: FC<{
   utxo: UnspentTransactionOutput | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
-  const { updateState } = useTbtcState()
   const { openModal } = useModal()
 
   const confirmDespotAndMint = async () => {
-    // TODO: Pass only one utxo here
-    openModal(ModalType.TbtcMintingConfirmation, { utxos: [utxo] })
+    openModal(ModalType.TbtcMintingConfirmation, { utxo: utxo })
   }
 
   return (
