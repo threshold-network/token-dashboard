@@ -41,7 +41,13 @@ const MintingFlowRouterBase = () => {
         const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
           btcDepositAddress
         )
-        if (utxos && utxos.length > 0) setUtxos(utxos)
+        if (utxos && utxos.length > 0) {
+          setUtxos(utxos)
+          // If there is at least one utxo we remove the interval, because we
+          // don't want to encourage sending multiple transactions to the same
+          // deposit address.
+          clearInterval(interval)
+        }
       }
     }
 
