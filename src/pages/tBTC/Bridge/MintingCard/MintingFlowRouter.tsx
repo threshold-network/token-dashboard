@@ -16,7 +16,7 @@ import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitc
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
@@ -24,14 +24,13 @@ const MintingFlowRouterBase = () => {
   const [utxo, setUtxo] = useState<UnspentTransactionOutput | undefined>(
     undefined
   )
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
+  const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (mintingStep === MintingStep.MintingSuccess) {
       updateState("mintingStep", MintingStep.ProvideData)
-      removeDepositDataFromLocalStorage()
+      removeDepositData()
       return
     }
     if (previousStep === MintingStep.ProvideData) {
@@ -83,7 +82,7 @@ const MintingFlowRouterBase = () => {
 
       if (isDepositRevealed) {
         updateState("mintingStep", MintingStep.ProvideData)
-        removeDepositDataFromLocalStorage()
+        removeDepositData()
       } else {
         updateState("mintingStep", MintingStep.InitiateMinting)
       }

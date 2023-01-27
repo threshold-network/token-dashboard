@@ -1,6 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
 import { useLocalStorage } from "../useLocalStorage"
-import { useTbtcState } from "../useTbtcState"
 
 export type TBTCDepositData = {
   ethAddress: string
@@ -17,7 +16,6 @@ export type TBTCLocalStorageDepositData = {
 
 export const useTBTCDepositDataFromLocalStorage = () => {
   const { account } = useWeb3React()
-  const { resetDepositData } = useTbtcState()
 
   const [tBTCDepositData, setTBTCDepositData] =
     useLocalStorage<TBTCLocalStorageDepositData>(`tBTCDepositData`, {})
@@ -38,7 +36,6 @@ export const useTBTCDepositDataFromLocalStorage = () => {
     }
     delete newLocalStorageData[`${account}`]
     setTBTCDepositData(newLocalStorageData)
-    resetDepositData() // additionaly remove the deposit data from the store
   }
 
   return {

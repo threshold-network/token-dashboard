@@ -17,17 +17,13 @@ import InfoBox from "../../InfoBox"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
 import ModalCloseButton from "../ModalCloseButton"
-import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
-import { useTbtcState } from "../../../hooks/useTbtcState"
+import { useRemoveDepositData } from "../../../hooks/tbtc/useRemoveDepositData"
 
 const GenerateNewDepositAddressBase: FC<BaseModalProps> = ({ closeModal }) => {
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
-
-  const { resetDepositData } = useTbtcState()
+  const removeDepositData = useRemoveDepositData()
 
   const onConfirmClick = () => {
-    removeDepositDataFromLocalStorage()
+    removeDepositData()
     closeModal()
   }
 
