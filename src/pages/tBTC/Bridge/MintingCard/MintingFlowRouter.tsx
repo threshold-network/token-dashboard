@@ -48,7 +48,11 @@ const MintingFlowRouterBase = () => {
           btcDepositAddress
         )
         if (utxos && utxos.length > 0) {
-          setUtxo(utxos[0])
+          // UTXOs returned from `findAllUndpentTransactionOutputs` are in
+          // reversed order so we have to get the last element of the `utxos`
+          // array to get the oldest utxo related to this deposit address.
+          const utxo = utxos.pop()
+          setUtxo(utxo)
           // If there is at least one utxo we remove the interval, because we
           // don't want to encourage sending multiple transactions to the same
           // deposit address.
