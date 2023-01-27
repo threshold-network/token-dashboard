@@ -71,18 +71,20 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
     await revealDeposit(utxo, depositScriptParameters)
   }
 
-  useEffect(() => {
-    const getEstimatedFees = async () => {
-      const amount = BigNumber.from(utxo.value)
-      updateState("tBTCMintAmount", amount.toString())
+  const amount = BigNumber.from(utxo.value)
 
+  useEffect(() => {
+    console.log("ueee")
+    const getEstimatedFees = async () => {
       const { treasuryFee, optimisticMintFee } =
         await threshold.tbtc.getEstimatedFees(amount.toString())
+
+      updateState("tBTCMintAmount", amount.toString())
       updateState("bitcoinMinerFee", treasuryFee)
       updateState("thresholdNetworkFee", optimisticMintFee)
     }
     getEstimatedFees()
-  }, [])
+  }, [amount, updateState, threshold])
 
   return (
     <>
