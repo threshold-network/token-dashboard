@@ -25,7 +25,7 @@ const InitiateMintingComponent: FC<{
   return (
     <>
       <TbtcMintingCardTitle
-        previousStep={MintingStep.Deposit}
+        previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />

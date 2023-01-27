@@ -29,6 +29,11 @@ const MintingFlowRouterBase = () => {
   const { openModal } = useModal()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
+    if (mintingStep === MintingStep.MintingSuccess) {
+      updateState("mintingStep", MintingStep.ProvideData)
+      removeDepositDataFromLocalStorage()
+      return
+    }
     if (previousStep === MintingStep.ProvideData) {
       openModal(ModalType.GenerateNewDepositAddress)
       return
