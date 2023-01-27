@@ -6,8 +6,6 @@ import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
@@ -16,6 +14,7 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import { BridgeContractLink } from "../../../../components/tBTC"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
@@ -93,11 +92,7 @@ export const MintingFlowRouter: FC = () => {
         </>
       )}
       <Box as="p" textAlign="center" mt="6">
-        <ViewInBlockExplorer
-          id={brdigeContractAddress}
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
+        <BridgeContractLink />
       </Box>
     </Flex>
   )
