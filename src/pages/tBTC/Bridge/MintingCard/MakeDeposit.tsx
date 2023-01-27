@@ -63,11 +63,13 @@ const MakeDepositComponent: FC<{
     checkIfAnyUtxosAreNotRevealed()
   }, [utxos?.length])
 
-  const handleSubmit = async () => {
+  useEffect(() => {
     if (hasAnyUnrevealedDeposits) {
       updateState("mintingStep", MintingStep.InitiateMinting)
     }
-  }
+  }, [hasAnyUnrevealedDeposits])
+
+  const handleSubmit = async () => {}
 
   return (
     <>
