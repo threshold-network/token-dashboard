@@ -81,7 +81,7 @@ const MintingFlowRouterBase = () => {
     }, 10000)
 
     return () => clearInterval(interval)
-  }, [btcDepositAddress, threshold, updateState])
+  }, [btcDepositAddress, threshold, updateState, removeDepositData])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
