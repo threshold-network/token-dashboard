@@ -32,7 +32,7 @@ export const ContractsCard: FC<ComponentProps<typeof Card>> = (props) => {
           title="Bridge Contract"
           href={createEtherscanLink(
             Number(supportedChainId),
-            brdigeContractAddress,
+            bridgeContractAddress,
             ExplorerDataType.ADDRESS
           )}
         />
