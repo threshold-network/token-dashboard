@@ -14,12 +14,11 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
-import { useTbtcState } from "../../../hooks/useTbtcState"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { BridgeContractLink } from "../../tBTC"
+import { useTbtcState } from "../../../hooks/useTbtcState"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -41,10 +40,9 @@ const TbtcRecoveryFileModalModal: FC<
 }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
-  const { btcRecoveryAddress, updateState } = useTbtcState()
+  const { btcRecoveryAddress } = useTbtcState()
 
   const handleDoubleReject = () => {
-    updateState("mintingStep", MintingStep.Deposit)
     closeModal()
   }
 
@@ -68,7 +66,6 @@ const TbtcRecoveryFileModalModal: FC<
     downloadFile(JSON.stringify(finalData), fileName, "text/json")
 
     closeModal()
-    updateState("mintingStep", MintingStep.Deposit)
   }
 
   const titleText = isOnConfirmStep

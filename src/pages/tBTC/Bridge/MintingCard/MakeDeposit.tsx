@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC } from "react"
 import {
   BodyMd,
   Box,
@@ -19,8 +19,6 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -39,35 +37,10 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC<{
-  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxos, onPreviousStepClick }) => {
+}> = ({ onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
-  const threshold = useThreshold()
-  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
-    useState(false)
-
-  useEffect(() => {
-    const checkIfAnyUtxosAreNotRevealed = async () => {
-      if (!utxos) return
-
-      const deposits = await Promise.all(
-        utxos.map(threshold.tbtc.getRevealedDeposit)
-      )
-
-      setHasAnyUnrevealedDeposits(
-        deposits.some((deposit) => deposit.revealedAt === 0)
-      )
-    }
-    checkIfAnyUtxosAreNotRevealed()
-  }, [utxos?.length])
-
-  const handleSubmit = async () => {
-    if (hasAnyUnrevealedDeposits) {
-      updateState("mintingStep", MintingStep.InitiateMinting)
-    }
-  }
 
   return (
     <>
@@ -157,12 +130,12 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
+      {/* TODO: No need to use button here. We can replace it with just some text */}
       <Button
-        isLoading={!hasAnyUnrevealedDeposits}
-        loadingText={"Checking if funds have been sent..."}
-        onClick={handleSubmit}
+        isLoading={true}
+        loadingText={"Waiting for funds to be sent..."}
         form="tbtc-minting-data-form"
-        isDisabled={!utxos}
+        isDisabled={true}
         isFullWidth
       >
         I sent the BTC

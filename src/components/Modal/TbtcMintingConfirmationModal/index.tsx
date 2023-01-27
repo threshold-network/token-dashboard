@@ -22,21 +22,18 @@ import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import {
-  RevealDepositSuccessTx,
-  useRevealMultipleDepositsTransaction,
-} from "../../../hooks/tbtc"
+import { useRevealDepositTransaction } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
-  utxos: UnspentTransactionOutput[]
+  utxo: UnspentTransactionOutput
 }
 
 const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
-  utxos,
+  utxo,
   closeModal,
 }) => {
   const {
@@ -52,12 +49,12 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
+  const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }
 
-  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+  const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
     onSuccessfulDepositReveal
   )
 
@@ -70,19 +67,10 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       refundLocktime,
     }
 
-    const successfulTransactions = await revealMultipleDeposits(
-      utxos,
-      depositScriptParameters
-    )
+    await revealDeposit(utxo, depositScriptParameters)
   }
-  // TODO: Pass only one utxo as a prop and amount should be `utxo.value`
-  const amount = utxos
-    .reduce(
-      (accumulator, currentValue) =>
-        BigNumber.from(accumulator).add(currentValue.value),
-      BigNumber.from(0)
-    )
-    .toString()
+
+  const amount = BigNumber.from(utxo.value).toString()
 
   useEffect(() => {
     const getEstimatedFees = async () => {
