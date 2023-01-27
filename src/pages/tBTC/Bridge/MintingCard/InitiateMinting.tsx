@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
