@@ -12,7 +12,7 @@ import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContra
 
 export const ContractsCard: FC<ComponentProps<typeof Card>> = (props) => {
   const tbtcTokenContractAddress = useTBTCTokenAddress()
-  const brdigeContractAddress = useTBTCBridgeContractAddress()
+  const bridgeContractAddress = useTBTCBridgeContractAddress()
 
   return (
     <Card {...props}>
