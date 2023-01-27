@@ -11,7 +11,7 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const InitiateMintingComponent: FC<{
-  utxo: UnspentTransactionOutput | undefined
+  utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()

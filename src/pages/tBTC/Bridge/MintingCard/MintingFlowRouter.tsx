@@ -100,7 +100,7 @@ const MintingFlowRouterBase = () => {
     case MintingStep.InitiateMinting: {
       return (
         <InitiateMinting
-          utxo={utxo}
+          utxo={utxo!}
           onPreviousStepClick={onPreviousStepClick}
         />
       )
