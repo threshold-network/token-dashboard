@@ -14,7 +14,6 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
-import { useTbtcState } from "../../../hooks/useTbtcState"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { downloadFile } from "../../../web3/utils"
 import Link from "../../Link"
@@ -41,7 +40,6 @@ const TbtcRecoveryFileModalModal: FC<
 }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
-  const { updateState } = useTbtcState()
 
   const handleDoubleReject = () => {
     closeModal()
