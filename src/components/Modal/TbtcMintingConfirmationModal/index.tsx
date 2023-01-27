@@ -12,8 +12,6 @@ import {
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
@@ -31,6 +29,7 @@ import {
 import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
+import { BridgeContractLink } from "../../tBTC"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -126,11 +125,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
         <TransactionDetailsTable />
         <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
-          <ViewInBlockExplorer
-            id="NEED BRIDGE CONTRACT ADDRESS"
-            type={ExplorerDataType.ADDRESS}
-            text="bridge contract."
-          />
+          <BridgeContractLink text="bridge contract" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>
