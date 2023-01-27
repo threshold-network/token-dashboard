@@ -69,7 +69,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
 
     await revealDeposit(utxo, depositScriptParameters)
   }
-  // TODO: Pass only one utxo as a prop and amount should be `utxo.value`
+
   const amount = BigNumber.from(utxo.value).toString()
 
   useEffect(() => {
