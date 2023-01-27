@@ -29,8 +29,8 @@ import {
   useRevealMultipleDepositsTransaction,
 } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
-import { formatTokenAmount } from "../../../utils/formatAmount"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { InlineTokenBalance } from "../../TokenBalance"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxos: UnspentTransactionOutput[]
@@ -104,16 +104,20 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
-          <H5 mb={4}>
-            You will initiate the minting of{" "}
-            <Skeleton
-              isLoaded={!!tBTCMintAmount}
-              w={!tBTCMintAmount ? "105px" : undefined}
-              display="inline-block"
-            >
-              {!!tBTCMintAmount ? formatTokenAmount(tBTCMintAmount) : "0"}
-            </Skeleton>{" "}
-            tBTC
+          <H5>You will initiate the minting of</H5>
+          {/*
+            We can't use `InlineTokenBalance` inside the above `H5` because
+            the tooltip won't work correctly- will display at the top and
+            center of the whole `H5` component not only above token amount.
+           */}
+          <H5 mb="4">
+            <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenAmount={tBTCMintAmount}
+                tokenSymbol="tBTC"
+                withSymbol
+              />
+            </Skeleton>
           </H5>
           <BodyLg>
             Minting tBTC is a process that requires one transaction.

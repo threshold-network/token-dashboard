@@ -2,7 +2,7 @@ import { BodySm, HStack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { Skeleton, Stack } from "@chakra-ui/react"
 import shortenAddress from "../../../../utils/shortenAddress"
-import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
 
 const TransactionDetailsTable = () => {
   const { tBTCMintAmount, mintingFee, thresholdNetworkFee, ethAddress } =
@@ -14,7 +14,11 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.500">Amount To Be Minted</BodySm>
         <Skeleton isLoaded={!!tBTCMintAmount}>
           <BodySm color="gray.700">
-            {!!tBTCMintAmount ? formatTokenAmount(tBTCMintAmount) : "0"} tBTC
+            <InlineTokenBalance
+              tokenAmount={tBTCMintAmount}
+              tokenSymbol="tBTC"
+              withSymbol
+            />
           </BodySm>
         </Skeleton>
       </HStack>
@@ -22,7 +26,13 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.500">Minting Fee</BodySm>
         <Skeleton isLoaded={!!mintingFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
-            {!!mintingFee ? formatTokenAmount(mintingFee) : "0"} tBTC
+            <InlineTokenBalance
+              tokenAmount={mintingFee}
+              tokenSymbol="tBTC"
+              withSymbol
+              precision={6}
+              higherPrecision={8}
+            />
           </BodySm>
         </Skeleton>
       </HStack>
@@ -30,10 +40,13 @@ const TransactionDetailsTable = () => {
         <BodySm color="gray.500">Threshold Network Fee</BodySm>
         <Skeleton isLoaded={!!thresholdNetworkFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
-            {!!thresholdNetworkFee
-              ? formatTokenAmount(thresholdNetworkFee)
-              : "0"}{" "}
-            tBTC
+            <InlineTokenBalance
+              tokenAmount={thresholdNetworkFee}
+              tokenSymbol="tBTC"
+              withSymbol
+              precision={6}
+              higherPrecision={8}
+            />
           </BodySm>
         </Skeleton>
       </HStack>
