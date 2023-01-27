@@ -56,8 +56,20 @@ const MintingFlowRouterBase = () => {
           // don't want to encourage sending multiple transactions to the same
           // deposit address.
           clearInterval(interval)
+
+          // check if deposit is revealed
+          const deposit = await threshold.tbtc.getRevealedDeposit(utxo!)
+
+          const isDepositRevealed = deposit.revealedAt !== 0
+
+          if (isDepositRevealed) {
+            updateState("mintingStep", MintingStep.ProvideData)
+            removeDepositData()
+          } else {
+            updateState("mintingStep", MintingStep.InitiateMinting)
+          }
         } else {
-          // If ther is no utxo then we display the `MakeDeposit` step to the
+          // If there is no utxo then we display the `MakeDeposit` step to the
           // user and still run the interval to check if the funds were sent.
           updateState("mintingStep", MintingStep.Deposit)
         }
@@ -70,25 +82,7 @@ const MintingFlowRouterBase = () => {
     }, 10000)
 
     return () => clearInterval(interval)
-  }, [btcDepositAddress])
-
-  useEffect(() => {
-    const checkIfUtxoIsRevealed = async () => {
-      if (!utxo) return
-
-      const deposit = await threshold.tbtc.getRevealedDeposit(utxo)
-
-      const isDepositRevealed = deposit.revealedAt !== 0
-
-      if (isDepositRevealed) {
-        updateState("mintingStep", MintingStep.ProvideData)
-        removeDepositData()
-      } else {
-        updateState("mintingStep", MintingStep.InitiateMinting)
-      }
-    }
-    checkIfUtxoIsRevealed()
-  }, [utxo])
+  }, [btcDepositAddress, threshold, updateState])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
