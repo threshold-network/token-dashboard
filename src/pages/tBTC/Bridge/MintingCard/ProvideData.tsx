@@ -93,7 +93,7 @@ export const ProvideDataComponent: FC<{
   const threshold = useThreshold()
   const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
-  const depositTelemetry = useDepositTelemetry()
+  const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
   const onSubmit = async (values: FormValues) => {
     setSubmitButtonLoading(true)
