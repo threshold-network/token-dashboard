@@ -35,7 +35,7 @@ interface TbtcState {
   tBTCMintAmount: string
   ethGasCost: number
   thresholdNetworkFee: string
-  bitcoinMinerFee: string
+  mintingFee: string
 
   transactionsHistory: FetchingState<BridgeTxHistory[]>
 }

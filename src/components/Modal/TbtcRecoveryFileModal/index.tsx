@@ -16,9 +16,9 @@ import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { downloadFile } from "../../../web3/utils"
-import Link from "../../Link"
-import { ExternalHref } from "../../../enums"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { BridgeContractLink } from "../../tBTC"
+import { useTbtcState } from "../../../hooks/useTbtcState"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -40,6 +40,7 @@ const TbtcRecoveryFileModalModal: FC<
 }) => {
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
+  const { btcRecoveryAddress } = useTbtcState()
 
   const handleDoubleReject = () => {
     closeModal()
@@ -58,7 +59,11 @@ const TbtcRecoveryFileModalModal: FC<
 
     const fileName = `${ethAddress}_${btcDepositAddress}_${date}`
 
-    downloadFile(JSON.stringify(depositScriptParameters), fileName, "text/json")
+    const finalData = {
+      ...depositScriptParameters,
+      btcRecoveryAddress: btcRecoveryAddress,
+    }
+    downloadFile(JSON.stringify(finalData), fileName, "text/json")
 
     closeModal()
   }
@@ -96,10 +101,7 @@ const TbtcRecoveryFileModalModal: FC<
         <Image mt="14" mb="16" mx="auto" maxW="210px" src={btcJsonFile} />
         <BodySm textAlign="center">
           Read more about the&nbsp;
-          <Link isExternal href={ExternalHref.tbtcBridgeGithub}>
-            bridge contract
-          </Link>
-          .
+          <BridgeContractLink text="bridge contract" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>

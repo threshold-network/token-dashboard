@@ -14,6 +14,7 @@ import {
   isValidBtcAddress,
   getContractPastEvents,
   getChainIdentifier,
+  ZERO,
 } from "../utils"
 import {
   Client,
@@ -115,13 +116,16 @@ export interface ITBTC {
   ): Promise<UnspentTransactionOutput[]>
 
   /**
-   * Gets estimated fees that will be payed during a reveal
-   * @param depositAmount - summed amount of all utxos that will be revealed
-   * @returns treasury fee and optitimistic mint fee
+   * Gets estimated fees that will be payed during a reveal and estimated amount
+   * of tBTC token that will be minted.
+   * @param depositAmount Amount that will be revealed in Satoshi.
+   * @returns Treasury fee, optitimistic mint fee and estimated amount of tBTC
+   * token that will be minted in ERC20 standart.
    */
   getEstimatedFees(depositAmount: string): Promise<{
     treasuryFee: string
     optimisticMintFee: string
+    amountToMint: string
   }>
 
   /**
@@ -183,6 +187,7 @@ export class TBTC implements ITBTC {
    */
   private _depositRefundLocktimDuration = 23328000
   private _bitcoinConfig: BitcoinConfig
+  private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
 
   /**
    * Maps the network that is currently used for bitcoin, so that it use "main"
@@ -336,21 +341,22 @@ export class TBTC implements ITBTC {
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
     const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
-      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor).toString()
-      : "0"
+      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor)
+      : ZERO
 
     const amountToMint = BigNumber.from(depositAmount)
       .sub(treasuryFee)
-      .toString()
+      .mul(this._satoshiMultiplier)
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
     const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
-      ? BigNumber.from(amountToMint).div(optimisticMintingFeeDivisor).toString()
-      : "0"
+      ? amountToMint.div(optimisticMintingFeeDivisor)
+      : ZERO
 
     return {
-      treasuryFee,
-      optimisticMintFee,
+      treasuryFee: treasuryFee.mul(this._satoshiMultiplier).toString(),
+      optimisticMintFee: optimisticMintFee.toString(),
+      amountToMint: amountToMint.sub(optimisticMintFee).toString(),
     }
   }
 
