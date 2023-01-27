@@ -9,7 +9,7 @@ export type TbtcStateKey =
   | "tBTCMintAmount"
   | "ethGasCost"
   | "thresholdNetworkFee"
-  | "bitcoinMinerFee"
+  | "mintingFee"
   | "nextBridgeCrossingInUnix"
   | "walletPublicKeyHash"
   | "blindingFactor"
@@ -71,7 +71,7 @@ export interface UseTbtcState {
     tBTCMintAmount: string
     ethGasCost: number
     thresholdNetworkFee: string
-    bitcoinMinerFee: string
+    mintingFee: string
     resetDepositData: () => void
   }
 }

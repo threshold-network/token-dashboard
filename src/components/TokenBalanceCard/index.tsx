@@ -6,13 +6,17 @@ import NuCircleBrand from "../../static/icons/NuCircleBrand"
 import T from "../../static/icons/Ttoken"
 import { useToken } from "../../hooks/useToken"
 import { tBTCFillBlack } from "../../static/icons/tBTCFillBlack"
+import { TokenBalanceProps } from "../TokenBalance"
 
-export interface TokenBalanceCardProps {
+export type TokenBalanceCardProps = {
   token: Exclude<Token, Token.TBTC>
   title?: string | JSX.Element
   tokenSymbol?: string
   withSymbol?: boolean
-}
+} & Pick<
+  TokenBalanceProps,
+  "precision" | "withHigherPrecision" | "higherPrecision"
+>
 
 const tokenToIconMap = {
   [Token.Keep]: KeepCircleBrand,

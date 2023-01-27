@@ -19,7 +19,7 @@ import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-h
 import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import { formatSatoshi } from "../../../../utils/formatAmount"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
 
 const bridgeTxHistoryStatusToBadgeProps: Record<
   BridgeHistoryStatus,
@@ -98,7 +98,12 @@ export const TransactionHistoryTable: FC<{
             data.map((_) => (
               <Tr key={_.txHash}>
                 <Td py={4} px={2}>
-                  {formatSatoshi(_.amount)}
+                  <InlineTokenBalance
+                    tokenAmount={_.amount}
+                    // TODO: Remove once we update the `bridgeTxHistory` in
+                    // `TBTC` wrapper in threshold lib.
+                    tokenDecimals={8}
+                  />
                 </Td>
                 <Td py={4} px={2}>
                   <ViewInBlockExplorer
