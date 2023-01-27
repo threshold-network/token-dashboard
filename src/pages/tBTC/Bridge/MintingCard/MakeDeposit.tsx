@@ -39,37 +39,10 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC<{
-  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxos, onPreviousStepClick }) => {
+}> = ({ onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
-  const threshold = useThreshold()
-  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
-    useState(false)
-
-  useEffect(() => {
-    const checkIfAnyUtxosAreNotRevealed = async () => {
-      if (!utxos) return
-
-      const deposits = await Promise.all(
-        utxos.map(threshold.tbtc.getRevealedDeposit)
-      )
-
-      setHasAnyUnrevealedDeposits(
-        deposits.some((deposit) => deposit.revealedAt === 0)
-      )
-    }
-    checkIfAnyUtxosAreNotRevealed()
-  }, [utxos?.length])
-
-  useEffect(() => {
-    if (hasAnyUnrevealedDeposits) {
-      updateState("mintingStep", MintingStep.InitiateMinting)
-    }
-  }, [hasAnyUnrevealedDeposits])
-
-  const handleSubmit = async () => {}
 
   return (
     <>
@@ -159,12 +132,12 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
+      {/* TODO: No need to use button here. We can replace it with just some text */}
       <Button
-        isLoading={!hasAnyUnrevealedDeposits}
+        isLoading={true}
         loadingText={"Waiting for funds to be sent..."}
-        onClick={handleSubmit}
         form="tbtc-minting-data-form"
-        isDisabled={!utxos}
+        isDisabled={true}
         isFullWidth
       >
         I sent the BTC

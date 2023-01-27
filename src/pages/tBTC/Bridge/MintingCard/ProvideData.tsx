@@ -140,9 +140,6 @@ export const ProvideDataComponent: FC<{
       refundLocktime: depositScriptParameters.refundLocktime,
       btcDepositAddress: depositAddress,
     })
-
-    // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
-    updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (

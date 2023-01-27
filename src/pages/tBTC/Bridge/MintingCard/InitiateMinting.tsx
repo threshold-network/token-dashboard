@@ -11,14 +11,15 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const InitiateMintingComponent: FC<{
-  utxos: UnspentTransactionOutput[] | undefined
+  utxo: UnspentTransactionOutput | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxos, onPreviousStepClick }) => {
+}> = ({ utxo, onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const { openModal } = useModal()
 
   const confirmDespotAndMint = async () => {
-    openModal(ModalType.TbtcMintingConfirmation, { utxos: utxos })
+    // TODO: Pass only one utxo here
+    openModal(ModalType.TbtcMintingConfirmation, { utxos: [utxo] })
   }
 
   return (

@@ -16,7 +16,6 @@ import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import { MintingStep } from "../../../types/tbtc"
 import { downloadFile } from "../../../web3/utils"
 import Link from "../../Link"
 import { ExternalHref } from "../../../enums"
@@ -45,7 +44,6 @@ const TbtcRecoveryFileModalModal: FC<
   const { updateState } = useTbtcState()
 
   const handleDoubleReject = () => {
-    updateState("mintingStep", MintingStep.Deposit)
     closeModal()
   }
 
@@ -65,7 +63,6 @@ const TbtcRecoveryFileModalModal: FC<
     downloadFile(JSON.stringify(depositScriptParameters), fileName, "text/json")
 
     closeModal()
-    updateState("mintingStep", MintingStep.Deposit)
   }
 
   const titleText = isOnConfirmStep

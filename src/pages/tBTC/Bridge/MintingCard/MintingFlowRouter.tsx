@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { Box, Flex, H5 } from "@threshold-network/components"
+import { Box, Flex, H5, Skeleton, Stack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { ProvideData } from "./ProvideData"
@@ -16,13 +16,14 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 
 const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
   const { removeDepositDataFromLocalStorage } =
     useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
-  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
+  const [utxo, setUtxo] = useState<UnspentTransactionOutput | undefined>(
     undefined
   )
   const { openModal } = useModal()
@@ -42,11 +43,15 @@ const MintingFlowRouterBase = () => {
           btcDepositAddress
         )
         if (utxos && utxos.length > 0) {
-          setUtxos(utxos)
+          setUtxo(utxos[0])
           // If there is at least one utxo we remove the interval, because we
           // don't want to encourage sending multiple transactions to the same
           // deposit address.
           clearInterval(interval)
+        } else {
+          // If ther is no utxo then we display the `MakeDeposit` step to the
+          // user and still run the interval to check if the funds were sent.
+          updateState("mintingStep", MintingStep.Deposit)
         }
       }
     }
@@ -59,19 +64,36 @@ const MintingFlowRouterBase = () => {
     return () => clearInterval(interval)
   }, [btcDepositAddress])
 
+  useEffect(() => {
+    const checkIfUtxoIsRevealed = async () => {
+      if (!utxo) return
+
+      const deposit = await threshold.tbtc.getRevealedDeposit(utxo)
+
+      const isDepositRevealed = deposit.revealedAt !== 0
+
+      if (isDepositRevealed) {
+        // TODO: clear deposit data in local storage and navigate user to the
+        // step 1 (Provide data)
+        updateState("mintingStep", MintingStep.MintingSuccess)
+      } else {
+        updateState("mintingStep", MintingStep.InitiateMinting)
+      }
+    }
+    checkIfUtxoIsRevealed()
+  }, [utxo])
+
   switch (mintingStep) {
     case MintingStep.ProvideData: {
       return <ProvideData onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.Deposit: {
-      return (
-        <MakeDeposit utxos={utxos} onPreviousStepClick={onPreviousStepClick} />
-      )
+      return <MakeDeposit onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.InitiateMinting: {
       return (
         <InitiateMinting
-          utxos={utxos}
+          utxo={utxo}
           onPreviousStepClick={onPreviousStepClick}
         />
       )
@@ -80,7 +102,19 @@ const MintingFlowRouterBase = () => {
       return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />
     }
     default:
-      return null
+      return (
+        <>
+          <TbtcMintingCardTitle
+            previousStep={MintingStep.ProvideData}
+            onPreviousStepClick={onPreviousStepClick}
+          />
+          <Stack>
+            <Skeleton height="40px" />
+            <Skeleton height="40px" />
+            <Skeleton height="100px" />
+          </Stack>
+        </>
+      )
   }
 }
 

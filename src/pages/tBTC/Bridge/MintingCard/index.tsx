@@ -4,7 +4,6 @@ import { MintingTimeline } from "./MintingTimeline"
 import { Box, StackDivider, Stack } from "@chakra-ui/react"
 import { MintingFlowRouter } from "./MintingFlowRouter"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { MintingStep } from "../../../../types/tbtc"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useWeb3React } from "@web3-react/core"
 import { isSameETHAddress } from "../../../../web3/utils"
@@ -31,15 +30,16 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
         refundLocktime,
       } = tBTCDepositData[account]
 
-      updateState("btcDepositAddress", btcDepositAddress)
-
       updateState("ethAddress", ethAddress)
       updateState("blindingFactor", blindingFactor)
       updateState("btcRecoveryAddress", btcRecoveryAddress)
       updateState("walletPublicKeyHash", walletPublicKeyHash)
       updateState("refundLocktime", refundLocktime)
-
-      updateState("mintingStep", MintingStep.Deposit)
+      // We reset the minting step to undefined to show skeleton and the
+      // useEffect in MintingFlowRouter will update and set the proper minting
+      // step when it recognizes the "btcDepositAddress" change.
+      updateState("mintingStep", undefined)
+      updateState("btcDepositAddress", btcDepositAddress)
     }
   }, [account])
 
