@@ -74,7 +74,6 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   const amount = BigNumber.from(utxo.value)
 
   useEffect(() => {
-    console.log("ueee")
     const getEstimatedFees = async () => {
       const { treasuryFee, optimisticMintFee } =
         await threshold.tbtc.getEstimatedFees(amount.toString())
