@@ -1,4 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
+import { useCallback } from "react"
 import { useLocalStorage } from "../useLocalStorage"
 
 export type TBTCDepositData = {
@@ -20,23 +21,26 @@ export const useTBTCDepositDataFromLocalStorage = () => {
   const [tBTCDepositData, setTBTCDepositData] =
     useLocalStorage<TBTCLocalStorageDepositData>(`tBTCDepositData`, {})
 
-  const setDepositDataInLocalStorage = (depositData: TBTCDepositData) => {
-    if (account) {
-      const newLocalStorageData = {
-        ...tBTCDepositData,
-        [account]: depositData,
+  const setDepositDataInLocalStorage = useCallback(
+    (depositData: TBTCDepositData) => {
+      if (account) {
+        const newLocalStorageData = {
+          ...tBTCDepositData,
+          [account]: depositData,
+        }
+        setTBTCDepositData(newLocalStorageData)
       }
-      setTBTCDepositData(newLocalStorageData)
-    }
-  }
+    },
+    [account, setTBTCDepositData]
+  )
 
-  const removeDepositDataFromLocalStorage = () => {
+  const removeDepositDataFromLocalStorage = useCallback(() => {
     const newLocalStorageData = {
       ...tBTCDepositData,
     }
     delete newLocalStorageData[`${account}`]
     setTBTCDepositData(newLocalStorageData)
-  }
+  }, [account, JSON.stringify(tBTCDepositData), setTBTCDepositData])
 
   return {
     tBTCDepositData,
