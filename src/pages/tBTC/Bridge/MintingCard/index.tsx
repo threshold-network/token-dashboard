@@ -14,10 +14,6 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { account } = useWeb3React()
 
   useEffect(() => {
-    // If user disconnects the wallet then we clear the redux store.
-    if (!account) {
-      resetDepositData()
-    }
     // Update the store with the deposit data if the account is placed in tbtc
     // local storage.
     if (
