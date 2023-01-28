@@ -53,8 +53,8 @@ const MakeDepositComponent: FC<{
         subTitle="Make your BTC deposit"
       />
       <BodyMd color="gray.500" mb={6}>
-        Use this generated address to send any amount of BTC you want to mint as
-        tBTC.
+        Use this generated address to send any amount larger than 0.01&nbsp;BTC,
+        to mint as tBTC.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
         This address is an unique generated address based on the data you
