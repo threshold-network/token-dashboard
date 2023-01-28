@@ -11,7 +11,14 @@ type Props = {
   contract: Contract | null
 } & Pick<
   TokenBalanceProps,
-  "tokenDecimals" | "tokenFormat" | "usdBalance" | "withSymbol" | "tokenSymbol"
+  | "tokenDecimals"
+  | "tokenFormat"
+  | "usdBalance"
+  | "withSymbol"
+  | "tokenSymbol"
+  | "precision"
+  | "withHigherPrecision"
+  | "higherPrecision"
 >
 
 const TokenBalanceCardTemplate: FC<Props> = ({
@@ -23,6 +30,9 @@ const TokenBalanceCardTemplate: FC<Props> = ({
   tokenSymbol,
   tokenDecimals,
   tokenFormat,
+  withHigherPrecision,
+  precision,
+  higherPrecision,
   withSymbol = false,
   ...restProps
 }) => {
@@ -40,6 +50,9 @@ const TokenBalanceCardTemplate: FC<Props> = ({
         tokenDecimals={tokenDecimals}
         tokenFormat={tokenFormat}
         withUSDBalance
+        withHigherPrecision={withHigherPrecision}
+        precision={precision}
+        higherPrecision={higherPrecision}
       />
       {/* <AddToMetamaskButton contract={contract} /> */}
     </Card>

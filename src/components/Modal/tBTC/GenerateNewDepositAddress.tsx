@@ -14,21 +14,15 @@ import withBaseModal from "../withBaseModal"
 import tbtcIllustration from "../../../static/images/tbtcMintingStep1.svg"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
-import Link from "../../Link"
-import { ExternalHref } from "../../../enums"
 import ModalCloseButton from "../ModalCloseButton"
-import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
-import { useTbtcState } from "../../../hooks/useTbtcState"
+import { useRemoveDepositData } from "../../../hooks/tbtc/useRemoveDepositData"
+import { BridgeContractLink } from "../../tBTC"
 
 const GenerateNewDepositAddressBase: FC<BaseModalProps> = ({ closeModal }) => {
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
-
-  const { resetDepositData } = useTbtcState()
+  const removeDepositData = useRemoveDepositData()
 
   const onConfirmClick = () => {
-    removeDepositDataFromLocalStorage()
-    resetDepositData()
+    removeDepositData()
     closeModal()
   }
 
@@ -60,10 +54,7 @@ const GenerateNewDepositAddressBase: FC<BaseModalProps> = ({ closeModal }) => {
         />
         <BodySm textAlign="center" color="gray.500">
           Read more about the&nbsp;
-          <Link isExternal href={ExternalHref.tbtcBridgeGithub}>
-            bridge contract
-          </Link>
-          .
+          <BridgeContractLink text="bridge contract" />.
         </BodySm>
         <Divider mt="2" />
       </ModalBody>

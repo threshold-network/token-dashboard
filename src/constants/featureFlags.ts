@@ -13,3 +13,5 @@ export const POSTHOG =
 
 export const FEEDBACK_MODULE =
   getEnvVariable(EnvVariable.FEATURE_FLAG_FEEDBACK_MODULE) === "true"
+
+export const SENTRY = getEnvVariable(EnvVariable.FEATURE_FLAG_SENTRY) === "true"

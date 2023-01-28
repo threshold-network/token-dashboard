@@ -34,7 +34,7 @@ export const TbtcBridgeCard: FC<ComponentProps<typeof Card>> = ({
           Bitcoin and Ethereum.
         </BodyMd>
         <BodyMd>
-          By providing Bitcoin holders permissionless access to DeFi and the
+          It provides Bitcoin holders permissionless access to DeFi and the
           expanding web3 universe.
         </BodyMd>
       </Box>

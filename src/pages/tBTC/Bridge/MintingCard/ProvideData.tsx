@@ -18,6 +18,7 @@ import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 
 export interface FormValues {
   ethAddress: string
@@ -92,6 +93,7 @@ export const ProvideDataComponent: FC<{
   const threshold = useThreshold()
   const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
+  const depositTelemetry = useDepositTelemetry()
 
   const onSubmit = async (values: FormValues) => {
     setSubmitButtonLoading(true)
@@ -127,6 +129,8 @@ export const ProvideDataComponent: FC<{
       btcDepositAddress: depositAddress,
     })
 
+    depositTelemetry(depositScriptParameters, depositAddress)
+
     // if the user has NOT declined the json file, ask the user if they want to accept the new file
     openModal(ModalType.TbtcRecoveryJson, {
       ethAddress: values.ethAddress,
@@ -136,9 +140,6 @@ export const ProvideDataComponent: FC<{
       refundLocktime: depositScriptParameters.refundLocktime,
       btcDepositAddress: depositAddress,
     })
-
-    // do not ask about JSON file again if the user has not changed anything because they have already accepted/declined the same json file
-    updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (

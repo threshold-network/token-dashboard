@@ -26,6 +26,8 @@
     "@ledgerhq/hw-transport-webusb": "^6.11.2",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
+    "@sentry/react": "^7.33.0",
+    "@sentry/tracing": "^7.33.0",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",

@@ -8,6 +8,7 @@ import {
   HStack,
   TextProps,
   useColorModeValue,
+  Tooltip,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import Icon from "./Icon"
@@ -24,6 +25,45 @@ export interface TokenBalanceProps {
   iconSize?: string
   isLarge?: boolean
   tokenFormat?: string
+  withHigherPrecision?: boolean
+  precision?: number
+  higherPrecision?: number
+}
+
+export const InlineTokenBalance: FC<TokenBalanceProps> = ({
+  withSymbol,
+  tokenDecimals,
+  tokenFormat,
+  tokenAmount,
+  tokenSymbol,
+  precision = 2,
+  higherPrecision = 6,
+}) => {
+  const _tokenAmount = useMemo(() => {
+    return formatTokenAmount(
+      tokenAmount || 0,
+      tokenFormat,
+      tokenDecimals,
+      precision
+    )
+  }, [tokenAmount, tokenFormat, tokenDecimals, precision])
+
+  const _tokenAmountWithHigherPrecision = useMemo(() => {
+    return formatTokenAmount(
+      tokenAmount || 0,
+      tokenFormat,
+      tokenDecimals,
+      higherPrecision
+    )
+  }, [tokenAmount, tokenFormat, tokenDecimals, higherPrecision])
+
+  return (
+    <Tooltip label={_tokenAmountWithHigherPrecision} placement="top">
+      <Box as="span">{`${_tokenAmount}${
+        withSymbol ? ` ${tokenSymbol}` : ""
+      }`}</Box>
+    </Tooltip>
+  )
 }
 
 const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
@@ -37,6 +77,9 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   iconSize = "32px",
   isLarge,
   tokenFormat,
+  precision,
+  higherPrecision,
+  withHigherPrecision = false,
   ...restProps
 }) => {
   const { active } = useWeb3React()
@@ -56,7 +99,21 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
       <HStack alignItems="center">
         {icon && <Icon as={icon} boxSize={iconSize} />}{" "}
         <BalanceTag {...restProps}>
-          {shouldRenderTokenAmount ? _tokenAmount : "--"}
+          {shouldRenderTokenAmount ? (
+            withHigherPrecision ? (
+              <InlineTokenBalance
+                tokenAmount={tokenAmount}
+                tokenFormat={tokenFormat}
+                tokenDecimals={tokenDecimals}
+                precision={precision}
+                withHigherPrecision
+              />
+            ) : (
+              _tokenAmount
+            )
+          ) : (
+            "--"
+          )}
           {withSymbol && tokenSymbol && (
             <SymbolTag as="span"> {tokenSymbol}</SymbolTag>
           )}

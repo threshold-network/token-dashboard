@@ -12,8 +12,6 @@ import {
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
@@ -24,20 +22,18 @@ import {
   decodeBitcoinAddress,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import {
-  RevealDepositSuccessTx,
-  useRevealMultipleDepositsTransaction,
-} from "../../../hooks/tbtc"
+import { useRevealDepositTransaction } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
-import { formatTokenAmount } from "../../../utils/formatAmount"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { InlineTokenBalance } from "../../TokenBalance"
+import { BridgeContractLink } from "../../tBTC"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
-  utxos: UnspentTransactionOutput[]
+  utxo: UnspentTransactionOutput
 }
 
 const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
-  utxos,
+  utxo,
   closeModal,
 }) => {
   const {
@@ -48,17 +44,17 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
     refundLocktime,
     walletPublicKeyHash,
     blindingFactor,
-    bitcoinMinerFee,
+    mintingFee,
     thresholdNetworkFee,
   } = useTbtcState()
   const threshold = useThreshold()
 
-  const onSuccessfulDepositReveal = (txs: RevealDepositSuccessTx[]) => {
+  const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }
 
-  const { revealMultipleDeposits } = useRevealMultipleDepositsTransaction(
+  const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
     onSuccessfulDepositReveal
   )
 
@@ -71,28 +67,23 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       refundLocktime,
     }
 
-    const successfulTransactions = await revealMultipleDeposits(
-      utxos,
-      depositScriptParameters
-    )
+    await revealDeposit(utxo, depositScriptParameters)
   }
+
+  const amount = BigNumber.from(utxo.value).toString()
 
   useEffect(() => {
     const getEstimatedFees = async () => {
-      const amount = utxos.reduce(
-        (accumulator, currentValue) =>
-          BigNumber.from(accumulator).add(currentValue.value),
-        BigNumber.from(0)
-      )
-      updateState("tBTCMintAmount", amount.toString())
+      const { treasuryFee, optimisticMintFee, amountToMint } =
+        await threshold.tbtc.getEstimatedFees(amount)
 
-      const { treasuryFee, optimisticMintFee } =
-        await threshold.tbtc.getEstimatedFees(amount.toString())
-      updateState("bitcoinMinerFee", treasuryFee)
-      updateState("thresholdNetworkFee", optimisticMintFee)
+      updateState("mintingFee", optimisticMintFee)
+      updateState("thresholdNetworkFee", treasuryFee)
+      updateState("tBTCMintAmount", amountToMint)
     }
+
     getEstimatedFees()
-  }, [])
+  }, [amount, updateState, threshold])
 
   return (
     <>
@@ -100,18 +91,20 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
-          <H5 mb={4}>
-            You will initiate the minting of{" "}
-            <Skeleton
-              isLoaded={!!tBTCMintAmount}
-              w={!tBTCMintAmount ? "105px" : undefined}
-              display="inline-block"
-            >
-              {!!tBTCMintAmount
-                ? formatTokenAmount(tBTCMintAmount, undefined, 8)
-                : "0"}
-            </Skeleton>{" "}
-            tBTC
+          <H5>You will initiate the minting of</H5>
+          {/*
+            We can't use `InlineTokenBalance` inside the above `H5` because
+            the tooltip won't work correctly- will display at the top and
+            center of the whole `H5` component not only above token amount.
+           */}
+          <H5 mb="4">
+            <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenAmount={tBTCMintAmount}
+                tokenSymbol="tBTC"
+                withSymbol
+              />
+            </Skeleton>
           </H5>
           <BodyLg>
             Minting tBTC is a process that requires one transaction.
@@ -120,11 +113,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
         <TransactionDetailsTable />
         <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
-          <ViewInBlockExplorer
-            id="NEED BRIDGE CONTRACT ADDRESS"
-            type={ExplorerDataType.ADDRESS}
-            text="bridge contract."
-          />
+          <BridgeContractLink text="bridge contract" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>
@@ -132,7 +121,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
           Cancel
         </Button>
         <Button
-          disabled={!tBTCMintAmount || !bitcoinMinerFee || !thresholdNetworkFee}
+          disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
         >
           Start minting

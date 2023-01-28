@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -11,20 +10,19 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const InitiateMintingComponent: FC<{
-  utxos: UnspentTransactionOutput[] | undefined
+  utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxos, onPreviousStepClick }) => {
-  const { updateState } = useTbtcState()
+}> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()
 
   const confirmDespotAndMint = async () => {
-    openModal(ModalType.TbtcMintingConfirmation, { utxos: utxos })
+    openModal(ModalType.TbtcMintingConfirmation, { utxo: utxo })
   }
 
   return (
     <>
       <TbtcMintingCardTitle
-        previousStep={MintingStep.Deposit}
+        previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
