@@ -24,8 +24,8 @@ export const TbtcMintingCardTitle: FC<{
       )}
       <Icon boxSize="32px" as={tBTCFillBlack} />
       <LabelSm textTransform="uppercase">
-        {mintingType === TbtcMintingType.mint && "TBTC - Minting Process"}
-        {mintingType === TbtcMintingType.unmint && "TBTC - Unminting Process"}
+        {mintingType === TbtcMintingType.mint && "tBTC - Minting Process"}
+        {mintingType === TbtcMintingType.unmint && "tBTC - Unminting Process"}
       </LabelSm>
     </Stack>
   )
