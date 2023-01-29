@@ -13,6 +13,7 @@ import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import { fetchBridgeTxHitoryEffect } from "./effects"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 interface TbtcState {
   mintingType: TbtcMintingType
@@ -28,6 +29,7 @@ interface TbtcState {
   walletPublicKeyHash: string
   refundLocktime: string
   blindingFactor: string
+  utxo: UnspentTransactionOutput
 
   nextBridgeCrossingInUnix?: number
 
