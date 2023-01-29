@@ -31,11 +31,15 @@ export const useSubscribeToDepositRevealedEvent = () => {
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
+      const { amountToMint } = await threshold.tbtc.getEstimatedFees(
+        amount.toString()
+      )
+
       dispatch(
         tbtcSlice.actions.depositRevealed({
           fundingOutputIndex,
           fundingTxHash,
-          amount: amount.toString(),
+          amount: amountToMint,
           txHash: event.transactionHash,
           depositor: depositor,
           depositKey: threshold.tbtc.buildDepositKey(
