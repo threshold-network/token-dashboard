@@ -12,7 +12,7 @@ import { FetchingState } from "../../types"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
-import { fetchBridgeTxHitoryEffect } from "./effects"
+import { fetchBridgeTxHitoryEffect, findUtxoEffect } from "./effects"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 interface TbtcState {
@@ -124,6 +124,12 @@ export const tbtcSlice = createSlice({
         txHash,
       }
     },
+    findUtxo: (
+      state,
+      action: PayloadAction<{
+        btcDepositAddress: string
+      }>
+    ) => {},
   },
 })
 
@@ -135,6 +141,11 @@ export const registerTBTCListeners = () => {
   startAppListening({
     actionCreator: tbtcSlice.actions.requestBridgeTransactionHistory,
     effect: fetchBridgeTxHitoryEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.findUtxo,
+    effect: findUtxoEffect,
   })
 }
 
