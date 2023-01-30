@@ -19,6 +19,7 @@ import { tbtcSlice } from "../../../../store/tbtc"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
+  const { account } = useWeb3React()
   const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
@@ -37,9 +38,11 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    if (!btcDepositAddress) return
-    dispatch(tbtcSlice.actions.findUtxo({ btcDepositAddress }))
-  }, [btcDepositAddress, dispatch])
+    if (!btcDepositAddress || !account) return
+    dispatch(
+      tbtcSlice.actions.findUtxo({ btcDepositAddress, depositor: account })
+    )
+  }, [btcDepositAddress, account, dispatch])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {

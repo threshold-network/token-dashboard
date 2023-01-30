@@ -4,6 +4,11 @@ import { isAddress, isAddressZero } from "../../web3/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
 import { TaskAbortError } from "@reduxjs/toolkit"
+import {
+  TBTCLocalStorageDepositData,
+  key,
+  removeDataForAccount,
+} from "../../utils/tbtcLocalStorageData"
 
 export const fetchBridgeTxHitoryEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeTransactionHistory>,
@@ -38,9 +43,13 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress } = action.payload
+  const { btcDepositAddress, depositor } = action.payload
 
-  if (!btcDepositAddress) return
+  if (
+    !btcDepositAddress ||
+    (!isAddress(depositor) && !isAddressZero(depositor))
+  )
+    return
 
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
@@ -60,7 +69,6 @@ export const findUtxoEffect = async (
           // deposit address- this means someone wants to use this deposit
           // address to mint tBTC. Redirect to step 2 and continue searching for
           // utxo.
-
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
@@ -85,7 +93,12 @@ export const findUtxoEffect = async (
 
         if (isDepositRevealed) {
           // Deposit already revealed, force start from step 1 and remove deposit data.
-          // TODO: Remove deposit data.
+          removeDataForAccount(
+            depositor,
+            JSON.parse(
+              localStorage.getItem(key) || "{}"
+            ) as TBTCLocalStorageDepositData
+          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
