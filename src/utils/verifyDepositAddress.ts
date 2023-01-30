@@ -4,7 +4,7 @@ import { BitcoinNetwork } from "../threshold-ts/types"
 
 export interface VerificationOutcome {
   status: "valid" | "invalid" | "error"
-  response: any
+  response: unknown
 }
 
 export const verifyDepositAddress = async (
