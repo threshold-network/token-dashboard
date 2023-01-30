@@ -15,6 +15,7 @@ import {
   getContractPastEvents,
   getChainIdentifier,
   ZERO,
+  isPublicKeyHashTypeAddress,
   isSameETHAddress,
 } from "../utils"
 import {
@@ -273,6 +274,10 @@ export class TBTC implements ITBTC {
       throw new Error(
         "Wrong bitcoin address passed to createDepositScriptParameters function"
       )
+    }
+
+    if (!isPublicKeyHashTypeAddress(btcRecoveryAddress)) {
+      throw new Error("Bitcoin recovery address must be a P2PKH or P2WPKH")
     }
 
     const currentTimestamp = Math.floor(new Date().getTime() / 1000)
