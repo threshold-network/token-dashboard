@@ -148,6 +148,7 @@ export const ProvideDataComponent: FC<{
       refundLocktime: depositScriptParameters.refundLocktime,
       btcDepositAddress: depositAddress,
     })
+    updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (
