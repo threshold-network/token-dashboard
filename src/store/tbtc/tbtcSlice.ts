@@ -95,6 +95,14 @@ export const tbtcSlice = createSlice({
       }>
     ) => {
       const { amount, txHash, depositKey } = action.payload
+      const history = state.transactionsHistory.data
+      const { itemToUpdate } = findHistoryByDepositKey(history, depositKey)
+
+      // Do not update an array if there is already an item with the same
+      // deposit key- just in case duplicated Ethereum events.
+      if (itemToUpdate) return
+
+      // Add item only if there is no item with the same deposit key.
       state.transactionsHistory.data = [
         { amount, txHash, status: BridgeHistoryStatus.PENDING, depositKey },
         ...state.transactionsHistory.data,
@@ -109,14 +117,12 @@ export const tbtcSlice = createSlice({
     ) => {
       const { depositKey, txHash } = action.payload
       const history = state.transactionsHistory.data
-      const historyIndexItemToUpdate = history.findIndex(
-        (item) => item.depositKey === depositKey
-      )
+      const {
+        index: historyIndexItemToUpdate,
+        itemToUpdate: historyItemToUpdate,
+      } = findHistoryByDepositKey(history, depositKey)
 
-      if (historyIndexItemToUpdate < 0) return
-
-      const historyItemToUpdate =
-        state.transactionsHistory.data[historyIndexItemToUpdate]
+      if (!historyItemToUpdate) return
 
       state.transactionsHistory.data[historyIndexItemToUpdate] = {
         ...historyItemToUpdate,
@@ -133,6 +139,21 @@ export const tbtcSlice = createSlice({
     ) => {},
   },
 })
+
+function findHistoryByDepositKey(
+  history: BridgeTxHistory[],
+  depositKey: string
+) {
+  const historyIndexItemToUpdate = history.findIndex(
+    (item) => item.depositKey === depositKey
+  )
+
+  if (historyIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }
+
+  const historyItemToUpdate = history[historyIndexItemToUpdate]
+
+  return { index: historyIndexItemToUpdate, itemToUpdate: historyItemToUpdate }
+}
 
 export const { updateState } = tbtcSlice.actions
 
