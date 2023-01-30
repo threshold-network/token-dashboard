@@ -1,10 +1,14 @@
 import { FC } from "react"
-import { Icon, Stack } from "@chakra-ui/react"
 import { HiArrowNarrowLeft } from "react-icons/all"
-import { LabelSm } from "@threshold-network/components"
+import { Icon, Stack, Box, LabelSm } from "@threshold-network/components"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
+
+const mintTypeToText: Record<TbtcMintingType, string> = {
+  [TbtcMintingType.mint]: "minting process",
+  [TbtcMintingType.unmint]: "unminting process",
+}
 
 export const TbtcMintingCardTitle: FC<{
   previousStep?: MintingStep
@@ -23,9 +27,11 @@ export const TbtcMintingCardTitle: FC<{
         />
       )}
       <Icon boxSize="32px" as={tBTCFillBlack} />
-      <LabelSm textTransform="uppercase">
-        {mintingType === TbtcMintingType.mint && "TBTC - Minting Process"}
-        {mintingType === TbtcMintingType.unmint && "TBTC - Unminting Process"}
+      <LabelSm>
+        <Box as="span" textTransform="lowercase">
+          t
+        </Box>
+        btc - {mintTypeToText[mintingType]}
       </LabelSm>
     </Stack>
   )
