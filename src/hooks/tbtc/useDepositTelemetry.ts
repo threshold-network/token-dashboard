@@ -15,11 +15,17 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
         network
       )
 
-      captureMessage(`Generated deposit [${depositAddress}]`, {
-        ...deposit,
-        verificationStatus: status,
-        verificationResponse: response,
-      })
+      captureMessage(
+        `Generated deposit [${depositAddress}]`,
+        {
+          ...deposit,
+          verificationStatus: status,
+          verificationResponse: response,
+        },
+        {
+          "verification.status": status,
+        }
+      )
     },
     [verifyDepositAddress, network, captureMessage]
   )
