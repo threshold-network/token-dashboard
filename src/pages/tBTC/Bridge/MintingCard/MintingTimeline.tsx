@@ -55,7 +55,7 @@ export const MintingTimelineStep2: FC<MintingTimelineStepProps> = ({
       stepText="Step 2"
       helperLabelText="ACTION ON BITCOIN NETWORK"
       title="Make a BTC deposit"
-      description="Send any amount larger than 0.01&nbsp;BTC to this unique BTC Deposit Address. The amount you send will be minted as tBTC."
+      description="Send minimum 0.01&nbsp;BTC to this unique BTC Deposit Address. The amount you send will be minted as tBTC."
       imageSrc={tbtcMintingStep2}
       {...restProps}
     />
