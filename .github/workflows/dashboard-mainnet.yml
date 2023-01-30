@@ -51,6 +51,7 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
           ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
@@ -63,6 +64,7 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true
           POSTHOG_API_KEY: ${{ secrets.MAINNET_POSTHOG_API_KEY }}
           POSTHOG_HOSTNAME_HTTP: ${{ secrets.MAINNET_POSTHOG_HOSTNAME_HTTP }}
