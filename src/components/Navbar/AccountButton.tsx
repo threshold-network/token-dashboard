@@ -1,6 +1,6 @@
 import { Button, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react"
 import { FC } from "react"
-import { useDispatch } from "react-redux"
+import { useAppDispatch } from "../../hooks/store"
 import { resetStoreAction } from "../../store"
 import shortenAddress from "../../utils/shortenAddress"
 import Identicon from "../Identicon"
@@ -10,7 +10,7 @@ const AccountButton: FC<{
   account?: string | null
   deactivate: () => void
 }> = ({ openWalletModal, account, deactivate }) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const onDisconnectClick = () => {
     dispatch(resetStoreAction())
