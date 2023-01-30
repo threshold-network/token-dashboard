@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react"
 import { BrowserTracing } from "@sentry/tracing"
 import { getEnvVariable } from "../utils/getEnvVariable"
 import { EnvVariable } from "../enums"
+import { Primitive } from "@sentry/types"
 
 export const init = () => {
   const dsn = getEnvVariable(EnvVariable.SENTRY_DSN)
@@ -15,12 +16,16 @@ export const init = () => {
 
 export const captureMessage = (
   message: string,
-  params: { [key: string]: unknown }
+  params?: { [key: string]: unknown },
+  tags?: { [key: string]: Primitive }
 ) => {
   Sentry.withScope((scope) => {
-    // eslint-disable-next-line guard-for-in
-    for (const key in params) {
-      scope.setExtra(key, params[key])
+    if (params) {
+      scope.setExtras(params)
+    }
+
+    if (tags) {
+      scope.setTags(tags)
     }
 
     Sentry.captureMessage(message)
