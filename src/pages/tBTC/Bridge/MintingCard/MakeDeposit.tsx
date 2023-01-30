@@ -57,7 +57,7 @@ const MakeDepositComponent: FC<{
         tBTC.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        This address is an unique generated address based on the data you
+        This address is a uniquely generated address based on the data you
         provided.
       </BodyMd>
       <InfoBox p="4">
@@ -71,7 +71,7 @@ const MakeDepositComponent: FC<{
           sx={{ ">span": { display: "flex" } }}
         >
           <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
-          <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
+          <TooltipIcon label="This is a unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
 
         <Box
