@@ -79,7 +79,9 @@ const TbtcRecoveryFileModalModal: FC<
   ) : (
     <>
       <BodyLg mb={6}>
-        This file is important to save in case you need to make a fast recovery.
+        This file is important to save in case you need to recover your funds.
+        Keep it until you have successfully initiated minting. One deposit, one
+        .JSON file.
       </BodyLg>
       <BodyLg>
         This file contains a wallet public key, a refund public key and a refund

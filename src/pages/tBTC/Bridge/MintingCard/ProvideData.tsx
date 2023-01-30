@@ -39,14 +39,14 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="ethAddress"
         label="ETH Address"
-        tooltip="ETH address is prepopulated with your wallet address. This is the address where you’ll receive your tBTC."
+        tooltip="ETH address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
         mb={6}
         isReadOnly={true}
       />
       <FormikInput
         name="btcRecoveryAddress"
         label="BTC Recovery Address"
-        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. The funds can be claimed by using the JSON file."
+        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Recovery Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file."
       />
     </Form>
   )
