@@ -129,8 +129,18 @@ const AppBody = () => {
       if (
         !update.account ||
         !isSameETHAddress(update.account, account as string)
-      )
-        dispatch(resetStoreAction())
+      ) {
+        // dispatch(resetStoreAction())
+
+        // TODO: This is a workaround for the accounts change. There are some
+        // unecpecting errors happening when the user changes the account in
+        // MM while he is connected to the dApp. To avoid any potential issues
+        // we are refreshing the page when we notice that the account was
+        // changed.
+        // The refresh will not fire if the uer disconnects and reconnects with
+        // another wallet or if he connects the wallet for the first time.
+        window.location.reload()
+      }
     }
 
     const deactivateHandler = () => {
