@@ -55,7 +55,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
                 0.01 BTC
               </Box>
               . Depositing less than the minimum can mean losing access to your
-              funds. Learn more.
+              funds.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
@@ -67,7 +67,6 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
             <BodyComponent>
               Bridging back is under construction! The ability to bridge BTC
               back to the Bitcoin network won't be enabled for 3 to 6 months.
-              Learn more.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
