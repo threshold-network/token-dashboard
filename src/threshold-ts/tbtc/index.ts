@@ -426,11 +426,7 @@ export class TBTC implements ITBTC {
     )
 
     const estimatedAmountToMintByDepositKey =
-      await this._calculateEstimatedAmountToMintForRevealedDeposits(
-        mintedDepositEvents.map((event) =>
-          (event.args?.depositKey as BigNumber).toHexString()
-        )
-      )
+      await this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys)
 
     const mintedDeposits = new Map(
       mintedDepositEvents.map((event) => [
