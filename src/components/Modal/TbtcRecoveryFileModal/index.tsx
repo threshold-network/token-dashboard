@@ -69,8 +69,8 @@ const TbtcRecoveryFileModalModal: FC<
   }
 
   const titleText = isOnConfirmStep
-    ? "Are you sure you do not want to download the .JSON file?"
-    : "Download this .JSON file"
+    ? "Are you sure you do not want to download the JSON file?"
+    : "Download this JSON file"
 
   const bodyContent = isOnConfirmStep ? (
     <BodyLg>
@@ -81,11 +81,11 @@ const TbtcRecoveryFileModalModal: FC<
       <BodyLg mb={6}>
         This file is important to save in case you need to recover your funds.
         Keep it until you have successfully initiated minting. One deposit, one
-        .JSON file.
+        JSON file.
       </BodyLg>
       <BodyLg>
-        This file contains a wallet public key, a refund public key and a refund
-        lock time.
+        This file contains your BTC recovery address, the wallet public key, the
+        refund public key and the refund lock time of this deposit.
       </BodyLg>
     </>
   )
