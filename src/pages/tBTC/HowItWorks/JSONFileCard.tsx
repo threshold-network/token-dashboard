@@ -7,23 +7,23 @@ import { ExternalHref } from "../../../enums"
 export const JSONFileCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   return (
     <Card {...props}>
-      <LabelSm mb="8">.json file for Fund recoveries</LabelSm>
+      <LabelSm mb="8">JSON file for fund recoveries</LabelSm>
       <BodySm mb="5">
-        The .JSON file is important to save in case you need to recover your
+        The JSON file is important to save in case you need to recover your
         funds.
       </BodySm>
       <BodySm mb="5">
-        It’s important to keep this .JSON file until you have successfully
+        It’s important to keep this JSON file until you have successfully
         initiated tBTC minting.
       </BodySm>
       <BodySm mb="5">
-        This file contains a wallet public key, a refund public key and a refund
-        lock time. It reconstructs the deposit address in case a very unlikely
-        incident were to happen.
+        This file contains your BTC recovery address, the wallet's public key,
+        the refund public key, and the refund lock time of this deposit. It can
+        be used to reconstruct the deposit address in case of system error.
       </BodySm>
       <BodySm mb="5">
-        Each new deposit will generate a new .JSON file. Take note: Recovery
-        time lock is currently 9 months.
+        Each new deposit will generate a new JSON file. Take note: Recovery time
+        lock is currently 9 months.
       </BodySm>
       <BodySm mb="5">
         Recovery guide can be found{" "}
