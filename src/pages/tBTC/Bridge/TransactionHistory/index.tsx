@@ -98,12 +98,7 @@ export const TransactionHistoryTable: FC<{
             data.map((_) => (
               <Tr key={_.txHash}>
                 <Td py={4} px={2}>
-                  <InlineTokenBalance
-                    tokenAmount={_.amount}
-                    // TODO: Remove once we update the `bridgeTxHistory` in
-                    // `TBTC` wrapper in threshold lib.
-                    tokenDecimals={8}
-                  />
+                  <InlineTokenBalance tokenAmount={_.amount} />
                 </Td>
                 <Td py={4} px={2}>
                   <ViewInBlockExplorer
