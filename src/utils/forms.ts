@@ -1,7 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { WeiPerEther } from "@ethersproject/constants"
 import { Network } from "bitcoin-address-validation"
-import { isValidBtcAddress } from "../threshold-ts/utils"
+import {
+  isPublicKeyHashTypeAddress,
+  isValidBtcAddress,
+} from "../threshold-ts/utils"
 import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 
@@ -83,5 +86,7 @@ export const validateBTCAddress = (
     return "Required."
   } else if (!isValidBtcAddress(address, network)) {
     return "Invalid btc address."
+  } else if (!isPublicKeyHashTypeAddress(address)) {
+    return "Must be a P2PKH or P2WPKH address."
   }
 }
