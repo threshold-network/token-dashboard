@@ -1,3 +1,4 @@
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
 
 export type TbtcStateKey =
@@ -14,6 +15,7 @@ export type TbtcStateKey =
   | "walletPublicKeyHash"
   | "blindingFactor"
   | "refundLocktime"
+  | "utxo"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -63,6 +65,7 @@ export interface UseTbtcState {
     refundLocktime: string
     blindingFactor: string
     walletPublicKeyHash: string
+    utxo: UnspentTransactionOutput
 
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
     nextBridgeCrossingInUnix?: number

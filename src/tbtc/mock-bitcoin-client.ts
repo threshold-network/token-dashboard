@@ -123,7 +123,7 @@ export class MockBitcoinClient implements Client {
         refundLocktime: refundLocktime,
       }
 
-      this.mockDepositTransaction(depositScriptParameters)
+      await this.mockDepositTransaction(depositScriptParameters)
     }
 
     return this._unspentTransactionOutputs.get(
@@ -172,7 +172,7 @@ export class MockBitcoinClient implements Client {
 
     const deposit2: Deposit = {
       ...depositScriptParameters,
-      amount: BigNumber.from("1000001"),
+      amount: BigNumber.from("1500000"),
     }
 
     const {

@@ -19,6 +19,7 @@ import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
+import { isSameETHAddress } from "../../../../web3/utils"
 
 export interface FormValues {
   ethAddress: string
@@ -37,9 +38,10 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
     <Form id={formId} mb={6}>
       <FormikInput
         name="ethAddress"
-        label="ETH address"
+        label="ETH Address"
         tooltip="ETH address is prepopulated with your wallet address. This is the address where you’ll receive your tBTC."
         mb={6}
+        isReadOnly={true}
       />
       <FormikInput
         name="btcRecoveryAddress"
@@ -68,7 +70,7 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     btcRecoveryAddress: btcRecoveryAddress,
     bitcoinNetwork: bitcoinNetwork,
   }),
-  validate: async (values) => {
+  validate: async (values, props) => {
     const errors: FormikErrors<FormValues> = {}
     errors.ethAddress = validateETHAddress(values.ethAddress)
     errors.btcRecoveryAddress = validateBTCAddress(
@@ -81,6 +83,7 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     props.onSubmitForm(values)
   },
   displayName: "MintingProcessForm",
+  enableReinitialize: true,
 })(MintingProcessFormBase)
 
 export const ProvideDataComponent: FC<{
@@ -93,9 +96,14 @@ export const ProvideDataComponent: FC<{
   const threshold = useThreshold()
   const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
-  const depositTelemetry = useDepositTelemetry()
+  const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
   const onSubmit = async (values: FormValues) => {
+    if (account && !isSameETHAddress(values.ethAddress, account)) {
+      throw new Error(
+        "The account used to generate the deposit address must be the same as the connected wallet."
+      )
+    }
     setSubmitButtonLoading(true)
     const depositScriptParameters =
       await threshold.tbtc.createDepositScriptParameters(
@@ -140,6 +148,7 @@ export const ProvideDataComponent: FC<{
       refundLocktime: depositScriptParameters.refundLocktime,
       btcDepositAddress: depositAddress,
     })
+    updateState("mintingStep", MintingStep.Deposit)
   }
 
   return (

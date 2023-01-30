@@ -10,10 +10,12 @@ import { isSameETHAddress } from "../../../../web3/utils"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
-  const { btcDepositAddress, updateState } = useTbtcState()
+  const { btcDepositAddress, resetDepositData, updateState } = useTbtcState()
   const { account } = useWeb3React()
 
   useEffect(() => {
+    // Update the store with the deposit data if the account is placed in tbtc
+    // local storage.
     if (
       tBTCDepositData &&
       account &&
