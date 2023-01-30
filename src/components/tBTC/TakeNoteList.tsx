@@ -32,39 +32,41 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
   return (
     <List spacing="4">
       <ListItem>
-        <LabelComponent mb="2">minting duration</LabelComponent>
+        <LabelComponent mb="2">Bridging duration</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent as="span">
-              Mint tBTC in around{" "}
+              You'll be able to mint tBTC{" "}
               <Box as="span" color="brand.500">
                 ~1 to 3 hours
-              </Box>
-              .
+              </Box>{" "}
+              after your BTC deposit.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
       </ListItem>
       <ListItem>
-        <LabelComponent mb="2">funds time lock</LabelComponent>
+        <LabelComponent mb="2">Minimum deposit</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent>
-              Your BTC funds will be locked for{" "}
+              The minimum deposit at launch is{" "}
               <Box as="span" color="brand.500">
-                9 months
+                0.01 BTC
               </Box>
-              .
+              . Depositing less than the minimum can mean losing access to your
+              funds.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
       </ListItem>
       <ListItem>
-        <LabelComponent mb="2">unminting tbtc</LabelComponent>
+        <LabelComponent mb="2">Bridging back BTC</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent>
-              Unminting is currently under construction.
+              Bridging back is under construction! The ability to bridge BTC
+              back to the Bitcoin network won't be enabled for 3 to 6 months.
             </BodyComponent>
           </ListItemWithIcon>
         </List>

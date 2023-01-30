@@ -3,13 +3,12 @@ import { List } from "@chakra-ui/react"
 import { Card, LabelSm } from "@threshold-network/components"
 import DetailedLinkListItem from "../../../components/DetailedLinkListItem"
 import { useTBTCTokenAddress } from "../../../hooks/useTBTCTokenAddress"
-import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../../../utils/createEtherscanLink"
 import { supportedChainId } from "../../../utils/getEnvVariable"
-import { IoLinkSharp, IoLogoGithub } from "react-icons/all"
-import { ExternalHref } from "../../../enums"
+import { IoLinkSharp } from "react-icons/all"
+import { useTBTCBridgeContractAddress } from "../../../hooks/useTBTCBridgeContractAddress"
 
 export const ContractsCard: FC<ComponentProps<typeof Card>> = (props) => {
   const tbtcTokenContractAddress = useTBTCTokenAddress()
@@ -29,9 +28,13 @@ export const ContractsCard: FC<ComponentProps<typeof Card>> = (props) => {
           )}
         />
         <DetailedLinkListItem
-          icon={IoLogoGithub}
+          icon={IoLinkSharp}
           title="Bridge Contract"
-          href={ExternalHref.tbtcBridgeGithub}
+          href={createEtherscanLink(
+            Number(supportedChainId),
+            bridgeContractAddress,
+            ExplorerDataType.ADDRESS
+          )}
         />
       </List>
     </Card>

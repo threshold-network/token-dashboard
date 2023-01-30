@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC } from "react"
 import {
   BodyMd,
   Box,
@@ -19,8 +19,6 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 
 const AddressRow: FC<{ address: string; text: string }> = ({
@@ -39,35 +37,10 @@ const AddressRow: FC<{ address: string; text: string }> = ({
 }
 
 const MakeDepositComponent: FC<{
-  utxos: UnspentTransactionOutput[] | undefined
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxos, onPreviousStepClick }) => {
+}> = ({ onPreviousStepClick }) => {
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
-  const threshold = useThreshold()
-  const [hasAnyUnrevealedDeposits, setHasAnyUnrevealedDeposits] =
-    useState(false)
-
-  useEffect(() => {
-    const checkIfAnyUtxosAreNotRevealed = async () => {
-      if (!utxos) return
-
-      const deposits = await Promise.all(
-        utxos.map(threshold.tbtc.getRevealedDeposit)
-      )
-
-      setHasAnyUnrevealedDeposits(
-        deposits.some((deposit) => deposit.revealedAt === 0)
-      )
-    }
-    checkIfAnyUtxosAreNotRevealed()
-  }, [utxos?.length])
-
-  const handleSubmit = async () => {
-    if (hasAnyUnrevealedDeposits) {
-      updateState("mintingStep", MintingStep.InitiateMinting)
-    }
-  }
 
   return (
     <>
@@ -80,11 +53,11 @@ const MakeDepositComponent: FC<{
         subTitle="Make your BTC deposit"
       />
       <BodyMd color="gray.500" mb={6}>
-        Use this generated address to send any amount of BTC you want to mint as
+        Use this generated address to send minimum 0.01&nbsp;BTC, to mint as
         tBTC.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        This address is an unique generated address based on the data you
+        This address is a uniquely generated address based on the data you
         provided.
       </BodyMd>
       <InfoBox p="4">
@@ -98,7 +71,7 @@ const MakeDepositComponent: FC<{
           sx={{ ">span": { display: "flex" } }}
         >
           <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
-          <TooltipIcon label="This is an unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
+          <TooltipIcon label="This is a unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
         </HStack>
 
         <Box
@@ -157,12 +130,12 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
+      {/* TODO: No need to use button here. We can replace it with just some text */}
       <Button
-        isLoading={!hasAnyUnrevealedDeposits}
-        loadingText={"Checking if funds have been sent..."}
-        onClick={handleSubmit}
+        isLoading={true}
+        loadingText={"Waiting for funds to be sent..."}
         form="tbtc-minting-data-form"
-        isDisabled={!utxos}
+        isDisabled={true}
         isFullWidth
       >
         I sent the BTC

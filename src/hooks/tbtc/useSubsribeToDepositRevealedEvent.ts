@@ -5,11 +5,13 @@ import { useAppDispatch } from "../store"
 import { useBridgeContract } from "./useBridgeContract"
 import { tbtcSlice } from "../../store/tbtc"
 import { BigNumber, Event } from "ethers"
+import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const useSubscribeToDepositRevealedEvent = () => {
   const contract = useBridgeContract()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
+  const threshold = useThreshold()
 
   useSubscribeToContractEvent(
     contract,
@@ -29,13 +31,21 @@ export const useSubscribeToDepositRevealedEvent = () => {
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
+      const { amountToMint } = await threshold.tbtc.getEstimatedFees(
+        amount.toString()
+      )
+
       dispatch(
         tbtcSlice.actions.depositRevealed({
           fundingOutputIndex,
           fundingTxHash,
-          amount: amount.toString(),
+          amount: amountToMint,
           txHash: event.transactionHash,
           depositor: depositor,
+          depositKey: threshold.tbtc.buildDepositKey(
+            fundingTxHash,
+            fundingOutputIndex
+          ),
         })
       )
     },

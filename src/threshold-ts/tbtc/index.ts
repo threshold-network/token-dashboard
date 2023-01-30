@@ -12,8 +12,11 @@ import {
   getContract,
   getProviderOrSigner,
   isValidBtcAddress,
-  unprefixedAndUncheckedAddress,
   getContractPastEvents,
+  getChainIdentifier,
+  ZERO,
+  isPublicKeyHashTypeAddress,
+  isSameETHAddress,
 } from "../utils"
 import {
   Client,
@@ -30,6 +33,7 @@ import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
+import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { BigNumber, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
@@ -44,6 +48,7 @@ export interface BridgeTxHistory {
   status: BridgeHistoryStatus
   txHash: string
   amount: string
+  depositKey: string
 }
 
 interface RevealedDepositEvent {
@@ -55,6 +60,8 @@ interface RevealedDepositEvent {
   txHash: string
 }
 
+type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
 export interface ITBTC {
   /**
    * Bitcoin network specified in the bitcoin config that we pass to the
@@ -62,6 +69,12 @@ export interface ITBTC {
    * @returns {BitcoinNetwork}
    */
   readonly bitcoinNetwork: BitcoinNetwork
+
+  readonly bridgeContract: Contract
+
+  readonly vaultContract: Contract
+
+  readonly tokenContract: Contract
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -105,13 +118,16 @@ export interface ITBTC {
   ): Promise<UnspentTransactionOutput[]>
 
   /**
-   * Gets estimated fees that will be payed during a reveal
-   * @param depositAmount - summed amount of all utxos that will be revealed
-   * @returns treasury fee and optitimistic mint fee
+   * Gets estimated fees that will be payed during a reveal and estimated amount
+   * of tBTC token that will be minted.
+   * @param depositAmount Amount that will be revealed in Satoshi.
+   * @returns Treasury fee, optitimistic mint fee and estimated amount of tBTC
+   * token that will be minted in ERC20 standart.
    */
   getEstimatedFees(depositAmount: string): Promise<{
     treasuryFee: string
     optimisticMintFee: string
+    amountToMint: string
   }>
 
   /**
@@ -139,6 +155,25 @@ export interface ITBTC {
    * @returns Bridge transaction history @see {@link BridgeTxHistory}.
    */
   bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
+
+  /**
+   * Builds the deposit key required to refer a revealed deposit.
+   * @param depositTxHash The revealed deposit transaction's hash.
+   * @param depositOutputIndex Index of the deposit transaction output that
+   * funds the revealed deposit.
+   * @param txHashByteOrder Determines the transaction hash byte order. Use
+   * `little-endian` to build the deposit key from transaction hash in native
+   * Bitcoin little-endian format- for example when using the `fundingTxHash`
+   * parameter from the `DepositRevealed` event. Use `big-endian` to build the
+   * deposit key from transaction hash in the same byte order as used by the
+   * Bitcoin block explorers. The `little-endian` is used as default.
+   * @returns Deposit key.
+   */
+  buildDepositKey(
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder?: BitcoinTransactionHashByteOrder
+  ): string
 }
 
 export class TBTC implements ITBTC {
@@ -147,6 +182,7 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: Client
   private _multicall: IMulticall
   private _bridgeContract: Contract
+  private _token: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -154,6 +190,7 @@ export class TBTC implements ITBTC {
   // This 15min is set FOR TESTING PURPOSES ONLY. DO NOT MERGE.
   private _depositRefundLocktimDuration = -7200 // in sec
   private _bitcoinConfig: BitcoinConfig
+  private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
 
   /**
    * Maps the network that is currently used for bitcoin, so that it use "main"
@@ -201,10 +238,28 @@ export class TBTC implements ITBTC {
       )
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
+    this._token = getContract(
+      TBTCToken.address,
+      TBTCToken.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
     return this._bitcoinConfig.network
+  }
+
+  get bridgeContract() {
+    return this._bridgeContract
+  }
+
+  get vaultContract() {
+    return this._tbtcVault
+  }
+
+  get tokenContract() {
+    return this._token
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -220,6 +275,10 @@ export class TBTC implements ITBTC {
       throw new Error(
         "Wrong bitcoin address passed to createDepositScriptParameters function"
       )
+    }
+
+    if (!isPublicKeyHashTypeAddress(btcRecoveryAddress)) {
+      throw new Error("Bitcoin recovery address must be a P2PKH or P2WPKH")
     }
 
     const currentTimestamp = Math.floor(new Date().getTime() / 1000)
@@ -240,12 +299,9 @@ export class TBTC implements ITBTC {
       currentTimestamp,
       this._depositRefundLocktimDuration
     )
-    const identifierHex = unprefixedAndUncheckedAddress(ethAddress)
 
     const depositScriptParameters: DepositScriptParameters = {
-      depositor: {
-        identifierHex,
-      },
+      depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
@@ -271,6 +327,32 @@ export class TBTC implements ITBTC {
   }
 
   getEstimatedFees = async (depositAmount: string) => {
+    const { depositTreasuryFeeDivisor, optimisticMintingFeeDivisor } =
+      await this._getDepositFees()
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
+    const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
+      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor)
+      : ZERO
+
+    const { amountToMint, optimisticMintFee } =
+      this._calculateOptimisticMintingAmountAndFee(
+        BigNumber.from(depositAmount),
+        treasuryFee,
+        optimisticMintingFeeDivisor
+      )
+
+    return {
+      treasuryFee: treasuryFee.mul(this._satoshiMultiplier).toString(),
+      optimisticMintFee: optimisticMintFee.toString(),
+      amountToMint: amountToMint.toString(),
+    }
+  }
+
+  private _getDepositFees = async (): Promise<{
+    depositTreasuryFeeDivisor: BigNumber
+    optimisticMintingFeeDivisor: BigNumber
+  }> => {
     const calls: ContractCall[] = [
       {
         interface: new Interface(BridgeArtifact.abi),
@@ -289,26 +371,36 @@ export class TBTC implements ITBTC {
     const [depositParams, _optimisticMintingFeeDivisor] =
       await this._multicall.aggregate(calls)
 
-    const depositTreasuryFeeDivisor = depositParams.depositTreasuryFeeDivisor
-    const optimisticMintingFeeDivisor = _optimisticMintingFeeDivisor[0]
+    const depositTreasuryFeeDivisor = BigNumber.from(
+      depositParams.depositTreasuryFeeDivisor
+    )
+    const optimisticMintingFeeDivisor = BigNumber.from(
+      _optimisticMintingFeeDivisor[0]
+    )
 
-    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
-    const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
-      ? BigNumber.from(depositAmount).div(depositTreasuryFeeDivisor).toString()
-      : "0"
+    return {
+      depositTreasuryFeeDivisor,
+      optimisticMintingFeeDivisor,
+    }
+  }
 
-    const amountToMint = BigNumber.from(depositAmount)
+  private _calculateOptimisticMintingAmountAndFee = (
+    depositAmount: BigNumber,
+    treasuryFee: BigNumber,
+    optimisticMintingFeeDivisor: BigNumber
+  ) => {
+    const amountToMint = depositAmount
       .sub(treasuryFee)
-      .toString()
+      .mul(this._satoshiMultiplier)
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
     const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
-      ? BigNumber.from(amountToMint).div(optimisticMintingFeeDivisor).toString()
-      : "0"
+      ? amountToMint.div(optimisticMintingFeeDivisor)
+      : ZERO
 
     return {
-      treasuryFee,
-      optimisticMintFee,
+      optimisticMintFee: optimisticMintFee,
+      amountToMint: amountToMint.sub(optimisticMintFee),
     }
   }
 
@@ -321,9 +413,7 @@ export class TBTC implements ITBTC {
       depositScriptParameters,
       this._bitcoinClient,
       this._bridge,
-      {
-        identifierHex: unprefixedAndUncheckedAddress(this._tbtcVault.address),
-      }
+      getChainIdentifier(this._tbtcVault.address)
     )
   }
 
@@ -338,33 +428,51 @@ export class TBTC implements ITBTC {
     const revealedDeposits = await this._findAllRevealedDeposits(depositor)
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
 
+    const mintedDepositEvents = await this._findAllMintedDeposits(
+      depositor,
+      depositKeys
+    )
+
+    const estimatedAmountToMintByDepositKey =
+      await this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys)
+
     const mintedDeposits = new Map(
-      (await this._findAllMintedDeposits(depositor, depositKeys)).map((_) => [
-        _.args?.depositKey,
-        { txHash: _.transactionHash },
+      mintedDepositEvents.map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
       ])
     )
 
     const cancelledDeposits = new Map(
-      (await this._findAllCancelledDeposits(depositKeys)).map((_) => [
-        _.args?.depositKey,
-        { txHash: _.transactionHash },
+      (await this._findAllCancelledDeposits(depositKeys)).map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
       ])
+    )
+    const mintedAmountByTxHash = new Map(
+      await Promise.all(
+        Array.from(mintedDeposits.values()).map((txHash) =>
+          this._getMintedAmountFromTxHash(txHash, depositor)
+        )
+      )
     )
 
     return revealedDeposits.map((deposit) => {
-      const { depositKey, amount, txHash: depositTxHash } = deposit
+      const { depositKey, txHash: depositTxHash } = deposit
       let status = BridgeHistoryStatus.PENDING
       let txHash = depositTxHash
+      let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
+
       if (mintedDeposits.has(depositKey)) {
         status = BridgeHistoryStatus.MINTED
-        txHash = mintedDeposits.get(depositKey)?.txHash!
+        txHash = mintedDeposits.get(depositKey)!
+        amount = mintedAmountByTxHash.get(txHash)!
       } else if (cancelledDeposits.has(depositKey)) {
         status = BridgeHistoryStatus.ERROR
-        txHash = cancelledDeposits.get(depositKey)?.txHash!
+        txHash = cancelledDeposits.get(depositKey)!
       }
 
-      return { amount, txHash, status }
+      return { amount: amount.toString(), txHash, status, depositKey }
     })
   }
 
@@ -382,8 +490,8 @@ export class TBTC implements ITBTC {
         const fundingTxHash = deposit.args?.fundingTxHash
         const fundingOutputIndex = deposit.args?.fundingOutputIndex
 
-        const depositKey = EthereumBridge.buildDepositKey(
-          TransactionHash.from(fundingTxHash).reverse(),
+        const depositKey = this.buildDepositKey(
+          fundingTxHash,
           fundingOutputIndex
         )
 
@@ -397,6 +505,61 @@ export class TBTC implements ITBTC {
         }
       })
       .reverse()
+  }
+
+  private _calculateEstimatedAmountToMintForRevealedDeposits = async (
+    depositKeys: string[]
+  ): Promise<Map<string, BigNumber>> => {
+    const { optimisticMintingFeeDivisor } = await this._getDepositFees()
+
+    const deposits = (
+      await this._multicall.aggregate(
+        depositKeys.map((depositKey) => ({
+          interface: this.bridgeContract.interface,
+          address: this.bridgeContract.address,
+          method: "deposits",
+          args: [depositKey],
+        }))
+      )
+    ).map((deposit) => deposit[0]) as {
+      amount: BigNumber
+      treasuryFee: BigNumber
+    }[]
+
+    return new Map(
+      depositKeys.map((depositKey, index) => {
+        const deposit = deposits[index]
+        return [
+          depositKey,
+          this._calculateOptimisticMintingAmountAndFee(
+            deposit.amount,
+            deposit.treasuryFee,
+            optimisticMintingFeeDivisor
+          ).amountToMint,
+        ]
+      })
+    )
+  }
+
+  private _getMintedAmountFromTxHash = async (
+    optimisticMintingFinalizedTxHash: string,
+    depositor: string
+  ): Promise<[string, BigNumber]> => {
+    const receipt = await this.tokenContract.provider.getTransactionReceipt(
+      optimisticMintingFinalizedTxHash
+    )
+
+    // There is only one transfer to depositor account.
+    const transferEvent = receipt.logs
+      .filter((log) => isSameETHAddress(log.address, this._token.address))
+      .map((log) => this._token.interface.parseLog(log))
+      .filter((log) => log.name === "Transfer")
+      .find((log) => isSameETHAddress(log.args.to, depositor))
+
+    return [
+      optimisticMintingFinalizedTxHash,
+      BigNumber.from(transferEvent?.args?.value ?? ZERO),
+    ]
   }
 
   private _findAllMintedDeposits = async (
@@ -418,5 +581,18 @@ export class TBTC implements ITBTC {
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
+  }
+
+  buildDepositKey = (
+    depositTxHash: string,
+    depositOutputIndex: number,
+    txHashByteOrder: BitcoinTransactionHashByteOrder = "little-endian"
+  ): string => {
+    const _txHash = TransactionHash.from(depositTxHash)
+
+    return EthereumBridge.buildDepositKey(
+      txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
+      depositOutputIndex
+    )
   }
 }
