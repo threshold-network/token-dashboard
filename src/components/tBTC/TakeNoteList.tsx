@@ -39,7 +39,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
               You'll be able to mint tBTC{" "}
               <Box as="span" color="brand.500">
                 ~1 to 3 hours
-              </Box>
+              </Box>{" "}
               after your BTC deposit.
             </BodyComponent>
           </ListItemWithIcon>
