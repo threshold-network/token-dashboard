@@ -17,12 +17,23 @@ import ConnectCoinbase from "./ConnectCoinbase"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
+import tallyHo from "../../../web3/connectors/tallyHo"
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
   const { activate, deactivate } = useWeb3React()
   const { closeModal } = useModal()
 
   const walletOptions: WalletOption[] = [
+    {
+      id: WalletType.TallyHo,
+      title: "Tally Ho!",
+      // TODO: ADD Tally Ho icon.
+      icon: MetaMaskIcon,
+      onClick: () => {
+        activate(tallyHo)
+        setWalletToConnect(WalletType.TallyHo)
+      },
+    },
     {
       id: WalletType.Metamask,
       title: "MetaMask",

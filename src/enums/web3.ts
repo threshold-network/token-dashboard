@@ -31,4 +31,5 @@ export enum WalletType {
   WalletConnect = "WALLET_CONNECT",
   Trezor = "TREZOR",
   Coinbase = "COINBASE",
+  TallyHo = "TALLy_HO",
 }
