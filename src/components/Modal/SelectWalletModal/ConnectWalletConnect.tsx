@@ -22,6 +22,7 @@ const ConnectWalletConnect: FC<{
 
   return (
     <WalletConnectionModalBase
+      connector={walletconnect}
       goBack={goBack}
       closeModal={closeModal}
       WalletIcon={WalletConnectIcon}

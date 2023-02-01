@@ -29,4 +29,5 @@ export enum ExternalHref {
   thresholdStakingAudit = "https://chainsecurity.com/security-audit/threshold-network/",
   // TODO: Add link to the recovery guide.
   tBTCRecoveryGuide = "",
+  installTallyHo = "https://tallyho.org/",
 }
