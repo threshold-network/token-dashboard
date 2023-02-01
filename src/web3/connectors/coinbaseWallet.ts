@@ -9,5 +9,3 @@ export const coinbaseConnector = new WalletLinkConnector({
   appName: "threshold-token-dashboard",
   supportedChainIds: [+supportedChainId],
 })
-
-export default coinbaseConnector
