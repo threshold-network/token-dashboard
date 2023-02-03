@@ -1,7 +1,10 @@
 import { FC } from "react"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { useWeb3React } from "@web3-react/core"
-import { injectedConnector as metaMaskConnector } from "../../../web3/connectors"
+import {
+  InjectedProviderIsNotMetaMaskError,
+  metamask,
+} from "../../../web3/connectors"
 import { MetamaskStatusAlert, WalletConnectionModalBase } from "./components"
 import { ConnectionError } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
@@ -22,24 +25,23 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
     ConnectionError.RejectedMetamaskConnection
   )
 
+  const isMetaMask = !(error instanceof InjectedProviderIsNotMetaMaskError)
+
   return (
     <WalletConnectionModalBase
-      connector={metaMaskConnector}
+      connector={metamask}
       goBack={goBack}
       closeModal={closeModal}
       WalletIcon={MetaMaskIcon}
       title="MetaMask"
       subTitle={
-        metamaskNotInstalled
-          ? ""
-          : "The MetaMask extension will open in an external window."
+        !error ? "The MetaMask extension will open in an external window." : ""
       }
-      tryAgain={
-        connectionRejected ? () => activate(metaMaskConnector) : undefined
-      }
+      tryAgain={connectionRejected ? () => activate(metamask) : undefined}
     >
       <MetamaskStatusAlert
         metamaskNotInstalled={metamaskNotInstalled}
+        isMetaMask={isMetaMask}
         connectionRejected={connectionRejected}
       />
     </WalletConnectionModalBase>
