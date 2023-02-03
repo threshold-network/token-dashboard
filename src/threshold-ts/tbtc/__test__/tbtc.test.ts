@@ -55,6 +55,9 @@ jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
 }))
 
 describe("TBTC test", () => {
+  const activeWalletPublicKey =
+    "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
+
   let tBTC: ITBTC
 
   let bridge: ChainBridge
@@ -114,7 +117,9 @@ describe("TBTC test", () => {
         txProofDifficultyFactor: jest.fn(),
         pendingRedemptions: jest.fn(),
         timedOutRedemptions: jest.fn(),
-        activeWalletPublicKey: jest.fn(),
+        activeWalletPublicKey: jest
+          .fn()
+          .mockResolvedValue(activeWalletPublicKey),
       } as ChainBridge
 
       tBTC = new TBTC(ethConfig, btcConfig, multicall)
@@ -153,6 +158,12 @@ describe("TBTC test", () => {
       expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
 
       expect(ElectrumClient).not.toBeCalled()
+    })
+
+    test("should suggest a despoti wallet", async () => {
+      const result = await tBTC.suggestDepositWallet()
+      expect(bridge.activeWalletPublicKey).toBeCalled()
+      expect(result).toBe(activeWalletPublicKey)
     })
   })
 })
