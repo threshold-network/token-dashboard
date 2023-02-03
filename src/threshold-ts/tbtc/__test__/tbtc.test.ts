@@ -94,73 +94,135 @@ describe("TBTC test", () => {
     client: new MockBitcoinClient(),
   }
 
-  describe("with mocked bitcoin client", () => {
-    beforeEach(() => {
-      ;(getContract as jest.Mock)
-        .mockImplementationOnce(() => mockTBTCVaultContract)
-        .mockImplementationOnce(() => mockBridgeContract)
-        .mockImplementationOnce(() => mockTokenContract)
-      ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
-        () => bridge
-      )
-      multicall = {
-        aggregate: jest.fn(),
-        getCurrentBlockTimestampCallObj: jest.fn(),
-      }
-      bridge = {
-        getDepositRevealedEvents: jest.fn(),
-        submitDepositSweepProof: jest.fn(),
-        revealDeposit: jest.fn(),
-        deposits: jest.fn(),
-        requestRedemption: jest.fn(),
-        submitRedemptionProof: jest.fn(),
-        txProofDifficultyFactor: jest.fn(),
-        pendingRedemptions: jest.fn(),
-        timedOutRedemptions: jest.fn(),
-        activeWalletPublicKey: jest
-          .fn()
-          .mockResolvedValue(activeWalletPublicKey),
-      } as ChainBridge
+  beforeEach(() => {
+    ;(getContract as jest.Mock)
+      .mockImplementationOnce(() => mockTBTCVaultContract)
+      .mockImplementationOnce(() => mockBridgeContract)
+      .mockImplementationOnce(() => mockTokenContract)
+    ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
+      () => bridge
+    )
+    multicall = {
+      aggregate: jest.fn(),
+      getCurrentBlockTimestampCallObj: jest.fn(),
+    }
+    bridge = {
+      getDepositRevealedEvents: jest.fn(),
+      submitDepositSweepProof: jest.fn(),
+      revealDeposit: jest.fn(),
+      deposits: jest.fn(),
+      requestRedemption: jest.fn(),
+      submitRedemptionProof: jest.fn(),
+      txProofDifficultyFactor: jest.fn(),
+      pendingRedemptions: jest.fn(),
+      timedOutRedemptions: jest.fn(),
+      activeWalletPublicKey: jest.fn().mockResolvedValue(activeWalletPublicKey),
+    } as ChainBridge
 
-      tBTC = new TBTC(ethConfig, btcConfig, multicall)
-    })
+    tBTC = new TBTC(ethConfig, btcConfig, multicall)
+  })
 
-    test("should create TBTC instance correctly with mocked Bitcoin client", () => {
-      expect(getContract).toHaveBeenCalledWith(
-        TBTCVault.address,
-        TBTCVault.abi,
-        ethConfig.providerOrSigner,
-        ethConfig.account
-      )
-      expect(getContract).toHaveBeenCalledWith(
-        Bridge.address,
-        Bridge.abi,
-        ethConfig.providerOrSigner,
-        ethConfig.account
-      )
-      expect(getContract).toHaveBeenCalledWith(
-        TBTCToken.address,
-        TBTCToken.abi,
-        ethConfig.providerOrSigner,
-        ethConfig.account
-      )
-      expect(EthereumBridge).toHaveBeenCalledWith({
-        address: Bridge.address,
-        signerOrProvider: getProviderOrSigner(
-          ethConfig.providerOrSigner as any,
+  describe("Create TBTC object", () => {
+    describe("with mocked bitcoin clinet", () => {
+      test("should create TBTC instance correctly", () => {
+        expect(getContract).toHaveBeenCalledWith(
+          TBTCVault.address,
+          TBTCVault.abi,
+          ethConfig.providerOrSigner,
           ethConfig.account
-        ),
+        )
+        expect(getContract).toHaveBeenCalledWith(
+          Bridge.address,
+          Bridge.abi,
+          ethConfig.providerOrSigner,
+          ethConfig.account
+        )
+        expect(getContract).toHaveBeenCalledWith(
+          TBTCToken.address,
+          TBTCToken.abi,
+          ethConfig.providerOrSigner,
+          ethConfig.account
+        )
+        expect(EthereumBridge).toHaveBeenCalledWith({
+          address: Bridge.address,
+          signerOrProvider: getProviderOrSigner(
+            ethConfig.providerOrSigner as any,
+            ethConfig.account
+          ),
+        })
+
+        expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
+        expect(tBTC.bridgeContract).toBe(mockBridgeContract)
+        expect(tBTC.tokenContract).toBe(mockTokenContract)
+        expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
       })
 
-      expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
-      expect(tBTC.bridgeContract).toBe(mockBridgeContract)
-      expect(tBTC.tokenContract).toBe(mockTokenContract)
-      expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
-
-      expect(ElectrumClient).not.toBeCalled()
+      test("should not create the real electrum client instance", () => {
+        expect(ElectrumClient).not.toBeCalled()
+      })
     })
 
-    test("should suggest a despoti wallet", async () => {
+    describe("with real electrum client", () => {
+      const btcConfigWithRealElectrumClient: BitcoinConfig = {
+        network: BitcoinNetwork.testnet,
+        credentials: {
+          host: "testhost",
+          port: 1,
+          protocol: "wss",
+        },
+      }
+      beforeEach(() => {
+        ;(getContract as jest.Mock)
+          .mockImplementationOnce(() => mockTBTCVaultContract)
+          .mockImplementationOnce(() => mockBridgeContract)
+          .mockImplementationOnce(() => mockTokenContract)
+        ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
+          () => bridge
+        )
+        tBTC = new TBTC(ethConfig, btcConfigWithRealElectrumClient, multicall)
+      })
+
+      test("should create TBTC instance correctly", () => {
+        expect(getContract).toHaveBeenCalledWith(
+          TBTCVault.address,
+          TBTCVault.abi,
+          ethConfig.providerOrSigner,
+          ethConfig.account
+        )
+        expect(getContract).toHaveBeenCalledWith(
+          Bridge.address,
+          Bridge.abi,
+          ethConfig.providerOrSigner,
+          ethConfig.account
+        )
+        expect(getContract).toHaveBeenCalledWith(
+          TBTCToken.address,
+          TBTCToken.abi,
+          ethConfig.providerOrSigner,
+          ethConfig.account
+        )
+        expect(EthereumBridge).toHaveBeenCalledWith({
+          address: Bridge.address,
+          signerOrProvider: getProviderOrSigner(
+            ethConfig.providerOrSigner as any,
+            ethConfig.account
+          ),
+        })
+
+        expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
+        expect(tBTC.bridgeContract).toBe(mockBridgeContract)
+        expect(tBTC.tokenContract).toBe(mockTokenContract)
+        expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
+      })
+
+      test("should create the real electrum client instance", () => {
+        expect(ElectrumClient).toBeCalled()
+      })
+    })
+  })
+
+  describe("suggestDepositWallet", () => {
+    test("should suggest a desposit wallet correctly", async () => {
       const result = await tBTC.suggestDepositWallet()
       expect(bridge.activeWalletPublicKey).toBeCalled()
       expect(result).toBe(activeWalletPublicKey)
