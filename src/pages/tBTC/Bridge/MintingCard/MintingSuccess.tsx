@@ -71,7 +71,7 @@ const MintingSuccessComponent: FC<{
       <TransactionDetailsTable />
 
       <Button onClick={onDismissButtonClick} isFullWidth mb={6} mt="10">
-        Dismiss
+        New Mint
       </Button>
     </>
   )

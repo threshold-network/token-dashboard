@@ -124,7 +124,7 @@ const MakeDepositComponent: FC<{
             itemSubTitle: (
               <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
                 Send the funds and come back to this dApp. You do not need to
-                wait for the BTC transaction to be mined
+                wait for the BTC transaction to be mined.
               </BodyMd>
             ),
           },

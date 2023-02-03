@@ -36,11 +36,11 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent as="span">
-              You'll be able to mint tBTC{" "}
+              Your tBTC token will arrive in{" "}
               <Box as="span" color="brand.500">
-                ~1 to 3 hours
+                ~ 1 to 3 hours
               </Box>{" "}
-              after your BTC deposit.
+              after you initiate minting.
             </BodyComponent>
           </ListItemWithIcon>
         </List>

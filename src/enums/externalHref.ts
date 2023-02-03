@@ -27,7 +27,6 @@ export enum ExternalHref {
   tBTCBrdigeAudit = "https://leastauthority.com/blog/audits/audit-of-keep-network-tbtc-bridge-v2/",
   vendingMachineAudit = "https://www.certik.com/projects/threshold-network",
   thresholdStakingAudit = "https://chainsecurity.com/security-audit/threshold-network/",
-  // TODO: Add link to the recovery guide.
-  tBTCRecoveryGuide = "",
   installTallyHo = "https://tallyho.org/",
+  tBTCRecoveryGuide = "https://github.com/keep-network/tbtc-v2/blob/main/typescript/scripts/README.adoc",
 }
