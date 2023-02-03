@@ -219,6 +219,29 @@ describe("TBTC test", () => {
         expect(ElectrumClient).toBeCalled()
       })
     })
+
+    describe("with client not specified in the bitcoin config", () => {
+      const btcConfigWithNoClientSpecified: BitcoinConfig = {
+        network: BitcoinNetwork.testnet,
+      }
+      beforeEach(() => {
+        ;(getContract as jest.Mock)
+          .mockImplementationOnce(() => mockTBTCVaultContract)
+          .mockImplementationOnce(() => mockBridgeContract)
+          .mockImplementationOnce(() => mockTokenContract)
+        ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
+          () => bridge
+        )
+      })
+
+      test("should throw an error", () => {
+        expect(() => {
+          new TBTC(ethConfig, btcConfigWithNoClientSpecified, multicall)
+        }).toThrowError(
+          "Neither bitcoin client nor bitcoin credentials are specified"
+        )
+      })
+    })
   })
 
   describe("suggestDepositWallet", () => {
