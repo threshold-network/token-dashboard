@@ -5,7 +5,7 @@ import {
   AlertDescription,
   Link,
 } from "@threshold-network/components"
-import { MetaMaskIcon } from "../../../static/icons/MetaMask"
+import { TallyHo } from "../../../static/icons/TallyHo"
 import { useWeb3React } from "@web3-react/core"
 import {
   tallyHo,
@@ -45,9 +45,8 @@ const ConnectTallyHo: FC<{ goBack: () => void; closeModal: () => void }> = ({
       connector={tallyHo}
       goBack={goBack}
       closeModal={closeModal}
-      // TODO: Wallet icon
-      WalletIcon={MetaMaskIcon}
-      title="Tally Ho"
+      WalletIcon={TallyHo}
+      title="Tally Ho!"
       subTitle={
         isTallyHoNotInstalled || isTallyHoNotDefaultWallet
           ? ""
@@ -85,7 +84,7 @@ const InstallTallyHo: FC = () => {
       <AlertDescription>
         Tally Ho is not installed. Please install the Tally Ho extension on{" "}
         <Link isExternal href={ExternalHref.installTallyHo}>
-          their website
+          their website.
         </Link>
       </AlertDescription>
     </Alert>

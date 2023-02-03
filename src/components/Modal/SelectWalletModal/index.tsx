@@ -1,6 +1,7 @@
 import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
+import { TallyHo } from "../../../static/icons/TallyHo"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
@@ -20,8 +21,7 @@ const walletOptions: WalletOption[] = [
   {
     id: WalletType.TallyHo,
     title: "Tally Ho!",
-    // TODO: ADD Tally Ho icon.
-    icon: MetaMaskIcon,
+    icon: TallyHo,
   },
   {
     id: WalletType.Metamask,
