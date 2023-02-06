@@ -1,14 +1,10 @@
 import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import {
   ClientOptions,
   Credentials,
 } from "@keep-network/tbtc-v2.ts/dist/src/electrum"
 import { providers, Signer } from "ethers"
-
-export enum BitcoinNetwork {
-  mainnet = "mainnet",
-  testnet = "testnet",
-}
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
@@ -48,3 +44,5 @@ export interface ThresholdConfig {
   ethereum: EthereumConfig
   bitcoin: BitcoinConfig
 }
+
+export { BitcoinNetwork }

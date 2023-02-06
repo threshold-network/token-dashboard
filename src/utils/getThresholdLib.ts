@@ -13,8 +13,8 @@ import {
 function getBitcoinConfig(): BitcoinConfig {
   const network =
     supportedChainId === ChainID.Ethereum.toString()
-      ? BitcoinNetwork.mainnet
-      : BitcoinNetwork.testnet
+      ? BitcoinNetwork.Mainnet
+      : BitcoinNetwork.Testnet
 
   const shouldMockBitcoinClient =
     getEnvVariable(EnvVariable.MOCK_BITCOIN_CLIENT) === "true"
