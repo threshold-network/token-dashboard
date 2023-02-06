@@ -140,10 +140,13 @@ export class MockBitcoinClient implements Client {
     // method. This is why we embrace `_isMockingDepositTransactionInProgress`
     // flag
     this._isMockingDepositTransactionInProgress = true
+
     await delay(5000)
+
+    const network = await this.getNetwork()
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
-      BitcoinNetwork.Testnet,
+      network,
       true
     )
 
