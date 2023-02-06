@@ -191,15 +191,6 @@ export class TBTC implements ITBTC {
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
 
-  /**
-   * Maps the network that is currently used for bitcoin, so that it use "main"
-   * instead of "mainnet". This is specific to the tbtc-v2.ts lib.
-   */
-  private tbtcLibNetworkMap: Record<BitcoinNetwork, "main" | "testnet"> = {
-    testnet: "testnet",
-    mainnet: "main",
-  }
-
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
@@ -313,8 +304,11 @@ export class TBTC implements ITBTC {
   calculateDepositAddress = async (
     depositScriptParameters: DepositScriptParameters
   ): Promise<string> => {
-    const network = this.tbtcLibNetworkMap[this.bitcoinNetwork]
-    return await calculateDepositAddress(depositScriptParameters, network, true)
+    return await calculateDepositAddress(
+      depositScriptParameters,
+      this.bitcoinNetwork,
+      true
+    )
   }
 
   findAllUnspentTransactionOutputs = async (
