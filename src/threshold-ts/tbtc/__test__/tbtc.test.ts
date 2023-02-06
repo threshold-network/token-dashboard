@@ -59,6 +59,7 @@ describe("TBTC test", () => {
     "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
 
   let tBTC: ITBTC
+  let tBTCMainnet: ITBTC
 
   let bridge: ChainBridge
   let tbtcVault: Contract
@@ -123,38 +124,41 @@ describe("TBTC test", () => {
   })
 
   describe("Create TBTC object", () => {
+    const expectTBTCInstanceToBeCreatedCorrectly = () => {
+      expect(getContract).toHaveBeenCalledWith(
+        TBTCVault.address,
+        TBTCVault.abi,
+        ethConfig.providerOrSigner,
+        ethConfig.account
+      )
+      expect(getContract).toHaveBeenCalledWith(
+        Bridge.address,
+        Bridge.abi,
+        ethConfig.providerOrSigner,
+        ethConfig.account
+      )
+      expect(getContract).toHaveBeenCalledWith(
+        TBTCToken.address,
+        TBTCToken.abi,
+        ethConfig.providerOrSigner,
+        ethConfig.account
+      )
+      expect(EthereumBridge).toHaveBeenCalledWith({
+        address: Bridge.address,
+        signerOrProvider: getProviderOrSigner(
+          ethConfig.providerOrSigner as any,
+          ethConfig.account
+        ),
+      })
+
+      expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
+      expect(tBTC.bridgeContract).toBe(mockBridgeContract)
+      expect(tBTC.tokenContract).toBe(mockTokenContract)
+      expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
+    }
     describe("with mocked bitcoin clinet", () => {
       test("should create TBTC instance correctly", () => {
-        expect(getContract).toHaveBeenCalledWith(
-          TBTCVault.address,
-          TBTCVault.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(getContract).toHaveBeenCalledWith(
-          Bridge.address,
-          Bridge.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(getContract).toHaveBeenCalledWith(
-          TBTCToken.address,
-          TBTCToken.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(EthereumBridge).toHaveBeenCalledWith({
-          address: Bridge.address,
-          signerOrProvider: getProviderOrSigner(
-            ethConfig.providerOrSigner as any,
-            ethConfig.account
-          ),
-        })
-
-        expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
-        expect(tBTC.bridgeContract).toBe(mockBridgeContract)
-        expect(tBTC.tokenContract).toBe(mockTokenContract)
-        expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
+        expectTBTCInstanceToBeCreatedCorrectly()
       })
 
       test("should not create the real electrum client instance", () => {
@@ -183,36 +187,7 @@ describe("TBTC test", () => {
       })
 
       test("should create TBTC instance correctly", () => {
-        expect(getContract).toHaveBeenCalledWith(
-          TBTCVault.address,
-          TBTCVault.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(getContract).toHaveBeenCalledWith(
-          Bridge.address,
-          Bridge.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(getContract).toHaveBeenCalledWith(
-          TBTCToken.address,
-          TBTCToken.abi,
-          ethConfig.providerOrSigner,
-          ethConfig.account
-        )
-        expect(EthereumBridge).toHaveBeenCalledWith({
-          address: Bridge.address,
-          signerOrProvider: getProviderOrSigner(
-            ethConfig.providerOrSigner as any,
-            ethConfig.account
-          ),
-        })
-
-        expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
-        expect(tBTC.bridgeContract).toBe(mockBridgeContract)
-        expect(tBTC.tokenContract).toBe(mockTokenContract)
-        expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
+        expectTBTCInstanceToBeCreatedCorrectly()
       })
 
       test("should create the real electrum client instance", () => {
