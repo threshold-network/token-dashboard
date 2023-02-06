@@ -16,6 +16,7 @@ import {
 import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
+import { BitcoinNetwork } from "../threshold-ts/types"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -139,10 +140,13 @@ export class MockBitcoinClient implements Client {
     // method. This is why we embrace `_isMockingDepositTransactionInProgress`
     // flag
     this._isMockingDepositTransactionInProgress = true
+
     await delay(5000)
+
+    const network = await this.getNetwork()
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
-      "testnet",
+      network,
       true
     )
 
@@ -236,5 +240,9 @@ export class MockBitcoinClient implements Client {
   async broadcast(transaction: RawTransaction): Promise<void> {
     this._broadcastLog.push(transaction)
     return
+  }
+
+  async getNetwork(): Promise<BitcoinNetwork> {
+    return BitcoinNetwork.Testnet
   }
 }
