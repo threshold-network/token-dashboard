@@ -3423,7 +3423,7 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" ">1.1.0-dev <1.1.0-ropsten"
 
-"@keep-network/ecdsa@2.1.0-dev.6", "@keep-network/ecdsa@development":
+"@keep-network/ecdsa@2.1.0-dev.6":
   version "2.1.0-dev.6"
   resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.6.tgz#ccc690f784b6e802a5b80b2dfb7127d96e548a25"
   integrity sha512-1D74OPVzzxxVcG8za/niuxmwEdDc5R6KNuHsUvsFkcHNJE1UgQNw+QdrI+k3M2so6YrO4L5lP7vTvIvBDbEMNQ==
@@ -3444,6 +3444,17 @@
     "@openzeppelin/contracts" "^4.6.0"
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
     "@threshold-network/solidity-contracts" "1.3.0-dev.2"
+
+"@keep-network/ecdsa@development":
+  version "2.1.0-dev.6"
+  resolved "https://registry.npmjs.org/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.6.tgz#ccc690f784b6e802a5b80b2dfb7127d96e548a25"
+  integrity sha512-1D74OPVzzxxVcG8za/niuxmwEdDc5R6KNuHsUvsFkcHNJE1UgQNw+QdrI+k3M2so6YrO4L5lP7vTvIvBDbEMNQ==
+  dependencies:
+    "@keep-network/random-beacon" "2.1.0-dev.5"
+    "@keep-network/sortition-pools" "^2.0.0-pre.16"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@threshold-network/solidity-contracts" "1.3.0-dev.3"
 
 "@keep-network/keep-core@1.8.0-dev.5":
   version "1.8.0-dev.5"
@@ -3541,9 +3552,9 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.0.0-dev.35"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.35.tgz#8dffd17f90dca4319e21a2acf65be68c34c08eb3"
-  integrity sha512-qGP39g1JgiS9jIWcuOd+at6pCzTIjN30rb3lfvA2/McFBtBf9QRaRMbtz8uegKVCEgE6A32WcX3vlesBY6n16g==
+  version "1.1.0-dev.5"
+  resolved "https://registry.npmjs.org/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.1.0-dev.5.tgz#6d31c6d5160f4fb1ee46985fbe92f20a270dc806"
+  integrity sha512-1oUM/OEononzhhQGtvWlb2ofZeY0VRnQyNO5tFHnZ+7I7A/Lm6/9OFtugXpTgpBFJ41ZhusbzBxPaUbMGeAOYA==
   dependencies:
     "@keep-network/ecdsa" development
     "@keep-network/tbtc-v2" "1.0.3-dev.0"
@@ -3556,7 +3567,7 @@
 
 "@keep-network/tbtc-v2@1.0.3-dev.0":
   version "1.0.3-dev.0"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.0.3-dev.0.tgz#754eab80269ea5a616c92cb8c1f607ec21343e0b"
+  resolved "https://registry.npmjs.org/@keep-network/tbtc-v2/-/tbtc-v2-1.0.3-dev.0.tgz#754eab80269ea5a616c92cb8c1f607ec21343e0b"
   integrity sha512-RqIFZvJtbLgmPZvPgamIJoTc5UsosrPE2g3879RqU4XqntezF4gr95FIuUFmicjRy0OPsjCupU2HplxlWfQfdw==
   dependencies:
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
@@ -8831,9 +8842,14 @@ bser@2.1.1:
   dependencies:
     node-int64 "^0.4.0"
 
-"bsert@git+https://github.com/chjj/bsert.git#semver:~0.0.10", bsert@~0.0.10:
+"bsert@git+https://github.com/chjj/bsert.git#semver:~0.0.10":
   version "0.0.10"
   resolved "git+https://github.com/chjj/bsert.git#bd09d49eab8644bca08ae8259a3d8756e7d453fc"
+
+bsert@~0.0.10:
+  version "0.0.10"
+  resolved "https://registry.npmjs.org/bsert/-/bsert-0.0.10.tgz#231ac82873a1418c6ade301ab5cd9ae385895597"
+  integrity sha512-NHNwlac+WPy4t2LoNh8pXk8uaIGH3NSaIUbTTRXGpE2WEbq0te/tDykYHkFK57YKLPjv/aGHmbqvnGeVWDz57Q==
 
 "bsock@git+https://github.com/bcoin-org/bsock.git#semver:~0.1.9", bsock@~0.1.8, bsock@~0.1.9:
   version "0.1.9"
@@ -8950,12 +8966,17 @@ bufferutil@^4.0.1:
 
 bufio@^1.0.6:
   version "1.2.0"
-  resolved "https://registry.yarnpkg.com/bufio/-/bufio-1.2.0.tgz#b9ad1c06b0d9010363c387c39d2810a7086d143f"
+  resolved "https://registry.npmjs.org/bufio/-/bufio-1.2.0.tgz#b9ad1c06b0d9010363c387c39d2810a7086d143f"
   integrity sha512-UlFk8z/PwdhYQTXSQQagwGAdtRI83gib2n4uy4rQnenxUM2yQi8lBDzF230BNk+3wAoZDxYRoBwVVUPgHa9MCA==
 
-"bufio@git+https://github.com/bcoin-org/bufio.git#semver:~1.0.6", bufio@~1.0.7:
+"bufio@git+https://github.com/bcoin-org/bufio.git#semver:~1.0.6":
   version "1.0.7"
   resolved "git+https://github.com/bcoin-org/bufio.git#91ae6c93899ff9fad7d7cee9afd2a1c4933ca984"
+
+bufio@~1.0.7:
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/bufio/-/bufio-1.0.7.tgz#b7f63a1369a0829ed64cc14edf0573b3e382a33e"
+  integrity sha512-bd1dDQhiC+bEbEfg56IdBv7faWa6OipMs/AFFFvtFnB3wAYjlwQpQRZ0pm6ZkgtfL0pILRXhKxOiQj6UzoMR7A==
 
 builtin-modules@^3.1.0:
   version "3.3.0"
@@ -16452,9 +16473,14 @@ loader-utils@^2.0.0:
     emojis-list "^3.0.0"
     json5 "^2.1.2"
 
-"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1", loady@~0.0.1, loady@~0.0.5:
+"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1":
   version "0.0.5"
   resolved "git+https://github.com/chjj/loady.git#b94958b7ee061518f4b85ea6da380e7ee93222d5"
+
+loady@~0.0.1, loady@~0.0.5:
+  version "0.0.5"
+  resolved "https://registry.npmjs.org/loady/-/loady-0.0.5.tgz#b17adb52d2fb7e743f107b0928ba0b591da5d881"
+  integrity sha512-uxKD2HIj042/HBx77NBcmEPsD+hxCgAtjEWlYNScuUjIsh/62Uyu39GOR68TBR68v+jqDL9zfftCWoUo4y03sQ==
 
 locate-path@^2.0.0:
   version "2.0.0"
