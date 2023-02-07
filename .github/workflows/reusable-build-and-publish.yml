@@ -114,6 +114,7 @@ jobs:
             random-beacon-contracts-version = github.com/keep-network/keep-core/random-beacon#version
             ecdsa-contracts-version = github.com/keep-network/keep-core/ecdsa#version
             tbtc-v2-contracts-version = github.com/keep-network/tbtc-v2#version
+            tbtc-v2-ts-version = github.com/keep-network/tbtc-v2.ts#version
 
       - name: Set packages versions
         shell: bash
@@ -124,22 +125,19 @@ jobs:
             echo "random-beacon-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
             echo "ecdsa-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
             echo "tbtc-v2-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
+            echo "tbtc-v2-ts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
           else
             echo "threshold-contracts-version=${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
             echo "ecdsa-contracts-version=${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}" >> $GITHUB_OUTPUT
             echo "tbtc-v2-contracts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}" >> $GITHUB_OUTPUT
+            echo "tbtc-v2-ts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-ts-version }}" >> $GITHUB_OUTPUT
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
       # version of the `keep-core` package, because using `goerli` tag results
       # in `expected manifest` error - probably caused by bug in Yarn:
       # https://github.com/yarnpkg/yarn/issues/4731.
-
-      # Temporarily we upgrade @keep-network/tbtc-v2.ts package to latest
-      # `development`-tagged package. Once we start to publish `goerli` packages,
-      # we'll need to use `@keep-network/tbtc-v2.ts@${{ inputs.environment }}`
-      # here.
 
       - name: Resolve contracts
         shell: bash
@@ -153,7 +151,7 @@ jobs:
             @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
             @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }} \
-            @keep-network/tbtc-v2.ts@development
+            @keep-network/tbtc-v2.ts@${{ inputs.environment }}
 
       - name: Run postinstall script
         shell: bash
