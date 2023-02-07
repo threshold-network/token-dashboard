@@ -1,6 +1,6 @@
 import { createSelector } from "@reduxjs/toolkit"
 import { BigNumber } from "ethers"
-import { max } from "../../threshold-ts/utils"
+import { ZERO, max } from "../../threshold-ts/utils"
 import { RootState } from ".."
 import { StakeData } from "../../types/staking"
 import { isSameETHAddress } from "../../web3/utils"
@@ -40,27 +40,25 @@ export const selectAvailableAmountToUnstakeByStakingProvider = createSelector(
       }
     }
 
-    const maxAuthorization = BigNumber.from(
-      max(
-        tbtcAppData.authorizedStake || "0",
-        randomBeaconAppData.authorizedStake || "0"
-      )
+    const maxAuthorization = max(
+      tbtcAppData.authorizedStake || ZERO,
+      randomBeaconAppData.authorizedStake || ZERO
     )
 
     const isZeroAuthorization = maxAuthorization.isZero()
 
     const nuInTMinStake = max(
-      "0",
+      ZERO,
       maxAuthorization.sub(stake.tStake).sub(stake.keepInTStake).toString()
     )
 
     const tMinStake = max(
-      "0",
+      ZERO,
       maxAuthorization.sub(stake.nuInTStake).sub(stake.keepInTStake).toString()
     )
 
-    const keepInT = max(
-      "0",
+    const keepInTMinStake = max(
+      ZERO,
       maxAuthorization.sub(stake.nuInTStake).sub(stake.tStake).toString()
     )
 
@@ -69,7 +67,7 @@ export const selectAvailableAmountToUnstakeByStakingProvider = createSelector(
         ? stake.nuInTStake
         : BigNumber.from(stake.nuInTStake).sub(nuInTMinStake).toString(),
       keepInT:
-        isZeroAuthorization || BigNumber.from(keepInT).isZero()
+        isZeroAuthorization || BigNumber.from(keepInTMinStake).isZero()
           ? stake.keepInTStake
           : "0",
       t: isZeroAuthorization
