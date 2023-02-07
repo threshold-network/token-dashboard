@@ -1,9 +1,20 @@
-import { BigNumber } from "ethers"
+import { BigNumber, BigNumberish } from "ethers"
 
-export const min = (a: string | number, b: string | number) => {
-  return BigNumber.from(a).lt(b) ? a.toString() : b.toString()
+const compare = (
+  a: BigNumberish,
+  b: BigNumberish,
+  nameOfCompareFunction: "lt" | "gt"
+) => {
+  const _a = BigNumber.from(a)
+  const _b = BigNumber.from(b)
+
+  return _a[nameOfCompareFunction](_b) ? _a : _b
 }
 
-export const max = (a: string | number, b: string | number) => {
-  return BigNumber.from(a).gt(b) ? a.toString() : b.toString()
+export const min = (a: BigNumberish, b: BigNumberish) => {
+  return compare(a, b, "lt")
+}
+
+export const max = (a: BigNumberish, b: BigNumberish) => {
+  return compare(a, b, "gt")
 }
