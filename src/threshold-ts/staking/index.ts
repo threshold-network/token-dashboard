@@ -185,7 +185,7 @@ export class Staking implements IStaking {
       },
     ]
 
-    const [rolesOf, stakes, eligibleKeepStake] =
+    const [rolesOf, stakes, { balance: eligibleKeepStake }] =
       await this._multicall.aggregate(multicalls)
 
     const { owner, authorizer, beneficiary } = rolesOf
@@ -195,16 +195,18 @@ export class Staking implements IStaking {
     // The NU staker can have only one stake.
     const { stakingProvider: nuStakingProvider, value: nuStake } =
       await this._legacyNuStaking.stakerInfo(owner)
+
     const possibleNuTopUpInT =
       isAddress(nuStakingProvider) &&
       isSameETHAddress(stakingProvider, nuStakingProvider)
         ? BigNumber.from(
-            (await this._vendingMachines.nu.convertToT(nuStake)).tAmount
-          ).sub(BigNumber.from(nuInTStake))
+            (await this._vendingMachines.nu.convertToT(nuStake.toString()))
+              .tAmount
+          ).sub(BigNumber.from(nuInTStake.toString()))
         : ZERO
 
     const keepEligableStakeInT = (
-      await this._vendingMachines.keep.convertToT(eligibleKeepStake)
+      await this._vendingMachines.keep.convertToT(eligibleKeepStake.toString())
     ).tAmount
     const possibleKeepTopUpInT = BigNumber.from(keepEligableStakeInT).sub(
       BigNumber.from(keepInTStake)

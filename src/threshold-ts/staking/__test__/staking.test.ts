@@ -166,7 +166,12 @@ describe("Staking test", () => {
     }
     const amount = BigNumber.from("100")
     const stakes = { tStake: amount, keepInTStake: amount, nuInTStake: amount }
-    const eligibleKeepStake = amount.add("100")
+    // Type of Multicall result is `Result` from `ethers`. A `Result` is an
+    // array, so each value can be accessed as a positional argument.
+    // Additionally, if values are named, the identical object as its positional
+    // value can be accessed by its name. Here we simulate the return value from
+    // `Multicall` service.
+    const eligibleKeepStake = { balance: amount.add("100") }
     const nuStakerInfo = {
       stakingProvider: stakingProvider,
       value: amount.add(300),
@@ -218,10 +223,10 @@ describe("Staking test", () => {
     ])
 
     expect(vendingMachines.keep.convertToT).toHaveBeenCalledWith(
-      eligibleKeepStake
+      eligibleKeepStake.balance.toString()
     )
     expect(vendingMachines.nu.convertToT).toHaveBeenCalledWith(
-      nuStakerInfo.value
+      nuStakerInfo.value.toString()
     )
 
     expect(result).toEqual({
