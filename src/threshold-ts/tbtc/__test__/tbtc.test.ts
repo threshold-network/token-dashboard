@@ -251,10 +251,15 @@ describe("TBTC test", () => {
   })
 
   describe("suggestDepositWallet", () => {
+    let expectedDepositWallet: string | undefined
+    beforeEach(async () => {
+      expectedDepositWallet = await tBTC.suggestDepositWallet()
+    })
+    test("should call a proper function with proper parameters", async () => {
+      expect(bridge.activeWalletPublicKey).toBeCalledWith()
+    })
     test("should suggest a desposit wallet correctly", async () => {
-      const result = await tBTC.suggestDepositWallet()
-      expect(bridge.activeWalletPublicKey).toBeCalled()
-      expect(result).toBe(activeWalletPublicKey)
+      expect(expectedDepositWallet).toBe(activeWalletPublicKey)
     })
   })
 
