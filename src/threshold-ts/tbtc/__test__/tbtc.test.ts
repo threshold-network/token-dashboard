@@ -2,15 +2,31 @@ import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { Contract, providers } from "ethers"
-import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  Client,
+  computeHash160,
+  decodeBitcoinAddress,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { IMulticall } from "../../multicall"
 import { AddressZero } from "@ethersproject/constants"
-import { getContract, getProviderOrSigner } from "../../utils"
+import {
+  getChainIdentifier,
+  getContract,
+  getProviderOrSigner,
+  isPublicKeyHashTypeAddress,
+  isValidBtcAddress,
+} from "../../utils"
 import { ITBTC, TBTC } from ".."
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
 import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import { MockBitcoinClient } from "../../../tbtc/mock-bitcoin-client"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
+import {
+  calculateDepositRefundLocktime,
+  DepositScriptParameters,
+} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
+//@ts-ignore
+import * as CryptoJS from "crypto-js"
 
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTCVault.json", () => ({
   address: "0x1e742E11389e5590a1a0c8e59a119Be5F73BFdf6",
@@ -45,18 +61,31 @@ jest.mock("../../utils", () => ({
   getContractPastEvents: jest.fn(),
   getChainIdentifier: jest.fn(),
   getProviderOrSigner: jest.fn(),
+  isValidBtcAddress: jest.fn(),
+  isPublicKeyHashTypeAddress: jest.fn(),
 }))
 
-// jest.mock("../../../tbtc/mock-bitcoin-client")
+jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
+  decodeBitcoinAddress: jest.fn(),
+  TransactionHash: {
+    from: jest.fn(),
+  },
+  computeHash160: jest.fn(),
+}))
 
 jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
   ElectrumClient: jest.fn(),
 }))
 
+jest.mock("crypto-js")
+
 describe("TBTC test", () => {
   const activeWalletPublicKey =
     "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
+
+  const ethAddress = "0x6c05E249D167a42dfFdC54Ff00c7832292889dff"
+  const bitcoinAddressTestnet = "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"
 
   let tBTC: ITBTC
   let tBTCMainnet: ITBTC
@@ -224,6 +253,133 @@ describe("TBTC test", () => {
       const result = await tBTC.suggestDepositWallet()
       expect(bridge.activeWalletPublicKey).toBeCalled()
       expect(result).toBe(activeWalletPublicKey)
+    })
+  })
+
+  describe("createDepositScriptParameters", () => {
+    let depositScriptParameters: DepositScriptParameters
+
+    const mockDecodeBitcoinAddressResult =
+      "3a38d44d6a0c8d0bb84e0232cc632b7e48c72e0e"
+    const mockCalculateDepositRefundLocktimeResult = "30ecaa62"
+    const mockWalletPublicKeyHash = "0x8db50eb52063ea9d98b3eac91489a90f738986f6"
+    const mockBlindingFactor = "f9f0c90d00039523"
+    const mockCurrentTime = 1466424490000
+    const mockDate = new Date(mockCurrentTime)
+
+    const setUpdeposiScriptParameters = () => {
+      ;(decodeBitcoinAddress as jest.Mock).mockImplementationOnce(
+        () => mockDecodeBitcoinAddressResult
+      )
+      ;(calculateDepositRefundLocktime as jest.Mock).mockImplementationOnce(
+        () => mockCalculateDepositRefundLocktimeResult
+      )
+      ;(calculateDepositRefundLocktime as jest.Mock).mockImplementationOnce(
+        () => mockCalculateDepositRefundLocktimeResult
+      )
+      ;(computeHash160 as jest.Mock).mockImplementationOnce(
+        () => mockWalletPublicKeyHash
+      )
+      CryptoJS.lib.WordArray.random.mockImplementation(() => ({
+        toString: jest.fn().mockImplementation(() => mockBlindingFactor),
+      }))
+      jest
+        .spyOn(global, "Date")
+        .mockImplementation(() => mockDate as unknown as string)
+    }
+
+    const setUpValidBTCAddress = (isValid: boolean) => {
+      ;(isValidBtcAddress as jest.Mock).mockImplementation(() => isValid)
+    }
+
+    const setUpIsPublicKeyHashTypeAddress = (isPKHType: boolean) => {
+      ;(isPublicKeyHashTypeAddress as jest.Mock).mockImplementation(
+        () => isPKHType
+      )
+    }
+
+    describe("when proper arguments are passed to the method", () => {
+      beforeEach(async () => {
+        setUpdeposiScriptParameters()
+        setUpValidBTCAddress(true)
+        setUpIsPublicKeyHashTypeAddress(true)
+        depositScriptParameters = await tBTC.createDepositScriptParameters(
+          ethAddress,
+          bitcoinAddressTestnet
+        )
+      })
+      test("should call proper functions with proper arguments", async () => {
+        expect(bridge.activeWalletPublicKey).toHaveBeenCalled()
+
+        expect(isValidBtcAddress).toHaveBeenCalledWith(
+          bitcoinAddressTestnet,
+          btcConfig.network
+        )
+        expect(isPublicKeyHashTypeAddress).toHaveBeenCalledWith(
+          bitcoinAddressTestnet
+        )
+        expect(calculateDepositRefundLocktime).toHaveBeenCalledWith(
+          Math.floor(mockCurrentTime / 1000),
+          23328000
+        )
+        expect(getChainIdentifier).toBeCalledWith(ethAddress)
+      })
+      test("should create proper deposit script parameters", async () => {
+        expect(depositScriptParameters.depositor).toBe(
+          getChainIdentifier(ethAddress)
+        )
+        expect(depositScriptParameters.blindingFactor).toBe(mockBlindingFactor)
+        expect(depositScriptParameters.refundPublicKeyHash).toBe(
+          mockDecodeBitcoinAddressResult
+        )
+        expect(depositScriptParameters.refundLocktime).toBe(
+          mockCalculateDepositRefundLocktimeResult
+        )
+        expect(depositScriptParameters.walletPublicKeyHash).toBe(
+          mockWalletPublicKeyHash
+        )
+      })
+    })
+
+    describe("when wrong btc address is provided", () => {
+      beforeEach(async () => {
+        setUpdeposiScriptParameters()
+        setUpValidBTCAddress(false)
+        setUpIsPublicKeyHashTypeAddress(false)
+      })
+      test("should throw", async () => {
+        await expect(
+          tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
+        ).rejects.toThrow(
+          "Wrong bitcoin address passed to createDepositScriptParameters function"
+        )
+
+        expect(isValidBtcAddress).toHaveBeenCalledWith(
+          bitcoinAddressTestnet,
+          btcConfig.network
+        )
+      })
+    })
+
+    describe("when provided btc address is not a PKH type address", () => {
+      beforeEach(async () => {
+        setUpdeposiScriptParameters()
+        setUpValidBTCAddress(true)
+        setUpIsPublicKeyHashTypeAddress(false)
+      })
+      test("should throw", async () => {
+        await expect(
+          tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
+        ).rejects.toThrow("Bitcoin recovery address must be a P2PKH or P2WPKH")
+
+        expect(isValidBtcAddress).toHaveBeenCalledWith(
+          bitcoinAddressTestnet,
+          btcConfig.network
+        )
+        expect(isPublicKeyHashTypeAddress).toHaveBeenCalledWith(
+          bitcoinAddressTestnet
+        )
+      })
     })
   })
 })
