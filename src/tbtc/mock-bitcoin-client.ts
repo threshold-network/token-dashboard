@@ -30,7 +30,7 @@ const testnetTransaction: RawTransaction = {
     "f68e65aa2727cd4208b5012102ee067a0273f2e3ba88d23140a24fdb290f27bbcd0f94" +
     "117a9c65be3911c5c04e00000000",
 }
-const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
+export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
   transactionHash: testnetTransactionHash,
   outputIndex: 1,
   value: BigNumber.from(3933200),

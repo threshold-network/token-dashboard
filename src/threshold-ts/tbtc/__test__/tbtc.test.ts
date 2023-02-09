@@ -6,6 +6,7 @@ import {
   Client,
   computeHash160,
   decodeBitcoinAddress,
+  UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { IMulticall } from "../../multicall"
 import { AddressZero } from "@ethersproject/constants"
@@ -19,7 +20,10 @@ import {
 import { ITBTC, TBTC } from ".."
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
 import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { MockBitcoinClient } from "../../../tbtc/mock-bitcoin-client"
+import {
+  MockBitcoinClient,
+  testnetUTXO,
+} from "../../../tbtc/mock-bitcoin-client"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import {
   calculateDepositAddress,
@@ -121,9 +125,11 @@ describe("TBTC test", () => {
     account: AddressZero,
   }
 
+  const mockBitcoinClient = new MockBitcoinClient()
+
   const btcConfig: BitcoinConfig = {
     network: BitcoinNetwork.testnet,
-    client: new MockBitcoinClient(),
+    client: mockBitcoinClient,
   }
 
   beforeEach(() => {
@@ -417,6 +423,27 @@ describe("TBTC test", () => {
     })
     test("should calculate deposit address correctly", () => {
       expect(expectedDepositAddress).toBe(mockDepositAddress)
+    })
+  })
+
+  describe("findAllUnspentTransactionOutputs", () => {
+    let expectedUTXOs: UnspentTransactionOutput[]
+    const mockDepositAddress = "123"
+    beforeEach(async () => {
+      jest
+        .spyOn(mockBitcoinClient, "findAllUnspentTransactionOutputs")
+        .mockImplementation(async () => [testnetUTXO])
+      expectedUTXOs = await tBTC.findAllUnspentTransactionOutputs(
+        mockDepositAddress
+      )
+    })
+    test("should call a proper function with proper parameters", async () => {
+      expect(mockBitcoinClient.findAllUnspentTransactionOutputs).toBeCalledWith(
+        mockDepositAddress
+      )
+    })
+    test("should return utxos correctly", async () => {
+      expect(expectedUTXOs).toEqual([testnetUTXO])
     })
   })
 })
