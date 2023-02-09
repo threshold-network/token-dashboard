@@ -22,11 +22,13 @@ import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import { MockBitcoinClient } from "../../../tbtc/mock-bitcoin-client"
 import { ElectrumClient, EthereumBridge } from "@keep-network/tbtc-v2.ts"
 import {
+  calculateDepositAddress,
   calculateDepositRefundLocktime,
   DepositScriptParameters,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
+import { Address } from "@keep-network/tbtc-v2.ts/dist/src/ethereum"
 
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTCVault.json", () => ({
   address: "0x1e742E11389e5590a1a0c8e59a119Be5F73BFdf6",
@@ -380,6 +382,36 @@ describe("TBTC test", () => {
           bitcoinAddressTestnet
         )
       })
+    })
+  })
+
+  describe("calculateDepositAddress", () => {
+    const mockDepositScriptParameters: DepositScriptParameters = {
+      depositor: Address.from("934b98637ca318a4d6e7ca6ffd1690b8e77df637"),
+      walletPublicKeyHash: "8db50eb52063ea9d98b3eac91489a90f738986f6",
+      refundPublicKeyHash: "28e081f285138ccbe389c1eb8985716230129f89",
+      blindingFactor: "f9f0c90d00039523",
+      refundLocktime: "30ecaa62",
+    }
+    const mockDepositAddress = "123"
+    let expectedDepositAddress: string
+    beforeEach(async () => {
+      ;(calculateDepositAddress as jest.Mock).mockImplementation(
+        () => mockDepositAddress
+      )
+      expectedDepositAddress = await tBTC.calculateDepositAddress(
+        mockDepositScriptParameters
+      )
+    })
+    test("should call proper function with proper parameters", () => {
+      expect(calculateDepositAddress).toHaveBeenCalledWith(
+        mockDepositScriptParameters,
+        btcConfig.network,
+        true
+      )
+    })
+    test("should calculate deposit address correctly", () => {
+      expect(expectedDepositAddress).toBe(mockDepositAddress)
     })
   })
 })
