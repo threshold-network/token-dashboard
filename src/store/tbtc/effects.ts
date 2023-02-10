@@ -118,6 +118,9 @@ export const findUtxoEffect = async (
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
           )
+          listenerApi.dispatch(
+            tbtcSlice.actions.fetchUtxoConfirmations({ utxo })
+          )
         }
       }
     } catch (err) {
@@ -134,6 +137,57 @@ export const findUtxoEffect = async (
       action as ReturnType<typeof tbtcSlice.actions.updateState>
     ).payload
     return key === "mintingStep" && value !== MintingStep.Deposit
+  })
+
+  // Stop polling task.
+  pollingTask.cancel()
+}
+
+export const fetchUtxoConfirmationsEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.fetchUtxoConfirmations>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { utxo } = action.payload
+
+  if (!utxo) return
+
+  // Cancel any in-progress instances of this listener.
+  listenerApi.cancelActiveListeners()
+
+  const pollingTask = listenerApi.fork(async (forkApi) => {
+    try {
+      while (true) {
+        // Get confirmations
+        const confirmations = await forkApi.pause(
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
+            utxo.transactionHash
+          )
+        )
+        listenerApi.dispatch(
+          tbtcSlice.actions.updateState({
+            key: "txConfirmations",
+            value: confirmations,
+          })
+        )
+        await forkApi.delay(10 * ONE_SEC_IN_MILISECONDS)
+      }
+    } catch (err) {
+      if (!(err instanceof TaskAbortError)) {
+        console.error(
+          `Failed to sync confirmation for transaction: ${utxo.transactionHash}.`,
+          err
+        )
+      }
+    }
+  })
+
+  await listenerApi.condition((action) => {
+    if (!tbtcSlice.actions.updateState.match(action)) return false
+
+    const { key, value } = (
+      action as ReturnType<typeof tbtcSlice.actions.updateState>
+    ).payload
+    return key === "txConfirmations" && value >= 6
   })
 
   // Stop polling task.

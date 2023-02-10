@@ -12,7 +12,11 @@ import { FetchingState } from "../../types"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
-import { fetchBridgeTxHitoryEffect, findUtxoEffect } from "./effects"
+import {
+  fetchBridgeTxHitoryEffect,
+  findUtxoEffect,
+  fetchUtxoConfirmationsEffect,
+} from "./effects"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 interface TbtcState {
@@ -30,6 +34,7 @@ interface TbtcState {
   refundLocktime: string
   blindingFactor: string
   utxo: UnspentTransactionOutput
+  txConfirmations: number
 
   nextBridgeCrossingInUnix?: number
 
@@ -137,6 +142,12 @@ export const tbtcSlice = createSlice({
         depositor: string
       }>
     ) => {},
+    fetchUtxoConfirmations: (
+      state,
+      action: PayloadAction<{
+        utxo: UnspentTransactionOutput
+      }>
+    ) => {},
   },
 })
 
@@ -168,6 +179,11 @@ export const registerTBTCListeners = () => {
   startAppListening({
     actionCreator: tbtcSlice.actions.findUtxo,
     effect: findUtxoEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.fetchUtxoConfirmations,
+    effect: fetchUtxoConfirmationsEffect,
   })
 }
 
