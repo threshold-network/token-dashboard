@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import {
   BodyLg,
   BodySm,
@@ -19,17 +19,29 @@ import TransactionDetailsTable from "../components/TransactionDetailsTable"
 import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
+import { useAppDispatch } from "../../../../hooks/store"
+import { tbtcSlice } from "../../../../store/tbtc"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const MintingSuccessComponent: FC<{
+  utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ onPreviousStepClick }) => {
-  const { tBTCMintAmount } = useTbtcState()
+}> = ({ utxo, onPreviousStepClick }) => {
+  const { tBTCMintAmount, txConfirmations } = useTbtcState()
+  const dispatch = useAppDispatch()
 
   const tbtcTokenAddress = useTBTCTokenAddress()
 
   const onDismissButtonClick = () => {
     onPreviousStepClick(MintingStep.ProvideData)
   }
+
+  useEffect(() => {
+    // TODO: This useEffect is fired when we go from Success Modal to another
+    // subpage (for example `Staking`) and go back here. We probalby shouldn't
+    // fire it again if we have at least 6 confirmations in the state.
+    dispatch(tbtcSlice.actions.fetchUtxoConfirmations({ utxo }))
+  }, [dispatch, JSON.stringify(utxo)])
 
   return (
     <>

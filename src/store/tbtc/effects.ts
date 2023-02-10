@@ -118,9 +118,6 @@ export const findUtxoEffect = async (
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
           )
-          listenerApi.dispatch(
-            tbtcSlice.actions.fetchUtxoConfirmations({ utxo })
-          )
         }
       }
     } catch (err) {
