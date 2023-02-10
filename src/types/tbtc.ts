@@ -16,6 +16,7 @@ export type TbtcStateKey =
   | "blindingFactor"
   | "refundLocktime"
   | "utxo"
+  | "txConfirmations"
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -66,6 +67,7 @@ export interface UseTbtcState {
     blindingFactor: string
     walletPublicKeyHash: string
     utxo: UnspentTransactionOutput
+    txConfirmations: number
 
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
     nextBridgeCrossingInUnix?: number
