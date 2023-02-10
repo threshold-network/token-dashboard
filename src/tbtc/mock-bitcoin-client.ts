@@ -93,7 +93,7 @@ export class MockBitcoinClient implements Client {
   async findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]> {
-    const utxos = this._unspentTransactionOutputs.get(
+    let utxos = this._unspentTransactionOutputs.get(
       address
     ) as UnspentTransactionOutput[]
 
@@ -123,15 +123,17 @@ export class MockBitcoinClient implements Client {
         refundLocktime: refundLocktime,
       }
 
-      await this.mockDepositTransaction(depositScriptParameters)
+      await this._mockDepositTransaction(depositScriptParameters)
     }
 
-    return this._unspentTransactionOutputs.get(
+    utxos = this._unspentTransactionOutputs.get(
       address
     ) as UnspentTransactionOutput[]
+
+    return utxos.length > 0 ? utxos.reverse() : utxos
   }
 
-  async mockDepositTransaction(
+  private async _mockDepositTransaction(
     depositScriptParameters: DepositScriptParameters
   ): Promise<void> {
     // Since we are using a delay function we don't want to mock multiple
@@ -194,7 +196,31 @@ export class MockBitcoinClient implements Client {
     rawTransactions.set(transactionHash2.toString(), transaction2)
     this.rawTransactions = rawTransactions
 
+    this._mockConfirmationsForTransaction(depositUtxo.transactionHash)
+    this._mockConfirmationsForTransaction(depositUtxo2.transactionHash)
+
     this._isMockingDepositTransactionInProgress = false
+  }
+
+  /**
+   * Mocks the confirmations for the given transaction based on it's hash. Adds
+   * a new confirmation every 8 seconds.
+   *
+   * @param {TransactionHash} transactionHash Hash of the transaction for which
+   * we want to mock the confirmations
+   * @param {number} confirmations (optional) Number of confirmations we want to
+   * mock fo the given transaction (default = 10)
+   */
+  private async _mockConfirmationsForTransaction(
+    transactionHash: TransactionHash,
+    confirmations: number = 10
+  ): Promise<void> {
+    this._confirmations.set(transactionHash.toString(), 0)
+    await this.getTransactionConfirmations(transactionHash)
+    for (let i = 0; i < confirmations; i++) {
+      await delay(8000)
+      this._confirmations.set(transactionHash.toString(), i + 1)
+    }
   }
 
   async getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
