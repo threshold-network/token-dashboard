@@ -149,6 +149,14 @@ export interface ITBTC {
   getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
 
   /**
+   * Gets the number of confirmations that a given transaction has accumulated
+   * so far.
+   * @param transactionHash - Hash of the transaction.
+   * @returns The number of confirmations.
+   */
+  getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
+
+  /**
    * Returns the bridge transaction history by depositor in order from the
    * newest revealed deposit to the oldest.
    * @param depositor Depositor Ethereum address.
@@ -412,6 +420,14 @@ export class TBTC implements ITBTC {
     utxo: UnspentTransactionOutput
   ): Promise<RevealedDeposit> => {
     return await tBTCgetRevealedDeposit(utxo, this._bridge)
+  }
+
+  getTransactionConfirmations = async (
+    transactionHash: TransactionHash
+  ): Promise<number> => {
+    return await this._bitcoinClient.getTransactionConfirmations(
+      transactionHash
+    )
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
