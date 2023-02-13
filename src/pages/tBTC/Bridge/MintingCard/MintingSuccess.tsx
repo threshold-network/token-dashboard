@@ -58,7 +58,7 @@ const MintingSuccessComponent: FC<{
     } else if (utxo.value.lt(100000000)) {
       minConfrimations = 3
     }
-    setMinConfirmationsNeeded(6)
+    setMinConfirmationsNeeded(minConfrimations)
   }, [utxo.value])
 
   const checkmarkColor =
