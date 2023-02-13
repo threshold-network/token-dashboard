@@ -1,21 +1,38 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
+import { FetchingState } from "."
+import { BridgeTxHistory } from "../threshold-ts/tbtc"
 
-export type TbtcStateKey =
-  | "mintingStep"
-  | "mintingType"
-  | "btcRecoveryAddress"
-  | "ethAddress"
-  | "btcDepositAddress"
-  | "tBTCMintAmount"
-  | "ethGasCost"
-  | "thresholdNetworkFee"
-  | "mintingFee"
-  | "nextBridgeCrossingInUnix"
-  | "walletPublicKeyHash"
-  | "blindingFactor"
-  | "refundLocktime"
-  | "utxo"
+export interface TbtcState {
+  mintingStep: MintingStep
+  unmintingStep: UnmintingStep
+  mintingType: TbtcMintingType
+  btcWithdrawAddress: string
+  unmintAmount: string
+  btcDepositAddress: string
+
+  // deposit data
+  btcRecoveryAddress: string
+  ethAddress: string
+  refundLocktime: string
+  blindingFactor: string
+  walletPublicKeyHash: string
+  utxo: UnspentTransactionOutput
+  nextBridgeCrossingInUnix?: number
+  depositRevealedTxHash?: string
+  optimisticMintingRequestedTxHash?: string
+  optimisticMintingFinalizedTxHash?: string
+
+  // TODO: These may be incorrect types
+  tBTCMintAmount: string
+  ethGasCost: number
+  thresholdNetworkFee: string
+  mintingFee: string
+
+  transactionsHistory: FetchingState<BridgeTxHistory[]>
+}
+
+export type TbtcStateKey = keyof Omit<TbtcState, "transactionsHistory">
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -52,29 +69,7 @@ export interface UpdateTbtcState {
 
 export interface UseTbtcState {
   (): {
-    mintingStep: MintingStep
-    unmintingStep: UnmintingStep
-    mintingType: TbtcMintingType
-    btcWithdrawAddress: string
-    unmintAmount: string
-    btcDepositAddress: string
-
-    // deposit data
-    btcRecoveryAddress: string
-    ethAddress: string
-    refundLocktime: string
-    blindingFactor: string
-    walletPublicKeyHash: string
-    utxo: UnspentTransactionOutput
-
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
-    nextBridgeCrossingInUnix?: number
-
-    // TODO: These may be incorrect types
-    tBTCMintAmount: string
-    ethGasCost: number
-    thresholdNetworkFee: string
-    mintingFee: string
     resetDepositData: () => void
-  }
+  } & TbtcState
 }
