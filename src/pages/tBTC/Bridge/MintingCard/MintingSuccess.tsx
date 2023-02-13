@@ -1,11 +1,15 @@
-import { FC, useEffect } from "react"
+import { FC, useEffect, useState } from "react"
 import {
   BodyLg,
   BodySm,
   Box,
   Button,
+  HStack,
   Image,
+  Progress,
+  Skeleton,
   Stack,
+  Text,
 } from "@threshold-network/components"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
@@ -22,6 +26,7 @@ import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { CheckCircleIcon } from "@chakra-ui/icons"
 
 const MintingSuccessComponent: FC<{
   utxo: UnspentTransactionOutput
@@ -29,6 +34,9 @@ const MintingSuccessComponent: FC<{
 }> = ({ utxo, onPreviousStepClick }) => {
   const { tBTCMintAmount, txConfirmations } = useTbtcState()
   const dispatch = useAppDispatch()
+  const [minConfirmationsNeeded, setMinConfirmationsNeeded] = useState<
+    number | undefined
+  >(undefined)
 
   const tbtcTokenAddress = useTBTCTokenAddress()
 
@@ -43,6 +51,23 @@ const MintingSuccessComponent: FC<{
     dispatch(tbtcSlice.actions.fetchUtxoConfirmations({ utxo }))
   }, [dispatch, JSON.stringify(utxo)])
 
+  useEffect(() => {
+    let minConfrimations = 6
+    if (utxo.value.lt(10000000)) {
+      minConfrimations = 1
+    } else if (utxo.value.lt(100000000)) {
+      minConfrimations = 3
+    }
+    setMinConfirmationsNeeded(6)
+  }, [utxo.value])
+
+  const checkmarkColor =
+    txConfirmations &&
+    minConfirmationsNeeded &&
+    txConfirmations >= minConfirmationsNeeded
+      ? "brand.500"
+      : "gray.500"
+
   return (
     <>
       <TbtcMintingCardTitle
@@ -56,6 +81,45 @@ const MintingSuccessComponent: FC<{
       <InfoBox>
         <Image src={tbtcSuccess} />
       </InfoBox>
+      <Stack my={2}>
+        <Skeleton
+          isLoaded={
+            txConfirmations !== undefined &&
+            minConfirmationsNeeded !== undefined
+          }
+        >
+          <Progress
+            h="2"
+            borderRadius="md"
+            colorScheme="brand"
+            value={
+              txConfirmations >= minConfirmationsNeeded!
+                ? 100
+                : (txConfirmations / minConfirmationsNeeded!) * 100
+            }
+          />
+        </Skeleton>
+        <HStack mt={1} alignSelf="flex-end">
+          <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
+          <BodySm color={"gray.500"}>
+            <Skeleton
+              isLoaded={
+                txConfirmations !== undefined &&
+                minConfirmationsNeeded !== undefined
+              }
+              display="inline-block"
+            >
+              {txConfirmations > minConfirmationsNeeded!
+                ? minConfirmationsNeeded
+                : txConfirmations}
+              {"/"}
+              {minConfirmationsNeeded}
+            </Skeleton>
+            {"  Bitcoin Network Confirmations"}
+          </BodySm>
+        </HStack>
+      </Stack>
+
       <Stack spacing={4} mb={8}>
         <BodyLg>
           You should receive{" "}
@@ -78,6 +142,10 @@ const MintingSuccessComponent: FC<{
             text="token address"
           />{" "}
           to your Ethererum wallet.
+          <Text>
+            The tBTC minting process will start only after 6 Bitcoin Network
+            confirmations.
+          </Text>
         </BodySm>
       </Stack>
       <TransactionDetailsTable />
