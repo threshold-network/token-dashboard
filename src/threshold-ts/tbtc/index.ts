@@ -34,7 +34,7 @@ import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, Contract } from "ethers"
+import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 
@@ -155,6 +155,9 @@ export interface ITBTC {
    * @returns The number of confirmations.
    */
   getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
+
+  // TODO: add comment
+  minimumNumberOfConfirmationsNeeded(amount: BigNumberish): number
 
   /**
    * Returns the bridge transaction history by depositor in order from the
@@ -428,6 +431,17 @@ export class TBTC implements ITBTC {
     return await this._bitcoinClient.getTransactionConfirmations(
       transactionHash
     )
+  }
+
+  minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
+    let minConfrimations = 6
+    const amountInBN = BigNumber.from(amount)
+    if (amountInBN.lt(10000000)) {
+      minConfrimations = 1
+    } else if (amountInBN.lt(100000000)) {
+      minConfrimations = 3
+    }
+    return minConfrimations
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
