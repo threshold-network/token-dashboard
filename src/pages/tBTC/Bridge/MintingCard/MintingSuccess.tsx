@@ -27,6 +27,7 @@ import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { CheckCircleIcon } from "@chakra-ui/icons"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
 
 const MintingSuccessComponent: FC<{
   utxo: UnspentTransactionOutput
@@ -34,6 +35,7 @@ const MintingSuccessComponent: FC<{
 }> = ({ utxo, onPreviousStepClick }) => {
   const { tBTCMintAmount, txConfirmations } = useTbtcState()
   const dispatch = useAppDispatch()
+  const threshold = useThreshold()
   const [minConfirmationsNeeded, setMinConfirmationsNeeded] = useState<
     number | undefined
   >(undefined)
@@ -45,19 +47,13 @@ const MintingSuccessComponent: FC<{
   }
 
   useEffect(() => {
-    // TODO: This useEffect is fired when we go from Success Modal to another
-    // subpage (for example `Staking`) and go back here. We probalby shouldn't
-    // fire it again if we have at least 6 confirmations in the state.
     dispatch(tbtcSlice.actions.fetchUtxoConfirmations({ utxo }))
   }, [dispatch, JSON.stringify(utxo)])
 
   useEffect(() => {
-    let minConfrimations = 6
-    if (utxo.value.lt(10000000)) {
-      minConfrimations = 1
-    } else if (utxo.value.lt(100000000)) {
-      minConfrimations = 3
-    }
+    const minConfrimations = threshold.tbtc.minimumNumberOfConfirmationsNeeded(
+      utxo.value
+    )
     setMinConfirmationsNeeded(minConfrimations)
   }, [utxo.value])
 

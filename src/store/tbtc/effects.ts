@@ -146,8 +146,19 @@ export const fetchUtxoConfirmationsEffect = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const { utxo } = action.payload
+  const {
+    tbtc: { txConfirmations },
+  } = listenerApi.getState()
 
   if (!utxo) return
+
+  const minimumNumberOfConfirmationsNeeded =
+    listenerApi.extra.threshold.tbtc.minimumNumberOfConfirmationsNeeded(
+      utxo.value
+    )
+
+  if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
+    return
 
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
@@ -185,7 +196,9 @@ export const fetchUtxoConfirmationsEffect = async (
     const { key, value } = (
       action as ReturnType<typeof tbtcSlice.actions.updateState>
     ).payload
-    return key === "txConfirmations" && value >= 6
+    return (
+      key === "txConfirmations" && value >= minimumNumberOfConfirmationsNeeded
+    )
   })
 
   // Stop polling task.
