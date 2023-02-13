@@ -109,14 +109,15 @@ export const findUtxoEffect = async (
           // UTXO exists for a given Bitcoin deposit address and deposit is not
           // yet revealed. Redirect to step 3 to reveal the deposit and set
           // utxo.
+
+          listenerApi.dispatch(
+            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
+          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
               value: MintingStep.InitiateMinting,
             })
-          )
-          listenerApi.dispatch(
-            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
           )
         }
       }
