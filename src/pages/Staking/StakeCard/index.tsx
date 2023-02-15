@@ -17,7 +17,6 @@ import { useTokenBalance } from "../../../hooks/useTokenBalance"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
 import {
-  ExternalHref,
   ModalType,
   StakeType,
   Token,
@@ -37,6 +36,7 @@ import { isSameETHAddress } from "../../../threshold-ts/utils"
 import { useWeb3React } from "@web3-react/core"
 import { useAppSelector } from "../../../hooks/store"
 import { selectAvailableAmountToUnstakeByStakingProvider } from "../../../store/staking"
+import { UnstakingFormLabel } from "../../../components/UnstakingFormLabel"
 
 const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -163,10 +163,20 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
         <TokenAmountForm
           innerRef={formRef}
           onSubmitForm={onSubmitForm}
-          label="Amount"
+          label={
+            isStakeAction ? (
+              "Amount"
+            ) : (
+              <UnstakingFormLabel
+                maxTokenAmount={availableAmountToUnstake.t}
+                stakingProvider={stake.stakingProvider}
+                hasAuthorizedApps={!availableAmountToUnstake.canUnstakeAll}
+              />
+            )
+          }
           submitButtonText={submitButtonText}
           maxTokenAmount={isStakeAction ? tBalance : availableAmountToUnstake.t}
-          shouldDisplayMaxAmountInLabel
+          shouldDisplayMaxAmountInLabel={isStakeAction}
           isDisabled={!isOwner}
           submitButtonVariant="outline"
         />
