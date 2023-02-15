@@ -17,6 +17,24 @@ export const selectStakeByStakingProvider = createSelector(
     stakes.find((_) => isSameETHAddress(_.stakingProvider, stakingProvider))
 )
 
+// This selector returns available amount to unstake for T, KEEP and NU in T
+// denomination. The maximum unstake amount depends on the authorized apps for
+// example suppose the given staking provider has 10T, 20T worth of KEEP and 30
+// T worth of NU- all staked. The maximum application authorization is 40 T,
+// then the maximum available amount to unstake is:
+// - 10T from T stake because: 10T(T stake) - max(0, 40T(authorization) -
+//   20T(KEEP stake) - 30T(NU stake)) = 10,
+// - 20T from KEEP stake because: 20T(KEEP stake) - max(0, 40T(authorization) -
+//   30T(NU stake) - 10T(T stake)) = 20,
+// - 20T from NU stake because: 30T(NU stake) - max(0, 40T(authorization) -
+//   20T(KEEP stake) -10T(T stake)) = 20,
+// - An owner can't unstake all stake(KEEP+NU+T) because has authorized
+//   applications. To unstake all the staking provider cannot have any
+//   authorized apps.
+// In other words, the minimum stake amount for the specified stake type is the
+// minimum amount of stake of the given type needed to satisfy the maximum
+// application authorization given the staked amounts of the other stake types
+// for that staking provider.
 export const selectAvailableAmountToUnstakeByStakingProvider = createSelector(
   [
     (state: RootState, stakingProvider: string) =>
