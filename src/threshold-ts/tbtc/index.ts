@@ -444,14 +444,13 @@ export class TBTC implements ITBTC {
   }
 
   minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
-    let minConfrimations = 6
     const amountInBN = BigNumber.from(amount)
     if (amountInBN.lt(10000000) /* 0.1 BTC */) {
-      minConfrimations = 1
+      return 1
     } else if (amountInBN.lt(100000000) /* 1 BTC */) {
-      minConfrimations = 3
+      return 3
     }
-    return minConfrimations
+    return 6
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
