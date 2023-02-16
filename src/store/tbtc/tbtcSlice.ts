@@ -145,7 +145,10 @@ export const tbtcSlice = createSlice({
     fetchUtxoConfirmations: (
       state,
       action: PayloadAction<{
-        utxo: UnspentTransactionOutput
+        utxo: {
+          transactionHash: string
+          value: string
+        }
       }>
     ) => {},
   },

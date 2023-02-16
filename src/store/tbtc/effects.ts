@@ -9,6 +9,7 @@ import {
   key,
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
+import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 export const fetchBridgeTxHitoryEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeTransactionHistory>,
@@ -160,6 +161,8 @@ export const fetchUtxoConfirmationsEffect = async (
   if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
     return
 
+  const txHash = TransactionHash.from(utxo.transactionHash)
+
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
 
@@ -168,9 +171,7 @@ export const fetchUtxoConfirmationsEffect = async (
       while (true) {
         // Get confirmations
         const confirmations = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
-            utxo.transactionHash
-          )
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(txHash)
         )
         listenerApi.dispatch(
           tbtcSlice.actions.updateState({
