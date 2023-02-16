@@ -46,9 +46,16 @@ const MintingSuccessComponent: FC<{
     onPreviousStepClick(MintingStep.ProvideData)
   }
 
+  const transactionHash = utxo.transactionHash.toString()
+  const value = utxo.value.toString()
+
   useEffect(() => {
-    dispatch(tbtcSlice.actions.fetchUtxoConfirmations({ utxo }))
-  }, [dispatch, JSON.stringify(utxo)])
+    dispatch(
+      tbtcSlice.actions.fetchUtxoConfirmations({
+        utxo: { transactionHash, value },
+      })
+    )
+  }, [dispatch, transactionHash, value])
 
   useEffect(() => {
     const minConfrimations = threshold.tbtc.minimumNumberOfConfirmationsNeeded(
