@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, ComponentProps } from "react"
 import {
   BodyMd,
   Box,
@@ -9,14 +9,17 @@ import {
   Stack,
   Divider,
   useColorModeValue,
+  Card,
 } from "@threshold-network/components"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
-import InfoBox from "../../../../components/InfoBox"
 import TooltipIcon from "../../../../components/TooltipIcon"
-import CopyToClipboard from "../../../../components/CopyToClipboard"
+import {
+  CopyAddressToClipboard,
+  CopyToClipboard,
+  CopyToClipboardButton,
+} from "../../../../components/CopyToClipboard"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import shortenAddress from "../../../../utils/shortenAddress"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
@@ -28,11 +31,82 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   return (
     <HStack justify="space-between">
       <BoxLabel>{text}</BoxLabel>
-      <HStack>
-        <BodyMd color="brand.500">{shortenAddress(address)}</BodyMd>
-        <CopyToClipboard textToCopy={address} />
-      </HStack>
+      <CopyAddressToClipboard address={address} copyIconPosition="end" />
     </HStack>
+  )
+}
+
+const BTCAddressCard: FC<ComponentProps<typeof Card>> = ({
+  children,
+  ...restProps
+}) => {
+  const bgColor = useColorModeValue("gray.50", "gray.900")
+  return (
+    <Card {...restProps} backgroundColor={bgColor} border="none">
+      {children}
+    </Card>
+  )
+}
+
+const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
+  btcDepositAddress,
+}) => {
+  const titleColor = useColorModeValue("gray.700", "gray.100")
+  const btcAddressColor = useColorModeValue("brand.500", "white")
+
+  return (
+    <>
+      <HStack
+        alignItems="center"
+        mb="3.5"
+        // To center the tooltip icon. The tooltip icon is wrapped by `span`
+        // because of: If you're wrapping an icon from `react-icons`, you need
+        // to also wrap the icon in a `span` element as `react-icons` icons do
+        // not use forwardRef. See
+        // https://chakra-ui.com/docs/components/tooltip#with-an-icon.
+        sx={{ ">span": { display: "flex" } }}
+      >
+        <BodyMd color={titleColor}>BTC Deposit Address</BodyMd>
+        <TooltipIcon
+          color={titleColor}
+          label="This is a unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC."
+        />
+      </HStack>
+      <BTCAddressCard p="2.5" display="flex" justifyContent="center">
+        <Box
+          p={2.5}
+          backgroundColor={"white"}
+          width={"100%"}
+          maxW="205px"
+          borderRadius="8px"
+        >
+          <QRCode
+            size={256}
+            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+            value={btcDepositAddress}
+            viewBox={`0 0 256 256`}
+          />
+        </Box>
+      </BTCAddressCard>
+      <CopyToClipboard textToCopy={btcDepositAddress}>
+        <HStack mt="2.5">
+          <BTCAddressCard minW="0" p="2">
+            <BodyMd color={btcAddressColor} textStyle="chain-identifier">
+              {btcDepositAddress}
+            </BodyMd>
+          </BTCAddressCard>
+          <BTCAddressCard
+            flex="1"
+            p="4"
+            display="flex"
+            alignSelf="stretch"
+            alignItems="center"
+          >
+            <CopyToClipboardButton />
+          </BTCAddressCard>
+        </HStack>
+      </CopyToClipboard>
+    </>
   )
 }
 
@@ -60,55 +134,7 @@ const MakeDepositComponent: FC<{
         This address is a uniquely generated address based on the data you
         provided.
       </BodyMd>
-      <InfoBox p="4">
-        <HStack
-          alignItems="center"
-          // To center the tooltip icon. The tooltip icon is wrapped by `span`
-          // because of: If you're wrapping an icon from `react-icons`, you need
-          // to also wrap the icon in a `span` element as `react-icons` icons do
-          // not use forwardRef. See
-          // https://chakra-ui.com/docs/components/tooltip#with-an-icon.
-          sx={{ ">span": { display: "flex" } }}
-        >
-          <BodyMd color="gray.700">BTC Deposit Address</BodyMd>
-          <TooltipIcon label="This is a unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC." />
-        </HStack>
-
-        <Box
-          my={5}
-          p={3}
-          backgroundColor={"white"}
-          width={"100%"}
-          maxW={"145px"}
-          marginY="4"
-          borderRadius="4"
-          border={"1px solid"}
-          borderColor={"brand.500"}
-          alignSelf="center"
-        >
-          <QRCode
-            size={256}
-            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-            value={btcDepositAddress}
-            viewBox={`0 0 256 256`}
-          />
-        </Box>
-
-        <HStack
-          bg="white"
-          borderRadius="lg"
-          justify="center"
-          mb="2"
-          p="1"
-          pl="2"
-          sx={{ ">div": { marginInlineStart: "0 !important" } }}
-        >
-          <BodyMd color="brand.500" isTruncated>
-            {btcDepositAddress}
-          </BodyMd>
-          <CopyToClipboard textToCopy={btcDepositAddress} />
-        </HStack>
-      </InfoBox>
+      <BTCAddressSection btcDepositAddress={btcDepositAddress} />
       <Stack spacing={4} mt="5" mb={8}>
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
