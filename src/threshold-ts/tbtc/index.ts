@@ -159,8 +159,8 @@ export interface ITBTC {
   /**
    * Gets the minimum number of confirmations needed for the minter to start the
    * minting process. The minimum number of confirmations is based on the amount
-   * that was sent to the deposit address:
-   * Here are the rules:
+   * that was sent to the deposit address.
+   * The rules are:
    * - If the amount is less than 0.1 BTC, it should have at least 1
    * confirmation.
    * - If the tx is less than 1 BTC, it should have at least 3 confirmations.
@@ -450,7 +450,7 @@ export class TBTC implements ITBTC {
     } else if (amountInBN.lt(100000000) /* 1 BTC */) {
       return 3
     }
-    return 6
+    return 0
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
