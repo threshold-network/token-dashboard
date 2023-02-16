@@ -36,9 +36,6 @@ const MintingSuccessComponent: FC<{
   const { tBTCMintAmount, txConfirmations } = useTbtcState()
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
-  const [minConfirmationsNeeded, setMinConfirmationsNeeded] = useState<
-    number | undefined
-  >(undefined)
 
   const tbtcTokenAddress = useTBTCTokenAddress()
 
@@ -57,12 +54,8 @@ const MintingSuccessComponent: FC<{
     )
   }, [dispatch, transactionHash, value])
 
-  useEffect(() => {
-    const minConfrimations = threshold.tbtc.minimumNumberOfConfirmationsNeeded(
-      utxo.value
-    )
-    setMinConfirmationsNeeded(minConfrimations)
-  }, [utxo.value])
+  const minConfirmationsNeeded =
+    threshold.tbtc.minimumNumberOfConfirmationsNeeded(utxo.value)
 
   const checkmarkColor =
     txConfirmations &&
@@ -85,20 +78,15 @@ const MintingSuccessComponent: FC<{
         <Image src={tbtcSuccess} />
       </InfoBox>
       <Stack my={2}>
-        <Skeleton
-          isLoaded={
-            txConfirmations !== undefined &&
-            minConfirmationsNeeded !== undefined
-          }
-        >
+        <Skeleton isLoaded={txConfirmations !== undefined}>
           <Progress
             h="2"
             borderRadius="md"
             colorScheme="brand"
             value={
-              txConfirmations >= minConfirmationsNeeded!
+              txConfirmations >= minConfirmationsNeeded
                 ? 100
-                : (txConfirmations / minConfirmationsNeeded!) * 100
+                : (txConfirmations / minConfirmationsNeeded) * 100
             }
           />
         </Skeleton>
@@ -106,13 +94,10 @@ const MintingSuccessComponent: FC<{
           <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
           <BodySm color={"gray.500"}>
             <Skeleton
-              isLoaded={
-                txConfirmations !== undefined &&
-                minConfirmationsNeeded !== undefined
-              }
+              isLoaded={txConfirmations !== undefined}
               display="inline-block"
             >
-              {txConfirmations > minConfirmationsNeeded!
+              {txConfirmations > minConfirmationsNeeded
                 ? minConfirmationsNeeded
                 : txConfirmations}
               {"/"}
