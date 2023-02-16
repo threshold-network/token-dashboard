@@ -151,12 +151,22 @@ export interface ITBTC {
   /**
    * Gets the number of confirmations that a given transaction has accumulated
    * so far.
-   * @param transactionHash - Hash of the transaction.
+   * @param transactionHash Hash of the transaction.
    * @returns The number of confirmations.
    */
   getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
 
-  // TODO: add comment
+  /**
+   * Gets the minimum number of confirmations needed for the minter to start the
+   * minting process. The minimum number of confirmations is based on the amount
+   * that was sent to the deposit address:
+   * Here are the rules:
+   * - If the amount is less than 0.1 BTC, it should have at least 1
+   * confirmation.
+   * - If the tx is less than 1 BTC, it should have at least 3 confirmations.
+   * - Otherwise, we need to wait for 6 confirmations.
+   * @param amount Amount that was sent to the deposit address (in satoshi)
+   */
   minimumNumberOfConfirmationsNeeded(amount: BigNumberish): number
 
   /**
@@ -442,9 +452,9 @@ export class TBTC implements ITBTC {
   minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
     let minConfrimations = 6
     const amountInBN = BigNumber.from(amount)
-    if (amountInBN.lt(10000000)) {
+    if (amountInBN.lt(10000000) /* 0.1 BTC */) {
       minConfrimations = 1
-    } else if (amountInBN.lt(100000000)) {
+    } else if (amountInBN.lt(100000000) /* 1 BTC */) {
       minConfrimations = 3
     }
     return minConfrimations
