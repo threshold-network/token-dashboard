@@ -12,7 +12,7 @@ export const verifyDepositAddress = async (
   depositAddress: string,
   network: BitcoinNetwork
 ): Promise<VerificationOutcome> => {
-  const endpoint = `https://us-central1-keep-test-f3e0.cloudfunctions.net/verify-deposit-address`
+  const endpoint = `https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address`
 
   const { depositor, blindingFactor, refundPublicKeyHash, refundLocktime } =
     deposit
