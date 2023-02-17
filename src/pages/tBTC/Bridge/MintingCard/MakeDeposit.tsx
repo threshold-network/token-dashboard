@@ -23,15 +23,20 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
 
-const AddressRow: FC<{ address: string; text: string }> = ({
-  address,
-  text,
-}) => {
+const AddressRow: FC<
+  { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
+> = ({ address, text, chain }) => {
   return (
     <HStack justify="space-between">
       <BoxLabel>{text}</BoxLabel>
-      <CopyAddressToClipboard address={address} copyButtonPosition="end" />
+      <CopyAddressToClipboard
+        address={address}
+        copyButtonPosition="end"
+        withLinkToBlockExplorer
+        chain={chain}
+      />
     </HStack>
   )
 }
@@ -138,7 +143,11 @@ const MakeDepositComponent: FC<{
       <Stack spacing={4} mt="5" mb={8}>
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
-        <AddressRow text="BTC Recovery Address" address={btcRecoveryAddress} />
+        <AddressRow
+          text="BTC Recovery Address"
+          address={btcRecoveryAddress}
+          chain="bitcoin"
+        />
       </Stack>
       <Divider mt={4} mb={6} />
       <ChecklistGroup
