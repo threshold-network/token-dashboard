@@ -216,7 +216,6 @@ export class MockBitcoinClient implements Client {
     confirmations: number = 10
   ): Promise<void> {
     this._confirmations.set(transactionHash.toString(), 0)
-    await this.getTransactionConfirmations(transactionHash)
     for (let i = 0; i < confirmations; i++) {
       await delay(8000)
       this._confirmations.set(transactionHash.toString(), i + 1)
