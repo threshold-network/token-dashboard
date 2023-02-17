@@ -7,12 +7,10 @@ export interface TbtcState {
   mintingStep: MintingStep
   unmintingStep: UnmintingStep
   mintingType: TbtcMintingType
-  btcWithdrawAddress: string
-  unmintAmount: string
-  btcDepositAddress: string
 
   // deposit data
   btcRecoveryAddress: string
+  btcDepositAddress: string
   ethAddress: string
   refundLocktime: string
   blindingFactor: string
@@ -22,10 +20,7 @@ export interface TbtcState {
   depositRevealedTxHash?: string
   optimisticMintingRequestedTxHash?: string
   optimisticMintingFinalizedTxHash?: string
-
-  // TODO: These may be incorrect types
   tBTCMintAmount: string
-  ethGasCost: number
   thresholdNetworkFee: string
   mintingFee: string
 
