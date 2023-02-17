@@ -1,7 +1,6 @@
 import { FC } from "react"
-import { BodyMd, BoxLabel, HStack } from "@threshold-network/components"
-import CopyToClipboard from "../../../components/CopyToClipboard"
-import shortenAddress from "../../../utils/shortenAddress"
+import { BoxLabel, HStack } from "@threshold-network/components"
+import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 
 type CommonProps = {
   label: string
@@ -30,11 +29,10 @@ const StakeDetailRow: FC<Props> = ({
     <HStack justify="space-between" minH="40px">
       <BoxLabel status={isPrimary ? "primary" : "secondary"}>{label}</BoxLabel>
       {isAddress ? (
-        <CopyToClipboard textToCopy={address}>
-          <BodyMd color={isPrimary ? "brand.500" : "gray.500"}>
-            {shortenAddress(address)}
-          </BodyMd>
-        </CopyToClipboard>
+        <CopyAddressToClipboard
+          color={isPrimary ? "brand.500" : "gray.500"}
+          address={address}
+        />
       ) : (
         children
       )}

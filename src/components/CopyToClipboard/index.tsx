@@ -1,4 +1,4 @@
-import { FC, ComponentProps } from "react"
+import { FC, ComponentProps, createContext, useContext } from "react"
 import {
   useClipboard,
   Flex,
@@ -7,46 +7,111 @@ import {
   Tooltip,
   BodyMd,
 } from "@threshold-network/components"
-import { CopyIcon } from "@chakra-ui/icons"
+import { IoCopyOutline } from "react-icons/all"
 import shortenAddress from "../../utils/shortenAddress"
+import ViewInBlockExplorer, {
+  ViewInBlockExplorerProps,
+} from "../ViewInBlockExplorer"
+import { ExplorerDataType } from "../../utils/createEtherscanLink"
 
 type CopyToClipboardProps = {
   textToCopy: string
   textCopiedMsg?: string
-  copyTextMsg?: string
+  helperText?: string
 }
 
-const CopyToClipboard: FC<CopyToClipboardProps> = ({
+type CopyToClipboardContextValue = {
+  hasCopied: boolean
+  onCopy: () => void
+  helperText: string
+  textCopiedMsg: string
+} & Omit<CopyToClipboardProps, "helperText" | "textCopiedMsg">
+
+const CopyToClipboardContext = createContext<
+  CopyToClipboardContextValue | undefined
+>(undefined)
+
+const useCopyToClipboardContext = () => {
+  const context = useContext(CopyToClipboardContext)
+
+  if (!context) {
+    throw new Error(
+      "CopyToClipboardContext used outside of the CopyToClipboard component."
+    )
+  }
+
+  return context
+}
+
+export const CopyToClipboardButton: FC = () => {
+  const { hasCopied, textCopiedMsg, helperText, onCopy } =
+    useCopyToClipboardContext()
+  return (
+    <Tooltip
+      hasArrow
+      label={hasCopied ? textCopiedMsg : helperText}
+      closeOnClick={false}
+    >
+      <IconButton
+        icon={<IoCopyOutline />}
+        color="gray.500"
+        onClick={onCopy}
+        aria-label={helperText}
+        variant="ghost"
+        width="none"
+        height="none"
+        minW="unset"
+        paddingInlineStart="unset"
+        paddingInlineEnd="unset"
+        p="0"
+        _hover={{ background: "none" }}
+      />
+    </Tooltip>
+  )
+}
+
+export const CopyToClipboard: FC<CopyToClipboardProps> = ({
   textToCopy,
   children,
   textCopiedMsg = "Copied!",
-  copyTextMsg = "Copy to clipboard",
+  helperText = "Copy to clipboard",
 }) => {
   const { hasCopied, onCopy } = useClipboard(textToCopy)
 
   return (
-    <Flex alignItems="center">
-      <Tooltip
-        hasArrow
-        label={hasCopied ? textCopiedMsg : copyTextMsg}
-        closeOnClick={false}
-      >
-        <IconButton
-          icon={<CopyIcon />}
-          color="gray.500"
-          onClick={onCopy}
-          aria-label={copyTextMsg}
-          variant="ghost"
-          width="none"
-          height="none"
-          minW="unset"
-          paddingInlineStart="unset"
-          paddingInlineEnd="unset"
-          p="2"
-        />
-      </Tooltip>
+    <CopyToClipboardContext.Provider
+      value={{
+        textToCopy,
+        textCopiedMsg,
+        helperText,
+        hasCopied,
+        onCopy,
+      }}
+    >
       {children}
-    </Flex>
+    </CopyToClipboardContext.Provider>
+  )
+}
+
+type CopyButtonPosition = "start" | "end"
+
+type BaseCopyToClipboardProps = {
+  copyButtonPosition?: CopyButtonPosition
+} & CopyToClipboardProps
+
+const BaseCopyToClipboard: FC<BaseCopyToClipboardProps> = ({
+  children,
+  copyButtonPosition = "start",
+  ...restProps
+}) => {
+  return (
+    <CopyToClipboard {...restProps}>
+      <Flex alignItems="center">
+        {copyButtonPosition === "start" && <CopyToClipboardButton />}
+        {children}
+        {copyButtonPosition === "end" && <CopyToClipboardButton />}
+      </Flex>
+    </CopyToClipboard>
   )
 }
 
@@ -55,20 +120,54 @@ type CopyAddressToClipboardProps = Omit<
   "children"
 > & {
   address: string
-}
+  withFullAddress?: boolean
+  withLinkToBlockExplorer?: boolean
+} & Omit<BaseCopyToClipboardProps, "textToCopy"> &
+  Pick<ViewInBlockExplorerProps, "chain">
 
 export const CopyAddressToClipboard: FC<CopyAddressToClipboardProps> = ({
   address,
+  textCopiedMsg,
+  helperText,
+  copyButtonPosition,
+  chain,
+  withFullAddress = false,
+  withLinkToBlockExplorer = false,
   ...restProps
 }) => {
   const addressColor = useColorModeValue("brand.500", "brand.100")
+  const _address = withFullAddress ? address : shortenAddress(address)
+  const mr = copyButtonPosition === "end" ? "2.5" : undefined
+  const ml =
+    !copyButtonPosition || copyButtonPosition === "start" ? "2.5" : undefined
+
+  const blockExplorerProps = {
+    as: ViewInBlockExplorer,
+    text: _address,
+    id: address,
+    type: ExplorerDataType.ADDRESS,
+    chain,
+  }
+
   return (
-    <CopyToClipboard textToCopy={address}>
-      <BodyMd color={addressColor} {...restProps}>
-        {shortenAddress(address)}
+    <BaseCopyToClipboard
+      textToCopy={address}
+      helperText={helperText}
+      textCopiedMsg={textCopiedMsg}
+      copyButtonPosition={copyButtonPosition}
+    >
+      <BodyMd
+        {...(withLinkToBlockExplorer && blockExplorerProps)}
+        color={addressColor}
+        mr={mr}
+        ml={ml}
+        textStyle="chain-identifier"
+        {...restProps}
+      >
+        {_address}
       </BodyMd>
-    </CopyToClipboard>
+    </BaseCopyToClipboard>
   )
 }
-
-export default CopyToClipboard
+// Just to not break the current component API.
+export default BaseCopyToClipboard

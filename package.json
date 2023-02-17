@@ -11,6 +11,7 @@
     "@ethersproject/address": "^5.5.0",
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/hardware-wallets": "^5.5.0",
+    "@fontsource/ibm-plex-mono": "^4.5.13",
     "@fontsource/inter": "^4.5.10",
     "@keep-network/coverage-pools": "1.0.0",
     "@keep-network/ecdsa": "2.0.0",
