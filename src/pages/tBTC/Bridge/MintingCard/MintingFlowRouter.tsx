@@ -60,12 +60,7 @@ const MintingFlowRouterBase = () => {
       )
     }
     case MintingStep.MintingSuccess: {
-      return (
-        <MintingSuccess
-          utxo={utxo!}
-          onPreviousStepClick={onPreviousStepClick}
-        />
-      )
+      return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />
     }
     default:
       return (

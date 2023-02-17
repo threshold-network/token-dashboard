@@ -1,4 +1,5 @@
 export * from "./address"
 export * from "./bitcoin"
 export * from "./constants"
+export * from "./math"
 export * from "./contract"

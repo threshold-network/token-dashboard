@@ -50,8 +50,6 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
       <Stack
         direction={{
           base: "column",
-          md: "row",
-          lg: "column",
           xl: "row",
         }}
         divider={<StackDivider />}
@@ -61,8 +59,6 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
         <Box
           w={{
             base: "100%",
-            md: "66%",
-            lg: "100%",
             xl: "66%",
           }}
         >
@@ -71,8 +67,6 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
         <Box
           w={{
             base: "100%",
-            md: "33%",
-            lg: "100%",
             xl: "33%",
           }}
           minW={"216px"}
