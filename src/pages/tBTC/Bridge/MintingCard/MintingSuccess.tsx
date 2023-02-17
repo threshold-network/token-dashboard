@@ -57,6 +57,8 @@ const MintingSuccessComponent: FC<{
   const minConfirmationsNeeded =
     threshold.tbtc.minimumNumberOfConfirmationsNeeded(utxo.value)
 
+  const areConfirmationsLoaded = txConfirmations !== undefined
+
   const checkmarkColor =
     txConfirmations &&
     minConfirmationsNeeded &&
@@ -78,7 +80,7 @@ const MintingSuccessComponent: FC<{
         <Image src={tbtcSuccess} />
       </InfoBox>
       <Stack my={2}>
-        <Skeleton isLoaded={txConfirmations !== undefined}>
+        <Skeleton isLoaded={areConfirmationsLoaded}>
           <Progress
             h="2"
             borderRadius="md"
@@ -93,10 +95,7 @@ const MintingSuccessComponent: FC<{
         <HStack mt={1} alignSelf="flex-end">
           <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
           <BodySm color={"gray.500"}>
-            <Skeleton
-              isLoaded={txConfirmations !== undefined}
-              display="inline-block"
-            >
+            <Skeleton isLoaded={areConfirmationsLoaded} display="inline-block">
               {txConfirmations > minConfirmationsNeeded
                 ? minConfirmationsNeeded
                 : txConfirmations}
