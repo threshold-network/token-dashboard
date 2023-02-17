@@ -131,8 +131,8 @@ const MintingSuccessComponent: FC<{
           />{" "}
           to your Ethererum wallet.
           <Text>
-            The tBTC minting process will start only after 6 Bitcoin Network
-            confirmations.
+            The tBTC minting process will start only after{" "}
+            {minConfirmationsNeeded} Bitcoin Network confirmations.
           </Text>
         </BodySm>
       </Stack>
