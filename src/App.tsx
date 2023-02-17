@@ -52,7 +52,10 @@ import { usePosthog } from "./hooks/posthog"
 import { featureFlags } from "./constants"
 import FeedbackRoutesButton from "./components/FeedbackRoutesButton"
 import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDepositRevealedEvent"
-import { useSubscribeToOptimisticMintingFinalizedEvent } from "./hooks/tbtc"
+import {
+  useSubscribeToOptimisticMintingFinalizedEvent,
+  useSubscribeToOptimisticMintingRequestedEvent,
+} from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
 
 const Web3EventHandlerComponent = () => {
@@ -76,6 +79,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToOperatorStatusUpdatedEvent("tbtc")
   useSubscribeToDepositRevealedEvent()
   useSubscribeToOptimisticMintingFinalizedEvent()
+  useSubscribeToOptimisticMintingRequestedEvent()
 
   return <></>
 }

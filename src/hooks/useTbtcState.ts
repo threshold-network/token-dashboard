@@ -26,6 +26,9 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("thresholdNetworkFee", undefined)
     updateState("mintingFee", undefined)
     updateState("utxo", undefined)
+    updateState("depositRevealedTxHash", undefined)
+    updateState("optimisticMintingRequestedTxHash", undefined)
+    updateState("optimisticMintingFinalizedTxHash", undefined)
   }, [updateState])
 
   return {
