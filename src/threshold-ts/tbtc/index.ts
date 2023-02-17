@@ -456,7 +456,7 @@ export class TBTC implements ITBTC {
     } else if (amountInBN.lt(100000000) /* 1 BTC */) {
       return 3
     }
-    return 0
+    return 6
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
