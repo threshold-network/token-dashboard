@@ -31,7 +31,7 @@ const AddressRow: FC<{ address: string; text: string }> = ({
   return (
     <HStack justify="space-between">
       <BoxLabel>{text}</BoxLabel>
-      <CopyAddressToClipboard address={address} copyIconPosition="end" />
+      <CopyAddressToClipboard address={address} copyButtonPosition="end" />
     </HStack>
   )
 }
