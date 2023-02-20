@@ -12,7 +12,8 @@ import { FetchingState } from "../../types"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
-import { fetchBridgeTxHitoryEffect } from "./effects"
+import { fetchBridgeTxHitoryEffect, findUtxoEffect } from "./effects"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 interface TbtcState {
   mintingType: TbtcMintingType
@@ -28,6 +29,7 @@ interface TbtcState {
   walletPublicKeyHash: string
   refundLocktime: string
   blindingFactor: string
+  utxo: UnspentTransactionOutput
 
   nextBridgeCrossingInUnix?: number
 
@@ -35,7 +37,7 @@ interface TbtcState {
   tBTCMintAmount: string
   ethGasCost: number
   thresholdNetworkFee: string
-  bitcoinMinerFee: string
+  mintingFee: string
 
   transactionsHistory: FetchingState<BridgeTxHistory[]>
 }
@@ -86,28 +88,86 @@ export const tbtcSlice = createSlice({
       action: PayloadAction<{
         fundingTxHash: string
         fundingOutputIndex: number
+        depositKey: string
         amount: string
         depositor: string
         txHash: string
       }>
     ) => {
-      const { amount, txHash } = action.payload
+      const { amount, txHash, depositKey } = action.payload
+      const history = state.transactionsHistory.data
+      const { itemToUpdate } = findHistoryByDepositKey(history, depositKey)
+
+      // Do not update an array if there is already an item with the same
+      // deposit key- just in case duplicated Ethereum events.
+      if (itemToUpdate) return
+
+      // Add item only if there is no item with the same deposit key.
       state.transactionsHistory.data = [
-        { amount, txHash, status: BridgeHistoryStatus.PENDING },
+        { amount, txHash, status: BridgeHistoryStatus.PENDING, depositKey },
         ...state.transactionsHistory.data,
       ]
     },
+    optimisticMintingFinalized: (
+      state,
+      action: PayloadAction<{
+        depositKey: string
+        txHash: string
+      }>
+    ) => {
+      const { depositKey, txHash } = action.payload
+      const history = state.transactionsHistory.data
+      const {
+        index: historyIndexItemToUpdate,
+        itemToUpdate: historyItemToUpdate,
+      } = findHistoryByDepositKey(history, depositKey)
+
+      if (!historyItemToUpdate) return
+
+      state.transactionsHistory.data[historyIndexItemToUpdate] = {
+        ...historyItemToUpdate,
+        status: BridgeHistoryStatus.MINTED,
+        txHash,
+      }
+    },
+    findUtxo: (
+      state,
+      action: PayloadAction<{
+        btcDepositAddress: string
+        depositor: string
+      }>
+    ) => {},
   },
 })
 
+function findHistoryByDepositKey(
+  history: BridgeTxHistory[],
+  depositKey: string
+) {
+  const historyIndexItemToUpdate = history.findIndex(
+    (item) => item.depositKey === depositKey
+  )
+
+  if (historyIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }
+
+  const historyItemToUpdate = history[historyIndexItemToUpdate]
+
+  return { index: historyIndexItemToUpdate, itemToUpdate: historyItemToUpdate }
+}
+
 export const { updateState } = tbtcSlice.actions
 
-const registerTBTCListeners = () => {
+export const registerTBTCListeners = () => {
   if (!featureFlags.TBTC_V2) return
 
   startAppListening({
     actionCreator: tbtcSlice.actions.requestBridgeTransactionHistory,
     effect: fetchBridgeTxHitoryEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.findUtxo,
+    effect: findUtxoEffect,
   })
 }
 

@@ -14,8 +14,9 @@ import {
   DepositScriptParameters,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { BigNumber } from "ethers"
-import { unprefixedAndUncheckedAddress } from "../threshold-ts/utils"
+import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
+import { BitcoinNetwork } from "../threshold-ts/types"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -116,16 +117,14 @@ export class MockBitcoinClient implements Client {
       } = tbtc
 
       const depositScriptParameters: DepositScriptParameters = {
-        depositor: {
-          identifierHex: unprefixedAndUncheckedAddress(ethAddress),
-        },
+        depositor: getChainIdentifier(ethAddress),
         blindingFactor: blindingFactor,
         walletPublicKeyHash: walletPublicKeyHash,
         refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
         refundLocktime: refundLocktime,
       }
 
-      this.mockDepositTransaction(depositScriptParameters)
+      await this.mockDepositTransaction(depositScriptParameters)
     }
 
     return this._unspentTransactionOutputs.get(
@@ -141,10 +140,13 @@ export class MockBitcoinClient implements Client {
     // method. This is why we embrace `_isMockingDepositTransactionInProgress`
     // flag
     this._isMockingDepositTransactionInProgress = true
+
     await delay(5000)
+
+    const network = await this.getNetwork()
     const depositAddress = await calculateDepositAddress(
       depositScriptParameters,
-      "testnet",
+      network,
       true
     )
 
@@ -174,7 +176,7 @@ export class MockBitcoinClient implements Client {
 
     const deposit2: Deposit = {
       ...depositScriptParameters,
-      amount: BigNumber.from("1000001"),
+      amount: BigNumber.from("1500000"),
     }
 
     const {
@@ -238,5 +240,9 @@ export class MockBitcoinClient implements Client {
   async broadcast(transaction: RawTransaction): Promise<void> {
     this._broadcastLog.push(transaction)
     return
+  }
+
+  async getNetwork(): Promise<BitcoinNetwork> {
+    return BitcoinNetwork.Testnet
   }
 }

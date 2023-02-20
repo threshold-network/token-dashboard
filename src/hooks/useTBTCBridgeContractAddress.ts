@@ -1,9 +1,7 @@
-import { useThreshold } from "../contexts/ThresholdContext"
-import { AddressZero } from "../web3/utils"
+import { useBridgeContract } from "./tbtc/useBridgeContract"
 
 export const useTBTCBridgeContractAddress = () => {
-  const threshold = useThreshold()
+  const bridgeContract = useBridgeContract()
 
-  // TODO: set the bridge contract address from `threshold-ts` lib
-  return AddressZero // threshold.tbtc.bridge.address
+  return bridgeContract.address
 }

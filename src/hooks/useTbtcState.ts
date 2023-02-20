@@ -24,8 +24,9 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("mintingStep", MintingStep.ProvideData)
     updateState("tBTCMintAmount", undefined)
     updateState("thresholdNetworkFee", undefined)
-    updateState("bitcoinMinerFee", undefined)
-  }, [dispatch, updateState])
+    updateState("mintingFee", undefined)
+    updateState("utxo", undefined)
+  }, [updateState])
 
   return {
     ...tbtcState,

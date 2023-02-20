@@ -45,7 +45,7 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       <BoxLabel status="secondary" mb="4" mt="4">
         Recovery BTC Address
       </BoxLabel>
-      <List mb="4">
+      <List mb="1.5rem" spacing="4">
         <ListItem>
           <ListIcon
             verticalAlign="sub"
@@ -57,6 +57,23 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
           <BodyMd as="span">
             Providing a BTC refund address means your bitcoin will be safe, even
             in the unlikely case of an error minting.{" "}
+            <Link isExternal href={ExternalHref.btcRecoveryAddress}>
+              Read more
+            </Link>
+          </BodyMd>
+        </ListItem>
+        <ListItem>
+          <ListIcon
+            verticalAlign="sub"
+            color="brand.500"
+            as={BsFillArrowRightCircleFill}
+            w="16px"
+            h="16px"
+          />
+          <BodyMd as="span">
+            Make sure you provide a single BTC recovery address that you
+            control. Don't use a multi-sig or an exchange address. You can read
+            more about the requirements and P2PKH.{" "}
             <Link isExternal href={ExternalHref.btcRecoveryAddress}>
               Read more
             </Link>

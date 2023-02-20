@@ -12,6 +12,8 @@ const envVariables = [
   "ELECTRUM_HOST",
   "ELECTRUM_PORT",
   "MOCK_BITCOIN_CLIENT",
+  "FEATURE_FLAG_SENTRY",
+  "SENTRY_DSN",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]

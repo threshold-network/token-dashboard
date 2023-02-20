@@ -1,33 +1,35 @@
-import { FC, useEffect, useState } from "react"
-import { Box, Flex, H5 } from "@threshold-network/components"
+import { FC, useEffect } from "react"
+import { Box, Flex, H5, Skeleton, Stack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import { BridgeContractLink } from "../../../../components/tBTC"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
+import { useAppDispatch } from "../../../../hooks/store"
+import { tbtcSlice } from "../../../../store/tbtc"
 
 const MintingFlowRouterBase = () => {
-  const { mintingStep, updateState, btcDepositAddress } = useTbtcState()
-  const { removeDepositDataFromLocalStorage } =
-    useTBTCDepositDataFromLocalStorage()
-  const threshold = useThreshold()
-  const [utxos, setUtxos] = useState<UnspentTransactionOutput[] | undefined>(
-    undefined
-  )
+  const dispatch = useAppDispatch()
+  const { account } = useWeb3React()
+  const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
+  const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
+    if (mintingStep === MintingStep.MintingSuccess) {
+      updateState("mintingStep", MintingStep.ProvideData)
+      removeDepositData()
+      return
+    }
     if (previousStep === MintingStep.ProvideData) {
       openModal(ModalType.GenerateNewDepositAddress)
       return
@@ -36,36 +38,23 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    const findUtxos = async () => {
-      if (btcDepositAddress) {
-        const utxos = await threshold.tbtc.findAllUnspentTransactionOutputs(
-          btcDepositAddress
-        )
-        if (utxos && utxos.length > 0) setUtxos(utxos)
-      }
-    }
-
-    findUtxos()
-    const interval = setInterval(async () => {
-      await findUtxos()
-    }, 10000)
-
-    return () => clearInterval(interval)
-  }, [btcDepositAddress])
+    if (!btcDepositAddress || !account) return
+    dispatch(
+      tbtcSlice.actions.findUtxo({ btcDepositAddress, depositor: account })
+    )
+  }, [btcDepositAddress, account, dispatch])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
       return <ProvideData onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.Deposit: {
-      return (
-        <MakeDeposit utxos={utxos} onPreviousStepClick={onPreviousStepClick} />
-      )
+      return <MakeDeposit onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.InitiateMinting: {
       return (
         <InitiateMinting
-          utxos={utxos}
+          utxo={utxo!}
           onPreviousStepClick={onPreviousStepClick}
         />
       )
@@ -74,7 +63,19 @@ const MintingFlowRouterBase = () => {
       return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />
     }
     default:
-      return null
+      return (
+        <>
+          <TbtcMintingCardTitle
+            previousStep={MintingStep.ProvideData}
+            onPreviousStepClick={onPreviousStepClick}
+          />
+          <Stack>
+            <Skeleton height="40px" />
+            <Skeleton height="40px" />
+            <Skeleton height="100px" />
+          </Stack>
+        </>
+      )
   }
 }
 
@@ -93,11 +94,7 @@ export const MintingFlowRouter: FC = () => {
         </>
       )}
       <Box as="p" textAlign="center" mt="6">
-        <ViewInBlockExplorer
-          id={brdigeContractAddress}
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
+        <BridgeContractLink />
       </Box>
     </Flex>
   )

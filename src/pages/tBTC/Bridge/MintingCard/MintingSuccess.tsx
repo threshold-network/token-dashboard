@@ -18,13 +18,13 @@ import tbtcSuccess from "../../../../static/images/tbtc-success.png"
 import TransactionDetailsTable from "../components/TransactionDetailsTable"
 import { useTBTCTokenAddress } from "../../../../hooks/useTBTCTokenAddress"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
 
 const MintingSuccessComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ onPreviousStepClick }) => {
-  const { updateState } = useTbtcState()
+  const { tBTCMintAmount } = useTbtcState()
 
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress } = useTbtcState()
   const tbtcTokenAddress = useTBTCTokenAddress()
 
   const onDismissButtonClick = () => {
@@ -46,7 +46,13 @@ const MintingSuccessComponent: FC<{
       </InfoBox>
       <Stack spacing={4} mb={8}>
         <BodyLg>
-          You should receive 1.2 tBTC in around{" "}
+          You should receive{" "}
+          <InlineTokenBalance
+            tokenAmount={tBTCMintAmount}
+            withSymbol
+            tokenSymbol="tBTC"
+          />{" "}
+          in around{" "}
           <Box as="span" color="brand.500">
             1-3 hours
           </Box>
@@ -65,7 +71,7 @@ const MintingSuccessComponent: FC<{
       <TransactionDetailsTable />
 
       <Button onClick={onDismissButtonClick} isFullWidth mb={6} mt="10">
-        Dismiss
+        New Mint
       </Button>
     </>
   )
