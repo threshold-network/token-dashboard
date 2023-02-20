@@ -57,6 +57,12 @@ export class MockBitcoinClient implements Client {
   private _broadcastLog: RawTransaction[] = []
   private _isMockingDepositTransactionInProgress = false
 
+  /**
+   * Array of transaction hashed for which we already started the process of
+   * confirmations mocking.
+   */
+  private _txHashesWithMockedConfirmations: TransactionHash[] = []
+
   set unspentTransactionOutputs(
     value: Map<string, UnspentTransactionOutput[]>
   ) {
@@ -200,9 +206,6 @@ export class MockBitcoinClient implements Client {
     rawTransactions.set(transactionHash2.toString(), transaction2)
     this.rawTransactions = rawTransactions
 
-    this._mockConfirmationsForTransaction(depositUtxo.transactionHash)
-    this._mockConfirmationsForTransaction(depositUtxo2.transactionHash)
-
     this._isMockingDepositTransactionInProgress = false
   }
 
@@ -241,6 +244,10 @@ export class MockBitcoinClient implements Client {
   async getTransactionConfirmations(
     transactionHash: TransactionHash
   ): Promise<number> {
+    if (!this._txHashesWithMockedConfirmations.includes(transactionHash)) {
+      this._mockConfirmationsForTransaction(transactionHash)
+      this._txHashesWithMockedConfirmations.push(transactionHash)
+    }
     return this._confirmations.get(transactionHash.toString()) as number
   }
 
