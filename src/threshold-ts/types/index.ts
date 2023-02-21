@@ -32,7 +32,7 @@ export interface BitcoinConfig {
   /**
    * Credentials for electrum client
    */
-  credentials?: BitcoinClientCredentials
+  credentials?: BitcoinClientCredentials[]
 
   /**
    * Additional options that can be passed to bitcoin client
