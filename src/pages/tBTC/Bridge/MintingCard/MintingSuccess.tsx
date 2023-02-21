@@ -25,18 +25,24 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 
 const MintingSuccessComponent: FC<{
-  utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ utxo, onPreviousStepClick }) => {
-  const { tBTCMintAmount, txConfirmations } = useTbtcState()
+}> = ({ onPreviousStepClick }) => {
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
+  const {
+    tBTCMintAmount,
+    utxo,
+    txConfirmations,
+    depositRevealedTxHash,
+    optimisticMintingRequestedTxHash,
+    optimisticMintingFinalizedTxHash,
+  } = useTbtcState()
 
+  const btcDepositTxHash = utxo.transactionHash.toString()
   const tbtcTokenAddress = useTBTCTokenAddress()
 
   const onDismissButtonClick = () => {
@@ -136,6 +142,47 @@ const MintingSuccessComponent: FC<{
         </BodySm>
       </Stack>
       <TransactionDetailsTable />
+      <Stack spacing="2" alignItems="center">
+        <BodySm>
+          View BTC deposit transaction on{" "}
+          <ViewInBlockExplorer
+            chain="bitcoin"
+            id={btcDepositTxHash}
+            type={ExplorerDataType.TRANSACTION}
+            text="Blockstream"
+          />
+        </BodySm>
+        {depositRevealedTxHash && (
+          <BodySm>
+            View deposit transaction on{" "}
+            <ViewInBlockExplorer
+              id={depositRevealedTxHash}
+              type={ExplorerDataType.TRANSACTION}
+              text="Etherscan"
+            />
+          </BodySm>
+        )}
+        {optimisticMintingRequestedTxHash && (
+          <BodySm>
+            View Optimistic Minting Requested transaction on{" "}
+            <ViewInBlockExplorer
+              id={optimisticMintingRequestedTxHash}
+              type={ExplorerDataType.TRANSACTION}
+              text="Etherscan"
+            />
+          </BodySm>
+        )}
+        {optimisticMintingFinalizedTxHash && (
+          <BodySm>
+            View Optimistic Minting Finalized transaction on{" "}
+            <ViewInBlockExplorer
+              id={optimisticMintingFinalizedTxHash}
+              type={ExplorerDataType.TRANSACTION}
+              text="Etherscan"
+            />
+          </BodySm>
+        )}
+      </Stack>
 
       <Button onClick={onDismissButtonClick} isFullWidth mb={6} mt="10">
         New Mint
