@@ -19,13 +19,15 @@ function getBitcoinConfig(): BitcoinConfig {
   const shouldMockBitcoinClient =
     getEnvVariable(EnvVariable.MOCK_BITCOIN_CLIENT) === "true"
 
-  const credentials: BitcoinClientCredentials = {
-    host: getEnvVariable(EnvVariable.ELECTRUM_HOST),
-    port: +getEnvVariable(EnvVariable.ELECTRUM_PORT),
-    protocol: getEnvVariable(
-      EnvVariable.ELECTRUM_PROTOCOL
-    ) as BitcoinClientCredentials["protocol"],
-  }
+  const credentials: BitcoinClientCredentials[] = [
+    {
+      host: getEnvVariable(EnvVariable.ELECTRUM_HOST),
+      port: +getEnvVariable(EnvVariable.ELECTRUM_PORT),
+      protocol: getEnvVariable(
+        EnvVariable.ELECTRUM_PROTOCOL
+      ) as BitcoinClientCredentials["protocol"],
+    },
+  ]
 
   return {
     client: shouldMockBitcoinClient ? new MockBitcoinClient() : undefined,
