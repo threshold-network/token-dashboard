@@ -43,13 +43,16 @@ export const useAuthorizeMultipleAppsTransaction = () => {
           amount: string
         }[] = []
         for (const stakingApp of applications) {
-          const tx = await sendTransaction(
+          const receipt = await sendTransaction(
             stakingProvider,
             stakingApp.address,
             stakingApp.amount
           )
-          if (tx) {
-            successfullTxs.push({ ...stakingApp, txHash: tx.hash })
+          if (receipt) {
+            successfullTxs.push({
+              ...stakingApp,
+              txHash: receipt.transactionHash,
+            })
           }
         }
         if (successfullTxs.length > 0) {

@@ -3083,6 +3083,11 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@fontsource/ibm-plex-mono@^4.5.13":
+  version "4.5.13"
+  resolved "https://registry.npmjs.org/@fontsource/ibm-plex-mono/-/ibm-plex-mono-4.5.13.tgz#f91559ab3b5074a8e2db75c0370b9640e80c99b2"
+  integrity sha512-KAE7X2LgCV4X6p7vj1h2phRnhPX4YUa8FBAB0Jj9xW7Q+p+k2ce4HEAMJJ2RFHI075ClgQx+KZuDBNuiKgp5yw==
+
 "@fontsource/inter@^4.5.10":
   version "4.5.11"
   resolved "https://registry.yarnpkg.com/@fontsource/inter/-/inter-4.5.11.tgz#3c45014821e8c82b247a291f1944dd2764a2d1ed"
@@ -3423,7 +3428,7 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" ">1.1.0-dev <1.1.0-ropsten"
 
-"@keep-network/ecdsa@2.1.0-dev.6", "@keep-network/ecdsa@development":
+"@keep-network/ecdsa@2.1.0-dev.6":
   version "2.1.0-dev.6"
   resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.6.tgz#ccc690f784b6e802a5b80b2dfb7127d96e548a25"
   integrity sha512-1D74OPVzzxxVcG8za/niuxmwEdDc5R6KNuHsUvsFkcHNJE1UgQNw+QdrI+k3M2so6YrO4L5lP7vTvIvBDbEMNQ==
@@ -3541,17 +3546,18 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.0.0-dev.35"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.0.0-dev.35.tgz#8dffd17f90dca4319e21a2acf65be68c34c08eb3"
-  integrity sha512-qGP39g1JgiS9jIWcuOd+at6pCzTIjN30rb3lfvA2/McFBtBf9QRaRMbtz8uegKVCEgE6A32WcX3vlesBY6n16g==
+  version "1.1.0-dev.10"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.1.0-dev.10.tgz#3ae01471992db2bae2ad6c4642c1750a83860d6e"
+  integrity sha512-A1iap6BdXkr2gu6kcCdT2bt/HosxmjWewmmEqnxOfK0Y5YQBKY4tkJI1VC2El3ScqhyWVgnj0AMyZsygKUl37Q==
   dependencies:
-    "@keep-network/ecdsa" development
+    "@keep-network/ecdsa" "2.1.0-dev.6"
     "@keep-network/tbtc-v2" "1.0.3-dev.0"
     bcoin "git+https://github.com/keep-network/bcoin.git#5accd32c63e6025a0d35d67739c4a6e84095a1f8"
     bcrypto "git+https://github.com/bcoin-org/bcrypto.git#semver:~5.5.0"
     bufio "^1.0.6"
     electrum-client-js "git+https://github.com/keep-network/electrum-client-js.git#v0.1.1"
     ethers "^5.5.2"
+    p-timeout "^4.1.0"
     wif "2.0.6"
 
 "@keep-network/tbtc-v2@1.0.3-dev.0":
@@ -18145,6 +18151,11 @@ p-timeout@^3.1.0:
   integrity sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==
   dependencies:
     p-finally "^1.0.0"
+
+p-timeout@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/p-timeout/-/p-timeout-4.1.0.tgz#788253c0452ab0ffecf18a62dff94ff1bd09ca0a"
+  integrity sha512-+/wmHtzJuWii1sXn3HCuH/FTwGhrp4tmJTxSKJbfS+vkipci6osxXM5mY0jUiRzWKMTgUT8l7HFbeSwZAynqHw==
 
 p-try@^1.0.0:
   version "1.0.0"

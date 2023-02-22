@@ -33,7 +33,7 @@ import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, Contract } from "ethers"
+import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 
@@ -148,6 +148,27 @@ export interface ITBTC {
   getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
 
   /**
+   * Gets the number of confirmations that a given transaction has accumulated
+   * so far.
+   * @param transactionHash Hash of the transaction.
+   * @returns The number of confirmations.
+   */
+  getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
+
+  /**
+   * Gets the minimum number of confirmations needed for the minter to start the
+   * minting process. The minimum number of confirmations is based on the amount
+   * that was sent to the deposit address.
+   * The rules are:
+   * - If the amount is less than 0.1 BTC, it should have at least 1
+   * confirmation.
+   * - If the tx is less than 1 BTC, it should have at least 3 confirmations.
+   * - Otherwise, we need to wait for 6 confirmations.
+   * @param amount Amount that was sent to the deposit address (in satoshi)
+   */
+  minimumNumberOfConfirmationsNeeded(amount: BigNumberish): number
+
+  /**
    * Returns the bridge transaction history by depositor in order from the
    * newest revealed deposit to the oldest.
    * @param depositor Depositor Ethereum address.
@@ -189,15 +210,6 @@ export class TBTC implements ITBTC {
   private _depositRefundLocktimDuration = 23328000
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
-
-  /**
-   * Maps the network that is currently used for bitcoin, so that it use "main"
-   * instead of "mainnet". This is specific to the tbtc-v2.ts lib.
-   */
-  private tbtcLibNetworkMap: Record<BitcoinNetwork, "main" | "testnet"> = {
-    testnet: "testnet",
-    mainnet: "main",
-  }
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -312,8 +324,11 @@ export class TBTC implements ITBTC {
   calculateDepositAddress = async (
     depositScriptParameters: DepositScriptParameters
   ): Promise<string> => {
-    const network = this.tbtcLibNetworkMap[this.bitcoinNetwork]
-    return await calculateDepositAddress(depositScriptParameters, network, true)
+    return await calculateDepositAddress(
+      depositScriptParameters,
+      this.bitcoinNetwork,
+      true
+    )
   }
 
   findAllUnspentTransactionOutputs = async (
@@ -417,6 +432,24 @@ export class TBTC implements ITBTC {
     utxo: UnspentTransactionOutput
   ): Promise<RevealedDeposit> => {
     return await tBTCgetRevealedDeposit(utxo, this._bridge)
+  }
+
+  getTransactionConfirmations = async (
+    transactionHash: TransactionHash
+  ): Promise<number> => {
+    return await this._bitcoinClient.getTransactionConfirmations(
+      transactionHash
+    )
+  }
+
+  minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
+    const amountInBN = BigNumber.from(amount)
+    if (amountInBN.lt(10000000) /* 0.1 BTC */) {
+      return 1
+    } else if (amountInBN.lt(100000000) /* 1 BTC */) {
+      return 3
+    }
+    return 6
   }
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {

@@ -11,7 +11,6 @@ import {
 import { AddressZero } from "@ethersproject/constants"
 import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { ContractTransaction } from "ethers"
 import { FC, useCallback } from "react"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
@@ -23,6 +22,7 @@ import { mapOperatorToStakingProviderModalClosed } from "../../../store/modal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
+import { OnSuccessCallback } from "../../../web3/hooks"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -68,12 +68,12 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   const dispatch = useAppDispatch()
 
   const { openModal } = useModal()
-  const onSuccess = useCallback(
-    (tx: ContractTransaction) => {
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt) => {
       openModal(ModalType.MapOperatorToStakingProviderSuccess, {
         transactions: [
           {
-            txHash: tx,
+            txHash: receipt.transactionHash,
             application: {
               appName: isOperatorMappedOnlyInRandomBeacon
                 ? "tbtc"
