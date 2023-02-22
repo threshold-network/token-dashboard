@@ -1,5 +1,4 @@
 import { FC, useCallback } from "react"
-import { TransactionReceipt } from "@ethersproject/providers"
 import {
   BodyLg,
   Button,

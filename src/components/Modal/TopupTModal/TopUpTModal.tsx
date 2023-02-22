@@ -20,7 +20,6 @@ import { StakeData } from "../../../types/staking"
 import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
-import { TransactionReceipt } from "@ethersproject/providers"
 import { OnSuccessCallback } from "../../../web3/hooks"
 
 const TopupTModal: FC<

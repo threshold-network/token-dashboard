@@ -33,7 +33,6 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import ModalCloseButton from "../ModalCloseButton"
-import { TransactionReceipt } from "@ethersproject/providers"
 
 const ClaimingRewardsBase: FC<
   BaseModalProps & {

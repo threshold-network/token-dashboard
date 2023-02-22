@@ -1,5 +1,4 @@
 import { useCallback } from "react"
-import { isAddressZero } from "../../web3/utils"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"

@@ -29,7 +29,6 @@ import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
-import { TransactionReceipt } from "@ethersproject/providers"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }

@@ -1,4 +1,3 @@
-import { TransactionReceipt } from "@ethersproject/providers"
 import { useCallback } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { ModalType } from "../../enums"

@@ -26,7 +26,6 @@ import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import { DeauthorizeInfo } from "./DeauthorizeInfo"
 import ModalCloseButton from "../ModalCloseButton"
-import { TransactionReceipt } from "@ethersproject/providers"
 import { OnSuccessCallback } from "../../../web3/hooks"
 
 const UnstakeTModal: FC<
