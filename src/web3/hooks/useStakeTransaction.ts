@@ -1,6 +1,5 @@
 import { useCallback } from "react"
-import { ContractTransaction } from "@ethersproject/contracts"
-import { useSendTransaction } from "./useSendTransaction"
+import { OnSuccessCallback, useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
 import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
@@ -20,9 +19,7 @@ enum CommonStakingErrors {
   ProviderInUse = "Provider is already in use",
 }
 
-export const useStakeTransaction = (
-  onSuccess: (tx: ContractTransaction) => void
-) => {
+export const useStakeTransaction = (onSuccess: OnSuccessCallback) => {
   const stakingContract = useTStakingContract()
   const { openModal } = useModal()
   const { approve } = useApproveTStaking()
