@@ -2,51 +2,25 @@ import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
 import {
   MintingStep,
-  MintingSteps,
   TbtcMintingType,
   TbtcStateKey,
-  UnmintingStep,
+  TbtcState,
 } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
-import { FetchingState } from "../../types"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
-import { fetchBridgeTxHitoryEffect, findUtxoEffect } from "./effects"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-
-interface TbtcState {
-  mintingType: TbtcMintingType
-  mintingStep: MintingStep
-  unmintingStep: UnmintingStep
-  btcWithdrawAddress: string
-  unmintAmount: string
-  btcDepositAddress: string
-
-  //deposit data
-  ethAddress: string
-  btcRecoveryAddress: string
-  walletPublicKeyHash: string
-  refundLocktime: string
-  blindingFactor: string
-  utxo: UnspentTransactionOutput
-
-  nextBridgeCrossingInUnix?: number
-
-  // TODO: These may be incorrect types
-  tBTCMintAmount: string
-  ethGasCost: number
-  thresholdNetworkFee: string
-  mintingFee: string
-
-  transactionsHistory: FetchingState<BridgeTxHistory[]>
-}
+import {
+  fetchBridgeTxHitoryEffect,
+  findUtxoEffect,
+  fetchUtxoConfirmationsEffect,
+} from "./effects"
 
 export const tbtcSlice = createSlice({
   name: "tbtc",
   initialState: {
     mintingType: TbtcMintingType.mint,
-    mintingStep: MintingSteps[0],
+    mintingStep: MintingStep.ProvideData,
     transactionsHistory: {
       isFetching: false,
       error: "",
@@ -137,6 +111,15 @@ export const tbtcSlice = createSlice({
         depositor: string
       }>
     ) => {},
+    fetchUtxoConfirmations: (
+      state,
+      action: PayloadAction<{
+        utxo: {
+          transactionHash: string
+          value: string
+        }
+      }>
+    ) => {},
   },
 })
 
@@ -168,6 +151,11 @@ export const registerTBTCListeners = () => {
   startAppListening({
     actionCreator: tbtcSlice.actions.findUtxo,
     effect: findUtxoEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.fetchUtxoConfirmations,
+    effect: fetchUtxoConfirmationsEffect,
   })
 }
 

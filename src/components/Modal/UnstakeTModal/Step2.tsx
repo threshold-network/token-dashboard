@@ -3,6 +3,7 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  AlertTitle,
   Button,
   Divider,
   ModalBody,
@@ -10,8 +11,10 @@ import {
   ModalHeader,
   Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { BodyLg, H5 } from "@threshold-network/components"
+  BodyLg,
+  Box,
+  H5,
+} from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
@@ -21,6 +24,7 @@ import { BaseModalProps } from "../../../types"
 import { StakeData } from "../../../types/staking"
 import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
+import { DeauthorizeInfo } from "./DeauthorizeInfo"
 import ModalCloseButton from "../ModalCloseButton"
 import { TransactionReceipt } from "@ethersproject/providers"
 import { OnSuccessCallback } from "../../../web3/hooks"
@@ -83,6 +87,7 @@ const UnstakeTModal: FC<
             <BodyLg>
               You can partially or totally unstake depending on your needs.
             </BodyLg>
+            <DeauthorizeInfo stakingProvider={stake.stakingProvider} />
           </InfoBox>
           <StakingStats
             stakeAmount={_amountToUnstake}
@@ -92,13 +97,18 @@ const UnstakeTModal: FC<
             authorizer={stake.authorizer}
           />
           <Alert status="warning">
-            <AlertIcon alignSelf="center" />
-
-            <AlertDescription color={useColorModeValue("gray.700", "gray.300")}>
-              Take note! If you fully unstake you will not be able to use the
-              same Staking Provider Address for new stakes. This unstaked stake
-              can be topped up anytime you want.
-            </AlertDescription>
+            <AlertIcon />
+            <Box color={useColorModeValue("gray.700", "gray.300")}>
+              <AlertTitle>Take note!</AlertTitle>
+              <AlertDescription>
+                If you fully unstake you will not be able to use the same
+                Provider Address for new stakes.
+                <Box as="p" mt="5">
+                  A fully unstaked stake will be shown as an inactive stake and
+                  can be toppped up anytime in order to re-activate it.
+                </Box>
+              </AlertDescription>
+            </Box>
           </Alert>
         </Stack>
         <StakingContractLearnMore mt="10" />
