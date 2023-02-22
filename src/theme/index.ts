@@ -20,6 +20,9 @@ const index = extendTheme({
       fontSize: "18px",
       lineHeight: "28px",
     },
+    "chain-identifier": {
+      fontFamily: "IBM Plex Mono, monospace",
+    },
   },
   components: {
     ...defaultTheme.components,

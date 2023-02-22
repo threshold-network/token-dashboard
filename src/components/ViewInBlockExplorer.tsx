@@ -39,11 +39,11 @@ type CommonProps = {
   text: string
 }
 
-export type Props = ConditionalProps &
+export type ViewInBlockExplorerProps = ConditionalProps &
   CommonProps &
   Omit<LinkProps, "isExternal">
 
-const ViewInBlockExplorer: FC<Props> = ({
+const ViewInBlockExplorer: FC<ViewInBlockExplorerProps> = ({
   id,
   type,
   text = "View in Block Explorer",
