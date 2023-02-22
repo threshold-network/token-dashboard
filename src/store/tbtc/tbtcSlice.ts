@@ -10,7 +10,11 @@ import { UpdateStateActionPayload } from "../../types/state"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
-import { fetchBridgeTxHitoryEffect, findUtxoEffect } from "./effects"
+import {
+  fetchBridgeTxHitoryEffect,
+  findUtxoEffect,
+  fetchUtxoConfirmationsEffect,
+} from "./effects"
 
 export const tbtcSlice = createSlice({
   name: "tbtc",
@@ -107,6 +111,15 @@ export const tbtcSlice = createSlice({
         depositor: string
       }>
     ) => {},
+    fetchUtxoConfirmations: (
+      state,
+      action: PayloadAction<{
+        utxo: {
+          transactionHash: string
+          value: string
+        }
+      }>
+    ) => {},
   },
 })
 
@@ -138,6 +151,11 @@ export const registerTBTCListeners = () => {
   startAppListening({
     actionCreator: tbtcSlice.actions.findUtxo,
     effect: findUtxoEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.fetchUtxoConfirmations,
+    effect: fetchUtxoConfirmationsEffect,
   })
 }
 

@@ -16,6 +16,7 @@ export interface TbtcState {
   blindingFactor: string
   walletPublicKeyHash: string
   utxo: UnspentTransactionOutput
+  txConfirmations: number
   nextBridgeCrossingInUnix?: number
   depositRevealedTxHash?: string
   optimisticMintingRequestedTxHash?: string
