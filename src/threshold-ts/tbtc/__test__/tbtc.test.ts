@@ -18,7 +18,8 @@ import {
   isValidBtcAddress,
 } from "../../utils"
 import { ITBTC, TBTC } from ".."
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
+import { BitcoinConfig, EthereumConfig } from "../../types"
 import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import {
   MockBitcoinClient,
@@ -47,10 +48,6 @@ jest.mock("@keep-network/tbtc-v2/artifacts/Bridge.json", () => ({
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTC.json", () => ({
   address: "0x5db5A1382234E2447E66CEB2Ee366a3e7a313Acf",
   abi: [],
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts", () => ({
-  EthereumAddress: jest.fn(),
 }))
 
 jest.mock("@keep-network/tbtc-v2.ts/dist/src/deposit", () => ({
@@ -128,7 +125,7 @@ describe("TBTC test", () => {
   const mockBitcoinClient = new MockBitcoinClient()
 
   const btcConfig: BitcoinConfig = {
-    network: BitcoinNetwork.testnet,
+    network: BitcoinNetwork.Testnet,
     client: mockBitcoinClient,
   }
 
@@ -155,6 +152,7 @@ describe("TBTC test", () => {
       pendingRedemptions: jest.fn(),
       timedOutRedemptions: jest.fn(),
       activeWalletPublicKey: jest.fn().mockResolvedValue(activeWalletPublicKey),
+      getNewWalletRegisteredEvents: jest.fn(),
     } as ChainBridge
 
     tBTC = new TBTC(ethConfig, btcConfig, multicall)
@@ -191,7 +189,7 @@ describe("TBTC test", () => {
       expect(tBTC.vaultContract).toBe(mockTBTCVaultContract)
       expect(tBTC.bridgeContract).toBe(mockBridgeContract)
       expect(tBTC.tokenContract).toBe(mockTokenContract)
-      expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.testnet)
+      expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.Testnet)
     }
     describe("with mocked bitcoin clinet", () => {
       test("should create TBTC instance correctly", () => {
@@ -205,12 +203,14 @@ describe("TBTC test", () => {
 
     describe("with real electrum client", () => {
       const btcConfigWithRealElectrumClient: BitcoinConfig = {
-        network: BitcoinNetwork.testnet,
-        credentials: {
-          host: "testhost",
-          port: 1,
-          protocol: "wss",
-        },
+        network: BitcoinNetwork.Testnet,
+        credentials: [
+          {
+            host: "testhost",
+            port: 1,
+            protocol: "wss",
+          },
+        ],
       }
       beforeEach(() => {
         ;(getContract as jest.Mock)
@@ -234,7 +234,7 @@ describe("TBTC test", () => {
 
     describe("with client not specified in the bitcoin config", () => {
       const btcConfigWithNoClientSpecified: BitcoinConfig = {
-        network: BitcoinNetwork.testnet,
+        network: BitcoinNetwork.Testnet,
       }
       beforeEach(() => {
         ;(getContract as jest.Mock)
