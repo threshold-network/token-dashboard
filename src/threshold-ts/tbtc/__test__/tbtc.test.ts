@@ -29,6 +29,7 @@ import {
   calculateDepositAddress,
   calculateDepositRefundLocktime,
   DepositScriptParameters,
+  revealDeposit,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
@@ -128,14 +129,15 @@ describe("TBTC test", () => {
     client: mockBitcoinClient,
   }
 
+  const mockDepositScriptParameters: DepositScriptParameters = {
+    depositor: Address.from("934b98637ca318a4d6e7ca6ffd1690b8e77df637"),
+    walletPublicKeyHash: "8db50eb52063ea9d98b3eac91489a90f738986f6",
+    refundPublicKeyHash: "28e081f285138ccbe389c1eb8985716230129f89",
+    blindingFactor: "f9f0c90d00039523",
+    refundLocktime: "30ecaa62",
+  }
+
   beforeEach(() => {
-    ;(getContract as jest.Mock)
-      .mockImplementationOnce(() => mockTBTCVaultContract)
-      .mockImplementationOnce(() => mockBridgeContract)
-      .mockImplementationOnce(() => mockTokenContract)
-    ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
-      () => bridge
-    )
     multicall = {
       aggregate: jest.fn(),
       getCurrentBlockTimestampCallObj: jest.fn(),
@@ -153,7 +155,13 @@ describe("TBTC test", () => {
       activeWalletPublicKey: jest.fn().mockResolvedValue(activeWalletPublicKey),
       getNewWalletRegisteredEvents: jest.fn(),
     } as ChainBridge
-
+    ;(getContract as jest.Mock)
+      .mockImplementationOnce(() => mockTBTCVaultContract)
+      .mockImplementationOnce(() => mockBridgeContract)
+      .mockImplementationOnce(() => mockTokenContract)
+    ;(EthereumBridge as unknown as jest.Mock).mockImplementationOnce(
+      () => bridge
+    )
     tBTC = new TBTC(ethConfig, btcConfig, multicall)
   })
 
@@ -396,13 +404,6 @@ describe("TBTC test", () => {
   })
 
   describe("calculateDepositAddress", () => {
-    const mockDepositScriptParameters: DepositScriptParameters = {
-      depositor: Address.from("934b98637ca318a4d6e7ca6ffd1690b8e77df637"),
-      walletPublicKeyHash: "8db50eb52063ea9d98b3eac91489a90f738986f6",
-      refundPublicKeyHash: "28e081f285138ccbe389c1eb8985716230129f89",
-      blindingFactor: "f9f0c90d00039523",
-      refundLocktime: "30ecaa62",
-    }
     const mockDepositAddress = "123"
     let expectedDepositAddress: string
     beforeEach(async () => {
@@ -443,6 +444,52 @@ describe("TBTC test", () => {
     })
     test("should return utxos correctly", async () => {
       expect(expectedUTXOs).toEqual([testnetUTXO])
+    })
+  })
+
+  //TODO (private methods mock)
+  // describe("getEstimatedFees", () => {
+  //   let test2: {
+  //     treasuryFee: string
+  //     optimisticMintFee: string
+  //     amountToMint: string
+  //   }
+  //   beforeEach(async () => {
+  //     jest
+  //       .spyOn(TBTC.prototype as any, "_getDepositFees")
+  //       .mockImplementation(async () => ({
+  //         depositTreasuryFeeDivisor: "5000",
+  //         optimisticMintingFeeDivisor: "300",
+  //       }))
+  //     test2 = await tBTC.getEstimatedFees("10000000")
+  //   })
+  //   test("should estimate fees", () => {
+  //     expect(test2).toBeCalled()
+  //   })
+  // })
+
+  describe("revealDeposit", () => {
+    let expectedRevealedDepositTxHash: string
+    const mockedRevealedDepositTxHash = "0x1"
+
+    beforeEach(async () => {
+      ;(revealDeposit as jest.Mock).mockImplementationOnce(
+        () => mockedRevealedDepositTxHash
+      )
+      expectedRevealedDepositTxHash = await tBTC.revealDeposit(
+        testnetUTXO,
+        mockDepositScriptParameters
+      )
+    })
+    test("should reveal deposit properly", () => {
+      expect(revealDeposit).toHaveBeenCalledWith(
+        testnetUTXO,
+        mockDepositScriptParameters,
+        mockBitcoinClient,
+        bridge,
+        getChainIdentifier(mockTBTCVaultContract.address)
+      )
+      expect(expectedRevealedDepositTxHash).toBe(mockedRevealedDepositTxHash)
     })
   })
 })
