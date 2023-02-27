@@ -18,8 +18,7 @@ import {
   isValidBtcAddress,
 } from "../../utils"
 import { ITBTC, TBTC } from ".."
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
-import { BitcoinConfig, EthereumConfig } from "../../types"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
 import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import {
   MockBitcoinClient,
