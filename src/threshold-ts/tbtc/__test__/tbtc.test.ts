@@ -117,9 +117,9 @@ describe("TBTC test", () => {
     address: TBTCToken.address,
   }
 
-  const mockedEthereumProvider = {} as providers.Provider
+  const mockEthereumProvider = {} as providers.Provider
   const ethConfig: EthereumConfig = {
-    providerOrSigner: mockedEthereumProvider,
+    providerOrSigner: mockEthereumProvider,
     chainId: 1,
     account: AddressZero,
   }
@@ -472,11 +472,11 @@ describe("TBTC test", () => {
 
   describe("revealDeposit", () => {
     let expectedRevealedDepositTxHash: string
-    const mockedRevealedDepositTxHash = "0x1"
+    const mockRevealedDepositTxHash = "0x1"
 
     beforeEach(async () => {
       ;(revealDeposit as jest.Mock).mockImplementationOnce(
-        () => mockedRevealedDepositTxHash
+        () => mockRevealedDepositTxHash
       )
       expectedRevealedDepositTxHash = await tBTC.revealDeposit(
         testnetUTXO,
@@ -491,13 +491,13 @@ describe("TBTC test", () => {
         bridge,
         getChainIdentifier(mockTBTCVaultContract.address)
       )
-      expect(expectedRevealedDepositTxHash).toBe(mockedRevealedDepositTxHash)
+      expect(expectedRevealedDepositTxHash).toBe(mockRevealedDepositTxHash)
     })
   })
 
   describe("getRevealedDeposit", () => {
     let expectedRevealedDeposit: RevealedDeposit
-    const mockedRevealedDeposit = {
+    const mockRevealedDeposit = {
       revealedAt: 5645,
       sweptAt: 4352,
       treasuryFee: BigNumber.from(5000),
@@ -505,13 +505,13 @@ describe("TBTC test", () => {
 
     beforeEach(async () => {
       ;(getRevealedDeposit as jest.Mock).mockImplementationOnce(
-        () => mockedRevealedDeposit
+        () => mockRevealedDeposit
       )
       expectedRevealedDeposit = await tBTC.getRevealedDeposit(testnetUTXO)
     })
     test("should get revealed deposit", () => {
       expect(getRevealedDeposit).toHaveBeenCalledWith(testnetUTXO, bridge)
-      expect(expectedRevealedDeposit).toBe(mockedRevealedDeposit)
+      expect(expectedRevealedDeposit).toBe(mockRevealedDeposit)
     })
   })
 })
