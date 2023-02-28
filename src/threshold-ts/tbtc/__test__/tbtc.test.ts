@@ -37,6 +37,7 @@ import {
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import { Address } from "@keep-network/tbtc-v2.ts/dist/src/ethereum"
+import { formatSatoshi } from "../../../utils/formatAmount"
 
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTCVault.json", () => ({
   address: "0x1e742E11389e5590a1a0c8e59a119Be5F73BFdf6",
@@ -538,6 +539,37 @@ describe("TBTC test", () => {
       expect(expectedTransactionConfirmations).toBe(
         mockTransactionConfirmations
       )
+    })
+  })
+
+  describe("minimumNumberOfConfirmationsNeeded", () => {
+    test("should return proper value for amount less than 0.1 BTC", () => {
+      const amountInSatoshi = 1 * 10 ** 6 // 0.01 BTC
+      const expectedMinimumNumberOfConfirmations =
+        tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
+      expect(expectedMinimumNumberOfConfirmations).toBe(1)
+    })
+
+    test("should return proper value for amount less than 1 BTC and equal or greater than 0.1 BTC", () => {
+      const amountInSatoshi = 1 * 10 ** 7 // 0.1 BTC
+      const expectedMinimumNumberOfConfirmations =
+        tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
+      const amountInSatoshi2 = 9 * 10 ** 7 // 0.9 BTC
+      const expectedMinimumNumberOfConfirmations2 =
+        tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
+      expect(expectedMinimumNumberOfConfirmations).toBe(3)
+      expect(expectedMinimumNumberOfConfirmations2).toBe(3)
+    })
+
+    test("should return proper value for amount that is equal or greater than 1 BTC", () => {
+      const amountInSatoshi = 1 * 10 ** 8 // 1 BTC
+      const expectedMinimumNumberOfConfirmations =
+        tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
+      const amountInSatoshi2 = 9 * 10 ** 8 // 9 BTC
+      const expectedMinimumNumberOfConfirmations2 =
+        tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
+      expect(expectedMinimumNumberOfConfirmations).toBe(6)
+      expect(expectedMinimumNumberOfConfirmations2).toBe(6)
     })
   })
 })
