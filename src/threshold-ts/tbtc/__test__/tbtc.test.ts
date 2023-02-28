@@ -20,7 +20,6 @@ import {
 } from "../../utils"
 import { ITBTC, TBTC } from ".."
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
-import { Bridge as ChainBridge } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import {
   MockBitcoinClient,
   testnetUTXO,
@@ -71,13 +70,16 @@ jest.mock("../../utils", () => ({
   isPublicKeyHashTypeAddress: jest.fn(),
 }))
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
-  decodeBitcoinAddress: jest.fn(),
-  TransactionHash: {
-    from: jest.fn(),
-  },
-  computeHash160: jest.fn(),
-}))
+jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => {
+  const originalModule = jest.requireActual(
+    "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+  )
+  return {
+    ...originalModule,
+    decodeBitcoinAddress: jest.fn(),
+    computeHash160: jest.fn(),
+  }
+})
 
 jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
@@ -96,7 +98,7 @@ describe("TBTC test", () => {
   let tBTC: ITBTC
   let tBTCMainnet: ITBTC
 
-  let bridge: ChainBridge
+  let bridge: EthereumBridge
   let tbtcVault: Contract
   let bitcoinClient: Client
   let multicall: IMulticall
@@ -157,7 +159,12 @@ describe("TBTC test", () => {
       timedOutRedemptions: jest.fn(),
       activeWalletPublicKey: jest.fn().mockResolvedValue(activeWalletPublicKey),
       getNewWalletRegisteredEvents: jest.fn(),
-    } as ChainBridge
+      buildRedemptionKey: jest.fn(),
+      parseRedemptionRequest: jest.fn(),
+      parseRevealedDeposit: jest.fn(),
+      walletRegistry: jest.fn(),
+      buildDepositKey: jest.fn(),
+    } as unknown as EthereumBridge
     ;(getContract as jest.Mock)
       .mockImplementationOnce(() => mockTBTCVaultContract)
       .mockImplementationOnce(() => mockBridgeContract)
@@ -521,6 +528,7 @@ describe("TBTC test", () => {
     const mockTransactionHash = TransactionHash.from(
       "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
     )
+    console.log("mock t hash!: ", mockTransactionHash)
 
     beforeEach(async () => {
       jest
@@ -566,6 +574,46 @@ describe("TBTC test", () => {
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
       expect(minimumNumberOfConfirmationsResult2).toBe(6)
       expect(minimumNumberOfConfirmationsResult2).toBe(6)
+    })
+  })
+
+  // TODO: bridgeTxHistory tests
+
+  describe("buildDepositKey", () => {
+    let buildDepositKeyResult: string
+    const mockDepositKey = "101010"
+    const mockTransactionHash = TransactionHash.from(
+      "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+    )
+    const mockDepositOutputIndex = 1
+
+    beforeEach(() => {
+      EthereumBridge.buildDepositKey = jest.fn().mockReturnValue(mockDepositKey)
+    })
+
+    test("should build a proper deposit key for little-endian hash byte order", () => {
+      buildDepositKeyResult = tBTC.buildDepositKey(
+        mockTransactionHash.toString(),
+        mockDepositOutputIndex
+      )
+      expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
+        mockTransactionHash.reverse(),
+        mockDepositOutputIndex
+      )
+      expect(buildDepositKeyResult).toBe(mockDepositKey)
+    })
+
+    test("should build a proper deposit key for big-endian hash byte order", () => {
+      buildDepositKeyResult = tBTC.buildDepositKey(
+        mockTransactionHash.toString(),
+        mockDepositOutputIndex,
+        "big-endian"
+      )
+      expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
+        mockTransactionHash,
+        mockDepositOutputIndex
+      )
+      expect(buildDepositKeyResult).toBe(mockDepositKey)
     })
   })
 })
