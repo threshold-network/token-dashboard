@@ -37,7 +37,6 @@ import {
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
 import { Address } from "@keep-network/tbtc-v2.ts/dist/src/ethereum"
-import { formatSatoshi } from "../../../utils/formatAmount"
 
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTCVault.json", () => ({
   address: "0x1e742E11389e5590a1a0c8e59a119Be5F73BFdf6",
@@ -268,15 +267,15 @@ describe("TBTC test", () => {
   })
 
   describe("suggestDepositWallet", () => {
-    let expectedDepositWallet: string | undefined
+    let suggestDepositWalletResult: string | undefined
     beforeEach(async () => {
-      expectedDepositWallet = await tBTC.suggestDepositWallet()
+      suggestDepositWalletResult = await tBTC.suggestDepositWallet()
     })
     test("should call a proper function with proper parameters", async () => {
       expect(bridge.activeWalletPublicKey).toBeCalledWith()
     })
     test("should suggest a desposit wallet correctly", async () => {
-      expect(expectedDepositWallet).toBe(activeWalletPublicKey)
+      expect(suggestDepositWalletResult).toBe(activeWalletPublicKey)
     })
   })
 
@@ -409,12 +408,12 @@ describe("TBTC test", () => {
 
   describe("calculateDepositAddress", () => {
     const mockDepositAddress = "123"
-    let expectedDepositAddress: string
+    let calculateDepositAddressResult: string
     beforeEach(async () => {
       ;(calculateDepositAddress as jest.Mock).mockImplementation(
         () => mockDepositAddress
       )
-      expectedDepositAddress = await tBTC.calculateDepositAddress(
+      calculateDepositAddressResult = await tBTC.calculateDepositAddress(
         mockDepositScriptParameters
       )
     })
@@ -426,20 +425,19 @@ describe("TBTC test", () => {
       )
     })
     test("should calculate deposit address correctly", () => {
-      expect(expectedDepositAddress).toBe(mockDepositAddress)
+      expect(calculateDepositAddressResult).toBe(mockDepositAddress)
     })
   })
 
   describe("findAllUnspentTransactionOutputs", () => {
-    let expectedUTXOs: UnspentTransactionOutput[]
+    let findAllUnspentTransactionOutputsResult: UnspentTransactionOutput[]
     const mockDepositAddress = "123"
     beforeEach(async () => {
       jest
         .spyOn(mockBitcoinClient, "findAllUnspentTransactionOutputs")
         .mockImplementation(async () => [testnetUTXO])
-      expectedUTXOs = await tBTC.findAllUnspentTransactionOutputs(
-        mockDepositAddress
-      )
+      findAllUnspentTransactionOutputsResult =
+        await tBTC.findAllUnspentTransactionOutputs(mockDepositAddress)
     })
     test("should call a proper function with proper parameters", async () => {
       expect(mockBitcoinClient.findAllUnspentTransactionOutputs).toBeCalledWith(
@@ -447,7 +445,7 @@ describe("TBTC test", () => {
       )
     })
     test("should return utxos correctly", async () => {
-      expect(expectedUTXOs).toEqual([testnetUTXO])
+      expect(findAllUnspentTransactionOutputsResult).toEqual([testnetUTXO])
     })
   })
 
@@ -473,14 +471,14 @@ describe("TBTC test", () => {
   // })
 
   describe("revealDeposit", () => {
-    let expectedRevealedDepositTxHash: string
+    let revealDepositResult: string
     const mockRevealedDepositTxHash = "0x1"
 
     beforeEach(async () => {
       ;(revealDeposit as jest.Mock).mockImplementationOnce(
         () => mockRevealedDepositTxHash
       )
-      expectedRevealedDepositTxHash = await tBTC.revealDeposit(
+      revealDepositResult = await tBTC.revealDeposit(
         testnetUTXO,
         mockDepositScriptParameters
       )
@@ -493,12 +491,12 @@ describe("TBTC test", () => {
         bridge,
         getChainIdentifier(mockTBTCVaultContract.address)
       )
-      expect(expectedRevealedDepositTxHash).toBe(mockRevealedDepositTxHash)
+      expect(revealDepositResult).toBe(mockRevealedDepositTxHash)
     })
   })
 
   describe("getRevealedDeposit", () => {
-    let expectedRevealedDeposit: RevealedDeposit
+    let revealedDepositResult: RevealedDeposit
     const mockRevealedDeposit = {
       revealedAt: 5645,
       sweptAt: 4352,
@@ -509,16 +507,16 @@ describe("TBTC test", () => {
       ;(getRevealedDeposit as jest.Mock).mockImplementationOnce(
         () => mockRevealedDeposit
       )
-      expectedRevealedDeposit = await tBTC.getRevealedDeposit(testnetUTXO)
+      revealedDepositResult = await tBTC.getRevealedDeposit(testnetUTXO)
     })
     test("should get revealed deposit", () => {
       expect(getRevealedDeposit).toHaveBeenCalledWith(testnetUTXO, bridge)
-      expect(expectedRevealedDeposit).toBe(mockRevealedDeposit)
+      expect(revealedDepositResult).toBe(mockRevealedDeposit)
     })
   })
 
   describe("getTransactionConfirmations", () => {
-    let expectedTransactionConfirmations: number
+    let transactionConfirmationsResult: number
     const mockTransactionConfirmations = 3
     const mockTransactionHash = TransactionHash.from(
       "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
@@ -528,7 +526,7 @@ describe("TBTC test", () => {
       jest
         .spyOn(mockBitcoinClient, "getTransactionConfirmations")
         .mockImplementation(async () => mockTransactionConfirmations)
-      expectedTransactionConfirmations = await tBTC.getTransactionConfirmations(
+      transactionConfirmationsResult = await tBTC.getTransactionConfirmations(
         mockTransactionHash
       )
     })
@@ -536,40 +534,38 @@ describe("TBTC test", () => {
       expect(
         mockBitcoinClient.getTransactionConfirmations
       ).toHaveBeenCalledWith(mockTransactionHash)
-      expect(expectedTransactionConfirmations).toBe(
-        mockTransactionConfirmations
-      )
+      expect(transactionConfirmationsResult).toBe(mockTransactionConfirmations)
     })
   })
 
   describe("minimumNumberOfConfirmationsNeeded", () => {
     test("should return proper value for amount less than 0.1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 6 // 0.01 BTC
-      const expectedMinimumNumberOfConfirmations =
+      const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
-      expect(expectedMinimumNumberOfConfirmations).toBe(1)
+      expect(minimumNumberOfConfirmationsResult).toBe(1)
     })
 
     test("should return proper value for amount less than 1 BTC and equal or greater than 0.1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 7 // 0.1 BTC
-      const expectedMinimumNumberOfConfirmations =
+      const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
       const amountInSatoshi2 = 9 * 10 ** 7 // 0.9 BTC
-      const expectedMinimumNumberOfConfirmations2 =
+      const minimumNumberOfConfirmationsResult2 =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
-      expect(expectedMinimumNumberOfConfirmations).toBe(3)
-      expect(expectedMinimumNumberOfConfirmations2).toBe(3)
+      expect(minimumNumberOfConfirmationsResult).toBe(3)
+      expect(minimumNumberOfConfirmationsResult2).toBe(3)
     })
 
     test("should return proper value for amount that is equal or greater than 1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 8 // 1 BTC
-      const expectedMinimumNumberOfConfirmations =
+      const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
       const amountInSatoshi2 = 9 * 10 ** 8 // 9 BTC
-      const expectedMinimumNumberOfConfirmations2 =
+      const minimumNumberOfConfirmationsResult2 =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
-      expect(expectedMinimumNumberOfConfirmations).toBe(6)
-      expect(expectedMinimumNumberOfConfirmations2).toBe(6)
+      expect(minimumNumberOfConfirmationsResult2).toBe(6)
+      expect(minimumNumberOfConfirmationsResult2).toBe(6)
     })
   })
 })
