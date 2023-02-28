@@ -6,6 +6,7 @@ import {
   Client,
   computeHash160,
   decodeBitcoinAddress,
+  TransactionHash,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { IMulticall } from "../../multicall"
@@ -512,6 +513,31 @@ describe("TBTC test", () => {
     test("should get revealed deposit", () => {
       expect(getRevealedDeposit).toHaveBeenCalledWith(testnetUTXO, bridge)
       expect(expectedRevealedDeposit).toBe(mockRevealedDeposit)
+    })
+  })
+
+  describe("getTransactionConfirmations", () => {
+    let expectedTransactionConfirmations: number
+    const mockTransactionConfirmations = 3
+    const mockTransactionHash = TransactionHash.from(
+      "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+    )
+
+    beforeEach(async () => {
+      jest
+        .spyOn(mockBitcoinClient, "getTransactionConfirmations")
+        .mockImplementation(async () => mockTransactionConfirmations)
+      expectedTransactionConfirmations = await tBTC.getTransactionConfirmations(
+        mockTransactionHash
+      )
+    })
+    test("should get revealed deposit", () => {
+      expect(
+        mockBitcoinClient.getTransactionConfirmations
+      ).toHaveBeenCalledWith(mockTransactionHash)
+      expect(expectedTransactionConfirmations).toBe(
+        mockTransactionConfirmations
+      )
     })
   })
 })
