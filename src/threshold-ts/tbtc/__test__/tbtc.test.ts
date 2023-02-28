@@ -1,7 +1,7 @@
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { Contract, providers } from "ethers"
+import { BigNumber, Contract, providers } from "ethers"
 import {
   Client,
   computeHash160,
@@ -29,7 +29,9 @@ import {
   calculateDepositAddress,
   calculateDepositRefundLocktime,
   DepositScriptParameters,
+  getRevealedDeposit,
   revealDeposit,
+  RevealedDeposit,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 //@ts-ignore
 import * as CryptoJS from "crypto-js"
@@ -490,6 +492,26 @@ describe("TBTC test", () => {
         getChainIdentifier(mockTBTCVaultContract.address)
       )
       expect(expectedRevealedDepositTxHash).toBe(mockedRevealedDepositTxHash)
+    })
+  })
+
+  describe("getRevealedDeposit", () => {
+    let expectedRevealedDeposit: RevealedDeposit
+    const mockedRevealedDeposit = {
+      revealedAt: 5645,
+      sweptAt: 4352,
+      treasuryFee: BigNumber.from(5000),
+    }
+
+    beforeEach(async () => {
+      ;(getRevealedDeposit as jest.Mock).mockImplementationOnce(
+        () => mockedRevealedDeposit
+      )
+      expectedRevealedDeposit = await tBTC.getRevealedDeposit(testnetUTXO)
+    })
+    test("should get revealed deposit", () => {
+      expect(getRevealedDeposit).toHaveBeenCalledWith(testnetUTXO, bridge)
+      expect(expectedRevealedDeposit).toBe(mockedRevealedDeposit)
     })
   })
 })
