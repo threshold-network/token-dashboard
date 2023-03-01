@@ -11,6 +11,7 @@ import { Checkbox } from "./Checkbox"
 import { Radio } from "./Radio"
 import { AnnouncementBanner } from "./AnnouncementBanner"
 import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
+import { Timeline } from "./Timeline"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -36,6 +37,7 @@ const index = extendTheme({
     DetailedLinkListItem,
     Radio,
     Checkbox,
+    Timeline,
   },
 })
 
