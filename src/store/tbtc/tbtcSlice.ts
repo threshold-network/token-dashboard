@@ -31,12 +31,13 @@ export const fetchCurveFactoryPoolData: AsyncThunk<CurvePoolData, void, {}> =
       CurveFactoryPoolId.TBTC_WBTC_SBTC
     )
 
+    const tvl = await curveAPI.fetchFactoryTvl()
+
     return {
       address: factoryPool.address,
       url: factoryPool.poolUrls.deposit[0],
       apy: factoryPool.gaugeCrvApy,
-      // TODO: fetch tvl
-      tvl: 0,
+      tvl,
     }
   })
 
