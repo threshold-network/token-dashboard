@@ -2,6 +2,7 @@ import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitc
 import { UpdateStateActionPayload } from "./state"
 import { FetchingState } from "."
 import { BridgeTxHistory } from "../threshold-ts/tbtc"
+import { CurvePoolData } from "../store/tbtc"
 
 export interface TbtcState {
   mintingStep: MintingStep
@@ -26,6 +27,8 @@ export interface TbtcState {
   mintingFee: string
 
   transactionsHistory: FetchingState<BridgeTxHistory[]>
+
+  curveTBTCPool: CurvePoolData
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "transactionsHistory">

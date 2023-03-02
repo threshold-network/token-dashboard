@@ -12,11 +12,11 @@ export type FactoryPool = {
   gaugeCrvApy: number[]
 }
 
-const fetchFactoryPoolData = async (factoryPoolId: CurveFactoryPoolId) => {
+const fetchFactoryPool = async (factoryPoolId: CurveFactoryPoolId) => {
   const response = await axios.get(
-    `https://api.curve.fi/api/getPools/ethereum/factory`
+    "https://api.curve.fi/api/getPools/ethereum/factory"
   )
-  const factoryPool: FactoryPool | undefined = response.data.find(
+  const factoryPool: FactoryPool | undefined = response.data.data.poolData.find(
     (factoryPool: FactoryPool) => factoryPool.id === factoryPoolId
   )
 
@@ -24,13 +24,9 @@ const fetchFactoryPoolData = async (factoryPoolId: CurveFactoryPoolId) => {
     throw new Error("Could not fetch the curve pool data.")
   }
 
-  return {
-    address: factoryPool.address,
-    url: factoryPool.poolUrls.deposit,
-    apy: factoryPool.gaugeCrvApy,
-  }
+  return factoryPool
 }
 
 export const curveAPI = {
-  fetchFactoryPoolData,
+  fetchFactoryPool,
 }
