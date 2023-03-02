@@ -15,6 +15,7 @@ import {
   Tr,
 } from "@threshold-network/components"
 import { FC } from "react"
+import ButtonLink from "../../../../components/ButtonLink"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import TBTCCurvePool from "../../../../static/images/TBTCCurvePool.svg"
 import TBTCWBTCSBTCPool from "../../../../static/images/TBTC_WBTC_SBTC_pool.svg"
@@ -32,7 +33,13 @@ export const ExternalPool: FC = () => {
           <Image src={TBTCCurvePool} />
           <BodySm>TBTC Curve Pool</BodySm>
         </HStack>
-        <Button marginRight={"0 auto"}>Deposit in pool</Button>
+        <ButtonLink
+          isLoading={!curveTBTCPool}
+          isExternal
+          href={curveTBTCPool ? curveTBTCPool.url : ""}
+        >
+          Deposit in pool
+        </ButtonLink>
       </HStack>
       <Skeleton isLoaded={!!curveTBTCPool && !!curveTBTCPool.url}>
         <TableContainer>
