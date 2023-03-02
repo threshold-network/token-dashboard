@@ -10,6 +10,7 @@ export type FactoryPool = {
     withdraw: string[]
   }
   gaugeCrvApy: number[]
+  usdTotal: number
 }
 
 const fetchFactoryPool = async (factoryPoolId: CurveFactoryPoolId) => {
@@ -27,13 +28,6 @@ const fetchFactoryPool = async (factoryPoolId: CurveFactoryPoolId) => {
   return factoryPool
 }
 
-const fetchFactoryTvl = async (): Promise<number> => {
-  const response = await axios.get("https://api.curve.fi/api/getFactoryTVL")
-
-  return response.data.data.factoryBalances
-}
-
 export const curveAPI = {
   fetchFactoryPool,
-  fetchFactoryTvl,
 }
