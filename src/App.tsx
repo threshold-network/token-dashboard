@@ -163,7 +163,6 @@ const AppBody = () => {
 
   useEffect(() => {
     dispatch(fetchETHPriceUSD())
-    // TODO: We might move this fetch somewhere else
     dispatch(fetchCurveFactoryPoolData())
   }, [dispatch])
 
