@@ -26,6 +26,10 @@ import shortenAddress from "../../../../utils/shortenAddress"
 export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { curveTBTCPool } = useTbtcState()
 
+  const commonCellProps = {
+    borderBottom: "none",
+  }
+
   return (
     <Card {...props}>
       <Stack>
@@ -55,13 +59,13 @@ export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
               </Thead>
               <Tbody>
                 <Tr>
-                  <Td>
+                  <Td {...commonCellProps}>
                     <HStack>
                       <Image src={TBTCWBTCSBTCPool} />{" "}
                       <BodyXs>tBTC/WBTC/sBTC</BodyXs>
                     </HStack>
                   </Td>
-                  <Td>
+                  <Td {...commonCellProps}>
                     {!!curveTBTCPool &&
                       !!curveTBTCPool.apy &&
                       curveTBTCPool.apy.length == 2 && (
@@ -78,12 +82,12 @@ export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
                         )} CRV`}</BodyXs>
                       )}
                   </Td>
-                  <Td>
+                  <Td {...commonCellProps}>
                     {!!curveTBTCPool && !!curveTBTCPool.tvl && (
                       <BodyXs>{formatNumeral(curveTBTCPool.tvl)}</BodyXs>
                     )}
                   </Td>
-                  <Td textAlign={"end"}>
+                  <Td {...commonCellProps} textAlign={"end"}>
                     {!!curveTBTCPool && !!curveTBTCPool.address && (
                       <BodyXs>{shortenAddress(curveTBTCPool.address)}</BodyXs>
                     )}
