@@ -458,14 +458,12 @@ describe("TBTC test", () => {
     })
   })
 
-  // TODO (private methods mock)
   describe("getEstimatedFees", () => {
     const mockDepositTreasuryFeeDivisor = "5000"
     const mockOptimisticMintingFeeDivisor = "300"
     const mockAmountToMint = "5000"
     const mockOptimisticMintFee = "300"
     const mockDepositAmount = "10000000"
-    const mockSatoshiMultiplier = "100"
 
     let estimatedFees: {
       treasuryFee: string
@@ -610,8 +608,6 @@ describe("TBTC test", () => {
       expect(minimumNumberOfConfirmationsResult2).toBe(6)
     })
   })
-
-  // TODO: bridgeTxHistory tests
 
   describe("buildDepositKey", () => {
     let buildDepositKeyResult: string
