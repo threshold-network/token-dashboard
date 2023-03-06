@@ -19,12 +19,32 @@ import ButtonLink from "../../../../components/ButtonLink"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import TBTCCurvePool from "../../../../static/images/TBTCCurvePool.svg"
 import TBTCWBTCSBTCPool from "../../../../static/images/TBTC_WBTC_SBTC_pool.svg"
+import { CurvePoolData } from "../../../../store/tbtc"
 import { formatNumeral } from "../../../../utils/formatAmount"
 import { formatPercentage } from "../../../../utils/percentage"
 import shortenAddress from "../../../../utils/shortenAddress"
 
-export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
-  const { curveTBTCPool } = useTbtcState()
+interface ExternalPoolData extends CurvePoolData {
+  poolName: string
+}
+
+export interface ExternalPoolProps extends ComponentProps<typeof Card> {
+  title: string
+  externalPoolData: ExternalPoolData
+}
+
+export const ExternalPool: FC<ExternalPoolProps> = ({
+  title,
+  externalPoolData,
+  ...props
+}) => {
+  const {
+    poolName,
+    url: curvePoolUrl,
+    apy,
+    tvl,
+    address: poolAddress,
+  } = externalPoolData
 
   const commonCellProps = {
     borderBottom: "none",
@@ -36,17 +56,13 @@ export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
         <HStack justifyContent={"space-between"} mb={4}>
           <HStack>
             <Image src={TBTCCurvePool} />
-            <BodySm>TBTC Curve Pool</BodySm>
+            <BodySm>{title}</BodySm>
           </HStack>
-          <ButtonLink
-            isLoading={!curveTBTCPool}
-            isExternal
-            href={curveTBTCPool ? curveTBTCPool.url : ""}
-          >
+          <ButtonLink isLoading={!curvePoolUrl} isExternal href={curvePoolUrl}>
             Deposit in pool
           </ButtonLink>
         </HStack>
-        <Skeleton isLoaded={!!curveTBTCPool && !!curveTBTCPool.url}>
+        <Skeleton isLoaded={!!curvePoolUrl}>
           <TableContainer>
             <Table variant="simple">
               <Thead>
@@ -62,34 +78,30 @@ export const ExternalPool: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
                   <Td {...commonCellProps}>
                     <HStack>
                       <Image src={TBTCWBTCSBTCPool} />{" "}
-                      <BodyXs>tBTC/WBTC/sBTC</BodyXs>
+                      <BodyXs>{poolName}</BodyXs>
                     </HStack>
                   </Td>
                   <Td {...commonCellProps}>
-                    {!!curveTBTCPool &&
-                      !!curveTBTCPool.apy &&
-                      curveTBTCPool.apy.length == 2 && (
-                        <BodyXs>{`${formatPercentage(
-                          curveTBTCPool.apy[0],
-                          2,
-                          false,
-                          true
-                        )} -> ${formatPercentage(
-                          curveTBTCPool.apy[1],
-                          2,
-                          false,
-                          true
-                        )} CRV`}</BodyXs>
-                      )}
-                  </Td>
-                  <Td {...commonCellProps}>
-                    {!!curveTBTCPool && !!curveTBTCPool.tvl && (
-                      <BodyXs>{formatNumeral(curveTBTCPool.tvl)}</BodyXs>
+                    {!!apy && apy.length == 2 && (
+                      <BodyXs>{`${formatPercentage(
+                        apy[0],
+                        2,
+                        false,
+                        true
+                      )} -> ${formatPercentage(
+                        apy[1],
+                        2,
+                        false,
+                        true
+                      )} CRV`}</BodyXs>
                     )}
                   </Td>
+                  <Td {...commonCellProps}>
+                    {!!tvl && <BodyXs>{formatNumeral(tvl)}</BodyXs>}
+                  </Td>
                   <Td {...commonCellProps} textAlign={"end"}>
-                    {!!curveTBTCPool && !!curveTBTCPool.address && (
-                      <BodyXs>{shortenAddress(curveTBTCPool.address)}</BodyXs>
+                    {!!poolAddress && (
+                      <BodyXs>{shortenAddress(poolAddress)}</BodyXs>
                     )}
                   </Td>
                 </Tr>
