@@ -95,6 +95,8 @@ describe("TBTC test", () => {
   const ethAddress = "0x6c05E249D167a42dfFdC54Ff00c7832292889dff"
   const bitcoinAddressTestnet = "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"
 
+  const satoshiMultiplier = BigNumber.from(10).pow(10)
+
   let tBTC: ITBTC
   let tBTCMainnet: ITBTC
 
@@ -456,26 +458,58 @@ describe("TBTC test", () => {
     })
   })
 
-  //TODO (private methods mock)
-  // describe("getEstimatedFees", () => {
-  //   let test2: {
-  //     treasuryFee: string
-  //     optimisticMintFee: string
-  //     amountToMint: string
-  //   }
-  //   beforeEach(async () => {
-  //     jest
-  //       .spyOn(TBTC.prototype as any, "_getDepositFees")
-  //       .mockImplementation(async () => ({
-  //         depositTreasuryFeeDivisor: "5000",
-  //         optimisticMintingFeeDivisor: "300",
-  //       }))
-  //     test2 = await tBTC.getEstimatedFees("10000000")
-  //   })
-  //   test("should estimate fees", () => {
-  //     expect(test2).toBeCalled()
-  //   })
-  // })
+  // TODO (private methods mock)
+  describe("getEstimatedFees", () => {
+    const mockDepositTreasuryFeeDivisor = "5000"
+    const mockOptimisticMintingFeeDivisor = "300"
+    const mockAmountToMint = "5000"
+    const mockOptimisticMintFee = "300"
+    const mockDepositAmount = "10000000"
+    const mockSatoshiMultiplier = "100"
+
+    let estimatedFees: {
+      treasuryFee: string
+      optimisticMintFee: string
+      amountToMint: string
+    }
+
+    let mockGetDepositFees: jest.SpyInstance
+    let mockCalculateOptimisticMintingAmountAndFee: jest.SpyInstance
+
+    beforeEach(async () => {
+      mockGetDepositFees = jest.spyOn(tBTC as any, "_getDepositFees")
+      mockGetDepositFees.mockReturnValue({
+        depositTreasuryFeeDivisor: mockDepositTreasuryFeeDivisor,
+        optimisticMintingFeeDivisor: mockOptimisticMintingFeeDivisor,
+      })
+      mockCalculateOptimisticMintingAmountAndFee = jest.spyOn(
+        tBTC as any,
+        "_calculateOptimisticMintingAmountAndFee"
+      )
+
+      mockCalculateOptimisticMintingAmountAndFee.mockReturnValue({
+        amountToMint: mockAmountToMint,
+        optimisticMintFee: mockOptimisticMintFee,
+      })
+      estimatedFees = await tBTC.getEstimatedFees(mockDepositAmount)
+    })
+    test("should estimate fees", () => {
+      const treasuryFee = BigNumber.from(mockDepositAmount).div(
+        mockDepositTreasuryFeeDivisor
+      )
+      expect(mockGetDepositFees).toHaveBeenCalled()
+      expect(mockCalculateOptimisticMintingAmountAndFee).toHaveBeenCalledWith(
+        BigNumber.from(mockDepositAmount),
+        treasuryFee,
+        mockOptimisticMintingFeeDivisor
+      )
+      expect(estimatedFees.treasuryFee).toBe(
+        treasuryFee.mul(satoshiMultiplier).toString()
+      )
+      expect(estimatedFees.optimisticMintFee).toBe(mockOptimisticMintFee)
+      expect(estimatedFees.amountToMint).toBe(mockAmountToMint)
+    })
+  })
 
   describe("revealDeposit", () => {
     let revealDepositResult: string
