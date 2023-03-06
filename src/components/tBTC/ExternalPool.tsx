@@ -15,14 +15,13 @@ import {
   Tr,
 } from "@threshold-network/components"
 import { ComponentProps, FC } from "react"
-import ButtonLink from "../../../../components/ButtonLink"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
-import TBTCCurvePool from "../../../../static/images/TBTCCurvePool.svg"
-import TBTCWBTCSBTCPool from "../../../../static/images/TBTC_WBTC_SBTC_pool.svg"
-import { CurvePoolData } from "../../../../store/tbtc"
-import { formatNumeral } from "../../../../utils/formatAmount"
-import { formatPercentage } from "../../../../utils/percentage"
-import shortenAddress from "../../../../utils/shortenAddress"
+import { CurvePoolData } from "../../store/tbtc"
+import { formatNumeral } from "../../utils/formatAmount"
+import { formatPercentage } from "../../utils/percentage"
+import shortenAddress from "../../utils/shortenAddress"
+import ButtonLink from "../ButtonLink"
+import TBTCWBTCSBTCPool from "../../static/images/TBTC_WBTC_SBTC_pool.svg"
+import TBTCCurvePool from "../../static/images/TBTCCurvePool.svg"
 
 interface ExternalPoolData extends CurvePoolData {
   poolName: string

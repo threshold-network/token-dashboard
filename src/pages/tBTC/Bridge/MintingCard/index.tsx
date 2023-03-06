@@ -7,7 +7,7 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useWeb3React } from "@web3-react/core"
 import { isSameETHAddress } from "../../../../web3/utils"
-import { ExternalPool } from "./ExternalPool"
+import { ExternalPool } from "../../../../components/tBTC/ExternalPool"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
