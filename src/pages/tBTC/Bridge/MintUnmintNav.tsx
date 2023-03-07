@@ -1,22 +1,27 @@
 import { ComponentProps, FC } from "react"
-import { Box } from "@chakra-ui/react"
-import { Card, FilterTabs, FilterTab } from "@threshold-network/components"
-import { TbtcMintingType } from "../../../types/tbtc"
-import { useTbtcState } from "../../../hooks/useTbtcState"
+import { Box, Card, FilterTabs, FilterTab } from "@threshold-network/components"
+import Link from "../../../components/Link"
+import { PageComponent } from "../../../types"
 
-export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
-  ...props
-}) => {
-  const { mintingType, updateState } = useTbtcState()
+const renderNavItem = (page: PageComponent, index: number) => (
+  <FilterTab
+    key={page.route.path}
+    as={Link}
+    to={page.route.path}
+    tabId={index.toString()}
+  >
+    {page.route.title}
+  </FilterTab>
+)
 
+export const MintUnmintNav: FC<
+  ComponentProps<typeof Card> & { pages: PageComponent[] }
+> = ({ pages, ...props }) => {
+  // TODO: set the proper selectedTabId based on the current location.
   return (
-    <Box {...props}>
-      <FilterTabs
-        selectedTabId={mintingType}
-        onTabClick={(tabId) => updateState("mintingType", tabId)}
-      >
-        <FilterTab tabId={TbtcMintingType.mint}>Mint</FilterTab>
-        <FilterTab tabId={TbtcMintingType.unmint}>Unmint</FilterTab>
+    <Box as="nav" {...props}>
+      <FilterTabs selectedTabId={"0"}>
+        {pages.filter((page) => !!page.route.title).map(renderNavItem)}
       </FilterTabs>
     </Box>
   )
