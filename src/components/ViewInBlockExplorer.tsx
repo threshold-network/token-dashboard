@@ -7,7 +7,7 @@ import createEtherscanLink, {
 } from "../utils/createEtherscanLink"
 import { supportedChainId } from "../utils/getEnvVariable"
 
-type Chain = "bitcoin" | "ethereum"
+export type Chain = "bitcoin" | "ethereum"
 
 const createLinkToBlockExplorerForChain: Record<
   Chain,

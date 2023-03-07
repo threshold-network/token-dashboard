@@ -8,7 +8,7 @@ import {
   useStyles,
 } from "@threshold-network/components"
 
-type TimelineItemStatus = "active" | "semi-active" | "inactive"
+export type TimelineItemStatus = "active" | "semi-active" | "inactive"
 type TimelineItemProps = {
   status: TimelineItemStatus
 }

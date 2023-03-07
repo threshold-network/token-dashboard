@@ -1,3 +1,4 @@
+import { FC, useMemo } from "react"
 import { useParams } from "react-router"
 import { PageComponent } from "../../../types"
 import { useAppDispatch } from "../../../hooks/store"
@@ -5,6 +6,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
 import {
+  Badge,
   BodyLg,
   BodyMd,
   BodySm,
@@ -13,7 +15,15 @@ import {
   CircularProgress,
   Flex,
   HStack,
+  LabelSm,
+  List,
+  ListItem,
   Skeleton,
+  Stack,
+  StackDivider,
+  Icon,
+  Image,
+  H6,
 } from "@threshold-network/components"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import {
@@ -23,10 +33,191 @@ import {
   TimelineContent,
   TimelineDot,
   TimelineItem,
+  TimelineItemStatus,
 } from "../../../components/Timeline"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import ViewInBlockExplorer from "../../../components/ViewInBlockExplorer"
+import { IoTime as TimeIcon } from "react-icons/all"
+import ViewInBlockExplorer, {
+  Chain as ViewInBlockExplorerChain,
+} from "../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import codeSlashIllustration from "../../../static/images/code-slash.svg"
+import Link from "../../../components/Link"
+
+type DepositDetailsTimelineStep =
+  | "bitcoin-confirmations"
+  | "minting-initialized"
+  | "guardian-check"
+  | "minting-completed"
+
+type DepositDetailsTimelineItem = {
+  id: DepositDetailsTimelineStep
+  text: string
+  status: TimelineItemStatus
+}
+
+const depositTimelineItems: DepositDetailsTimelineItem[] = [
+  {
+    id: "bitcoin-confirmations",
+    text: "Bitcoin Checkpoint",
+    status: "semi-active",
+  },
+  {
+    id: "minting-initialized",
+    text: "Minting Initialized",
+    status: "inactive",
+  },
+  {
+    id: "guardian-check",
+    text: "Guardian Check",
+    status: "inactive",
+  },
+  {
+    id: "minting-completed",
+    text: "Minting Completed",
+    status: "inactive",
+  },
+]
+type DepositDetailsTimelineProps =
+  | {
+      isCompleted?: never
+      inProgressStep: DepositDetailsTimelineStep
+    }
+  | {
+      inProgressStep?: never
+      isCompleted: true
+    }
+
+const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
+  inProgressStep,
+  isCompleted,
+}) => {
+  const items = useMemo<DepositDetailsTimelineItem[]>(() => {
+    const inProgressItemIndex = depositTimelineItems.findIndex(
+      (item) => item.id === inProgressStep
+    )
+    return depositTimelineItems.map((item, index) => {
+      let status: TimelineItemStatus = "active"
+      if (isCompleted) return { ...item, status }
+      if (index === inProgressItemIndex) {
+        status = "semi-active"
+      } else if (index > inProgressItemIndex) {
+        status = "inactive"
+      }
+
+      return { ...item, status }
+    })
+  }, [inProgressStep])
+
+  return (
+    <Timeline>
+      {items.map((item) => (
+        <TimelineItem key={item.id} status={item.status}>
+          <TimelineBreakpoint>
+            <TimelineDot />
+            <TimelineConnector />
+          </TimelineBreakpoint>
+          <TimelineContent>{item.text}</TimelineContent>
+        </TimelineItem>
+      ))}
+    </Timeline>
+  )
+}
+
+type StepTemplateCommonProps = {
+  title: string
+  subtitle: string
+  txHash: string
+  chain: ViewInBlockExplorerChain
+  progressBarColor: string
+  progressBarLabel?: string | JSX.Element
+}
+type StepTemplateConditionalProps =
+  | {
+      isIndeterminate: true
+      progressBarValue: never
+      progressBarMaxValue: never
+    }
+  | {
+      isIndeterminate?: false
+      progressBarValue: number
+      progressBarMaxValue: number
+    }
+
+type StepTemplateProps = StepTemplateCommonProps & StepTemplateConditionalProps
+
+const StepTemplate: FC<StepTemplateProps> = ({
+  title,
+  subtitle,
+  txHash,
+  chain,
+  progressBarLabel,
+  progressBarValue,
+  progressBarMaxValue,
+  progressBarColor,
+  isIndeterminate,
+}) => {
+  return (
+    <Flex flexDirection="column" alignItems="center">
+      <BodyLg color="gray.700" mt="8" alignSelf="flex-start">
+        {title}
+      </BodyLg>
+
+      <CircularProgress
+        alignSelf="center"
+        mt="6"
+        value={progressBarValue}
+        color={progressBarColor}
+        trackColor="gray.100"
+        max={progressBarMaxValue}
+        size="160px"
+        thickness="8px"
+        isIndeterminate={isIndeterminate}
+      />
+      {progressBarLabel}
+      <BodyMd textAlign="center" mt="6" px="6">
+        {subtitle}
+      </BodyMd>
+      <BodySm mt="9" color="gray.500" textAlign="center">
+        See transaction on{" "}
+        <ViewInBlockExplorer
+          text={chain === "bitcoin" ? "blockstream" : "etherscan"}
+          chain={chain}
+          id={txHash}
+          type={ExplorerDataType.TRANSACTION}
+        />
+      </BodySm>
+    </Flex>
+  )
+}
+
+const BitcoinConfirmationsSummary: FC<{
+  minConfirmationsNeeded: number
+  txConfirmations: number
+}> = ({ minConfirmationsNeeded, txConfirmations }) => {
+  const areConfirmationsLoaded = txConfirmations !== undefined
+  const checkmarkColor =
+    txConfirmations &&
+    minConfirmationsNeeded &&
+    txConfirmations >= minConfirmationsNeeded
+      ? "brand.500"
+      : "gray.500"
+  return (
+    <HStack mt={8}>
+      <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
+      <BodySm color={"gray.500"}>
+        <Skeleton isLoaded={areConfirmationsLoaded} display="inline-block">
+          {txConfirmations > minConfirmationsNeeded
+            ? minConfirmationsNeeded
+            : txConfirmations}
+          {"/"}
+          {minConfirmationsNeeded}
+        </Skeleton>
+        {"  Bitcoin Network Confirmations"}
+      </BodySm>
+    </HStack>
+  )
+}
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -37,7 +228,6 @@ export const DepositDetails: PageComponent = () => {
   const {
     tBTCMintAmount,
     utxo,
-    txConfirmations,
     depositRevealedTxHash,
     optimisticMintingRequestedTxHash,
     optimisticMintingFinalizedTxHash,
@@ -64,109 +254,86 @@ export const DepositDetails: PageComponent = () => {
 
   const minConfirmationsNeeded = 6
   // threshold.tbtc.minimumNumberOfConfirmationsNeeded(utxo.value)
-
-  const areConfirmationsLoaded = true // txConfirmations !== undefined
-
-  const checkmarkColor =
-    txConfirmations &&
-    minConfirmationsNeeded &&
-    txConfirmations >= minConfirmationsNeeded
-      ? "brand.500"
-      : "gray.500"
+  const txConfirmations = 3
 
   return (
     <Card>
-      <TbtcMintingCardTitle />
-      <Flex mb="4">
-        <BodyLg>
-          <Box as="span" fontWeight="600" color="brand.500">
-            Minting{" "}
+      <Stack
+        direction={{
+          base: "column",
+          xl: "row",
+        }}
+        divider={<StackDivider />}
+        h="100%"
+        spacing={4}
+      >
+        <Box>
+          <TbtcMintingCardTitle />
+          <Flex mb="4">
+            <BodyLg>
+              <Box as="span" fontWeight="600" color="brand.500">
+                Minting{" "}
+              </Box>
+              - In progress...
+            </BodyLg>{" "}
+            <InlineTokenBalance
+              tokenAmount={amount}
+              tokenSymbol="tBTC"
+              withSymbol
+              ml="auto"
+            />
+          </Flex>
+          <DepositDetailsTimeline
+            // isCompleted
+            inProgressStep="bitcoin-confirmations"
+          />
+          <StepTemplate
+            title="Waiting for the Bitcoin Network Confirmations..."
+            subtitle="The Bitcoin Deposit transaction needs to get 6 confirmations on the Bitcoin Network before the minting is initialised."
+            chain="bitcoin"
+            txHash={btcDepositTxHash}
+            progressBarColor="brand.500"
+            progressBarValue={3}
+            progressBarMaxValue={6}
+            progressBarLabel={
+              <BitcoinConfirmationsSummary
+                minConfirmationsNeeded={minConfirmationsNeeded}
+                txConfirmations={txConfirmations}
+              />
+            }
+          />
+        </Box>
+        <Flex maxW="33%" direction="column">
+          <LabelSm mb="8">Transaction History</LabelSm>
+          <Badge
+            size="sm"
+            colorScheme="yellow"
+            variant="solid"
+            display="flex"
+            alignItems="center"
+            mb="4"
+          >
+            <Icon as={TimeIcon} /> ~3 hours minting time
+          </Badge>
+          <List color="gray.500">
+            <ListItem>Bitcoin Deposit transaction</ListItem>
+            <ListItem>Reveal transaction</ListItem>
+          </List>
+          <Box bg="yellow.50" p="4" mt="auto">
+            <Image src={codeSlashIllustration} mx="auto" />
           </Box>
-          - In progress...
-        </BodyLg>{" "}
-        <InlineTokenBalance
-          tokenAmount={amount}
-          tokenSymbol="tBTC"
-          withSymbol
-          ml="auto"
-        />
-      </Flex>
-      <Timeline>
-        <TimelineItem status="active">
-          <TimelineBreakpoint>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineBreakpoint>
-          <TimelineContent>Bitcoin checkpoint</TimelineContent>
-        </TimelineItem>
-
-        <TimelineItem status="active">
-          <TimelineBreakpoint>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineBreakpoint>
-          <TimelineContent>Minting initialized</TimelineContent>
-        </TimelineItem>
-
-        <TimelineItem status="semi-active">
-          <TimelineBreakpoint>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineBreakpoint>
-          <TimelineContent>Guardian Check</TimelineContent>
-        </TimelineItem>
-
-        <TimelineItem status="inactive">
-          <TimelineBreakpoint>
-            <TimelineDot />
-            <TimelineConnector />
-          </TimelineBreakpoint>
-          <TimelineContent>Minting Completed</TimelineContent>
-        </TimelineItem>
-      </Timeline>
-      <Flex flexDirection="column" alignItems="center">
-        <BodyLg color="gray.700" mt="8">
-          Waiting for the Bitcoin Network Confirmations...
-        </BodyLg>
-
-        <CircularProgress
-          alignSelf="center"
-          mt="6"
-          value={3}
-          color="brand.500"
-          trackColor="gray.100"
-          max={minConfirmationsNeeded}
-          size="160px"
-          thickness="8px"
-        />
-        <HStack mt="6">
-          <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
-          <BodySm as="div" color={"gray.500"}>
-            <Skeleton isLoaded={areConfirmationsLoaded} display="inline-block">
-              {txConfirmations > minConfirmationsNeeded
-                ? minConfirmationsNeeded
-                : txConfirmations}
-              {"/"}
-              {minConfirmationsNeeded}
-            </Skeleton>
-            {"  Bitcoin Network Confirmations"}
+          <H6 mt="4" color="gray.800">
+            6/6 Bitcoin Confirmations Requirement
+          </H6>
+          <BodySm mt="1" color="gray.500">
+            Amazing body copy of the new update, feature, code or design
+            improvement.{" "}
+            <Link isExternal href="TODO">
+              Read more
+            </Link>
           </BodySm>
-        </HStack>
-      </Flex>
-
-      <BodyMd textAlign="center" mt="6" px="6">
-        The Bitcoin Deposit transaction needs to get 6 confirmations on the
-        Bitcoin Network before the minting is initialised.
-      </BodyMd>
-      <BodySm mt="9" color="gray.500" textAlign="center">
-        See transaction on{" "}
-        <ViewInBlockExplorer
-          text="blockstream"
-          chain="bitcoin"
-          id={btcDepositTxHash}
-          type={ExplorerDataType.TRANSACTION}
-        />
-      </BodySm>
+        </Flex>
+      </Stack>
     </Card>
   )
 }

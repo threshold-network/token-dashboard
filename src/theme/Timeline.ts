@@ -39,6 +39,13 @@ const baseStyleItem: SystemStyleObject = {
       },
     },
     "&--semi-active": {
+      _first: {
+        ".timeline__item__breakpoint": {
+          ".breakpoint__connector": {
+            backgroundColor: "gray.100",
+          },
+        },
+      },
       ".timeline__item__breakpoint": {
         ".breakpoint__connector": {
           backgroundColor: "brand.500",
