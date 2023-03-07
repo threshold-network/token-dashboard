@@ -41,7 +41,7 @@ const baseStyleItem: SystemStyleObject = {
     "&--semi-active": {
       ".timeline__item__breakpoint": {
         ".breakpoint__connector": {
-          // backgroundColor: "brand.500",
+          backgroundColor: "brand.500",
         },
         ".breakpoint__dot": {
           background: "gradient.3",
@@ -63,37 +63,37 @@ const baseStyleItem: SystemStyleObject = {
   _first: {
     ".timeline__item__breakpoint": {
       ".breakpoint__dot": {
-        // mx: "unset",
+        mx: "unset",
       },
       ".breakpoint__connector": {
         width: "100%",
-        // left: "30px",
-        // _after: {
-        //   content: "none",
-        // },
+        left: "29px",
+        _after: {
+          content: "none",
+        },
       },
     },
     ".timeline__item__content": {
-      // textAlign: "left",
+      textAlign: "left",
     },
   },
   _last: {
     ".timeline__item__breakpoint": {
-      // flexDirection: "row-reverse",
+      flexDirection: "row-reverse",
       ".breakpoint__dot": {
-        // mx: "unset",
+        mx: "unset",
       },
       ".breakpoint__connector": {
-        display: "none",
-        // width: "calc(100% - 30px)",
-        // right: "50%",
-        // _after: {
-        //   content: "none",
-        // },
+        width: "100%",
+        right: "29px",
+        left: "unset",
+        _after: {
+          content: "none",
+        },
       },
     },
     ".timeline__item__content": {
-      // textAlign: "right",
+      textAlign: "right",
     },
   },
 }
@@ -121,20 +121,20 @@ const baseStyleItemDot: SystemStyleFunction = (props) => {
 
 const baseStyleItemConnector: SystemStyleObject = {
   height: 2,
-  width: "100%",
+  width: "50%",
   position: "absolute",
   top: "calc(50% - 4px)",
-  left: "60px",
+  left: "auto",
   zIndex: -1,
   backgroundColor: "gray.100",
-  // _after: {
-  //   position: "absolute",
-  //   content: `" "`,
-  //   width: "100%",
-  //   height: 2,
-  //   backgroundColor: "gray.100",
-  //   left: "100%",
-  // },
+  _after: {
+    position: "absolute",
+    content: `" "`,
+    width: "100%",
+    height: 2,
+    backgroundColor: "gray.100",
+    left: "100%",
+  },
 }
 
 const baseStyleItemConntent: SystemStyleObject = {
