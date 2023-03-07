@@ -1,6 +1,7 @@
 import { Outlet } from "react-router"
-import { MintingCard } from "./MintingCard"
 import { PageComponent } from "../../../types"
+import { DepositDetails } from "./DepositDetails"
+import { MintingCard } from "./MintingCard"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -20,6 +21,6 @@ MintPage.route = {
   path: "mint",
   index: true,
   title: "Mint",
-  pages: [DefaultMintPage],
+  pages: [DefaultMintPage, DepositDetails],
   isPageEnabled: true,
 }
