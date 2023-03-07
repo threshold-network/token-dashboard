@@ -51,6 +51,12 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
+          ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+          ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+          ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+          SENTRY_SUPPORT: true
+          SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -60,9 +66,15 @@ jobs:
           CHAIN_ID: 1
           ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true
           POSTHOG_API_KEY: ${{ secrets.MAINNET_POSTHOG_API_KEY }}
           POSTHOG_HOSTNAME_HTTP: ${{ secrets.MAINNET_POSTHOG_HOSTNAME_HTTP }}
+          ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+          ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+          ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+          SENTRY_SUPPORT: true
+          SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -80,7 +92,11 @@ jobs:
       - uses: actions/download-artifact@v3
 
       - name: Deploy PR mainnet preview to GCP
-        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        # Temporarily we run the action in version from `alpine-version-413.0.0`
+        # branch, which contains a fix for the issue introduced in the `414.0.0`
+        # version of the `cloud-sdk` (`rsync` fails for users with no
+        # `storage.buckets.get` permission).
+        uses: thesis/gcp-storage-bucket-action@alpine-version-413.0.0
         with:
           service-key: ${{ secrets.MAINNET_PREVIEW_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
           project: ${{ secrets.MAINNET_PREVIEW_GOOGLE_PROJECT_ID }}
@@ -102,7 +118,11 @@ jobs:
       - uses: actions/download-artifact@v3
 
       - name: Deploy mainnet build to GCP
-        uses: thesis/gcp-storage-bucket-action@v3.1.0
+        # Temporarily we run the action in version from `alpine-version-413.0.0`
+        # branch, which contains a fix for the issue introduced in the `414.0.0`
+        # version of the `cloud-sdk` (`rsync` fails for users with no
+        # `storage.buckets.get` permission).
+        uses: thesis/gcp-storage-bucket-action@alpine-version-413.0.0
         with:
           service-key: ${{ secrets.MAINNET_UPLOADER_SERVICE_KEY_JSON_BASE64 }}
           project: ${{ secrets.MAINNET_GOOGLE_PROJECT_ID }}

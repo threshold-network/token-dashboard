@@ -1,45 +1,54 @@
-import { BodySm, Box, HStack } from "@threshold-network/components"
+import { BodySm, HStack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { Skeleton, Stack } from "@chakra-ui/react"
 import shortenAddress from "../../../../utils/shortenAddress"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
 
 const TransactionDetailsTable = () => {
-  const {
-    tBTCMintAmount,
-    isLoadingTbtcMintAmount,
-    ethGasCost,
-    bitcoinMinerFee,
-    isLoadingBitcoinMinerFee,
-    thresholdNetworkFee,
-    ethAddress,
-  } = useTbtcState()
+  const { tBTCMintAmount, mintingFee, thresholdNetworkFee, ethAddress } =
+    useTbtcState()
+
   return (
     <Stack spacing={2} mb={6}>
       <HStack justifyContent="space-between" alignItems="center">
-        <BodySm color="gray.500">Minted Amount</BodySm>
-        <Skeleton isLoaded={!isLoadingTbtcMintAmount}>
-          <BodySm color="gray.700">{tBTCMintAmount} tBTC</BodySm>
+        <BodySm color="gray.500">Amount To Be Minted</BodySm>
+        <Skeleton isLoaded={!!tBTCMintAmount}>
+          <BodySm color="gray.700">
+            <InlineTokenBalance
+              tokenAmount={tBTCMintAmount}
+              tokenSymbol="tBTC"
+              withSymbol
+            />
+          </BodySm>
         </Skeleton>
       </HStack>
-      <HStack justifyContent="space-between" alignItems="center">
-        <BodySm color="gray.500">Estimated Ethereum Gas Cost</BodySm>
-        <BodySm color="gray.700">~{ethGasCost} gWEI</BodySm>
-      </HStack>
       <HStack justifyContent="space-between">
-        <BodySm color="gray.500">Bitcoin Miner Fee</BodySm>
-        <Skeleton isLoaded={!isLoadingBitcoinMinerFee}>
+        <BodySm color="gray.500">Minting Fee</BodySm>
+        <Skeleton isLoaded={!!mintingFee}>
           <BodySm color="gray.700" display="flex" alignItems="center">
-            {bitcoinMinerFee} BTC
+            <InlineTokenBalance
+              tokenAmount={mintingFee}
+              tokenSymbol="tBTC"
+              withSymbol
+              precision={6}
+              higherPrecision={8}
+            />
           </BodySm>
         </Skeleton>
       </HStack>
       <HStack justifyContent="space-between" alignItems="center">
         <BodySm color="gray.500">Threshold Network Fee</BodySm>
-        <BodySm color="gray.700">{thresholdNetworkFee} BTC</BodySm>
-      </HStack>
-      <HStack justifyContent="space-between">
-        <BodySm color="gray.500">tBTC</BodySm>
-        <BodySm color="gray.700">1 BTC</BodySm>
+        <Skeleton isLoaded={!!thresholdNetworkFee}>
+          <BodySm color="gray.700" display="flex" alignItems="center">
+            <InlineTokenBalance
+              tokenAmount={thresholdNetworkFee}
+              tokenSymbol="tBTC"
+              withSymbol
+              precision={6}
+              higherPrecision={8}
+            />
+          </BodySm>
+        </Skeleton>
       </HStack>
       <HStack justifyContent="space-between">
         <BodySm color="gray.500">ETH address</BodySm>

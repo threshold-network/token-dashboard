@@ -32,7 +32,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
     <Form id={formId} mb={6}>
       <FormikInput
         name="ethAddress"
-        label="ETH address"
+        label="ETH Address"
         tooltip="ETH address is prepopulated with your wallet address. This is the address where you’ll receive your tBTC."
         mb={6}
       />
@@ -117,7 +117,7 @@ export const ProvideData: FC = () => {
   return (
     <Flex flexDirection="column" justifyContent="space-between" h="100%">
       <Box>
-        <TbtcMintingCardTitle />
+        {/* <TbtcMintingCardTitle /> */}
         <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
         <BodyMd color="gray.500" mb={12}>
           Based on these two addresses, the system will generate for you an

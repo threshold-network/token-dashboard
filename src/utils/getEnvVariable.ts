@@ -1,37 +1,16 @@
-import { EnvVariable } from "../enums"
+import { EnvVariable, EnvVariableKey } from "../enums"
 
-const envMap: { [key in EnvVariable]: string } = {
-  [EnvVariable.SupportedChainId]: process.env[
-    "REACT_APP_SUPPORTED_CHAIN_ID"
-  ] as string,
-  [EnvVariable.ETH_HOSTNAME_HTTP]: process.env[
-    "REACT_APP_ETH_HOSTNAME_HTTP"
-  ] as string,
-  [EnvVariable.ETH_HOSTNAME_WS]: process.env[
-    "REACT_APP_ETH_HOSTNAME_WS"
-  ] as string,
-  [EnvVariable.FEATURE_FLAG_TBTC_V2]: process.env[
-    "REACT_APP_FEATURE_FLAG_TBTC_V2"
-  ] as string,
-  [EnvVariable.FEATURE_FLAG_MULTI_APP_STAKING]: process.env[
-    "REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING"
-  ] as string,
-  [EnvVariable.FEATURE_FLAG_FEEDBACK_MODULE]: process.env[
-    "REACT_APP_FEATURE_FLAG_FEEDBACK_MODULE"
-  ] as string,
-  [EnvVariable.FEATURE_FLAG_POSTHOG]: process.env[
-    "REACT_APP_FEATURE_FLAG_POSTHOG"
-  ] as string,
-  [EnvVariable.POSTHOG_HOSTNAME_HTTP]: process.env[
-    "REACT_APP_POSTHOG_HOSTNAME_HTTP"
-  ] as string,
-  [EnvVariable.POSTHOG_API_KEY]: process.env[
-    "REACT_APP_POSTHOG_API_KEY"
-  ] as string,
-}
+type EnvMap = { [key in EnvVariableKey]: string }
 
-export const getEnvVariable = (envVar: EnvVariable) => {
+const envMap: EnvMap = (
+  Object.keys(EnvVariable) as Array<EnvVariableKey>
+).reduce((reducer, key) => {
+  reducer[key] = process.env[`REACT_APP_${EnvVariable[key]}`] as string
+  return reducer
+}, {} as EnvMap)
+
+export const getEnvVariable = (envVar: EnvVariableKey) => {
   return envMap[envVar]
 }
 
-export const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
+export const supportedChainId = getEnvVariable(EnvVariable.SUPPORTED_CHAIN_ID)

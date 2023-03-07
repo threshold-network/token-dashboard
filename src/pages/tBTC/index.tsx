@@ -12,7 +12,7 @@ MainTBTCPage.route = {
   path: "tBTC",
   index: true,
   pages: [TBTCBridge, HowItWorksPage],
-  title: "TBTC",
+  title: "tBTC",
   isPageEnabled: featureFlags.TBTC_V2,
 }
 

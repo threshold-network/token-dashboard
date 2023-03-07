@@ -1,32 +1,30 @@
 import { FC } from "react"
 import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
-export const InitiateMinting: FC = () => {
-  const { updateState } = useTbtcState()
+const InitiateMintingComponent: FC<{
+  utxo: UnspentTransactionOutput
+  onPreviousStepClick: (previosuStep: MintingStep) => void
+}> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()
-  const confirmDespotAndMint = () => {
-    // TODO: calculate these values. They are hardcoded for now. Loading states are mocked in the confirmation modal
 
-    updateState("ethGasCost", 50)
-    updateState("thresholdNetworkFee", 0.0001)
-    updateState("isLoadingTbtcMintAmount", true)
-    updateState("isLoadingBitcoinMinerFee", true)
-    // updateState("tBTCMintAmount")
-    // updateState("bitcoinMinerFee")
-    // updateState("mintingStep", MintingStep.MintingSuccess)
-    openModal(ModalType.TbtcMintingConfirmation)
+  const confirmDespotAndMint = async () => {
+    openModal(ModalType.TbtcMintingConfirmation, { utxo: utxo })
   }
 
   return (
     <>
-      <TbtcMintingCardTitle previousStep={MintingStep.Deposit} />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.ProvideData}
+        onPreviousStepClick={onPreviousStepClick}
+      />
       <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
       <Alert status="warning" my={6}>
         <AlertIcon />
@@ -47,3 +45,5 @@ export const InitiateMinting: FC = () => {
     </>
   )
 }
+
+export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)

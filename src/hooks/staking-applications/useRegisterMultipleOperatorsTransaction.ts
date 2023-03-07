@@ -1,5 +1,4 @@
 import { useCallback } from "react"
-import { isAddressZero } from "../../web3/utils"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
@@ -49,27 +48,27 @@ export const useRegisterMultipleOperatorsTransaction = () => {
         // TODO: might also add a check if the operator is already used by another staking provider
 
         const successfullTxs: OperatorMappedSuccessTx[] = []
-        const tbtcTx = await sendRegisterOperatorTransactionTbtc(operator)
-        if (tbtcTx) {
+        const tbtcReceipt = await sendRegisterOperatorTransactionTbtc(operator)
+        if (tbtcReceipt) {
           successfullTxs.push({
             application: {
               appName: "tbtc",
               operator: operator,
               stakingProvider: account,
             },
-            txHash: tbtcTx.hash,
+            txHash: tbtcReceipt.transactionHash,
           })
         }
-        const randomBeaconTx =
+        const randomBeaconReceipt =
           await sendRegisterOperatorTransactionRandomBeacon(operator)
-        if (randomBeaconTx) {
+        if (randomBeaconReceipt) {
           successfullTxs.push({
             application: {
               appName: "randomBeacon",
               operator: operator,
               stakingProvider: account,
             },
-            txHash: randomBeaconTx.hash,
+            txHash: randomBeaconReceipt.transactionHash,
           })
         }
 

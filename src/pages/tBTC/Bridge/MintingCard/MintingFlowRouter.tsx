@@ -1,48 +1,100 @@
-import { FC } from "react"
-import { Box, Flex } from "@threshold-network/components"
+import { FC, useEffect } from "react"
+import { Box, Flex, H5, Skeleton, Stack } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
+import { useWeb3React } from "@web3-react/core"
+import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
+import { BridgeContractLink } from "../../../../components/tBTC"
+import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
+import { useAppDispatch } from "../../../../hooks/store"
+import { tbtcSlice } from "../../../../store/tbtc"
 
 const MintingFlowRouterBase = () => {
-  const { mintingStep } = useTbtcState()
+  const dispatch = useAppDispatch()
+  const { account } = useWeb3React()
+  const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
+  const removeDepositData = useRemoveDepositData()
+  const { openModal } = useModal()
+
+  const onPreviousStepClick = (previousStep?: MintingStep) => {
+    if (mintingStep === MintingStep.MintingSuccess) {
+      updateState("mintingStep", MintingStep.ProvideData)
+      removeDepositData()
+      return
+    }
+    if (previousStep === MintingStep.ProvideData) {
+      openModal(ModalType.GenerateNewDepositAddress)
+      return
+    }
+    updateState("mintingStep", previousStep)
+  }
+
+  useEffect(() => {
+    if (!btcDepositAddress || !account) return
+    dispatch(
+      tbtcSlice.actions.findUtxo({ btcDepositAddress, depositor: account })
+    )
+  }, [btcDepositAddress, account, dispatch])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
-      return <ProvideData />
+      return <ProvideData onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.Deposit: {
-      return <MakeDeposit />
+      return <MakeDeposit onPreviousStepClick={onPreviousStepClick} />
     }
     case MintingStep.InitiateMinting: {
-      return <InitiateMinting />
+      return (
+        <InitiateMinting
+          utxo={utxo!}
+          onPreviousStepClick={onPreviousStepClick}
+        />
+      )
     }
     case MintingStep.MintingSuccess: {
-      return <MintingSuccess />
+      return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />
     }
     default:
-      return null
+      return (
+        <>
+          <TbtcMintingCardTitle
+            previousStep={MintingStep.ProvideData}
+            onPreviousStepClick={onPreviousStepClick}
+          />
+          <Stack>
+            <Skeleton height="40px" />
+            <Skeleton height="40px" />
+            <Skeleton height="100px" />
+          </Stack>
+        </>
+      )
   }
 }
 
 export const MintingFlowRouter: FC = () => {
   const brdigeContractAddress = useTBTCBridgeContractAddress()
+  const { active } = useWeb3React()
 
   return (
     <Flex flexDirection="column">
-      <MintingFlowRouterBase />
+      {active ? (
+        <MintingFlowRouterBase />
+      ) : (
+        <>
+          <H5 align={"center"}>Connect wallet to mint tBTC</H5>
+          <SubmitTxButton />
+        </>
+      )}
       <Box as="p" textAlign="center" mt="6">
-        <ViewInBlockExplorer
-          id={brdigeContractAddress}
-          type={ExplorerDataType.ADDRESS}
-          text="Bridge Contract"
-        />
+        <BridgeContractLink />
       </Box>
     </Flex>
   )

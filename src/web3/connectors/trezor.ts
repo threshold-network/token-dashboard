@@ -4,7 +4,7 @@ import Web3ProviderEngine from "web3-provider-engine"
 // import { TrezorSubprovider } from "@0x/subproviders/lib/src/subproviders/trezor" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { RPCSubprovider } from "@0x/subproviders/lib/src/subproviders/rpc_subprovider" // https://github.com/0xProject/0x-monorepo/issues/1400
 import { TrezorSubprovider } from "./trezor_subprovider"
-import { getEnvVariable } from "../../utils/getEnvVariable"
+import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
 import { EnvVariable } from "../../enums"
 
 interface TrezorConnectorArguments {
@@ -113,7 +113,7 @@ export class TrezorConnector extends AbstractConnector {
 
 const TREZOR_POLLING_INTERVAL = 12000
 
-const chainId = +getEnvVariable(EnvVariable.SupportedChainId)
+const chainId = +supportedChainId
 const url = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
 const trezor = new TrezorConnector({

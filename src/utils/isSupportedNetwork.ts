@@ -1,7 +1,4 @@
-import { getEnvVariable } from "./getEnvVariable"
-import { EnvVariable } from "../enums"
-
-const supportedChainId = getEnvVariable(EnvVariable.SupportedChainId)
+import { supportedChainId } from "./getEnvVariable"
 
 const isSupportedNetwork = (networkChainId?: number) => {
   return networkChainId === Number(supportedChainId)

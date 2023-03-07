@@ -1,18 +1,34 @@
+import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
+import { FetchingState } from "."
+import { BridgeTxHistory } from "../threshold-ts/tbtc"
 
-export type TbtcStateKey =
-  | "mintingStep"
-  | "mintingType"
-  | "btcRecoveryAddress"
-  | "ethAddress"
-  | "btcDepositAddress"
-  | "tBTCMintAmount"
-  | "isLoadingTbtcMintAmount"
-  | "ethGasCost"
-  | "thresholdNetworkFee"
-  | "bitcoinMinerFee"
-  | "isLoadingBitcoinMinerFee"
-  | "nextBridgeCrossingInUnix"
+export interface TbtcState {
+  mintingStep: MintingStep
+  unmintingStep: UnmintingStep
+  mintingType: TbtcMintingType
+
+  // deposit data
+  btcRecoveryAddress: string
+  btcDepositAddress: string
+  ethAddress: string
+  refundLocktime: string
+  blindingFactor: string
+  walletPublicKeyHash: string
+  utxo: UnspentTransactionOutput
+  txConfirmations: number
+  nextBridgeCrossingInUnix?: number
+  depositRevealedTxHash?: string
+  optimisticMintingRequestedTxHash?: string
+  optimisticMintingFinalizedTxHash?: string
+  tBTCMintAmount: string
+  thresholdNetworkFee: string
+  mintingFee: string
+
+  transactionsHistory: FetchingState<BridgeTxHistory[]>
+}
+
+export type TbtcStateKey = keyof Omit<TbtcState, "transactionsHistory">
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -49,30 +65,7 @@ export interface UpdateTbtcState {
 
 export interface UseTbtcState {
   (): {
-    mintingStep: MintingStep
-    unmintingStep: UnmintingStep
-    mintingType: TbtcMintingType
-    btcWithdrawAddress: string
-    unmintAmount: string
-    btcDepositAddress: string
-    btcRecoveryAddress: string
-    ethAddress: string
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
-    nextBridgeCrossingInUnix?: number
-
-    // TODO: These may be incorrect types
-    tBTCMintAmount: number
-    isLoadingTbtcMintAmount: boolean
-    ethGasCost: number
-    thresholdNetworkFee: number
-    bitcoinMinerFee: number
-    isLoadingBitcoinMinerFee: boolean
-  }
-}
-
-export enum TbtcTransactionResult {
-  PENDING = "PENDING",
-  UNMINTED = "UNMINTED",
-  ERROR = "ERROR",
-  MINTED = "MINTED",
+    resetDepositData: () => void
+  } & TbtcState
 }

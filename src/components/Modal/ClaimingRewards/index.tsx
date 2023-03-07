@@ -19,7 +19,10 @@ import { StakingContractLearnMore } from "../../Link/SharedLinks"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import { useClaimMerkleRewardsTransaction } from "../../../web3/hooks"
+import {
+  OnSuccessCallback,
+  useClaimMerkleRewardsTransaction,
+} from "../../../web3/hooks"
 import {
   interimRewardsClaimed,
   selectAccumulatedRewardsPerBeneficiary,
@@ -41,11 +44,11 @@ const ClaimingRewardsBase: FC<
   const beneficiaryRewards = useSelector(selectAccumulatedRewardsPerBeneficiary)
   const rewards = useSelector(selectInterimRewards)
 
-  const onClaimSuccess = useCallback(
-    (tx) => {
+  const onClaimSuccess = useCallback<OnSuccessCallback>(
+    (receipt) => {
       dispatch(interimRewardsClaimed())
       openModal(ModalType.ClaimingRewardsSuccess, {
-        transactionHash: tx.hash,
+        transactionHash: receipt.transactionHash,
         totalRewardsAmount,
         beneficiaries: Object.keys(beneficiaryRewards),
       })

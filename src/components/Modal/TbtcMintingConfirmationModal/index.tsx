@@ -5,57 +5,85 @@ import {
   Button,
   H5,
   ModalBody,
+  ModalCloseButton,
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
-import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
 import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
 import { MintingStep } from "../../../types/tbtc"
-import { useTbtcMintTransaction } from "../../../web3/hooks/useTbtcMintTransaction"
-import ModalCloseButton from "../ModalCloseButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
+import {
+  decodeBitcoinAddress,
+  UnspentTransactionOutput,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { useRevealDepositTransaction } from "../../../hooks/tbtc"
+import { BigNumber } from "ethers"
+import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { InlineTokenBalance } from "../../TokenBalance"
+import { BridgeContractLink } from "../../tBTC"
 
-const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
+export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
+  utxo: UnspentTransactionOutput
+}
+
+const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
+  utxo,
+  closeModal,
+}) => {
   const {
     updateState,
     tBTCMintAmount,
-    isLoadingTbtcMintAmount,
-    isLoadingBitcoinMinerFee,
+    btcRecoveryAddress,
+    ethAddress,
+    refundLocktime,
+    walletPublicKeyHash,
+    blindingFactor,
+    mintingFee,
+    thresholdNetworkFee,
   } = useTbtcState()
+  const threshold = useThreshold()
 
-  const { mint } = useTbtcMintTransaction((tx) => {
-    updateState("mintingStep", MintingStep.MintingSuccess)
-  })
-
-  const initiateMintTransaction = () => {
-    // TODO: implement this
-    // mint({})
-
-    // 1. reveal deposit to the bridge
-
-    // 2. the sweep will mint automatically
-    // 3. minting will happen behind the scenes
-
-    // TODO: this is a shortcut for now. We need to implement this properly
+  const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
     closeModal()
   }
 
-  // TODO: this is just to mock the loading state for the UI
+  const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
+    onSuccessfulDepositReveal
+  )
+
+  const initiateMintTransaction = async () => {
+    const depositScriptParameters: DepositScriptParameters = {
+      depositor: getChainIdentifier(ethAddress),
+      blindingFactor,
+      walletPublicKeyHash: walletPublicKeyHash,
+      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      refundLocktime,
+    }
+
+    await revealDeposit(utxo, depositScriptParameters)
+  }
+
+  const amount = BigNumber.from(utxo.value).toString()
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      updateState("tBTCMintAmount", 1.2)
-      updateState("bitcoinMinerFee", 0.001)
-      updateState("isLoadingTbtcMintAmount", false)
-      updateState("isLoadingBitcoinMinerFee", false)
-    }, 3000)
-    return () => clearTimeout(timer)
-  }, [])
+    const getEstimatedFees = async () => {
+      const { treasuryFee, optimisticMintFee, amountToMint } =
+        await threshold.tbtc.getEstimatedFees(amount)
+
+      updateState("mintingFee", optimisticMintFee)
+      updateState("thresholdNetworkFee", treasuryFee)
+      updateState("tBTCMintAmount", amountToMint)
+    }
+
+    getEstimatedFees()
+  }, [amount, updateState, threshold])
 
   return (
     <>
@@ -63,16 +91,20 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
-          <H5 mb={4}>
-            You will initiate the minting of{" "}
-            <Skeleton
-              isLoaded={!isLoadingTbtcMintAmount}
-              w={isLoadingTbtcMintAmount ? "105px" : undefined}
-              display="inline-block"
-            >
-              {tBTCMintAmount}
-            </Skeleton>{" "}
-            tBTC
+          <H5>You will initiate the minting of</H5>
+          {/*
+            We can't use `InlineTokenBalance` inside the above `H5` because
+            the tooltip won't work correctly- will display at the top and
+            center of the whole `H5` component not only above token amount.
+           */}
+          <H5 mb="4">
+            <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenAmount={tBTCMintAmount}
+                tokenSymbol="tBTC"
+                withSymbol
+              />
+            </Skeleton>
           </H5>
           <BodyLg>
             Minting tBTC is a process that requires one transaction.
@@ -81,11 +113,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
         <TransactionDetailsTable />
         <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
-          <ViewInBlockExplorer
-            id="NEED BRIDGE CONTRACT ADDRESS"
-            type={ExplorerDataType.ADDRESS}
-            text="bridge contract."
-          />
+          <BridgeContractLink text="bridge contract" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>
@@ -93,7 +121,7 @@ const TbtcMintingConfirmationModal: FC<BaseModalProps> = ({ closeModal }) => {
           Cancel
         </Button>
         <Button
-          disabled={isLoadingTbtcMintAmount || isLoadingBitcoinMinerFee}
+          disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
         >
           Start minting

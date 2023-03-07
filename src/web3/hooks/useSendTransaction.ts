@@ -4,17 +4,26 @@ import { Contract, ContractTransaction } from "@ethersproject/contracts"
 import { ModalType, TransactionStatus } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
+import { TransactionReceipt } from "@ethersproject/providers"
 
-export type ContractTransactionFunction = Promise<ContractTransaction>
+export type ContractTransactionFunction =
+  | Promise<ContractTransaction>
+  | Promise<string>
+
+export type OnSuccessCallback = (
+  receipt: TransactionReceipt
+) => void | Promise<void>
+
+export type OnErrorCallback = (error: any) => void | Promise<void>
 
 export const useSendTransactionFromFn = <
   F extends (...args: never[]) => ContractTransactionFunction
 >(
   fn: F,
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
-  onError?: (error: any) => void | Promise<void>
+  onSuccess?: OnSuccessCallback,
+  onError?: OnErrorCallback
 ) => {
-  const { account } = useWeb3React()
+  const { account, library } = useWeb3React()
   const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
@@ -31,14 +40,22 @@ export const useSendTransactionFromFn = <
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = await fn(...args)
-        openModal(ModalType.TransactionIsPending, { transactionHash: tx.hash })
+
+        const txHash = typeof tx === "string" ? tx : tx.hash
+        openModal(ModalType.TransactionIsPending, {
+          transactionHash: txHash,
+        })
         setTransactionStatus(TransactionStatus.PendingOnChain)
-        await tx.wait()
+
+        const txReceipt = (await (typeof tx === "string"
+          ? library.waitForTransaction(tx)
+          : tx.wait())) as TransactionReceipt
+
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
-          onSuccess(tx)
+          onSuccess(txReceipt)
         }
-        return tx
+        return txReceipt
       } catch (error: any) {
         setTransactionStatus(
           isWalletRejectionError(error)
@@ -51,7 +68,7 @@ export const useSendTransactionFromFn = <
         } else {
           openModal(ModalType.TransactionFailed, {
             transactionHash: error?.transaction?.hash,
-            error,
+            error: error?.message,
             // TODO: how to check if an error is expandable?
             isExpandableError: true,
           })
@@ -67,7 +84,7 @@ export const useSendTransactionFromFn = <
 export const useSendTransaction = (
   contract: Contract,
   methodName: string,
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
+  onSuccess?: (tx: TransactionReceipt) => void | Promise<void>,
   onError?: (error: any) => void | Promise<void>
 ) => {
   return useSendTransactionFromFn(contract[methodName], onSuccess, onError)
