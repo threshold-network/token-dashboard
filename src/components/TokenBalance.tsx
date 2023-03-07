@@ -9,6 +9,7 @@ import {
   TextProps,
   useColorModeValue,
   Tooltip,
+  BoxProps,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import Icon from "./Icon"
@@ -30,7 +31,7 @@ export interface TokenBalanceProps {
   higherPrecision?: number
 }
 
-export const InlineTokenBalance: FC<TokenBalanceProps> = ({
+export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
   withSymbol,
   tokenDecimals,
   tokenFormat,
@@ -38,6 +39,8 @@ export const InlineTokenBalance: FC<TokenBalanceProps> = ({
   tokenSymbol,
   precision = 2,
   higherPrecision = 6,
+  withHigherPrecision,
+  ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
     return formatTokenAmount(
@@ -59,7 +62,7 @@ export const InlineTokenBalance: FC<TokenBalanceProps> = ({
 
   return (
     <Tooltip label={_tokenAmountWithHigherPrecision} placement="top">
-      <Box as="span">{`${_tokenAmount}${
+      <Box as="span" {...restProps}>{`${_tokenAmount}${
         withSymbol ? ` ${tokenSymbol}` : ""
       }`}</Box>
     </Tooltip>
