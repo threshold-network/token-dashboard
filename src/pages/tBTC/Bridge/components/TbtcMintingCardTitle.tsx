@@ -10,10 +10,20 @@ const mintTypeToText: Record<TbtcMintingType, string> = {
   [TbtcMintingType.unmint]: "unminting process",
 }
 
-export const TbtcMintingCardTitle: FC<{
-  previousStep?: MintingStep
-  onPreviousStepClick: (previosuStep: MintingStep) => void
-}> = ({ previousStep, onPreviousStepClick }) => {
+type Props =
+  | {
+      previousStep?: MintingStep
+      onPreviousStepClick: (previosuStep: MintingStep) => void
+    }
+  | {
+      previousStep?: never
+      onPreviousStepClick?: never
+    }
+
+export const TbtcMintingCardTitle: FC<Props> = ({
+  previousStep,
+  onPreviousStepClick,
+}) => {
   const { mintingType } = useTbtcState()
 
   return (
