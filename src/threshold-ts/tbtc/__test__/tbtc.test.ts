@@ -18,7 +18,7 @@ import {
   isPublicKeyHashTypeAddress,
   isValidBtcAddress,
 } from "../../utils"
-import { ITBTC, TBTC } from ".."
+import { BridgeTxHistory, ITBTC, TBTC } from ".."
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
 import {
   MockBitcoinClient,
@@ -40,11 +40,17 @@ import { Address } from "@keep-network/tbtc-v2.ts/dist/src/ethereum"
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTCVault.json", () => ({
   address: "0x1e742E11389e5590a1a0c8e59a119Be5F73BFdf6",
   abi: [],
+  receipt: {
+    blockNumber: 8368598,
+  },
 }))
 
 jest.mock("@keep-network/tbtc-v2/artifacts/Bridge.json", () => ({
   address: "0xF0d5D8312d8B3fd5b580DC46A8154c45aAaF47D2",
   abi: [],
+  receipt: {
+    blockNumber: 8368597,
+  },
 }))
 
 jest.mock("@keep-network/tbtc-v2/artifacts/TBTC.json", () => ({
@@ -611,15 +617,17 @@ describe("TBTC test", () => {
 
   describe("bridgeTxHistory", () => {
     const mockDepositor = "0xCDAfb5A23A1F1c6f80706Cc101BCcf4b9A1A3e3B"
+    const mockDepositKey =
+      "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6"
+    const mockTxHash =
+      "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9"
     const mockRevealedDeposit = {
       amount: "1000000",
-      depositKey:
-        "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6",
+      depositKey: mockDepositKey,
       fundingOutputIndex: 0,
       fundingTxHash:
         "0xf178ee999b6550ad172b94683e0497f77d91fc183390cbffecff9cb585961b76",
-      txHash:
-        "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9",
+      txHash: mockTxHash,
       walletPublicKeyHash: "0x56988a974575d42db330193acd7a8d9efc67f830",
     }
     const mockEstimatedAmountToMint = BigNumber.from("9975010000000000")
@@ -627,41 +635,67 @@ describe("TBTC test", () => {
     const expectedBridgeHistory = [
       {
         amount: "9975010000000000",
-        depositKey:
-          "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6",
+        depositKey: mockDepositKey,
         status: "PENDING",
-        txHash:
-          "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9",
+        txHash: mockTxHash,
       },
     ]
 
     let mockFindAllRevealedDepositsFunction: jest.SpyInstance
     let mockFindAllMintedDepositsFunction: jest.SpyInstance
     let mockCalculateEstimatedAmountToMintForRevealedDepositsFunction: jest.SpyInstance
+    let mockFindAllCancelledDepositsFunction: jest.SpyInstance
+
+    let result: BridgeTxHistory[]
 
     beforeEach(async () => {
       mockFindAllRevealedDepositsFunction = jest.spyOn(
         tBTC as any,
         "_findAllRevealedDeposits"
       )
-      mockFindAllRevealedDepositsFunction.mockReturnValue([mockRevealedDeposit])
+      mockFindAllRevealedDepositsFunction.mockResolvedValue([
+        mockRevealedDeposit,
+      ])
 
       mockFindAllMintedDepositsFunction = jest.spyOn(
         tBTC as any,
         "_findAllMintedDeposits"
       )
-      mockFindAllMintedDepositsFunction.mockReturnValue([
-        mockRevealedDeposit.depositKey,
-      ])
+      mockFindAllMintedDepositsFunction.mockResolvedValue([])
 
       mockCalculateEstimatedAmountToMintForRevealedDepositsFunction =
         jest.spyOn(
           tBTC as any,
           "_calculateEstimatedAmountToMintForRevealedDeposits"
         )
-      mockCalculateEstimatedAmountToMintForRevealedDepositsFunction.mockReturnValue(
-        new Map([[mockRevealedDeposit.depositKey, mockEstimatedAmountToMint]])
+      mockCalculateEstimatedAmountToMintForRevealedDepositsFunction.mockResolvedValue(
+        new Map([[mockDepositKey, mockEstimatedAmountToMint]])
       )
+
+      mockFindAllCancelledDepositsFunction = jest.spyOn(
+        tBTC as any,
+        "_findAllCancelledDeposits"
+      )
+      mockFindAllCancelledDepositsFunction.mockResolvedValue([])
+
+      result = await tBTC.bridgeTxHistory(mockDepositor)
+    })
+
+    test("should create the bridge history properly", () => {
+      expect(mockFindAllRevealedDepositsFunction).toHaveBeenCalledWith(
+        mockDepositor
+      )
+      expect(mockFindAllMintedDepositsFunction).toHaveBeenCalledWith(
+        mockDepositor,
+        [mockDepositKey]
+      )
+      expect(
+        mockCalculateEstimatedAmountToMintForRevealedDepositsFunction
+      ).toHaveBeenCalledWith([mockDepositKey])
+      expect(mockFindAllCancelledDepositsFunction).toHaveBeenCalledWith([
+        mockDepositKey,
+      ])
+      expect(result).toEqual(expectedBridgeHistory)
     })
   })
 
