@@ -609,6 +609,62 @@ describe("TBTC test", () => {
     })
   })
 
+  describe("bridgeTxHistory", () => {
+    const mockDepositor = "0xCDAfb5A23A1F1c6f80706Cc101BCcf4b9A1A3e3B"
+    const mockRevealedDeposit = {
+      amount: "1000000",
+      depositKey:
+        "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6",
+      fundingOutputIndex: 0,
+      fundingTxHash:
+        "0xf178ee999b6550ad172b94683e0497f77d91fc183390cbffecff9cb585961b76",
+      txHash:
+        "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9",
+      walletPublicKeyHash: "0x56988a974575d42db330193acd7a8d9efc67f830",
+    }
+    const mockEstimatedAmountToMint = BigNumber.from("9975010000000000")
+
+    const expectedBridgeHistory = [
+      {
+        amount: "9975010000000000",
+        depositKey:
+          "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6",
+        status: "PENDING",
+        txHash:
+          "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9",
+      },
+    ]
+
+    let mockFindAllRevealedDepositsFunction: jest.SpyInstance
+    let mockFindAllMintedDepositsFunction: jest.SpyInstance
+    let mockCalculateEstimatedAmountToMintForRevealedDepositsFunction: jest.SpyInstance
+
+    beforeEach(async () => {
+      mockFindAllRevealedDepositsFunction = jest.spyOn(
+        tBTC as any,
+        "_findAllRevealedDeposits"
+      )
+      mockFindAllRevealedDepositsFunction.mockReturnValue([mockRevealedDeposit])
+
+      mockFindAllMintedDepositsFunction = jest.spyOn(
+        tBTC as any,
+        "_findAllMintedDeposits"
+      )
+      mockFindAllMintedDepositsFunction.mockReturnValue([
+        mockRevealedDeposit.depositKey,
+      ])
+
+      mockCalculateEstimatedAmountToMintForRevealedDepositsFunction =
+        jest.spyOn(
+          tBTC as any,
+          "_calculateEstimatedAmountToMintForRevealedDeposits"
+        )
+      mockCalculateEstimatedAmountToMintForRevealedDepositsFunction.mockReturnValue(
+        new Map([[mockRevealedDeposit.depositKey, mockEstimatedAmountToMint]])
+      )
+    })
+  })
+
   describe("buildDepositKey", () => {
     let buildDepositKeyResult: string
     const mockDepositKey = "101010"
