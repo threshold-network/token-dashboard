@@ -16,10 +16,10 @@ export const MintingProcessResource: FC<MintingProcessResourceProps> = ({
 }) => {
   return (
     <>
-      <Box bg="yellow.50" p="4" mt="auto">
+      <Box bg="yellow.50" p="4" m="-1rem" mr="-1.5rem" mt="auto">
         <Image src={codeSlashIllustration} mx="auto" />
       </Box>
-      <H6 mt="4" color="gray.800">
+      <H6 mt="8" color="gray.800">
         {title}
       </H6>
       <BodySm mt="1" color="gray.500" mb="8">
