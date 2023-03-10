@@ -28,7 +28,7 @@ import {
   SkeletonText,
   SkeletonCircle,
 } from "@threshold-network/components"
-import { IoTime as TimeIcon } from "react-icons/all"
+import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import {
   Timeline,
@@ -364,7 +364,21 @@ const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
       {items.map((item) => (
         <TimelineItem key={item.id} status={item.status}>
           <TimelineBreakpoint>
-            <TimelineDot />
+            <TimelineDot position="relative">
+              {item.status === "active" && (
+                <Icon
+                  as={IoCheckmarkSharp}
+                  position="absolute"
+                  color="white"
+                  w="22px"
+                  h="22px"
+                  m="auto"
+                  left="0"
+                  right="0"
+                  textAlign="center"
+                />
+              )}
+            </TimelineDot>
             <TimelineConnector />
           </TimelineBreakpoint>
           <TimelineContent>{item.text}</TimelineContent>

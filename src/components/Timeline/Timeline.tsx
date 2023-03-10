@@ -6,6 +6,7 @@ import {
   StylesProvider,
   useMultiStyleConfig,
   useStyles,
+  BoxProps,
 } from "@threshold-network/components"
 
 export type TimelineItemStatus = "active" | "semi-active" | "inactive"
@@ -51,11 +52,12 @@ export const TimelineBreakpoint: FC = ({ children }) => {
   )
 }
 
-export const TimelineDot = () => {
+export const TimelineDot: FC<BoxProps> = ({ children, ...restProps }) => {
   const styles = useStyles()
 
   return (
-    <Box className="breakpoint__dot" __css={styles.itemDot}>
+    <Box className="breakpoint__dot" __css={styles.itemDot} {...restProps}>
+      {children}
       <Box className="dot__background" />
     </Box>
   )
