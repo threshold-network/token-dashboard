@@ -1,18 +1,19 @@
-import { FC, useMemo } from "react"
+import {
+  FC,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  createContext,
+  useContext,
+} from "react"
 import { useParams } from "react-router"
-import { PageComponent } from "../../../types"
-import { useAppDispatch } from "../../../hooks/store"
-import { useThreshold } from "../../../contexts/ThresholdContext"
-import { useTbtcState } from "../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
 import {
   Badge,
   BodyLg,
   BodyMd,
-  BodySm,
   Box,
   Card,
-  CircularProgress,
   Flex,
   HStack,
   LabelSm,
@@ -22,9 +23,12 @@ import {
   Stack,
   StackDivider,
   Icon,
-  Image,
-  H6,
+  Divider,
+  H5,
+  SkeletonText,
+  SkeletonCircle,
 } from "@threshold-network/components"
+import { IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import {
   Timeline,
@@ -35,20 +39,272 @@ import {
   TimelineItem,
   TimelineItemStatus,
 } from "../../../components/Timeline"
-import { CheckCircleIcon } from "@chakra-ui/icons"
-import { IoTime as TimeIcon } from "react-icons/all"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
 } from "../../../components/ViewInBlockExplorer"
+import ButtonLink from "../../../components/ButtonLink"
+import { TBTCTokenContractLink } from "../../../components/tBTC"
+import { Step1, Step2, Step3, Step4 } from "./components/DepositDetailsStep"
+import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
+import {
+  MintingProcessResource,
+  MintingProcessResourceProps,
+} from "./components/MintingProcessResource"
+import { useAppDispatch } from "../../../hooks/store"
+import { useTbtcState } from "../../../hooks/useTbtcState"
+import {
+  useFetchDepositDetails,
+  DepositData,
+  useSubscribeToOptimisticMintingRequestedEventBase,
+  useSubscribeToOptimisticMintingFinalizedEventBase,
+} from "../../../hooks/tbtc"
+import { tbtcSlice } from "../../../store/tbtc"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
-import codeSlashIllustration from "../../../static/images/code-slash.svg"
-import Link from "../../../components/Link"
+import { PageComponent } from "../../../types"
+import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
+
+export const DepositDetails: PageComponent = () => {
+  const { depositKey } = useParams()
+  const dispatch = useAppDispatch()
+  const { txConfirmations } = useTbtcState()
+  const { isFetching, data, error } = useFetchDepositDetails(depositKey)
+  const [inProgressStep, setInProgressStep] =
+    useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
+  const { mintingRequestedTxHash, mintingFinalizedTxHash } =
+    useSubscribeToOptimisticMintingEvents(depositKey)
+
+  // Extract deposit details values to use them as a dependency in hook
+  // dependency array.
+  const btcDepositTxHash = data?.btcTxHash
+  const amount = data?.amount ?? "0"
+  const confirmations = data?.confirmations
+  const requiredConfirmations = data?.requiredConfirmations
+  const depositRevealedTxHash = data?.depositRevealedTxHash
+  const optimisticMintingRequestedTxHash =
+    data?.optimisticMintingRequestedTxHash
+  const optimisticMintingFinalizedTxHash =
+    data?.optimisticMintingFinalizedTxHash
+
+  useEffect(() => {
+    if (
+      !!btcDepositTxHash &&
+      confirmations !== undefined &&
+      requiredConfirmations !== undefined &&
+      confirmations < requiredConfirmations
+    ) {
+      dispatch(
+        tbtcSlice.actions.fetchUtxoConfirmations({
+          utxo: { transactionHash: btcDepositTxHash, value: amount },
+        })
+      )
+    }
+  }, [dispatch, btcDepositTxHash, amount, confirmations, requiredConfirmations])
+
+  useEffect(() => {
+    if (!confirmations || !requiredConfirmations) return
+
+    setInProgressStep(
+      getInProgressStep({
+        confirmations,
+        requiredConfirmations,
+        optimisticMintingFinalizedTxHash,
+        optimisticMintingRequestedTxHash,
+      })
+    )
+  }, [
+    confirmations,
+    requiredConfirmations,
+    optimisticMintingFinalizedTxHash,
+    optimisticMintingRequestedTxHash,
+  ])
+
+  const transactions: {
+    label: string
+    txHash?: string
+    chain: ViewInBlockExplorerChain
+  }[] = [
+    { label: "Bitcoin Deposit", txHash: btcDepositTxHash, chain: "bitcoin" },
+    { label: "Reveal", txHash: depositRevealedTxHash, chain: "ethereum" },
+    {
+      label: "Minting Initiation",
+      txHash: data?.optimisticMintingRequestedTxHash ?? mintingRequestedTxHash,
+      chain: "ethereum",
+    },
+    {
+      label: "Minting completion",
+      txHash: data?.optimisticMintingFinalizedTxHash ?? mintingFinalizedTxHash,
+      chain: "ethereum",
+    },
+  ]
+
+  const mainCardProps =
+    inProgressStep === "completed"
+      ? {
+          backgroundImage: mainCardBackground,
+          backgroundPosition: "bottom -10px right",
+          backgroundRepeat: "no-repeat",
+        }
+      : {}
+
+  return (
+    <DepositDetailsPageContext.Provider
+      value={{
+        step: inProgressStep,
+        updateStep: setInProgressStep,
+        btcTxHash: btcDepositTxHash,
+        optimisticMintingRequestedTxHash:
+          optimisticMintingRequestedTxHash ?? mintingRequestedTxHash,
+        optimisticMintingFinalizedTxHash:
+          optimisticMintingFinalizedTxHash ?? mintingFinalizedTxHash,
+        confirmations: confirmations || txConfirmations,
+        requiredConfirmations: requiredConfirmations!,
+      }}
+    >
+      <Card {...mainCardProps}>
+        {(isFetching || !data) && !error && <DepositDetailsPageSkeleton />}
+        {error && <>{error}</>}
+        {!isFetching && !!data && !error && (
+          <>
+            <Stack
+              direction={{
+                base: "column",
+                xl: "row",
+              }}
+              divider={<StackDivider />}
+              h="100%"
+              spacing={4}
+            >
+              <Box mb="8">
+                <TbtcMintingCardTitle />
+                <Flex mb="4">
+                  <BodyLg>
+                    <Box as="span" fontWeight="600" color="brand.500">
+                      {inProgressStep === "completed" ? "Minted" : "Minting"}
+                    </Box>
+                    {inProgressStep !== "completed" && ` - In progress...`}
+                  </BodyLg>{" "}
+                  <InlineTokenBalance
+                    tokenAmount={amount || "0"}
+                    tokenDecimals={8}
+                    tokenSymbol="tBTC"
+                    withSymbol
+                    ml="auto"
+                  />
+                </Flex>
+                <DepositDetailsTimeline
+                  // isCompleted
+                  inProgressStep={inProgressStep}
+                />
+                <StepSwitcher />
+              </Box>
+              <Flex maxW="33%" direction="column">
+                <LabelSm mb="8">Transaction History</LabelSm>
+                <Badge
+                  size="sm"
+                  colorScheme="yellow"
+                  variant="solid"
+                  display="flex"
+                  alignItems="center"
+                  alignSelf="flex-start"
+                  mb="4"
+                >
+                  <Icon as={TimeIcon} /> ~3 hours minting time
+                </Badge>
+                <List color="gray.500" spacing="2">
+                  {transactions
+                    .filter((item) => !!item.txHash)
+                    .map((item) => (
+                      <ListItem key={item.txHash}>
+                        {item.label}{" "}
+                        <ViewInBlockExplorer
+                          id={item.txHash!}
+                          type={ExplorerDataType.TRANSACTION}
+                          chain={item.chain}
+                          text="transaction"
+                        />
+                        .
+                      </ListItem>
+                    ))}
+                </List>
+                {inProgressStep !== "completed" && (
+                  <MintingProcessResource
+                    {...stepToResourceData[inProgressStep]}
+                  />
+                )}
+              </Flex>
+            </Stack>
+            {inProgressStep !== "completed" && (
+              <>
+                <Divider />
+                <HStack mt="8" spacing="16" alignItems="center">
+                  <BodyLg>
+                    Eager to start a new mint while waiting for this one? You
+                    can now.
+                  </BodyLg>
+                  <ButtonLink size="lg" to="/tBTC/mint">
+                    New Mint
+                  </ButtonLink>
+                </HStack>
+              </>
+            )}
+          </>
+        )}
+      </Card>
+    </DepositDetailsPageContext.Provider>
+  )
+}
+
+DepositDetails.route = {
+  path: "deposit/:depositKey",
+  index: false,
+  isPageEnabled: true,
+}
+
+const DepositDetailsPageContext = createContext<
+  | (Pick<
+      DepositData,
+      "optimisticMintingRequestedTxHash" | "optimisticMintingFinalizedTxHash"
+    > & {
+      btcTxHash?: string
+      confirmations?: number
+      requiredConfirmations?: number
+      updateStep: (step: DepositDetailsTimelineStep) => void
+      step: DepositDetailsTimelineStep
+    })
+  | undefined
+>(undefined)
+
+const useDepositDetailsPageContext = () => {
+  const context = useContext(DepositDetailsPageContext)
+
+  if (!context) {
+    throw new Error(
+      "DepositDetailsPageContext used outside of the DepositDetailsPage component."
+    )
+  }
+  return context
+}
+
+const DepositDetailsPageSkeleton: FC = () => {
+  return (
+    <>
+      <SkeletonText noOfLines={1} skeletonHeight={6} />
+
+      <Skeleton height="80px" mt="4" />
+
+      <SkeletonText noOfLines={1} width="40%" skeletonHeight={6} mt="8" />
+      <SkeletonCircle mt="4" size="160px" mx="auto" />
+      <SkeletonText mt="4" noOfLines={4} spacing={2} skeletonHeight={4} />
+    </>
+  )
+}
 
 type DepositDetailsTimelineStep =
   | "bitcoin-confirmations"
   | "minting-initialized"
   | "guardian-check"
   | "minting-completed"
+  | "completed"
 
 type DepositDetailsTimelineItem = {
   id: DepositDetailsTimelineStep
@@ -78,21 +334,15 @@ const depositTimelineItems: DepositDetailsTimelineItem[] = [
     status: "inactive",
   },
 ]
-type DepositDetailsTimelineProps =
-  | {
-      isCompleted?: never
-      inProgressStep: DepositDetailsTimelineStep
-    }
-  | {
-      inProgressStep?: never
-      isCompleted: true
-    }
+type DepositDetailsTimelineProps = {
+  inProgressStep: DepositDetailsTimelineStep
+}
 
 const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
   inProgressStep,
-  isCompleted,
 }) => {
   const items = useMemo<DepositDetailsTimelineItem[]>(() => {
+    const isCompleted = inProgressStep === "completed"
     const inProgressItemIndex = depositTimelineItems.findIndex(
       (item) => item.id === inProgressStep
     )
@@ -124,222 +374,166 @@ const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
   )
 }
 
-type StepTemplateCommonProps = {
-  title: string
-  subtitle: string
-  txHash: string
-  chain: ViewInBlockExplorerChain
-  progressBarColor: string
-  progressBarLabel?: string | JSX.Element
-}
-type StepTemplateConditionalProps =
-  | {
-      isIndeterminate: true
-      progressBarValue: never
-      progressBarMaxValue: never
-    }
-  | {
-      isIndeterminate?: false
-      progressBarValue: number
-      progressBarMaxValue: number
-    }
+const getInProgressStep = (
+  depositDetails?: Omit<
+    DepositData,
+    "depositRevealedTxHash" | "btcTxHash" | "amount"
+  >
+) => {
+  let step: DepositDetailsTimelineStep = "bitcoin-confirmations"
+  if (!depositDetails) return step
 
-type StepTemplateProps = StepTemplateCommonProps & StepTemplateConditionalProps
-
-const StepTemplate: FC<StepTemplateProps> = ({
-  title,
-  subtitle,
-  txHash,
-  chain,
-  progressBarLabel,
-  progressBarValue,
-  progressBarMaxValue,
-  progressBarColor,
-  isIndeterminate,
-}) => {
-  return (
-    <Flex flexDirection="column" alignItems="center">
-      <BodyLg color="gray.700" mt="8" alignSelf="flex-start">
-        {title}
-      </BodyLg>
-
-      <CircularProgress
-        alignSelf="center"
-        mt="6"
-        value={progressBarValue}
-        color={progressBarColor}
-        trackColor="gray.100"
-        max={progressBarMaxValue}
-        size="160px"
-        thickness="8px"
-        isIndeterminate={isIndeterminate}
-      />
-      {progressBarLabel}
-      <BodyMd textAlign="center" mt="6" px="6">
-        {subtitle}
-      </BodyMd>
-      <BodySm mt="9" color="gray.500" textAlign="center">
-        See transaction on{" "}
-        <ViewInBlockExplorer
-          text={chain === "bitcoin" ? "blockstream" : "etherscan"}
-          chain={chain}
-          id={txHash}
-          type={ExplorerDataType.TRANSACTION}
-        />
-      </BodySm>
-    </Flex>
-  )
-}
-
-const BitcoinConfirmationsSummary: FC<{
-  minConfirmationsNeeded: number
-  txConfirmations: number
-}> = ({ minConfirmationsNeeded, txConfirmations }) => {
-  const areConfirmationsLoaded = txConfirmations !== undefined
-  const checkmarkColor =
-    txConfirmations &&
-    minConfirmationsNeeded &&
-    txConfirmations >= minConfirmationsNeeded
-      ? "brand.500"
-      : "gray.500"
-  return (
-    <HStack mt={8}>
-      <CheckCircleIcon w={4} h={4} color={checkmarkColor} />{" "}
-      <BodySm color={"gray.500"}>
-        <Skeleton isLoaded={areConfirmationsLoaded} display="inline-block">
-          {txConfirmations > minConfirmationsNeeded
-            ? minConfirmationsNeeded
-            : txConfirmations}
-          {"/"}
-          {minConfirmationsNeeded}
-        </Skeleton>
-        {"  Bitcoin Network Confirmations"}
-      </BodySm>
-    </HStack>
-  )
-}
-
-export const DepositDetails: PageComponent = () => {
-  const { depositKey } = useParams()
-  console.log("desposit key", depositKey)
-
-  const dispatch = useAppDispatch()
-  const threshold = useThreshold()
   const {
-    tBTCMintAmount,
-    utxo,
-    depositRevealedTxHash,
+    confirmations,
+    requiredConfirmations,
     optimisticMintingRequestedTxHash,
     optimisticMintingFinalizedTxHash,
-  } = useTbtcState()
-  const amount = "1335600000000000000"
+  } = depositDetails
 
-  const btcDepositTxHash = "0x0" // utxo.transactionHash.toString()
-  // const tbtcTokenAddress = useTBTCTokenAddress()
+  if (confirmations >= requiredConfirmations) {
+    step = "minting-initialized"
+  } else if (optimisticMintingRequestedTxHash) {
+    step = "guardian-check"
+  } else if (optimisticMintingFinalizedTxHash) {
+    step = "minting-initialized"
+  }
 
-  // const onDismissButtonClick = () => {
-  //   onPreviousStepClick(MintingStep.ProvideData)
-  // }
-
-  // const transactionHash = utxo.transactionHash.toString()
-  // const value = utxo.value.toString()
-
-  // useEffect(() => {
-  //   dispatch(
-  //     tbtcSlice.actions.fetchUtxoConfirmations({
-  //       utxo: { transactionHash, value },
-  //     })
-  //   )
-  // }, [dispatch, transactionHash, value])
-
-  const minConfirmationsNeeded = 6
-  // threshold.tbtc.minimumNumberOfConfirmationsNeeded(utxo.value)
-  const txConfirmations = 3
-
-  return (
-    <Card>
-      <Stack
-        direction={{
-          base: "column",
-          xl: "row",
-        }}
-        divider={<StackDivider />}
-        h="100%"
-        spacing={4}
-      >
-        <Box>
-          <TbtcMintingCardTitle />
-          <Flex mb="4">
-            <BodyLg>
-              <Box as="span" fontWeight="600" color="brand.500">
-                Minting{" "}
-              </Box>
-              - In progress...
-            </BodyLg>{" "}
-            <InlineTokenBalance
-              tokenAmount={amount}
-              tokenSymbol="tBTC"
-              withSymbol
-              ml="auto"
-            />
-          </Flex>
-          <DepositDetailsTimeline
-            // isCompleted
-            inProgressStep="bitcoin-confirmations"
-          />
-          <StepTemplate
-            title="Waiting for the Bitcoin Network Confirmations..."
-            subtitle="The Bitcoin Deposit transaction needs to get 6 confirmations on the Bitcoin Network before the minting is initialised."
-            chain="bitcoin"
-            txHash={btcDepositTxHash}
-            progressBarColor="brand.500"
-            progressBarValue={3}
-            progressBarMaxValue={6}
-            progressBarLabel={
-              <BitcoinConfirmationsSummary
-                minConfirmationsNeeded={minConfirmationsNeeded}
-                txConfirmations={txConfirmations}
-              />
-            }
-          />
-        </Box>
-        <Flex maxW="33%" direction="column">
-          <LabelSm mb="8">Transaction History</LabelSm>
-          <Badge
-            size="sm"
-            colorScheme="yellow"
-            variant="solid"
-            display="flex"
-            alignItems="center"
-            mb="4"
-          >
-            <Icon as={TimeIcon} /> ~3 hours minting time
-          </Badge>
-          <List color="gray.500">
-            <ListItem>Bitcoin Deposit transaction</ListItem>
-            <ListItem>Reveal transaction</ListItem>
-          </List>
-          <Box bg="yellow.50" p="4" mt="auto">
-            <Image src={codeSlashIllustration} mx="auto" />
-          </Box>
-          <H6 mt="4" color="gray.800">
-            6/6 Bitcoin Confirmations Requirement
-          </H6>
-          <BodySm mt="1" color="gray.500">
-            Amazing body copy of the new update, feature, code or design
-            improvement.{" "}
-            <Link isExternal href="TODO">
-              Read more
-            </Link>
-          </BodySm>
-        </Flex>
-      </Stack>
-    </Card>
-  )
+  return step
 }
 
-DepositDetails.route = {
-  path: "deposit/:depositKey",
-  index: false,
-  isPageEnabled: true,
+const stepToNextStep: Record<
+  Exclude<DepositDetailsTimelineStep, "completed">,
+  DepositDetailsTimelineStep
+> = {
+  "bitcoin-confirmations": "minting-initialized",
+  "minting-initialized": "guardian-check",
+  "guardian-check": "minting-completed",
+  "minting-completed": "completed",
+}
+
+const StepSwitcher: FC = () => {
+  const {
+    step,
+    confirmations,
+    requiredConfirmations,
+    optimisticMintingRequestedTxHash,
+    optimisticMintingFinalizedTxHash,
+    btcTxHash,
+    updateStep,
+  } = useDepositDetailsPageContext()
+
+  const onComplete = useCallback(() => {
+    if (step === "completed") return
+
+    updateStep(stepToNextStep[step])
+  }, [step])
+
+  switch (step) {
+    default:
+    case "bitcoin-confirmations":
+      return (
+        <Step1
+          txHash={btcTxHash}
+          confirmations={confirmations}
+          requiredConfirmations={requiredConfirmations}
+          onComplete={onComplete}
+        />
+      )
+    case "minting-initialized":
+      return (
+        <Step2
+          txHash={optimisticMintingRequestedTxHash}
+          onComplete={onComplete}
+        />
+      )
+    case "guardian-check":
+      return (
+        <Step3
+          txHash={optimisticMintingFinalizedTxHash}
+          onComplete={onComplete}
+        />
+      )
+    case "minting-completed":
+      return <Step4 onComplete={onComplete} />
+    case "completed":
+      return (
+        <>
+          <H5 mt="10">Success!</H5>
+          <BodyMd mt="8">
+            Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
+          </BodyMd>
+          <ButtonLink size="lg" mt="12" to="/tBTC" isFullWidth>
+            New mint
+          </ButtonLink>
+        </>
+      )
+  }
+}
+
+const useSubscribeToOptimisticMintingEvents = (depositKey?: string) => {
+  const [mintingRequestedTxHash, setMintingRequestedTxHash] = useState("")
+  const [mintingFinalizedTxHash, setMintingFinalizedTxHashTxHash] = useState("")
+
+  useSubscribeToOptimisticMintingRequestedEventBase(
+    (
+      minter,
+      depositKeyEventParam,
+      depositor,
+      amount,
+      fundingTxHash,
+      fundingOutputIndex,
+      event
+    ) => {
+      const depositKeyFromEvent = depositKeyEventParam.toHexString()
+      if (depositKeyFromEvent === depositKey) {
+        setMintingRequestedTxHash(event.transactionHash)
+      }
+    },
+    undefined,
+    true
+  )
+
+  useSubscribeToOptimisticMintingFinalizedEventBase(
+    (minter, depositKeyEventParam, depositor, optimisticMintingDebt, event) => {
+      const depositKeyFromEvent = depositKeyEventParam.toHexString()
+      if (depositKeyFromEvent === depositKey) {
+        setMintingFinalizedTxHashTxHash(event.transactionHash)
+      }
+    },
+    undefined,
+    true
+  )
+
+  return { mintingRequestedTxHash, mintingFinalizedTxHash }
+}
+
+// TODO: Update link and copy for subtitle!
+const stepToResourceData: Record<
+  Exclude<DepositDetailsTimelineStep, "completed">,
+  MintingProcessResourceProps
+> = {
+  "bitcoin-confirmations": {
+    title: "Bitcoin Confirmations Requirement",
+    subtitle:
+      "Amazing body copy of the new update, feature, code or design improvement.",
+    link: "TODO",
+  },
+  "minting-initialized": {
+    title: "Minters, Guardians and a secure tBTC",
+    subtitle:
+      "Amazing body copy of the new update, feature, code or design improvement.",
+    link: "TODO",
+  },
+  "guardian-check": {
+    title: "Minters and Guardians in Optimistic Minting",
+    subtitle:
+      "Amazing body copy of the new update, feature, code or design improvement.",
+    link: "TODO",
+  },
+  "minting-completed": {
+    title: "Minters and Guardians in Optimistic Minting",
+    subtitle:
+      "Amazing body copy of the new update, feature, code or design improvement.",
+    link: "TODO",
+  },
 }
