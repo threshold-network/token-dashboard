@@ -37,6 +37,7 @@ import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
+import { BlockTag } from "@ethersproject/abstract-provider"
 
 export enum BridgeHistoryStatus {
   PENDING = "PENDING",
@@ -58,6 +59,7 @@ interface RevealedDepositEvent {
   fundingOutputIndex: string
   depositKey: string
   txHash: string
+  blockNumber: BlockTag
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
@@ -195,6 +197,8 @@ export interface ITBTC {
     depositOutputIndex: number,
     txHashByteOrder?: BitcoinTransactionHashByteOrder
   ): string
+
+  findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
 }
 
 export class TBTC implements ITBTC {
@@ -455,7 +459,7 @@ export class TBTC implements ITBTC {
 
   bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
     // We can assume that all revealed deposits have `PENDING` status.
-    const revealedDeposits = await this._findAllRevealedDeposits(depositor)
+    const revealedDeposits = await this.findAllRevealedDeposits(depositor)
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
 
     const mintedDepositEvents = await this._findAllMintedDeposits(
@@ -506,7 +510,7 @@ export class TBTC implements ITBTC {
     })
   }
 
-  private _findAllRevealedDeposits = async (
+  findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
     const deposits = await getContractPastEvents(this._bridgeContract, {
@@ -532,6 +536,7 @@ export class TBTC implements ITBTC {
           fundingOutputIndex,
           depositKey,
           txHash: deposit.transactionHash,
+          blockNumber: deposit.blockNumber,
         }
       })
       .reverse()
