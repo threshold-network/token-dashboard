@@ -14,13 +14,6 @@ interface SentryUIElement {
 
 export const init = () => {
   const dsn = getEnvVariable(EnvVariable.SENTRY_DSN)
-  const element: SentryUIElement = {
-    name: undefined,
-    type: undefined,
-    url: undefined,
-    class: undefined,
-    id: undefined,
-  }
 
   Sentry.init({
     dsn: dsn,
@@ -28,6 +21,13 @@ export const init = () => {
     tracesSampleRate: 0.5,
     beforeBreadcrumb(breadcrumb, hint) {
       if (breadcrumb.category === "ui.click") {
+        const element: SentryUIElement = {
+          name: undefined,
+          type: undefined,
+          url: undefined,
+          class: undefined,
+          id: undefined,
+        }
         const { target } = hint?.event
 
         if (target) {
