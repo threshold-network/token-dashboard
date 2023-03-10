@@ -12,6 +12,7 @@ import { Radio } from "./Radio"
 import { AnnouncementBanner } from "./AnnouncementBanner"
 import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
 import { Timeline } from "./Timeline"
+import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -38,6 +39,7 @@ const index = extendTheme({
     Radio,
     Checkbox,
     Timeline,
+    DotsLoadingIndicator,
   },
 })
 
