@@ -2,24 +2,27 @@ import { ComponentProps, FC } from "react"
 import {
   Badge,
   BodyMd,
-  BodySm,
   Card,
+  HStack,
   Image,
   LabelSm,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
+  List,
+  ListItem,
   useColorModeValue,
+  Box,
+  LinkBox,
+  LinkOverlay,
 } from "@threshold-network/components"
-import { BridgeHistoryStatus } from "../../../../threshold-ts/tbtc"
+import {
+  BridgeHistoryStatus,
+  BridgeTxHistory,
+} from "../../../../threshold-ts/tbtc"
 import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
+import Link from "../../../../components/Link"
 
 const bridgeTxHistoryStatusToBadgeProps: Record<
   BridgeHistoryStatus,
@@ -42,6 +45,8 @@ const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
       variant="subtle"
       {...bridgeTxHistoryStatusToBadgeProps[status]}
       size="sm"
+      display="flex"
+      alignItems="center"
     >
       {status}
     </Badge>
@@ -54,14 +59,54 @@ export const TransactionHistoryCard: FC<ComponentProps<typeof Card>> = ({
 }) => {
   return (
     <Card {...props} minH="530px">
-      <LabelSm mb="5">tx history</LabelSm>
+      <LabelSm mb="5">my activity</LabelSm>
       {children}
     </Card>
   )
 }
 
-export const TransactionHistoryTable: FC<{
-  data: { amount: string; status: BridgeHistoryStatus; txHash: string }[]
+const ActivityItemWrapper: FC = ({ children }) => (
+  <LinkBox
+    as={ListItem}
+    display="flex"
+    justifyContent="space-between"
+    aligItems="center"
+    borderColor="gray.100"
+    borderWidth="1px"
+    borderStyle="solid"
+    borderRadius="6px"
+    py="4"
+    pl="6"
+    pr="3"
+    mx="-0.75rem"
+  >
+    {children}
+  </LinkBox>
+)
+
+const ActivityItem: FC<BridgeTxHistory> = ({ amount, status, depositKey }) => {
+  return (
+    <ActivityItemWrapper>
+      <LinkOverlay
+        as={Link}
+        textDecoration="none"
+        _hover={{ textDecoration: "none" }}
+        color="inherit"
+        to={`/tBTC/mint/deposit/${depositKey}`}
+      >
+        <InlineTokenBalance tokenAmount={amount} />
+      </LinkOverlay>
+      <TbtcActionBadge status={status} />
+    </ActivityItemWrapper>
+  )
+}
+
+const renderActivityItem = (item: BridgeTxHistory) => (
+  <ActivityItem key={item.depositKey} {...item} />
+)
+
+export const TransactionHistory: FC<{
+  data: BridgeTxHistory[]
 }> = ({ data }) => {
   const epmtyHistoryImg = useColorModeValue(
     emptyHistoryImageSrcLight,
@@ -72,51 +117,13 @@ export const TransactionHistoryTable: FC<{
 
   return (
     <>
-      <Table>
-        <Thead>
-          <Tr color="gray.500">
-            <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
-              TBTC
-            </LabelSm>
-            <LabelSm as={Th} paddingInlineStart="2" paddingInlineEnd="2">
-              TX
-            </LabelSm>
-            <LabelSm
-              as={Th}
-              textAlign="right"
-              paddingInlineStart="2"
-              paddingInlineEnd="2"
-            >
-              STATE
-            </LabelSm>
-          </Tr>
-        </Thead>
-        <BodySm as={Tbody}>
-          {isHistoryEmpty ? (
-            <EmptyHistoryTableBody />
-          ) : (
-            data.map((_) => (
-              <Tr key={_.txHash}>
-                <Td py={4} px={2}>
-                  <InlineTokenBalance tokenAmount={_.amount} />
-                </Td>
-                <Td py={4} px={2}>
-                  <ViewInBlockExplorer
-                    id={_.txHash}
-                    type={ExplorerDataType.TRANSACTION}
-                    isTruncated
-                    text={`${_.txHash.slice(0, 4)}...`}
-                  />
-                </Td>
-                <Td py={4} px={2}>
-                  <TbtcActionBadge status={_.status} />
-                </Td>
-              </Tr>
-            ))
-          )}
-        </BodySm>
-      </Table>
-
+      <HStack justifyContent="space-between" mt="10">
+        <LabelSm color="gray.500">tBTC</LabelSm>
+        <LabelSm color="gray.500">state</LabelSm>
+      </HStack>
+      <List spacing="1" mt="2">
+        {isHistoryEmpty ? <EmptyActivity /> : data.map(renderActivityItem)}
+      </List>
       {isHistoryEmpty && (
         <>
           <Image
@@ -133,21 +140,17 @@ export const TransactionHistoryTable: FC<{
   )
 }
 
-const EmptyRow = () => (
-  <Tr>
-    <Td py={4} px={2}>
-      -.--
-    </Td>
-    <Td py={4} px={2} />
-    <Td py={4} px={2} />
-  </Tr>
-)
-
-const EmptyHistoryTableBody = () => {
+const EmptyActivity: FC = () => {
   return (
     <>
-      <EmptyRow />
-      <EmptyRow />
+      <ActivityItemWrapper>
+        <Box as="span">-.--</Box>
+        <Box as="span">-.--</Box>
+      </ActivityItemWrapper>
+      <ActivityItemWrapper>
+        <Box as="span">-.--</Box>
+        <Box as="span">-.--</Box>
+      </ActivityItemWrapper>
     </>
   )
 }

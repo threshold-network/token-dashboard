@@ -5,7 +5,7 @@ import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
 import {
   TransactionHistoryCard,
-  TransactionHistoryTable,
+  TransactionHistory,
 } from "./TransactionHistory"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
@@ -69,7 +69,7 @@ const TBTCBridge: PageComponent = (props) => {
               <Skeleton height="20px" />
             </Stack>
           ) : (
-            <TransactionHistoryTable data={bridgeTransactionHistory} />
+            <TransactionHistory data={bridgeTransactionHistory} />
           )}
         </TransactionHistoryCard>
       </Box>
