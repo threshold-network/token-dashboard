@@ -40,13 +40,8 @@ export const useSubscribeToOptimisticMintingFinalizedEvent = () => {
   const { account } = useWeb3React()
 
   useSubscribeToOptimisticMintingFinalizedEventBase(
-    (
-      minter: string,
-      depositKey: BigNumber,
-      depositor: string,
-      optimisticMintingDebt: BigNumber,
-      event: Event
-    ) => {
+    (...args) => {
+      const [, depositKey, , , event] = args
       const depositKeyFromEvent = depositKey.toHexString()
       const depositKeyFromUTXO = utxo
         ? threshold.tbtc.buildDepositKey(

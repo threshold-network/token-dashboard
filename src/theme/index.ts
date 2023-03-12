@@ -16,6 +16,13 @@ import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
 
 const index = extendTheme({
   ...defaultTheme,
+  colors: {
+    ...defaultTheme.colors,
+    // TODO: move color to components repo.
+    teal: {
+      "500": "#00BACC",
+    },
+  },
   textStyles: {
     bodyLg: {
       fontWeight: "400",

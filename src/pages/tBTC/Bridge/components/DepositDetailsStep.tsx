@@ -149,8 +149,6 @@ export const Step1: FC<
       subtitle={`The Bitcoin Deposit transaction needs to get ${requiredConfirmations} confirmations on the Bitcoin Network before the minting is initialised.`}
       chain="bitcoin"
       txHash={txHash}
-      // TODO: confirm colors, we can't use gradients with `CircularProgressBar`
-      // comoponent.
       progressBarColor="brand.500"
       progressBarValue={confirmations}
       progressBarMaxValue={requiredConfirmations}
@@ -177,9 +175,7 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       subtitle="The minter is reviewing he minting initialisation. If everything is fine the minter will move the initialisation to the guardian."
       chain="ethereum"
       txHash={txHash}
-      // TODO: confirm colors, we can't use gradients with `CircularProgressBar`
-      // comoponent.
-      progressBarColor="#FAAD14"
+      progressBarColor="yellow.500"
       isCompleted={!!txHash}
       onComplete={onComplete}
       isIndeterminate
@@ -193,9 +189,7 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       title="Guardian Check"
       subtitle="A guardian is reviewing the minting request forwarded by a minter. If everything is compliant the contract will move on yo minting."
       chain="ethereum"
-      // TODO: confirm colors, we can't use gradients with `CircularProgressBar`
-      // comoponent.
-      progressBarColor="#8FFF00"
+      progressBarColor="green.500"
       isCompleted={!!txHash}
       onComplete={onComplete}
       isIndeterminate
@@ -210,9 +204,7 @@ export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       subtitle="The contract is minting your tBTC tokens."
       chain="ethereum"
       txHash={txHash}
-      // TODO: confirm colors, we can't use gradients with `CircularProgressBar`
-      // comoponent.
-      progressBarColor="#F045E9"
+      progressBarColor="teal.500"
       isCompleted={true}
       onComplete={onComplete}
       isIndeterminate
