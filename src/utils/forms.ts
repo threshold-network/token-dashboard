@@ -84,9 +84,12 @@ export const validateBTCAddress = (
 ) => {
   if (!address) {
     return "Required."
-  } else if (!isValidBtcAddress(address, network)) {
-    return "Invalid btc address."
-  } else if (!isPublicKeyHashTypeAddress(address)) {
-    return "Must be a P2PKH or P2WPKH address."
+  } else if (
+    !isValidBtcAddress(address, network) ||
+    !isPublicKeyHashTypeAddress(address)
+  ) {
+    return `The BTC Recovery address has to start with the letters "${
+      network === Network.mainnet ? "bc" : "t"
+    }", meaning it is P2PKH or P2WPKH compliant.`
   }
 }

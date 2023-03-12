@@ -6,7 +6,7 @@ import {
   BoxLabel,
   List,
   ListItem,
-  ListIcon,
+  ListIcon as TListIcon,
 } from "@threshold-network/components"
 import { BsFillArrowRightCircleFill } from "react-icons/all"
 import {
@@ -16,6 +16,16 @@ import {
 } from "../Bridge/MintingCard/MintingTimeline"
 import Link from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
+
+const ListIcon: FC = () => (
+  <TListIcon
+    color="brand.500"
+    verticalAlign="sub"
+    as={BsFillArrowRightCircleFill}
+    w="16px"
+    h="16px"
+  />
+)
 
 export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
   ...props
@@ -29,13 +39,7 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       </BoxLabel>
       <List>
         <ListItem>
-          <ListIcon
-            color="brand.500"
-            verticalAlign="sub"
-            as={BsFillArrowRightCircleFill}
-            w="16px"
-            h="16px"
-          />
+          <ListIcon />
           <BodyMd as="span">
             This is where your tBTC (ERC20) will be sent after minting
             initiation.
@@ -47,13 +51,7 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
       </BoxLabel>
       <List mb="1.5rem" spacing="4">
         <ListItem>
-          <ListIcon
-            verticalAlign="sub"
-            color="brand.500"
-            as={BsFillArrowRightCircleFill}
-            w="16px"
-            h="16px"
-          />
+          <ListIcon />
           <BodyMd as="span">
             Providing a BTC refund address means your bitcoin will be safe, even
             in the unlikely case of an error minting.{" "}
@@ -63,17 +61,22 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
           </BodyMd>
         </ListItem>
         <ListItem>
-          <ListIcon
-            verticalAlign="sub"
-            color="brand.500"
-            as={BsFillArrowRightCircleFill}
-            w="16px"
-            h="16px"
-          />
+          <ListIcon />
           <BodyMd as="span">
             Make sure you provide a single BTC recovery address that you
             control. Don't use a multi-sig or an exchange address. You can read
             more about the requirements and P2PKH.{" "}
+            <Link isExternal href={ExternalHref.btcRecoveryAddress}>
+              Read more
+            </Link>
+          </BodyMd>
+        </ListItem>
+        <ListItem>
+          <ListIcon />
+          <BodyMd as="span">
+            This address has to start with the letters “bc” for Bitcoin Mainnet
+            and with the letter “t” for Testnet Bitcoin. This means that your
+            addresses are P2PKH or P2WPKH compliant.{" "}
             <Link isExternal href={ExternalHref.btcRecoveryAddress}>
               Read more
             </Link>

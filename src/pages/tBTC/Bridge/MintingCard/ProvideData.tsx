@@ -20,6 +20,7 @@ import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
+import { supportedChainId } from "../../../../utils/getEnvVariable"
 
 export interface FormValues {
   ethAddress: string
@@ -31,6 +32,8 @@ type ComponentProps = {
   formId: string
 }
 
+const resolvedBTCAddressPrefix = supportedChainId === "1" ? "bc" : "t"
+
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
 }) => {
@@ -39,6 +42,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="ethAddress"
         label="ETH Address"
+        placeholder="Address where you'll receive your tBTC"
         tooltip="ETH address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
         mb={6}
         isReadOnly={true}
@@ -46,7 +50,8 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="btcRecoveryAddress"
         label="BTC Recovery Address"
-        tooltip="Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Recovery Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file."
+        tooltip={`This address needs to start with the letters "${resolvedBTCAddressPrefix}". Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Recovery Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file`}
+        placeholder={`BTC Address should start with “${resolvedBTCAddressPrefix}”`}
       />
     </Form>
   )
