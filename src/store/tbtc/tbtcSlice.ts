@@ -5,6 +5,7 @@ import {
   TbtcMintingType,
   TbtcStateKey,
   TbtcState,
+  ExternalPoolData,
 } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
 import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
@@ -17,14 +18,6 @@ import {
 } from "./effects"
 import { curveAPI } from "../../utils/curveAPI"
 import { CurveFactoryPoolId } from "../../enums"
-
-export type ExternalPoolData = {
-  poolName: string
-  url: string
-  address: string
-  apy: number[]
-  tvl: number
-}
 
 export const fetchCurveFactoryPoolData: AsyncThunk<ExternalPoolData, void, {}> =
   createAsyncThunk("tbtc/fetchFactoryPool", async () => {

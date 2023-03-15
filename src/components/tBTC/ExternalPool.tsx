@@ -21,7 +21,7 @@ import shortenAddress from "../../utils/shortenAddress"
 import ButtonLink from "../ButtonLink"
 import TBTCWBTCSBTCPool from "../../static/images/TBTC_WBTC_SBTC_pool.svg"
 import TBTCCurvePool from "../../static/images/TBTCCurvePool.svg"
-import { ExternalPoolData } from "../../store/tbtc"
+import { ExternalPoolData } from "../../types/tbtc"
 
 export interface ExternalPoolProps extends ComponentProps<typeof Card> {
   title: string

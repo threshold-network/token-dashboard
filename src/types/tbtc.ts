@@ -2,7 +2,6 @@ import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitc
 import { UpdateStateActionPayload } from "./state"
 import { FetchingState } from "."
 import { BridgeTxHistory } from "../threshold-ts/tbtc"
-import { ExternalPoolData } from "../store/tbtc"
 
 export interface TbtcState {
   mintingStep: MintingStep
@@ -71,4 +70,12 @@ export interface UseTbtcState {
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
     resetDepositData: () => void
   } & TbtcState
+}
+
+export type ExternalPoolData = {
+  poolName: string
+  url: string
+  address: string
+  apy: number[]
+  tvl: number
 }
