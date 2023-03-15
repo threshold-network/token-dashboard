@@ -68,7 +68,7 @@ export const useFetchExternalPoolData = <T extends ExternalPool>(
     }
 
     fetchExternalPoolData()
-  }, [type, poolId, fetchPoolDataStrategy])
+  }, [type, poolId])
 
   return data
 }
