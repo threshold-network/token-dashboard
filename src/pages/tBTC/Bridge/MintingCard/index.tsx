@@ -7,11 +7,18 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useWeb3React } from "@web3-react/core"
 import { isSameETHAddress } from "../../../../web3/utils"
+import { ExternalPool } from "../../../../components/tBTC/ExternalPool"
+import { useFetchExternalPoolData } from "../../../../hooks/useFetchExternalPoolData"
+import { CurveFactoryPoolId } from "../../../../enums"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
-  const { btcDepositAddress, resetDepositData, updateState } = useTbtcState()
+  const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useWeb3React()
+  const tBTCWBTCSBTCPoolData = useFetchExternalPoolData(
+    "curve",
+    CurveFactoryPoolId.TBTC_WBTC_SBTC
+  )
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc
@@ -46,34 +53,42 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   }, [account])
 
   return (
-    <Card {...props} minW="0">
-      <Stack
-        direction={{
-          base: "column",
-          xl: "row",
-        }}
-        divider={<StackDivider />}
-        h="100%"
-        spacing={8}
-      >
-        <Box
-          w={{
-            base: "100%",
-            xl: "66%",
+    <>
+      <Card {...props} minW="0">
+        <Stack
+          direction={{
+            base: "column",
+            xl: "row",
           }}
+          divider={<StackDivider />}
+          h="100%"
+          spacing={8}
         >
-          <MintingFlowRouter />
-        </Box>
-        <Box
-          w={{
-            base: "100%",
-            xl: "33%",
-          }}
-          minW={"216px"}
-        >
-          <MintingTimeline />
-        </Box>
-      </Stack>
-    </Card>
+          <Box
+            w={{
+              base: "100%",
+              xl: "66%",
+            }}
+          >
+            <MintingFlowRouter />
+          </Box>
+          <Box
+            w={{
+              base: "100%",
+              xl: "33%",
+            }}
+            minW={"216px"}
+          >
+            <MintingTimeline />
+          </Box>
+        </Stack>
+      </Card>
+      {/* TODO: ExternalPool is placed here just for a showcase. This might not be the best place for it, so feel free to remove it */}
+      <ExternalPool
+        title={"TBTC Curve Pool"}
+        externalPoolData={{ ...tBTCWBTCSBTCPoolData }}
+        mt={4}
+      />
+    </>
   )
 }
