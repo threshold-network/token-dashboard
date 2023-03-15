@@ -176,7 +176,7 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Minting Initialized"
-      subtitle="The minter is reviewing he minting initialisation. If everything is fine the minter will move the initialisation to the guardian."
+      subtitle="The minter is reviewing the minting initialisation. If everything is fine the minter will move the initialisation to the guardian."
       chain="ethereum"
       txHash={txHash}
       progressBarColor="yellow.500"
