@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { CurveFactoryPoolId, ExternalPoolType } from "../enums"
+import { CurveFactoryPoolId } from "../enums"
 import { ExternalPoolData } from "../types/tbtc"
 import { curveAPI } from "../utils/curveAPI"
 
@@ -11,15 +11,22 @@ const initialState = {
   tvl: 0,
 }
 
-export const useFetchExternalPoolData = (
-  type: ExternalPoolType,
-  poolId: CurveFactoryPoolId
+const pools = {
+  curve: [CurveFactoryPoolId.TBTC_WBTC_SBTC],
+} as const
+
+type ExternalPool = keyof typeof pools
+type ExternalPoolId<T extends ExternalPool> = typeof pools[T][number]
+
+export const useFetchExternalPoolData = <T extends ExternalPool>(
+  type: T,
+  poolId: ExternalPoolId<T>
 ): [ExternalPoolData, () => Promise<ExternalPoolData>] => {
   const [data, setData] = useState<ExternalPoolData>(initialState)
 
   const fetchExternalPoolData =
     useCallback(async (): Promise<ExternalPoolData> => {
-      if (type === ExternalPoolType.CURVE_POOL) {
+      if (type === "curve") {
         const factoryPool = await curveAPI.fetchFactoryPool(poolId)
 
         const poolTokens = factoryPool.underlyingCoins
