@@ -92,7 +92,7 @@ export const ExternalPool: FC<ExternalPoolProps> = ({
                     )}
                   </Td>
                   <Td {...commonCellProps}>
-                    {!!tvl && <BodyXs>{formatNumeral(tvl)}</BodyXs>}
+                    {!!tvl && <BodyXs>${formatNumeral(tvl)}</BodyXs>}
                   </Td>
                   <Td {...commonCellProps} textAlign={"end"}>
                     {!!poolAddress && (
