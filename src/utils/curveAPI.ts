@@ -4,6 +4,10 @@ import { CurveFactoryPoolId } from "../enums"
 export type FactoryPool = {
   id: CurveFactoryPoolId
   address: string
+  name: string
+  underlyingCoins: {
+    symbol: string
+  }[]
   poolUrls: {
     swap: string[]
     deposit: string[]

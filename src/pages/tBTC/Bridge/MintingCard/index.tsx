@@ -81,7 +81,7 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
       {/* TODO: ExternalPool is placed here just for a showcase. This might not be the best place for it, so feel free to remove it */}
       <ExternalPool
         title={"TBTC Curve Pool"}
-        externalPoolData={{ poolName: "tBTC/WBTC/sBTC", ...curveTBTCPool }}
+        externalPoolData={{ ...curveTBTCPool }}
         mt={4}
       />
     </>

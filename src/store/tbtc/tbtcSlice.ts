@@ -18,20 +18,34 @@ import {
 import { curveAPI } from "../../utils/curveAPI"
 import { CurveFactoryPoolId } from "../../enums"
 
-export type CurvePoolData = {
+export type ExternalPoolData = {
+  poolName: string
   url: string
   address: string
   apy: number[]
   tvl: number
 }
 
-export const fetchCurveFactoryPoolData: AsyncThunk<CurvePoolData, void, {}> =
+export const fetchCurveFactoryPoolData: AsyncThunk<ExternalPoolData, void, {}> =
   createAsyncThunk("tbtc/fetchFactoryPool", async () => {
     const factoryPool = await curveAPI.fetchFactoryPool(
       CurveFactoryPoolId.TBTC_WBTC_SBTC
     )
 
+    const poolTokens = factoryPool.underlyingCoins
+
+    const poolName =
+      poolTokens && poolTokens.length > 0
+        ? poolTokens.reduce((accumulator, currentValue, index) => {
+            if (index === poolTokens.length - 1) {
+              return accumulator + currentValue.symbol
+            }
+            return accumulator + currentValue.symbol + "/"
+          }, "")
+        : factoryPool.name
+
     return {
+      poolName,
       address: factoryPool.address,
       url: factoryPool.poolUrls.deposit[0],
       apy: factoryPool.gaugeCrvApy,
