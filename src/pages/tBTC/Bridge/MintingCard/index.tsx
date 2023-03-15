@@ -15,12 +15,10 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useWeb3React()
-  const [tBTCWBTCSBTCPoolData, fetchTBTCWBTCSBTCPoolData] =
-    useFetchExternalPoolData("curve", CurveFactoryPoolId.TBTC_WBTC_SBTC)
-
-  useEffect(() => {
-    fetchTBTCWBTCSBTCPoolData()
-  }, [fetchTBTCWBTCSBTCPoolData])
+  const tBTCWBTCSBTCPoolData = useFetchExternalPoolData(
+    "curve",
+    CurveFactoryPoolId.TBTC_WBTC_SBTC
+  )
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useEffect, useState } from "react"
 import { CurveFactoryPoolId } from "../enums"
 import { ExternalPoolData } from "../types/tbtc"
 import { curveAPI } from "../utils/curveAPI"
@@ -57,16 +57,18 @@ const fetchPoolDataStrategy: {
 export const useFetchExternalPoolData = <T extends ExternalPool>(
   type: T,
   poolId: ExternalPoolId<T>
-): [ExternalPoolData, () => Promise<ExternalPoolData>] => {
+): ExternalPoolData => {
   const [data, setData] = useState<ExternalPoolData>(initialState)
 
-  const fetchExternalPoolData =
-    useCallback(async (): Promise<ExternalPoolData> => {
+  useEffect(() => {
+    const fetchExternalPoolData = async () => {
       const fetchPoolData = fetchPoolDataStrategy[type]
       const data = await fetchPoolData(poolId)
       setData(data)
-      return data
-    }, [type, poolId, fetchPoolDataStrategy])
+    }
 
-  return [data, fetchExternalPoolData]
+    fetchExternalPoolData()
+  }, [type, poolId, fetchPoolDataStrategy])
+
+  return data
 }
