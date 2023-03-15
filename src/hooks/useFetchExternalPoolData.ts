@@ -18,6 +18,42 @@ const pools = {
 type ExternalPool = keyof typeof pools
 type ExternalPoolId<T extends ExternalPool> = typeof pools[T][number]
 
+const fetchCurvePool: (
+  poolId: ExternalPoolId<"curve">
+) => Promise<ExternalPoolData> = async (poolId) => {
+  const factoryPool = await curveAPI.fetchFactoryPool(poolId)
+
+  const poolTokens = factoryPool.underlyingCoins
+
+  const poolName =
+    poolTokens && poolTokens.length > 0
+      ? poolTokens.reduce((accumulator, currentValue, index) => {
+          if (index === poolTokens.length - 1) {
+            return accumulator + currentValue.symbol
+          }
+          return accumulator + currentValue.symbol + "/"
+        }, "")
+      : factoryPool.name
+
+  const finalData = {
+    poolName,
+    address: factoryPool.address,
+    url: factoryPool.poolUrls.deposit[0],
+    apy: factoryPool.gaugeCrvApy,
+    tvl: factoryPool.usdTotal,
+  }
+
+  return finalData
+}
+
+const fetchPoolDataStrategy: {
+  [key in ExternalPool]: (
+    poolId: ExternalPoolId<key>
+  ) => Promise<ExternalPoolData>
+} = {
+  curve: fetchCurvePool,
+}
+
 export const useFetchExternalPoolData = <T extends ExternalPool>(
   type: T,
   poolId: ExternalPoolId<T>
@@ -26,36 +62,11 @@ export const useFetchExternalPoolData = <T extends ExternalPool>(
 
   const fetchExternalPoolData =
     useCallback(async (): Promise<ExternalPoolData> => {
-      if (type === "curve") {
-        const factoryPool = await curveAPI.fetchFactoryPool(poolId)
-
-        const poolTokens = factoryPool.underlyingCoins
-
-        const poolName =
-          poolTokens && poolTokens.length > 0
-            ? poolTokens.reduce((accumulator, currentValue, index) => {
-                if (index === poolTokens.length - 1) {
-                  return accumulator + currentValue.symbol
-                }
-                return accumulator + currentValue.symbol + "/"
-              }, "")
-            : factoryPool.name
-
-        const finalData = {
-          poolName,
-          address: factoryPool.address,
-          url: factoryPool.poolUrls.deposit[0],
-          apy: factoryPool.gaugeCrvApy,
-          tvl: factoryPool.usdTotal,
-        }
-        setData(finalData)
-        return finalData
-      } else {
-        throw new Error(
-          `Error while fetching external pool data: fetching of ${type} external pool data is not implemented.`
-        )
-      }
-    }, [type, poolId, curveAPI.fetchFactoryPool])
+      const fetchPoolData = fetchPoolDataStrategy[type]
+      const data = await fetchPoolData(poolId)
+      setData(data)
+      return data
+    }, [type, poolId, fetchPoolDataStrategy])
 
   return [data, fetchExternalPoolData]
 }
