@@ -143,10 +143,14 @@ export const Step1: FC<
     "txHash" | "onComplete"
   >
 > = ({ confirmations, requiredConfirmations, txHash, onComplete }) => {
+  const subtitle = `The Bitcoin Deposit transaction needs to get ${requiredConfirmations} confirmation${
+    requiredConfirmations !== undefined && requiredConfirmations > 1 ? "s" : ""
+  } on the Bitcoin Network before the minting is initialised.`
+
   return (
     <StepTemplate
       title="Waiting for the Bitcoin Network Confirmations..."
-      subtitle={`The Bitcoin Deposit transaction needs to get ${requiredConfirmations} confirmations on the Bitcoin Network before the minting is initialised.`}
+      subtitle={subtitle}
       chain="bitcoin"
       txHash={txHash}
       progressBarColor="brand.500"
