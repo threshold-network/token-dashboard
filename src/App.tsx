@@ -57,7 +57,6 @@ import {
   useSubscribeToOptimisticMintingRequestedEvent,
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
-import { fetchCurveFactoryPoolData } from "./store/tbtc"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -163,7 +162,6 @@ const AppBody = () => {
 
   useEffect(() => {
     dispatch(fetchETHPriceUSD())
-    dispatch(fetchCurveFactoryPoolData())
   }, [dispatch])
 
   usePosthog()

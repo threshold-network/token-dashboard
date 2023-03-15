@@ -26,8 +26,6 @@ export interface TbtcState {
   mintingFee: string
 
   transactionsHistory: FetchingState<BridgeTxHistory[]>
-
-  curveTBTCPool: ExternalPoolData
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "transactionsHistory">
