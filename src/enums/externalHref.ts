@@ -28,4 +28,6 @@ export enum ExternalHref {
   vendingMachineAudit = "https://www.certik.com/projects/threshold-network",
   thresholdStakingAudit = "https://chainsecurity.com/security-audit/threshold-network/",
   tBTCRecoveryGuide = "https://github.com/keep-network/tbtc-v2/blob/main/typescript/scripts/README.adoc",
+  btcConfirmations = "https://en.bitcoin.it/wiki/Confirmation",
+  mintersAndGuardiansDocs = "https://blog.threshold.network/minters-guardians-and-a-strong-tbtc/",
 }

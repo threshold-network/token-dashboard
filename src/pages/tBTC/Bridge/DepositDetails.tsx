@@ -66,6 +66,7 @@ import mainCardBackground from "../../../static/images/minting-completed-card-bg
 import { DotsLoadingIndicator } from "../../../components/DotsLoadingIndicator"
 import tBTCIcon from "../../../static/images/tBTC.svg"
 import BitcoinIcon from "../../../static/images/bitcoin.svg"
+import { ExternalHref } from "../../../enums"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -532,7 +533,6 @@ const useSubscribeToOptimisticMintingEvents = (depositKey?: string) => {
   return { mintingRequestedTxHash, mintingFinalizedTxHash }
 }
 
-// TODO: Update link and copy for subtitle!
 const stepToResourceData: Record<
   Exclude<DepositDetailsTimelineStep, "completed">,
   MintingProcessResourceProps
@@ -540,25 +540,22 @@ const stepToResourceData: Record<
   "bitcoin-confirmations": {
     title: "Bitcoin Confirmations Requirement",
     subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+      "Confirmations typically ensure transaction validity and finality.",
+    link: ExternalHref.btcConfirmations,
   },
   "minting-initialized": {
     title: "Minters, Guardians and a secure tBTC",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
   "guardian-check": {
     title: "Minters and Guardians in Optimistic Minting",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
   "minting-completed": {
     title: "Minters and Guardians in Optimistic Minting",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
 }
