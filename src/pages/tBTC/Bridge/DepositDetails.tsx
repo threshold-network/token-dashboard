@@ -66,13 +66,19 @@ import mainCardBackground from "../../../static/images/minting-completed-card-bg
 import { DotsLoadingIndicator } from "../../../components/DotsLoadingIndicator"
 import tBTCIcon from "../../../static/images/tBTC.svg"
 import BitcoinIcon from "../../../static/images/bitcoin.svg"
-import { ExternalHref } from "../../../enums"
+import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
+import { ExternalPool } from "../../../components/tBTC/ExternalPool"
+import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
   const dispatch = useAppDispatch()
   const { txConfirmations } = useTbtcState()
   const { isFetching, data, error } = useFetchDepositDetails(depositKey)
+  const tBTCWBTCSBTCPoolData = useFetchExternalPoolData(
+    "curve",
+    CurveFactoryPoolId.TBTC_WBTC_SBTC
+  )
   const [inProgressStep, setInProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
@@ -179,7 +185,7 @@ export const DepositDetails: PageComponent = () => {
               h="100%"
               spacing={4}
             >
-              <Box mb="8">
+              <Box mb="8" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
                 <Flex mb="4">
                   <BodyLg>
@@ -202,7 +208,11 @@ export const DepositDetails: PageComponent = () => {
                 />
                 <StepSwitcher />
               </Box>
-              <Flex maxW="33%" direction="column">
+              <Flex
+                w={{ base: "100%", xl: "35%" }}
+                mb={{ base: "20", xl: "unset" }}
+                direction="column"
+              >
                 <LabelSm mb="8">Transaction History</LabelSm>
                 <Badge
                   size="sm"
@@ -262,6 +272,13 @@ export const DepositDetails: PageComponent = () => {
           </>
         )}
       </Card>
+      {inProgressStep === "completed" && (
+        <ExternalPool
+          title={"tBTC Curve Pool"}
+          externalPoolData={{ ...tBTCWBTCSBTCPoolData }}
+          mt={4}
+        />
+      )}
     </DepositDetailsPageContext.Provider>
   )
 }
