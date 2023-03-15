@@ -187,7 +187,7 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Guardian Check"
-      subtitle="A guardian is reviewing the minting request forwarded by a minter. If everything is compliant the contract will move on yo minting."
+      subtitle="A guardian is reviewing the minting request forwarded by a minter. If everything is compliant the contract will move on to minting."
       chain="ethereum"
       progressBarColor="green.500"
       isCompleted={!!txHash}
