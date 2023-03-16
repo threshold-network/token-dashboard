@@ -3,20 +3,19 @@ import { Grid, Box, Skeleton, Stack } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
-import { MintingCard } from "./MintingCard"
-import { UnmintingCard } from "./UnmintingCard"
 import {
   TransactionHistoryCard,
   TransactionHistoryTable,
 } from "./TransactionHistory"
-import { useTbtcState } from "../../../hooks/useTbtcState"
-import { TbtcMintingType } from "../../../types/tbtc"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { selectBridgeTransacionHistory, tbtcSlice } from "../../../store/tbtc"
 import { useWeb3React } from "@web3-react/core"
+import { Outlet } from "react-router"
+import { MintPage } from "./Mint"
+import { UnmintPage } from "./Unmint"
 
 const gridTemplateAreas = {
   base: `
@@ -27,7 +26,6 @@ const gridTemplateAreas = {
 }
 
 const TBTCBridge: PageComponent = (props) => {
-  const { mintingType } = useTbtcState()
   const { openModal } = useModal()
   const { hasUserResponded } = useTBTCTerms()
   const dispatch = useAppDispatch()
@@ -58,13 +56,8 @@ const TBTCBridge: PageComponent = (props) => {
       gap="5"
     >
       <Box gridArea="main" minW="0">
-        <MintUnmintNav w="100%" gridArea="nav" mb="5" />
-        {mintingType === TbtcMintingType.mint && (
-          <MintingCard gridArea="main-card" p={35} />
-        )}
-        {mintingType === TbtcMintingType.unmint && (
-          <UnmintingCard gridArea="main-card" p={35} />
-        )}
+        <MintUnmintNav w="100%" gridArea="nav" mb="5" pages={props.pages!} />
+        <Outlet />
       </Box>
       <Box gridArea="aside">
         <TbtcBalanceCard gridArea="balance-card" mb="5" />
@@ -87,6 +80,8 @@ const TBTCBridge: PageComponent = (props) => {
 TBTCBridge.route = {
   path: "",
   index: false,
+  pathOverride: "/tBTC/*",
+  pages: [MintPage, UnmintPage],
   title: "Bridge",
   isPageEnabled: true,
 }

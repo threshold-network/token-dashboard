@@ -11,7 +11,8 @@ export const useSubscribeToContractEvent = (
   // to filter the `Transfer` event of ERC20 contract, which is implemented as
   // `event Transfer(address indexed from, address indexed to, uint256 value);`,
   // by `to` param we need to pass `[null, <address>]`.
-  indexedFilterParams: string[] = []
+  indexedFilterParams: string[] = [],
+  shouldSubscribeIfUserNotConnected: boolean = false
 ) => {
   const { active } = useWeb3React()
   const callbackRef = useRef<(args: any[]) => void>()
@@ -31,7 +32,7 @@ export const useSubscribeToContractEvent = (
   }, [callback])
 
   useEffect(() => {
-    if (!contract || !active) {
+    if (!contract || (!active && !shouldSubscribeIfUserNotConnected)) {
       return
     }
 

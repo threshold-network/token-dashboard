@@ -6,7 +6,6 @@ import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
-import { useTBTCBridgeContractAddress } from "../../../../hooks/useTBTCBridgeContractAddress"
 import { useWeb3React } from "@web3-react/core"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { useModal } from "../../../../hooks/useModal"
@@ -60,7 +59,7 @@ const MintingFlowRouterBase = () => {
       )
     }
     case MintingStep.MintingSuccess: {
-      return <MintingSuccess onPreviousStepClick={onPreviousStepClick} />
+      return <MintingSuccess />
     }
     default:
       return (
@@ -80,7 +79,6 @@ const MintingFlowRouterBase = () => {
 }
 
 export const MintingFlowRouter: FC = () => {
-  const brdigeContractAddress = useTBTCBridgeContractAddress()
   const { active } = useWeb3React()
 
   return (

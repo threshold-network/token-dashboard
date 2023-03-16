@@ -6,16 +6,39 @@ import { useTbtcState } from "../useTbtcState"
 import { MintingStep } from "../../types/tbtc"
 import { useThreshold } from "../../contexts/ThresholdContext"
 
-export const useSubscribeToOptimisticMintingRequestedEvent = () => {
+type OptimisticMintingRequestedEventCallback = (
+  minter: string,
+  depositKey: BigNumber,
+  depositor: string,
+  amount: BigNumber,
+  fundingTxHash: unknown,
+  fundingOutputIndex: BigNumber,
+  event: Event
+) => void
+
+export const useSubscribeToOptimisticMintingRequestedEventBase = (
+  callback: OptimisticMintingRequestedEventCallback,
+  filterParams?: any[string],
+  shouldSubscribeIfUserNotConnected: boolean = false
+) => {
   const tbtcVaultContract = useTBTCVaultContract()
-  const threshold = useThreshold()
-  const { updateState, utxo, mintingStep } = useTbtcState()
-  const { account } = useWeb3React()
 
   useSubscribeToContractEvent(
     tbtcVaultContract,
     "OptimisticMintingRequested",
     //@ts-ignore
+    callback,
+    filterParams,
+    shouldSubscribeIfUserNotConnected
+  )
+}
+
+export const useSubscribeToOptimisticMintingRequestedEvent = () => {
+  const threshold = useThreshold()
+  const { updateState, utxo, mintingStep } = useTbtcState()
+  const { account } = useWeb3React()
+
+  useSubscribeToOptimisticMintingRequestedEventBase(
     (
       minter: string,
       depositKey: BigNumber,
