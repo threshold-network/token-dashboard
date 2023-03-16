@@ -422,9 +422,8 @@ const getInProgressStep = (
     DepositData,
     "depositRevealedTxHash" | "btcTxHash" | "amount"
   >
-) => {
-  let step: DepositDetailsTimelineStep = "bitcoin-confirmations"
-  if (!depositDetails) return step
+): DepositDetailsTimelineStep => {
+  if (!depositDetails) return "bitcoin-confirmations"
 
   const {
     confirmations,
@@ -433,15 +432,13 @@ const getInProgressStep = (
     optimisticMintingFinalizedTxHash,
   } = depositDetails
 
-  if (confirmations >= requiredConfirmations) {
-    step = "minting-initialized"
-  } else if (optimisticMintingRequestedTxHash) {
-    step = "guardian-check"
-  } else if (optimisticMintingFinalizedTxHash) {
-    step = "minting-initialized"
-  }
+  if (optimisticMintingFinalizedTxHash) return "completed"
 
-  return step
+  if (optimisticMintingRequestedTxHash) return "guardian-check"
+
+  if (confirmations >= requiredConfirmations) return "minting-initialized"
+
+  return "bitcoin-confirmations"
 }
 
 const stepToNextStep: Record<
