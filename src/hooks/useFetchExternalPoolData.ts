@@ -62,9 +62,16 @@ export const useFetchExternalPoolData = <T extends ExternalPool>(
 
   useEffect(() => {
     const fetchExternalPoolData = async () => {
-      const fetchPoolData = fetchPoolDataStrategy[type]
-      const data = await fetchPoolData(poolId)
-      setData(data)
+      try {
+        const fetchPoolData = fetchPoolDataStrategy[type]
+        const data = await fetchPoolData(poolId)
+        setData(data)
+      } catch (error) {
+        console.error(
+          `Could not fetch external pool data ${type} ${poolId}: `,
+          error
+        )
+      }
     }
 
     fetchExternalPoolData()
