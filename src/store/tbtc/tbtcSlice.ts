@@ -7,11 +7,11 @@ import {
   TbtcState,
 } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
-import { BridgeHistoryStatus, BridgeTxHistory } from "../../threshold-ts/tbtc"
+import { BridgeActivityStatus, BridgeActivity } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import {
-  fetchBridgeTxHitoryEffect,
+  fetchBridgeactivityEffect,
   findUtxoEffect,
   fetchUtxoConfirmationsEffect,
 } from "./effects"
@@ -21,10 +21,10 @@ export const tbtcSlice = createSlice({
   initialState: {
     mintingType: TbtcMintingType.mint,
     mintingStep: MintingStep.ProvideData,
-    transactionsHistory: {
+    bridgeActivity: {
       isFetching: false,
       error: "",
-      data: [] as BridgeTxHistory[],
+      data: [] as BridgeActivity[],
     },
   } as TbtcState,
   reducers: {
@@ -35,27 +35,21 @@ export const tbtcSlice = createSlice({
       // @ts-ignore
       state[action.payload.key] = action.payload.value
     },
-    requestBridgeTransactionHistory: (
+    requestBridgeActivity: (
       state,
       action: PayloadAction<{ depositor: string }>
     ) => {},
-    fetchingBridgeTransactionHistory: (state) => {
-      state.transactionsHistory.isFetching = true
+    fetchingBridgeActivity: (state) => {
+      state.bridgeActivity.isFetching = true
     },
-    bridgeTransactionHistoryFetched: (
-      state,
-      action: PayloadAction<BridgeTxHistory[]>
-    ) => {
-      state.transactionsHistory.isFetching = false
-      state.transactionsHistory.error = ""
-      state.transactionsHistory.data = action.payload
+    bridgeActivityFetched: (state, action: PayloadAction<BridgeActivity[]>) => {
+      state.bridgeActivity.isFetching = false
+      state.bridgeActivity.error = ""
+      state.bridgeActivity.data = action.payload
     },
-    bridgeTransactionHistoryFailed: (
-      state,
-      action: PayloadAction<{ error: string }>
-    ) => {
-      state.transactionsHistory.isFetching = false
-      state.transactionsHistory.error = action.payload.error
+    bridgeActivityFailed: (state, action: PayloadAction<{ error: string }>) => {
+      state.bridgeActivity.isFetching = false
+      state.bridgeActivity.error = action.payload.error
     },
     depositRevealed: (
       state,
@@ -69,17 +63,17 @@ export const tbtcSlice = createSlice({
       }>
     ) => {
       const { amount, txHash, depositKey } = action.payload
-      const history = state.transactionsHistory.data
-      const { itemToUpdate } = findHistoryByDepositKey(history, depositKey)
+      const history = state.bridgeActivity.data
+      const { itemToUpdate } = findActivityByDepositKey(history, depositKey)
 
       // Do not update an array if there is already an item with the same
       // deposit key- just in case duplicated Ethereum events.
       if (itemToUpdate) return
 
       // Add item only if there is no item with the same deposit key.
-      state.transactionsHistory.data = [
-        { amount, txHash, status: BridgeHistoryStatus.PENDING, depositKey },
-        ...state.transactionsHistory.data,
+      state.bridgeActivity.data = [
+        { amount, txHash, status: BridgeActivityStatus.PENDING, depositKey },
+        ...state.bridgeActivity.data,
       ]
     },
     optimisticMintingFinalized: (
@@ -90,17 +84,17 @@ export const tbtcSlice = createSlice({
       }>
     ) => {
       const { depositKey, txHash } = action.payload
-      const history = state.transactionsHistory.data
+      const history = state.bridgeActivity.data
       const {
         index: historyIndexItemToUpdate,
         itemToUpdate: historyItemToUpdate,
-      } = findHistoryByDepositKey(history, depositKey)
+      } = findActivityByDepositKey(history, depositKey)
 
       if (!historyItemToUpdate) return
 
-      state.transactionsHistory.data[historyIndexItemToUpdate] = {
+      state.bridgeActivity.data[historyIndexItemToUpdate] = {
         ...historyItemToUpdate,
-        status: BridgeHistoryStatus.MINTED,
+        status: BridgeActivityStatus.MINTED,
         txHash,
       }
     },
@@ -123,19 +117,22 @@ export const tbtcSlice = createSlice({
   },
 })
 
-function findHistoryByDepositKey(
-  history: BridgeTxHistory[],
+function findActivityByDepositKey(
+  bridgeActivities: BridgeActivity[],
   depositKey: string
 ) {
-  const historyIndexItemToUpdate = history.findIndex(
+  const activityIndexItemToUpdate = bridgeActivities.findIndex(
     (item) => item.depositKey === depositKey
   )
 
-  if (historyIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }
+  if (activityIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }
 
-  const historyItemToUpdate = history[historyIndexItemToUpdate]
+  const activityItemToUpdate = bridgeActivities[activityIndexItemToUpdate]
 
-  return { index: historyIndexItemToUpdate, itemToUpdate: historyItemToUpdate }
+  return {
+    index: activityIndexItemToUpdate,
+    itemToUpdate: activityItemToUpdate,
+  }
 }
 
 export const { updateState } = tbtcSlice.actions
@@ -144,8 +141,8 @@ export const registerTBTCListeners = () => {
   if (!featureFlags.TBTC_V2) return
 
   startAppListening({
-    actionCreator: tbtcSlice.actions.requestBridgeTransactionHistory,
-    effect: fetchBridgeTxHitoryEffect,
+    actionCreator: tbtcSlice.actions.requestBridgeActivity,
+    effect: fetchBridgeactivityEffect,
   })
 
   startAppListening({

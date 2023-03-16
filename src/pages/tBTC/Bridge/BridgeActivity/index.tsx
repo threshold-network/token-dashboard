@@ -14,36 +14,34 @@ import {
   LinkOverlay,
 } from "@threshold-network/components"
 import {
-  BridgeHistoryStatus,
-  BridgeTxHistory,
+  BridgeActivityStatus,
+  BridgeActivity as BridgeActivityType,
 } from "../../../../threshold-ts/tbtc"
 import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
-import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import Link from "../../../../components/Link"
 
-const bridgeTxHistoryStatusToBadgeProps: Record<
-  BridgeHistoryStatus,
+const bridgeActivityStatusToBadgeProps: Record<
+  BridgeActivityStatus,
   { colorScheme: string }
 > = {
-  [BridgeHistoryStatus.MINTED]: {
+  [BridgeActivityStatus.MINTED]: {
     colorScheme: "green",
   },
-  [BridgeHistoryStatus.PENDING]: {
+  [BridgeActivityStatus.PENDING]: {
     colorScheme: "yellow",
   },
-  [BridgeHistoryStatus.ERROR]: {
+  [BridgeActivityStatus.ERROR]: {
     colorScheme: "red",
   },
 }
 
-const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
+const TBTCStatusBadge: FC<{ status: BridgeActivityStatus }> = ({ status }) => {
   return (
     <Badge
       variant="subtle"
-      {...bridgeTxHistoryStatusToBadgeProps[status]}
+      {...bridgeActivityStatusToBadgeProps[status]}
       size="sm"
       display="flex"
       alignItems="center"
@@ -53,7 +51,7 @@ const TbtcActionBadge: FC<{ status: BridgeHistoryStatus }> = ({ status }) => {
   )
 }
 
-export const TransactionHistoryCard: FC<ComponentProps<typeof Card>> = ({
+export const BridgeActivityCard: FC<ComponentProps<typeof Card>> = ({
   children,
   ...props
 }) => {
@@ -70,7 +68,7 @@ const ActivityItemWrapper: FC = ({ children }) => (
     as={ListItem}
     display="flex"
     justifyContent="space-between"
-    aligItems="center"
+    alignItems="center"
     borderColor="gray.100"
     borderWidth="1px"
     borderStyle="solid"
@@ -84,7 +82,11 @@ const ActivityItemWrapper: FC = ({ children }) => (
   </LinkBox>
 )
 
-const ActivityItem: FC<BridgeTxHistory> = ({ amount, status, depositKey }) => {
+const ActivityItem: FC<BridgeActivityType> = ({
+  amount,
+  status,
+  depositKey,
+}) => {
   return (
     <ActivityItemWrapper>
       <LinkOverlay
@@ -96,17 +98,17 @@ const ActivityItem: FC<BridgeTxHistory> = ({ amount, status, depositKey }) => {
       >
         <InlineTokenBalance tokenAmount={amount} />
       </LinkOverlay>
-      <TbtcActionBadge status={status} />
+      <TBTCStatusBadge status={status} />
     </ActivityItemWrapper>
   )
 }
 
-const renderActivityItem = (item: BridgeTxHistory) => (
+const renderActivityItem = (item: BridgeActivityType) => (
   <ActivityItem key={item.depositKey} {...item} />
 )
 
-export const TransactionHistory: FC<{
-  data: BridgeTxHistory[]
+export const BridgeActivity: FC<{
+  data: BridgeActivityType[]
 }> = ({ data }) => {
   const epmtyHistoryImg = useColorModeValue(
     emptyHistoryImageSrcLight,

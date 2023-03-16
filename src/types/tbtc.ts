@@ -1,7 +1,7 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
 import { FetchingState } from "."
-import { BridgeTxHistory } from "../threshold-ts/tbtc"
+import { BridgeActivity } from "../threshold-ts/tbtc"
 
 export interface TbtcState {
   mintingStep: MintingStep
@@ -25,10 +25,10 @@ export interface TbtcState {
   thresholdNetworkFee: string
   mintingFee: string
 
-  transactionsHistory: FetchingState<BridgeTxHistory[]>
+  bridgeActivity: FetchingState<BridgeActivity[]>
 }
 
-export type TbtcStateKey = keyof Omit<TbtcState, "transactionsHistory">
+export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">
 
 export enum TbtcMintingType {
   mint = "MINT",

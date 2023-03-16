@@ -11,8 +11,8 @@ import {
 } from "../../utils/tbtcLocalStorageData"
 import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
-export const fetchBridgeTxHitoryEffect = async (
-  action: ReturnType<typeof tbtcSlice.actions.requestBridgeTransactionHistory>,
+export const fetchBridgeactivityEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
   const { depositor } = action.payload
@@ -20,21 +20,19 @@ export const fetchBridgeTxHitoryEffect = async (
 
   listenerApi.unsubscribe()
 
-  listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeTransactionHistory())
+  listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
 
   try {
-    const data = await listenerApi.extra.threshold.tbtc.bridgeTxHistory(
+    const data = await listenerApi.extra.threshold.tbtc.bridgeActivity(
       depositor
     )
-    listenerApi.dispatch(
-      tbtcSlice.actions.bridgeTransactionHistoryFetched(data)
-    )
+    listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
   } catch (error) {
-    console.error("Could not fetch bridge transaction history: ", error)
+    console.error("Could not fetch bridge activity: ", error)
     listenerApi.subscribe()
     listenerApi.dispatch(
-      tbtcSlice.actions.bridgeTransactionHistoryFailed({
-        error: "Could not fetch bridge transaction history.",
+      tbtcSlice.actions.bridgeActivityFailed({
+        error: "Could not fetch bridge activity.",
       })
     )
   }
