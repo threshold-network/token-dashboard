@@ -10,7 +10,7 @@ import { isSameETHAddress } from "../../../../web3/utils"
 
 export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
-  const { btcDepositAddress, resetDepositData, updateState } = useTbtcState()
+  const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useWeb3React()
 
   useEffect(() => {
@@ -46,34 +46,36 @@ export const MintingCard: FC<ComponentProps<typeof Card>> = ({ ...props }) => {
   }, [account])
 
   return (
-    <Card {...props} minW="0">
-      <Stack
-        direction={{
-          base: "column",
-          xl: "row",
-        }}
-        divider={<StackDivider />}
-        h="100%"
-        spacing={8}
-      >
-        <Box
-          w={{
-            base: "100%",
-            xl: "66%",
+    <>
+      <Card {...props} minW="0">
+        <Stack
+          direction={{
+            base: "column",
+            xl: "row",
           }}
+          divider={<StackDivider />}
+          h="100%"
+          spacing={8}
         >
-          <MintingFlowRouter />
-        </Box>
-        <Box
-          w={{
-            base: "100%",
-            xl: "33%",
-          }}
-          minW={"216px"}
-        >
-          <MintingTimeline />
-        </Box>
-      </Stack>
-    </Card>
+          <Box
+            w={{
+              base: "100%",
+              xl: "66%",
+            }}
+          >
+            <MintingFlowRouter />
+          </Box>
+          <Box
+            w={{
+              base: "100%",
+              xl: "33%",
+            }}
+            minW={"216px"}
+          >
+            <MintingTimeline />
+          </Box>
+        </Stack>
+      </Card>
+    </>
   )
 }

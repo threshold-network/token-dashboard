@@ -69,3 +69,11 @@ export interface UseTbtcState {
     resetDepositData: () => void
   } & TbtcState
 }
+
+export type ExternalPoolData = {
+  poolName: string
+  url: string
+  address: string
+  apy: number[]
+  tvl: number
+}

@@ -66,12 +66,19 @@ import mainCardBackground from "../../../static/images/minting-completed-card-bg
 import { DotsLoadingIndicator } from "../../../components/DotsLoadingIndicator"
 import tBTCIcon from "../../../static/images/tBTC.svg"
 import BitcoinIcon from "../../../static/images/bitcoin.svg"
+import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
+import { ExternalPool } from "../../../components/tBTC/ExternalPool"
+import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
   const dispatch = useAppDispatch()
   const { txConfirmations } = useTbtcState()
   const { isFetching, data, error } = useFetchDepositDetails(depositKey)
+  const tBTCWBTCSBTCPoolData = useFetchExternalPoolData(
+    "curve",
+    CurveFactoryPoolId.TBTC_WBTC_SBTC
+  )
   const [inProgressStep, setInProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
@@ -178,7 +185,7 @@ export const DepositDetails: PageComponent = () => {
               h="100%"
               spacing={4}
             >
-              <Box mb="8">
+              <Box mb="8" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
                 <Flex mb="4">
                   <BodyLg>
@@ -201,7 +208,11 @@ export const DepositDetails: PageComponent = () => {
                 />
                 <StepSwitcher />
               </Box>
-              <Flex maxW="33%" direction="column">
+              <Flex
+                w={{ base: "100%", xl: "35%" }}
+                mb={{ base: "20", xl: "unset" }}
+                direction="column"
+              >
                 <LabelSm mb="8">Transaction History</LabelSm>
                 <Badge
                   size="sm"
@@ -261,6 +272,13 @@ export const DepositDetails: PageComponent = () => {
           </>
         )}
       </Card>
+      {inProgressStep === "completed" && (
+        <ExternalPool
+          title={"tBTC Curve Pool"}
+          externalPoolData={{ ...tBTCWBTCSBTCPoolData }}
+          mt={4}
+        />
+      )}
     </DepositDetailsPageContext.Provider>
   )
 }
@@ -404,9 +422,8 @@ const getInProgressStep = (
     DepositData,
     "depositRevealedTxHash" | "btcTxHash" | "amount"
   >
-) => {
-  let step: DepositDetailsTimelineStep = "bitcoin-confirmations"
-  if (!depositDetails) return step
+): DepositDetailsTimelineStep => {
+  if (!depositDetails) return "bitcoin-confirmations"
 
   const {
     confirmations,
@@ -415,15 +432,13 @@ const getInProgressStep = (
     optimisticMintingFinalizedTxHash,
   } = depositDetails
 
-  if (confirmations >= requiredConfirmations) {
-    step = "minting-initialized"
-  } else if (optimisticMintingRequestedTxHash) {
-    step = "guardian-check"
-  } else if (optimisticMintingFinalizedTxHash) {
-    step = "minting-initialized"
-  }
+  if (optimisticMintingFinalizedTxHash) return "completed"
 
-  return step
+  if (optimisticMintingRequestedTxHash) return "guardian-check"
+
+  if (confirmations >= requiredConfirmations) return "minting-initialized"
+
+  return "bitcoin-confirmations"
 }
 
 const stepToNextStep: Record<
@@ -479,7 +494,12 @@ const StepSwitcher: FC = () => {
         />
       )
     case "minting-completed":
-      return <Step4 onComplete={onComplete} />
+      return (
+        <Step4
+          txHash={optimisticMintingFinalizedTxHash}
+          onComplete={onComplete}
+        />
+      )
     case "completed":
       return (
         <>
@@ -532,7 +552,6 @@ const useSubscribeToOptimisticMintingEvents = (depositKey?: string) => {
   return { mintingRequestedTxHash, mintingFinalizedTxHash }
 }
 
-// TODO: Update link and copy for subtitle!
 const stepToResourceData: Record<
   Exclude<DepositDetailsTimelineStep, "completed">,
   MintingProcessResourceProps
@@ -540,25 +559,22 @@ const stepToResourceData: Record<
   "bitcoin-confirmations": {
     title: "Bitcoin Confirmations Requirement",
     subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+      "Confirmations typically ensure transaction validity and finality.",
+    link: ExternalHref.btcConfirmations,
   },
   "minting-initialized": {
     title: "Minters, Guardians and a secure tBTC",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
   "guardian-check": {
     title: "Minters and Guardians in Optimistic Minting",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
   "minting-completed": {
     title: "Minters and Guardians in Optimistic Minting",
-    subtitle:
-      "Amazing body copy of the new update, feature, code or design improvement.",
-    link: "TODO",
+    subtitle: "A phased approach with two main roles: Minters and Guardians.",
+    link: ExternalHref.mintersAndGuardiansDocs,
   },
 }

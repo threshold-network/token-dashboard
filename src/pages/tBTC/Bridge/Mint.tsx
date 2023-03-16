@@ -19,6 +19,7 @@ DefaultMintPage.route = {
 
 MintPage.route = {
   path: "mint",
+  pathOverride: "mint/*",
   index: true,
   title: "Mint",
   pages: [DefaultMintPage, DepositDetails],

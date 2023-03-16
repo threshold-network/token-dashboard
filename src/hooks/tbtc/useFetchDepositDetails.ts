@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { getContractPastEvents, isEmptyOrZeroAddress } from "../../web3/utils"
+import { reverseTxHash } from "../../threshold-ts/utils"
 
 export type DepositData = {
   depositRevealedTxHash: string
@@ -64,7 +64,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
           }
         )
 
-        const btcTxHash = TransactionHash.from(deposit.fundingTxHash).reverse()
+        const btcTxHash = reverseTxHash(deposit.fundingTxHash)
         const confirmations = await threshold.tbtc.getTransactionConfirmations(
           btcTxHash
         )
@@ -91,7 +91,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
     if (depositKey) {
       fetch()
     }
-  }, [depositKey, threshold])
+  }, [depositKey, threshold, reverseTxHash])
 
   return { isFetching, data: depositData, error }
 }

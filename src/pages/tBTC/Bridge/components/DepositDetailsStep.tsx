@@ -143,10 +143,14 @@ export const Step1: FC<
     "txHash" | "onComplete"
   >
 > = ({ confirmations, requiredConfirmations, txHash, onComplete }) => {
+  const subtitle = `Your Bitcoin deposit transaction requires ${requiredConfirmations} confirmation${
+    requiredConfirmations !== undefined && requiredConfirmations > 1 ? "s" : ""
+  } on the Bitcoin Network before initiating the minting process.`
+
   return (
     <StepTemplate
       title="Waiting for the Bitcoin Network Confirmations..."
-      subtitle={`The Bitcoin Deposit transaction needs to get ${requiredConfirmations} confirmations on the Bitcoin Network before the minting is initialised.`}
+      subtitle={subtitle}
       chain="bitcoin"
       txHash={txHash}
       progressBarColor="brand.500"
@@ -172,7 +176,7 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Minting Initialized"
-      subtitle="The minter is reviewing he minting initialisation. If everything is fine the minter will move the initialisation to the guardian."
+      subtitle="A Minter is assessing the minting initialization. If all is well, the Minter will transfer the initialization to the Guardian. Minters are a small group of experts who monitor BTC deposits on the chain."
       chain="ethereum"
       txHash={txHash}
       progressBarColor="yellow.500"
@@ -187,7 +191,7 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Guardian Check"
-      subtitle="A guardian is reviewing the minting request forwarded by a minter. If everything is compliant the contract will move on yo minting."
+      subtitle="A Guardian examines the minting request submitted by a Minter. If all is well, the contract proceeds to the minting stage. Guardians verify minting requests and cancel fraudulent mints and remove problematic minters."
       chain="ethereum"
       progressBarColor="green.500"
       isCompleted={!!txHash}
