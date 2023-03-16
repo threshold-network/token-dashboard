@@ -497,7 +497,12 @@ const StepSwitcher: FC = () => {
         />
       )
     case "minting-completed":
-      return <Step4 onComplete={onComplete} />
+      return (
+        <Step4
+          txHash={optimisticMintingFinalizedTxHash}
+          onComplete={onComplete}
+        />
+      )
     case "completed":
       return (
         <>
