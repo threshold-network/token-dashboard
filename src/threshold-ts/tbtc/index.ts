@@ -39,14 +39,14 @@ import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
 
-export enum BridgeHistoryStatus {
+export enum BridgeActivityStatus {
   PENDING = "PENDING",
   MINTED = "MINTED",
   ERROR = "ERROR",
 }
 
-export interface BridgeTxHistory {
-  status: BridgeHistoryStatus
+export interface BridgeActivity {
+  status: BridgeActivityStatus
   txHash: string
   amount: string
   depositKey: string
@@ -175,9 +175,9 @@ export interface ITBTC {
    * Returns the bridge transaction history by depositor in order from the
    * newest revealed deposit to the oldest.
    * @param depositor Depositor Ethereum address.
-   * @returns Bridge transaction history @see {@link BridgeTxHistory}.
+   * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
-  bridgeTxHistory(depositor: string): Promise<BridgeTxHistory[]>
+  bridgeActivity(depositor: string): Promise<BridgeActivity[]>
 
   /**
    * Builds the deposit key required to refer a revealed deposit.
@@ -457,7 +457,7 @@ export class TBTC implements ITBTC {
     return 6
   }
 
-  bridgeTxHistory = async (depositor: string): Promise<BridgeTxHistory[]> => {
+  bridgeActivity = async (depositor: string): Promise<BridgeActivity[]> => {
     // We can assume that all revealed deposits have `PENDING` status.
     const revealedDeposits = await this.findAllRevealedDeposits(depositor)
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
@@ -493,16 +493,16 @@ export class TBTC implements ITBTC {
 
     return revealedDeposits.map((deposit) => {
       const { depositKey, txHash: depositTxHash } = deposit
-      let status = BridgeHistoryStatus.PENDING
+      let status = BridgeActivityStatus.PENDING
       let txHash = depositTxHash
       let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
 
       if (mintedDeposits.has(depositKey)) {
-        status = BridgeHistoryStatus.MINTED
+        status = BridgeActivityStatus.MINTED
         txHash = mintedDeposits.get(depositKey)!
         amount = mintedAmountByTxHash.get(txHash)!
       } else if (cancelledDeposits.has(depositKey)) {
-        status = BridgeHistoryStatus.ERROR
+        status = BridgeActivityStatus.ERROR
         txHash = cancelledDeposits.get(depositKey)!
       }
 

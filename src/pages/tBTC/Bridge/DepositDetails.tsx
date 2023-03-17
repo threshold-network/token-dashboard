@@ -243,7 +243,7 @@ export const DepositDetails: PageComponent = () => {
                 </List>
                 {inProgressStep !== "completed" && (
                   <>
-                    <HStack spacing="4" mt="auto" mb="10">
+                    <HStack spacing="4" mt="auto" mb="10" alignSelf="center">
                       <Image src={BitcoinIcon} />
                       <DotsLoadingIndicator />
                       <Image src={tBTCIcon} />
