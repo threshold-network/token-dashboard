@@ -27,7 +27,7 @@ const TBTCBridge: PageComponent = (props) => {
   const { hasUserResponded } = useTBTCTerms()
   const dispatch = useAppDispatch()
   const bridgeActivity = useAppSelector(selectBridgeActivity)
-  const isBridgeTxHistoryFetching = useAppSelector(
+  const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
   const { account } = useWeb3React()
@@ -59,7 +59,7 @@ const TBTCBridge: PageComponent = (props) => {
       <Box gridArea="aside">
         <TbtcBalanceCard gridArea="balance-card" mb="5" />
         <BridgeActivityCard>
-          {isBridgeTxHistoryFetching ? (
+          {isBridgeActivityFetching ? (
             <Stack>
               <Skeleton height="20px" />
               <Skeleton height="20px" />
