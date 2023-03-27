@@ -4,12 +4,6 @@ import {
 } from "@web3-react/injected-connector"
 import { ConnectorUpdate } from "@web3-react/types"
 
-declare global {
-  interface Window {
-    ethereum: MetaMaskProvider
-  }
-}
-
 interface MetaMaskProvider {
   /**
    * MetaMask exposes some experimental, MetaMask-specific methods under the
