@@ -3,7 +3,6 @@ import {
   Alert,
   AlertIcon,
   AlertDescription,
-  Link,
 } from "@threshold-network/components"
 import { Taho } from "../../../static/icons/Taho"
 import { useWeb3React } from "@web3-react/core"
@@ -20,6 +19,7 @@ import {
   WalletRejectedAlert,
 } from "./components"
 import { ExternalHref } from "../../../enums"
+import Link from "../../Link"
 
 const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
@@ -83,8 +83,9 @@ const InstallTaho: FC = () => {
       <AlertDescription>
         Taho is not installed. Please install the Taho extension on{" "}
         <Link isExternal href={ExternalHref.installTaho}>
-          their website.
+          their website
         </Link>
+        .
       </AlertDescription>
     </Alert>
   )
