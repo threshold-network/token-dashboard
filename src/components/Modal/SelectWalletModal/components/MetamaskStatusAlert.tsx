@@ -23,7 +23,7 @@ const MetamaskStatusAlert: FC<{
     return (
       <>
         window.ethereum is not MetaMask. Make sure you have MetaMask extension
-        installed or MetaMask is your default wallet.
+        installed and MetaMask is your default wallet.
       </>
     )
   }
