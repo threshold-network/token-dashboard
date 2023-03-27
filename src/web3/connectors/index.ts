@@ -1,4 +1,4 @@
-export * from "./tallyHo"
+export * from "./taho"
 export * from "./metamask"
 export * from "./walletConnect"
 export * from "./coinbaseWallet"

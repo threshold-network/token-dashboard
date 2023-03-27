@@ -5,12 +5,12 @@ import {
   AlertDescription,
   Link,
 } from "@threshold-network/components"
-import { TallyHo } from "../../../static/icons/TallyHo"
+import { Taho } from "../../../static/icons/Taho"
 import { useWeb3React } from "@web3-react/core"
 import {
-  tallyHo,
-  TallyHoIsNotDefaultWalletError,
-  TallyHoNotInstalledError,
+  taho,
+  TahoIsNotDefaultWalletError,
+  TahoNotInstalledError,
   UserRejectedRequestError,
 } from "../../../web3/connectors"
 import {
@@ -21,69 +21,68 @@ import {
 } from "./components"
 import { ExternalHref } from "../../../enums"
 
-const ConnectTallyHo: FC<{ goBack: () => void; closeModal: () => void }> = ({
+const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
   closeModal,
 }) => {
   const { activate, error, active, deactivate } = useWeb3React()
 
-  const isTallyHoNotInstalled = error instanceof TallyHoNotInstalledError
-  const isTallyHoNotDefaultWallet =
-    error instanceof TallyHoIsNotDefaultWalletError
+  const isTahoNotInstalled = error instanceof TahoNotInstalledError
+  const isTahoNotDefaultWallet = error instanceof TahoIsNotDefaultWalletError
 
   const hasUserRejectedConnectionRequest =
     error instanceof UserRejectedRequestError
 
   const hasAnyError =
-    isTallyHoNotInstalled ||
-    isTallyHoNotDefaultWallet ||
+    isTahoNotInstalled ||
+    isTahoNotDefaultWallet ||
     hasUserRejectedConnectionRequest ||
     error
 
   return (
     <WalletConnectionModalBase
-      connector={tallyHo}
+      connector={taho}
       goBack={goBack}
       closeModal={closeModal}
-      WalletIcon={TallyHo}
-      title="Tally Ho!"
+      WalletIcon={Taho}
+      title="Taho"
       subTitle={
-        isTallyHoNotInstalled || isTallyHoNotDefaultWallet
+        isTahoNotInstalled || isTahoNotDefaultWallet
           ? ""
-          : "The TallyHo extension will open in an external window."
+          : "The Taho extension will open in an external window."
       }
       tryAgain={
         hasUserRejectedConnectionRequest
           ? () => {
               deactivate()
-              activate(tallyHo)
+              activate(taho)
             }
           : undefined
       }
     >
-      {isTallyHoNotInstalled && <InstallTallyHo />}
-      {isTallyHoNotDefaultWallet && <TallyHoIsNotSetAsDefaultWallet />}
+      {isTahoNotInstalled && <InstallTaho />}
+      {isTahoNotDefaultWallet && <TahoIsNotSetAsDefaultWallet />}
       {hasUserRejectedConnectionRequest && <WalletRejectedAlert />}
-      {!isTallyHoNotInstalled &&
-        !isTallyHoNotDefaultWallet &&
+      {!isTahoNotInstalled &&
+        !isTahoNotDefaultWallet &&
         !hasUserRejectedConnectionRequest &&
         hasAnyError &&
         `Unexpected ${error?.name} error: ${error?.message}`}
       {!active && !hasAnyError && <WalletInitializeAlert />}
       {active && (
-        <AccountSuccessAlert message="Your Tally Ho wallet is connected" />
+        <AccountSuccessAlert message="Your Taho wallet is connected" />
       )}
     </WalletConnectionModalBase>
   )
 }
 
-const InstallTallyHo: FC = () => {
+const InstallTaho: FC = () => {
   return (
     <Alert status="warning">
       <AlertIcon />
       <AlertDescription>
-        Tally Ho is not installed. Please install the Tally Ho extension on{" "}
-        <Link isExternal href={ExternalHref.installTallyHo}>
+        Taho is not installed. Please install the Taho extension on{" "}
+        <Link isExternal href={ExternalHref.installTaho}>
           their website.
         </Link>
       </AlertDescription>
@@ -91,16 +90,16 @@ const InstallTallyHo: FC = () => {
   )
 }
 
-const TallyHoIsNotSetAsDefaultWallet: FC = () => {
+const TahoIsNotSetAsDefaultWallet: FC = () => {
   return (
     <Alert status="warning">
       <AlertIcon />
       <AlertDescription>
-        Tally Ho is not set as default wallet. Please make sure Tally Ho is your
-        defaul wallet and try again.
+        Taho is not set as default wallet. Please make sure Taho is your defaul
+        wallet and try again.
       </AlertDescription>
     </Alert>
   )
 }
 
-export default ConnectTallyHo
+export default ConnectTaho

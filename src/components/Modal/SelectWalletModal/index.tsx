@@ -1,7 +1,7 @@
 import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
-import { TallyHo } from "../../../static/icons/TallyHo"
+import { Taho } from "../../../static/icons/Taho"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
@@ -15,13 +15,13 @@ import ConnectCoinbase from "./ConnectCoinbase"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
-import ConnectTallyHo from "./ConnectTallyHo"
+import ConnectTaho from "./ConnectTaho"
 
 const walletOptions: WalletOption[] = [
   {
-    id: WalletType.TallyHo,
-    title: "Tally Ho!",
-    icon: TallyHo,
+    id: WalletType.TAHO,
+    title: "Taho",
+    icon: Taho,
   },
   {
     id: WalletType.Metamask,
@@ -86,8 +86,8 @@ const ConnectWallet: FC<{
   onClose: () => void
 }> = ({ walletType, goBack, onClose }) => {
   switch (walletType) {
-    case WalletType.TallyHo:
-      return <ConnectTallyHo goBack={goBack} closeModal={onClose} />
+    case WalletType.TAHO:
+      return <ConnectTaho goBack={goBack} closeModal={onClose} />
     case WalletType.Metamask:
       return <ConnectMetamask goBack={goBack} closeModal={onClose} />
     case WalletType.WalletConnect:

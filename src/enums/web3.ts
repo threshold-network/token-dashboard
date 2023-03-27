@@ -19,7 +19,6 @@ export enum TrezorConnectionStage {
 export enum ConnectionError {
   MetamaskNotInstalled = "No Ethereum provider was found on window.ethereum",
   RejectedMetamaskConnection = "The user rejected the request.",
-  RejectedTallyHoConnection = "The user rejected the request.",
   RejectedCoinbaseConnection = "User denied account authorization",
   CoinbaseUnsupportedNetwork = "Unsupported chain id:",
   TrezorDenied = "Popup closed",
@@ -27,7 +26,7 @@ export enum ConnectionError {
 }
 
 export enum WalletType {
-  TallyHo = "TALLy_HO",
+  TAHO = "TAHO",
   Metamask = "METAMASK",
   WalletConnect = "WALLET_CONNECT",
   Coinbase = "COINBASE",

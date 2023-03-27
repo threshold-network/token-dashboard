@@ -27,7 +27,7 @@ export enum ExternalHref {
   tBTCBrdigeAudit = "https://leastauthority.com/blog/audits/audit-of-keep-network-tbtc-bridge-v2/",
   vendingMachineAudit = "https://www.certik.com/projects/threshold-network",
   thresholdStakingAudit = "https://chainsecurity.com/security-audit/threshold-network/",
-  installTallyHo = "https://tallyho.org/",
+  installTaho = "https://taho.xyz/",
   tBTCRecoveryGuide = "https://github.com/keep-network/tbtc-v2/blob/main/typescript/scripts/README.adoc",
   btcConfirmations = "https://en.bitcoin.it/wiki/Confirmation",
   mintersAndGuardiansDocs = "https://blog.threshold.network/minters-guardians-and-a-strong-tbtc/",

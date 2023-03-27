@@ -1,7 +1,7 @@
 import { createIcon } from "@chakra-ui/icons"
 
-export const TallyHo = createIcon({
-  displayName: "TallyHo",
+export const Taho = createIcon({
+  displayName: "Taho",
   viewBox: "0 0 80 80",
   path: [
     <rect x="6" y="8" width="68" height="69" rx="22" fill="#EF9C32" />,
