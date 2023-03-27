@@ -1,2 +1,2 @@
 export * from "./TakeNoteList"
-export * from "./BridgeContractLink"
+export * from "./Links"

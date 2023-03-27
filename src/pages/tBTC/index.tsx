@@ -10,7 +10,7 @@ const MainTBTCPage: PageComponent = (props) => {
 
 MainTBTCPage.route = {
   path: "tBTC",
-  index: true,
+  index: false,
   pages: [TBTCBridge, HowItWorksPage],
   title: "tBTC",
   isPageEnabled: featureFlags.TBTC_V2,

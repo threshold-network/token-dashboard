@@ -9,9 +9,10 @@ import {
   key,
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
+import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
-export const fetchBridgeTxHitoryEffect = async (
-  action: ReturnType<typeof tbtcSlice.actions.requestBridgeTransactionHistory>,
+export const fetchBridgeactivityEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
   const { depositor } = action.payload
@@ -19,21 +20,19 @@ export const fetchBridgeTxHitoryEffect = async (
 
   listenerApi.unsubscribe()
 
-  listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeTransactionHistory())
+  listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
 
   try {
-    const data = await listenerApi.extra.threshold.tbtc.bridgeTxHistory(
+    const data = await listenerApi.extra.threshold.tbtc.bridgeActivity(
       depositor
     )
-    listenerApi.dispatch(
-      tbtcSlice.actions.bridgeTransactionHistoryFetched(data)
-    )
+    listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
   } catch (error) {
-    console.error("Could not fetch bridge transaction history: ", error)
+    console.error("Could not fetch bridge activity: ", error)
     listenerApi.subscribe()
     listenerApi.dispatch(
-      tbtcSlice.actions.bridgeTransactionHistoryFailed({
-        error: "Could not fetch bridge transaction history.",
+      tbtcSlice.actions.bridgeActivityFailed({
+        error: "Could not fetch bridge activity.",
       })
     )
   }
@@ -109,14 +108,15 @@ export const findUtxoEffect = async (
           // UTXO exists for a given Bitcoin deposit address and deposit is not
           // yet revealed. Redirect to step 3 to reveal the deposit and set
           // utxo.
+
+          listenerApi.dispatch(
+            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
+          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
               value: MintingStep.InitiateMinting,
             })
-          )
-          listenerApi.dispatch(
-            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
           )
         }
       }
@@ -134,6 +134,70 @@ export const findUtxoEffect = async (
       action as ReturnType<typeof tbtcSlice.actions.updateState>
     ).payload
     return key === "mintingStep" && value !== MintingStep.Deposit
+  })
+
+  // Stop polling task.
+  pollingTask.cancel()
+}
+
+export const fetchUtxoConfirmationsEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.fetchUtxoConfirmations>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { utxo } = action.payload
+  const {
+    tbtc: { txConfirmations },
+  } = listenerApi.getState()
+
+  if (!utxo) return
+
+  const minimumNumberOfConfirmationsNeeded =
+    listenerApi.extra.threshold.tbtc.minimumNumberOfConfirmationsNeeded(
+      utxo.value
+    )
+
+  if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
+    return
+
+  const txHash = TransactionHash.from(utxo.transactionHash)
+
+  // Cancel any in-progress instances of this listener.
+  listenerApi.cancelActiveListeners()
+
+  const pollingTask = listenerApi.fork(async (forkApi) => {
+    try {
+      while (true) {
+        // Get confirmations
+        const confirmations = await forkApi.pause(
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(txHash)
+        )
+        listenerApi.dispatch(
+          tbtcSlice.actions.updateState({
+            key: "txConfirmations",
+            value: confirmations,
+          })
+        )
+        await forkApi.delay(10 * ONE_SEC_IN_MILISECONDS)
+      }
+    } catch (err) {
+      if (!(err instanceof TaskAbortError)) {
+        console.error(
+          `Failed to sync confirmation for transaction: ${utxo.transactionHash}.`,
+          err
+        )
+      }
+    }
+  })
+
+  await listenerApi.condition((action) => {
+    if (!tbtcSlice.actions.updateState.match(action)) return false
+
+    const { key, value } = (
+      action as ReturnType<typeof tbtcSlice.actions.updateState>
+    ).payload
+    return (
+      key === "txConfirmations" && value >= minimumNumberOfConfirmationsNeeded
+    )
   })
 
   // Stop polling task.

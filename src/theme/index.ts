@@ -11,14 +11,26 @@ import { Checkbox } from "./Checkbox"
 import { Radio } from "./Radio"
 import { AnnouncementBanner } from "./AnnouncementBanner"
 import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
+import { Timeline } from "./Timeline"
+import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
 
 const index = extendTheme({
   ...defaultTheme,
+  colors: {
+    ...defaultTheme.colors,
+    // TODO: move color to components repo.
+    teal: {
+      "500": "#00BACC",
+    },
+  },
   textStyles: {
     bodyLg: {
       fontWeight: "400",
       fontSize: "18px",
       lineHeight: "28px",
+    },
+    "chain-identifier": {
+      fontFamily: "IBM Plex Mono, monospace",
     },
   },
   components: {
@@ -33,6 +45,8 @@ const index = extendTheme({
     DetailedLinkListItem,
     Radio,
     Checkbox,
+    Timeline,
+    DotsLoadingIndicator,
   },
 })
 

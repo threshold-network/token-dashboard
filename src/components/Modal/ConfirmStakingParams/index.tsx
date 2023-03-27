@@ -24,7 +24,6 @@ import { useStakingState } from "../../../hooks/useStakingState"
 import { ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
 import { StakingContractLearnMore } from "../../Link"
-import StakingStats from "../../StakingStats"
 import useCheckDuplicateProviderAddress from "../../../web3/hooks/useCheckDuplicateProviderAddress"
 import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
@@ -43,14 +42,14 @@ const ConfirmStakingParamsModal: FC<
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
-  const { stake } = useStakeTransaction((tx) => {
+  const { stake } = useStakeTransaction((receipt) => {
     if (featureFlags.MULTI_APP_STAKING) {
       openModal(ModalType.StakeSuccess, {
-        transactionHash: tx.hash,
+        transactionHash: receipt.transactionHash,
       })
     } else {
       openModal(ModalType.StakeSuccessOLD, {
-        transactionHash: tx.hash,
+        transactionHash: receipt.transactionHash,
       })
     }
   })

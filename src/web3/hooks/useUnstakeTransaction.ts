@@ -1,6 +1,5 @@
 import { useCallback } from "react"
-import { ContractTransaction } from "@ethersproject/contracts"
-import { useSendTransaction } from "./useSendTransaction"
+import { OnSuccessCallback, useSendTransaction } from "./useSendTransaction"
 import { useTStakingContract } from "./useTStakingContract"
 import { useModal } from "../../hooks/useModal"
 import doesErrorInclude from "../utils/doesErrorInclude"
@@ -24,7 +23,7 @@ const unstakeTypeToContractFunctionName: Record<UnstakeType, string> = {
 
 const useUnstakeTransaction = (
   type: UnstakeType,
-  onSuccess: (tx: ContractTransaction) => void
+  onSuccess: OnSuccessCallback
 ) => {
   const { openModal } = useModal()
 

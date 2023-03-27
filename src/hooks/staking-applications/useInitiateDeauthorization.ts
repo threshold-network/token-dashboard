@@ -1,9 +1,12 @@
-import { ContractTransaction } from "ethers"
 import { useCallback } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { ModalType } from "../../enums"
 import { StakingAppName } from "../../store/staking-applications"
-import { useSendTransactionFromFn } from "../../web3/hooks"
+import {
+  OnErrorCallback,
+  OnSuccessCallback,
+  useSendTransactionFromFn,
+} from "../../web3/hooks"
 import { isAddressZero } from "../../web3/utils"
 import { useModal } from "../useModal"
 import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
@@ -12,8 +15,8 @@ import { useUpdateOperatorStatus } from "./useUpdateOperatorStatus"
 export const useInitiateDeauthorization = (
   appName: StakingAppName,
   shouldUpdateOperatorStatusAfterInitiation?: boolean,
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
-  onError?: (error: any) => void | Promise<void>
+  onSuccess?: OnSuccessCallback,
+  onError?: OnErrorCallback
 ) => {
   const { openModal } = useModal()
   const threshold = useThreshold()

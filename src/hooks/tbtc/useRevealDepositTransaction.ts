@@ -1,10 +1,13 @@
-import { ContractTransaction } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
-import { useSendTransactionFromFn } from "../../web3/hooks"
+import {
+  OnErrorCallback,
+  OnSuccessCallback,
+  useSendTransactionFromFn,
+} from "../../web3/hooks"
 
 export const useRevealDepositTransaction = (
-  onSuccess?: (tx: ContractTransaction) => void | Promise<void>,
-  onError?: (error: any) => void | Promise<void>
+  onSuccess?: OnSuccessCallback,
+  onError?: OnErrorCallback
 ) => {
   const threshold = useThreshold()
 

@@ -13,6 +13,28 @@ export enum ExplorerDataType {
   BLOCK = "block",
 }
 
+export const createBlockExplorerLink = (
+  prefix: string,
+  id: string,
+  type: ExplorerDataType
+) => {
+  switch (type) {
+    case ExplorerDataType.TRANSACTION: {
+      return `${prefix}/tx/${id}`
+    }
+    case ExplorerDataType.TOKEN: {
+      return `${prefix}/token/${id}`
+    }
+    case ExplorerDataType.BLOCK: {
+      return `${prefix}/block/${id}`
+    }
+    case ExplorerDataType.ADDRESS:
+    default: {
+      return `${prefix}/address/${id}`
+    }
+  }
+}
+
 const createEtherscanLink = (
   chainId: number,
   address: string,
@@ -20,21 +42,7 @@ const createEtherscanLink = (
 ): string => {
   const prefix = `https://${ETHERSCAN_PREFIXES[chainId] ?? ""}etherscan.io`
 
-  switch (type) {
-    case ExplorerDataType.TRANSACTION: {
-      return `${prefix}/tx/${address}`
-    }
-    case ExplorerDataType.TOKEN: {
-      return `${prefix}/token/${address}`
-    }
-    case ExplorerDataType.BLOCK: {
-      return `${prefix}/block/${address}`
-    }
-    case ExplorerDataType.ADDRESS:
-    default: {
-      return `${prefix}/address/${address}`
-    }
-  }
+  return createBlockExplorerLink(prefix, address, type)
 }
 
 export default createEtherscanLink

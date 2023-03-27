@@ -1,21 +1,34 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
+import { FetchingState } from "."
+import { BridgeActivity } from "../threshold-ts/tbtc"
 
-export type TbtcStateKey =
-  | "mintingStep"
-  | "mintingType"
-  | "btcRecoveryAddress"
-  | "ethAddress"
-  | "btcDepositAddress"
-  | "tBTCMintAmount"
-  | "ethGasCost"
-  | "thresholdNetworkFee"
-  | "mintingFee"
-  | "nextBridgeCrossingInUnix"
-  | "walletPublicKeyHash"
-  | "blindingFactor"
-  | "refundLocktime"
-  | "utxo"
+export interface TbtcState {
+  mintingStep: MintingStep
+  unmintingStep: UnmintingStep
+  mintingType: TbtcMintingType
+
+  // deposit data
+  btcRecoveryAddress: string
+  btcDepositAddress: string
+  ethAddress: string
+  refundLocktime: string
+  blindingFactor: string
+  walletPublicKeyHash: string
+  utxo: UnspentTransactionOutput
+  txConfirmations: number
+  nextBridgeCrossingInUnix?: number
+  depositRevealedTxHash?: string
+  optimisticMintingRequestedTxHash?: string
+  optimisticMintingFinalizedTxHash?: string
+  tBTCMintAmount: string
+  thresholdNetworkFee: string
+  mintingFee: string
+
+  bridgeActivity: FetchingState<BridgeActivity[]>
+}
+
+export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">
 
 export enum TbtcMintingType {
   mint = "MINT",
@@ -52,29 +65,15 @@ export interface UpdateTbtcState {
 
 export interface UseTbtcState {
   (): {
-    mintingStep: MintingStep
-    unmintingStep: UnmintingStep
-    mintingType: TbtcMintingType
-    btcWithdrawAddress: string
-    unmintAmount: string
-    btcDepositAddress: string
-
-    // deposit data
-    btcRecoveryAddress: string
-    ethAddress: string
-    refundLocktime: string
-    blindingFactor: string
-    walletPublicKeyHash: string
-    utxo: UnspentTransactionOutput
-
     updateState: (key: TbtcStateKey, value: any) => UpdateTbtcState
-    nextBridgeCrossingInUnix?: number
-
-    // TODO: These may be incorrect types
-    tBTCMintAmount: string
-    ethGasCost: number
-    thresholdNetworkFee: string
-    mintingFee: string
     resetDepositData: () => void
-  }
+  } & TbtcState
+}
+
+export type ExternalPoolData = {
+  poolName: string
+  url: string
+  address: string
+  apy: number[]
+  tvl: number
 }

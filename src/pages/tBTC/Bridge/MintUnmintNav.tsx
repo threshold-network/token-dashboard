@@ -1,22 +1,45 @@
 import { ComponentProps, FC } from "react"
-import { Box } from "@chakra-ui/react"
-import { Card, FilterTabs, FilterTab } from "@threshold-network/components"
-import { TbtcMintingType } from "../../../types/tbtc"
-import { useTbtcState } from "../../../hooks/useTbtcState"
+import {
+  matchPath,
+  resolvePath,
+  useLocation,
+  useResolvedPath,
+} from "react-router"
+import { Box, Card, FilterTabs, FilterTab } from "@threshold-network/components"
+import Link from "../../../components/Link"
+import { PageComponent } from "../../../types"
 
-export const MintUnmintNav: FC<ComponentProps<typeof Card>> = ({
-  ...props
-}) => {
-  const { mintingType, updateState } = useTbtcState()
+const renderNavItem = (page: PageComponent, index: number) => (
+  <FilterTab
+    key={page.route.path}
+    as={Link}
+    to={page.route.path}
+    tabId={index.toString()}
+  >
+    {page.route.title}
+  </FilterTab>
+)
+
+export const MintUnmintNav: FC<
+  ComponentProps<typeof Card> & { pages: PageComponent[] }
+> = ({ pages, ...props }) => {
+  const resolved = useResolvedPath("")
+  const location = useLocation()
+
+  const activeTabId = pages
+    .map((page) =>
+      resolvePath(page.route.pathOverride || page.route.path, resolved.pathname)
+    )
+    .map((resolvedPath) =>
+      matchPath({ path: resolvedPath.pathname, end: true }, location.pathname)
+    )
+    .findIndex((match) => !!match)
+    .toString()
 
   return (
-    <Box {...props}>
-      <FilterTabs
-        selectedTabId={mintingType}
-        onTabClick={(tabId) => updateState("mintingType", tabId)}
-      >
-        <FilterTab tabId={TbtcMintingType.mint}>Mint</FilterTab>
-        <FilterTab tabId={TbtcMintingType.unmint}>Unmint</FilterTab>
+    <Box as="nav" {...props}>
+      <FilterTabs selectedTabId={activeTabId}>
+        {pages.filter((page) => !!page.route.title).map(renderNavItem)}
       </FilterTabs>
     </Box>
   )
