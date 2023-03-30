@@ -7,7 +7,7 @@ import {
   createContext,
   useContext,
 } from "react"
-import { useParams } from "react-router"
+import { useParams, useLocation, useNavigate } from "react-router"
 import {
   Badge,
   BodyLg,
@@ -72,6 +72,8 @@ import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolDat
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
+  const { state } = useLocation()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { txConfirmations } = useTbtcState()
   const { isFetching, data, error } = useFetchDepositDetails(depositKey)
@@ -79,10 +81,23 @@ export const DepositDetails: PageComponent = () => {
     "curve",
     CurveFactoryPoolId.TBTC_WBTC_SBTC
   )
+
   const [inProgressStep, setInProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
     useSubscribeToOptimisticMintingEvents(depositKey)
+
+  // Cache the location state in component state.
+  const [locationStateCache] = useState<{ shouldStartFromFirstStep?: boolean }>(
+    (state as { shouldStartFromFirstStep?: boolean }) || {}
+  )
+
+  useEffect(() => {
+    // Redirect to current path and clear the location state.
+    navigate(".", { replace: true })
+  }, [navigate])
+
+  const shouldStartFromFirstStep = locationStateCache?.shouldStartFromFirstStep
 
   // Extract deposit details values to use them as a dependency in hook
   // dependency array.
@@ -112,7 +127,8 @@ export const DepositDetails: PageComponent = () => {
   }, [dispatch, btcDepositTxHash, amount, confirmations, requiredConfirmations])
 
   useEffect(() => {
-    if (!confirmations || !requiredConfirmations) return
+    if (!confirmations || !requiredConfirmations || shouldStartFromFirstStep)
+      return
 
     setInProgressStep(
       getInProgressStep({
@@ -127,6 +143,7 @@ export const DepositDetails: PageComponent = () => {
     requiredConfirmations,
     optimisticMintingFinalizedTxHash,
     optimisticMintingRequestedTxHash,
+    shouldStartFromFirstStep,
   ])
 
   const transactions: {
