@@ -71,6 +71,7 @@ import BitcoinIcon from "../../../static/images/bitcoin.svg"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
+import { TransactionDetailsAmountItem } from "./components/MintingTransactionDetails"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -112,6 +113,8 @@ export const DepositDetails: PageComponent = () => {
     data?.optimisticMintingRequestedTxHash
   const optimisticMintingFinalizedTxHash =
     data?.optimisticMintingFinalizedTxHash
+  const thresholdNetworkFee = data?.treasuryFee
+  const mintingFee = data?.optimisticMintFee
 
   useEffect(() => {
     if (
@@ -188,6 +191,9 @@ export const DepositDetails: PageComponent = () => {
           optimisticMintingFinalizedTxHash ?? mintingFinalizedTxHash,
         confirmations: confirmations || txConfirmations,
         requiredConfirmations: requiredConfirmations!,
+        amount: amount,
+        thresholdNetworkFee,
+        mintingFee,
       }}
     >
       <Card {...mainCardProps}>
@@ -214,7 +220,6 @@ export const DepositDetails: PageComponent = () => {
                   </BodyLg>{" "}
                   <InlineTokenBalance
                     tokenAmount={amount || "0"}
-                    tokenDecimals={8}
                     tokenSymbol="tBTC"
                     withSymbol
                     ml="auto"
@@ -321,6 +326,9 @@ const DepositDetailsPageContext = createContext<
       requiredConfirmations?: number
       updateStep: (step: DepositDetailsTimelineStep) => void
       step: DepositDetailsTimelineStep
+      amount?: string
+      mintingFee?: string
+      thresholdNetworkFee?: string
     })
   | undefined
 >(undefined)
@@ -444,7 +452,11 @@ const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
 const getInProgressStep = (
   depositDetails?: Omit<
     DepositData,
-    "depositRevealedTxHash" | "btcTxHash" | "amount"
+    | "depositRevealedTxHash"
+    | "btcTxHash"
+    | "amount"
+    | "optimisticMintFee"
+    | "treasuryFee"
   >
 ): DepositDetailsTimelineStep => {
   if (!depositDetails) return "bitcoin-confirmations"
@@ -484,6 +496,9 @@ const StepSwitcher: FC = () => {
     optimisticMintingFinalizedTxHash,
     btcTxHash,
     updateStep,
+    amount,
+    thresholdNetworkFee,
+    mintingFee,
   } = useDepositDetailsPageContext()
 
   const onComplete = useCallback(() => {
@@ -527,11 +542,35 @@ const StepSwitcher: FC = () => {
     case "completed":
       return (
         <>
-          <H5 mt="10">Success!</H5>
-          <BodyMd mt="8">
+          <BodyLg mt="4" fontSize="20px" lineHeight="24px">
+            Success!
+          </BodyLg>
+          <BodyMd mt="2">
             Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
           </BodyMd>
-          <ButtonLink size="lg" mt="12" mb="8" to="/tBTC" isFullWidth>
+          <Divider my="4" />
+          <List spacing="2">
+            <TransactionDetailsAmountItem
+              label="Minted Amount"
+              tokenAmount={amount}
+              tokenSymbol="tBTC"
+            />
+            <TransactionDetailsAmountItem
+              label="Minting Fee"
+              tokenAmount={mintingFee}
+              tokenSymbol="tBTC"
+              precision={6}
+              higherPrecision={8}
+            />
+            <TransactionDetailsAmountItem
+              label="Threshold Network Fee"
+              tokenAmount={thresholdNetworkFee}
+              tokenSymbol="tBTC"
+              precision={6}
+              higherPrecision={8}
+            />
+          </List>
+          <ButtonLink size="lg" mt="8" mb="8" to="/tBTC" isFullWidth>
             New mint
           </ButtonLink>
         </>

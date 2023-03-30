@@ -14,7 +14,7 @@ import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Skeleton } from "@chakra-ui/react"
-import TransactionDetailsTable from "../../../pages/tBTC/Bridge/components/TransactionDetailsTable"
+import MintingTransactionDetails from "../../../pages/tBTC/Bridge/components/MintingTransactionDetails"
 import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
@@ -110,7 +110,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             Minting tBTC is a process that requires one transaction.
           </BodyLg>
         </InfoBox>
-        <TransactionDetailsTable />
+        <MintingTransactionDetails />
         <BodySm textAlign="center" mt="16">
           Read more about the&nbsp;
           <BridgeContractLink text="bridge contract" />.
