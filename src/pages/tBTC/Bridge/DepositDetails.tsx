@@ -201,10 +201,9 @@ export const DepositDetails: PageComponent = () => {
                 xl: "row",
               }}
               divider={<StackDivider />}
-              h="100%"
               spacing={4}
             >
-              <Box mb="8" w={{ base: "100%", xl: "65%" }}>
+              <Flex flexDirection="column" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
                 <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
@@ -226,7 +225,7 @@ export const DepositDetails: PageComponent = () => {
                   inProgressStep={inProgressStep}
                 />
                 <StepSwitcher />
-              </Box>
+              </Flex>
               <Flex
                 w={{ base: "100%", xl: "35%" }}
                 mb={{ base: "20", xl: "unset" }}
@@ -532,7 +531,7 @@ const StepSwitcher: FC = () => {
           <BodyMd mt="8">
             Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
           </BodyMd>
-          <ButtonLink size="lg" mt="12" to="/tBTC" isFullWidth>
+          <ButtonLink size="lg" mt="12" mb="8" to="/tBTC" isFullWidth>
             New mint
           </ButtonLink>
         </>
