@@ -230,7 +230,9 @@ export const DepositDetails: PageComponent = () => {
                 mb={{ base: "20", xl: "unset" }}
                 direction="column"
               >
-                <LabelSm mb="8">Transaction History</LabelSm>
+                <LabelSm mb="8" mt={{ xl: 2 }}>
+                  Transaction History
+                </LabelSm>
                 <Badge
                   size="sm"
                   colorScheme="yellow"
