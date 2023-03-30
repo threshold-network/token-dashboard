@@ -9,6 +9,7 @@ import {
   HStack,
   Skeleton,
   Icon,
+  Box,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
 import { IoCheckmarkSharp } from "react-icons/all"
@@ -20,7 +21,7 @@ import { ONE_SEC_IN_MILISECONDS } from "../../../../utils/date"
 
 type StepTemplateProps = {
   title: string
-  subtitle: string
+  subtitle: string | JSX.Element
   txHash?: string
   chain: ViewInBlockExplorerChain
   progressBarColor: string
@@ -84,7 +85,9 @@ export const StepTemplate: FC<StepTemplateProps> = ({
         )}
       </CircularProgress>
       {progressBarLabel}
-      <BodyMd mt="6">{subtitle}</BodyMd>
+      <BodyMd as={Box} mt="6" px="3.5">
+        {subtitle}
+      </BodyMd>
       {txHash && (
         <BodySm mt="9" color="gray.500" textAlign="center">
           See transaction on{" "}
@@ -176,7 +179,18 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Minting Initialized"
-      subtitle="A Minter is assessing the minting initialization. If all is well, the Minter will transfer the initialization to the Guardian. Minters are a small group of experts who monitor BTC deposits on the chain."
+      subtitle={
+        <>
+          <BodyMd mb="10">
+            A Minter is assessing the minting initialization.If all is well, the
+            Minter will transfer the initialization to the Guardian.
+          </BodyMd>
+          <BodyMd>
+            Minters are a small group of experts who monitor BTC deposits on the
+            chain.
+          </BodyMd>
+        </>
+      }
       chain="ethereum"
       txHash={txHash}
       progressBarColor="yellow.500"
@@ -191,7 +205,18 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Guardian Check"
-      subtitle="A Guardian examines the minting request submitted by a Minter. If all is well, the contract proceeds to the minting stage. Guardians verify minting requests and cancel fraudulent mints and remove problematic minters."
+      subtitle={
+        <>
+          <BodyMd mb="10">
+            A Guardian examines the minting request submitted by a Minter. If
+            all is well, the contract proceeds to the minting stage.
+          </BodyMd>
+          <BodyMd>
+            Guardians verify minting requests and cancel fraudulent mints and
+            remove problematic minters.
+          </BodyMd>
+        </>
+      }
       chain="ethereum"
       progressBarColor="green.500"
       isCompleted={!!txHash}
