@@ -32,7 +32,8 @@ type ComponentProps = {
   formId: string
 }
 
-const resolvedBTCAddressPrefix = supportedChainId === "1" ? "bc" : "t"
+const resolvedBTCAddressPrefix =
+  supportedChainId === "1" ? `"1" or "bc1"` : `"m", "n" or "tb1"`
 
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
@@ -50,8 +51,8 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="btcRecoveryAddress"
         label="BTC Recovery Address"
-        tooltip={`This address needs to start with the letters "${resolvedBTCAddressPrefix}". Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Recovery Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file`}
-        placeholder={`BTC Address should start with “${resolvedBTCAddressPrefix}”`}
+        tooltip={`This address needs to start with ${resolvedBTCAddressPrefix}. Recovery Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Recovery Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file`}
+        placeholder={`BTC Address should start with ${resolvedBTCAddressPrefix}`}
       />
     </Form>
   )

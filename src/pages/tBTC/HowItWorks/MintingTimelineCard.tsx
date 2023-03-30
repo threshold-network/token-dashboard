@@ -74,8 +74,8 @@ export const MintingTimelineCard: FC<ComponentProps<typeof Card>> = ({
         <ListItem>
           <ListIcon />
           <BodyMd as="span">
-            This address has to start with the letters “bc” for Bitcoin Mainnet
-            and with the letter “t” for Testnet Bitcoin. This means that your
+            This address has to start with “1” or “bc1” for Bitcoin Mainnet and
+            with “n”, “m” or “tb1” for Testnet Bitcoin. This means that your
             addresses are P2PKH or P2WPKH compliant.{" "}
             <Link isExternal href={ExternalHref.btcRecoveryAddress}>
               Read more
