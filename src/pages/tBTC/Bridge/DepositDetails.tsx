@@ -206,7 +206,7 @@ export const DepositDetails: PageComponent = () => {
             >
               <Box mb="8" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
-                <Flex mb="4" alignItems="center">
+                <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
                     <Box as="span" fontWeight="600" color="brand.500">
                       {inProgressStep === "completed" ? "Minted" : "Minting"}
