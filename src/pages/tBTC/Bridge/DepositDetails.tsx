@@ -28,6 +28,8 @@ import {
   SkeletonText,
   SkeletonCircle,
   Image,
+  BodySm,
+  BodyXs,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -204,7 +206,7 @@ export const DepositDetails: PageComponent = () => {
             >
               <Box mb="8" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
-                <Flex mb="4">
+                <Flex mb="4" alignItems="center">
                   <BodyLg>
                     <Box as="span" fontWeight="600" color="brand.500">
                       {inProgressStep === "completed" ? "Minted" : "Minting"}
@@ -249,14 +251,16 @@ export const DepositDetails: PageComponent = () => {
                     .filter((item) => !!item.txHash)
                     .map((item) => (
                       <ListItem key={item.txHash}>
-                        {item.label}{" "}
-                        <ViewInBlockExplorer
-                          id={item.txHash!}
-                          type={ExplorerDataType.TRANSACTION}
-                          chain={item.chain}
-                          text="transaction"
-                        />
-                        .
+                        <BodySm>
+                          {item.label}{" "}
+                          <ViewInBlockExplorer
+                            id={item.txHash!}
+                            type={ExplorerDataType.TRANSACTION}
+                            chain={item.chain}
+                            text="transaction"
+                          />
+                          .
+                        </BodySm>
                       </ListItem>
                     ))}
                 </List>
@@ -277,15 +281,15 @@ export const DepositDetails: PageComponent = () => {
             {inProgressStep !== "completed" && (
               <>
                 <Divider />
-                <HStack mt="8" spacing="16" alignItems="center">
+                <Flex mt="8" alignItems="center">
                   <BodyLg>
                     Eager to start a new mint while waiting for this one? You
                     can now.
                   </BodyLg>
-                  <ButtonLink size="lg" to="/tBTC/mint">
+                  <ButtonLink size="lg" to="/tBTC/mint" marginLeft="auto">
                     New Mint
                   </ButtonLink>
-                </HStack>
+                </Flex>
               </>
             )}
           </>
@@ -363,22 +367,22 @@ type DepositDetailsTimelineItem = {
 const depositTimelineItems: DepositDetailsTimelineItem[] = [
   {
     id: "bitcoin-confirmations",
-    text: "Bitcoin Checkpoint",
+    text: `Bitcoin\nCheckpoint`,
     status: "semi-active",
   },
   {
     id: "minting-initialized",
-    text: "Minting Initialized",
+    text: "Minting\nInitialized",
     status: "inactive",
   },
   {
     id: "guardian-check",
-    text: "Guardian Check",
+    text: "Guardian\nCheck",
     status: "inactive",
   },
   {
     id: "minting-completed",
-    text: "Minting Completed",
+    text: "Minting\nCompleted",
     status: "inactive",
   },
 ]
@@ -429,7 +433,9 @@ const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
             </TimelineDot>
             <TimelineConnector />
           </TimelineBreakpoint>
-          <TimelineContent>{item.text}</TimelineContent>
+          <TimelineContent>
+            <BodyXs whiteSpace="pre-line">{item.text}</BodyXs>
+          </TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>

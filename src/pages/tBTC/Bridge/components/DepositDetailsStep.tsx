@@ -58,7 +58,13 @@ export const StepTemplate: FC<StepTemplateProps> = ({
 
   return (
     <Flex flexDirection="column" alignItems="center">
-      <BodyLg color="gray.700" mt="8" alignSelf="flex-start">
+      <BodyLg
+        color="gray.700"
+        mt="8"
+        alignSelf="flex-start"
+        fontSize="20px"
+        lineHeight="24px"
+      >
         {title}
       </BodyLg>
 
@@ -181,7 +187,7 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       title="Minting Initialized"
       subtitle={
         <>
-          <BodyMd mb="10">
+          <BodyMd mb="9">
             A Minter is assessing the minting initialization.If all is well, the
             Minter will transfer the initialization to the Guardian.
           </BodyMd>
@@ -207,7 +213,7 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       title="Guardian Check"
       subtitle={
         <>
-          <BodyMd mb="10">
+          <BodyMd mb="9">
             A Guardian examines the minting request submitted by a Minter. If
             all is well, the contract proceeds to the minting stage.
           </BodyMd>
