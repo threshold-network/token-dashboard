@@ -190,7 +190,7 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       subtitle={
         <>
           <BodyMd mb="9">
-            A Minter is assessing the minting initialization.If all is well, the
+            A Minter is assessing the minting initialization. If all is well, the
             Minter will transfer the initialization to the Guardian.
           </BodyMd>
           <BodyMd>
