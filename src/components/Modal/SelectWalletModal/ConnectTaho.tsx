@@ -85,7 +85,7 @@ const InstallTaho: FC = () => {
         <Link isExternal href={ExternalHref.installTaho}>
           their website
         </Link>
-        .
+        , refresh the page and try again.
       </AlertDescription>
     </Alert>
   )
@@ -99,8 +99,8 @@ const TahoIsNotSetAsDefaultWallet: FC = () => {
         Taho is not set as default wallet. Please make sure Taho is{" "}
         <Link isExternal href={ExternalHref.setTahoAsDefaultWallet}>
           your defaul wallet
-        </Link>{" "}
-        and try again.
+        </Link>
+        , refresh the page and try again.
       </AlertDescription>
     </Alert>
   )
