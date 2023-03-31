@@ -8,42 +8,46 @@ import {
   Flex,
   HStack,
   Skeleton,
-  Icon,
+  Box,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import { IoCheckmarkSharp } from "react-icons/all"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
 } from "../../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
 import { ONE_SEC_IN_MILISECONDS } from "../../../../utils/date"
+import {
+  BTCConfirmationsIcon,
+  GuardianCheckIcon,
+  MintingCompletedIcon,
+  MintingInitializedIcon,
+} from "./DepositDetailsStepIcons"
 
 type StepTemplateProps = {
   title: string
-  subtitle: string
   txHash?: string
   chain: ViewInBlockExplorerChain
   progressBarColor: string
-  progressBarLabel?: string | JSX.Element
   isCompleted: boolean
   onComplete: () => void
   isIndeterminate?: boolean
   progressBarValue?: number
   progressBarMaxValue?: number
+  icon: JSX.Element
 }
 
 export const StepTemplate: FC<StepTemplateProps> = ({
   title,
-  subtitle,
   txHash,
   chain,
-  progressBarLabel,
   progressBarValue,
   progressBarMaxValue,
   progressBarColor,
   isIndeterminate,
   isCompleted,
   onComplete,
+  icon,
+  children,
 }) => {
   useEffect(() => {
     if (!isCompleted) return
@@ -56,8 +60,14 @@ export const StepTemplate: FC<StepTemplateProps> = ({
   }, [isCompleted, onComplete])
 
   return (
-    <Flex flexDirection="column" alignItems="center">
-      <BodyLg color="gray.700" mt="8" alignSelf="flex-start">
+    <Flex flexDirection="column" alignItems="center" height="100%">
+      <BodyLg
+        color="gray.700"
+        mt="8"
+        alignSelf="flex-start"
+        fontSize="20px"
+        lineHeight="24px"
+      >
         {title}
       </BodyLg>
 
@@ -73,20 +83,14 @@ export const StepTemplate: FC<StepTemplateProps> = ({
         isIndeterminate={isCompleted ? undefined : isIndeterminate}
       >
         {isCompleted && (
-          <CircularProgressLabel>
-            <Icon
-              as={IoCheckmarkSharp}
-              w="100px"
-              h="100px"
-              color={progressBarColor}
-            />
+          <CircularProgressLabel __css={{ svg: { margin: "auto" } }}>
+            {icon}
           </CircularProgressLabel>
         )}
       </CircularProgress>
-      {progressBarLabel}
-      <BodyMd mt="6">{subtitle}</BodyMd>
+      {children}
       {txHash && (
-        <BodySm mt="9" color="gray.500" textAlign="center">
+        <BodySm mt="auto" mb="8" color="gray.500" textAlign="center">
           See transaction on{" "}
           <ViewInBlockExplorer
             text={chain === "bitcoin" ? "blockstream" : "etherscan"}
@@ -150,25 +154,27 @@ export const Step1: FC<
   return (
     <StepTemplate
       title="Waiting for the Bitcoin Network Confirmations..."
-      subtitle={subtitle}
       chain="bitcoin"
       txHash={txHash}
+      icon={<BTCConfirmationsIcon />}
       progressBarColor="brand.500"
       progressBarValue={confirmations}
       progressBarMaxValue={requiredConfirmations}
-      progressBarLabel={
-        <BitcoinConfirmationsSummary
-          minConfirmationsNeeded={requiredConfirmations}
-          txConfirmations={confirmations}
-        />
-      }
       isCompleted={Boolean(
         confirmations &&
           requiredConfirmations &&
           confirmations >= requiredConfirmations
       )}
       onComplete={onComplete}
-    />
+    >
+      <BitcoinConfirmationsSummary
+        minConfirmationsNeeded={requiredConfirmations}
+        txConfirmations={confirmations}
+      />
+      <BodyMd mt="6" px="3.5" alignSelf="flex-start">
+        {subtitle}
+      </BodyMd>
+    </StepTemplate>
   )
 }
 
@@ -176,14 +182,25 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Minting Initialized"
-      subtitle="A Minter is assessing the minting initialization. If all is well, the Minter will transfer the initialization to the Guardian. Minters are a small group of experts who monitor BTC deposits on the chain."
+      icon={<MintingInitializedIcon />}
       chain="ethereum"
       txHash={txHash}
       progressBarColor="yellow.500"
       isCompleted={!!txHash}
       onComplete={onComplete}
       isIndeterminate
-    />
+    >
+      <Box mt="6" px="3.5" alignSelf="flex-start">
+        <BodyMd mb="9">
+          A Minter is assessing the minting initialization. If all is well, the
+          Minter will transfer the initialization to the Guardian.
+        </BodyMd>
+        <BodyMd>
+          Minters are a small group of experts who monitor BTC deposits on the
+          chain.
+        </BodyMd>
+      </Box>
+    </StepTemplate>
   )
 }
 
@@ -191,13 +208,24 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Guardian Check"
-      subtitle="A Guardian examines the minting request submitted by a Minter. If all is well, the contract proceeds to the minting stage. Guardians verify minting requests and cancel fraudulent mints and remove problematic minters."
+      icon={<GuardianCheckIcon />}
       chain="ethereum"
       progressBarColor="green.500"
       isCompleted={!!txHash}
       onComplete={onComplete}
       isIndeterminate
-    />
+    >
+      <Box mt="6" px="3.5" alignSelf="flex-start">
+        <BodyMd mb="9">
+          A Guardian examines the minting request submitted by a Minter. If all
+          is well, the contract proceeds to the minting stage.
+        </BodyMd>
+        <BodyMd>
+          Guardians verify minting requests and cancel fraudulent mints and
+          remove problematic minters.
+        </BodyMd>
+      </Box>
+    </StepTemplate>
   )
 }
 
@@ -205,13 +233,17 @@ export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
     <StepTemplate
       title="Minting in progress"
-      subtitle="The contract is minting your tBTC tokens."
+      icon={<MintingCompletedIcon />}
       chain="ethereum"
       txHash={txHash}
       progressBarColor="teal.500"
       isCompleted={true}
       onComplete={onComplete}
       isIndeterminate
-    />
+    >
+      <BodyMd mt="6" px="3.5" alignSelf="flex-start">
+        The contract is minting your tBTC tokens.
+      </BodyMd>
+    </StepTemplate>
   )
 }

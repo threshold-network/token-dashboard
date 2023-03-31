@@ -7,7 +7,7 @@ import {
   createContext,
   useContext,
 } from "react"
-import { useParams } from "react-router"
+import { useParams, useLocation, useNavigate } from "react-router"
 import {
   Badge,
   BodyLg,
@@ -28,6 +28,8 @@ import {
   SkeletonText,
   SkeletonCircle,
   Image,
+  BodySm,
+  BodyXs,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -72,6 +74,8 @@ import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolDat
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
+  const { state } = useLocation()
+  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { txConfirmations } = useTbtcState()
   const { isFetching, data, error } = useFetchDepositDetails(depositKey)
@@ -79,10 +83,23 @@ export const DepositDetails: PageComponent = () => {
     "curve",
     CurveFactoryPoolId.TBTC_WBTC_SBTC
   )
-  const [inProgressStep, setInProgressStep] =
+
+  const [mintingProgressStep, setMintingProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
     useSubscribeToOptimisticMintingEvents(depositKey)
+
+  // Cache the location state in component state.
+  const [locationStateCache] = useState<{ shouldStartFromFirstStep?: boolean }>(
+    (state as { shouldStartFromFirstStep?: boolean }) || {}
+  )
+
+  useEffect(() => {
+    // Redirect to current path and clear the location state.
+    navigate(".", { replace: true })
+  }, [navigate])
+
+  const shouldStartFromFirstStep = locationStateCache?.shouldStartFromFirstStep
 
   // Extract deposit details values to use them as a dependency in hook
   // dependency array.
@@ -112,10 +129,11 @@ export const DepositDetails: PageComponent = () => {
   }, [dispatch, btcDepositTxHash, amount, confirmations, requiredConfirmations])
 
   useEffect(() => {
-    if (!confirmations || !requiredConfirmations) return
+    if (!confirmations || !requiredConfirmations || shouldStartFromFirstStep)
+      return
 
-    setInProgressStep(
-      getInProgressStep({
+    setMintingProgressStep(
+      getMintingProgressStep({
         confirmations,
         requiredConfirmations,
         optimisticMintingFinalizedTxHash,
@@ -127,6 +145,7 @@ export const DepositDetails: PageComponent = () => {
     requiredConfirmations,
     optimisticMintingFinalizedTxHash,
     optimisticMintingRequestedTxHash,
+    shouldStartFromFirstStep,
   ])
 
   const transactions: {
@@ -149,7 +168,7 @@ export const DepositDetails: PageComponent = () => {
   ]
 
   const mainCardProps =
-    inProgressStep === "completed"
+    mintingProgressStep === "completed"
       ? {
           backgroundImage: mainCardBackground,
           backgroundPosition: "bottom -10px right",
@@ -160,8 +179,8 @@ export const DepositDetails: PageComponent = () => {
   return (
     <DepositDetailsPageContext.Provider
       value={{
-        step: inProgressStep,
-        updateStep: setInProgressStep,
+        step: mintingProgressStep,
+        updateStep: setMintingProgressStep,
         btcTxHash: btcDepositTxHash,
         optimisticMintingRequestedTxHash:
           optimisticMintingRequestedTxHash ?? mintingRequestedTxHash,
@@ -182,17 +201,18 @@ export const DepositDetails: PageComponent = () => {
                 xl: "row",
               }}
               divider={<StackDivider />}
-              h="100%"
               spacing={4}
             >
-              <Box mb="8" w={{ base: "100%", xl: "65%" }}>
+              <Flex flexDirection="column" w={{ base: "100%", xl: "65%" }}>
                 <TbtcMintingCardTitle />
-                <Flex mb="4">
+                <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
                     <Box as="span" fontWeight="600" color="brand.500">
-                      {inProgressStep === "completed" ? "Minted" : "Minting"}
+                      {mintingProgressStep === "completed"
+                        ? "Minted"
+                        : "Minting"}
                     </Box>
-                    {inProgressStep !== "completed" && ` - In progress...`}
+                    {mintingProgressStep !== "completed" && ` - In progress...`}
                   </BodyLg>{" "}
                   <InlineTokenBalance
                     tokenAmount={amount || "0"}
@@ -204,16 +224,18 @@ export const DepositDetails: PageComponent = () => {
                 </Flex>
                 <DepositDetailsTimeline
                   // isCompleted
-                  inProgressStep={inProgressStep}
+                  inProgressStep={mintingProgressStep}
                 />
                 <StepSwitcher />
-              </Box>
+              </Flex>
               <Flex
                 w={{ base: "100%", xl: "35%" }}
                 mb={{ base: "20", xl: "unset" }}
                 direction="column"
               >
-                <LabelSm mb="8">Transaction History</LabelSm>
+                <LabelSm mb="8" mt={{ xl: 2 }}>
+                  Transaction History
+                </LabelSm>
                 <Badge
                   size="sm"
                   colorScheme="yellow"
@@ -230,18 +252,20 @@ export const DepositDetails: PageComponent = () => {
                     .filter((item) => !!item.txHash)
                     .map((item) => (
                       <ListItem key={item.txHash}>
-                        {item.label}{" "}
-                        <ViewInBlockExplorer
-                          id={item.txHash!}
-                          type={ExplorerDataType.TRANSACTION}
-                          chain={item.chain}
-                          text="transaction"
-                        />
-                        .
+                        <BodySm>
+                          {item.label}{" "}
+                          <ViewInBlockExplorer
+                            id={item.txHash!}
+                            type={ExplorerDataType.TRANSACTION}
+                            chain={item.chain}
+                            text="transaction"
+                          />
+                          .
+                        </BodySm>
                       </ListItem>
                     ))}
                 </List>
-                {inProgressStep !== "completed" && (
+                {mintingProgressStep !== "completed" && (
                   <>
                     <HStack spacing="4" mt="auto" mb="10" alignSelf="center">
                       <Image src={BitcoinIcon} />
@@ -249,30 +273,30 @@ export const DepositDetails: PageComponent = () => {
                       <Image src={tBTCIcon} />
                     </HStack>
                     <MintingProcessResource
-                      {...stepToResourceData[inProgressStep]}
+                      {...stepToResourceData[mintingProgressStep]}
                     />
                   </>
                 )}
               </Flex>
             </Stack>
-            {inProgressStep !== "completed" && (
+            {mintingProgressStep !== "completed" && (
               <>
                 <Divider />
-                <HStack mt="8" spacing="16" alignItems="center">
+                <Flex mt="8" alignItems="center">
                   <BodyLg>
                     Eager to start a new mint while waiting for this one? You
                     can now.
                   </BodyLg>
-                  <ButtonLink size="lg" to="/tBTC/mint">
+                  <ButtonLink size="lg" to="/tBTC/mint" marginLeft="auto">
                     New Mint
                   </ButtonLink>
-                </HStack>
+                </Flex>
               </>
             )}
           </>
         )}
       </Card>
-      {inProgressStep === "completed" && (
+      {mintingProgressStep === "completed" && (
         <ExternalPool
           title={"tBTC Curve Pool"}
           externalPoolData={{ ...tBTCWBTCSBTCPoolData }}
@@ -344,22 +368,22 @@ type DepositDetailsTimelineItem = {
 const depositTimelineItems: DepositDetailsTimelineItem[] = [
   {
     id: "bitcoin-confirmations",
-    text: "Bitcoin Checkpoint",
+    text: `Bitcoin\nCheckpoint`,
     status: "semi-active",
   },
   {
     id: "minting-initialized",
-    text: "Minting Initialized",
+    text: "Minting\nInitialized",
     status: "inactive",
   },
   {
     id: "guardian-check",
-    text: "Guardian Check",
+    text: "Guardian\nCheck",
     status: "inactive",
   },
   {
     id: "minting-completed",
-    text: "Minting Completed",
+    text: "Minting\nCompleted",
     status: "inactive",
   },
 ]
@@ -410,14 +434,16 @@ const DepositDetailsTimeline: FC<DepositDetailsTimelineProps> = ({
             </TimelineDot>
             <TimelineConnector />
           </TimelineBreakpoint>
-          <TimelineContent>{item.text}</TimelineContent>
+          <TimelineContent>
+            <BodyXs whiteSpace="pre-line">{item.text}</BodyXs>
+          </TimelineContent>
         </TimelineItem>
       ))}
     </Timeline>
   )
 }
 
-const getInProgressStep = (
+const getMintingProgressStep = (
   depositDetails?: Omit<
     DepositData,
     "depositRevealedTxHash" | "btcTxHash" | "amount"
@@ -507,7 +533,7 @@ const StepSwitcher: FC = () => {
           <BodyMd mt="8">
             Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
           </BodyMd>
-          <ButtonLink size="lg" mt="12" to="/tBTC" isFullWidth>
+          <ButtonLink size="lg" mt="12" mb="8" to="/tBTC" isFullWidth>
             New mint
           </ButtonLink>
         </>

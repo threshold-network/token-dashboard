@@ -15,6 +15,8 @@ const renderNavItem = (page: PageComponent, index: number) => (
     as={Link}
     to={page.route.path}
     tabId={index.toString()}
+    textDecoration="none"
+    _groupHover={{ textDecoration: "none" }}
   >
     {page.route.title}
   </FilterTab>
