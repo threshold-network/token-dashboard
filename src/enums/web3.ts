@@ -26,9 +26,8 @@ export enum ConnectionError {
 }
 
 export enum WalletType {
+  TAHO = "TAHO",
   Metamask = "METAMASK",
-  Ledger = "LEDGER",
   WalletConnect = "WALLET_CONNECT",
-  Trezor = "TREZOR",
   Coinbase = "COINBASE",
 }

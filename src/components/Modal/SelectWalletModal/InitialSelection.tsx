@@ -10,10 +10,12 @@ import {
 import { BiRightArrowAlt } from "react-icons/all"
 import { H4 } from "@threshold-network/components"
 import { WalletOption } from "../../../types"
+import { WalletType } from "../../../enums"
 
 const InitialWalletSelection: FC<{
   walletOptions: WalletOption[]
-}> = ({ walletOptions }) => {
+  onSelect: (walletType: WalletType) => void
+}> = ({ walletOptions, onSelect }) => {
   return (
     <VStack divider={<StackDivider margin="0 40px !important" />}>
       {walletOptions.map((opt) => (
@@ -25,7 +27,7 @@ const InitialWalletSelection: FC<{
           _hover={{ bg: useColorModeValue("gray.100", "gray.500") }}
           _active={{ bg: "gray.300" }}
           borderRadius={0}
-          onClick={opt.onClick}
+          onClick={() => onSelect(opt.id)}
         >
           <Stack justify="space-between" direction="row" px="40px">
             <Stack direction="row">

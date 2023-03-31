@@ -10,13 +10,22 @@ import {
 const MetamaskStatusAlert: FC<{
   metamaskNotInstalled?: boolean
   connectionRejected?: boolean
-}> = ({ metamaskNotInstalled, connectionRejected }) => {
+  isMetaMask: boolean
+}> = ({ metamaskNotInstalled, connectionRejected, isMetaMask }) => {
   const { active } = useWeb3React()
   if (metamaskNotInstalled) {
     return <MetamaskNotInstalledAlert />
   }
   if (connectionRejected) {
     return <WalletRejectedAlert />
+  }
+  if (!isMetaMask) {
+    return (
+      <>
+        window.ethereum is not MetaMask. Make sure you have MetaMask extension
+        installed and MetaMask is your default wallet.
+      </>
+    )
   }
   if (active) {
     return <AccountSuccessAlert message="Your MetaMask wallet is connected" />
