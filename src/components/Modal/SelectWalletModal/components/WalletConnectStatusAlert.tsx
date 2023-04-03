@@ -4,6 +4,9 @@ import WalletRejectedAlert from "./WalletRejectedAlert"
 import isSupportedNetwork from "../../../../utils/isSupportedNetwork"
 import { useWeb3React } from "@web3-react/core"
 import IncorrectNetwork from "./IncorrectNetwork"
+import { useCapture } from "../../../../hooks/posthog"
+import { PosthogEvent } from "../../../../types/posthog"
+import { WalletType } from "../../../../enums"
 
 const WalletConnectStatusAlert: FC<{
   connectionRejected?: boolean
@@ -11,6 +14,7 @@ const WalletConnectStatusAlert: FC<{
 }> = ({ connectionRejected, active }) => {
   const { chainId } = useWeb3React()
   const networkOK = isSupportedNetwork(chainId)
+  const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
 
   if (connectionRejected) {
     return <WalletRejectedAlert />
@@ -21,6 +25,7 @@ const WalletConnectStatusAlert: FC<{
   }
 
   if (active) {
+    captureWalletConnected({ walletType: WalletType.WalletConnect })
     return (
       <AccountSuccessAlert message="Your Walletconnect wallet is connected" />
     )
