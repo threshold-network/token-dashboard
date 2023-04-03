@@ -76,16 +76,34 @@ jest.mock("../../utils", () => ({
   isPublicKeyHashTypeAddress: jest.fn(),
 }))
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => {
-  const originalModule = jest.requireActual(
-    "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-  )
-  return {
-    ...originalModule,
-    decodeBitcoinAddress: jest.fn(),
-    computeHash160: jest.fn(),
-  }
-})
+jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
+  decodeBitcoinAddress: jest.fn(),
+  TransactionHash: {
+    from: jest.fn().mockReturnValue({
+      reverse: jest
+        .fn()
+        .mockReturnValue(
+          "reversed_9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+        ),
+      toString: jest
+        .fn()
+        .mockReturnValue(
+          "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+        ),
+    }),
+    reverse: jest
+      .fn()
+      .mockReturnValue(
+        "reversed_9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+      ),
+    toString: jest
+      .fn()
+      .mockReturnValue(
+        "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
+      ),
+  },
+  computeHash160: jest.fn(),
+}))
 
 jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
@@ -566,7 +584,6 @@ describe("TBTC test", () => {
     const mockTransactionHash = TransactionHash.from(
       "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
     )
-    console.log("mock t hash!: ", mockTransactionHash)
 
     beforeEach(async () => {
       jest
@@ -702,22 +719,27 @@ describe("TBTC test", () => {
   describe("buildDepositKey", () => {
     let buildDepositKeyResult: string
     const mockDepositKey = "101010"
-    const mockTransactionHash = TransactionHash.from(
+    const mockTransactionHash =
       "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
-    )
     const mockDepositOutputIndex = 1
 
     beforeEach(() => {
+      TransactionHash.from = jest.fn().mockReturnValue({
+        reverse: jest.fn().mockReturnValue(`reversed_${mockTransactionHash}`),
+        toString: jest.fn().mockReturnValue(mockTransactionHash),
+      })
+      //@ts-ignore
+      TransactionHash.reverse = jest.fn().mockReturnValue(mockTransactionHash)
       EthereumBridge.buildDepositKey = jest.fn().mockReturnValue(mockDepositKey)
     })
 
     test("should build a proper deposit key for little-endian hash byte order", () => {
       buildDepositKeyResult = tBTC.buildDepositKey(
-        mockTransactionHash.toString(),
+        mockTransactionHash,
         mockDepositOutputIndex
       )
       expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
-        mockTransactionHash.reverse(),
+        TransactionHash.from(mockTransactionHash).reverse(),
         mockDepositOutputIndex
       )
       expect(buildDepositKeyResult).toBe(mockDepositKey)
@@ -730,7 +752,7 @@ describe("TBTC test", () => {
         "big-endian"
       )
       expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
-        mockTransactionHash,
+        TransactionHash.from(mockTransactionHash),
         mockDepositOutputIndex
       )
       expect(buildDepositKeyResult).toBe(mockDepositKey)
