@@ -406,7 +406,7 @@ describe("TBTC test", () => {
         setUpIsPublicKeyHashTypeAddress(false)
       })
 
-      test("should throw", async () => {
+      test("should throw and error", async () => {
         await expect(
           tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
         ).rejects.toThrow(
