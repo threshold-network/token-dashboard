@@ -1,9 +1,8 @@
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, Contract, providers } from "ethers"
+import { BigNumber, providers } from "ethers"
 import {
-  Client,
   computeHash160,
   decodeBitcoinAddress,
   TransactionHash,
@@ -122,14 +121,9 @@ describe("TBTC test", () => {
   const satoshiMultiplier = BigNumber.from(10).pow(10)
 
   let tBTC: ITBTC
-  let tBTCMainnet: ITBTC
 
   let bridge: EthereumBridge
-  let tbtcVault: Contract
-  let bitcoinClient: Client
   let multicall: IMulticall
-  let bridgeContract: Contract
-  let token: Contract
 
   const mockTBTCVaultContract = {
     interface: {},
