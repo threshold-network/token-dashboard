@@ -234,6 +234,7 @@ describe("TBTC test", () => {
       expect(tBTC.tokenContract).toBe(mockTokenContract)
       expect(tBTC.bitcoinNetwork).toBe(BitcoinNetwork.Testnet)
     }
+
     describe("with mocked bitcoin clinet", () => {
       test("should create TBTC instance correctly", () => {
         expectTBTCInstanceToBeCreatedCorrectly()
@@ -255,6 +256,7 @@ describe("TBTC test", () => {
           },
         ],
       }
+
       beforeEach(() => {
         ;(getContract as jest.Mock)
           .mockImplementationOnce(() => mockTBTCVaultContract)
@@ -279,6 +281,7 @@ describe("TBTC test", () => {
       const btcConfigWithNoClientSpecified: BitcoinConfig = {
         network: BitcoinNetwork.Testnet,
       }
+
       beforeEach(() => {
         ;(getContract as jest.Mock)
           .mockImplementationOnce(() => mockTBTCVaultContract)
@@ -301,12 +304,15 @@ describe("TBTC test", () => {
 
   describe("suggestDepositWallet", () => {
     let suggestDepositWalletResult: string | undefined
+
     beforeEach(async () => {
       suggestDepositWalletResult = await tBTC.suggestDepositWallet()
     })
+
     test("should call a proper function with proper parameters", async () => {
       expect(bridge.activeWalletPublicKey).toBeCalledWith()
     })
+
     test("should suggest a desposit wallet correctly", async () => {
       expect(suggestDepositWalletResult).toBe(activeWalletPublicKey)
     })
@@ -364,6 +370,7 @@ describe("TBTC test", () => {
           bitcoinAddressTestnet
         )
       })
+
       test("should call proper functions with proper arguments", async () => {
         expect(bridge.activeWalletPublicKey).toHaveBeenCalled()
 
@@ -380,6 +387,7 @@ describe("TBTC test", () => {
         )
         expect(getChainIdentifier).toBeCalledWith(ethAddress)
       })
+
       test("should create proper deposit script parameters", async () => {
         expect(depositScriptParameters.depositor).toBe(
           getChainIdentifier(ethAddress)
@@ -403,6 +411,7 @@ describe("TBTC test", () => {
         setUpValidBTCAddress(false)
         setUpIsPublicKeyHashTypeAddress(false)
       })
+
       test("should throw", async () => {
         await expect(
           tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
@@ -423,6 +432,7 @@ describe("TBTC test", () => {
         setUpValidBTCAddress(true)
         setUpIsPublicKeyHashTypeAddress(false)
       })
+
       test("should throw", async () => {
         await expect(
           tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
@@ -442,6 +452,7 @@ describe("TBTC test", () => {
   describe("calculateDepositAddress", () => {
     const mockDepositAddress = "123"
     let calculateDepositAddressResult: string
+
     beforeEach(async () => {
       ;(calculateDepositAddress as jest.Mock).mockImplementation(
         () => mockDepositAddress
@@ -450,6 +461,7 @@ describe("TBTC test", () => {
         mockDepositScriptParameters
       )
     })
+
     test("should call proper function with proper parameters", () => {
       expect(calculateDepositAddress).toHaveBeenCalledWith(
         mockDepositScriptParameters,
@@ -457,6 +469,7 @@ describe("TBTC test", () => {
         true
       )
     })
+
     test("should calculate deposit address correctly", () => {
       expect(calculateDepositAddressResult).toBe(mockDepositAddress)
     })
@@ -465,6 +478,7 @@ describe("TBTC test", () => {
   describe("findAllUnspentTransactionOutputs", () => {
     let findAllUnspentTransactionOutputsResult: UnspentTransactionOutput[]
     const mockDepositAddress = "123"
+
     beforeEach(async () => {
       jest
         .spyOn(mockBitcoinClient, "findAllUnspentTransactionOutputs")
@@ -472,11 +486,13 @@ describe("TBTC test", () => {
       findAllUnspentTransactionOutputsResult =
         await tBTC.findAllUnspentTransactionOutputs(mockDepositAddress)
     })
+
     test("should call a proper function with proper parameters", async () => {
       expect(mockBitcoinClient.findAllUnspentTransactionOutputs).toBeCalledWith(
         mockDepositAddress
       )
     })
+
     test("should return utxos correctly", async () => {
       expect(findAllUnspentTransactionOutputsResult).toEqual([testnetUTXO])
     })
@@ -515,6 +531,7 @@ describe("TBTC test", () => {
       })
       estimatedFees = await tBTC.getEstimatedFees(mockDepositAmount)
     })
+
     test("should estimate fees", () => {
       const treasuryFee = BigNumber.from(mockDepositAmount).div(
         mockDepositTreasuryFeeDivisor
@@ -546,6 +563,7 @@ describe("TBTC test", () => {
         mockDepositScriptParameters
       )
     })
+
     test("should reveal deposit properly", () => {
       expect(revealDeposit).toHaveBeenCalledWith(
         testnetUTXO,
@@ -572,6 +590,7 @@ describe("TBTC test", () => {
       )
       revealedDepositResult = await tBTC.getRevealedDeposit(testnetUTXO)
     })
+
     test("should get revealed deposit", () => {
       expect(getRevealedDeposit).toHaveBeenCalledWith(testnetUTXO, bridge)
       expect(revealedDepositResult).toBe(mockRevealedDeposit)
@@ -593,6 +612,7 @@ describe("TBTC test", () => {
         mockTransactionHash
       )
     })
+
     test("should get revealed deposit", () => {
       expect(
         mockBitcoinClient.getTransactionConfirmations
