@@ -17,7 +17,7 @@ import {
   isPublicKeyHashTypeAddress,
   isValidBtcAddress,
 } from "../../utils"
-import { BridgeTxHistory, ITBTC, TBTC } from ".."
+import { BridgeActivity, ITBTC, TBTC } from ".."
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../../types"
 import {
   MockBitcoinClient,
@@ -608,7 +608,7 @@ describe("TBTC test", () => {
     })
   })
 
-  describe("bridgeTxHistory", () => {
+  describe("bridgeActivity", () => {
     const mockDepositor = "0xCDAfb5A23A1F1c6f80706Cc101BCcf4b9A1A3e3B"
     const mockDepositKey =
       "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6"
@@ -639,12 +639,12 @@ describe("TBTC test", () => {
     let mockCalculateEstimatedAmountToMintForRevealedDepositsFunction: jest.SpyInstance
     let mockFindAllCancelledDepositsFunction: jest.SpyInstance
 
-    let result: BridgeTxHistory[]
+    let result: BridgeActivity[]
 
     beforeEach(async () => {
       mockFindAllRevealedDepositsFunction = jest.spyOn(
         tBTC as any,
-        "_findAllRevealedDeposits"
+        "findAllRevealedDeposits"
       )
       mockFindAllRevealedDepositsFunction.mockResolvedValue([
         mockRevealedDeposit,
@@ -671,7 +671,7 @@ describe("TBTC test", () => {
       )
       mockFindAllCancelledDepositsFunction.mockResolvedValue([])
 
-      result = await tBTC.bridgeTxHistory(mockDepositor)
+      result = await tBTC.bridgeActivity(mockDepositor)
     })
 
     test("should fetch the bridge history properly", () => {
