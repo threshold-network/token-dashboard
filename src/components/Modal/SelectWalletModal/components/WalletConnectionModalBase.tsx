@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import React, { FC, useEffect } from "react"
 import {
   Box,
   Button,
@@ -13,6 +13,7 @@ import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
+import { AbstractConnector } from "../../../../web3/connectors"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
@@ -20,6 +21,7 @@ interface Props extends WalletConnectionModalProps {
   subTitle?: string
   tryAgain?: () => void
   onContinue?: () => void
+  connector?: AbstractConnector
 }
 
 const WalletConnectionModalBase: FC<Props> = ({
@@ -31,8 +33,15 @@ const WalletConnectionModalBase: FC<Props> = ({
   children,
   tryAgain,
   onContinue,
+  connector,
 }) => {
-  const { error, active, account } = useWeb3React()
+  const { activate, active, account } = useWeb3React()
+
+  useEffect(() => {
+    if (!connector) return
+
+    activate(connector)
+  }, [activate, connector])
 
   return (
     <>

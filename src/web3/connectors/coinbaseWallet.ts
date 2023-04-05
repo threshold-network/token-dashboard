@@ -3,12 +3,6 @@ import { ConnectorUpdate } from "@web3-react/types"
 import { supportedChainId, getEnvVariable } from "../../utils/getEnvVariable"
 import { EnvVariable } from "../../enums"
 
-declare global {
-  interface Window {
-    ethereum: CoinbaseWalletProvider
-  }
-}
-
 interface CoinbaseWalletProvider {
   isCoinbaseWallet: boolean
   overrideIsMetaMask: boolean
@@ -22,8 +16,9 @@ class CoinbaseWalletConnector extends WalletLinkConnector {
   activate = async (): Promise<ConnectorUpdate<string | number>> => {
     // Handle the case when MetaMask and Coinbase Wallet are both installed.
     const provider =
-      window.ethereum?.providers?.find((p) => p.isCoinbaseWallet) ??
-      window.ethereum
+      (window.ethereum as CoinbaseWalletProvider)?.providers?.find(
+        (p) => p.isCoinbaseWallet
+      ) ?? (window.ethereum as CoinbaseWalletProvider)
 
     if (provider.isCoinbaseWallet) {
       // Force the Coinbase Wallet provider to use our RPC url. We can't fetch
@@ -47,5 +42,3 @@ export const coinbaseConnector = new CoinbaseWalletConnector({
   appName: "threshold-token-dashboard",
   supportedChainIds: [+supportedChainId],
 })
-
-export default coinbaseConnector

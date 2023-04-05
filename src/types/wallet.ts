@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { WalletType } from "../enums"
 
 export interface WalletConnectionModalProps {
   goBack: () => void
@@ -6,8 +7,7 @@ export interface WalletConnectionModalProps {
 }
 
 export interface WalletOption {
-  id: string
-  onClick: () => void
+  id: WalletType
   icon: FC
   title: string
 }
