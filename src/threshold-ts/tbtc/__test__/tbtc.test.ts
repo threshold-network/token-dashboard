@@ -57,14 +57,6 @@ jest.mock("@keep-network/tbtc-v2/artifacts/TBTC.json", () => ({
   abi: [],
 }))
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/deposit", () => ({
-  calculateDepositAddress: jest.fn(),
-  calculateDepositRefundLocktime: jest.fn(),
-  DepositScriptParameters: jest.fn(),
-  revealDeposit: jest.fn(),
-  getRevealedDeposit: jest.fn(),
-}))
-
 jest.mock("../../utils", () => ({
   ...(jest.requireActual("../../utils") as {}),
   getContract: jest.fn(),
@@ -74,42 +66,6 @@ jest.mock("../../utils", () => ({
   isValidBtcAddress: jest.fn(),
   isPublicKeyHashTypeAddress: jest.fn(),
 }))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
-  decodeBitcoinAddress: jest.fn(),
-  TransactionHash: {
-    from: jest.fn().mockReturnValue({
-      reverse: jest
-        .fn()
-        .mockReturnValue(
-          "reversed_9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
-        ),
-      toString: jest
-        .fn()
-        .mockReturnValue(
-          "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
-        ),
-    }),
-    reverse: jest
-      .fn()
-      .mockReturnValue(
-        "reversed_9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
-      ),
-    toString: jest
-      .fn()
-      .mockReturnValue(
-        "9eb901fc68f0d9bcaf575f23783b7d30ac5dd8d95f3c83dceaa13dce17de816a"
-      ),
-  },
-  computeHash160: jest.fn(),
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
-  EthereumBridge: jest.fn(),
-  ElectrumClient: jest.fn(),
-}))
-
-jest.mock("crypto-js")
 
 describe("TBTC test", () => {
   const activeWalletPublicKey =
