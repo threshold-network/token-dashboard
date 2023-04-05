@@ -426,7 +426,7 @@ describe("TBTC test", () => {
         setUpIsPublicKeyHashTypeAddress(false)
       })
 
-      test("should throw", async () => {
+      test("should throw an error", async () => {
         await expect(
           tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
         ).rejects.toThrow("Bitcoin recovery address must be a P2PKH or P2WPKH")
@@ -718,7 +718,7 @@ describe("TBTC test", () => {
       result = await tBTC.bridgeTxHistory(mockDepositor)
     })
 
-    test("should create the bridge history properly", () => {
+    test("should fetch the bridge history properly", () => {
       expect(mockFindAllRevealedDepositsFunction).toHaveBeenCalledWith(
         mockDepositor
       )
