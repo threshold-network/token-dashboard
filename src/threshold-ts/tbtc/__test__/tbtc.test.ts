@@ -367,7 +367,6 @@ describe("TBTC test", () => {
 
       test("should call proper functions with proper arguments", async () => {
         expect(bridge.activeWalletPublicKey).toHaveBeenCalled()
-
         expect(isValidBtcAddress).toHaveBeenCalledWith(
           bitcoinAddressTestnet,
           btcConfig.network
@@ -530,6 +529,7 @@ describe("TBTC test", () => {
       const treasuryFee = BigNumber.from(mockDepositAmount).div(
         mockDepositTreasuryFeeDivisor
       )
+
       expect(mockGetDepositFees).toHaveBeenCalled()
       expect(mockCalculateOptimisticMintingAmountAndFee).toHaveBeenCalledWith(
         BigNumber.from(mockDepositAmount),
@@ -618,30 +618,36 @@ describe("TBTC test", () => {
   describe("minimumNumberOfConfirmationsNeeded", () => {
     test("should return proper value for amount less than 0.1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 6 // 0.01 BTC
+
       const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
+
       expect(minimumNumberOfConfirmationsResult).toBe(1)
     })
 
     test("should return proper value for amount less than 1 BTC and equal or greater than 0.1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 7 // 0.1 BTC
+      const amountInSatoshi2 = 9 * 10 ** 7 // 0.9 BTC
+
       const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
-      const amountInSatoshi2 = 9 * 10 ** 7 // 0.9 BTC
       const minimumNumberOfConfirmationsResult2 =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
+
       expect(minimumNumberOfConfirmationsResult).toBe(3)
       expect(minimumNumberOfConfirmationsResult2).toBe(3)
     })
 
     test("should return proper value for amount that is equal or greater than 1 BTC", () => {
       const amountInSatoshi = 1 * 10 ** 8 // 1 BTC
+      const amountInSatoshi2 = 9 * 10 ** 8 // 9 BTC
+
       const minimumNumberOfConfirmationsResult =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi)
-      const amountInSatoshi2 = 9 * 10 ** 8 // 9 BTC
       const minimumNumberOfConfirmationsResult2 =
         tBTC.minimumNumberOfConfirmationsNeeded(amountInSatoshi2)
-      expect(minimumNumberOfConfirmationsResult2).toBe(6)
+
+      expect(minimumNumberOfConfirmationsResult).toBe(6)
       expect(minimumNumberOfConfirmationsResult2).toBe(6)
     })
   })
@@ -752,6 +758,7 @@ describe("TBTC test", () => {
         mockTransactionHash,
         mockDepositOutputIndex
       )
+
       expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
         TransactionHash.from(mockTransactionHash).reverse(),
         mockDepositOutputIndex
@@ -765,6 +772,7 @@ describe("TBTC test", () => {
         mockDepositOutputIndex,
         "big-endian"
       )
+
       expect(EthereumBridge.buildDepositKey).toHaveBeenCalledWith(
         TransactionHash.from(mockTransactionHash),
         mockDepositOutputIndex
