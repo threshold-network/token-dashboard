@@ -5,13 +5,7 @@ import Identicon from "../Identicon"
 import { OutlineListItem } from "../OutlineListItem"
 import { InlineTokenBalance } from "../TokenBalance"
 import { getRelativeTime } from "../../utils/date"
-
-type RecentDeposit = {
-  amount: string
-  address: string
-  date: number
-  txHash: string
-}
+import { RecentDeposit } from "../../hooks/tbtc/useFetchRecentDeposits"
 
 type RecentDepositsProps = {
   deposits: RecentDeposit[]

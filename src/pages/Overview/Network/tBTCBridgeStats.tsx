@@ -13,43 +13,18 @@ import Link from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
 import { RecentDeposits } from "../../../components/tBTC/RecentDeposits"
 import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
-
-// TODO: fetch recent deposit from the subgraph.
-const mockDeposits = [
-  {
-    amount: "100000000000000000",
-    address: "0xbaf6dc2e647aeb6f510f9e318856a1bcd66c5e19",
-    date: 1680776443,
-    txHash: "1",
-  },
-  {
-    amount: "155000000000000000",
-    address: "0xd0111cf5bf230832f422da1c6c1d0a512d4e005a",
-    date: 1680772306,
-    txHash: "2",
-  },
-  {
-    amount: "2000000000000000000",
-    address: "0x60d0f24d97222726dd8355368cc4584500f31ae8",
-    date: 1680769504,
-    txHash: "3",
-  },
-  {
-    amount: "24000000000000000000",
-    address: "0xdac17f958d2ee523a2206206994597c13d831ec7",
-    date: 1680772306,
-    txHash: "4",
-  },
-]
+import { RecentDeposit } from "../../../hooks/tbtc"
 
 type TBTCBrdigeStatsProps = {
   tvl: string
   tvlInUSD: string
+  deposits: RecentDeposit[]
 }
 
 export const TBTCBrdigeStats: FC<TBTCBrdigeStatsProps> = ({
   tvl,
   tvlInUSD,
+  deposits,
 }) => {
   return (
     <Card>
@@ -65,7 +40,7 @@ export const TBTCBrdigeStats: FC<TBTCBrdigeStatsProps> = ({
 
       <Divider my="6" />
       <BodyMd mb="3">Protocol History</BodyMd>
-      <RecentDeposits deposits={mockDeposits} />
+      <RecentDeposits deposits={deposits} />
       <Box as="p" mt="3.5" textAlign="center">
         <Link isExternal href={ExternalHref.tBTCDuneDashboard}>
           View on Dune Analytics

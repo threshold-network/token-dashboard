@@ -5,9 +5,11 @@ import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { PageComponent } from "../../../types"
 import { TBTCBrdigeStats } from "./tBTCBridgeStats"
+import { useFetchRecentDeposits } from "../../../hooks/tbtc"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
+  const [deposits, isFetching, error] = useFetchRecentDeposits()
 
   useEffect(() => {
     fetchtTvlData()
@@ -15,7 +17,11 @@ const Network: PageComponent = () => {
 
   return (
     <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
-      <TBTCBrdigeStats tvl={tvlInTokenUnits.tBTC} tvlInUSD={tvlInUSD.tBTC} />
+      <TBTCBrdigeStats
+        tvl={tvlInTokenUnits.tBTC}
+        tvlInUSD={tvlInUSD.tBTC}
+        deposits={deposits}
+      />
       <Stack spacing={4}>
         <StakingOverview />
         <TotalValueLocked totalValueLocked={tvlInUSD.total} />
