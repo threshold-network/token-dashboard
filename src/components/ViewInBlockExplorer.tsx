@@ -9,7 +9,7 @@ import { supportedChainId } from "../utils/getEnvVariable"
 
 export type Chain = "bitcoin" | "ethereum"
 
-const createLinkToBlockExplorerForChain: Record<
+export const createLinkToBlockExplorerForChain: Record<
   Chain,
   (id: string, type: ExplorerDataType) => string
 > = {
