@@ -4,11 +4,12 @@ import shortenAddress from "../../utils/shortenAddress"
 import Identicon from "../Identicon"
 import { OutlineListItem } from "../OutlineListItem"
 import { InlineTokenBalance } from "../TokenBalance"
+import { getRelativeTime } from "../../utils/date"
 
 type RecentDeposit = {
   amount: string
   address: string
-  date: string
+  date: number
   txHash: string
 }
 
@@ -35,8 +36,7 @@ const RecentDepositItem: FC<RecentDeposit> = ({ amount, address, date }) => {
         <Identicon address={address} />
         <BodySm textStyle="chain-identifier">{shortenAddress(address)}</BodySm>
       </HStack>
-      {/* TODO: format date */}
-      <BodySm>{date}</BodySm>
+      <BodySm>{getRelativeTime(date)}</BodySm>
     </OutlineListItem>
   )
 }
