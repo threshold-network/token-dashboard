@@ -7,7 +7,6 @@ import {
   Image,
   LabelSm,
   List,
-  ListItem,
   useColorModeValue,
   Box,
   LinkBox,
@@ -21,6 +20,7 @@ import emptyHistoryImageSrcDark from "../../../../static/images/tBTC-bridge-no-h
 import emptyHistoryImageSrcLight from "../../../../static/images/tBTC-bridge-no-history-light.svg"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import Link from "../../../../components/Link"
+import { OutlineListItem } from "../../../../components/OutlineListItem"
 
 const bridgeActivityStatusToBadgeProps: Record<
   BridgeActivityStatus,
@@ -64,20 +64,7 @@ export const BridgeActivityCard: FC<ComponentProps<typeof Card>> = ({
 }
 
 const ActivityItemWrapper: FC = ({ children }) => (
-  <LinkBox
-    as={ListItem}
-    display="flex"
-    justifyContent="space-between"
-    alignItems="center"
-    borderColor="gray.100"
-    borderWidth="1px"
-    borderStyle="solid"
-    borderRadius="6px"
-    py="4"
-    pl="6"
-    pr="3"
-    mx="-0.75rem"
-  >
+  <LinkBox as={OutlineListItem} pl="6" pr="3" mx="-0.75rem">
     {children}
   </LinkBox>
 )
