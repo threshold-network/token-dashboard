@@ -1,3 +1,4 @@
+import { FC } from "react"
 import {
   BodyMd,
   Box,
@@ -11,6 +12,7 @@ import { InlineTokenBalance } from "../../../components/TokenBalance"
 import Link from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
 import { RecentDeposits } from "../../../components/tBTC/RecentDeposits"
+import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
 
 // TODO: fetch recent deposit from the subgraph.
 const mockDeposits = [
@@ -40,17 +42,26 @@ const mockDeposits = [
   },
 ]
 
-export const TBTCBrdigeStats = () => {
+type TBTCBrdigeStatsProps = {
+  tvl: string
+  tvlInUSD: string
+}
+
+export const TBTCBrdigeStats: FC<TBTCBrdigeStatsProps> = ({
+  tvl,
+  tvlInUSD,
+}) => {
   return (
     <Card>
       <LabelSm mb="4">tBTC Bridge Stats</LabelSm>
       <BodyMd mb="1.5">TVL</BodyMd>
       {/* TODO: Fetch tvl from contracts.*/}
       <H1 textAlign="center">
-        <InlineTokenBalance tokenAmount="429560000000000000000" />{" "}
-        <H5 as="span">tBTC</H5>
+        <InlineTokenBalance tokenAmount={tvl} /> <H5 as="span">tBTC</H5>
       </H1>
-      <BodyMd textAlign="center">$8,000,234.00 USD</BodyMd>
+      <BodyMd textAlign="center">
+        {formatFiatCurrencyAmount(tvlInUSD, "0,00.00")} USD
+      </BodyMd>
 
       <Divider my="6" />
       <BodyMd mb="3">Protocol History</BodyMd>
