@@ -1,5 +1,5 @@
 import { FC } from "react"
-import { BodySm, List, HStack } from "@threshold-network/components"
+import { BodySm, List, HStack, ListProps } from "@threshold-network/components"
 import shortenAddress from "../../utils/shortenAddress"
 import Identicon from "../Identicon"
 import { OutlineListItem } from "../OutlineListItem"
@@ -7,12 +7,19 @@ import { InlineTokenBalance } from "../TokenBalance"
 import { getRelativeTime } from "../../utils/date"
 import { RecentDeposit } from "../../hooks/tbtc/useFetchRecentDeposits"
 
-type RecentDepositsProps = {
+export type RecentDepositsProps = {
   deposits: RecentDeposit[]
-}
+} & ListProps
 
-export const RecentDeposits: FC<RecentDepositsProps> = ({ deposits }) => {
-  return <List spacing="1">{deposits.map(renderRecentDeposit)}</List>
+export const RecentDeposits: FC<RecentDepositsProps> = ({
+  deposits,
+  ...restProps
+}) => {
+  return (
+    <List spacing="1" position="relative" {...restProps}>
+      {deposits.map(renderRecentDeposit)}
+    </List>
+  )
 }
 
 const RecentDepositItem: FC<RecentDeposit> = ({ amount, address, date }) => {
