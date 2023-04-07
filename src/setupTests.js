@@ -4,8 +4,6 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom"
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({}))
-
 jest.mock("@keep-network/tbtc-v2.ts/dist/src/deposit", () => ({
   calculateDepositAddress: jest.fn(),
   calculateDepositRefundLocktime: jest.fn(),
