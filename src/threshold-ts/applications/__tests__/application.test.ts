@@ -201,6 +201,7 @@ describe("Application test", () => {
       currentBlockTimestamp +
       remainingAuthorizationDecreaseDelay -
       authorizationDecreaseDelay
+    const operator = "0xeCbEb9B6Aa18dD3B57ECD061490ae5029c05EC91"
     const testCases = [
       {
         remainingAuthorizationDecreaseDelay: MAX_UINT64,
@@ -243,17 +244,22 @@ describe("Application test", () => {
         const authParameters = {
           authorizationDecreaseDelay,
         }
+
         const multicallResult = [
           authorizedStake,
           pendingAuthorizationDecrease,
           remainingAuthorizationDecreaseDelay,
           currentBlockTimestamp,
           authParameters,
+          [operator],
         ]
 
         const multicallSpy = jest
           .spyOn(mockMulticall, "aggregate")
           .mockResolvedValue(multicallResult)
+        const isOperatorInPoolSpy = jest
+          .spyOn(mockAppContract, "isOperatorInPool")
+          .mockResolvedValue(false)
 
         const result = await application.getStakingProviderAppInfo(
           stakingProvider
@@ -284,11 +290,20 @@ describe("Application test", () => {
             address: application.address,
             method: "authorizationParameters",
           },
+          {
+            interface: application.contract.interface,
+            address: application.address,
+            method: "stakingProviderToOperator",
+            args: [stakingProvider],
+          },
         ])
+        expect(isOperatorInPoolSpy).toHaveBeenCalledWith(operator)
         expect(result).toEqual({
           authorizedStake,
           pendingAuthorizationDecrease,
           remainingAuthorizationDecreaseDelay,
+          isOperatorInPool: false,
+          operator,
           ...expectedValue,
         })
       }

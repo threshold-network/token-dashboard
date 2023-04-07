@@ -97,7 +97,7 @@ describe("Test `useSendTransaction` hook", () => {
     result.current.sendTransaction(from, value)
     await waitForNextUpdate()
 
-    expect(mockedOnSuccessCallback).toHaveBeenCalledWith(mockedTx)
+    expect(mockedOnSuccessCallback).toHaveBeenCalledWith(mockedTx.wait())
   })
 
   test("should do nothing if there is no signer", async () => {
@@ -194,7 +194,11 @@ describe("Test `useSendTransaction` hook", () => {
       expect(result.current.status).toEqual(expectedStatus)
       expect(mockedOpenModalFn).toHaveBeenCalledWith(
         ModalType.TransactionFailed,
-        { error, transactionHash: undefined, isExpandableError: true }
+        {
+          transactionHash: undefined,
+          error: error.message,
+          isExpandableError: true,
+        }
       )
     }
   )

@@ -29,7 +29,6 @@ import {
   ElectrumClient,
   EthereumBridge,
 } from "@keep-network/tbtc-v2.ts/dist/src"
-import BridgeArtifact from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
@@ -227,7 +226,7 @@ export class TBTC implements ITBTC {
       )
     }
     this._bridge = new EthereumBridge({
-      address: BridgeArtifact.address,
+      address: Bridge.address,
       signerOrProvider: getProviderOrSigner(
         ethereumConfig.providerOrSigner as any,
         ethereumConfig.account
@@ -371,8 +370,8 @@ export class TBTC implements ITBTC {
   }> => {
     const calls: ContractCall[] = [
       {
-        interface: new Interface(BridgeArtifact.abi),
-        address: BridgeArtifact.address,
+        interface: new Interface(Bridge.abi),
+        address: Bridge.address,
         method: "depositParameters",
         args: [],
       },
