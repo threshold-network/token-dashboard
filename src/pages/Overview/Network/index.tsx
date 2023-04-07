@@ -1,5 +1,14 @@
 import { useEffect } from "react"
-import { SimpleGrid, Stack } from "@threshold-network/components"
+import {
+  Box,
+  Card,
+  HStack,
+  SimpleGrid,
+  Image,
+  H5,
+  BodyMd,
+  VStack,
+} from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import TotalValueLocked from "./TotalValueLocked"
 import StakingOverview from "./StakingOverview"
@@ -10,6 +19,8 @@ import { useFetchRecentDeposits } from "../../../hooks/tbtc"
 import { TBTCUserStats } from "./tBTCUserStats"
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
+import ButtonLink from "../../../components/ButtonLink"
+import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
@@ -42,14 +53,32 @@ const Network: PageComponent = () => {
         tvlInUSD={tvlInUSD.tBTC}
         deposits={deposits}
       />
-      <Stack spacing={4}>
-        <TBTCUserStats
-          bridgeActivity={bridgeActivity}
-          isBridgeActivityFetching={isBridgeActivityFetching}
-        />
-        <StakingOverview />
+      <TBTCUserStats
+        bridgeActivity={bridgeActivity}
+        isBridgeActivityFetching={isBridgeActivityFetching}
+      />
+      <VStack>
         <TotalValueLocked totalValueLocked={tvlInUSD.total} />
-      </Stack>
+        <Card>
+          <HStack spacing="6">
+            <Image src={upgradeToTIcon} />
+            <Box>
+              <H5>Do you own KEEP or NU tokens?</H5>
+              <BodyMd>Upgrade your tokens to T.</BodyMd>
+            </Box>
+          </HStack>
+          <ButtonLink
+            to="/upgrade"
+            variant="outline"
+            size="lg"
+            isFullWidth
+            mt="9"
+          >
+            Upgrade
+          </ButtonLink>
+        </Card>
+      </VStack>
+      <StakingOverview />
     </SimpleGrid>
   )
 }
