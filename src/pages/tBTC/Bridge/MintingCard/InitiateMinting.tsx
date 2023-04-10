@@ -8,6 +8,8 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { capture } from "../../../../posthog"
+import { PosthogEvent } from "../../../../types/posthog"
 
 const InitiateMintingComponent: FC<{
   utxo: UnspentTransactionOutput
@@ -39,7 +41,18 @@ const InitiateMintingComponent: FC<{
       <BodyMd color="gray.500" mb={6}>
         Your tBTC will arrive in your wallet in around 1-3 hours.
       </BodyMd>
-      <Button onClick={confirmDespotAndMint} isFullWidth>
+      <Button
+        onClick={() => {
+          capture(PosthogEvent.ButtonClicked, {
+            buttonName: "Confirm deposit & mint (Step 2)",
+          })
+          confirmDespotAndMint()
+        }}
+        isFullWidth
+        data-ph-capture-attribute-button-name={
+          "Confirm deposit & mint (Step 2)"
+        }
+      >
         Confirm deposit & mint
       </Button>
     </>

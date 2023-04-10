@@ -20,6 +20,8 @@ import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
+import { capture } from "../../../../posthog"
+import { PosthogEvent } from "../../../../types/posthog"
 
 export interface FormValues {
   ethAddress: string
@@ -168,6 +170,11 @@ export const ProvideDataComponent: FC<{
         onSubmitForm={onSubmit}
       />
       <Button
+        onClick={() => {
+          capture(PosthogEvent.ButtonClicked, {
+            buttonName: "Generate Deposit Address (Deposit flow)",
+          })
+        }}
         isLoading={isSubmitButtonLoading}
         loadingText={"Generating deposit address..."}
         type="submit"

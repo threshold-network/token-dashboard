@@ -19,6 +19,8 @@ import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
+import { capture } from "../../../posthog"
+import { PosthogEvent } from "../../../types/posthog"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -108,15 +110,47 @@ const TbtcRecoveryFileModalModal: FC<
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
-          <Button onClick={handleDoubleReject} variant="outline" mr={2}>
+          <Button
+            onClick={() => {
+              capture(PosthogEvent.ButtonClicked, {
+                buttonName: "Dismiss Anyway [JSON download]",
+              })
+              handleDoubleReject()
+            }}
+            variant="outline"
+            mr={2}
+            data-ph-capture-attribute-button-name={
+              "Dismiss Anyway [JSON download]"
+            }
+          >
             Dismiss Anyway
           </Button>
         ) : (
-          <Button onClick={setIsOnConfirmStep} variant="outline" mr={2}>
+          <Button
+            onClick={() => {
+              capture(PosthogEvent.ButtonClicked, {
+                buttonName: "Cancel [JSON download]",
+              })
+              setIsOnConfirmStep()
+            }}
+            variant="outline"
+            mr={2}
+            data-ph-capture-attribute-button-name={"Cancel [JSON download]"}
+          >
             Cancel
           </Button>
         )}
-        <Button onClick={handleDownloadClick}>Download</Button>
+        <Button
+          onClick={() => {
+            capture(PosthogEvent.ButtonClicked, {
+              buttonName: "Download JSON",
+            })
+            handleDownloadClick()
+          }}
+          data-ph-capture-attribute-button-name={"Download JSON"}
+        >
+          Download
+        </Button>
       </ModalFooter>
     </>
   )

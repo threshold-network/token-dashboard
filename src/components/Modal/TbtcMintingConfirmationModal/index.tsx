@@ -27,6 +27,8 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
+import { capture } from "../../../posthog"
+import { PosthogEvent } from "../../../types/posthog"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxo: UnspentTransactionOutput
@@ -117,12 +119,32 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
         </BodySm>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
+        <Button
+          onClick={() => {
+            capture(PosthogEvent.ButtonClicked, {
+              buttonName: "Start minting (TBTC Minting Confirmation Modal)",
+            })
+            closeModal()
+          }}
+          variant="outline"
+          mr={2}
+          data-ph-capture-attribute-button-name={
+            "Cancel (TBTC Minting Confirmation Modal)"
+          }
+        >
           Cancel
         </Button>
         <Button
           disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
-          onClick={initiateMintTransaction}
+          onClick={() => {
+            capture(PosthogEvent.ButtonClicked, {
+              buttonName: "Start minting (TBTC Minting Confirmation Modal)",
+            })
+            initiateMintTransaction()
+          }}
+          data-ph-capture-attribute-button-name={
+            "Start minting (TBTC Minting Confirmation Modal)"
+          }
         >
           Start minting
         </Button>

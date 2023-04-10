@@ -16,6 +16,8 @@ import withBaseModal from "../withBaseModal"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { BaseModalProps } from "../../../types"
+import { capture } from "../../../posthog"
+import { PosthogEvent } from "../../../types/posthog"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
@@ -46,6 +48,9 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
       <ModalFooter>
         <Button
           onClick={() => {
+            capture(PosthogEvent.ButtonClicked, {
+              buttonName: "I Agree, Let's Go! (New tBTC app)",
+            })
             accept()
             closeModal()
           }}
