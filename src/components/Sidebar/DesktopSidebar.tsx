@@ -5,7 +5,6 @@ import ExpanderIcon from "./ExpanderIcon"
 import SidebarFooter from "./SidebarFooter"
 import BrandIcon from "./BrandIcon"
 import NavItem, { NavItemDetail } from "./NavItem"
-import AlphaReleaseTag from "../AlphaReleaseTag"
 
 const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
   const { isOpen } = useSidebar()
@@ -23,7 +22,6 @@ const DesktopSidebar: FC<{ navItems: NavItemDetail[] }> = ({ navItems }) => {
       bg={useColorModeValue("white", "gray.800")}
     >
       <ExpanderIcon />
-      <AlphaReleaseTag />
       <BrandIcon />
       <Stack
         mt={isOpen ? 10 : 6}

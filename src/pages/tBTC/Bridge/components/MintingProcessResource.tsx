@@ -29,8 +29,10 @@ export const MintingProcessResource: FC<MintingProcessResourceProps> = ({
       <H6 mt="8" color="gray.800">
         {title}
       </H6>
-      <BodySm mt="1" color="gray.500" mb="8">
-        {subtitle}{" "}
+      <BodySm mt="1" color="gray.500">
+        {subtitle}
+      </BodySm>
+      <BodySm mb="8">
         <Link isExternal href={link}>
           Read more
         </Link>

@@ -11,6 +11,8 @@ export type DepositData = {
   optimisticMintingFinalizedTxHash?: string
   confirmations: number
   requiredConfirmations: number
+  treasuryFee: string
+  optimisticMintFee: string
 }
 
 export const useFetchDepositDetails = (depositKey: string | undefined) => {
@@ -71,10 +73,15 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         const requiredConfirmations =
           threshold.tbtc.minimumNumberOfConfirmationsNeeded(deposit.amount)
 
+        const { treasuryFee, optimisticMintFee, amountToMint } =
+          await threshold.tbtc.getEstimatedFees(deposit.amount)
+
         setDepositData({
           btcTxHash: btcTxHash.toString(),
           depositRevealedTxHash: deposit.txHash,
-          amount: deposit.amount,
+          amount: amountToMint,
+          treasuryFee,
+          optimisticMintFee,
           optimisticMintingRequestedTxHash:
             optimisticMintingRequestedEvents[0]?.transactionHash,
           optimisticMintingFinalizedTxHash:

@@ -13,7 +13,8 @@ import { WalletType } from "../../../../enums"
 const MetamaskStatusAlert: FC<{
   metamaskNotInstalled?: boolean
   connectionRejected?: boolean
-}> = ({ metamaskNotInstalled, connectionRejected }) => {
+  isMetaMask: boolean
+}> = ({ metamaskNotInstalled, connectionRejected, isMetaMask }) => {
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
   const { active } = useWeb3React()
 
@@ -22,6 +23,14 @@ const MetamaskStatusAlert: FC<{
   }
   if (connectionRejected) {
     return <WalletRejectedAlert />
+  }
+  if (!isMetaMask) {
+    return (
+      <>
+        window.ethereum is not MetaMask. Make sure you have MetaMask extension
+        installed and MetaMask is your default wallet.
+      </>
+    )
   }
   if (active) {
     captureWalletConnected({ walletType: WalletType.Metamask })

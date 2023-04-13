@@ -1,5 +1,5 @@
 import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
   ClientOptions,
   Credentials,

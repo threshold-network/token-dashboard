@@ -1,75 +1,48 @@
 import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
+import { Taho } from "../../../static/icons/Taho"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
-import injected from "../../../web3/connectors/injected"
 import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
 import withBaseModal from "../withBaseModal"
-import { walletconnect } from "../../../web3/connectors/walletConnect"
 import ConnectWalletConnect from "./ConnectWalletConnect"
 import { WalletType } from "../../../enums"
 import { H5 } from "@threshold-network/components"
 import { BaseModalProps, WalletOption } from "../../../types"
-import coinbaseConnector from "../../../web3/connectors/coinbaseWallet"
 import ConnectCoinbase from "./ConnectCoinbase"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
+import ConnectTaho from "./ConnectTaho"
+
+const walletOptions: WalletOption[] = [
+  {
+    id: WalletType.TAHO,
+    title: "Taho",
+    icon: Taho,
+  },
+  {
+    id: WalletType.Metamask,
+    title: "MetaMask",
+    icon: MetaMaskIcon,
+  },
+  {
+    id: WalletType.WalletConnect,
+    title: "WalletConnect",
+    icon: WalletConnectIcon,
+  },
+  {
+    id: WalletType.Coinbase,
+    title: "Coinbase Wallet",
+    icon: CoinbaseWallet,
+  },
+]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
-  const { activate, deactivate } = useWeb3React()
+  const { deactivate } = useWeb3React()
   const { closeModal } = useModal()
-
-  const walletOptions: WalletOption[] = [
-    {
-      id: WalletType.Metamask,
-      title: "MetaMask",
-      icon: MetaMaskIcon,
-      onClick: () => {
-        activate(injected)
-        setWalletToConnect(WalletType.Metamask)
-      },
-    },
-    // {
-    //   id: WalletType.Ledger,
-    //   title: "Ledger",
-    //   icon: useColorModeValue(Ledger, LedgerWhite),
-    //   onClick: async () => {
-    //     setWalletToConnect(WalletType.Ledger)
-    //   },
-    // },
-    {
-      id: WalletType.WalletConnect,
-      title: "WalletConnect",
-      icon: WalletConnectIcon,
-      onClick: () => {
-        // if the user has already tried to connect we need to manually reset the connector to allow the QR popup to work again
-        walletconnect.walletConnectProvider = undefined
-        activate(walletconnect)
-        setWalletToConnect(WalletType.WalletConnect)
-      },
-    },
-    // {
-    //   id: WalletType.Trezor,
-    //   title: "Trezor",
-    //   icon: useColorModeValue(Trezor, TrezorLight),
-    //   onClick: () => {
-    //     setWalletToConnect(WalletType.Trezor)
-    //   },
-    // },
-
-    {
-      id: WalletType.Coinbase,
-      title: "Coinbase Wallet",
-      icon: CoinbaseWallet,
-      onClick: () => {
-        activate(coinbaseConnector)
-        setWalletToConnect(WalletType.Coinbase)
-      },
-    },
-  ]
 
   const [walletToConnect, setWalletToConnect] = useState<WalletType | null>(
     null
@@ -80,32 +53,50 @@ const SelectWalletModal: FC<BaseModalProps> = () => {
     setWalletToConnect(null)
   }
 
+  const onClick = async (walletType: WalletType) => {
+    setWalletToConnect(walletType)
+  }
+
   return (
     <>
       <ModalHeader>
         <H5>Connect a Wallet</H5>
       </ModalHeader>
       <ModalCloseButton />
-      {walletToConnect === null && (
-        <InitialWalletSelection walletOptions={walletOptions} />
-      )}
-      {walletToConnect === WalletType.Metamask && (
-        <ConnectMetamask goBack={goBack} closeModal={closeModal} />
-      )}
-      {/* {walletToConnect === WalletType.Ledger && ( */}
-      {/*   <ConnectLedger goBack={goBack} closeModal={closeModal} /> */}
-      {/* )} */}
-      {walletToConnect === WalletType.WalletConnect && (
-        <ConnectWalletConnect goBack={goBack} closeModal={closeModal} />
-      )}
-      {/* {walletToConnect === WalletType.Trezor && ( */}
-      {/*   <ConnectTrezor goBack={goBack} closeModal={closeModal} /> */}
-      {/* )} */}
 
-      {walletToConnect === WalletType.Coinbase && (
-        <ConnectCoinbase goBack={goBack} closeModal={closeModal} />
+      {walletToConnect === null ? (
+        <InitialWalletSelection
+          walletOptions={walletOptions}
+          onSelect={onClick}
+        />
+      ) : (
+        <ConnectWallet
+          walletType={walletToConnect}
+          goBack={goBack}
+          onClose={closeModal}
+        />
       )}
     </>
   )
 }
+
+const ConnectWallet: FC<{
+  walletType: WalletType
+  goBack: () => void
+  onClose: () => void
+}> = ({ walletType, goBack, onClose }) => {
+  switch (walletType) {
+    case WalletType.TAHO:
+      return <ConnectTaho goBack={goBack} closeModal={onClose} />
+    case WalletType.Metamask:
+      return <ConnectMetamask goBack={goBack} closeModal={onClose} />
+    case WalletType.WalletConnect:
+      return <ConnectWalletConnect goBack={goBack} closeModal={onClose} />
+    case WalletType.Coinbase:
+      return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
+    default:
+      return <></>
+  }
+}
+
 export default withBaseModal(SelectWalletModal)

@@ -40,6 +40,11 @@ describe("Test `useFetchTvl` hook", () => {
     usdConversion: 2,
   } as any
 
+  const tbtcv2Context = {
+    contract: {} as any,
+    usdConversion: 2,
+  } as any
+
   const tContext = {
     contract: {} as any,
     usdConversion: 3,
@@ -61,6 +66,7 @@ describe("Test `useFetchTvl` hook", () => {
       value={{
         [Token.Keep]: keepContext,
         [Token.TBTC]: tbtcContext,
+        [Token.TBTCV2]: tbtcv2Context,
         [Token.T]: tContext,
         [Token.Nu]: nuContext,
       }}
