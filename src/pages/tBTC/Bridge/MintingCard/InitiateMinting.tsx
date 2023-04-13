@@ -8,14 +8,15 @@ import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { capture } from "../../../../posthog"
 import { PosthogEvent } from "../../../../types/posthog"
+import { useCapture } from "../../../../hooks/posthog"
 
 const InitiateMintingComponent: FC<{
   utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()
+  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   const confirmDespotAndMint = async () => {
     openModal(ModalType.TbtcMintingConfirmation, { utxo: utxo })
@@ -43,7 +44,7 @@ const InitiateMintingComponent: FC<{
       </BodyMd>
       <Button
         onClick={() => {
-          capture(PosthogEvent.ButtonClicked, {
+          captureButtonClick({
             buttonName: "Confirm deposit & mint (Step 2)",
           })
           confirmDespotAndMint()

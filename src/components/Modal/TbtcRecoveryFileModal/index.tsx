@@ -19,8 +19,8 @@ import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { capture } from "../../../posthog"
 import { PosthogEvent } from "../../../types/posthog"
+import { useCapture } from "../../../hooks/posthog"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -43,6 +43,7 @@ const TbtcRecoveryFileModalModal: FC<
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
   const { btcRecoveryAddress } = useTbtcState()
+  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   const handleDoubleReject = () => {
     closeModal()
@@ -112,7 +113,7 @@ const TbtcRecoveryFileModalModal: FC<
         {isOnConfirmStep ? (
           <Button
             onClick={() => {
-              capture(PosthogEvent.ButtonClicked, {
+              captureButtonClick({
                 buttonName: "Dismiss Anyway [JSON download]",
               })
               handleDoubleReject()
@@ -128,7 +129,7 @@ const TbtcRecoveryFileModalModal: FC<
         ) : (
           <Button
             onClick={() => {
-              capture(PosthogEvent.ButtonClicked, {
+              captureButtonClick({
                 buttonName: "Cancel [JSON download]",
               })
               setIsOnConfirmStep()
@@ -142,7 +143,7 @@ const TbtcRecoveryFileModalModal: FC<
         )}
         <Button
           onClick={() => {
-            capture(PosthogEvent.ButtonClicked, {
+            captureButtonClick({
               buttonName: "Download JSON",
             })
             handleDownloadClick()

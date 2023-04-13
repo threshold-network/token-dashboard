@@ -21,8 +21,8 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
-import { capture } from "../../../../posthog"
 import { PosthogEvent } from "../../../../types/posthog"
+import { useCapture } from "../../../../hooks/posthog"
 
 export interface FormValues {
   ethAddress: string
@@ -105,6 +105,7 @@ export const ProvideDataComponent: FC<{
   const { account } = useWeb3React()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   const onSubmit = async (values: FormValues) => {
     if (account && !isSameETHAddress(values.ethAddress, account)) {
@@ -177,7 +178,7 @@ export const ProvideDataComponent: FC<{
       />
       <Button
         onClick={() => {
-          capture(PosthogEvent.ButtonClicked, {
+          captureButtonClick({
             buttonName: "Generate Deposit Address (Deposit flow)",
           })
         }}
