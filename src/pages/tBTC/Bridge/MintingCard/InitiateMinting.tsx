@@ -10,6 +10,7 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { PosthogEvent } from "../../../../types/posthog"
 import { useCapture } from "../../../../hooks/posthog"
+import { TrackingButton } from "../../../../components/TrackingButton/TrackingButton"
 
 const InitiateMintingComponent: FC<{
   utxo: UnspentTransactionOutput
@@ -42,20 +43,13 @@ const InitiateMintingComponent: FC<{
       <BodyMd color="gray.500" mb={6}>
         Your tBTC will arrive in your wallet in around 1-3 hours.
       </BodyMd>
-      <Button
-        onClick={() => {
-          captureButtonClick({
-            buttonName: "Confirm deposit & mint (Step 2)",
-          })
-          confirmDespotAndMint()
-        }}
+      <TrackingButton
+        onClick={confirmDespotAndMint}
         isFullWidth
-        data-ph-capture-attribute-button-name={
-          "Confirm deposit & mint (Step 2)"
-        }
+        capturedButtonName={"Confirm deposit & mint (Step 2)"}
       >
         Confirm deposit & mint
-      </Button>
+      </TrackingButton>
     </>
   )
 }

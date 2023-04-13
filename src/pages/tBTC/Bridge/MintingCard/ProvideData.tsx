@@ -23,6 +23,7 @@ import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { PosthogEvent } from "../../../../types/posthog"
 import { useCapture } from "../../../../hooks/posthog"
+import { TrackingButton } from "../../../../components/TrackingButton/TrackingButton"
 
 export interface FormValues {
   ethAddress: string
@@ -176,21 +177,16 @@ export const ProvideDataComponent: FC<{
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
-      <Button
-        onClick={() => {
-          captureButtonClick({
-            buttonName: "Generate Deposit Address (Deposit flow)",
-          })
-        }}
+      <TrackingButton
         isLoading={isSubmitButtonLoading}
         loadingText={"Generating deposit address..."}
         type="submit"
         form="tbtc-minting-data-form"
         isFullWidth
-        data-ph-capture-attribute-button-name={`Generate Deposit Address (Deposit flow)`}
+        capturedButtonName={`Generate Deposit Address (Deposit flow)`}
       >
         Generate Deposit Address
-      </Button>
+      </TrackingButton>
     </>
   )
 }

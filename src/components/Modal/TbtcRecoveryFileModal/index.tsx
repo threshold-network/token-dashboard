@@ -21,6 +21,7 @@ import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { PosthogEvent } from "../../../types/posthog"
 import { useCapture } from "../../../hooks/posthog"
+import { TrackingButton } from "../../TrackingButton/TrackingButton"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -111,47 +112,30 @@ const TbtcRecoveryFileModalModal: FC<
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
-          <Button
-            onClick={() => {
-              captureButtonClick({
-                buttonName: "Dismiss Anyway [JSON download]",
-              })
-              handleDoubleReject()
-            }}
+          <TrackingButton
+            onClick={handleDoubleReject}
             variant="outline"
             mr={2}
-            data-ph-capture-attribute-button-name={
-              "Dismiss Anyway [JSON download]"
-            }
+            capturedButtonName={"Dismiss Anyway [JSON download]"}
           >
             Dismiss Anyway
-          </Button>
+          </TrackingButton>
         ) : (
-          <Button
-            onClick={() => {
-              captureButtonClick({
-                buttonName: "Cancel [JSON download]",
-              })
-              setIsOnConfirmStep()
-            }}
+          <TrackingButton
+            onClick={setIsOnConfirmStep}
             variant="outline"
             mr={2}
-            data-ph-capture-attribute-button-name={"Cancel [JSON download]"}
+            capturedButtonName={"Cancel [JSON download]"}
           >
             Cancel
-          </Button>
+          </TrackingButton>
         )}
-        <Button
-          onClick={() => {
-            captureButtonClick({
-              buttonName: "Download JSON",
-            })
-            handleDownloadClick()
-          }}
-          data-ph-capture-attribute-button-name={"Download JSON"}
+        <TrackingButton
+          onClick={handleDownloadClick}
+          capturedButtonName={"Download JSON"}
         >
           Download
-        </Button>
+        </TrackingButton>
       </ModalFooter>
     </>
   )
