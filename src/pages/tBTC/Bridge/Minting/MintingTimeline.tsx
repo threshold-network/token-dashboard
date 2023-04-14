@@ -32,7 +32,7 @@ export const MintingTimelineStep1: FC<MintingTimelineStepProps> = ({
       isComplete={isComplete}
       stepText="Step 1"
       helperLabelText="ACTION OFF-CHAIN"
-      title="Provide Data"
+      title="Deposit Address"
       description={
         <>
           Provide an ETH address and a BTC Recovery address to generate an
