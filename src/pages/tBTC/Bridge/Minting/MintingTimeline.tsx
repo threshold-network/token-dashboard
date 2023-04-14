@@ -133,7 +133,7 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
         mb="4"
       />
       <Badge size="sm" colorScheme="yellow" variant="solid">
-        <Icon as={TimeIcon} alignSelf="center" /> ~1-3 hours minting time
+        <Icon as={TimeIcon} alignSelf="center" /> ~3 hours minting time
       </Badge>
     </Box>
   )
