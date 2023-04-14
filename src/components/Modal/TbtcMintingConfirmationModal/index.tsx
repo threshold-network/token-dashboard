@@ -29,7 +29,6 @@ import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
 import { PosthogEvent } from "../../../types/posthog"
 import { useCapture } from "../../../hooks/posthog"
-import { TrackingButton } from "../../TrackingButton/TrackingButton"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxo: UnspentTransactionOutput
@@ -121,21 +120,25 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
         </BodySm>
       </ModalBody>
       <ModalFooter>
-        <TrackingButton
+        <Button
           onClick={closeModal}
           variant="outline"
           mr={2}
-          capturedButtonName={"Cancel (TBTC Minting Confirmation Modal)"}
+          data-ph-capture-attribute-button-name={
+            "Cancel (TBTC Minting Confirmation Modal)"
+          }
         >
           Cancel
-        </TrackingButton>
-        <TrackingButton
+        </Button>
+        <Button
           disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
-          capturedButtonName={"Start minting (TBTC Minting Confirmation Modal)"}
+          data-ph-capture-attribute-button-name={
+            "Start minting (TBTC Minting Confirmation Modal)"
+          }
         >
           Start minting
-        </TrackingButton>
+        </Button>
       </ModalFooter>
     </>
   )

@@ -18,7 +18,6 @@ import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { BaseModalProps } from "../../../types"
 import { PosthogEvent } from "../../../types/posthog"
 import { useCapture } from "../../../hooks/posthog"
-import { TrackingButton } from "../../TrackingButton/TrackingButton"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
@@ -48,15 +47,15 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         <Divider mt="2" />
       </ModalBody>
       <ModalFooter>
-        <TrackingButton
+        <Button
           onClick={() => {
             accept()
             closeModal()
           }}
-          capturedButtonName={"I Agree, Let's Go! (New tBTC app)"}
+          data-ph-capture-attribute-button-name={`I Agree, Let's Go! (New tBTC app)`}
         >
           I Agree, Let's Go!
-        </TrackingButton>
+        </Button>
       </ModalFooter>
     </>
   )

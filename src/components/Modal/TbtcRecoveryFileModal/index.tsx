@@ -21,7 +21,6 @@ import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { PosthogEvent } from "../../../types/posthog"
 import { useCapture } from "../../../hooks/posthog"
-import { TrackingButton } from "../../TrackingButton/TrackingButton"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -112,30 +111,32 @@ const TbtcRecoveryFileModalModal: FC<
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
-          <TrackingButton
+          <Button
             onClick={handleDoubleReject}
             variant="outline"
             mr={2}
-            capturedButtonName={"Dismiss Anyway [JSON download]"}
+            data-ph-capture-attribute-button-name={
+              "Dismiss Anyway [JSON download]"
+            }
           >
             Dismiss Anyway
-          </TrackingButton>
+          </Button>
         ) : (
-          <TrackingButton
+          <Button
             onClick={setIsOnConfirmStep}
             variant="outline"
             mr={2}
-            capturedButtonName={"Cancel [JSON download]"}
+            data-ph-capture-attribute-button-name={"Cancel [JSON download]"}
           >
             Cancel
-          </TrackingButton>
+          </Button>
         )}
-        <TrackingButton
+        <Button
           onClick={handleDownloadClick}
-          capturedButtonName={"Download JSON"}
+          data-ph-capture-attribute-button-name={"Download JSON"}
         >
           Download
-        </TrackingButton>
+        </Button>
       </ModalFooter>
     </>
   )
