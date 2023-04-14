@@ -96,14 +96,12 @@ const TimelineItem: FC<TimelineProps> = ({
       borderColor={isActive || isComplete ? "brand.500" : "gray.300"}
       {...restProps}
     >
-      <Flex alignItems="center" mb="2.5">
-        <Label color="brand.500">{stepText}</Label>
-        {isActive && withBadge && (
-          <Badge size="sm" variant="subtle" ml="auto">
-            {helperLabelText}
-          </Badge>
-        )}
-      </Flex>
+      <Label color="brand.500">{stepText}</Label>
+      {withBadge && (
+        <Badge size="sm" variant="subtle" my="2">
+          {helperLabelText}
+        </Badge>
+      )}
       <Title>{title}</Title>
       {isActive && <Description mt={4}>{description}</Description>}
       {isActive && <Image mt={4} src={imageSrc} mx="auto" />}

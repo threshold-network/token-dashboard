@@ -31,7 +31,7 @@ export const MintingTimelineStep1: FC<MintingTimelineStepProps> = ({
       isActive={isActive}
       isComplete={isComplete}
       stepText="Step 1"
-      helperLabelText="OFF-CHAIN ACTION"
+      helperLabelText="ACTION OFF-CHAIN"
       title="Provide Data"
       description={
         <>
@@ -59,7 +59,7 @@ export const MintingTimelineStep2: FC<MintingTimelineStepProps> = ({
       isActive={isActive}
       isComplete={isComplete}
       stepText="Step 2"
-      helperLabelText="ACTION ON BITCOIN NETWORK"
+      helperLabelText="ACTION ON BITCOIN"
       title="Make a BTC deposit"
       // TODO: Make sure this copy is a final one and can be the same on the How
       // it Works page and minting timeline in deposit flow.
@@ -81,7 +81,7 @@ export const MintingTimelineStep3: FC<MintingTimelineStepProps> = ({
       // we never render the complete state for this step
       isComplete={isComplete}
       stepText="Step 3"
-      helperLabelText="ACTION ON ETHEREUM NETWORK"
+      helperLabelText="ACTION ON ETHEREUM"
       title="Initiate minting"
       description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
       imageSrc={tbtcMintingStep3}
@@ -113,21 +113,15 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
         }
         mb="4"
       />
-      <Badge size="sm" variant="subtle" mb="4">
-        action on bitcoin network
-      </Badge>
       <MintingTimelineStep2
         isActive={_mintingStep === MintingStep.Deposit}
         isComplete={
           _mintingStep === MintingStep.InitiateMinting ||
           _mintingStep === MintingStep.MintingSuccess
         }
-        withBadge={false}
+        withBadge
         mb="4"
       />
-      <Badge size="sm" variant="subtle" mb="4">
-        action on ethereum network
-      </Badge>
       <MintingTimelineStep3
         isActive={
           _mintingStep === MintingStep.InitiateMinting ||
@@ -135,7 +129,7 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
         }
         // we never render the complete state for this step
         isComplete={false}
-        withBadge={false}
+        withBadge
         mb="4"
       />
       <Badge size="sm" colorScheme="yellow" variant="solid">
