@@ -15,6 +15,7 @@ import { Ledger } from "../../../../static/icons/Ledger"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalBase } from "../components"
 import { WalletConnectionModalProps } from "../../../../types"
+import { WalletType } from "../../../../enums"
 
 interface SelectDerivationPathProps extends WalletConnectionModalProps {
   derivationPath: string
@@ -46,6 +47,7 @@ const SelectDerivationPath: FC<SelectDerivationPathProps> = ({
       title="Ledger"
       subTitle="Plug in Ledger device and unlock. Choose one of the following:"
       onContinue={onContinue}
+      walletType={WalletType.Ledger}
     >
       <RadioGroup
         onChange={setDerivationPath}

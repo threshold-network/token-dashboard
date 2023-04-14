@@ -25,6 +25,7 @@ interface Props extends WalletConnectionModalProps {
   tryAgain?: () => void
   onContinue?: () => void
   connector?: AbstractConnector
+  walletType: WalletType
 }
 
 const WalletConnectionModalBase: FC<Props> = ({
@@ -37,6 +38,7 @@ const WalletConnectionModalBase: FC<Props> = ({
   tryAgain,
   onContinue,
   connector,
+  walletType,
 }) => {
   const { activate, active, account } = useWeb3React()
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
@@ -44,9 +46,9 @@ const WalletConnectionModalBase: FC<Props> = ({
   useEffect(() => {
     if (!connector) return
 
-    captureWalletConnected({ walletType: WalletType.Coinbase })
+    captureWalletConnected({ walletType })
     activate(connector)
-  }, [activate, connector])
+  }, [activate, connector, captureWalletConnected])
 
   return (
     <>

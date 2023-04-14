@@ -6,7 +6,7 @@ import {
   metamask,
 } from "../../../web3/connectors"
 import { MetamaskStatusAlert, WalletConnectionModalBase } from "./components"
-import { ConnectionError } from "../../../enums"
+import { ConnectionError, WalletType } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 
 const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
@@ -38,6 +38,7 @@ const ConnectMetamask: FC<{ goBack: () => void; closeModal: () => void }> = ({
         !error ? "The MetaMask extension will open in an external window." : ""
       }
       tryAgain={connectionRejected ? () => activate(metamask) : undefined}
+      walletType={WalletType.Metamask}
     >
       <MetamaskStatusAlert
         metamaskNotInstalled={metamaskNotInstalled}
