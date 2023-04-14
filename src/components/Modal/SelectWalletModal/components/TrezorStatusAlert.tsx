@@ -11,7 +11,6 @@ const TrezorStatusAlert: FC<{
   active?: boolean
 }> = ({ connectionRejected }) => {
   const { active } = useWeb3React()
-
   if (connectionRejected) {
     return <WalletRejectedAlert />
   }

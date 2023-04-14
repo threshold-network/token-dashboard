@@ -19,8 +19,6 @@ import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { PosthogEvent } from "../../../types/posthog"
-import { useCapture } from "../../../hooks/posthog"
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -43,7 +41,6 @@ const TbtcRecoveryFileModalModal: FC<
   const { isOpen: isOnConfirmStep, onOpen: setIsOnConfirmStep } =
     useDisclosure()
   const { btcRecoveryAddress } = useTbtcState()
-  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   const handleDoubleReject = () => {
     closeModal()

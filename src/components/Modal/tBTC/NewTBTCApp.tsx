@@ -16,12 +16,9 @@ import withBaseModal from "../withBaseModal"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { BaseModalProps } from "../../../types"
-import { PosthogEvent } from "../../../types/posthog"
-import { useCapture } from "../../../hooks/posthog"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
-  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   return (
     <>

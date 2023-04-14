@@ -27,8 +27,6 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
-import { PosthogEvent } from "../../../types/posthog"
-import { useCapture } from "../../../hooks/posthog"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxo: UnspentTransactionOutput
@@ -50,7 +48,6 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
     thresholdNetworkFee,
   } = useTbtcState()
   const threshold = useThreshold()
-  const captureButtonClick = useCapture(PosthogEvent.ButtonClicked)
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
