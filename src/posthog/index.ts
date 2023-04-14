@@ -43,7 +43,3 @@ export const capture = (
 ) => {
   posthog.capture(event, params)
 }
-
-export const debug = () => {
-  posthog.debug()
-}
