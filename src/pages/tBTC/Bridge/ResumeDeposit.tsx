@@ -19,27 +19,36 @@ import { Form } from "../../../components/Forms"
 import { isSameETHAddress, isAddress, parseJsonFile } from "../../../web3/utils"
 import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
   const { account } = useWeb3React()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
+  const threshold = useThreshold()
 
   useEffect(() => {
     updateState("mintingStep", MintingStep.InitiateMinting)
   }, [updateState])
 
-  const onSubmit = (values: FormValues) => {
-    const { depositParameters } = values
+  const onSubmit = async (values: FormValues) => {
+    if (!values.depositParameters) return
+
+    const {
+      depositParameters: { btcRecoveryAddress, ...restDepositParameters },
+    } = values
+    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress(
+      restDepositParameters
+    )
 
     setDepositDataInLocalStorage({
-      ethAddress: depositParameters?.depositor.identifierHex!,
-      blindingFactor: depositParameters?.blindingFactor!,
-      btcRecoveryAddress: depositParameters?.btcRecoveryAddress!,
-      walletPublicKeyHash: depositParameters?.walletPublicKeyHash!,
-      refundLocktime: depositParameters?.refundLocktime!,
-      btcDepositAddress: depositParameters?.btcRecoveryAddress!,
+      ethAddress: restDepositParameters?.depositor.identifierHex!,
+      blindingFactor: restDepositParameters?.blindingFactor!,
+      btcRecoveryAddress: btcRecoveryAddress!,
+      walletPublicKeyHash: restDepositParameters?.walletPublicKeyHash!,
+      refundLocktime: restDepositParameters?.refundLocktime!,
+      btcDepositAddress,
     })
 
     updateState("mintingStep", MintingStep.ProvideData)
