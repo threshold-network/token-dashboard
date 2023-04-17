@@ -22,7 +22,7 @@ export const useFetchRecentDeposits = (
       setIsFetching(true)
 
       try {
-        const data = await subgraphAPI.fetchRecenttBTCDeposits(numberOfDeposits)
+        const data = await subgraphAPI.fetchRecentTBTCDeposits(numberOfDeposits)
         if (!shouldUpdateState.current) return
 
         setDeposits(

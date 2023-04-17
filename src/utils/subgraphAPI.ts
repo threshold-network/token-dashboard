@@ -31,7 +31,7 @@ const mapToRecentDepositData = (transaction: TransactionRawResponse) => {
   }
 }
 
-const fetchRecenttBTCDeposits = async (numberOfDeposits = 4) => {
+const fetchRecentTBTCDeposits = async (numberOfDeposits = 4) => {
   const response = await axios.post(TBTC_SUBGRAPH_URL, {
     query: `query {
         transactions(
@@ -64,5 +64,5 @@ const fetchRecenttBTCDeposits = async (numberOfDeposits = 4) => {
 }
 
 export const subgraphAPI = {
-  fetchRecenttBTCDeposits,
+  fetchRecentTBTCDeposits,
 }
