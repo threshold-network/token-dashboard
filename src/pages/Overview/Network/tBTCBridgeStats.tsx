@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { Card, Divider, LabelSm } from "@threshold-network/components"
 import {
-  DefaultProtocolHistory,
+  ProtocolHistory,
   ProtocolHistoryProps,
   TVL,
   TVLProps,
@@ -19,7 +19,7 @@ export const TBTCBrdigeStats: FC<TBTCBrdigeStatsProps> = ({
       <LabelSm mb="4">tBTC Bridge Stats</LabelSm>
       <TVL tvl={tvl} tvlInUSD={tvlInUSD} />
       <Divider my="6" />
-      <DefaultProtocolHistory deposits={deposits} />
+      <ProtocolHistory deposits={deposits} />
     </Card>
   )
 }

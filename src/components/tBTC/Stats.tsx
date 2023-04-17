@@ -51,9 +51,7 @@ export const ProtocolHistoryRecentDeposits: FC<RecentDepositsProps> = ({
   ...restProps
 }) => <RecentDeposits deposits={deposits} {...restProps} />
 
-export const DefaultProtocolHistory: FC<ProtocolHistoryProps> = ({
-  deposits,
-}) => {
+export const ProtocolHistory: FC<ProtocolHistoryProps> = ({ deposits }) => {
   return (
     <>
       <ProtocolHistoryTitle />
