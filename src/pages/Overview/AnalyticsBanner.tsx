@@ -21,5 +21,3 @@ export const AnalyticsBanner: FC = () => {
     />
   )
 }
-
-// export AnalyticsBanner
