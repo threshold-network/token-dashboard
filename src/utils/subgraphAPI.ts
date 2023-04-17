@@ -6,6 +6,7 @@ const TBTC_SUBGRAPH_URL =
 type TransactionRawResponse = {
   // Actual transaction hash where the tBTC tokens were minted.
   id: string
+  // Unix timestamps in seconds.
   timestamp: string
   deposits: {
     actualAmountReceived: string
