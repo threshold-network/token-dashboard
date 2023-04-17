@@ -7,9 +7,9 @@ import {
   TVLProps,
 } from "../../../components/tBTC"
 
-type TBTCBrdigeStatsProps = ProtocolHistoryProps & TVLProps
+type TBTCBridgeStatsProps = ProtocolHistoryProps & TVLProps
 
-export const TBTCBrdigeStats: FC<TBTCBrdigeStatsProps> = ({
+export const TBTCBridgeStats: FC<TBTCBridgeStatsProps> = ({
   tvl,
   tvlInUSD,
   deposits,

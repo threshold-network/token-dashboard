@@ -4,7 +4,7 @@ import TotalValueLocked from "./TotalValueLocked"
 import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { PageComponent } from "../../../types"
-import { TBTCBrdigeStats } from "./tBTCBridgeStats"
+import { TBTCBridgeStats } from "./tBTCBridgeStats"
 import { useFetchRecentDeposits } from "../../../hooks/tbtc"
 
 const Network: PageComponent = () => {
@@ -17,7 +17,7 @@ const Network: PageComponent = () => {
 
   return (
     <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
-      <TBTCBrdigeStats
+      <TBTCBridgeStats
         tvl={tvlInTokenUnits.tBTC}
         tvlInUSD={tvlInUSD.tBTC}
         deposits={deposits}
