@@ -214,8 +214,9 @@ describe("Test `useFetchTvl` hook", () => {
 
     expect(multicallRequest).toHaveBeenCalled()
 
-    // The `toUsdBalance` and `spyOnFormatUnits` function was called 2x times because it was called
-    // first on mount for every value and then after fetching on-chain data.
+    // The `toUsdBalance` and `spyOnFormatUnits` function were called 2x times
+    // because they were called called first on mount for every value and then
+    // after fetching on-chain data.
     expect(spyOnToUsdBalance).toHaveBeenCalledTimes(
       multicallRequestResult.length * 2
     )

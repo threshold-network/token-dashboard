@@ -4,7 +4,7 @@ const TBTC_SUBGRAPH_URL =
   "https://api.thegraph.com/subgraphs/name/suntzu93/threshold-tbtc"
 
 type TransactionRawResponse = {
-  // Actually transacion hash where the tbtc tokens were minted.
+  // Actual transaction hash where the tBTC tokens were minted.
   id: string
   timestamp: string
   deposits: {
