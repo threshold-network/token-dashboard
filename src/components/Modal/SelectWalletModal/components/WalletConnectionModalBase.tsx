@@ -48,7 +48,7 @@ const WalletConnectionModalBase: FC<Props> = ({
 
     captureWalletConnected({ walletType })
     activate(connector)
-  }, [activate, connector, captureWalletConnected])
+  }, [activate, connector, captureWalletConnected, walletType])
 
   return (
     <>
