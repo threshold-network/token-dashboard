@@ -98,7 +98,7 @@ const TahoIsNotSetAsDefaultWallet: FC = () => {
       <AlertDescription>
         Taho is not set as default wallet. Please make sure Taho is{" "}
         <Link isExternal href={ExternalHref.setTahoAsDefaultWallet}>
-          your defaul wallet
+          your default wallet
         </Link>
         , refresh the page and try again.
       </AlertDescription>
