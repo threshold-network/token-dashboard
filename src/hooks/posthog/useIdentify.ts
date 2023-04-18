@@ -5,15 +5,12 @@ import * as posthog from "../../posthog"
 import { getAddress, isSameETHAddress } from "../../web3/utils"
 import { featureFlags } from "../../constants"
 import { hashString } from "../../utils/crypto"
-import { useAnalytics } from "../useAnalytics"
 
 export const useIdentify = () => {
-  const { isAnalyticsEnabled } = useAnalytics()
   const { connector, account } = useWeb3React()
 
   useEffect(() => {
     if (!featureFlags.POSTHOG) return
-    if (!isAnalyticsEnabled) return
 
     const onLogin = async () => {
       const account = await connector?.getAccount()
@@ -27,11 +24,10 @@ export const useIdentify = () => {
       }
     }
     onLogin()
-  }, [connector, isAnalyticsEnabled])
+  }, [connector])
 
   useEffect(() => {
     if (!featureFlags.POSTHOG) return
-    if (!isAnalyticsEnabled) return
 
     const updateHandler = (update: ConnectorUpdate) => {
       if (!update.account) {
@@ -56,5 +52,5 @@ export const useIdentify = () => {
       connector?.removeListener(ConnectorEvent.Update, updateHandler)
       connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
     }
-  }, [connector, account, isAnalyticsEnabled])
+  }, [connector, account])
 }

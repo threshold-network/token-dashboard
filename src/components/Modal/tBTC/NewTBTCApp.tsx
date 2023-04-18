@@ -49,6 +49,7 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
             accept()
             closeModal()
           }}
+          data-ph-capture-attribute-button-name={`I Agree, Let's Go! (New tBTC app)`}
         >
           I Agree, Let's Go!
         </Button>

@@ -108,15 +108,32 @@ const TbtcRecoveryFileModalModal: FC<
       </ModalBody>
       <ModalFooter>
         {isOnConfirmStep ? (
-          <Button onClick={handleDoubleReject} variant="outline" mr={2}>
+          <Button
+            onClick={handleDoubleReject}
+            variant="outline"
+            mr={2}
+            data-ph-capture-attribute-button-name={
+              "Dismiss Anyway [JSON download]"
+            }
+          >
             Dismiss Anyway
           </Button>
         ) : (
-          <Button onClick={setIsOnConfirmStep} variant="outline" mr={2}>
+          <Button
+            onClick={setIsOnConfirmStep}
+            variant="outline"
+            mr={2}
+            data-ph-capture-attribute-button-name={"Cancel [JSON download]"}
+          >
             Cancel
           </Button>
         )}
-        <Button onClick={handleDownloadClick}>Download</Button>
+        <Button
+          onClick={handleDownloadClick}
+          data-ph-capture-attribute-button-name={"Download JSON"}
+        >
+          Download
+        </Button>
       </ModalFooter>
     </>
   )

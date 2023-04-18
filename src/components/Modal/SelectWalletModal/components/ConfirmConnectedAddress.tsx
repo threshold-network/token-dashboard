@@ -1,11 +1,13 @@
 import { FC } from "react"
 import { AccountSuccessAlert, WalletConnectionModalBase } from "./index"
 import { WalletConnectionModalProps } from "../../../../types"
+import { WalletType } from "../../../../enums"
 
 interface Props {
   icon: any
   title: string
   message: string
+  walletType: WalletType
 }
 
 const ConfirmConnectedAddress: FC<Props & WalletConnectionModalProps> = ({
@@ -14,6 +16,7 @@ const ConfirmConnectedAddress: FC<Props & WalletConnectionModalProps> = ({
   icon: WalletIcon,
   title,
   message,
+  walletType,
 }) => {
   return (
     <WalletConnectionModalBase
@@ -21,6 +24,7 @@ const ConfirmConnectedAddress: FC<Props & WalletConnectionModalProps> = ({
       closeModal={closeModal}
       WalletIcon={<WalletIcon />}
       title={title}
+      walletType={walletType}
     >
       <AccountSuccessAlert message={message} />
     </WalletConnectionModalBase>

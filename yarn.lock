@@ -4186,11 +4186,6 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.33.0.tgz#7d4893a783360a868382e5194b50dbf034ba23c0"
   integrity sha512-5kkmYjtBWSbPxfYGiXdZFPS6xpFBNlXvDqeX4NpCFXz6/LiEDn6tZ61kuCSFb8MZlyqyCX5WsP3aiI2FJfpGIA==
 
-"@sentry/types@^7.2.0":
-  version "7.14.0"
-  resolved "https://registry.npmjs.org/@sentry/types/-/types-7.14.0.tgz#8069e58a0104190e328647963036c7597e2e5fa8"
-  integrity sha512-9iFZS9Hr5hAoL+M9oUH2dY9burOaQh+CHGH66fortuTp++YDWKdbPEeKcz8hRJaUyBBn53rdxiBmAyHsrlE6KA==
-
 "@sentry/utils@7.33.0":
   version "7.33.0"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.33.0.tgz#e6910139328b49b9cc21186521bdb10390dfd915"
@@ -19196,12 +19191,11 @@ postcss@^8.1.0:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-posthog-js@^1.32.2:
-  version "1.32.2"
-  resolved "https://registry.npmjs.org/posthog-js/-/posthog-js-1.32.2.tgz#faf8e88946e448ccfd6f673d1cce4512dd7568d9"
-  integrity sha512-1jepbvxUCGJW7pxsiPeioct9+JZJKPur6j0M2+pe2WFmNnkBGlV7qbK/evv1k6jjYpG8SxDZqwU0RAseRyh7rA==
+posthog-js@^1.53.1:
+  version "1.53.1"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.53.1.tgz#7c14aacaed70b4e302257d8534373f832a28f7dd"
+  integrity sha512-sqCIYkq7qR74NhrmW0n7Fe1c90peNz8v6CReIXJ02XlesN8O4Is04DcnReQxcnbKy6hFGkgV6Zn6RPD/Tl+JSg==
   dependencies:
-    "@sentry/types" "^7.2.0"
     fflate "^0.4.1"
     rrweb-snapshot "^1.1.14"
 

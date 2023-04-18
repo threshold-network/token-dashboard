@@ -18,6 +18,7 @@ import { HiChevronLeft, HiChevronRight } from "react-icons/all"
 import createEtherscanLink, {
   ExplorerDataType,
 } from "../../../../utils/createEtherscanLink"
+import { WalletType } from "../../../../enums"
 
 interface HardwareAccountSelectionProps extends WalletConnectionModalProps {
   selectedAddress: string
@@ -28,6 +29,7 @@ interface HardwareAccountSelectionProps extends WalletConnectionModalProps {
   icon: any
   title: string
   eagerFetch: boolean
+  walletType: WalletType
 }
 
 const HARDWARE_LOADING_TIMEOUT_MS = 60000
@@ -43,6 +45,7 @@ const HardwareAccountSelection: FC<HardwareAccountSelectionProps> = ({
   icon: WalletIcon,
   title,
   eagerFetch,
+  walletType,
 }) => {
   const [loadingCountDown, setCounter] = useState(HARDWARE_LOADING_TIMEOUT_MS)
 
@@ -105,6 +108,7 @@ const HardwareAccountSelection: FC<HardwareAccountSelectionProps> = ({
       title={title}
       subTitle="Choose an address below."
       onContinue={confirmAddress}
+      walletType={walletType}
     >
       {loading ? (
         Array.from(Array(ROWS_PER_PAGE).keys()).map((address) => (

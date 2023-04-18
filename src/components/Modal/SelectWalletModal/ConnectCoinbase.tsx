@@ -1,7 +1,7 @@
 import React, { FC } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalBase } from "./components"
-import { ConnectionError } from "../../../enums"
+import { ConnectionError, WalletType } from "../../../enums"
 import { coinbaseConnector } from "../../../web3/connectors"
 import CoinbaseStatusAlert from "./components/CoinbaseStatusAlert"
 import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
@@ -34,6 +34,7 @@ const ConnectCoinbase: FC<{ goBack: () => void; closeModal: () => void }> = ({
       tryAgain={
         connectionRejected ? () => activate(coinbaseConnector) : undefined
       }
+      walletType={WalletType.Coinbase}
     >
       <CoinbaseStatusAlert
         connectionRejected={connectionRejected}
