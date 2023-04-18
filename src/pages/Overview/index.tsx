@@ -7,7 +7,6 @@ import { PageComponent } from "../../types"
 import { featureFlags } from "../../constants"
 import AnnouncementBanner from "../../components/AnnouncementBanner"
 import tbtcAppBannerIllustration from "../../static/images/tBTCAppBanner.svg"
-import { AnalyticsBanner } from "./AnalyticsBanner"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
@@ -16,7 +15,6 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      <AnalyticsBanner />
       {featureFlags.TBTC_V2 && (
         <AnnouncementBanner
           variant="primary"
