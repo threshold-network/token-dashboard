@@ -57,7 +57,7 @@ const Network: PageComponent = () => {
         bridgeActivity={bridgeActivity}
         isBridgeActivityFetching={isBridgeActivityFetching}
       />
-      <VStack>
+      <VStack spacing="4">
         <TotalValueLocked totalValueLocked={tvlInUSD.total} />
         <Card>
           <HStack spacing="6">
