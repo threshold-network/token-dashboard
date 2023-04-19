@@ -146,7 +146,7 @@ const TBTCStatusBadge: FC<{ status: BridgeActivityStatus }> = ({ status }) => {
 }
 
 const ActivityItemWrapper: FC = ({ children }) => (
-  <LinkBox as={OutlineListItem} pl="6" pr="3" mx="-0.75rem">
+  <LinkBox as={OutlineListItem} pl="6" pr="3">
     {children}
   </LinkBox>
 )

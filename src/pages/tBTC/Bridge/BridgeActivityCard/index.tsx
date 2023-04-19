@@ -16,7 +16,7 @@ export const BridgeActivityCard: FC<
       <LabelSm mb="5">my activity</LabelSm>
       <BridgeActivity data={data} isFetching={isFetching}>
         <BridgeAcivityHeader />
-        <BridgeActivityData />
+        <BridgeActivityData mx="-0.75rem" />
         <BridgeActivityEmptyHistoryImg />
       </BridgeActivity>
     </Card>
