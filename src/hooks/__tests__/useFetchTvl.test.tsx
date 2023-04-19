@@ -14,6 +14,7 @@ import { useFetchTvl } from "../useFetchTvl"
 import * as useTokenModule from "../useToken"
 import { TokenContext } from "../../contexts/TokenContext"
 import * as usdUtils from "../../utils/getUsdBalance"
+import { useTBTCv2TokenContract } from "../../web3/hooks/useTBTCv2TokenContract"
 
 jest.mock("../../web3/hooks", () => ({
   ...(jest.requireActual("../../web3/hooks") as {}),
@@ -23,6 +24,11 @@ jest.mock("../../web3/hooks", () => ({
   useMulticall: jest.fn(),
   useMulticallContract: jest.fn(),
   useTStakingContract: jest.fn(),
+}))
+
+jest.mock("../../web3/hooks/useTBTCv2TokenContract", () => ({
+  ...(jest.requireActual("../../web3/hooks/useTBTCv2TokenContract") as {}),
+  useTBTCv2TokenContract: jest.fn(),
 }))
 
 jest.mock("../useETHData", () => ({
@@ -35,12 +41,7 @@ describe("Test `useFetchTvl` hook", () => {
     contract: {} as any,
     usdConversion: 1,
   } as any
-  const tbtcContext = {
-    contract: {} as any,
-    usdConversion: 2,
-  } as any
-
-  const tbtcv2Context = {
+  const tbtcv1Context = {
     contract: {} as any,
     usdConversion: 2,
   } as any
@@ -54,21 +55,25 @@ describe("Test `useFetchTvl` hook", () => {
     contract: {} as any,
     usdConversion: 4,
   } as any
-
+  const tBTCContext = {
+    contract: {} as any,
+    usdConversion: 2,
+  } as any
   const mockedKeepTokenStakingContract = { address: "0x1" }
   const mockedKeepBondingContract = { address: "0x0" }
   const mockedTStakingContract = { address: "0x2" }
   const mockedMultiCallContract = { interface: {}, address: "0x3" }
   const mockedKeepAssetPoolContract = { interface: {}, address: "0x4" }
+  const mockedtBTCTokenContract = { interface: {}, address: "0x5" }
 
   const wrapper = ({ children }) => (
     <TokenContext.Provider
       value={{
         [Token.Keep]: keepContext,
-        [Token.TBTC]: tbtcContext,
-        [Token.TBTCV2]: tbtcv2Context,
+        [Token.TBTC]: tbtcv1Context,
         [Token.T]: tContext,
         [Token.Nu]: nuContext,
+        [Token.TBTCV2]: tBTCContext,
       }}
     >
       {children}
@@ -94,6 +99,9 @@ describe("Test `useFetchTvl` hook", () => {
     ;(useKeepTokenStakingContract as jest.Mock).mockReturnValue(
       mockedKeepTokenStakingContract
     )
+    ;(useTBTCv2TokenContract as jest.Mock).mockReturnValue(
+      mockedtBTCTokenContract
+    )
   })
 
   test("should fetch tvl data correctly.", async () => {
@@ -103,6 +111,7 @@ describe("Test `useFetchTvl` hook", () => {
     const coveragePoolTvl = { raw: "300000000000000000000", format: "300.0" }
     const keepStaking = { raw: "500000000000000000000", format: "500.0" }
     const tStaking = { raw: "600000000000000000000", format: "600.0" }
+    const tBTC = { raw: "700000000000000000000", format: "700.0" }
 
     const multicallRequestResult = [
       ethInKeepBonding.raw,
@@ -110,6 +119,7 @@ describe("Test `useFetchTvl` hook", () => {
       coveragePoolTvl.raw,
       keepStaking.raw,
       tStaking.raw,
+      tBTC.raw,
     ]
 
     multicallRequest.mockResolvedValue(multicallRequestResult)
@@ -119,27 +129,30 @@ describe("Test `useFetchTvl` hook", () => {
     const spyOnUseToken = jest.spyOn(useTokenModule, "useToken")
 
     const _expectedResult = {
-      ecdsa: ethInKeepBonding.format * mockedETHData.usdPrice,
-      tbtc: tbtcTokenTotalSupply.format * tbtcContext.usdConversion,
-      keepCoveragePool: coveragePoolTvl.format * keepContext.usdConversion,
-      keepStaking: keepStaking.format * keepContext.usdConversion,
-      tStaking: tStaking.format * tContext.usdConversion,
+      ecdsa: +ethInKeepBonding.format * mockedETHData.usdPrice,
+      tbtc: +tbtcTokenTotalSupply.format * tbtcv1Context.usdConversion,
+      keepCoveragePool: +coveragePoolTvl.format * keepContext.usdConversion,
+      keepStaking: +keepStaking.format * keepContext.usdConversion,
+      tStaking: +tStaking.format * tContext.usdConversion,
+      tBTC: +tBTC.format * tBTCContext.usdConversion,
     }
 
     // `FixedNumber` from `@ethersproject/bignumber` adds trailing zero so we
     // need to do the same here.
     const expectedResult = {
       ecdsa: `${_expectedResult.ecdsa.toString()}.0`,
-      tbtc: `${_expectedResult.tbtc.toString()}.0`,
+      tbtcv1: `${_expectedResult.tbtc.toString()}.0`,
       keepCoveragePool: `${_expectedResult.keepCoveragePool.toString()}.0`,
       keepStaking: `${_expectedResult.keepStaking.toString()}.0`,
       tStaking: `${_expectedResult.tStaking.toString()}.0`,
+      tBTC: `${_expectedResult.tBTC.toString()}.0`,
       total: `${
         _expectedResult.ecdsa +
         _expectedResult.tbtc +
         _expectedResult.keepCoveragePool +
         _expectedResult.keepStaking +
-        _expectedResult.tStaking
+        _expectedResult.tStaking +
+        _expectedResult.tBTC
       }.0`,
     }
 
@@ -153,6 +166,7 @@ describe("Test `useFetchTvl` hook", () => {
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.Keep)
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTC)
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.T)
+    expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTCV2)
     expect(useKeepBondingContract).toHaveBeenCalled()
     expect(useMulticallContract).toHaveBeenCalled()
     expect(useKeepAssetPoolContract).toHaveBeenCalled()
@@ -166,8 +180,8 @@ describe("Test `useFetchTvl` hook", () => {
         args: [mockedKeepBondingContract.address],
       },
       {
-        interface: tbtcContext.contract.interface,
-        address: tbtcContext.contract.address,
+        interface: tbtcv1Context.contract.interface,
+        address: tbtcv1Context.contract.address,
         method: "totalSupply",
       },
       {
@@ -187,6 +201,11 @@ describe("Test `useFetchTvl` hook", () => {
         method: "balanceOf",
         args: [mockedTStakingContract.address],
       },
+      {
+        interface: tBTCContext.contract.interface,
+        address: tBTCContext.contract.address,
+        method: "totalSupply",
+      },
     ])
 
     result.current[1]()
@@ -194,36 +213,44 @@ describe("Test `useFetchTvl` hook", () => {
     await waitForNextUpdate()
 
     expect(multicallRequest).toHaveBeenCalled()
-    expect(spyOnFormatUnits).toHaveBeenCalledTimes(
-      multicallRequestResult.length
-    )
-    // The `toUsdBalance` function was called 2x times because it was called
-    // first on mount for every value and then after fetching on-chain data.
+
+    // The `toUsdBalance` and `spyOnFormatUnits` function were called 2x times
+    // because they were called called first on mount for every value and then
+    // after fetching on-chain data.
     expect(spyOnToUsdBalance).toHaveBeenCalledTimes(
       multicallRequestResult.length * 2
     )
+    expect(spyOnFormatUnits).toHaveBeenCalledTimes(
+      multicallRequestResult.length * 2
+    )
+
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      6,
+      7,
       ethInKeepBonding.format,
       mockedETHData.usdPrice
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      7,
+      8,
       tbtcTokenTotalSupply.format,
-      tbtcContext.usdConversion
+      tbtcv1Context.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      8,
+      9,
+      tBTC.format,
+      tBTCContext.usdConversion
+    )
+    expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
+      10,
       coveragePoolTvl.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      9,
+      11,
       keepStaking.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      10,
+      12,
       tStaking.format,
       tContext.usdConversion
     )

@@ -1,13 +1,15 @@
 import { useEffect } from "react"
 import { SimpleGrid, Stack } from "@threshold-network/components"
 import TotalValueLocked from "./TotalValueLocked"
-import WalletBalances from "./WalletBalances"
 import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { PageComponent } from "../../../types"
+import { TBTCBridgeStats } from "./tBTCBridgeStats"
+import { useFetchRecentDeposits } from "../../../hooks/tbtc"
 
 const Network: PageComponent = () => {
-  const [data, fetchtTvlData] = useFetchTvl()
+  const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
+  const [deposits, isFetching, error] = useFetchRecentDeposits()
 
   useEffect(() => {
     fetchtTvlData()
@@ -15,10 +17,14 @@ const Network: PageComponent = () => {
 
   return (
     <SimpleGrid columns={{ base: 1, xl: 2 }} spacing={4}>
-      <WalletBalances />
+      <TBTCBridgeStats
+        tvl={tvlInTokenUnits.tBTC}
+        tvlInUSD={tvlInUSD.tBTC}
+        deposits={deposits}
+      />
       <Stack spacing={4}>
         <StakingOverview />
-        <TotalValueLocked totalValueLocked={data.total} />
+        <TotalValueLocked totalValueLocked={tvlInUSD.total} />
       </Stack>
     </SimpleGrid>
   )
