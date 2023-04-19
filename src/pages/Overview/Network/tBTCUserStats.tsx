@@ -1,5 +1,6 @@
 import { FC } from "react"
 import {
+  Badge,
   BodyMd,
   Box,
   Card,
@@ -11,6 +12,7 @@ import TokenBalance from "../../../components/TokenBalance"
 import ButtonLink from "../../../components/ButtonLink"
 import { useTokenState } from "../../../hooks/useTokenState"
 import {
+  ActivityItemWrapper,
   BridgeActivity,
   BridgeActivityData,
   BridgeActivityProps,
@@ -56,6 +58,7 @@ export const TBTCUserStats: FC<TBTCUserStatsProps> = ({
       <BridgeActivity
         data={_bridgeActivity}
         isFetching={isBridgeActivityFetching}
+        emptyState={<BridgeActivityCustomEmptyState />}
       >
         <BridgeActivityData />
       </BridgeActivity>
@@ -65,5 +68,27 @@ export const TBTCUserStats: FC<TBTCUserStatsProps> = ({
         </Link>
       </Box>
     </Card>
+  )
+}
+
+const BridgeActivityCustomEmptyStateItem = () => {
+  return (
+    <ActivityItemWrapper>
+      <Box as="span" color="grey.700">
+        -.-- tBTC
+      </Box>
+      <Badge variant="subtle" size="sm" colorScheme="gray">
+        connect your wallet
+      </Badge>
+    </ActivityItemWrapper>
+  )
+}
+
+const BridgeActivityCustomEmptyState = () => {
+  return (
+    <>
+      <BridgeActivityCustomEmptyStateItem />
+      <BridgeActivityCustomEmptyStateItem />
+    </>
   )
 }

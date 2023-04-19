@@ -1,4 +1,4 @@
-import { FC, createContext, useContext } from "react"
+import { FC, createContext, useContext, ReactElement } from "react"
 import {
   Badge,
   BodyMd,
@@ -25,13 +25,18 @@ import { InlineTokenBalance } from "../TokenBalance"
 import Link from "../Link"
 import { OutlineListItem } from "../OutlineListItem"
 
+export type BridgeActivityProps = {
+  data: BridgeActivityType[]
+  isFetching: boolean
+  emptyState?: ReactElement
+}
+
+type BridgeActivityContextValue = {
+  [Property in keyof BridgeActivityProps]-?: BridgeActivityProps[Property]
+} & { isBridgeHistoryEmpty: boolean }
+
 const BridgeActivityContext = createContext<
-  | {
-      data: BridgeActivityType[]
-      isBridgeHistoryEmpty: boolean
-      isFetching: boolean
-    }
-  | undefined
+  BridgeActivityContextValue | undefined
 >(undefined)
 
 const useBridgeActivityContext = () => {
@@ -45,14 +50,10 @@ const useBridgeActivityContext = () => {
   return context
 }
 
-export type BridgeActivityProps = {
-  data: BridgeActivityType[]
-  isFetching: boolean
-}
-
 export const BridgeActivity: FC<BridgeActivityProps> = ({
   data,
   isFetching,
+  emptyState,
   children,
 }) => {
   const isBridgeHistoryEmpty = data.length === 0
@@ -63,6 +64,7 @@ export const BridgeActivity: FC<BridgeActivityProps> = ({
         data,
         isBridgeHistoryEmpty,
         isFetching,
+        emptyState: emptyState ?? <EmptyActivity />,
       }}
     >
       {children}
@@ -80,13 +82,14 @@ export const BridgeAcivityHeader: FC<StackProps> = (props) => {
 }
 
 export const BridgeActivityData: FC<ListProps> = (props) => {
-  const { data, isBridgeHistoryEmpty, isFetching } = useBridgeActivityContext()
+  const { data, isBridgeHistoryEmpty, isFetching, emptyState } =
+    useBridgeActivityContext()
 
   return isFetching ? (
     <BridgeActivityLoadingState />
   ) : (
     <List spacing="1" mt="2" {...props}>
-      {isBridgeHistoryEmpty ? <EmptyActivity /> : data.map(renderActivityItem)}
+      {isBridgeHistoryEmpty ? emptyState : data.map(renderActivityItem)}
     </List>
   )
 }
@@ -145,7 +148,7 @@ const TBTCStatusBadge: FC<{ status: BridgeActivityStatus }> = ({ status }) => {
   )
 }
 
-const ActivityItemWrapper: FC = ({ children }) => (
+export const ActivityItemWrapper: FC = ({ children }) => (
   <LinkBox as={OutlineListItem} pl="6" pr="3">
     {children}
   </LinkBox>
