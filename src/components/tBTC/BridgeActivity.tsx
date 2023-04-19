@@ -171,17 +171,21 @@ export const BridgeActivityEmptyHistoryImg: FC = () => {
   )
 }
 
+const EmptyActivityItem: FC = () => (
+  <ActivityItemWrapper>
+    <Box as="span" color="gray.700">
+      -.--
+    </Box>
+    <Box as="span" color="gray.700">
+      -.--
+    </Box>
+  </ActivityItemWrapper>
+)
 const EmptyActivity: FC = () => {
   return (
     <>
-      <ActivityItemWrapper>
-        <Box as="span">-.--</Box>
-        <Box as="span">-.--</Box>
-      </ActivityItemWrapper>
-      <ActivityItemWrapper>
-        <Box as="span">-.--</Box>
-        <Box as="span">-.--</Box>
-      </ActivityItemWrapper>
+      <EmptyActivityItem />
+      <EmptyActivityItem />
     </>
   )
 }

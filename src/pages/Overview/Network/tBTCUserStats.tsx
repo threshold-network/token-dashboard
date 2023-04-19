@@ -74,7 +74,7 @@ export const TBTCUserStats: FC<TBTCUserStatsProps> = ({
 const BridgeActivityCustomEmptyStateItem = () => {
   return (
     <ActivityItemWrapper>
-      <Box as="span" color="grey.700">
+      <Box as="span" color="gray.700">
         -.-- tBTC
       </Box>
       <Badge variant="subtle" size="sm" colorScheme="gray">
