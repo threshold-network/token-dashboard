@@ -30,4 +30,6 @@ export enum WalletType {
   Metamask = "METAMASK",
   WalletConnect = "WALLET_CONNECT",
   Coinbase = "COINBASE",
+  Trezor = "TREZOR",
+  Ledger = "Ledger",
 }

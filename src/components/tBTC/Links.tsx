@@ -22,6 +22,7 @@ export const BridgeContractLink: FC<Props> = ({
       type={ExplorerDataType.ADDRESS}
       text={text}
       {...props}
+      data-ph-capture-attribute-button-name={`Bridge contract link (Deposit flow)`}
     />
   )
 }

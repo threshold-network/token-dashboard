@@ -39,7 +39,13 @@ const InitiateMintingComponent: FC<{
       <BodyMd color="gray.500" mb={6}>
         Your tBTC will arrive in your wallet in around ~3 hours.
       </BodyMd>
-      <Button onClick={confirmDespotAndMint} isFullWidth>
+      <Button
+        onClick={confirmDespotAndMint}
+        isFullWidth
+        data-ph-capture-attribute-button-name={
+          "Confirm deposit & mint (Step 2)"
+        }
+      >
         Confirm deposit & mint
       </Button>
     </>

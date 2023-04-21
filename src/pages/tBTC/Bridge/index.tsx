@@ -3,7 +3,7 @@ import { Grid, Box, Skeleton, Stack } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
-import { BridgeActivityCard, BridgeActivity } from "./BridgeActivity"
+import { BridgeActivityCard } from "./BridgeActivityCard"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
@@ -58,17 +58,10 @@ const TBTCBridge: PageComponent = (props) => {
       </Box>
       <Box gridArea="aside">
         <TbtcBalanceCard gridArea="balance-card" mb="5" />
-        <BridgeActivityCard>
-          {isBridgeActivityFetching ? (
-            <Stack>
-              <Skeleton height="20px" />
-              <Skeleton height="20px" />
-              <Skeleton height="20px" />
-            </Stack>
-          ) : (
-            <BridgeActivity data={bridgeActivity} />
-          )}
-        </BridgeActivityCard>
+        <BridgeActivityCard
+          data={bridgeActivity}
+          isFetching={isBridgeActivityFetching}
+        />
       </Box>
     </Grid>
   )

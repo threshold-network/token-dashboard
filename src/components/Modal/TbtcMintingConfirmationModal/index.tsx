@@ -117,12 +117,22 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
         </BodySm>
       </ModalBody>
       <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
+        <Button
+          onClick={closeModal}
+          variant="outline"
+          mr={2}
+          data-ph-capture-attribute-button-name={
+            "Cancel (TBTC Minting Confirmation Modal)"
+          }
+        >
           Cancel
         </Button>
         <Button
           disabled={!tBTCMintAmount || !mintingFee || !thresholdNetworkFee}
           onClick={initiateMintTransaction}
+          data-ph-capture-attribute-button-name={
+            "Start minting (TBTC Minting Confirmation Modal)"
+          }
         >
           Start minting
         </Button>

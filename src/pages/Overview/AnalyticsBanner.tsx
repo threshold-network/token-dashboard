@@ -6,7 +6,7 @@ import { ModalType } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import SecondaryAnnouncementBanner from "../../components/AnnouncementBanner/SecondaryAnnouncementBanner"
 
-const AnalyticsBanner: FC = () => {
+export const AnalyticsBanner: FC = () => {
   const { openModal } = useModal()
 
   const imgSrc = useColorModeValue(analyticsImageLight, analyticsImageDark)
@@ -21,5 +21,3 @@ const AnalyticsBanner: FC = () => {
     />
   )
 }
-
-export default AnalyticsBanner

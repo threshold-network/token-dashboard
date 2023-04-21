@@ -18,7 +18,7 @@ import {
   WalletInitializeAlert,
   WalletRejectedAlert,
 } from "./components"
-import { ExternalHref } from "../../../enums"
+import { ExternalHref, WalletType } from "../../../enums"
 import Link from "../../Link"
 
 const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
@@ -59,6 +59,7 @@ const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
             }
           : undefined
       }
+      walletType={WalletType.TAHO}
     >
       {isTahoNotInstalled && <InstallTaho />}
       {isTahoNotDefaultWallet && <TahoIsNotSetAsDefaultWallet />}
@@ -98,7 +99,7 @@ const TahoIsNotSetAsDefaultWallet: FC = () => {
       <AlertDescription>
         Taho is not set as default wallet. Please make sure Taho is{" "}
         <Link isExternal href={ExternalHref.setTahoAsDefaultWallet}>
-          your defaul wallet
+          your default wallet
         </Link>
         , refresh the page and try again.
       </AlertDescription>

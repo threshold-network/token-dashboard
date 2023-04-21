@@ -3,7 +3,7 @@ import { Icon, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { LEDGER_DERIVATION_PATHS } from "../../../../web3/connectors/ledger_subprovider"
 import { WalletConnectionModalProps } from "../../../../types"
-import { LedgerConnectionStage } from "../../../../enums"
+import { LedgerConnectionStage, WalletType } from "../../../../enums"
 import {
   LedgerConnector,
   ledgerLegacyConnectorFactory,
@@ -102,6 +102,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
           )}
           title="Ledger"
           eagerFetch
+          walletType={WalletType.Ledger}
         />
       )
 
@@ -119,6 +120,7 @@ const ConnectLedger: FC<WalletConnectionModalProps> = ({
           )}
           title="Ledger"
           message="Your Ledger wallet is connected"
+          walletType={WalletType.Ledger}
         />
       )
 

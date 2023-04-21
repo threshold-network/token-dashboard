@@ -2,7 +2,11 @@ import { FC, useEffect, useMemo, useState } from "react"
 import { Icon, useColorModeValue } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
-import { ConnectionError, TrezorConnectionStage } from "../../../../enums"
+import {
+  ConnectionError,
+  TrezorConnectionStage,
+  WalletType,
+} from "../../../../enums"
 import HardwareAccountSelection from "../components/HardwareAccountSelection"
 import ConfirmConnectedAddress from "../components/ConfirmConnectedAddress"
 import trezorConnector from "../../../../web3/connectors/trezor"
@@ -69,6 +73,7 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
           tryAgain={
             connectionRejected ? () => fetchAddresses(10, 0) : undefined
           }
+          walletType={WalletType.Trezor}
         >
           <TrezorStatusAlert connectionRejected={connectionRejected} />
         </WalletConnectionModalBase>
@@ -92,6 +97,7 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
           )}
           title="Trezor"
           eagerFetch={false}
+          walletType={WalletType.Trezor}
         />
       )
 
@@ -102,6 +108,7 @@ const ConnectTrezor: FC<WalletConnectionModalProps> = ({
           icon={() => <Icon h="40px" w="40px" mr={4} />}
           title="Trezor"
           message="Your Trezor wallet is connected"
+          walletType={WalletType.Ledger}
         />
       )
 

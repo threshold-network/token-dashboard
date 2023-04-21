@@ -23,7 +23,12 @@ const variants = {
     const { colorScheme: c, theme } = props
     const whiteAlpha200 = "rgba(255, 255, 255, 0.08);"
 
-    const bgVariant = c === "brand" ? "75" : "50"
+    let bgVariant = "50"
+    if (c === "brand") {
+      bgVariant = "75"
+    } else if (c === "gray") {
+      bgVariant = "100"
+    }
     // The `brand.75` color is already defined in the default theme but for some
     // reason chakra can't find the `brand.75` color.
     const brand75 = "#F2EDFF"

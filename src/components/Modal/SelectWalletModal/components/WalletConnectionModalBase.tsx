@@ -14,6 +14,9 @@ import { useWeb3React } from "@web3-react/core"
 import { WalletConnectionModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
 import { AbstractConnector } from "../../../../web3/connectors"
+import { WalletType } from "../../../../enums"
+import { useCapture } from "../../../../hooks/posthog"
+import { PosthogEvent } from "../../../../types/posthog"
 
 interface Props extends WalletConnectionModalProps {
   WalletIcon: any
@@ -22,6 +25,7 @@ interface Props extends WalletConnectionModalProps {
   tryAgain?: () => void
   onContinue?: () => void
   connector?: AbstractConnector
+  walletType: WalletType
 }
 
 const WalletConnectionModalBase: FC<Props> = ({
@@ -34,14 +38,17 @@ const WalletConnectionModalBase: FC<Props> = ({
   tryAgain,
   onContinue,
   connector,
+  walletType,
 }) => {
   const { activate, active, account } = useWeb3React()
+  const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
 
   useEffect(() => {
     if (!connector) return
 
+    captureWalletConnected({ walletType })
     activate(connector)
-  }, [activate, connector])
+  }, [activate, connector, captureWalletConnected, walletType])
 
   return (
     <>
