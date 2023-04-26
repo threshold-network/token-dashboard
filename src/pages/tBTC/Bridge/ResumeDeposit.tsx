@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   FileUploader,
+  FormControl,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { FormikErrors, FormikProps, withFormik } from "formik"
@@ -16,10 +17,16 @@ import { BridgeContractLink } from "../../../components/tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { MintingStep } from "../../../types/tbtc"
 import { Form } from "../../../components/Forms"
-import { isSameETHAddress, isAddress, parseJsonFile } from "../../../web3/utils"
+import {
+  isSameETHAddress,
+  isAddress,
+  parseJSONFile,
+  InvalidJSONFileError,
+} from "../../../web3/utils"
 import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import HelperErrorText from "../../../components/Forms/HelperErrorText"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -90,25 +97,26 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
     }
 
     try {
-      const result = (await parseJsonFile(file)) as DepositDetails
+      const result = (await parseJSONFile(file)) as DepositDetails
       setValues({ depositParameters: result })
     } catch (error) {
       console.error("Unexpected error: ", (error as Error).toString())
       setFieldError(
         "depositParameters",
-        "Unexpected error while reading file, try again..."
+        error instanceof InvalidJSONFileError
+          ? error.message
+          : "Unexpected error while reading file, try again..."
       )
     }
   }
 
   return (
     <Form>
-      <FileUploader
-        onFileUpload={onFileUpload}
-        headerHelperText="Require"
-        accept="text"
-      />
-      {isError && error}
+      <FormControl isInvalid={isError}>
+        <FileUploader onFileUpload={onFileUpload} headerHelperText="Required" />
+        <HelperErrorText hasError={isError} errorMsgText={error} />
+      </FormControl>
+
       <Button
         size="lg"
         isFullWidth
@@ -150,7 +158,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
       !values.depositParameters?.walletPublicKeyHash ||
       !values.depositParameters?.btcRecoveryAddress
     ) {
-      errors.depositParameters = "Invalid JSON. file."
+      errors.depositParameters = "Invalid .JSON file."
     } else if (
       !isSameETHAddress(
         values.depositParameters?.depositor?.identifierHex,
