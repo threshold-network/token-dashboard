@@ -37,6 +37,10 @@ export const ResumeDepositPage: PageComponent = () => {
 
   useEffect(() => {
     updateState("mintingStep", MintingStep.InitiateMinting)
+
+    return () => {
+      updateState("mintingStep", MintingStep.ProvideData)
+    }
   }, [updateState])
 
   const onSubmit = async (values: FormValues) => {
