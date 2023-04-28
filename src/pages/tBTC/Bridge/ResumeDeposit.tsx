@@ -62,7 +62,6 @@ export const ResumeDepositPage: PageComponent = () => {
       btcDepositAddress,
     })
 
-    updateState("mintingStep", MintingStep.ProvideData)
     navigate("/tBTC/mint")
   }
 
