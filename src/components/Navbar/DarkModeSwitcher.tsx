@@ -4,21 +4,20 @@ import {
   IconButton,
   IconButtonProps,
   useColorMode,
-} from "@chakra-ui/react"
-import { ColorMode } from "../../enums/project"
+  useColorModeValue,
+} from "@threshold-network/components"
 import { IoMoonSharp, IoSunnySharp } from "react-icons/all"
 
 const DarkModeSwitcher: FC<Omit<IconButtonProps, "aria-label">> = () => {
-  const { colorMode, toggleColorMode } = useColorMode()
+  const { toggleColorMode } = useColorMode()
+  const icon = useColorModeValue(IoMoonSharp, IoSunnySharp)
 
   return (
     <IconButton
       variant="ghost"
       aria-label="color mode"
       onClick={toggleColorMode}
-      icon={
-        <Icon as={colorMode === ColorMode.LIGHT ? IoMoonSharp : IoSunnySharp} />
-      }
+      icon={<Icon as={icon} />}
     />
   )
 }
