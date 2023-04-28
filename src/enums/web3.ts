@@ -21,8 +21,6 @@ export enum ConnectionError {
   RejectedMetamaskConnection = "The user rejected the request.",
   RejectedCoinbaseConnection = "User denied account authorization",
   CoinbaseUnsupportedNetwork = "Unsupported chain id:",
-  TrezorDenied = "Popup closed",
-  TrezorCancelled = "Cancelled",
 }
 
 export enum WalletType {
@@ -30,6 +28,4 @@ export enum WalletType {
   Metamask = "METAMASK",
   WalletConnect = "WALLET_CONNECT",
   Coinbase = "COINBASE",
-  Trezor = "TREZOR",
-  Ledger = "Ledger",
 }
