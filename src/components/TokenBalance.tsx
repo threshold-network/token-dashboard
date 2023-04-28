@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { ComponentType, FC, useMemo } from "react"
 import {
   BodyLg,
   BodySm,
@@ -10,10 +10,11 @@ import {
   useColorModeValue,
   Tooltip,
   BoxProps,
+  Icon,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import Icon from "./Icon"
 import { formatTokenAmount } from "../utils/formatAmount"
+import tokenIconMap, { TokenIcon } from "../static/icons/tokenIconMap"
 
 export interface TokenBalanceProps {
   tokenAmount: string | number
@@ -22,7 +23,7 @@ export interface TokenBalanceProps {
   withUSDBalance?: boolean
   withSymbol?: boolean
   tokenDecimals?: number
-  icon?: any
+  icon?: TokenIcon | ComponentType
   iconSize?: string
   isLarge?: boolean
   tokenFormat?: string
@@ -100,7 +101,12 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   return (
     <Box>
       <HStack alignItems="center">
-        {icon && <Icon as={icon} boxSize={iconSize} />}{" "}
+        {icon && (
+          <Icon
+            as={tokenIconMap[icon as TokenIcon] ?? icon}
+            boxSize={iconSize}
+          />
+        )}{" "}
         <BalanceTag {...restProps}>
           {shouldRenderTokenAmount ? (
             withHigherPrecision ? (
