@@ -14,9 +14,7 @@ import { OutlineListItem } from "../OutlineListItem"
 import { InlineTokenBalance } from "../TokenBalance"
 import { getRelativeTime } from "../../utils/date"
 import { RecentDeposit } from "../../hooks/tbtc/useFetchRecentDeposits"
-import ViewInBlockExplorer, {
-  createLinkToBlockExplorerForChain,
-} from "../ViewInBlockExplorer"
+import { createLinkToBlockExplorerForChain } from "../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../utils/createEtherscanLink"
 
 export type RecentDepositsProps = {
@@ -58,6 +56,7 @@ const RecentDepositItem: FC<RecentDeposit> = ({
           txHash,
           ExplorerDataType.TRANSACTION
         )}
+        flex="1"
       >
         <BodySm>
           <InlineTokenBalance
@@ -68,11 +67,13 @@ const RecentDepositItem: FC<RecentDeposit> = ({
           />
         </BodySm>
       </LinkOverlay>
-      <HStack spacing="2">
+      <HStack spacing="2" flex="1">
         <Identicon address={address} />
         <BodySm textStyle="chain-identifier">{shortenAddress(address)}</BodySm>
       </HStack>
-      <BodySm>{getRelativeTime(date)}</BodySm>
+      <BodySm flex="1" textAlign="right">
+        {getRelativeTime(date)}
+      </BodySm>
     </LinkBox>
   )
 }
