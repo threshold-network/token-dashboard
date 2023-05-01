@@ -102,7 +102,6 @@
     "@chakra-ui/cli": "0.0.0-pr-20211126153854",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@testing-library/react-hooks": "7.0.2",
-    "@types/web3-provider-engine": "^14.0.1",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
     "chromatic": "^6.0.0-canary.1",
