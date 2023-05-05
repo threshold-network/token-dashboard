@@ -1,6 +1,7 @@
 import { FC, useEffect } from "react"
 import {
   BodyMd,
+  BodyXs,
   Box,
   Card,
   Divider,
@@ -9,6 +10,18 @@ import {
   H3,
   H5,
   HStack,
+  LabelSm,
+  LabelXs,
+  Link,
+  LinkBox,
+  LinkOverlay,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import tBTCExplorerBg from "../../../static/images/tBTC-explorer-bg.svg"
@@ -16,6 +29,35 @@ import ButtonLink from "../../../components/ButtonLink"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
 import { ExternalHref } from "../../../enums"
+import { TBTCText } from "../../../components/tBTC"
+import Identicon from "../../../components/Identicon"
+import { InlineTokenBalance } from "../../../components/TokenBalance"
+import shortenAddress from "../../../utils/shortenAddress"
+import { getRelativeTime } from "../../../utils/date"
+import { createLinkToBlockExplorerForChain } from "../../../components/ViewInBlockExplorer"
+import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+
+type Mint = {
+  txHash: string
+  amount: string
+  address: string
+  timestamp: string
+}
+
+const latestMints: Mint[] = [
+  {
+    amount: "1200000000000000000",
+    txHash: "0x4fed83d354e8c1bc750ac7454dd88a8329c5e681",
+    address: "0x1582B392b58AB9686d824C4c84a3576e13d5F4Bf",
+    timestamp: "1683285501",
+  },
+  {
+    amount: "200000000000000000",
+    txHash: "0x4fed83d354e8c1bc750ac7454dd88a8329c5e682",
+    address: "0x1582B392b58AB9686d824C4c84a3576e13d5F4CD",
+    timestamp: "1683285501",
+  },
+]
 
 export const ExplorerPage: PageComponent = () => {
   const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
@@ -27,6 +69,7 @@ export const ExplorerPage: PageComponent = () => {
   return (
     <>
       <Card
+        as="section"
         bgImage={tBTCExplorerBg}
         backgroundRepeat="no-repeat"
         backgroundPosition="bottom -25px right"
@@ -58,7 +101,84 @@ export const ExplorerPage: PageComponent = () => {
           <MetricBox value="420.69" label="tBTC" />
         </HStack>
       </Card>
+      <Card mt="4" as="section">
+        <LabelSm as="header">History</LabelSm>
+        <TableContainer mt="6">
+          <Table variant="simple">
+            <Thead color="gray.500">
+              <Tr>
+                <Th paddingLeft={12}>
+                  <LabelXs color="gray.500">
+                    <TBTCText /> amount
+                  </LabelXs>
+                </Th>
+                <Th>
+                  <LabelXs>Wallet Address</LabelXs>
+                </Th>
+                <Th>
+                  <LabelXs>TX Hash</LabelXs>
+                </Th>
+                <Th textAlign={"right"}>
+                  <LabelXs>Timestamp</LabelXs>
+                </Th>
+              </Tr>
+            </Thead>
+            <Tbody>{latestMints.map(renderHistoryRow)}</Tbody>
+          </Table>
+        </TableContainer>
+      </Card>
     </>
+  )
+}
+
+const renderHistoryRow = (item: Mint) => (
+  <HistoryRow key={item.txHash} {...item} />
+)
+
+const HistoryRow: FC<Mint> = ({ txHash, address, amount, timestamp }) => {
+  return (
+    <LinkBox
+      as={Tr}
+      key={`latest-mints-${txHash}`}
+      _odd={{ backgroundColor: "gray.50" }}
+      sx={{ td: { borderBottom: "none" } }}
+    >
+      <Td paddingLeft={12}>
+        <BodyXs>
+          <InlineTokenBalance
+            tokenAmount={amount}
+            withSymbol
+            tokenSymbol="tBTC"
+          />
+        </BodyXs>
+      </Td>
+      <Td>
+        <HStack>
+          <Identicon address={address} />
+          <BodyXs textStyle="chain-identifier">
+            {shortenAddress(address)}
+          </BodyXs>
+        </HStack>
+      </Td>
+      <Td>
+        <LinkOverlay
+          as={Link}
+          textDecoration="none"
+          _hover={{ textDecoration: "none" }}
+          color="inherit"
+          isExternal
+          href={createLinkToBlockExplorerForChain.ethereum(
+            txHash,
+            ExplorerDataType.TRANSACTION
+          )}
+        >
+          <BodyXs textStyle="chain-identifier">{shortenAddress(txHash)}</BodyXs>
+        </LinkOverlay>
+      </Td>
+      <Td textAlign={"right"}>
+        <BodyXs>{getRelativeTime(Number(timestamp))}</BodyXs>
+      </Td>
+    </LinkBox>
   )
 }
 
