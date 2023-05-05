@@ -1,6 +1,7 @@
 import { FC, useEffect } from "react"
 import {
   BodyMd,
+  BodySm,
   BodyXs,
   Box,
   Card,
@@ -27,7 +28,10 @@ import { PageComponent } from "../../../types"
 import tBTCExplorerBg from "../../../static/images/tBTC-explorer-bg.svg"
 import ButtonLink from "../../../components/ButtonLink"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
-import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
+import {
+  formatFiatCurrencyAmount,
+  formatNumeral,
+} from "../../../utils/formatAmount"
 import { ExternalHref } from "../../../enums"
 import { TBTCText } from "../../../components/tBTC"
 import Identicon from "../../../components/Identicon"
@@ -36,30 +40,17 @@ import shortenAddress from "../../../utils/shortenAddress"
 import { getRelativeTime } from "../../../utils/date"
 import { createLinkToBlockExplorerForChain } from "../../../components/ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import {
+  RecentDeposit,
+  useFetchRecentDeposits,
+  useFetchTBTCMetrics,
+} from "../../../hooks/tbtc"
 
-type Mint = {
-  txHash: string
-  amount: string
-  address: string
-  timestamp: string
-}
-
-const latestMints: Mint[] = [
-  {
-    amount: "1200000000000000000",
-    txHash: "0x4fed83d354e8c1bc750ac7454dd88a8329c5e681",
-    address: "0x1582B392b58AB9686d824C4c84a3576e13d5F4Bf",
-    timestamp: "1683285501",
-  },
-  {
-    amount: "200000000000000000",
-    txHash: "0x4fed83d354e8c1bc750ac7454dd88a8329c5e682",
-    address: "0x1582B392b58AB9686d824C4c84a3576e13d5F4CD",
-    timestamp: "1683285501",
-  },
-]
+const MINTS_TO_DISPLAY = 10
 
 export const ExplorerPage: PageComponent = () => {
+  const { metrics } = useFetchTBTCMetrics()
+  const [latestMints] = useFetchRecentDeposits(MINTS_TO_DISPLAY)
   const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
 
   useEffect(() => {
@@ -95,10 +86,23 @@ export const ExplorerPage: PageComponent = () => {
             View On Dune Analytics
           </ButtonLink>
         </Flex>
-        <HStack mt="12" justifyContent="space-around">
-          <MetricBox value="420.69" label="tBTC" />
-          <MetricBox value="420.69" label="tBTC" />
-          <MetricBox value="420.69" label="tBTC" />
+        <HStack mt="12" justifyContent="space-between">
+          <MetricBox>
+            <H3>
+              <InlineTokenBalance tokenAmount={tvl.tBTC} />
+            </H3>
+            <BodyMd>
+              <TBTCText />
+            </BodyMd>
+          </MetricBox>
+          <SimpleMetricBox
+            value={formatNumeral(metrics.totalMints, "0,00")}
+            label="Total Mints"
+          />
+          <SimpleMetricBox
+            value={formatNumeral(metrics.totalHolders, "0,00")}
+            label="tBTC Holding Addresses"
+          />
         </HStack>
       </Card>
       <Card mt="4" as="section">
@@ -125,17 +129,20 @@ export const ExplorerPage: PageComponent = () => {
             </Thead>
             <Tbody>{latestMints.map(renderHistoryRow)}</Tbody>
           </Table>
+          <BodySm color="gray.500" mt="10">
+            Showing {MINTS_TO_DISPLAY} out of {metrics.totalMints} transactions
+          </BodySm>
         </TableContainer>
       </Card>
     </>
   )
 }
 
-const renderHistoryRow = (item: Mint) => (
+const renderHistoryRow = (item: RecentDeposit) => (
   <HistoryRow key={item.txHash} {...item} />
 )
 
-const HistoryRow: FC<Mint> = ({ txHash, address, amount, timestamp }) => {
+const HistoryRow: FC<RecentDeposit> = ({ txHash, address, amount, date }) => {
   return (
     <LinkBox
       as={Tr}
@@ -176,13 +183,25 @@ const HistoryRow: FC<Mint> = ({ txHash, address, amount, timestamp }) => {
         </LinkOverlay>
       </Td>
       <Td textAlign={"right"}>
-        <BodyXs>{getRelativeTime(Number(timestamp))}</BodyXs>
+        <BodyXs>{getRelativeTime(Number(date))}</BodyXs>
       </Td>
     </LinkBox>
   )
 }
 
-const MetricBox: FC<{ value: string; label: string }> = ({ value, label }) => {
+const SimpleMetricBox: FC<{ value: string; label: string }> = ({
+  value,
+  label,
+}) => {
+  return (
+    <MetricBox>
+      <H3>{value}</H3>
+      <BodyMd>{label}</BodyMd>
+    </MetricBox>
+  )
+}
+
+const MetricBox: FC = ({ children }) => {
   return (
     <Box
       border="1px solid"
@@ -194,8 +213,7 @@ const MetricBox: FC<{ value: string; label: string }> = ({ value, label }) => {
       minWidth="294px"
       color="grat.700"
     >
-      <H3>{value}</H3>
-      <BodyMd>{label}</BodyMd>
+      {children}
     </Box>
   )
 }
