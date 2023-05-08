@@ -16,6 +16,7 @@ import {
   Link,
   LinkBox,
   LinkOverlay,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -73,7 +74,7 @@ export const ExplorerPage: PageComponent = () => {
           </ButtonLink>
         </Flex>
         <Divider my="8" />
-        <Flex direction="row" alignItems="center">
+        <Flex direction={{ base: "column", xl: "row" }} alignItems="center">
           <H1>{formatFiatCurrencyAmount(tvlInUSD.tBTC, "0,00.00")} USD</H1>
           <ButtonLink
             size="lg"
@@ -81,12 +82,19 @@ export const ExplorerPage: PageComponent = () => {
             href={ExternalHref.tBTCDuneDashboard}
             isExternal
             justifySelf="flex-end"
-            ml="auto"
+            ml={{ xl: "auto" }}
+            mt={{ base: 4, xl: "unset" }}
           >
             View On Dune Analytics
           </ButtonLink>
         </Flex>
-        <HStack mt="12" justifyContent="space-between">
+        <Stack
+          mb={{ base: "10", sm: "32", xl: "unset" }}
+          spacing="4"
+          mt="12"
+          direction={{ base: "column", xl: "row" }}
+          justifyContent="space-between"
+        >
           <MetricBox>
             <H3>
               <InlineTokenBalance tokenAmount={tvl.tBTC} />
@@ -103,7 +111,7 @@ export const ExplorerPage: PageComponent = () => {
             value={formatNumeral(metrics.totalHolders, "0,00")}
             label="tBTC Holding Addresses"
           />
-        </HStack>
+        </Stack>
       </Card>
       <Card mt="4" as="section">
         <LabelSm as="header">History</LabelSm>
