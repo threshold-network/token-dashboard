@@ -1,5 +1,11 @@
 import { FC } from "react"
-import { LabelSm, Box, Badge, Icon } from "@threshold-network/components"
+import {
+  LabelSm,
+  Box,
+  Badge,
+  Icon,
+  BoxProps,
+} from "@threshold-network/components"
 import { IoTime as TimeIcon } from "react-icons/all"
 import TimelineItem, { TimelineProps } from "../components/TimelineItem"
 import tbtcMintingStep1 from "../../../../static/images/tbtcMintingStep1.svg"
@@ -25,8 +31,8 @@ export const MintingTimelineStep1: FC<MintingTimelineStepProps> = ({
       isActive={isActive}
       isComplete={isComplete}
       stepText="Step 1"
-      helperLabelText="OFF-CHAIN ACTION"
-      title="Provide Data"
+      helperLabelText="ACTION OFF-CHAIN"
+      title="Deposit Address"
       description={
         <>
           Provide an ETH address and a BTC Recovery address to generate an
@@ -53,11 +59,9 @@ export const MintingTimelineStep2: FC<MintingTimelineStepProps> = ({
       isActive={isActive}
       isComplete={isComplete}
       stepText="Step 2"
-      helperLabelText="ACTION ON BITCOIN NETWORK"
+      helperLabelText="ACTION ON BITCOIN"
       title="Make a BTC deposit"
-      // TODO: Make sure this copy is a final one and can be the same on the How
-      // it Works page and minting timeline in deposit flow.
-      description="Send minimum 0.01&nbsp;BTC to this unique BTC Deposit Address. The amount sent will be used to mint tBTC."
+      description="Send any amount lager than 0.01 BTC to this unique BTC Deposit Address. The amount sent will be used to mint tBTC."
       imageSrc={tbtcMintingStep2}
       {...restProps}
     />
@@ -75,7 +79,7 @@ export const MintingTimelineStep3: FC<MintingTimelineStepProps> = ({
       // we never render the complete state for this step
       isComplete={isComplete}
       stepText="Step 3"
-      helperLabelText="ACTION ON ETHEREUM NETWORK"
+      helperLabelText="ACTION ON ETHEREUM"
       title="Initiate minting"
       description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
       imageSrc={tbtcMintingStep3}
@@ -84,47 +88,50 @@ export const MintingTimelineStep3: FC<MintingTimelineStepProps> = ({
   )
 }
 
-export const MintingTimeline: FC = () => {
-  const { mintingStep } = useTbtcState()
+type MintingTimelineProps = {
+  mintingStep?: MintingStep
+} & BoxProps
+
+export const MintingTimeline: FC<MintingTimelineProps> = ({
+  mintingStep: mintingStepFropProps,
+  ...restProps
+}) => {
+  const { mintingStep: mintingStepFromState } = useTbtcState()
+  const _mintingStep = mintingStepFropProps ?? mintingStepFromState
+
   return (
-    <Box>
+    <Box {...restProps}>
       <LabelSm mb={8}>Minting Timeline</LabelSm>
       <MintingTimelineStep1
-        isActive={mintingStep === MintingStep.ProvideData}
+        isActive={_mintingStep === MintingStep.ProvideData}
         isComplete={
-          mintingStep === MintingStep.Deposit ||
-          mintingStep === MintingStep.InitiateMinting ||
-          mintingStep === MintingStep.MintingSuccess
+          _mintingStep === MintingStep.Deposit ||
+          _mintingStep === MintingStep.InitiateMinting ||
+          _mintingStep === MintingStep.MintingSuccess
         }
         mb="4"
       />
-      <Badge size="sm" variant="subtle" mb="4">
-        action on bitcoin network
-      </Badge>
       <MintingTimelineStep2
-        isActive={mintingStep === MintingStep.Deposit}
+        isActive={_mintingStep === MintingStep.Deposit}
         isComplete={
-          mintingStep === MintingStep.InitiateMinting ||
-          mintingStep === MintingStep.MintingSuccess
+          _mintingStep === MintingStep.InitiateMinting ||
+          _mintingStep === MintingStep.MintingSuccess
         }
-        withBadge={false}
+        withBadge
         mb="4"
       />
-      <Badge size="sm" variant="subtle" mb="4">
-        action on ethereum network
-      </Badge>
       <MintingTimelineStep3
         isActive={
-          mintingStep === MintingStep.InitiateMinting ||
-          mintingStep === MintingStep.MintingSuccess
+          _mintingStep === MintingStep.InitiateMinting ||
+          _mintingStep === MintingStep.MintingSuccess
         }
         // we never render the complete state for this step
         isComplete={false}
-        withBadge={false}
+        withBadge
         mb="4"
       />
       <Badge size="sm" colorScheme="yellow" variant="solid">
-        <Icon as={TimeIcon} alignSelf="center" /> ~1-3 hours minting time
+        <Icon as={TimeIcon} alignSelf="center" /> ~3 hours minting time
       </Badge>
     </Box>
   )

@@ -160,7 +160,10 @@ export const ProvideDataComponent: FC<{
   return (
     <>
       <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
-      <TbtcMintingCardSubTitle stepText="Step 1" subTitle="Provide Data" />
+      <TbtcMintingCardSubTitle
+        stepText="Step 1"
+        subTitle="Generate a Deposit Address"
+      />
       <BodyMd color="gray.500" mb={12}>
         Based on these two addresses, the system will generate for you a unique
         BTC deposit address. There is no minting limit.

@@ -37,7 +37,7 @@ const InitiateMintingComponent: FC<{
         This step requires you to sign a transaction in your Ethereum wallet.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        Your tBTC will arrive in your wallet in around 1-3 hours.
+        Your tBTC will arrive in your wallet in around ~3 hours.
       </BodyMd>
       <Button
         onClick={confirmDespotAndMint}

@@ -13,7 +13,7 @@ import {
   MintingTimelineStep1,
   MintingTimelineStep2,
   MintingTimelineStep3,
-} from "../Bridge/MintingCard/MintingTimeline"
+} from "../Bridge/Minting/MintingTimeline"
 import Link from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
 
