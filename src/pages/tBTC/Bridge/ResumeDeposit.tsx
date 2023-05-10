@@ -43,6 +43,10 @@ export const ResumeDepositPage: PageComponent = () => {
     }
   }, [updateState])
 
+  const navigateToMintPage = () => {
+    navigate("/tBTC/mint")
+  }
+
   const onSubmit = async (values: FormValues) => {
     if (!values.depositParameters) return
 
@@ -62,17 +66,20 @@ export const ResumeDepositPage: PageComponent = () => {
       btcDepositAddress,
     })
 
-    navigate("/tBTC/mint")
+    navigateToMintPage()
   }
 
   return (
     <>
-      <TbtcMintingCardTitle />
+      <TbtcMintingCardTitle
+        previousStep={MintingStep.InitiateMinting}
+        onPreviousStepClick={navigateToMintPage}
+      />
       <BodyLg>
         <Box as="span" fontWeight="600" color="brand.500">
           Resume Minting
         </Box>{" "}
-        - Upload JSON. file
+        - Upload .JSON file
       </BodyLg>
       <BodyMd mt="3" mb="6">
         To resume your minting you need to upload your .JSON file and sign the
