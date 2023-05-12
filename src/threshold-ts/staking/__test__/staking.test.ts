@@ -265,6 +265,10 @@ describe("Staking test", () => {
       { ...mockPastEventsResult[0].args, owner },
     ] as Stake[]
 
+    const spyOnFindRefreshedKeepStakes = jest
+      .spyOn(staking, "findRefreshedKeepStakes")
+      .mockResolvedValueOnce({ current: [], outdated: [] })
+
     const spyOnGetStakeByStakingProvider = jest
       .spyOn(staking, "getStakeByStakingProvider")
       .mockResolvedValueOnce(mockStakes[0])
@@ -278,6 +282,8 @@ describe("Staking test", () => {
       fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
       filterParams: [undefined, owner],
     })
+
+    expect(spyOnFindRefreshedKeepStakes).toHaveBeenCalledWith(owner)
 
     mockPastEventsResult.reverse().forEach((event, index) => {
       expect(spyOnGetStakeByStakingProvider).toHaveBeenNthCalledWith(

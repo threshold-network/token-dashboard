@@ -43,6 +43,11 @@ export interface RolesOf {
   authorizer: string
 }
 
+interface OwnerRefreshedResult {
+  current: string[]
+  outdated: string[]
+}
+
 export interface IStaking {
   stakingContract: Contract
   STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
@@ -99,6 +104,12 @@ export interface IStaking {
    * @returns All stakes for a given owner address.
    */
   getOwnerStakes(owner: string): Promise<Array<Stake>>
+
+  /**
+   *
+   * @param owner
+   */
+  findRefreshedKeepStakes(owner: string): Promise<OwnerRefreshedResult>
 }
 
 export class Staking implements IStaking {
@@ -249,21 +260,85 @@ export class Staking implements IStaking {
   }
 
   getOwnerStakes = async (owner: string): Promise<Array<Stake>> => {
-    const stakedEvents = (
+    const stakes = (
       await getContractPastEvents(this._staking, {
         eventName: "Staked",
         fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         filterParams: [undefined, owner],
       })
-    ).reverse()
+    )
+      .map((event) => ({
+        stakingProvider: event.args?.stakingProvider,
+        stakeType: event.args?.stakeType,
+      }))
+      .reverse()
+
+    const { current, outdated } = await this.findRefreshedKeepStakes(owner)
+
+    const stakingProviders = stakes
+      .filter(({ stakingProvider }) => !outdated.includes(stakingProvider))
+      .concat(
+        current.map((stakingProvider) => ({
+          stakingProvider,
+          stakeType: StakeType.KEEP,
+        }))
+      )
 
     return await Promise.all(
-      stakedEvents.map((stakedEvent) =>
-        this.getStakeByStakingProvider(
-          stakedEvent.args?.stakingProvider,
-          stakedEvent.args?.stakeType
-        )
+      stakingProviders.map(({ stakingProvider, stakeType }) =>
+        this.getStakeByStakingProvider(stakingProvider, stakeType)
       )
     )
+  }
+
+  findRefreshedKeepStakes = async (
+    owner: string
+  ): Promise<OwnerRefreshedResult> => {
+    // Find all events where the `owner` was set as a new owner of the stake.
+    const ownerRefreshedEvents = await getContractPastEvents(this._staking, {
+      eventName: "OwnerRefreshed",
+      filterParams: [null, null, owner],
+      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+    })
+
+    // Convert to `Set` to remove duplicated staking provider addresses(the
+    // owner can be changed multiple times for the same staking provider) and
+    // then to an array so we can use `map`, `filter` and other array methods.
+    const possibleStakingProviders: string[] = Array.from(
+      new Set(ownerRefreshedEvents.map((event) => event?.args?.stakingProvider))
+    )
+
+    const multicalls: ContractCall[] = possibleStakingProviders.map(
+      (stakingProvider) => ({
+        address: this._staking.address,
+        interface: this._staking.interface,
+        method: "rolesOf",
+        args: [stakingProvider],
+      })
+    )
+
+    // For each staking provider, we need to verify that the current owner of
+    // the stake is indeed the one we are looking for(the `owner` argumment).
+    // It's possible that the owner can be changed multiple times. Instead of
+    // iterating through the `OwnerRefreshed` events and comparing the
+    // `oldOwner` and `newOner` params from that event, we can just check the
+    // current owner for a given staking provider by calling `rolesOf`.
+    const rolesOf = await this._multicall.aggregate(multicalls)
+
+    // Staking provideres are owned by the `owner` address.
+    const stakingProviders: string[] = rolesOf
+      .filter((rolesOf) => isSameETHAddress(rolesOf.owner, owner))
+      .map((_, index) => possibleStakingProviders[index])
+
+    // Outdated staking providers- the `owner` address is no longer an owner of
+    // these stakes.
+    const outdatedStakingProviders: string[] = possibleStakingProviders.filter(
+      (stakingProvider) => !stakingProviders.includes(stakingProvider)
+    )
+
+    return {
+      current: stakingProviders,
+      outdated: outdatedStakingProviders,
+    }
   }
 }
