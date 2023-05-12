@@ -137,10 +137,10 @@ export const ExplorerPage: PageComponent = () => {
             </Thead>
             <Tbody>{latestMints.map(renderHistoryRow)}</Tbody>
           </Table>
-          <BodySm color="gray.500" mt="10">
-            Showing {MINTS_TO_DISPLAY} out of {metrics.totalMints} transactions
-          </BodySm>
         </TableContainer>
+        <BodySm color="gray.500" mt="2">
+          Showing {MINTS_TO_DISPLAY} out of {metrics.totalMints} transactions
+        </BodySm>
       </Card>
     </>
   )
