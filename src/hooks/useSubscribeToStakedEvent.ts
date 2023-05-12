@@ -7,7 +7,6 @@ import {
   providerStakedForStakingProvider,
 } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
-import { isAddress, isSameETHAddress } from "../web3/utils"
 
 export const useSubscribeToStakedEvent = () => {
   const tStakingContract = useTStakingContract()
@@ -35,7 +34,6 @@ export const useSubscribeToStakedEvent = () => {
       event: Event
     ) => {
       // TODO: open success modal here
-      const { blockNumber, blockHash, transactionHash } = event
       dispatch(
         providerStaked({
           stakeType,
@@ -43,9 +41,6 @@ export const useSubscribeToStakedEvent = () => {
           stakingProvider,
           authorizer,
           beneficiary,
-          blockHash,
-          blockNumber,
-          transactionHash,
           amount: amount.toString(),
         })
       )
