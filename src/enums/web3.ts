@@ -31,5 +31,6 @@ export enum WalletType {
   WalletConnect = "WALLET_CONNECT",
   Coinbase = "COINBASE",
   Trezor = "TREZOR",
-  Ledger = "Ledger",
+  Ledger = "LEDGER",
+  LedgerLive = "LEDGER_LIVE",
 }
