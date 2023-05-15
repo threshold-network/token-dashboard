@@ -38,6 +38,11 @@ const walletOptions: WalletOption[] = [
     title: "Coinbase Wallet",
     icon: CoinbaseWallet,
   },
+  {
+    id: WalletType.LedgerLive,
+    title: "Ledger Live",
+    icon: MetaMaskIcon,
+  },
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
