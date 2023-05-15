@@ -1,4 +1,3 @@
-import { IFrameEthereumProvider } from "@ledgerhq/iframe-provider"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { AbstractConnectorArguments, ConnectorUpdate } from "@web3-react/types"
 import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
@@ -6,11 +5,12 @@ import {
   LedgerConnectKit,
   SupportedProviders,
   loadConnectKit,
+  EthereumProvider,
 } from "@ledgerhq/connect-kit-loader"
 import { EnvVariable } from "../../enums"
 
 export class LedgerLiveConnector extends AbstractConnector {
-  private provider?: any
+  private provider?: EthereumProvider | undefined
   private connectKitPromise: Promise<LedgerConnectKit>
 
   constructor(args: Required<AbstractConnectorArguments>) {
@@ -52,10 +52,10 @@ export class LedgerLiveConnector extends AbstractConnector {
         },
       })
 
-      this.provider = await connectKit.getProvider()
-      const accounts = await this.provider.request({
+      this.provider = (await connectKit.getProvider()) as EthereumProvider
+      const accounts = (await this.provider.request({
         method: "eth_requestAccounts",
-      })
+      })) as string[]
       account = accounts[0]
     } catch (err) {
       console.log("Error: ", err)
@@ -64,7 +64,7 @@ export class LedgerLiveConnector extends AbstractConnector {
     return { provider: this.provider, account }
   }
 
-  public async getProvider(): Promise<IFrameEthereumProvider | undefined> {
+  public async getProvider(): Promise<EthereumProvider | undefined> {
     return this.provider
   }
 
@@ -73,9 +73,10 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 
   public async getAccount(): Promise<string> {
-    return this.provider!.request({ method: "eth_accounts" }).then(
-      (accounts: string[]): string => accounts[0]
-    )
+    const accounts = (await this.provider!.request({
+      method: "eth_requestAccounts",
+    })) as string[]
+    return accounts[0]
   }
 
   public deactivate() {
