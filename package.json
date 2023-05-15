@@ -21,6 +21,7 @@
     "@keep-network/tbtc": "development",
     "@keep-network/tbtc-v2": "development",
     "@keep-network/tbtc-v2.ts": "development",
+    "@ledgerhq/connect-kit-loader": "^1.0.2",
     "@ledgerhq/hw-app-eth": "^6.9.0",
     "@ledgerhq/hw-transport-u2f": "^5.36.0-deprecated",
     "@ledgerhq/hw-transport-webhid": "^6.7.0",
