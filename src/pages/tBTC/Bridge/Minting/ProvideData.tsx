@@ -21,6 +21,7 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
+import ButtonLink from "../../../../components/ButtonLink"
 
 export interface FormValues {
   ethAddress: string
@@ -186,6 +187,9 @@ export const ProvideDataComponent: FC<{
       >
         Generate Deposit Address
       </Button>
+      <ButtonLink variant="outline" to="/tbtc/mint/continue" mt={4}>
+        Resume minting (upload JSON)
+      </ButtonLink>
     </>
   )
 }
