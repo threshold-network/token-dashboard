@@ -338,7 +338,9 @@ export class TBTC implements ITBTC {
   findAllUnspentTransactionOutputs = async (
     address: string
   ): Promise<UnspentTransactionOutput[]> => {
-    return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
+    return (
+      await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
+    ).reverse()
   }
 
   getEstimatedFees = async (depositAmount: string) => {
