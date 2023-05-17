@@ -44,7 +44,7 @@ interface EventFilterOptions {
 }
 
 const GET_EVENTS_BLOCK_INTERVAL =
-  getEnvVariable("GET_EVENTS_BLOCK_INTERVAL") ?? 10_000
+  +getEnvVariable("GET_EVENTS_BLOCK_INTERVAL") ?? 10_000
 
 export const getContractPastEvents = async (
   contract: Contract,
@@ -55,7 +55,7 @@ export const getContractPastEvents = async (
   return await getEvents(
     contract,
     filter,
-    options.fromBlock,
+    Number(options?.fromBlock ?? 0),
     options.toBlock,
     GET_EVENTS_BLOCK_INTERVAL
   )
