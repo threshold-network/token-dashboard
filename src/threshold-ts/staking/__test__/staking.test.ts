@@ -82,6 +82,8 @@ describe("Staking test", () => {
     KeepTokenStaking as unknown as { address: string }
   ).address
 
+  const owner = "0x97839202A818D2C927f7f44685c5a34f80FbcdB6"
+
   beforeEach(() => {
     ;(getContract as jest.Mock)
       .mockImplementationOnce(() => mockStakingContract)
@@ -243,7 +245,6 @@ describe("Staking test", () => {
   })
 
   test("should return all stakes for a given owner address", async () => {
-    const owner = "0x97839202A818D2C927f7f44685c5a34f80FbcdB6"
     const stakingProvider1 = stakingProvider
     const stakingProvider2 = "0xad96829b90c8c2cbbe8e59dd3bf1c101c38cd822"
     const stakingProvider3 = "0xd74Cf2a8b8DFc2CA74Be5f381c4c220238F63c58"
@@ -293,5 +294,133 @@ describe("Staking test", () => {
       )
     })
     expect(result).toEqual(mockStakes)
+  })
+
+  describe("findRefreshedKeepStakes test", () => {
+    test("should return empty arrays if the owner was never updated", async () => {
+      ;(getContractPastEvents as jest.Mock).mockResolvedValue([])
+
+      const aggregateSpyOn = jest
+        .spyOn(multicall, "aggregate")
+        .mockResolvedValue([])
+
+      const result = await staking.findRefreshedKeepStakes(owner)
+
+      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, null, owner],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+      expect(aggregateSpyOn).toHaveBeenCalledWith([])
+      expect(result).toEqual({ current: [], outdated: [] })
+    })
+
+    test("should return current owner stakes", async () => {
+      const ownerRefreshedEvent = {
+        args: { stakingProvider: stakingProvider, newOwner: owner },
+      }
+      ;(getContractPastEvents as jest.Mock).mockResolvedValue([
+        ownerRefreshedEvent,
+      ])
+
+      const rolesOfMulticallSpyOn = jest
+        .spyOn(multicall, "aggregate")
+        .mockResolvedValue([{ owner }])
+
+      const result = await staking.findRefreshedKeepStakes(owner)
+
+      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, null, owner],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
+        {
+          address: staking.stakingContract.address,
+          interface: staking.stakingContract.interface,
+          method: "rolesOf",
+          args: [stakingProvider],
+        },
+      ])
+      expect(result).toEqual({ current: [stakingProvider], outdated: [] })
+    })
+
+    test("should return outdated staking providers if the owner was updated multiple times", async () => {
+      // `OwnerRefreshed` event emitted with `newOwner = owner`.
+      const ownerRefreshedEvent = {
+        args: { stakingProvider: stakingProvider, newOwner: owner },
+      }
+      ;(getContractPastEvents as jest.Mock).mockResolvedValue([
+        ownerRefreshedEvent,
+      ])
+
+      // `rolesOf` method for the staking provider address from `OwnerRefreshed`
+      // event returns different owner address than we are looking for. This
+      // means the owner has been updated again.
+      const rolesOfMulticallSpyOn = jest
+        .spyOn(multicall, "aggregate")
+        .mockResolvedValue([{ owner: stakingProvider }])
+
+      const result = await staking.findRefreshedKeepStakes(owner)
+
+      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, null, owner],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
+        {
+          address: staking.stakingContract.address,
+          interface: staking.stakingContract.interface,
+          method: "rolesOf",
+          args: [stakingProvider],
+        },
+      ])
+      expect(result).toEqual({ current: [], outdated: [stakingProvider] })
+    })
+
+    test("should call `rolesOf` only once for a given staking provider even if the `OwnerRefreshed` event was emitted multiple times with the same staking provider addrerss", async () => {
+      const ownerRefreshedEvent = {
+        args: { stakingProvider: stakingProvider, newOwner: owner },
+      }
+      // `OwnerRefreshed` event emitted with `newOwner = owner` two times.
+      ;(getContractPastEvents as jest.Mock).mockResolvedValue([
+        ownerRefreshedEvent,
+        ownerRefreshedEvent,
+      ])
+
+      const rolesOfMulticallSpyOn = jest
+        .spyOn(multicall, "aggregate")
+        .mockResolvedValue([{ owner }])
+
+      const result = await staking.findRefreshedKeepStakes(owner)
+
+      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, null, owner],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
+        {
+          address: staking.stakingContract.address,
+          interface: staking.stakingContract.interface,
+          method: "rolesOf",
+          args: [stakingProvider],
+        },
+      ])
+      expect(result).toEqual({ current: [stakingProvider], outdated: [] })
+    })
   })
 })
