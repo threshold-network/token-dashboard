@@ -8,6 +8,9 @@ export interface WalletConnectionModalProps {
 
 export interface WalletOption {
   id: WalletType
-  icon: FC
   title: string
+  icon: {
+    light: FC
+    dark: FC
+  }
 }

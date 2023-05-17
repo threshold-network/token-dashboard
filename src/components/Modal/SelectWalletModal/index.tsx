@@ -17,32 +17,50 @@ import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
 import ConnectTaho from "./ConnectTaho"
 import ConnectLedgerLive from "./ConnectLedgerLive"
+import { Ledger } from "../../../static/icons/Ledger"
+import { LedgerLight } from "../../../static/icons/LedgerLight"
+import { LedgerDark } from "../../../static/icons/LedgerDark"
 
 const walletOptions: WalletOption[] = [
   {
     id: WalletType.TAHO,
     title: "Taho",
-    icon: Taho,
+    icon: {
+      light: Taho,
+      dark: Taho,
+    },
   },
   {
     id: WalletType.Metamask,
     title: "MetaMask",
-    icon: MetaMaskIcon,
-  },
-  {
-    id: WalletType.WalletConnect,
-    title: "WalletConnect",
-    icon: WalletConnectIcon,
-  },
-  {
-    id: WalletType.Coinbase,
-    title: "Coinbase Wallet",
-    icon: CoinbaseWallet,
+    icon: {
+      light: MetaMaskIcon,
+      dark: MetaMaskIcon,
+    },
   },
   {
     id: WalletType.LedgerLive,
     title: "Ledger Live",
-    icon: MetaMaskIcon,
+    icon: {
+      light: LedgerLight,
+      dark: LedgerDark,
+    },
+  },
+  {
+    id: WalletType.WalletConnect,
+    title: "WalletConnect",
+    icon: {
+      light: WalletConnectIcon,
+      dark: WalletConnectIcon,
+    },
+  },
+  {
+    id: WalletType.Coinbase,
+    title: "Coinbase Wallet",
+    icon: {
+      light: CoinbaseWallet,
+      dark: CoinbaseWallet,
+    },
   },
 ]
 
