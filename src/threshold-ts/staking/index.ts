@@ -100,14 +100,20 @@ export interface IStaking {
 
   /**
    * Returns all stakes for the given owner address.
-   * @param owner The stake owner address
+   * @param owner The stake owner address.
    * @returns All stakes for a given owner address.
    */
   getOwnerStakes(owner: string): Promise<Array<Stake>>
 
   /**
-   *
-   * @param owner
+   * Returns the current and outdated staking providers for a givne owner
+   * address. The outdated array is necessary while fetching all owner stakes.
+   * We need to filter out outdated staking providers eg. the `Staked` event was
+   * emitted with the owner address that we are looking for but then the owner
+   * was changed(`OwnerRefreshed` event emitted with `oldOwner = owner`) meaning the
+   * owner is not the owner of this staking- we should skip that address.
+   * @param owner The stake owner address.
+   * @returns Two arrays: current and outdated staking providers.
    */
   findRefreshedKeepStakes(owner: string): Promise<OwnerRefreshedResult>
 }
