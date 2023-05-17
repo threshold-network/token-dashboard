@@ -90,7 +90,6 @@ export class LedgerLiveConnector extends AbstractConnector {
     this.provider!.removeListener("chainChanged", this.handleChainChanged)
     this.provider!.removeListener("accountsChanged", this.handleAccountsChanged)
     this.provider!.removeListener("close", this.handleClose)
-    this.provider = undefined
   }
 }
 const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
