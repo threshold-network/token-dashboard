@@ -53,6 +53,12 @@ export class LedgerLiveConnector extends AbstractConnector {
       })
 
       this.provider = (await connectKit.getProvider()) as EthereumProvider
+
+      this.provider.on("networkChanged", this.handleNetworkChanged)
+      this.provider.on("chainChanged", this.handleChainChanged)
+      this.provider.on("accountsChanged", this.handleAccountsChanged)
+      this.provider.on("close", this.handleClose)
+
       const accounts = (await this.provider.request({
         method: "eth_requestAccounts",
       })) as string[]
@@ -80,6 +86,10 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 
   public deactivate() {
+    this.provider!.removeListener("networkChanged", this.handleNetworkChanged)
+    this.provider!.removeListener("chainChanged", this.handleChainChanged)
+    this.provider!.removeListener("accountsChanged", this.handleAccountsChanged)
+    this.provider!.removeListener("close", this.handleClose)
     this.provider = undefined
   }
 }
