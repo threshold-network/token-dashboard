@@ -2,6 +2,7 @@ import { JsonRpcSigner, Web3Provider, BlockTag } from "@ethersproject/providers"
 import { Contract, ContractInterface, providers, Signer, Event } from "ethers"
 import { getEvents } from "@keep-network/tbtc-v2.ts/dist/src/ethereum-helpers"
 import { AddressZero, getAddress, isAddressZero } from "./address"
+import { getEnvVariable } from "../../utils/getEnvVariable"
 
 // account is not optional
 export function getSigner(
@@ -42,13 +43,22 @@ interface EventFilterOptions {
   eventName: string
 }
 
+const GET_EVENTS_BLOCK_INTERVAL =
+  getEnvVariable("GET_EVENTS_BLOCK_INTERVAL") ?? 10_000
+
 export const getContractPastEvents = async (
   contract: Contract,
   options: EventFilterOptions
 ): Promise<Array<Event>> => {
   const filter = contract.filters[options.eventName](...options.filterParams)
 
-  return await getEvents(contract, filter, options.fromBlock, options.toBlock)
+  return await getEvents(
+    contract,
+    filter,
+    options.fromBlock,
+    options.toBlock,
+    GET_EVENTS_BLOCK_INTERVAL
+  )
 }
 
 export function getContractAddressFromTruffleArtifact(

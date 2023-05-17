@@ -71,6 +71,9 @@ on:
       sentryDsn:
         description: Sentry DSN endpoint
         required: true
+      getEventsBlockInterval:
+        description: The range of blocks using in the partial events pulls mechanism.
+        required: true
 
 jobs:
   build-and-publish:
@@ -178,6 +181,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
+          GET_EVENTS_BLOCK_INTERVAL: ${{ secrets.getEventsBlockInterval }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -194,6 +198,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
+          GET_EVENTS_BLOCK_INTERVAL: ${{ secrets.getEventsBlockInterval }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0

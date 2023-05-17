@@ -57,6 +57,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
+          GET_EVENTS_BLOCK_INTERVAL: ${{ secrets.GET_EVENTS_BLOCK_INTERVAL }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -75,6 +76,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
+          GET_EVENTS_BLOCK_INTERVAL: ${{ secrets.GET_EVENTS_BLOCK_INTERVAL }}
 
       - uses: actions/upload-artifact@v3
         with:

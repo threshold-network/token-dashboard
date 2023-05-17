@@ -14,6 +14,7 @@ const envVariables = [
   "MOCK_BITCOIN_CLIENT",
   "FEATURE_FLAG_SENTRY",
   "SENTRY_DSN",
+  "GET_EVENTS_BLOCK_INTERVAL",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]
