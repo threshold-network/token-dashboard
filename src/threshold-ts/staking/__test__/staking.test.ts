@@ -310,7 +310,7 @@ describe("Staking test", () => {
         mockStakingContract,
         {
           eventName: "OwnerRefreshed",
-          filterParams: [null, null, owner],
+          filterParams: [null, owner, owner],
           fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         }
       )
@@ -336,7 +336,7 @@ describe("Staking test", () => {
         mockStakingContract,
         {
           eventName: "OwnerRefreshed",
-          filterParams: [null, null, owner],
+          filterParams: [null, owner, owner],
           fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         }
       )
@@ -373,7 +373,7 @@ describe("Staking test", () => {
         mockStakingContract,
         {
           eventName: "OwnerRefreshed",
-          filterParams: [null, null, owner],
+          filterParams: [null, owner, owner],
           fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         }
       )
@@ -408,7 +408,7 @@ describe("Staking test", () => {
         mockStakingContract,
         {
           eventName: "OwnerRefreshed",
-          filterParams: [null, null, owner],
+          filterParams: [null, owner, owner],
           fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         }
       )

@@ -294,10 +294,11 @@ export class Staking implements IStaking {
   findRefreshedKeepStakes = async (
     owner: string
   ): Promise<OwnerRefreshedResult> => {
-    // Find all events where the `owner` was set as a new owner of the stake.
+    // Find all events where the `owner` was set as a new owner or old owner of
+    // the stake.
     const ownerRefreshedEvents = await getContractPastEvents(this._staking, {
       eventName: "OwnerRefreshed",
-      filterParams: [null, null, owner],
+      filterParams: [null, owner, owner],
       fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
     })
 
