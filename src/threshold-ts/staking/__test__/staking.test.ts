@@ -297,6 +297,31 @@ describe("Staking test", () => {
   })
 
   describe("findRefreshedKeepStakes test", () => {
+    const ownerRefreshedEventEmittedExpectation = () => {
+      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, owner, owner],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+    }
+
+    const rolesOfMulticallCalledExpectation = (
+      aggregateSpyon: jest.SpyInstance,
+      stakingProviders: string[]
+    ) => {
+      expect(aggregateSpyon).toHaveBeenCalledWith(
+        stakingProviders.map((stakingProvider) => ({
+          address: staking.stakingContract.address,
+          interface: staking.stakingContract.interface,
+          method: "rolesOf",
+          args: [stakingProvider],
+        }))
+      )
+    }
+
     test("should return empty arrays if the owner was never updated", async () => {
       ;(getContractPastEvents as jest.Mock).mockResolvedValue([])
 
@@ -306,15 +331,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      expect(getContractPastEvents).toHaveBeenLastCalledWith(
-        mockStakingContract,
-        {
-          eventName: "OwnerRefreshed",
-          filterParams: [null, owner, owner],
-          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        }
-      )
-      expect(aggregateSpyOn).toHaveBeenCalledWith([])
+      ownerRefreshedEventEmittedExpectation()
+      rolesOfMulticallCalledExpectation(aggregateSpyOn, [])
       expect(result).toEqual({ current: [], outdated: [] })
     })
 
@@ -332,21 +350,9 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      expect(getContractPastEvents).toHaveBeenLastCalledWith(
-        mockStakingContract,
-        {
-          eventName: "OwnerRefreshed",
-          filterParams: [null, owner, owner],
-          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        }
-      )
-      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
-        {
-          address: staking.stakingContract.address,
-          interface: staking.stakingContract.interface,
-          method: "rolesOf",
-          args: [stakingProvider],
-        },
+      ownerRefreshedEventEmittedExpectation()
+      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
+        stakingProvider,
       ])
       expect(result).toEqual({ current: [stakingProvider], outdated: [] })
     })
@@ -369,21 +375,9 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      expect(getContractPastEvents).toHaveBeenLastCalledWith(
-        mockStakingContract,
-        {
-          eventName: "OwnerRefreshed",
-          filterParams: [null, owner, owner],
-          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        }
-      )
-      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
-        {
-          address: staking.stakingContract.address,
-          interface: staking.stakingContract.interface,
-          method: "rolesOf",
-          args: [stakingProvider],
-        },
+      ownerRefreshedEventEmittedExpectation()
+      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
+        stakingProvider,
       ])
       expect(result).toEqual({ current: [], outdated: [stakingProvider] })
     })
@@ -404,21 +398,9 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      expect(getContractPastEvents).toHaveBeenLastCalledWith(
-        mockStakingContract,
-        {
-          eventName: "OwnerRefreshed",
-          filterParams: [null, owner, owner],
-          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        }
-      )
-      expect(rolesOfMulticallSpyOn).toHaveBeenCalledWith([
-        {
-          address: staking.stakingContract.address,
-          interface: staking.stakingContract.interface,
-          method: "rolesOf",
-          args: [stakingProvider],
-        },
+      ownerRefreshedEventEmittedExpectation()
+      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
+        stakingProvider,
       ])
       expect(result).toEqual({ current: [stakingProvider], outdated: [] })
     })
