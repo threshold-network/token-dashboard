@@ -5,7 +5,6 @@ import { BridgeActivity } from "../threshold-ts/tbtc"
 
 export interface TbtcState {
   mintingStep: MintingStep
-  unmintingStep: UnmintingStep
   mintingType: TbtcMintingType
 
   // deposit data
