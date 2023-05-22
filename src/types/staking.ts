@@ -88,7 +88,3 @@ export type UnstakedActionPayload = UpdateStakeAmountActionPayload & {
 export type ToppedUpActionPayload = UpdateStakeAmountActionPayload & {
   topUpType: TopUpType
 }
-
-export interface StakeCellProps {
-  stake: StakeData
-}

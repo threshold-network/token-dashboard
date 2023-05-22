@@ -9,7 +9,6 @@ import {
   SetTokenLoadingActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
-import Icon from "../../enums/icon"
 import getUsdBalance from "../../utils/getUsdBalance"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
@@ -38,7 +37,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 4.87,
       text: Token.Keep,
-      icon: Icon.KeepCircleBrand,
+      icon: "KEEP_CIRCLE_BRAND",
       usdConversion: 0,
       usdBalance: "0",
     },
@@ -47,7 +46,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 2.66,
       text: Token.Nu,
-      icon: Icon.NuCircleBrand,
+      icon: "NU_CIRCLE_BRAND",
       usdConversion: 0,
       usdBalance: "0",
     },
@@ -56,7 +55,7 @@ export const tokenSlice = createSlice({
       balance: 0,
       conversionRate: 1,
       text: Token.T,
-      icon: Icon.TCircleBrand,
+      icon: "T_CIRCLE_BRAND",
       usdConversion: 0,
       usdBalance: "0",
     },

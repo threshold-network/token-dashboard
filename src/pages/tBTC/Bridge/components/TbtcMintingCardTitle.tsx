@@ -2,15 +2,21 @@ import { FC } from "react"
 import { HiArrowNarrowLeft } from "react-icons/all"
 import { Icon, Stack, Box, LabelSm } from "@threshold-network/components"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { MintingStep, TbtcMintingType } from "../../../../types/tbtc"
+import { MintingStep } from "../../../../types/tbtc"
+import { TBTCText } from "../../../../components/tBTC"
 
-const mintTypeToText: Record<TbtcMintingType, string> = {
-  [TbtcMintingType.mint]: "minting process",
-  [TbtcMintingType.unmint]: "unminting process",
+type BridgeProcess = "mint" | "unmint"
+
+const bridgeProcessToText: Record<BridgeProcess, string> = {
+  mint: "minting process",
+  unmint: "unminting process",
 }
 
-type Props =
+type CommonProps = {
+  bridgeProcess?: BridgeProcess
+}
+
+type ConditionalProps =
   | {
       previousStep?: MintingStep
       onPreviousStepClick: (previosuStep: MintingStep) => void
@@ -20,12 +26,13 @@ type Props =
       onPreviousStepClick?: never
     }
 
+type Props = CommonProps & ConditionalProps
+
 export const TbtcMintingCardTitle: FC<Props> = ({
   previousStep,
   onPreviousStepClick,
+  bridgeProcess = "mint",
 }) => {
-  const { mintingType } = useTbtcState()
-
   return (
     <Stack direction="row" mb={8} align={"center"}>
       {previousStep && (
@@ -38,10 +45,7 @@ export const TbtcMintingCardTitle: FC<Props> = ({
       )}
       <Icon boxSize="32px" as={tBTCFillBlack} />
       <LabelSm>
-        <Box as="span" textTransform="lowercase">
-          t
-        </Box>
-        btc - {mintTypeToText[mintingType]}
+        <TBTCText /> - {bridgeProcessToText[bridgeProcess]}
       </LabelSm>
     </Stack>
   )

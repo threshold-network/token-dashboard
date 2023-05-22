@@ -28,7 +28,6 @@ import {
 import NewAppsToAuthorizeModal from "../components/Modal/NewAppsToAuthorizeModal"
 import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
 import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
-import UseDesktopModal from "../components/Modal/UseDesktopModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
 import {
   AuthorizeStakingApps,
@@ -71,7 +70,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.NewAppsToAuthorize]: NewAppsToAuthorizeModal,
   [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
   [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
-  [ModalType.UseDesktop]: UseDesktopModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.MapOperatorToStakingProvider]: MapOperatorToStakingProviderModal,
