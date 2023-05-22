@@ -5,8 +5,6 @@ import { BridgeActivity } from "../threshold-ts/tbtc"
 
 export interface TbtcState {
   mintingStep: MintingStep
-  mintingType: TbtcMintingType
-
   // deposit data
   btcRecoveryAddress: string
   btcDepositAddress: string
@@ -28,11 +26,6 @@ export interface TbtcState {
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">
-
-export enum TbtcMintingType {
-  mint = "MINT",
-  unmint = "UNMINT",
-}
 
 export enum MintingStep {
   ProvideData = "PROVIDE_DATA",
