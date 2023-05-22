@@ -34,21 +34,11 @@ export enum MintingStep {
   MintingSuccess = "MINTING_SUCCESS",
 }
 
-export enum UnmintingStep {
-  ProvideData = "PROVIDE_DATA",
-  Success = "SUCCESS",
-}
-
 export const MintingSteps: MintingStep[] = [
   MintingStep.ProvideData,
   MintingStep.Deposit,
   MintingStep.InitiateMinting,
   MintingStep.MintingSuccess,
-]
-
-export const UnmintingSteps: UnmintingStep[] = [
-  UnmintingStep.ProvideData,
-  UnmintingStep.Success,
 ]
 
 export interface UpdateTbtcState {
