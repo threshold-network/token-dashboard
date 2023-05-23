@@ -15,6 +15,7 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import Link from "../../../../components/Link"
 import { ExternalHref } from "../../../../enums"
+import { Steps } from "../../../../components/Step"
 
 type MintingTimelineStepProps = Omit<
   TimelineProps,
@@ -102,34 +103,36 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
   return (
     <Box {...restProps}>
       <LabelSm mb={8}>Minting Timeline</LabelSm>
-      <MintingTimelineStep1
-        isActive={_mintingStep === MintingStep.ProvideData}
-        isComplete={
-          _mintingStep === MintingStep.Deposit ||
-          _mintingStep === MintingStep.InitiateMinting ||
-          _mintingStep === MintingStep.MintingSuccess
-        }
-        mb="4"
-      />
-      <MintingTimelineStep2
-        isActive={_mintingStep === MintingStep.Deposit}
-        isComplete={
-          _mintingStep === MintingStep.InitiateMinting ||
-          _mintingStep === MintingStep.MintingSuccess
-        }
-        withBadge
-        mb="4"
-      />
-      <MintingTimelineStep3
-        isActive={
-          _mintingStep === MintingStep.InitiateMinting ||
-          _mintingStep === MintingStep.MintingSuccess
-        }
-        // we never render the complete state for this step
-        isComplete={false}
-        withBadge
-        mb="4"
-      />
+      <Steps>
+        <MintingTimelineStep1
+          isActive={_mintingStep === MintingStep.ProvideData}
+          isComplete={
+            _mintingStep === MintingStep.Deposit ||
+            _mintingStep === MintingStep.InitiateMinting ||
+            _mintingStep === MintingStep.MintingSuccess
+          }
+          mb="4"
+        />
+        <MintingTimelineStep2
+          isActive={_mintingStep === MintingStep.Deposit}
+          isComplete={
+            _mintingStep === MintingStep.InitiateMinting ||
+            _mintingStep === MintingStep.MintingSuccess
+          }
+          withBadge
+          mb="4"
+        />
+        <MintingTimelineStep3
+          isActive={
+            _mintingStep === MintingStep.InitiateMinting ||
+            _mintingStep === MintingStep.MintingSuccess
+          }
+          // we never render the complete state for this step
+          isComplete={false}
+          withBadge
+          mb="4"
+        />
+      </Steps>
       <Badge size="sm" colorScheme="yellow" variant="solid">
         <Icon as={TimeIcon} alignSelf="center" /> ~3 hours minting time
       </Badge>
