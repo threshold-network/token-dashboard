@@ -12,7 +12,7 @@ import {
   Card,
 } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
-import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import {
   CopyAddressToClipboard,
@@ -127,7 +127,7 @@ const MakeDepositComponent: FC<{
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
-      <TbtcMintingCardSubTitle
+      <BridgeProcessCardSubTitle
         stepText="Step 2"
         subTitle="Make your BTC deposit"
       />
