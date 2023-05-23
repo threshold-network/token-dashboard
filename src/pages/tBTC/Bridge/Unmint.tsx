@@ -40,8 +40,12 @@ import {
 import { tBTCFillBlack } from "../../../static/icons/tBTCFillBlack"
 import { getErrorsObj } from "../../../utils/forms"
 import { PageComponent } from "../../../types"
+import { useToken } from "../../../hooks/useToken"
+import { Token } from "../../../enums"
 
 export const UnmintPage: PageComponent = ({}) => {
+  const { balance } = useToken(Token.TBTCV2)
+
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
@@ -55,7 +59,7 @@ export const UnmintPage: PageComponent = ({}) => {
           hours.
         </BodyMd>
         <UnmintForm
-          maxTokenAmount="1050000000000000000"
+          maxTokenAmount={balance.toString()}
           onSubmitForm={() => console.log("TODO: handle submit")}
         />
         <Box as="p" textAlign="center" mt="4">
@@ -117,6 +121,7 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({ maxTokenAmount }) => {
           <>
             <Box as="span">Amount </Box>
             <BodySm as="span" float="right" color="gray.500">
+              Balance:{" "}
               <InlineTokenBalance
                 tokenAmount={maxTokenAmount}
                 withSymbol
