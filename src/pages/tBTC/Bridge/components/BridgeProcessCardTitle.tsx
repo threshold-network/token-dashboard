@@ -28,7 +28,7 @@ type ConditionalProps =
 
 type Props = CommonProps & ConditionalProps
 
-export const TbtcMintingCardTitle: FC<Props> = ({
+export const BridgeProcessCardTitle: FC<Props> = ({
   previousStep,
   onPreviousStepClick,
   bridgeProcess = "mint",

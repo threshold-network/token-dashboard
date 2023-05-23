@@ -14,7 +14,7 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { isSameETHAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
-import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import SubmitTxButton from "../../../components/SubmitTxButton"
 import {
   ProtocolHistoryRecentDeposits,
@@ -94,7 +94,7 @@ const MintPageLayout: PageComponent = () => {
           <Outlet />
         ) : (
           <>
-            <TbtcMintingCardTitle />
+            <BridgeProcessCardTitle />
             <H5 align={"center"}>Ready to mint tBTC?</H5>
             <SubmitTxButton mb="6" mt="4" />
             <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />

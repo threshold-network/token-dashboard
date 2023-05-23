@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { AlertDescription } from "@chakra-ui/react"
@@ -21,7 +21,7 @@ const InitiateMintingComponent: FC<{
 
   return (
     <>
-      <TbtcMintingCardTitle
+      <BridgeProcessCardTitle
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />

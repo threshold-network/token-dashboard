@@ -11,7 +11,7 @@ import {
   useColorModeValue,
   Card,
 } from "@threshold-network/components"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import {
@@ -123,7 +123,7 @@ const MakeDepositComponent: FC<{
 
   return (
     <>
-      <TbtcMintingCardTitle
+      <BridgeProcessCardTitle
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />

@@ -2,7 +2,7 @@ import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
 import { Form, FormikInput } from "../../../../components/Forms"
 import {
@@ -159,7 +159,7 @@ export const ProvideDataComponent: FC<{
 
   return (
     <>
-      <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
+      <BridgeProcessCardTitle onPreviousStepClick={onPreviousStepClick} />
       <TbtcMintingCardSubTitle
         stepText="Step 1"
         subTitle="Generate a Deposit Address"
