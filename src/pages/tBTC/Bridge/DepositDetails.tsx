@@ -46,7 +46,10 @@ import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
 } from "../../../components/ViewInBlockExplorer"
 import ButtonLink from "../../../components/ButtonLink"
-import { TBTCTokenContractLink } from "../../../components/tBTC"
+import {
+  BridgeProcessIndicator,
+  TBTCTokenContractLink,
+} from "../../../components/tBTC"
 import { Step1, Step2, Step3, Step4 } from "./components/DepositDetailsStep"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import {
@@ -65,9 +68,6 @@ import { tbtcSlice } from "../../../store/tbtc"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
 import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
-import { DotsLoadingIndicator } from "../../../components/DotsLoadingIndicator"
-import tBTCIcon from "../../../static/images/tBTC.svg"
-import BitcoinIcon from "../../../static/images/bitcoin.svg"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
@@ -272,11 +272,11 @@ export const DepositDetails: PageComponent = () => {
                 </List>
                 {mintingProgressStep !== "completed" && (
                   <>
-                    <HStack spacing="4" mt="auto" mb="10" alignSelf="center">
-                      <Image src={BitcoinIcon} />
-                      <DotsLoadingIndicator />
-                      <Image src={tBTCIcon} />
-                    </HStack>
+                    <BridgeProcessIndicator
+                      bridgeProcess="mint"
+                      mt="auto"
+                      mb="10"
+                    />
                     <MintingProcessResource
                       {...stepToResourceData[mintingProgressStep]}
                     />

@@ -1,11 +1,9 @@
 import { FC } from "react"
 import { HiArrowNarrowLeft } from "react-icons/all"
-import { Icon, Stack, Box, LabelSm } from "@threshold-network/components"
+import { Icon, Stack, LabelSm } from "@threshold-network/components"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
-import { MintingStep } from "../../../../types/tbtc"
+import { BridgeProcess, MintingStep } from "../../../../types/tbtc"
 import { TBTCText } from "../../../../components/tBTC"
-
-type BridgeProcess = "mint" | "unmint"
 
 const bridgeProcessToText: Record<BridgeProcess, string> = {
   mint: "minting process",
