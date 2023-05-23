@@ -1,8 +1,7 @@
 import { PageComponent } from "../../../types"
-import { UnmintingCard } from "./UnmintingCard"
 
 export const UnmintPage: PageComponent = ({}) => {
-  return <UnmintingCard gridArea="main-card" p={35} />
+  return <>Unmint Page</>
 }
 
 UnmintPage.route = {
