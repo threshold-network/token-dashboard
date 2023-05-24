@@ -71,7 +71,7 @@ import mainCardBackground from "../../../static/images/minting-completed-card-bg
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
-import { TransactionDetailsAmountItem } from "./components/MintingTransactionDetails"
+import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
