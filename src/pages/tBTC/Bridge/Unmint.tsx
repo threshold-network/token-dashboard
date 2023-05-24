@@ -42,9 +42,13 @@ import { getErrorsObj } from "../../../utils/forms"
 import { PageComponent } from "../../../types"
 import { useToken } from "../../../hooks/useToken"
 import { Token } from "../../../enums"
+import { BitcoinNetwork } from "../../../threshold-ts/types"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { getBridgeBTCSupportedAddressPrefixesText } from "../../../utils/tBTC"
 
 export const UnmintPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
+  const threshold = useThreshold()
 
   return (
     <BridgeLayout>
@@ -61,6 +65,7 @@ export const UnmintPage: PageComponent = ({}) => {
         <UnmintForm
           maxTokenAmount={balance.toString()}
           onSubmitForm={() => console.log("TODO: handle submit")}
+          bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         />
         <Box as="p" textAlign="center" mt="4">
           <BridgeContractLink />
@@ -108,9 +113,17 @@ export const UnmintPage: PageComponent = ({}) => {
 
 type UnmintFormBaseProps = {
   maxTokenAmount: string
+  bitcoinNetwork: BitcoinNetwork
 }
 
-const UnmintFormBase: FC<UnmintFormBaseProps> = ({ maxTokenAmount }) => {
+const UnmintFormBase: FC<UnmintFormBaseProps> = ({
+  maxTokenAmount,
+  bitcoinNetwork,
+}) => {
+  const supportedPrefixesText = getBridgeBTCSupportedAddressPrefixesText(
+    "unmint",
+    bitcoinNetwork
+  )
   return (
     <Form mt={10}>
       <FormikTokenBalanceInput
@@ -138,8 +151,8 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({ maxTokenAmount }) => {
         name="btcAddress"
         label="BTC Address"
         // TODO: add BTC addresse prefixes
-        tooltip={`This address needs to start with TODO!!. This is where your BTC funds are sent.`}
-        placeholder={`BTC Address should start with TODO!!!`}
+        tooltip={`This address needs to start with ${supportedPrefixesText}. This is where your BTC funds are sent.`}
+        placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
       />
       <Button size="lg" w="100%" mt="10">
