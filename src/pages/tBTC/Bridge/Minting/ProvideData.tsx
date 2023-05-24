@@ -21,6 +21,7 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
+import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 
 export interface FormValues {
   ethAddress: string
@@ -32,8 +33,10 @@ type ComponentProps = {
   formId: string
 }
 
-const resolvedBTCAddressPrefix =
-  supportedChainId === "1" ? `"1" or "bc1"` : `"m", "n" or "tb1"`
+const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
+  "mint",
+  supportedChainId === "1" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
+)
 
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
