@@ -38,13 +38,20 @@ import {
   StepTitle,
 } from "../../../components/Step"
 import { tBTCFillBlack } from "../../../static/icons/tBTCFillBlack"
-import { getErrorsObj } from "../../../utils/forms"
+import {
+  getErrorsObj,
+  validateAmountInRange,
+  validateUnmintBTCAddress,
+} from "../../../utils/forms"
 import { PageComponent } from "../../../types"
 import { useToken } from "../../../hooks/useToken"
 import { Token } from "../../../enums"
 import { BitcoinNetwork } from "../../../threshold-ts/types"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { getBridgeBTCSupportedAddressPrefixesText } from "../../../utils/tBTC"
+import {
+  getBridgeBTCSupportedAddressPrefixesText,
+  UNMINT_MIN_AMOUNT,
+} from "../../../utils/tBTC"
 
 export const UnmintPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -177,8 +184,17 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
     btcAddress: "",
   }),
   validate: async (values, props) => {
-    // TODO: add form validation
     const errors: FormikErrors<UnmintFormValues> = {}
+
+    errors.btcAddress = validateUnmintBTCAddress(
+      values.btcAddress,
+      props.bitcoinNetwork
+    )
+    errors.amount = validateAmountInRange(
+      values.amount,
+      props.maxTokenAmount,
+      UNMINT_MIN_AMOUNT
+    )
 
     return getErrorsObj(errors)
   },

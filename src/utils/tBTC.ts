@@ -73,3 +73,5 @@ export const getBridgeBTCSupportedAddressPrefixesText = (
 
   return supportedAddressPrefixesText[bridgeProcess][btcNetwork]
 }
+
+export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01
