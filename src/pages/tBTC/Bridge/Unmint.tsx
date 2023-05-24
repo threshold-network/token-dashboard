@@ -45,17 +45,27 @@ import {
 } from "../../../utils/forms"
 import { PageComponent } from "../../../types"
 import { useToken } from "../../../hooks/useToken"
-import { Token } from "../../../enums"
+import { ModalType, Token } from "../../../enums"
 import { BitcoinNetwork } from "../../../threshold-ts/types"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   getBridgeBTCSupportedAddressPrefixesText,
   UNMINT_MIN_AMOUNT,
 } from "../../../utils/tBTC"
+import { useModal } from "../../../hooks/useModal"
 
 export const UnmintPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
+  const { openModal } = useModal()
   const threshold = useThreshold()
+
+  const onSubmitForm = (values: UnmintFormValues) => {
+    console.log("on submittttt")
+    openModal(ModalType.InitiateUnminting, {
+      unmintAmount: values.amount,
+      btcAddress: values.btcAddress,
+    })
+  }
 
   return (
     <BridgeLayout>
@@ -71,7 +81,7 @@ export const UnmintPage: PageComponent = ({}) => {
         </BodyMd>
         <UnmintForm
           maxTokenAmount={balance.toString()}
-          onSubmitForm={() => console.log("TODO: handle submit")}
+          onSubmitForm={onSubmitForm}
           bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         />
         <Box as="p" textAlign="center" mt="4">
@@ -162,7 +172,7 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
       />
-      <Button size="lg" w="100%" mt="10">
+      <Button size="lg" w="100%" mt="10" type="submit">
         Unmint
       </Button>
     </Form>
