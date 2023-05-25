@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { Outlet } from "react-router-dom"
 import { FormikErrors, withFormik } from "formik"
 import {
   BodyLg,
@@ -53,8 +54,9 @@ import {
   UNMINT_MIN_AMOUNT,
 } from "../../../utils/tBTC"
 import { useModal } from "../../../hooks/useModal"
+import { UnmintDetails } from "./UnmintDetails"
 
-export const UnmintPage: PageComponent = ({}) => {
+const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
   const { openModal } = useModal()
   const threshold = useThreshold()
@@ -215,9 +217,21 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
   enableReinitialize: true,
 })(UnmintFormBase)
 
+UnmintFormPage.route = {
+  path: "",
+  index: false,
+  isPageEnabled: true,
+}
+
+export const UnmintPage: PageComponent = ({}) => {
+  return <Outlet />
+}
+
 UnmintPage.route = {
   path: "unmint",
-  index: false,
+  pathOverride: "unmint/*",
+  index: true,
   title: "Unmint",
+  pages: [UnmintFormPage, UnmintDetails],
   isPageEnabled: true,
 }
