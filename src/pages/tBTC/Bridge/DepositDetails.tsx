@@ -53,9 +53,9 @@ import {
 import { Step1, Step2, Step3, Step4 } from "./components/DepositDetailsStep"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import {
-  MintingProcessResource,
-  MintingProcessResourceProps,
-} from "./components/MintingProcessResource"
+  BridgeProcessResource,
+  BridgeProcessResourceProps,
+} from "./components/BridgeProcessResource"
 import { useAppDispatch } from "../../../hooks/store"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import {
@@ -277,7 +277,7 @@ export const DepositDetails: PageComponent = () => {
                       mt="auto"
                       mb="10"
                     />
-                    <MintingProcessResource
+                    <BridgeProcessResource
                       {...stepToResourceData[mintingProgressStep]}
                     />
                   </>
@@ -619,7 +619,7 @@ const useSubscribeToOptimisticMintingEvents = (depositKey?: string) => {
 
 const stepToResourceData: Record<
   Exclude<DepositDetailsTimelineStep, "completed">,
-  MintingProcessResourceProps
+  BridgeProcessResourceProps
 > = {
   "bitcoin-confirmations": {
     title: "Bitcoin Confirmations Requirement",

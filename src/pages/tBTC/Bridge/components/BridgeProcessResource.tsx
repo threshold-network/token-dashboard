@@ -3,13 +3,13 @@ import { BodySm, Box, H6, Image } from "@threshold-network/components"
 import Link from "../../../../components/Link"
 import codeSlashIllustration from "../../../../static/images/code-slash.svg"
 
-export type MintingProcessResourceProps = {
+export type BridgeProcessResourceProps = {
   title: string
   subtitle: string
   link: string
 }
 
-export const MintingProcessResource: FC<MintingProcessResourceProps> = ({
+export const BridgeProcessResource: FC<BridgeProcessResourceProps> = ({
   title,
   subtitle,
   link,
