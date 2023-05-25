@@ -64,7 +64,7 @@ export class LedgerLiveConnector extends AbstractConnector {
       })) as string[]
       account = accounts[0]
     } catch (err) {
-      console.log("Error: ", err)
+      console.error("Error: ", err)
     }
 
     return { provider: this.provider, account }
