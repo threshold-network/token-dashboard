@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { IoCheckmarkSharp } from "react-icons/all"
 import {
@@ -44,6 +44,7 @@ import shortenAddress from "../../../utils/shortenAddress"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
 import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
+import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -51,9 +52,22 @@ export const UnmintDetails: PageComponent = () => {
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
     useState(false)
 
+  // TODO: It's a temporary solution to be able to go through the whole flow.
+  // Remove once we implement the correct solution.
+  const [isProcessCompleted, setIsProcessCompleted] = useState(false)
+  useEffect(() => {
+    const id = setTimeout(() => {
+      setIsProcessCompleted(true)
+    }, ONE_SEC_IN_MILISECONDS * 10)
+
+    return () => {
+      clearTimeout(id)
+    }
+  }, [])
+
   // TODO: check if the process is completed based on the redemptions details
   // data.
-  const isProcessCompleted = true
+  // const isProcessCompleted = true
   const unmintedAmount = "1200000000000000000"
   const btcAddress = "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   const fee = "20000000000000000"
@@ -242,7 +256,7 @@ const SuccessStep: FC<{
           value={shortenAddress(btcAddress)}
         />
       </List>
-      <ButtonLink mt="8" size="lg" to="tBTC/mint" width="100%">
+      <ButtonLink mt="8" size="lg" to="/tBTC/mint" width="100%">
         New Mint
       </ButtonLink>
     </>
