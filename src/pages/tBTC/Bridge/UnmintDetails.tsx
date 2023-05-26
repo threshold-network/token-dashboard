@@ -185,10 +185,10 @@ export const UnmintDetails: PageComponent = () => {
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection
+        alignSelf="stretch"
         display="flex"
         flex="1"
         flexDirection="column"
-        h="100%"
       >
         <LabelSm>elapsed time</LabelSm>
         <BodyLg mt="2.5" color="gray.500">
