@@ -11,12 +11,17 @@ import { useMatch, useResolvedPath } from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"
 
-interface Props {
+interface SubNavigationPillsProps {
   links: RouteProps[]
 }
 
-const SubNavigationPills: FC<Props> = ({ links }) => {
+interface NavPill extends RouteProps {
+  isActive: boolean
+}
+
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
   const linksWithTitle = links.filter((link) => !!link.title)
+  const navPills = addActiveStatusToPills(linksWithTitle)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
   return (
@@ -38,16 +43,14 @@ const SubNavigationPills: FC<Props> = ({ links }) => {
           height="28px"
           as="ul"
         >
-          {linksWithTitle.map(renderPill)}
+          {navPills.map(renderPill)}
         </HStack>
       </Box>
     </>
   )
 }
 
-const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
-  const resolved = useResolvedPath(pathOverride || path)
-  const isActive = useMatch({ path: resolved.pathname, end: true })
+const NavPill: FC<NavPill> = ({ path, title, isActive }) => {
   const activeColor = useColorModeValue("brand.500", "gray.100")
   const underlineColor = useColorModeValue("brand.500", "white")
 
@@ -81,6 +84,38 @@ const NavPill: FC<RouteProps> = ({ path, pathOverride, title }) => {
   )
 }
 
-const renderPill = (pill: RouteProps) => <NavPill key={pill.path} {...pill} />
+const renderPill = (pill: NavPill) => <NavPill key={pill.path} {...pill} />
+
+/**
+ * Adds `isActive` property to each of the link. If there are two or more links
+ * that are active (based on `useMatch` hook) then we only keep the active
+ * status for the last one.
+ * @param {RouteProps[]} pills Array of links (RouteProps)
+ * @return {RouteProps[]} Array of links with active status added to each of them. Only one
+ * link can have an active status.
+ */
+const addActiveStatusToPills = (pills: RouteProps[]) => {
+  const pillsWithActiveStatus: NavPill[] = []
+  let indexOfLastActivePill
+  for (let i = 0; i < pills.length; i++) {
+    const { path, pathOverride } = pills[i]
+    const resolved = useResolvedPath(pathOverride || path)
+    const match = useMatch({ path: resolved.pathname, end: true })
+    const isActive = !!match
+    if (isActive) {
+      // remove the active status of the previous pill
+      if (indexOfLastActivePill !== undefined) {
+        pillsWithActiveStatus[indexOfLastActivePill].isActive = false
+      }
+      indexOfLastActivePill = i
+    }
+    const pillWithActiveStatus = {
+      ...pills[i],
+      isActive,
+    }
+    pillsWithActiveStatus.push(pillWithActiveStatus)
+  }
+  return pillsWithActiveStatus
+}
 
 export default SubNavigationPills
