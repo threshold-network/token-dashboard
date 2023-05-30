@@ -167,7 +167,6 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
       <FormikInput
         name="btcAddress"
         label="BTC Address"
-        // TODO: add BTC addresse prefixes
         tooltip={`This address needs to start with ${supportedPrefixesText}. This is where your BTC funds are sent.`}
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
