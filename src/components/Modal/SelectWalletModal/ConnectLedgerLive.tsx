@@ -19,20 +19,7 @@ const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
     ConnectionError.RejectedMetamaskConnection
   )
 
-  const connector = ledgerLive
   const walletType = WalletType.LedgerLive
-  const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
-
-  const onError = (error: unknown) => {
-    console.log("error:", error)
-  }
-  useEffect(() => {
-    if (!connector) return
-
-    captureWalletConnected({ walletType })
-    activate(connector, onError)
-    closeModal()
-  }, [activate, connector, captureWalletConnected, walletType])
 
   return (
     <WalletConnectionModalBase
