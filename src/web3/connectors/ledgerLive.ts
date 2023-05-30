@@ -10,7 +10,7 @@ import {
 import { EnvVariable } from "../../enums"
 
 export class LedgerLiveConnector extends AbstractConnector {
-  private provider?: EthereumProvider | undefined
+  private provider?: EthereumProvider
   private connectKitPromise: Promise<LedgerConnectKit>
 
   constructor(args: Required<AbstractConnectorArguments>) {
