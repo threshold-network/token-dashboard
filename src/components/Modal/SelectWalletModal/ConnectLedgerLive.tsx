@@ -1,32 +1,33 @@
-import { FC, useEffect } from "react"
-import { MetaMaskIcon } from "../../../static/icons/MetaMask"
+import { FC } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { ledgerLive } from "../../../web3/connectors"
 import { WalletConnectionModalBase } from "./components"
-import { ConnectionError, WalletType } from "../../../enums"
+import { ColorMode, ConnectionError, WalletType } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
-import { useCapture } from "../../../hooks/posthog"
-import { PosthogEvent } from "../../../types/posthog"
+import { LedgerLight } from "../../../static/icons/LedgerLight"
+import { LedgerDark } from "../../../static/icons/LedgerDark"
+import { useColorMode } from "@chakra-ui/react"
 
 const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
   closeModal,
 }) => {
   const { activate, error } = useWeb3React()
+  const { colorMode } = useColorMode()
 
   const connectionRejected = doesErrorInclude(
     error,
     ConnectionError.RejectedMetamaskConnection
   )
 
-  const walletType = WalletType.LedgerLive
+  const walletIcon = colorMode === ColorMode.DARK ? LedgerDark : LedgerLight
 
   return (
     <WalletConnectionModalBase
       connector={ledgerLive}
       goBack={goBack}
       closeModal={closeModal}
-      WalletIcon={MetaMaskIcon}
+      WalletIcon={walletIcon}
       title="Ledger Live"
       subTitle={
         !error
@@ -34,8 +35,8 @@ const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
           : ""
       }
       tryAgain={connectionRejected ? () => activate(ledgerLive) : undefined}
-      walletType={walletType}
-    ></WalletConnectionModalBase>
+      walletType={WalletType.LedgerLive}
+    />
   )
 }
 
