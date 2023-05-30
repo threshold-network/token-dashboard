@@ -75,21 +75,27 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 
   public async getChainId(): Promise<number> {
-    return this.provider!.request({ method: "eth_chainId" })
+    if (!this.provider) throw new ConnectorNotAcivatedError()
+
+    return this.provider.request({ method: "eth_chainId" })
   }
 
   public async getAccount(): Promise<string> {
-    const accounts = (await this.provider!.request({
+    if (!this.provider) throw new ConnectorNotAcivatedError()
+
+    const accounts = (await this.provider.request({
       method: "eth_requestAccounts",
     })) as string[]
     return accounts[0]
   }
 
   public deactivate() {
-    this.provider!.removeListener("networkChanged", this.handleNetworkChanged)
-    this.provider!.removeListener("chainChanged", this.handleChainChanged)
-    this.provider!.removeListener("accountsChanged", this.handleAccountsChanged)
-    this.provider!.removeListener("close", this.handleClose)
+    if (!this.provider) throw new ConnectorNotAcivatedError()
+
+    this.provider.removeListener("networkChanged", this.handleNetworkChanged)
+    this.provider.removeListener("chainChanged", this.handleChainChanged)
+    this.provider.removeListener("accountsChanged", this.handleAccountsChanged)
+    this.provider.removeListener("close", this.handleClose)
   }
 }
 
@@ -99,3 +105,9 @@ const chainId = +supportedChainId
 export const ledgerLive = new LedgerLiveConnector({
   supportedChainIds: [chainId],
 })
+
+class ConnectorNotAcivatedError extends Error {
+  constructor() {
+    super("Connector not activated!")
+  }
+}
