@@ -191,7 +191,7 @@ export const UnmintDetails: PageComponent = () => {
         flex="1"
         flexDirection="column"
       >
-        <LabelSm>elapsed time</LabelSm>
+        <LabelSm>{isProcessCompleted ? "total time" : "elapsed time"}</LabelSm>
         <BodyLg mt="2.5" color="gray.500">
           15 minutes
         </BodyLg>
