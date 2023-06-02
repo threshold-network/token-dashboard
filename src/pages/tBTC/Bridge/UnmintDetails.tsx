@@ -48,6 +48,7 @@ import { PageComponent } from "../../../types"
 import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
 import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
+import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDetailsIcons"
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -186,8 +187,7 @@ export const UnmintDetails: PageComponent = () => {
             txHash={"0x0"}
             progressBarColor="brand.500"
             isCompleted={isProcessCompleted}
-            // TODO: set correct icon here
-            icon={<IoCheckmarkSharp />}
+            icon={<ProcessCompletedBrandGradientIcon />}
             onComplete={() => setShouldDisplaySuccessStep(true)}
             isIndeterminate
           >
