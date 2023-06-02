@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import { IoCheckmarkSharp } from "react-icons/all"
 import {
+  Badge,
   BodyLg,
   BodyMd,
   BodySm,
@@ -13,6 +14,7 @@ import {
   LabelSm,
   List,
   ListItem,
+  useColorModeValue,
 } from "@threshold-network/components"
 import {
   Timeline,
@@ -115,6 +117,17 @@ export const UnmintDetails: PageComponent = () => {
           />
         </BridgeProcessCardSubTitle>
         <Timeline>
+          <Badge
+            variant="subtle"
+            size="sm"
+            bg={useColorModeValue("white", "brand.800")}
+            position="absolute"
+            bottom="10px"
+            left="50%"
+            transform="translateX(-50%)"
+          >
+            usual duration - 5 hours
+          </Badge>
           <TimelineItem status="active">
             <TimelineBreakpoint>
               <TimelineDot position="relative">

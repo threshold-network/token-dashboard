@@ -19,6 +19,7 @@ const baseStyleContainer: SystemStyleFunction = (props) => {
     listStyle: "none",
     listStyleType: "none",
     marginInlineStart: "0",
+    position: "relative",
   }
 }
 
