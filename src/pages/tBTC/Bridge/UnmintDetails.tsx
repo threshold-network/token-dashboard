@@ -45,6 +45,7 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
 import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
 import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
+import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -251,10 +252,13 @@ const SuccessStep: FC<{
           precision={6}
           higherPrecision={8}
         />
-        <TransactionDetailsItem
-          label="BTC address"
-          value={shortenAddress(btcAddress)}
-        />
+        <TransactionDetailsItem label="BTC address">
+          <CopyAddressToClipboard
+            address={btcAddress}
+            withLinkToBlockExplorer
+            fontSize="14px"
+          />
+        </TransactionDetailsItem>
       </List>
       <ButtonLink mt="8" size="lg" to="/tBTC/mint" width="100%">
         New Mint
