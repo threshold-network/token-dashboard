@@ -37,15 +37,14 @@ import { BridgeProcessStep } from "./components/BridgeProcessStep"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import { BridgeProcessCardSubTitle } from "./components/BridgeProcessCardSubTitle"
 import { BridgeProcessResource } from "./components/BridgeProcessResource"
+import { BridgeProcessDetailsCard } from "./components/BridgeProcessDetailsCard"
 import {
   BridgeLayout,
   BridgeLayoutAsideSection,
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
-import shortenAddress from "../../../utils/shortenAddress"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
-import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
 import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDetailsIcons"
@@ -76,16 +75,6 @@ export const UnmintDetails: PageComponent = () => {
   const btcAddress = "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   const fee = "20000000000000000"
 
-  // TODO: Probably create a shared component because we do the same on the
-  // deposit details page
-  const mainCardProps = shouldDisplaySuccessStep
-    ? {
-        backgroundImage: mainCardBackground,
-        backgroundPosition: "bottom -10px right",
-        backgroundRepeat: "no-repeat",
-      }
-    : {}
-
   const transactions: {
     label: string
     txHash?: string
@@ -96,7 +85,12 @@ export const UnmintDetails: PageComponent = () => {
   ]
 
   return (
-    <BridgeLayout {...mainCardProps} spacing="4">
+    <BridgeLayout
+      as={BridgeProcessDetailsCard}
+      spacing="4"
+      // @ts-ignore
+      isProcessCompleted={shouldDisplaySuccessStep}
+    >
       <BridgeLayoutMainSection>
         <BridgeProcessCardTitle bridgeProcess="unmint" />
         <BridgeProcessCardSubTitle
