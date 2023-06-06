@@ -9,12 +9,25 @@ import {
 } from "@ledgerhq/connect-kit-loader"
 import { EnvVariable } from "../../enums"
 
+interface LedgerLiveConnectorArguments extends AbstractConnectorArguments {
+  rpc: {
+    [chainId: number]: string
+  }
+}
+
 export class LedgerLiveConnector extends AbstractConnector {
+  private rpc: LedgerLiveConnectorArguments["rpc"]
   private provider?: EthereumProvider
   private connectKitPromise: Promise<LedgerConnectKit>
 
-  constructor(args: Required<AbstractConnectorArguments>) {
-    super(args)
+  constructor(args: Required<LedgerLiveConnectorArguments>) {
+    super({
+      supportedChainIds: Object.keys(args.rpc).map((chainId) =>
+        Number(chainId)
+      ),
+    })
+
+    this.rpc = args.rpc
 
     this.handleNetworkChanged = this.handleNetworkChanged.bind(this)
     this.handleChainChanged = this.handleChainChanged.bind(this)
@@ -44,12 +57,11 @@ export class LedgerLiveConnector extends AbstractConnector {
     let account = ""
     try {
       const connectKit = await this.connectKitPromise
+      const chainId = Number(Object.keys(this.rpc)[0])
       const checkSupportResult = connectKit.checkSupport({
-        chainId: 1,
+        chainId: chainId,
         providerType: SupportedProviders.Ethereum,
-        rpc: {
-          [Number(supportedChainId)]: rpcUrl as string,
-        },
+        rpc: this.rpc,
       })
 
       this.provider = (await connectKit.getProvider()) as EthereumProvider
@@ -104,6 +116,9 @@ const chainId = +supportedChainId
 
 export const ledgerLive = new LedgerLiveConnector({
   supportedChainIds: [chainId],
+  rpc: {
+    [Number(supportedChainId)]: rpcUrl as string,
+  },
 })
 
 class ConnectorNotAcivatedError extends Error {
