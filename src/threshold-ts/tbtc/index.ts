@@ -37,6 +37,7 @@ import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
+import { findWalletForRedemption } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -62,6 +63,26 @@ interface RevealedDepositEvent {
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
+export type RedemptionWalletData = Awaited<
+  ReturnType<typeof findWalletForRedemption>
+>
+
+type AmountToSatoshiResult = {
+  /**
+   * Amount of TBTC to be minted/unminted.
+   */
+  convertibleAmount: BigNumber
+  /**
+   * Not convertible remainder if amount is not divisible by satoshi multiplier.
+   */
+  remainder: BigNumber
+  /**
+   * Amount in satoshis - the balance to be transferred for the given
+   * mint/unmint.
+   */
+  satoshis: BigNumber
+}
 
 export interface ITBTC {
   /**
@@ -198,6 +219,8 @@ export interface ITBTC {
   ): string
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+
+  findWalletForRedemption(amount: BigNumberish): Promise<RedemptionWalletData>
 }
 
 export class TBTC implements ITBTC {
@@ -628,5 +651,41 @@ export class TBTC implements ITBTC {
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
+  }
+
+  findWalletForRedemption = async (
+    amount: BigNumberish
+  ): Promise<RedemptionWalletData> => {
+    const { satoshis } = this._amountToSatoshi(amount)
+
+    return await findWalletForRedemption(
+      satoshis,
+      this._bridge,
+      this._bitcoinClient,
+      this.bitcoinNetwork
+    )
+  }
+
+  /**
+   * Returns the amount of tBTC to be minted/unminted, the remainder, and the
+   * balance to be transferred for the given mint/unmint. Note that if the
+   * `amount` is not divisible by SATOSHI_MULTIPLIER, the remainder is left on
+   * the caller's account when minting or unminting.
+   * @param {BigNumberish} amount Amount of tBTC to be converted.
+   * @return {AmountToSatoshiResult} The object that represnts convertible
+   * amount, remainder and amount in statoshi.
+   */
+  private _amountToSatoshi = (amount: BigNumberish): AmountToSatoshiResult => {
+    const _amount = BigNumber.from(amount)
+
+    const remainder = _amount.mod(this._satoshiMultiplier)
+    const convertibleAmount = _amount.sub(remainder)
+    const satoshis = convertibleAmount.div(this._satoshiMultiplier)
+
+    return {
+      remainder,
+      convertibleAmount,
+      satoshis,
+    }
   }
 }

@@ -11,7 +11,10 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
-import { BaseModalProps } from "../../../types"
+import {
+  BaseModalProps,
+  UnspentTransactionOutputPlainObject,
+} from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
 import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
@@ -25,6 +28,10 @@ import withBaseModal from "../withBaseModal"
 type InitiateUnmintingProps = {
   unmintAmount: string
   btcAddress: string
+  wallet: {
+    walletPublicKeyHash: string
+    mainUTXO: UnspentTransactionOutputPlainObject
+  }
 } & BaseModalProps
 
 const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({

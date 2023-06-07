@@ -61,3 +61,7 @@ export type ExternalPoolData = {
 }
 
 export type BridgeProcess = "mint" | "unmint"
+
+export type UnspentTransactionOutputPlainObject = {
+  [key in keyof UnspentTransactionOutput]: string
+}
