@@ -6,21 +6,20 @@ import { ColorMode, ConnectionError, WalletType } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
-import { useColorMode } from "@chakra-ui/react"
+import { useColorModeValue } from "@threshold-network/components"
 
 const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
   goBack,
   closeModal,
 }) => {
   const { activate, error } = useWeb3React()
-  const { colorMode } = useColorMode()
 
   const connectionRejected = doesErrorInclude(
     error,
     ConnectionError.RejectedMetamaskConnection
   )
 
-  const walletIcon = colorMode === ColorMode.DARK ? LedgerDark : LedgerLight
+  const walletIcon = useColorModeValue(LedgerLight, LedgerDark)
 
   return (
     <WalletConnectionModalBase
