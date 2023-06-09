@@ -1,8 +1,8 @@
 import { FC } from "react"
 import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
-import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
@@ -21,11 +21,14 @@ const InitiateMintingComponent: FC<{
 
   return (
     <>
-      <TbtcMintingCardTitle
+      <BridgeProcessCardTitle
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
-      <TbtcMintingCardSubTitle stepText="Step 3" subTitle="Initiate minting" />
+      <BridgeProcessCardSubTitle
+        stepText="Step 3"
+        subTitle="Initiate minting"
+      />
       <Alert status="warning" my={6}>
         <AlertIcon />
         <AlertDescription>

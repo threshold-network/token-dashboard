@@ -59,3 +59,5 @@ export type ExternalPoolData = {
   apy: number[]
   tvl: number
 }
+
+export type BridgeProcess = "mint" | "unmint"
