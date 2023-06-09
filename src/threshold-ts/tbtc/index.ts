@@ -28,6 +28,7 @@ import {
 import {
   ElectrumClient,
   EthereumBridge,
+  EthereumTBTCToken,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
@@ -37,6 +38,8 @@ import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
+import { requestRedemption } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
+import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -198,6 +201,26 @@ export interface ITBTC {
   ): string
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+
+  /**
+   * Requests a redemption from the on-chain Bridge contract.
+   * @param redeemer On-chain identifier of the redeemer.
+   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in
+   * the compressed form (33 bytes long with 02 or 03 prefix).
+   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO
+   * held by the on-chain Bridge contract.
+   * @param redeemerOutputScript - The output script that the redeemed funds
+   * will be locked to. Must be un-prefixed and not prepended with length.
+   * @param amount The amount to be redeemed in satoshis.
+   * @returns Transaction hash of the request redemption transaction.
+   */
+  requestRedemption(
+    redeemer: string,
+    walletPublicKey: string,
+    mainUtxo: UnspentTransactionOutput,
+    redeemerOutputScript: string,
+    amount: BigNumberish
+  ): Promise<string>
 }
 
 export class TBTC implements ITBTC {
@@ -206,7 +229,8 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: Client
   private _multicall: IMulticall
   private _bridgeContract: Contract
-  private _token: Contract
+  private _token: ChainTBTCToken
+  private _tokenContract: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -252,7 +276,14 @@ export class TBTC implements ITBTC {
       )
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
-    this._token = getContract(
+    this._token = new EthereumTBTCToken({
+      address: TBTCToken.address,
+      signerOrProvider: getProviderOrSigner(
+        ethereumConfig.providerOrSigner as any,
+        ethereumConfig.account
+      ),
+    })
+    this._tokenContract = getContract(
       TBTCToken.address,
       TBTCToken.abi,
       ethereumConfig.providerOrSigner,
@@ -273,7 +304,7 @@ export class TBTC implements ITBTC {
   }
 
   get tokenContract() {
-    return this._token
+    return this._tokenContract
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -585,8 +616,10 @@ export class TBTC implements ITBTC {
 
     // There is only one transfer to depositor account.
     const transferEvent = receipt.logs
-      .filter((log) => isSameETHAddress(log.address, this._token.address))
-      .map((log) => this._token.interface.parseLog(log))
+      .filter((log) =>
+        isSameETHAddress(log.address, this._tokenContract.address)
+      )
+      .map((log) => this._tokenContract.interface.parseLog(log))
       .filter((log) => log.name === "Transfer")
       .find((log) => isSameETHAddress(log.args.to, depositor))
 
@@ -628,5 +661,26 @@ export class TBTC implements ITBTC {
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
+  }
+
+  requestRedemption = async (
+    redeemer: string,
+    walletPublicKey: string,
+    mainUtxo: UnspentTransactionOutput,
+    redeemerOutputScript: string,
+    amount: BigNumberish
+  ): Promise<string> => {
+    const tx = await requestRedemption(
+      getChainIdentifier(redeemer),
+      walletPublicKey,
+      mainUtxo,
+      redeemerOutputScript,
+      BigNumber.from(amount),
+      getChainIdentifier(this._tbtcVault.address),
+      this._bridge,
+      this._token
+    )
+
+    return tx.toPrefixedString()
   }
 }
