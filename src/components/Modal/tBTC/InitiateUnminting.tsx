@@ -29,7 +29,7 @@ type InitiateUnmintingProps = {
   unmintAmount: string
   btcAddress: string
   wallet: {
-    walletPublicKeyHash: string
+    walletPublicKey: string
     mainUTXO: UnspentTransactionOutputPlainObject
   }
 } & BaseModalProps

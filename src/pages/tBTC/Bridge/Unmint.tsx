@@ -67,7 +67,7 @@ const UnmintFormPage: PageComponent = ({}) => {
     const { wallet } = values
 
     const walletData: {
-      walletPublicKeyHash: string
+      walletPublicKey: string
       mainUTXO: UnspentTransactionOutputPlainObject
     } = {
       ...wallet,
