@@ -53,6 +53,7 @@ import {
   UNMINT_MIN_AMOUNT,
 } from "../../../utils/tBTC"
 import { useModal } from "../../../hooks/useModal"
+import { UnmintingCard } from "./UnmintingCard"
 
 export const UnmintPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
