@@ -11,19 +11,20 @@ import {
 } from "@chakra-ui/react"
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
-import { WalletConnectionModalProps } from "../../../../types"
+import { BaseModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
 import { AbstractConnector } from "../../../../web3/connectors"
 import { WalletType } from "../../../../enums"
 import { useCapture } from "../../../../hooks/posthog"
 import { PosthogEvent } from "../../../../types/posthog"
 
-interface Props extends WalletConnectionModalProps {
+interface Props extends BaseModalProps {
   WalletIcon: any
   title: string
   subTitle?: string
   tryAgain?: () => void
   onContinue?: () => void
+  goBack: () => void
   connector?: AbstractConnector
   walletType: WalletType
 }

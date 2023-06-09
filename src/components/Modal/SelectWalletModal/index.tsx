@@ -17,7 +17,6 @@ import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
 import ConnectTaho from "./ConnectTaho"
 import ConnectLedgerLive from "./ConnectLedgerLive"
-import { Ledger } from "../../../static/icons/Ledger"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
 

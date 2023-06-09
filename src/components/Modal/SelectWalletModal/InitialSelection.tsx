@@ -4,25 +4,22 @@ import {
   Icon,
   Stack,
   StackDivider,
-  useColorMode,
   useColorModeValue,
   VStack,
 } from "@chakra-ui/react"
 import { BiRightArrowAlt } from "react-icons/all"
 import { H4 } from "@threshold-network/components"
 import { WalletOption } from "../../../types"
-import { ColorMode, WalletType } from "../../../enums"
+import { WalletType } from "../../../enums"
 
 const InitialWalletSelection: FC<{
   walletOptions: WalletOption[]
   onSelect: (walletType: WalletType) => void
 }> = ({ walletOptions, onSelect }) => {
-  const { colorMode } = useColorMode()
   return (
     <VStack divider={<StackDivider margin="0 40px !important" />}>
       {walletOptions.map((opt) => {
-        const icon =
-          colorMode === ColorMode.DARK ? opt.icon.dark : opt.icon.light
+        const icon = useColorModeValue(opt.icon.light, opt.icon.dark)
         return (
           <Button
             key={opt.id}

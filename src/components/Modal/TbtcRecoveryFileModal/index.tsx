@@ -9,6 +9,7 @@ import {
   Image,
   BodySm,
   useDisclosure,
+  Box,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
@@ -79,13 +80,15 @@ const TbtcRecoveryFileModalModal: FC<
   ) : (
     <>
       <BodyLg mb={6}>
-        This file is important to save in case you need to recover your funds.
-        Keep it until you have successfully initiated minting. One deposit, one
-        JSON file.
+        This file is important to save in case you need to recover your funds.{" "}
+        <Box as="strong">
+          Keep it until you have successfully initiated minting. One deposit,
+          one JSON file.
+        </Box>
       </BodyLg>
       <BodyLg>
         This file contains your BTC recovery address, the wallet public key, the
-        refund public key and the refund lock time of this deposit.
+        refund public key and the refund lock time.
       </BodyLg>
     </>
   )

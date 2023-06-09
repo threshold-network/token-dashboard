@@ -46,9 +46,12 @@ import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
 } from "../../../components/ViewInBlockExplorer"
 import ButtonLink from "../../../components/ButtonLink"
-import { TBTCTokenContractLink } from "../../../components/tBTC"
+import {
+  BridgeProcessIndicator,
+  TBTCTokenContractLink,
+} from "../../../components/tBTC"
 import { Step1, Step2, Step3, Step4 } from "./components/DepositDetailsStep"
-import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import {
   MintingProcessResource,
   MintingProcessResourceProps,
@@ -65,13 +68,10 @@ import { tbtcSlice } from "../../../store/tbtc"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
 import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
-import { DotsLoadingIndicator } from "../../../components/DotsLoadingIndicator"
-import tBTCIcon from "../../../static/images/tBTC.svg"
-import BitcoinIcon from "../../../static/images/bitcoin.svg"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
-import { TransactionDetailsAmountItem } from "./components/MintingTransactionDetails"
+import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -210,7 +210,7 @@ export const DepositDetails: PageComponent = () => {
               spacing={4}
             >
               <Flex flexDirection="column" w={{ base: "100%", xl: "65%" }}>
-                <TbtcMintingCardTitle />
+                <BridgeProcessCardTitle />
                 <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
                     <Box as="span" fontWeight="600" color="brand.500">
@@ -272,11 +272,11 @@ export const DepositDetails: PageComponent = () => {
                 </List>
                 {mintingProgressStep !== "completed" && (
                   <>
-                    <HStack spacing="4" mt="auto" mb="10" alignSelf="center">
-                      <Image src={BitcoinIcon} />
-                      <DotsLoadingIndicator />
-                      <Image src={tBTCIcon} />
-                    </HStack>
+                    <BridgeProcessIndicator
+                      bridgeProcess="mint"
+                      mt="auto"
+                      mb="10"
+                    />
                     <MintingProcessResource
                       {...stepToResourceData[mintingProgressStep]}
                     />

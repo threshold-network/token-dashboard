@@ -1,4 +1,6 @@
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { toBcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
   AddressType,
   getAddressInfo,
@@ -8,14 +10,20 @@ import {
 
 export const isValidBtcAddress = (
   address: string,
-  network: Network = Network.mainnet
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
 ): boolean => {
-  return validate(address, network)
+  return validate(address, toBcoinNetwork(network) as Network)
 }
 
+// P2PKH, P2WPKH, P2SH, or P2WSH
 export const isPublicKeyHashTypeAddress = (address: string): boolean => {
   const { type } = getAddressInfo(address)
   return type === AddressType.p2pkh || type === AddressType.p2wpkh
+}
+
+export const isPayToScriptHashTypeAddress = (address: string): boolean => {
+  const { type } = getAddressInfo(address)
+  return type === AddressType.p2sh || type === AddressType.p2wsh
 }
 
 /**

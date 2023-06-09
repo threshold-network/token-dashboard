@@ -107,7 +107,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             </Skeleton>
           </H5>
           <BodyLg>
-            Minting tBTC is a process that requires one transaction.
+            Minting tBTC is a process that requires one transaction on your end.
           </BodyLg>
         </InfoBox>
         <MintingTransactionDetails />

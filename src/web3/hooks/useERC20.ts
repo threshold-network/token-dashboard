@@ -9,7 +9,6 @@ import { Approve, UseErc20Interface } from "../../types/token"
 import { useTransaction } from "../../hooks/useTransaction"
 import { TransactionStatus } from "../../enums/transactionType"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
-import { once } from "@storybook/node-logger"
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
