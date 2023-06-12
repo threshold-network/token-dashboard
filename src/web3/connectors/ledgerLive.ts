@@ -8,6 +8,7 @@ import {
   EthereumProvider,
 } from "@ledgerhq/connect-kit-loader"
 import { EnvVariable } from "../../enums"
+import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 
 interface LedgerLiveConnectorArguments extends AbstractConnectorArguments {
   rpc: {
@@ -55,29 +56,33 @@ export class LedgerLiveConnector extends AbstractConnector {
 
   public async activate(): Promise<ConnectorUpdate> {
     let account = ""
-    try {
-      const connectKit = await this.connectKitPromise
-      const chainId = Number(Object.keys(this.rpc)[0])
-      const checkSupportResult = connectKit.checkSupport({
-        chainId: chainId,
-        providerType: SupportedProviders.Ethereum,
-        rpc: this.rpc,
-      })
+    const connectKit = await this.connectKitPromise
+    const chainId = Number(Object.keys(this.rpc)[0])
+    const checkSupportResult = connectKit.checkSupport({
+      chainId: chainId,
+      providerType: SupportedProviders.Ethereum,
+      rpc: this.rpc,
+    })
 
-      this.provider = (await connectKit.getProvider()) as EthereumProvider
-
-      this.provider.on("networkChanged", this.handleNetworkChanged)
-      this.provider.on("chainChanged", this.handleChainChanged)
-      this.provider.on("accountsChanged", this.handleAccountsChanged)
-      this.provider.on("close", this.handleClose)
-
-      const accounts = (await this.provider.request({
-        method: "eth_requestAccounts",
-      })) as string[]
-      account = accounts[0]
-    } catch (err) {
-      console.error("Error: ", err)
+    if (!checkSupportResult.isChainIdSupported) {
+      throw new Error(
+        `The ${chainIdToNetworkName(
+          chainId
+        )} network is not supported for LedgerLive.`
+      )
     }
+
+    this.provider = (await connectKit.getProvider()) as EthereumProvider
+
+    this.provider.on("networkChanged", this.handleNetworkChanged)
+    this.provider.on("chainChanged", this.handleChainChanged)
+    this.provider.on("accountsChanged", this.handleAccountsChanged)
+    this.provider.on("close", this.handleClose)
+
+    const accounts = (await this.provider.request({
+      method: "eth_requestAccounts",
+    })) as string[]
+    account = accounts[0]
 
     return { provider: this.provider, account }
   }

@@ -41,14 +41,18 @@ const WalletConnectionModalBase: FC<Props> = ({
   connector,
   walletType,
 }) => {
-  const { activate, active, account } = useWeb3React()
+  const { activate, active, account, setError } = useWeb3React()
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
+
+  const onError = (error: Error) => {
+    setError(error)
+  }
 
   useEffect(() => {
     if (!connector) return
 
     captureWalletConnected({ walletType })
-    activate(connector)
+    activate(connector, onError)
     if (walletType === WalletType.LedgerLive) closeModal()
   }, [activate, connector, captureWalletConnected, walletType])
 
