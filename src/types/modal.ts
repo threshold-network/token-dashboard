@@ -44,7 +44,11 @@ import MapOperatorToStakingProviderModal from "../components/Modal/MapOperatorTo
 import MapOperatorToStakingProviderConfirmationModal from "../components/Modal/MapOperatorToStakingProviderConfirmationModal"
 import { MapOperatorToStakingProviderSuccess } from "../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import AnalyticsModal from "../components/Modal/AnalyticsModal"
-import { GenerateNewDepositAddress, NewTBTCApp } from "../components/Modal/tBTC"
+import {
+  GenerateNewDepositAddress,
+  InitiateUnminting,
+  NewTBTCApp,
+} from "../components/Modal/tBTC"
 import FeedbackSubmissionModal from "../components/Modal/FeedbackSubmissionModal"
 
 export const MODAL_TYPES: Record<ModalType, ElementType> = {
@@ -91,6 +95,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.NewTBTCApp]: NewTBTCApp,
   [ModalType.FeedbackSubmission]: FeedbackSubmissionModal,
   [ModalType.GenerateNewDepositAddress]: GenerateNewDepositAddress,
+  [ModalType.InitiateUnminting]: InitiateUnminting,
 }
 
 export interface BaseModalProps {

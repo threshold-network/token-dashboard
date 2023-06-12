@@ -2,8 +2,8 @@ import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { Button, BodyMd } from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
-import { TbtcMintingCardSubTitle } from "../components/TbtcMintingCardSubtitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { Form, FormikInput } from "../../../../components/Forms"
 import {
   getErrorsObj,
@@ -21,6 +21,7 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
+import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 
 export interface FormValues {
   ethAddress: string
@@ -32,8 +33,10 @@ type ComponentProps = {
   formId: string
 }
 
-const resolvedBTCAddressPrefix =
-  supportedChainId === "1" ? `"1" or "bc1"` : `"m", "n" or "tb1"`
+const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
+  "mint",
+  supportedChainId === "1" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
+)
 
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
@@ -159,8 +162,8 @@ export const ProvideDataComponent: FC<{
 
   return (
     <>
-      <TbtcMintingCardTitle onPreviousStepClick={onPreviousStepClick} />
-      <TbtcMintingCardSubTitle
+      <BridgeProcessCardTitle onPreviousStepClick={onPreviousStepClick} />
+      <BridgeProcessCardSubTitle
         stepText="Step 1"
         subTitle="Generate a Deposit Address"
       />

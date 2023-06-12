@@ -1,13 +1,7 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
 import { useWeb3React } from "@web3-react/core"
-import {
-  Box,
-  Card,
-  H5,
-  Stack,
-  StackDivider,
-} from "@threshold-network/components"
+import { H5 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
@@ -20,7 +14,7 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { isSameETHAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
-import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import SubmitTxButton from "../../../components/SubmitTxButton"
 import {
   ProtocolHistoryRecentDeposits,
@@ -28,6 +22,11 @@ import {
   ProtocolHistoryViewMoreLink,
   TVL,
 } from "../../../components/tBTC"
+import {
+  BridgeLayout,
+  BridgeLayoutAsideSection,
+  BridgeLayoutMainSection,
+} from "./BridgeLayout"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -89,29 +88,13 @@ const MintPageLayout: PageComponent = () => {
   }, [fetchTvl])
 
   return (
-    <Stack
-      as={Card}
-      direction={{
-        base: "column",
-        xl: "row",
-      }}
-      divider={<StackDivider />}
-      spacing={8}
-      minW="0"
-      alignItems="flex-start"
-      gap="unset"
-    >
-      <Box
-        w={{
-          base: "100%",
-          xl: "66%",
-        }}
-      >
+    <BridgeLayout>
+      <BridgeLayoutMainSection>
         {active ? (
           <Outlet />
         ) : (
           <>
-            <TbtcMintingCardTitle />
+            <BridgeProcessCardTitle />
             <H5 align={"center"}>Ready to mint tBTC?</H5>
             <SubmitTxButton mb="6" mt="4" />
             <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
@@ -133,15 +116,11 @@ const MintPageLayout: PageComponent = () => {
             <ProtocolHistoryViewMoreLink mt="7" />
           </>
         )}
-      </Box>
-      <MintingTimeline
-        w={{
-          base: "100%",
-          xl: "33%",
-        }}
-        minW={"216px"}
-      />
-    </Stack>
+      </BridgeLayoutMainSection>
+      <BridgeLayoutAsideSection>
+        <MintingTimeline />
+      </BridgeLayoutAsideSection>
+    </BridgeLayout>
   )
 }
 

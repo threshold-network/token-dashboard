@@ -12,7 +12,7 @@ import { FormikErrors, FormikProps, withFormik } from "formik"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { useNavigate } from "react-router-dom"
 import { PageComponent } from "../../../types"
-import { TbtcMintingCardTitle } from "./components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import { BridgeContractLink } from "../../../components/tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { MintingStep } from "../../../types/tbtc"
@@ -71,7 +71,7 @@ export const ResumeDepositPage: PageComponent = () => {
 
   return (
     <>
-      <TbtcMintingCardTitle
+      <BridgeProcessCardTitle
         previousStep={MintingStep.InitiateMinting}
         onPreviousStepClick={navigateToMintPage}
       />

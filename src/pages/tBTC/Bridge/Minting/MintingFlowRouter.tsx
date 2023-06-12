@@ -10,7 +10,7 @@ import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { BridgeContractLink } from "../../../../components/tBTC"
-import { TbtcMintingCardTitle } from "../components/TbtcMintingCardTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
@@ -63,7 +63,7 @@ const MintingFlowRouterBase = () => {
     default:
       return (
         <>
-          <TbtcMintingCardTitle
+          <BridgeProcessCardTitle
             previousStep={MintingStep.ProvideData}
             onPreviousStepClick={onPreviousStepClick}
           />
