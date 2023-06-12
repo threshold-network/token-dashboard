@@ -39,7 +39,7 @@ const InitiateMintingComponent: FC<{
           "Confirm deposit & mint (Step 2)"
         }
       >
-        Confirm deposit & mint
+        Initiate minting
       </Button>
     </>
   )
