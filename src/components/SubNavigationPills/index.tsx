@@ -96,18 +96,33 @@ const renderPill = (pill: NavPill) => <NavPill key={pill.path} {...pill} />
  */
 const addActiveStatusToPills = (pills: RouteProps[]) => {
   const pillsWithActiveStatus: NavPill[] = []
-  let indexOfLastActivePill
+  const lastActivePill: {
+    index: number | undefined
+    pathnameBase: string
+  } = {
+    index: undefined,
+    pathnameBase: "",
+  }
   for (let i = 0; i < pills.length; i++) {
     const { path, pathOverride } = pills[i]
     const resolved = useResolvedPath(pathOverride || path)
     const match = useMatch({ path: resolved.pathname, end: true })
-    const isActive = !!match
+    // The second condition here checks if the current match pathnameBase
+    // includes the pathnameBase of the last active pill. If it does, then this
+    // pill will be active and we will remove the active status from the
+    // previous pill. This means that if we have multiple paths that start with
+    // the same page, such as "staking/how-it-works" and "staking", the active
+    // one will be the one that useMatch returns true for and has the longest
+    // pathnameBase (so in this case it will be `staking/how-it-works`).
+    const isActive =
+      !!match && match.pathnameBase.includes(lastActivePill.pathnameBase)
     if (isActive) {
-      // remove the active status of the previous pill
-      if (indexOfLastActivePill !== undefined) {
-        pillsWithActiveStatus[indexOfLastActivePill].isActive = false
+      // Remove the active status of the previous pill
+      if (lastActivePill.index !== undefined) {
+        pillsWithActiveStatus[lastActivePill.index].isActive = false
       }
-      indexOfLastActivePill = i
+      lastActivePill.index = i
+      lastActivePill.pathnameBase = match.pathnameBase
     }
     const pillWithActiveStatus = {
       ...pills[i],
