@@ -17,10 +17,12 @@ import {
   ZERO,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
+  isPayToScriptHashTypeAddress,
 } from "../utils"
 import {
   Client,
   computeHash160,
+  createOutputScriptFromAddress,
   decodeBitcoinAddress,
   TransactionHash,
   UnspentTransactionOutput,
@@ -209,16 +211,16 @@ export interface ITBTC {
    * the compressed form (33 bytes long with 02 or 03 prefix).
    * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO
    * held by the on-chain Bridge contract.
-   * @param redeemerOutputScript - The output script that the redeemed funds
-   * will be locked to. Must be un-prefixed and not prepended with length.
-   * @param amount The amount to be redeemed in satoshis.
+   * @param btcAddress - The Bitcoin address that the redeemed funds
+   * will be locked to.
+   * @param amount The amount to be redeemed in tBTC token unit.
    * @returns Transaction hash of the request redemption transaction.
    */
   requestRedemption(
     redeemer: string,
     walletPublicKey: string,
     mainUtxo: UnspentTransactionOutput,
-    redeemerOutputScript: string,
+    btcAddress: string,
     amount: BigNumberish
   ): Promise<string>
 }
@@ -667,14 +669,24 @@ export class TBTC implements ITBTC {
     redeemer: string,
     walletPublicKey: string,
     mainUtxo: UnspentTransactionOutput,
-    redeemerOutputScript: string,
+    btcAddress: string,
     amount: BigNumberish
   ): Promise<string> => {
+    if (
+      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
+      (!isPublicKeyHashTypeAddress(btcAddress) &&
+        !isPayToScriptHashTypeAddress(btcAddress))
+    ) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+
     const tx = await requestRedemption(
       getChainIdentifier(redeemer),
       walletPublicKey,
       mainUtxo,
-      redeemerOutputScript,
+      createOutputScriptFromAddress(btcAddress),
       BigNumber.from(amount),
       getChainIdentifier(this._tbtcVault.address),
       this._bridge,
