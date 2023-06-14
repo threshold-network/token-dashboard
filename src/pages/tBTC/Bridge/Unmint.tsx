@@ -55,6 +55,8 @@ import {
 } from "../../../utils/tBTC"
 import { useModal } from "../../../hooks/useModal"
 import { UnmintDetails } from "./UnmintDetails"
+import { UnmintingCard } from "./UnmintingCard"
+import { featureFlags } from "../../../constants"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -69,7 +71,9 @@ const UnmintFormPage: PageComponent = ({}) => {
     })
   }
 
-  return (
+  return !featureFlags.TBTC_V2_REDEMPTION ? (
+    <UnmintingCard />
+  ) : (
     <BridgeLayout>
       <BridgeLayoutMainSection>
         <BridgeProcessCardTitle bridgeProcess="unmint" />
@@ -169,7 +173,6 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
       <FormikInput
         name="btcAddress"
         label="BTC Address"
-        // TODO: add BTC addresse prefixes
         tooltip={`This address needs to start with ${supportedPrefixesText}. This is where your BTC funds are sent.`}
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"

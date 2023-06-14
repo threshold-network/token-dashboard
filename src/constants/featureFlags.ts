@@ -15,3 +15,6 @@ export const FEEDBACK_MODULE =
   getEnvVariable(EnvVariable.FEATURE_FLAG_FEEDBACK_MODULE) === "true"
 
 export const SENTRY = getEnvVariable(EnvVariable.FEATURE_FLAG_SENTRY) === "true"
+
+export const TBTC_V2_REDEMPTION =
+  getEnvVariable(EnvVariable.FEATURE_FLAG_TBTC_V2_REDEMPTION) === "true"

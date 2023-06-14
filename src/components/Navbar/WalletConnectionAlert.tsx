@@ -13,11 +13,12 @@ const WalletConnectionAlert: FC<{
   account?: string | null
   chainId?: number
 }> = ({ account, chainId }) => {
-  const [hideAlert, setHideAlert] = useState(true)
+  const [hideAlert, setHideAlert] = useState(false)
 
   const alertDescription = useMemo(() => {
     if (!account) {
-      return "Connect your wallet"
+      setHideAlert(false)
+      return
     }
 
     if (!isSupportedNetwork(chainId)) {
@@ -28,12 +29,12 @@ const WalletConnectionAlert: FC<{
   }, [account, chainId])
 
   useEffect(() => {
-    if (account && isSupportedNetwork(chainId)) {
+    if (!account || (account && isSupportedNetwork(chainId))) {
       setHideAlert(true)
       return
     }
 
-    if (!account || !isSupportedNetwork(chainId)) {
+    if (!isSupportedNetwork(chainId)) {
       setHideAlert(false)
       return
     }

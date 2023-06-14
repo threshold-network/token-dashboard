@@ -48,6 +48,7 @@ import { PageComponent } from "../../../types"
 import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDetailsIcons"
+import { featureFlags } from "../../../constants"
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -277,5 +278,5 @@ const SuccessStep: FC<{
 UnmintDetails.route = {
   path: "redemption/:redemptionKey",
   index: false,
-  isPageEnabled: true,
+  isPageEnabled: featureFlags.TBTC_V2_REDEMPTION,
 }
