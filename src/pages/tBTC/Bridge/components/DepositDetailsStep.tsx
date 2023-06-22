@@ -1,108 +1,19 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import {
-  BodyLg,
   BodyMd,
   BodySm,
-  CircularProgress,
-  CircularProgressLabel,
-  Flex,
   HStack,
   Skeleton,
   Box,
 } from "@threshold-network/components"
 import { CheckCircleIcon } from "@chakra-ui/icons"
-import ViewInBlockExplorer, {
-  Chain as ViewInBlockExplorerChain,
-} from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
-import { ONE_SEC_IN_MILISECONDS } from "../../../../utils/date"
 import {
   BTCConfirmationsIcon,
   GuardianCheckIcon,
   MintingCompletedIcon,
   MintingInitializedIcon,
 } from "./DepositDetailsStepIcons"
-
-type StepTemplateProps = {
-  title: string
-  txHash?: string
-  chain: ViewInBlockExplorerChain
-  progressBarColor: string
-  isCompleted: boolean
-  onComplete: () => void
-  isIndeterminate?: boolean
-  progressBarValue?: number
-  progressBarMaxValue?: number
-  icon: JSX.Element
-}
-
-export const StepTemplate: FC<StepTemplateProps> = ({
-  title,
-  txHash,
-  chain,
-  progressBarValue,
-  progressBarMaxValue,
-  progressBarColor,
-  isIndeterminate,
-  isCompleted,
-  onComplete,
-  icon,
-  children,
-}) => {
-  useEffect(() => {
-    if (!isCompleted) return
-
-    const timeout = setTimeout(onComplete, 10 * ONE_SEC_IN_MILISECONDS)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [isCompleted, onComplete])
-
-  return (
-    <Flex flexDirection="column" alignItems="center" height="100%">
-      <BodyLg
-        color="gray.700"
-        mt="8"
-        alignSelf="flex-start"
-        fontSize="20px"
-        lineHeight="24px"
-      >
-        {title}
-      </BodyLg>
-
-      <CircularProgress
-        alignSelf="center"
-        mt="6"
-        value={isCompleted ? 100 : progressBarValue}
-        max={isCompleted ? undefined : progressBarMaxValue}
-        color={progressBarColor}
-        trackColor="gray.100"
-        size="160px"
-        thickness="8px"
-        isIndeterminate={isCompleted ? undefined : isIndeterminate}
-      >
-        {isCompleted && (
-          <CircularProgressLabel __css={{ svg: { margin: "auto" } }}>
-            {icon}
-          </CircularProgressLabel>
-        )}
-      </CircularProgress>
-      {children}
-      {txHash && (
-        <BodySm mt="auto" mb="8" color="gray.500" textAlign="center">
-          See transaction on{" "}
-          <ViewInBlockExplorer
-            text={chain === "bitcoin" ? "blockstream" : "etherscan"}
-            chain={chain}
-            id={txHash}
-            type={ExplorerDataType.TRANSACTION}
-          />
-        </BodySm>
-      )}
-    </Flex>
-  )
-}
+import { BridgeProcessStepProps, BridgeProcessStep } from "./BridgeProcessStep"
 
 const BitcoinConfirmationsSummary: FC<{
   minConfirmationsNeeded?: number
@@ -137,13 +48,13 @@ const BitcoinConfirmationsSummary: FC<{
   )
 }
 
-type CommonStepProps = Pick<StepTemplateProps, "onComplete"> & {
+type CommonStepProps = Pick<BridgeProcessStepProps, "onComplete"> & {
   txHash?: string
 }
 
 export const Step1: FC<
   { confirmations?: number; requiredConfirmations?: number } & Pick<
-    StepTemplateProps,
+    BridgeProcessStepProps,
     "txHash" | "onComplete"
   >
 > = ({ confirmations, requiredConfirmations, txHash, onComplete }) => {
@@ -152,7 +63,7 @@ export const Step1: FC<
   } on the Bitcoin Network before initiating the minting process.`
 
   return (
-    <StepTemplate
+    <BridgeProcessStep
       title="Waiting for the Bitcoin Network Confirmations..."
       chain="bitcoin"
       txHash={txHash}
@@ -174,13 +85,13 @@ export const Step1: FC<
       <BodyMd mt="6" px="3.5" alignSelf="flex-start">
         {subtitle}
       </BodyMd>
-    </StepTemplate>
+    </BridgeProcessStep>
   )
 }
 
 export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
-    <StepTemplate
+    <BridgeProcessStep
       title="Minting Initialized"
       icon={<MintingInitializedIcon />}
       chain="ethereum"
@@ -200,13 +111,13 @@ export const Step2: FC<CommonStepProps> = ({ txHash, onComplete }) => {
           chain.
         </BodyMd>
       </Box>
-    </StepTemplate>
+    </BridgeProcessStep>
   )
 }
 
 export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
-    <StepTemplate
+    <BridgeProcessStep
       title="Guardian Check"
       icon={<GuardianCheckIcon />}
       chain="ethereum"
@@ -225,13 +136,13 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
           remove problematic minters.
         </BodyMd>
       </Box>
-    </StepTemplate>
+    </BridgeProcessStep>
   )
 }
 
 export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   return (
-    <StepTemplate
+    <BridgeProcessStep
       title="Minting in progress"
       icon={<MintingCompletedIcon />}
       chain="ethereum"
@@ -244,6 +155,6 @@ export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       <BodyMd mt="6" px="3.5" alignSelf="flex-start">
         The contract is minting your tBTC tokens.
       </BodyMd>
-    </StepTemplate>
+    </BridgeProcessStep>
   )
 }

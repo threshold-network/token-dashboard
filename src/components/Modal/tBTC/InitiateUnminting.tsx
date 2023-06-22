@@ -10,6 +10,7 @@ import {
   ModalHeader,
 } from "@threshold-network/components"
 import { FC } from "react"
+import { useNavigate } from "react-router-dom"
 import { BaseModalProps } from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
 import InfoBox from "../../InfoBox"
@@ -31,6 +32,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   unmintAmount,
   btcAddress,
 }) => {
+  const navigate = useNavigate()
   // TODO: calculate the BTC amount- take into account fees
   const btcAmount = "1.25"
   const thresholdNetworkFee = "0"
@@ -38,7 +40,9 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
 
   // TODO: implement submit function
   const initiateUnminting = () => {
-    console.log("unminting")
+    // TODO: It's a temporary solution to be able to go through the whole flow.
+    navigate("/tBTC/unmint/redemption/123456789")
+    closeModal()
   }
 
   return (
