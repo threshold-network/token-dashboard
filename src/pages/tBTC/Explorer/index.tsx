@@ -157,6 +157,7 @@ const HistoryRow: FC<RecentDeposit> = ({ txHash, address, amount, date }) => {
       key={`latest-mints-${txHash}`}
       _odd={{ backgroundColor: "gray.50" }}
       sx={{ td: { borderBottom: "none" } }}
+      transform="scale(1)"
     >
       <Td paddingLeft={12}>
         <BodyXs>
