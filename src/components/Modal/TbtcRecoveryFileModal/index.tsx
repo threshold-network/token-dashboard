@@ -70,8 +70,8 @@ const TbtcRecoveryFileModalModal: FC<
   }
 
   const titleText = isOnConfirmStep
-    ? "Are you sure you do not want to download the JSON file?"
-    : "Download this JSON file"
+    ? "Are you sure you do not want to download the Recovery Receipt?"
+    : "Download for your records"
 
   const bodyContent = isOnConfirmStep ? (
     <BodyLg>
@@ -80,15 +80,15 @@ const TbtcRecoveryFileModalModal: FC<
   ) : (
     <>
       <BodyLg mb={6}>
-        This file is important to save in case you need to recover your funds.{" "}
+        This file is important in the rare case of fund recovery{" "}
         <Box as="strong">
-          Keep it until you have successfully initiated minting. One deposit,
-          one JSON file.
+          Keep it until you have received your tBTC token. One deposit, one
+          receipt.
         </Box>
       </BodyLg>
       <BodyLg>
-        This file contains your BTC recovery address, the wallet public key, the
-        refund public key and the refund lock time.
+        This file contains a BTC recovery address, a wallet public key, a refund
+        public key and a refund lock time of your deposit.
       </BodyLg>
     </>
   )
@@ -96,7 +96,7 @@ const TbtcRecoveryFileModalModal: FC<
   return (
     <>
       <ModalHeader>
-        {isOnConfirmStep ? "Take note" : "Recovery .JSON file"}
+        {isOnConfirmStep ? "Take note" : "Recovery Receipt"}
       </ModalHeader>
       <ModalBody>
         <InfoBox variant="modal" mb="6">
@@ -105,8 +105,8 @@ const TbtcRecoveryFileModalModal: FC<
         </InfoBox>
         <Image mt="14" mb="16" mx="auto" maxW="210px" src={btcJsonFile} />
         <BodySm textAlign="center">
-          Read more about the&nbsp;
-          <BridgeContractLink text="bridge contract" />.
+          View bridge contract on&nbsp;
+          <BridgeContractLink text="etherscan" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>
