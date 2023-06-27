@@ -1,6 +1,6 @@
 # Threshold Token Dashboard
 
-[![Token Dashboard / CI](https://github.com/threshold-network/token-dashboard/actions/workflows/dashboard-ci.yml/badge.svg?branch=main&event=push)](https://github.com/threshold-network/token-dashboard/actions/workflows/dashboard-ci.yml)
+[![Token Dashboard / CI](https://github.com/threshold-network/dapp/actions/workflows/dashboard-ci.yml/badge.svg?branch=main&event=push)](https://github.com/threshold-network/dapp/actions/workflows/dashboard-ci.yml)
 [![Docs](https://img.shields.io/badge/docs-website-green)](https://docs.threshold.network)
 [![Chat with us on Discord](https://img.shields.io/badge/chat-Discord-5865f2.svg)](https://discord.gg/threshold)
 
@@ -72,7 +72,7 @@ yarn upgrade @threshold-network/solidity-contracts@goerli \
 using `goerli` tag results in `expected manifest` error - probably caused by bug
 in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
 
-**NOTE 2:** The `token-dashboard` package contains an indirect dependency to
+**NOTE 2:** The `dapp` project contains an indirect dependency to
 `@summa-tx/relay-sol@2.0.2` package, which downloads one of its sub-dependencies
 via unathenticated `git://` protocol. That protocol is no longer supported by
 GitHub. This means that in certain situations installation of the package or
@@ -100,7 +100,7 @@ The following procedure allows to deploy T token dashboard to production:
    and creating a PR with a release branch is not required.
    Dependencies and project version needs to be updated on the release branch.
    All `-dev`, `-goerli` dependencies need to be updated to mainnet versions.
-   See [this commit](https://github.com/threshold-network/token-dashboard/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
+   See [this commit](https://github.com/threshold-network/dapp/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
    for `v1.0.0` release as a good example.
 2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`
    under the directory named after the release branch. For example:

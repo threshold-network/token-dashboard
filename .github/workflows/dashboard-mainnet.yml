@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
 
-      - name: Run token-dashboard post-install script
+      - name: Run dapp post-install script
         run: yarn run postinstall
 
       # FIXME: It's work in progress, the contracts are not yet published.

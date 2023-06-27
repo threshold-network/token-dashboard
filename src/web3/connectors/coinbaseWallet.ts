@@ -39,6 +39,6 @@ class CoinbaseWalletConnector extends WalletLinkConnector {
 
 export const coinbaseConnector = new CoinbaseWalletConnector({
   url: rpcUrl,
-  appName: "threshold-token-dashboard",
+  appName: "threshold-dapp",
   supportedChainIds: [+supportedChainId],
 })

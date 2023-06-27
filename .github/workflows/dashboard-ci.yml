@@ -44,7 +44,7 @@ jobs:
       - name: Install dependencies
         run: yarn install --ignore-scripts --frozen-lockfile
 
-      - name: Run token-dashboard post-install script
+      - name: Run dapp post-install script
         run: yarn run postinstall
 
       - name: Check formatting

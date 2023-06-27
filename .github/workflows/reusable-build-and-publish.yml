@@ -99,7 +99,7 @@ jobs:
         shell: bash
         run: yarn install --ignore-scripts --frozen-lockfile
 
-      - name: Run token-dashboard post-install script
+      - name: Run dapp post-install script
         shell: bash
         run: yarn run postinstall
 

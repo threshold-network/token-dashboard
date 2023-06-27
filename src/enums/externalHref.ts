@@ -1,5 +1,5 @@
 export enum ExternalHref {
-  thresholdGithub = "https://github.com/threshold-network/token-dashboard",
+  thresholdGithub = "https://github.com/threshold-network/dapp",
   thresholdDiscord = "https://discord.gg/WXK9PC6SRF",
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
