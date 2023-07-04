@@ -17,6 +17,7 @@ import {
   ZERO,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
+  AddressZero,
 } from "../utils"
 import {
   Client,
@@ -29,6 +30,7 @@ import {
 import {
   ElectrumClient,
   EthereumBridge,
+  Hex,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
@@ -36,8 +38,8 @@ import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import { BigNumber, BigNumberish, Contract, utils } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
-import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
+import { LogDescription } from "ethers/lib/utils"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -52,12 +54,62 @@ export interface BridgeActivity {
   depositKey: string
 }
 
-interface RevealedDepositEvent {
+export interface RevealedDepositEvent {
   amount: string
   walletPublicKeyHash: string
   fundingTxHash: string
   fundingOutputIndex: string
   depositKey: string
+  txHash: string
+  blockNumber: BlockTag
+}
+
+export interface RedemptionRequestedEvent {
+  amount: string
+  walletPublicKeyHash: string
+  redeemerOutputScript: string
+  redeemer: string
+  treasuryFee: string
+  txMaxFee: string
+  blockNumber: BlockTag
+  txHash: string
+}
+
+type QueryEventFilter = { fromBlock?: BlockTag; toBlock?: BlockTag }
+
+type RedemptionRequestedEventFilter = {
+  walletPublicKeyHash?: string | string[]
+  redeemer?: string | string[]
+} & QueryEventFilter
+
+interface RedemptionRequest<NumberType extends BigNumberish = BigNumber> {
+  redeemer: string
+  requestedAmount: NumberType
+  treasuryFee: NumberType
+  txMaxFee: NumberType
+  requestedAt: number
+  isPending: boolean
+  isTimedOut: boolean
+}
+
+type RedemptionTimedOutEventFilter = {
+  walletPublicKeyHash?: string | string[]
+} & QueryEventFilter
+
+interface RedemptionTimedOutEvent {
+  walletPublicKeyHash: string
+  redeemerOutputScript: string
+  txHash: string
+  blockNumber: BlockTag
+}
+
+type RedemptionsCompletedEventFilter = {
+  walletPublicKeyHash: string
+} & QueryEventFilter
+
+interface RedemptionsCompletedEvent {
+  walletPublicKeyHash: string
+  redemptionBitcoinTxHash: string
   txHash: string
   blockNumber: BlockTag
 }
@@ -214,6 +266,20 @@ export interface ITBTC {
   ): string
 
   getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
+
+  getRedemptionRequestedEvents(
+    filter: RedemptionRequestedEventFilter
+  ): Promise<RedemptionRequestedEvent[]>
+
+  getRedemptionRequest(redemptionKey: string): Promise<RedemptionRequest>
+
+  getRedemptionTimedOutEvents(
+    filter: RedemptionTimedOutEventFilter
+  ): Promise<RedemptionTimedOutEvent[]>
+
+  getRedemptionsCompletedEvents(
+    filter: RedemptionsCompletedEventFilter
+  ): Promise<RedemptionsCompletedEvent[]>
 }
 
 export class TBTC implements ITBTC {
@@ -386,7 +452,7 @@ export class TBTC implements ITBTC {
   }> => {
     const calls: ContractCall[] = [
       {
-        interface: new Interface(Bridge.abi),
+        interface: this._bridgeContract.interface,
         address: Bridge.address,
         method: "depositParameters",
         args: [],
@@ -665,5 +731,192 @@ export class TBTC implements ITBTC {
     return this._bitcoinClient.getTransaction(
       TransactionHash.from(transacionHash)
     )
+  }
+
+  getRedemptionRequestedEvents = async (
+    filter: RedemptionRequestedEventFilter
+  ): Promise<RedemptionRequestedEvent[]> => {
+    const { walletPublicKeyHash, redeemer, fromBlock, toBlock } = filter
+
+    // TODO: Use this sinppet to fetch events once we provide a fix in the `ethers.js` lib.
+    // const events = await getContractPastEvents(this.bridgeContract, {
+    //   eventName: "RedemptionRequested",
+    //   filterParams: [walletPublicKeyHash, null, redeemer],
+    //   fromBlock,
+    //   toBlock,
+    // })
+
+    // This is a workaround to get the `RedemptionRequested` events by
+    // `walletPublicKeyHash` param. The `ethers.js` lib encodes the `bytesX`
+    // param in the wrong way. It uses the left-padded rule but based on the
+    // Solidity docs it should be a sequence of bytes in X padded with trailing
+    // zero-bytes to a length of 32 bytes(right-padded). See
+    // https://docs.soliditylang.org/en/v0.8.17/abi-spec.html#formal-specification-of-the-encoding
+    // Consider this wallet public key hash
+    // `0x03B74D6893AD46DFDD01B9E0E3B3385F4FCE2D1E`:
+    // - `ethers.js` returns
+    //   `0x00000000000000000000000003b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e`
+    // - should be:
+    //   `0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e000000000000000000000000`
+
+    const encodeAddress = (address: string) =>
+      utils.hexZeroPad(utils.hexlify(address), 32)
+
+    const filterTopics = [
+      utils.id(
+        "RedemptionRequested(bytes20,bytes,address,uint64,uint64,uint64)"
+      ),
+      this._encodeWalletPublicKeyHash(walletPublicKeyHash),
+      Array.isArray(redeemer)
+        ? redeemer.map(encodeAddress)
+        : encodeAddress(redeemer ?? AddressZero),
+    ]
+
+    const logs = await this.bridgeContract.queryFilter(
+      {
+        address: this.bridgeContract.address,
+        topics: filterTopics,
+      },
+      fromBlock,
+      toBlock
+    )
+
+    return logs
+      .map((log) => ({
+        ...this.bridgeContract.interface.parseLog(log),
+        blockNumber: log.blockNumber,
+        transactionHash: log.transactionHash,
+      }))
+      .map(this._parseRedemptionRequestedEvent)
+  }
+
+  private _encodeWalletPublicKeyHash = (
+    walletPublicKeyHash?: string | string[]
+  ): string | string[] => {
+    const encodeWalletPublicKeyHash = (hash: string) =>
+      utils.defaultAbiCoder.encode(["bytes20"], [hash])
+
+    return Array.isArray(walletPublicKeyHash)
+      ? walletPublicKeyHash.map(encodeWalletPublicKeyHash)
+      : encodeWalletPublicKeyHash(walletPublicKeyHash ?? "0x00")
+  }
+
+  _parseRedemptionRequestedEvent = (
+    event: LogDescription & {
+      blockNumber: number
+      transactionHash: string
+    }
+  ): RedemptionRequestedEvent => {
+    return {
+      amount: event.args?.requestedAmount.toString(),
+      walletPublicKeyHash: event.args?.walletPubKeyHash.toString(),
+      redeemerOutputScript: event.args?.redeemerOutputScript.toString(),
+      redeemer: event.args?.redeemer.toString(),
+      treasuryFee: event.args?.redeemer.toString(),
+      txMaxFee: event.args?.txMaxFee.toString(),
+      blockNumber: event.blockNumber,
+      txHash: event.transactionHash,
+    }
+  }
+
+  getRedemptionRequest = async (
+    redemptionKey: string
+  ): Promise<RedemptionRequest> => {
+    const [[pending], [timedOut]] = await this._multicall.aggregate([
+      {
+        interface: this._bridgeContract.interface,
+        address: this._bridgeContract.address,
+        method: "pendingRedemptions",
+        args: [redemptionKey],
+      },
+      {
+        interface: this._bridgeContract.interface,
+        address: this._bridgeContract.address,
+        method: "timedOutRedemptions",
+        args: [redemptionKey],
+      },
+    ])
+
+    const isPending = pending.requestedAt !== 0
+    const isTimedOut = !isPending ? timedOut.requestedAt !== 0 : false
+
+    let redemptionData: Omit<RedemptionRequest, "isPending" | "isTimedOut">
+
+    if (isPending) {
+      redemptionData = pending
+    } else if (isTimedOut) {
+      redemptionData = timedOut
+    } else {
+      redemptionData = {
+        redeemer: AddressZero,
+        requestedAmount: ZERO,
+        treasuryFee: ZERO,
+        txMaxFee: ZERO,
+        requestedAt: 0,
+      }
+    }
+
+    return {
+      ...redemptionData,
+      redeemer: redemptionData.redeemer.toString(),
+      isPending,
+      isTimedOut,
+    }
+  }
+
+  getRedemptionTimedOutEvents = async (
+    filter: RedemptionTimedOutEventFilter
+  ): Promise<RedemptionTimedOutEvent[]> => {
+    const { walletPublicKeyHash, fromBlock, toBlock } = filter
+
+    const filterTopics = [
+      utils.id("RedemptionTimedOut(bytes20,bytes)"),
+      this._encodeWalletPublicKeyHash(walletPublicKeyHash),
+    ]
+
+    const logs = await this.bridgeContract.queryFilter(
+      {
+        address: this.bridgeContract.address,
+        topics: filterTopics,
+      },
+      fromBlock,
+      toBlock
+    )
+
+    return logs.map((log) => ({
+      walletPublicKeyHash: log.args?.walletPubKeyHash.toString(),
+      redeemerOutputScript: log.args?.redeemerOutputScript.toString(),
+      blockNumber: log.blockNumber,
+      txHash: log.transactionHash,
+    }))
+  }
+
+  getRedemptionsCompletedEvents = async (
+    filter: RedemptionsCompletedEventFilter
+  ): Promise<RedemptionsCompletedEvent[]> => {
+    const { walletPublicKeyHash, fromBlock, toBlock } = filter
+
+    const filterTopics = [
+      utils.id("RedemptionsCompleted(bytes20,bytes32)"),
+      this._encodeWalletPublicKeyHash(walletPublicKeyHash),
+    ]
+
+    const logs = await this.bridgeContract.queryFilter(
+      {
+        address: this.bridgeContract.address,
+        topics: filterTopics,
+      },
+      fromBlock,
+      toBlock
+    )
+
+    return logs.map((log) => ({
+      walletPublicKeyHash: log.args?.walletPubKeyHash.toString(),
+      redemptionBitcoinTxHash: Hex.from(log.args?.redemptionTxHash.toString())
+        .reverse()
+        .toString(),
+      blockNumber: log.blockNumber,
+      txHash: log.transactionHash,
+    }))
   }
 }
