@@ -1,12 +1,15 @@
 import WalletConnectProvider from "@walletconnect/ethereum-provider"
-import { EthereumRpcMap } from "@walletconnect/ethereum-provider/dist/types/EthereumProvider"
 import { IWCEthRpcConnectionOptions, IRPCMap } from "@walletconnect/types"
 import { AbstractConnector } from "@web3-react/abstract-connector"
-import { AbstractConnectorArguments, ConnectorUpdate } from "@web3-react/types"
+import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
 import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
 
 export const URI_AVAILABLE = "URI_AVAILABLE"
+
+export interface EthereumRpcMap {
+  [chainId: string]: string
+}
 
 export interface WalletConnectConnectorArguments
   extends IWCEthRpcConnectionOptions {
@@ -72,7 +75,7 @@ export class WalletConnectV2Connector extends AbstractConnector {
     if (!this.provider) {
       this.provider = await WalletConnectProvider.init({
         projectId: "threshold-network-dashboard",
-        chains: [5],
+        chains: [chainId],
         rpcMap: this.rpcMap,
         showQrModal: true,
       })
