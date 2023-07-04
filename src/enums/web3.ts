@@ -29,6 +29,7 @@ export enum WalletType {
   TAHO = "TAHO",
   Metamask = "METAMASK",
   WalletConnect = "WALLET_CONNECT",
+  WalletConnectV2 = "WALLET_CONNECT_V2",
   Coinbase = "COINBASE",
   Trezor = "TREZOR",
   Ledger = "Ledger",
