@@ -170,9 +170,9 @@ export const useFetchRedemptionDetails = (
           )
 
           for (const { scriptPubKey } of outputs) {
-            // TODO: compare correctly.
             if (
-              scriptPubKey.toString() !== redemptionRequest.redeemerOutputScript
+              toPrefixedRawRedeemerOutputScript(scriptPubKey.toString()) !==
+              redemptionRequest.redeemerOutputScript
             )
               continue
 
@@ -220,4 +220,14 @@ export const useFetchRedemptionDetails = (
   ])
 
   return { isFetching, data: redemptionData, error }
+}
+
+const toPrefixedRawRedeemerOutputScript = (scriptPubKey: string) => {
+  const rawRedeemerOutputScript = Buffer.from(scriptPubKey.toString(), "hex")
+
+  // Prefix the output script bytes buffer with 0x and its own length.
+  return `0x${Buffer.concat([
+    Buffer.from([rawRedeemerOutputScript.length]),
+    rawRedeemerOutputScript,
+  ]).toString("hex")}`
 }

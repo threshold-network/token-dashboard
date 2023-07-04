@@ -78,10 +78,10 @@ export const UnmintDetails: PageComponent = () => {
   const fee = "20000000000000000"
 
   const redemptionRequestedTxHash =
-    "0xef7219802103bdca0dc2d3dcc35d906cfff32708b5630a62aee9a72c49b94c3a"
+    "0x0b5d66b89c5fe276ac5b0fd1874142f99329ea6f66485334a558e2bccd977618"
   const walletPublicKeyHash = "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e"
   const redeemerOutputScript =
-    "0x17A914538E4CC700D6510C8CAE5E8B688D65276771E60887"
+    "0x17A91486884E6BE1525DAB5AE0B451BD2C72CEE67DCF4187"
   const redeemer = "0x68ad60CC5e8f3B7cC53beaB321cf0e6036962dBc"
 
   const { data } = useFetchRedemptionDetails(
@@ -90,6 +90,7 @@ export const UnmintDetails: PageComponent = () => {
     redeemerOutputScript,
     redeemer
   )
+  console.log("data", data)
 
   const transactions: {
     label: string
