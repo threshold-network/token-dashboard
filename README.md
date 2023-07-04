@@ -1,6 +1,6 @@
-# Threshold Token Dashboard
+# Threshold Token dapp
 
-[![Token Dashboard / CI](https://github.com/threshold-network/dapp/actions/workflows/dashboard-ci.yml/badge.svg?branch=main&event=push)](https://github.com/threshold-network/dapp/actions/workflows/dashboard-ci.yml)
+[![Dapp / CI](https://github.com/threshold-network/dapp/actions/workflows/dapp-ci.yml/badge.svg?branch=main&event=push)](https://github.com/threshold-network/dapp/actions/workflows/dapp-ci.yml)
 [![Docs](https://img.shields.io/badge/docs-website-green)](https://docs.threshold.network)
 [![Chat with us on Discord](https://img.shields.io/badge/chat-Discord-5865f2.svg)](https://discord.gg/threshold)
 

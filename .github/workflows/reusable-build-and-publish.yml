@@ -1,4 +1,4 @@
-name: Build the dashboard and deploy to a GCP Bucket
+name: Build the dapp and deploy to a GCP Bucket
 on:
   workflow_call:
     inputs:

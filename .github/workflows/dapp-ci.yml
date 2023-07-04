@@ -1,4 +1,4 @@
-name: Token Dashboard / CI
+name: Dapp / CI
 
 on:
   schedule:
