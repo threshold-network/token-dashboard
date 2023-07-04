@@ -49,6 +49,7 @@ import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDetailsIcons"
 import { featureFlags } from "../../../constants"
+import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -75,6 +76,20 @@ export const UnmintDetails: PageComponent = () => {
   const unmintedAmount = "1200000000000000000"
   const btcAddress = "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
   const fee = "20000000000000000"
+
+  const redemptionRequestedTxHash =
+    "0xef7219802103bdca0dc2d3dcc35d906cfff32708b5630a62aee9a72c49b94c3a"
+  const walletPublicKeyHash = "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e"
+  const redeemerOutputScript =
+    "0x17A914538E4CC700D6510C8CAE5E8B688D65276771E60887"
+  const redeemer = "0x68ad60CC5e8f3B7cC53beaB321cf0e6036962dBc"
+
+  const { data } = useFetchRedemptionDetails(
+    redemptionRequestedTxHash,
+    walletPublicKeyHash,
+    redeemerOutputScript,
+    redeemer
+  )
 
   const transactions: {
     label: string

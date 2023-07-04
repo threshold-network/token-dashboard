@@ -1,0 +1,223 @@
+import { useEffect, useState } from "react"
+import { useThreshold } from "../../contexts/ThresholdContext"
+import { useGetBlock } from "../../web3/hooks"
+
+interface RedemptionDetails {
+  amount: string
+  redemptionRequestedTxHash: string
+  redemptionCompletedTxHash?: {
+    chain: string
+    bitcoin: string
+  }
+  requestedAt: number
+  completedAt: number
+  isTimedOut: boolean
+  redemptionTimedOutTxHash?: string
+}
+
+export const useFetchRedemptionDetails = (
+  redemptionRequestedTxHash: string,
+  walletPublicKeyHash: string,
+  redeemerOutputScript: string,
+  redeemer: string
+) => {
+  const threshold = useThreshold()
+  const getBlock = useGetBlock()
+  const [isFetching, setIsFetching] = useState(false)
+  const [error, setError] = useState("")
+  const [redemptionData, setRedemptionData] = useState<
+    RedemptionDetails | undefined
+  >()
+
+  useEffect(() => {
+    const fetch = async () => {
+      setIsFetching(true)
+      try {
+        const redemptionKey = threshold.tbtc.buildRedemptionKey(
+          walletPublicKeyHash,
+          redeemerOutputScript
+        )
+
+        // We need to find `RedemptionRequested` event by wallet public key hash
+        // and `reedemer` address to get all necessary data and make sure that
+        // the request actually happened. We need `redeemer` address as well to
+        // reduce the number of records- any user can request redemption for the
+        // same wallet.
+        const redemptionRequest = (
+          await threshold.tbtc.getRedemptionRequestedEvents({
+            walletPublicKeyHash,
+            redeemer,
+          })
+        ).find(
+          (event) =>
+            // It's not possible that the redemption request with the same
+            // redemption key can be created in the same transaction- it means
+            // that redemption key is unique and can be used for only one
+            // pending request at the same time. We also need to find an event
+            // by transaction hash because it's possible that there can be
+            // multiple `RedemptionRequest` events with the same redemption key
+            // but created at different times eg:
+            // - redemption X requested,
+            // - redemption X was handled successfully and the redemption X was
+            //   removed from `pendingRedemptions` map,
+            // - the same wallet is still in `live` state and can handle
+            //   redemption request with the same `walletPubKeyHash` and
+            //   `redeemerOutputScript` pair,
+            // - now 2 `RedemptionRequested` events exist with the same
+            //   redemption key(the same `walletPubKeyHash` and
+            //   `redeemerOutputScript` pair).
+            //
+            // In that case we must know exactly which redemption request we
+            // want to fetch.
+            event.txHash === redemptionRequestedTxHash &&
+            threshold.tbtc.buildRedemptionKey(
+              event.walletPublicKeyHash,
+              event.redeemerOutputScript
+            ) === redemptionKey
+        )
+
+        console.log("redemptionRequest", redemptionRequest)
+
+        if (!redemptionRequest) {
+          throw new Error("Redemption not found...")
+        }
+
+        const { timestamp: redemptionRequestedEventTimestamp } = await getBlock(
+          redemptionRequest.blockNumber
+        )
+
+        // We need to check if the redemption has `pending` or `timedOut` status.
+        const { isPending, isTimedOut, requestedAt } =
+          await threshold.tbtc.getRedemptionRequest(
+            threshold.tbtc.buildRedemptionKey(
+              walletPublicKeyHash,
+              redeemerOutputScript
+            )
+          )
+
+        console.log(
+          "redemptionRequestedEventTimestamp",
+          redemptionRequestedEventTimestamp,
+          requestedAt
+        )
+
+        // Find the transaction hash where the timeout was reported by
+        // scanning the `RedemptionTimedOut` event by the `walletPubKeyHash`
+        // param.
+        const timedOutTxHash: undefined | string = isTimedOut
+          ? (
+              await threshold.tbtc.getRedemptionTimedOutEvents({
+                walletPublicKeyHash,
+                fromBlock: redemptionRequest.blockNumber,
+              })
+            ).find(
+              (event) => event.redeemerOutputScript === redeemerOutputScript
+            )?.txHash
+          : undefined
+
+        if (
+          (isTimedOut || isPending) &&
+          // We need to make sure this is the same redemption request. Let's
+          // consider this case:
+          // - redemption X requested,
+          // - redemption X was handled sucesfully and the redemption X was
+          //   removed from `pendingRedemptions` map,
+          // - the same wallet is still in `live` state and can handle
+          //   redemption request with the same `walletPubKeyHash` and
+          //   `redeemerOutputScript` pair(the same redemption request key),
+          // - the redemption request X exists in the `pendingRedemptions` map.
+          //
+          // In that case we want to fetch redemption data for the first
+          // request, so we must compare timestamps, otherwise the redemption
+          // will be considered as pending.
+          requestedAt === redemptionRequestedEventTimestamp
+        ) {
+          setRedemptionData({
+            amount: redemptionRequest.amount,
+            redemptionRequestedTxHash: redemptionRequest.txHash,
+            redemptionCompletedTxHash: undefined,
+            requestedAt: requestedAt,
+            completedAt: 0,
+            redemptionTimedOutTxHash: timedOutTxHash,
+            isTimedOut,
+          })
+          return
+        }
+
+        // If we are here it menas that the redemption request was handled
+        // successfully and we need to find all `RedemptionCompleted` events
+        // that happend after `redemptionRequest` block and filter by
+        // `walletPubKeyHash` param.
+        const redemptionCompletedEvents =
+          await threshold.tbtc.getRedemptionsCompletedEvents({
+            walletPublicKeyHash,
+            fromBlock: redemptionRequest.blockNumber,
+          })
+
+        console.log("redemptionCompletedEvents", redemptionCompletedEvents)
+
+        // For each event we should take `redemptionTxHash` param from
+        // `RedemptionCompleted` event and check if in that Bitcoin transaction
+        // we can find transfer to a `redeemerOutputScript` using
+        // `bitcoinClient.getTransaction`.
+        for (const {
+          redemptionBitcoinTxHash,
+          txHash,
+          blockNumber: redemptionCompletedBlockNumber,
+        } of redemptionCompletedEvents) {
+          const { outputs } = await threshold.tbtc.getBitcoinTransaction(
+            redemptionBitcoinTxHash
+          )
+
+          for (const { scriptPubKey } of outputs) {
+            // TODO: compare correctly.
+            if (
+              scriptPubKey.toString() !== redemptionRequest.redeemerOutputScript
+            )
+              continue
+
+            const { timestamp: redemptionCompletedTimestamp } = await getBlock(
+              redemptionCompletedBlockNumber
+            )
+            setRedemptionData({
+              amount: redemptionRequest.amount,
+              redemptionRequestedTxHash: redemptionRequest.txHash,
+              redemptionCompletedTxHash: {
+                chain: txHash,
+                bitcoin: redemptionBitcoinTxHash,
+              },
+              requestedAt: requestedAt,
+              completedAt: redemptionCompletedTimestamp,
+              isTimedOut: false,
+            })
+
+            return
+          }
+        }
+      } catch (error) {
+        console.error("Could not fetch the redemption request details!", error)
+        setError((error as Error).toString())
+      } finally {
+        setIsFetching(false)
+      }
+    }
+
+    if (
+      redemptionRequestedTxHash &&
+      walletPublicKeyHash &&
+      redeemer &&
+      redeemerOutputScript
+    ) {
+      fetch()
+    }
+  }, [
+    redemptionRequestedTxHash,
+    walletPublicKeyHash,
+    redeemer,
+    redeemerOutputScript,
+    threshold,
+    getBlock,
+  ])
+
+  return { isFetching, data: redemptionData, error }
+}
