@@ -35,6 +35,11 @@ const walletOptions: WalletOption[] = [
     icon: WalletConnectIcon,
   },
   {
+    id: WalletType.WalletConnectV2,
+    title: "WalletConnectV2",
+    icon: WalletConnectIcon,
+  },
+  {
     id: WalletType.Coinbase,
     title: "Coinbase Wallet",
     icon: CoinbaseWallet,
