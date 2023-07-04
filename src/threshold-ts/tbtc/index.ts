@@ -22,6 +22,7 @@ import {
   Client,
   computeHash160,
   decodeBitcoinAddress,
+  Transaction as BitcoinTransaction,
   TransactionHash,
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
@@ -198,6 +199,8 @@ export interface ITBTC {
   ): string
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+
+  getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
 }
 
 export class TBTC implements ITBTC {
@@ -627,6 +630,14 @@ export class TBTC implements ITBTC {
     return EthereumBridge.buildDepositKey(
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
+    )
+  }
+
+  getBitcoinTransaction = async (
+    transacionHash: string
+  ): Promise<BitcoinTransaction> => {
+    return this._bitcoinClient.getTransaction(
+      TransactionHash.from(transacionHash)
     )
   }
 }
