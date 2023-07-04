@@ -1,4 +1,4 @@
-name: Build the dashboard and deploy to a GCP Bucket
+name: Build the dapp and deploy to a GCP Bucket
 on:
   workflow_call:
     inputs:
@@ -99,7 +99,7 @@ jobs:
         shell: bash
         run: yarn install --ignore-scripts --frozen-lockfile
 
-      - name: Run token-dashboard post-install script
+      - name: Run dapp post-install script
         shell: bash
         run: yarn run postinstall
 

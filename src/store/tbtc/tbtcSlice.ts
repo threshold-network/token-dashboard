@@ -151,5 +151,5 @@ export const registerTBTCListeners = () => {
 }
 
 // TODO: Move to the `../listener` file once we merge
-// https://github.com/threshold-network/token-dashboard/pull/302.
+// https://github.com/threshold-network/dapp/pull/302.
 registerTBTCListeners()
