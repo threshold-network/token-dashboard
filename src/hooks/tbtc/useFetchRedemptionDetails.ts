@@ -77,8 +77,6 @@ export const useFetchRedemptionDetails = (
             ) === redemptionKey
         )
 
-        console.log("redemptionRequest", redemptionRequest)
-
         if (!redemptionRequest) {
           throw new Error("Redemption not found...")
         }
