@@ -34,7 +34,7 @@ import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, BigNumberish, Contract } from "ethers"
+import { BigNumber, BigNumberish, Contract, utils } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
@@ -199,6 +199,19 @@ export interface ITBTC {
   ): string
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+
+  /**
+   * Builds a redemption key required to refer a redemption request.
+   * @param walletPublicKeyHash The wallet public key hash that identifies the
+   *        pending redemption (along with the redeemer output script).
+   * @param redeemerOutputScript The redeemer output script that identifies the
+   *        pending redemption (along with the wallet public key hash).
+   * @returns The redemption key.
+   */
+  buildRedemptionKey(
+    walletPublicKeyHash: string,
+    redeemerOutputScript: string
+  ): string
 
   getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
 }
@@ -630,6 +643,19 @@ export class TBTC implements ITBTC {
     return EthereumBridge.buildDepositKey(
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
+    )
+  }
+
+  buildRedemptionKey = (
+    walletPublicKeyHash: string,
+    redeemerOutputScript: string
+  ) => {
+    return utils.solidityKeccak256(
+      ["bytes32", "bytes20"],
+      [
+        utils.solidityKeccak256(["bytes"], [redeemerOutputScript]),
+        walletPublicKeyHash,
+      ]
     )
   }
 
