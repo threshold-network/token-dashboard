@@ -10,9 +10,10 @@ interface RedemptionDetails {
     bitcoin: string
   }
   requestedAt: number
-  completedAt: number
+  completedAt?: number
   isTimedOut: boolean
   redemptionTimedOutTxHash?: string
+  btcAddress?: string
 }
 
 export const useFetchRedemptionDetails = (
@@ -95,12 +96,6 @@ export const useFetchRedemptionDetails = (
             )
           )
 
-        console.log(
-          "redemptionRequestedEventTimestamp",
-          redemptionRequestedEventTimestamp,
-          requestedAt
-        )
-
         // Find the transaction hash where the timeout was reported by
         // scanning the `RedemptionTimedOut` event by the `walletPubKeyHash`
         // param.
@@ -137,7 +132,6 @@ export const useFetchRedemptionDetails = (
             redemptionRequestedTxHash: redemptionRequest.txHash,
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
-            completedAt: 0,
             redemptionTimedOutTxHash: timedOutTxHash,
             isTimedOut,
           })
@@ -153,8 +147,6 @@ export const useFetchRedemptionDetails = (
             walletPublicKeyHash,
             fromBlock: redemptionRequest.blockNumber,
           })
-
-        console.log("redemptionCompletedEvents", redemptionCompletedEvents)
 
         // For each event we should take `redemptionTxHash` param from
         // `RedemptionCompleted` event and check if in that Bitcoin transaction
@@ -186,9 +178,11 @@ export const useFetchRedemptionDetails = (
                 chain: txHash,
                 bitcoin: redemptionBitcoinTxHash,
               },
-              requestedAt: requestedAt,
+              requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
               isTimedOut: false,
+              // TODO: convert the `scriptPubKey` to address.
+              btcAddress: "2Mzs2YNphdHmBoE7SE77cGB57JBXveNGtae",
             })
 
             return

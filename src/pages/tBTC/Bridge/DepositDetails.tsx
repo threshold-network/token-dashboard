@@ -71,6 +71,7 @@ import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
+import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -189,7 +190,9 @@ export const DepositDetails: PageComponent = () => {
       <BridgeProcessDetailsCard
         isProcessCompleted={mintingProgressStep === "completed"}
       >
-        {(isFetching || !data) && !error && <DepositDetailsPageSkeleton />}
+        {(isFetching || !data) && !error && (
+          <BridgeProcessDetailsPageSkeleton />
+        )}
         {error && <>{error}</>}
         {!isFetching && !!data && !error && (
           <>
@@ -345,20 +348,6 @@ const useDepositDetailsPageContext = () => {
     )
   }
   return context
-}
-
-const DepositDetailsPageSkeleton: FC = () => {
-  return (
-    <>
-      <SkeletonText noOfLines={1} skeletonHeight={6} />
-
-      <Skeleton height="80px" mt="4" />
-
-      <SkeletonText noOfLines={1} width="40%" skeletonHeight={6} mt="8" />
-      <SkeletonCircle mt="4" size="160px" mx="auto" />
-      <SkeletonText mt="4" noOfLines={4} spacing={2} skeletonHeight={4} />
-    </>
-  )
 }
 
 type DepositDetailsTimelineStep =
