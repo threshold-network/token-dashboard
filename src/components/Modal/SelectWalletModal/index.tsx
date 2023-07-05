@@ -16,7 +16,6 @@ import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
 import ConnectTaho from "./ConnectTaho"
-import ConnectWalletConnectV2 from "./ConnectWalletConnectV2"
 
 const walletOptions: WalletOption[] = [
   {
@@ -32,11 +31,6 @@ const walletOptions: WalletOption[] = [
   {
     id: WalletType.WalletConnect,
     title: "WalletConnect",
-    icon: WalletConnectIcon,
-  },
-  {
-    id: WalletType.WalletConnectV2,
-    title: "WalletConnectV2",
     icon: WalletConnectIcon,
   },
   {
@@ -98,8 +92,6 @@ const ConnectWallet: FC<{
       return <ConnectMetamask goBack={goBack} closeModal={onClose} />
     case WalletType.WalletConnect:
       return <ConnectWalletConnect goBack={goBack} closeModal={onClose} />
-    case WalletType.WalletConnectV2:
-      return <ConnectWalletConnectV2 goBack={goBack} closeModal={onClose} />
     case WalletType.Coinbase:
       return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
     default:
