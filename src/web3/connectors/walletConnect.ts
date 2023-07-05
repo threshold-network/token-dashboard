@@ -60,8 +60,9 @@ export class WalletConnectConnector extends AbstractConnector {
 
   private handleOnDisplayUri(): void {}
 
-  private handleChainChanged(chainId: number | string): void {
-    this.emitUpdate({ chainId })
+  private handleChainChanged(newChainId: number | string): void {
+    this.emitUpdate({ chainId: newChainId })
+    if (newChainId !== `0x${chainId}`) this.deactivate()
   }
 
   private handleAccountsChanged(accounts: string[]): void {
@@ -76,6 +77,8 @@ export class WalletConnectConnector extends AbstractConnector {
         "accountsChanged",
         this.handleAccountsChanged
       )
+      this.provider.removeListener("display_uri", this.handleOnDisplayUri)
+      this.provider.removeListener("connect", this.handleOnConnect)
       this.provider = undefined
     }
     this.emitDeactivate()
@@ -89,6 +92,10 @@ export class WalletConnectConnector extends AbstractConnector {
         rpcMap: this.rpcMap,
         showQrModal: true,
       })
+    }
+
+    if (chainId !== this.provider.chainId) {
+      this.deactivate()
     }
 
     this.provider.on("connect", this.handleOnConnect)
@@ -162,7 +169,10 @@ export class WalletConnectConnector extends AbstractConnector {
         "accountsChanged",
         this.handleAccountsChanged
       )
+      this.provider.removeListener("display_uri", this.handleOnDisplayUri)
+      this.provider.removeListener("connect", this.handleOnConnect)
       this.provider.disconnect()
+      this.provider = undefined
     }
   }
 
