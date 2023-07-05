@@ -66,7 +66,7 @@ export class WalletConnectConnector extends AbstractConnector {
   }
 
   private handleDisconnect(): void {
-    // we have to do this because of a @walletconnect/web3-provider bug
+    // We have to do this because of a @walletconnect/web3-provider bug
     if (this.provider) {
       this.provider.removeListener("chainChanged", this.handleChainChanged)
       this.provider.removeListener(
@@ -116,7 +116,7 @@ export class WalletConnectConnector extends AbstractConnector {
       this.provider!.enable()
         .then((accounts: string[]) => resolve(accounts[0]))
         .catch((error: Error): void => {
-          // TODO ideally this would be a better check
+          // TODO: ideally this would be a better check
           if (error.message === "User closed modal") {
             userReject()
             return
