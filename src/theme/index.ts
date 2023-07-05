@@ -14,7 +14,6 @@ import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
 import { Timeline } from "./Timeline"
 import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
 import { Tooltip } from "./Tooltip"
-import { Modal } from "./Modal"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -50,7 +49,6 @@ const index = extendTheme({
     Timeline,
     DotsLoadingIndicator,
     Tooltip,
-    Modal,
   },
 })
 
