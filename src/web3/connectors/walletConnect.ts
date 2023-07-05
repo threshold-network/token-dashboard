@@ -106,7 +106,8 @@ export class WalletConnectConnector extends AbstractConnector {
 
       // Workaround to bubble up the error when user reject the connection
       this.provider!.on("disconnect", () => {
-        // Check provider has not been enabled to prevent this event callback from being called in the future
+        // Check provider has not been enabled to prevent this event callback
+        // from being called in the future
         if (!account) {
           userReject()
         }
