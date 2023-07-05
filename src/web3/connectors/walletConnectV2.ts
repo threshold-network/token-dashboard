@@ -45,10 +45,17 @@ export class WalletConnectV2Connector extends AbstractConnector {
     this.config = config
     this.rpcMap = getRpcMap(config.rpc!)
 
+    this.handleOnConnect = this.handleOnConnect.bind(this)
+    this.handleOnDisplayUri = this.handleOnDisplayUri.bind(this)
+
     this.handleChainChanged = this.handleChainChanged.bind(this)
     this.handleAccountsChanged = this.handleAccountsChanged.bind(this)
     this.handleDisconnect = this.handleDisconnect.bind(this)
   }
+
+  private handleOnConnect(): void {}
+
+  private handleOnDisplayUri(): void {}
 
   private handleChainChanged(chainId: number | string): void {
     this.emitUpdate({ chainId })
@@ -80,6 +87,9 @@ export class WalletConnectV2Connector extends AbstractConnector {
         showQrModal: true,
       })
     }
+
+    this.provider.on("connect", this.handleOnConnect)
+    this.provider.on("display_uri", this.handleOnDisplayUri)
 
     // ensure that the uri is going to be available, and emit an event if there's a new uri
     // if (!this.walletConnectProvider.connected) {
@@ -115,6 +125,8 @@ export class WalletConnectV2Connector extends AbstractConnector {
           reject(error)
         })
     }).catch((err) => {
+      console.log("Provider closed")
+      this.emitError(err)
       throw err
     })
 
