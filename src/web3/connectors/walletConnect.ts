@@ -178,6 +178,6 @@ export const walletConnect = new WalletConnectConnector({
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
-  projectId: "threshold-network-dashboard",
+  projectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
   showQrModal: true,
 })
