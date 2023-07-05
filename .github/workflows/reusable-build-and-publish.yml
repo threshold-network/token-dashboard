@@ -71,6 +71,11 @@ on:
       sentryDsn:
         description: Sentry DSN endpoint
         required: true
+      walletConnectProjectId:
+        description: >
+          Project Id gathered from WalletConnect cloud. Required for
+          WalletConnect v2.
+        required: true
 
 jobs:
   build-and-publish:
@@ -178,6 +183,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
+          WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -194,6 +200,7 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.electrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
+          WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0
