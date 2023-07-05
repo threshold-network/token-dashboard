@@ -1,5 +1,4 @@
 import WalletConnectProvider from "@walletconnect/ethereum-provider"
-import { IWCEthRpcConnectionOptions, IRPCMap } from "@walletconnect/types"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
@@ -9,9 +8,11 @@ export interface EthereumRpcMap {
   [chainId: string]: string
 }
 
-export interface WalletConnectConnectorArguments
-  extends IWCEthRpcConnectionOptions {
-  supportedChainIds?: number[]
+export type WalletConnectOptions = Omit<
+  Parameters<typeof WalletConnectProvider.init>[0],
+  "rpcMap"
+> & {
+  rpc: EthereumRpcMap
 }
 
 export class UserRejectedRequestError extends Error {
@@ -22,15 +23,12 @@ export class UserRejectedRequestError extends Error {
   }
 }
 
-function getSupportedChains({
-  supportedChainIds,
-  rpc,
-}: WalletConnectConnectorArguments): number[] | undefined {
-  if (supportedChainIds) {
-    return supportedChainIds
+function getSupportedChains({ chains, rpc }: WalletConnectOptions): number[] {
+  if (chains) {
+    return chains
   }
 
-  return rpc ? Object.keys(rpc).map((k) => Number(k)) : undefined
+  return rpc ? Object.keys(rpc).map((k) => Number(k)) : []
 }
 
 /**
@@ -38,13 +36,13 @@ function getSupportedChains({
  */
 export class WalletConnectConnector extends AbstractConnector {
   public provider?: WalletConnectProvider
-  private readonly config: WalletConnectConnectorArguments
+  private readonly config: WalletConnectOptions
   private rpcMap: EthereumRpcMap
 
-  constructor(config: WalletConnectConnectorArguments) {
+  constructor(config: WalletConnectOptions) {
     super({ supportedChainIds: getSupportedChains(config) })
     this.config = config
-    this.rpcMap = getRpcMap(config.rpc!)
+    this.rpcMap = config.rpc
 
     this.handleOnConnect = this.handleOnConnect.bind(this)
     this.handleOnDisplayUri = this.handleOnDisplayUri.bind(this)
@@ -85,10 +83,10 @@ export class WalletConnectConnector extends AbstractConnector {
   public async activate(): Promise<ConnectorUpdate> {
     if (!this.provider) {
       this.provider = await WalletConnectProvider.init({
-        projectId: "threshold-network-dashboard",
-        chains: [chainId],
+        projectId: this.config.projectId,
+        chains: getSupportedChains(this.config),
         rpcMap: this.rpcMap,
-        showQrModal: true,
+        showQrModal: this.config.showQrModal,
       })
     }
 
@@ -175,20 +173,10 @@ const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 const chainId = +supportedChainId
 
 export const walletConnect = new WalletConnectConnector({
-  supportedChainIds: [chainId],
+  chains: [chainId],
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
+  projectId: "threshold-network-dashboard",
+  showQrModal: true,
 })
-
-function getRpcMap(rpc: IRPCMap): EthereumRpcMap {
-  const rpcMap: EthereumRpcMap = {}
-
-  for (const chainId in rpc) {
-    if (rpc.hasOwnProperty(chainId)) {
-      rpcMap[String(chainId)] = rpc[chainId]
-    }
-  }
-
-  return rpcMap
-}
