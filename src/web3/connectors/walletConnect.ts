@@ -5,8 +5,6 @@ import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
 import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
 
-export const URI_AVAILABLE = "URI_AVAILABLE"
-
 export interface EthereumRpcMap {
   [chainId: string]: string
 }
@@ -100,14 +98,6 @@ export class WalletConnectConnector extends AbstractConnector {
 
     this.provider.on("connect", this.handleOnConnect)
     this.provider.on("display_uri", this.handleOnDisplayUri)
-
-    // ensure that the uri is going to be available, and emit an event if there's a new uri
-    // if (!this.walletConnectProvider.connected) {
-    //   await this.walletConnectProvider.connector.createSession(
-    //     this.config.chainId ? { chainId: this.config.chainId } : undefined
-    //   )
-    //   this.emit(URI_AVAILABLE, this.walletConnectProvider.connector.uri)
-    // }
 
     const account = await new Promise<string>((resolve, reject) => {
       const userReject = () => {
