@@ -172,12 +172,15 @@ export class WalletConnectConnector extends AbstractConnector {
 
 const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 const chainId = +supportedChainId
+const walletConnectProjectId = getEnvVariable(
+  EnvVariable.WALLET_CONNECT_PROJECT_ID
+)
 
 export const walletConnect = new WalletConnectConnector({
   chains: [chainId],
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
-  projectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
+  projectId: walletConnectProjectId,
   showQrModal: true,
 })
