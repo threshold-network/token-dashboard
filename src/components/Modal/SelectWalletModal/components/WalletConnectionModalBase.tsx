@@ -48,6 +48,7 @@ const WalletConnectionModalBase: FC<Props> = ({
 
     captureWalletConnected({ walletType })
     activate(connector)
+    if (walletType === WalletType.WalletConnectV2) closeModal()
   }, [activate, connector, captureWalletConnected, walletType])
 
   return (
