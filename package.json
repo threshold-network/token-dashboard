@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "private": true,
   "dependencies": {
     "@0x/subproviders": "^6.6.1",
