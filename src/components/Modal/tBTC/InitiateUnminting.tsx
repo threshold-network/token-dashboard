@@ -62,22 +62,16 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
     // TODO: Temporary solution- we will pass this data via props once we merge
     // https://github.com/threshold-network/token-dashboard/pull/532
     const walletPublicKey =
-      "028ed84936be6a9f594a2dcc636d4bebf132713da3ce4dac5c61afbf8bbb47d6f7"
+      "025183c15164e1b2211eb359fce2ceeefc3abad3af6d760cc6355f9de99bf60229"
     const utxo: UnspentTransactionOutput = {
       transactionHash: Hex.from(
-        "0x5b6d040eb06b3de1a819890d55d251112e55c31db4a3f5eb7cfacf519fad7adb"
+        "0xda0e364abb3ed952bcc694e48bbcff19131ba9513fe981b303fa900cff0f9fbc"
       ),
       outputIndex: 0,
-      value: BigNumber.from("791613461"),
+      value: BigNumber.from("164380000"),
     }
 
-    await sendTransaction(
-      account!,
-      walletPublicKey,
-      utxo,
-      btcAddress,
-      unmintAmount
-    )
+    await sendTransaction(walletPublicKey, utxo, btcAddress, unmintAmount)
   }
 
   return (

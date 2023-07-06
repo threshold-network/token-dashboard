@@ -206,7 +206,6 @@ export interface ITBTC {
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
-   * @param redeemer On-chain identifier of the redeemer.
    * @param walletPublicKey The Bitcoin public key of the wallet. Must be in
    * the compressed form (33 bytes long with 02 or 03 prefix).
    * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO
@@ -217,7 +216,6 @@ export interface ITBTC {
    * @returns Transaction hash of the request redemption transaction.
    */
   requestRedemption(
-    redeemer: string,
     walletPublicKey: string,
     mainUtxo: UnspentTransactionOutput,
     btcAddress: string,
@@ -666,7 +664,6 @@ export class TBTC implements ITBTC {
   }
 
   requestRedemption = async (
-    redeemer: string,
     walletPublicKey: string,
     mainUtxo: UnspentTransactionOutput,
     btcAddress: string,
@@ -683,13 +680,10 @@ export class TBTC implements ITBTC {
     }
 
     const tx = await requestRedemption(
-      getChainIdentifier(redeemer),
       walletPublicKey,
       mainUtxo,
-      createOutputScriptFromAddress(btcAddress),
+      createOutputScriptFromAddress(btcAddress).toString(),
       BigNumber.from(amount),
-      getChainIdentifier(this._tbtcVault.address),
-      this._bridge,
       this._token
     )
 
