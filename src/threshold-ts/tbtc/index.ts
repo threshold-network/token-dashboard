@@ -812,7 +812,7 @@ export class TBTC implements ITBTC {
       walletPublicKeyHash: event.args?.walletPubKeyHash.toString(),
       redeemerOutputScript: event.args?.redeemerOutputScript.toString(),
       redeemer: event.args?.redeemer.toString(),
-      treasuryFee: event.args?.redeemer.toString(),
+      treasuryFee: event.args?.treasuryFee.toString(),
       txMaxFee: event.args?.txMaxFee.toString(),
       blockNumber: event.blockNumber,
       txHash: event.transactionHash,
