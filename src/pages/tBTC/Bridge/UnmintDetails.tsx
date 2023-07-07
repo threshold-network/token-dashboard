@@ -122,6 +122,8 @@ export const UnmintDetails: PageComponent = () => {
     },
   ]
 
+  const timelineBadgeBgColor = useColorModeValue("white", "brand.800")
+
   return (
     <BridgeLayout
       as={BridgeProcessDetailsCard}
@@ -158,7 +160,7 @@ export const UnmintDetails: PageComponent = () => {
               <Badge
                 variant="subtle"
                 size="sm"
-                bg={useColorModeValue("white", "brand.800")}
+                bg={timelineBadgeBgColor}
                 position="absolute"
                 bottom="10px"
                 left="50%"
