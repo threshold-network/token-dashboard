@@ -320,6 +320,7 @@ const SuccessStep: FC<{
         <TransactionDetailsItem label="BTC address">
           <CopyAddressToClipboard
             address={btcAddress}
+            chain="bitcoin"
             withLinkToBlockExplorer
             fontSize="14px"
           />
