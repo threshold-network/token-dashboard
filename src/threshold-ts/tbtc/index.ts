@@ -869,6 +869,10 @@ export class TBTC implements ITBTC {
   ): Promise<RedemptionTimedOutEvent[]> => {
     const { walletPublicKeyHash, fromBlock, toBlock } = filter
 
+    // TODO: Use `getContractPastEvents` to fetch events once we provide a fix
+    // in the `ethers.js` lib. This is a workaround to get the
+    // `RedemptionTimedOut` events by `walletPublicKeyHash` param. The
+    // `ethers.js` lib encodes the `bytesX` param in the wrong way.
     const filterTopics = [
       utils.id("RedemptionTimedOut(bytes20,bytes)"),
       this._encodeWalletPublicKeyHash(walletPublicKeyHash),
@@ -896,6 +900,10 @@ export class TBTC implements ITBTC {
   ): Promise<RedemptionsCompletedEvent[]> => {
     const { walletPublicKeyHash, fromBlock, toBlock } = filter
 
+    // TODO: Use `getContractPastEvents` to fetch events once we provide a fix
+    // in the `ethers.js` lib. This is a workaround to get the
+    // `RedemptionsCompleted` events by `walletPublicKeyHash` param. The
+    // `ethers.js` lib encodes the `bytesX` param in the wrong way.
     const filterTopics = [
       utils.id("RedemptionsCompleted(bytes20,bytes32)"),
       this._encodeWalletPublicKeyHash(walletPublicKeyHash),
