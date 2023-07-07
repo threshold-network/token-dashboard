@@ -40,3 +40,13 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
 export const reverseTxHash = (txHash: string): TransactionHash => {
   return TransactionHash.from(txHash).reverse()
 }
+
+export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
+  const rawRedeemerOutputScript = Buffer.from(scriptPubKey.toString(), "hex")
+
+  // Prefix the output script bytes buffer with 0x and its own length.
+  return `0x${Buffer.concat([
+    Buffer.from([rawRedeemerOutputScript.length]),
+    rawRedeemerOutputScript,
+  ]).toString("hex")}`
+}
