@@ -40,9 +40,9 @@ export const useFetchRedemptionDetails = (
         )
 
         // We need to find `RedemptionRequested` event by wallet public key hash
-        // and `reedemer` address to get all necessary data and make sure that
+        // and `redeemer` address to get all necessary data and make sure that
         // the request actually happened. We need `redeemer` address as well to
-        // reduce the number of records- any user can request redemption for the
+        // reduce the number of records - any user can request redemption for the
         // same wallet.
         const redemptionRequest = (
           await threshold.tbtc.getRedemptionRequestedEvents({
@@ -52,7 +52,7 @@ export const useFetchRedemptionDetails = (
         ).find(
           (event) =>
             // It's not possible that the redemption request with the same
-            // redemption key can be created in the same transaction- it means
+            // redemption key can be created in the same transaction - it means
             // that redemption key is unique and can be used for only one
             // pending request at the same time. We also need to find an event
             // by transaction hash because it's possible that there can be
@@ -113,7 +113,7 @@ export const useFetchRedemptionDetails = (
           // We need to make sure this is the same redemption request. Let's
           // consider this case:
           // - redemption X requested,
-          // - redemption X was handled sucesfully and the redemption X was
+          // - redemption X was handled successfully and the redemption X was
           //   removed from `pendingRedemptions` map,
           // - the same wallet is still in `live` state and can handle
           //   redemption request with the same `walletPubKeyHash` and
@@ -136,9 +136,9 @@ export const useFetchRedemptionDetails = (
           return
         }
 
-        // If we are here it menas that the redemption request was handled
+        // If we are here it means that the redemption request was handled
         // successfully and we need to find all `RedemptionCompleted` events
-        // that happend after `redemptionRequest` block and filter by
+        // that happened after `redemptionRequest` block and filter by
         // `walletPubKeyHash` param.
         const redemptionCompletedEvents =
           await threshold.tbtc.getRedemptionsCompletedEvents({
