@@ -2,6 +2,7 @@ import WalletConnectProvider from "@walletconnect/ethereum-provider"
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
+import { ArrayOneOrMore } from "../../types"
 import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
 
 export interface EthereumRpcMap {
@@ -82,9 +83,11 @@ export class WalletConnectConnector extends AbstractConnector {
 
   public async activate(): Promise<ConnectorUpdate> {
     if (!this.provider) {
+      const chains = getSupportedChains(this.config)
+      if (chains.length === 0) throw new Error("Chains not specified!")
       this.provider = await WalletConnectProvider.init({
         projectId: this.config.projectId,
-        chains: getSupportedChains(this.config),
+        chains: chains as ArrayOneOrMore<number>,
         rpcMap: this.rpcMap,
         showQrModal: this.config.showQrModal,
       })
