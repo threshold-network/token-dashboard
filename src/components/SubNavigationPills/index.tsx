@@ -61,8 +61,7 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
 const NavPill: FC<NavPill> = ({ path, pathOverride, title, resolvedPaths }) => {
   let isActive = false
   const resolved = useResolvedPath(pathOverride || path)
-  const { pathname } = useLocation()
-  const match = matchPath(resolved.pathname, pathname)
+  const match = useMatch({ path: resolved.pathname, end: true })
   if (match) {
     if (match.params["*"]) {
       const lastPieceOfPath = match.pathname.replace(match.pathnameBase, "")
