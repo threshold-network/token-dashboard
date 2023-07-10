@@ -70,15 +70,15 @@ const UnmintFormPage: PageComponent = ({}) => {
 
     const walletData: {
       walletPublicKey: string
-      mainUTXO: UnspentTransactionOutputPlainObject
+      mainUtxo: UnspentTransactionOutputPlainObject
     } = {
       ...wallet,
-      mainUTXO: {
-        ...wallet.mainUTXO,
+      mainUtxo: {
+        ...wallet.mainUtxo,
         transactionHash:
-          values.wallet.mainUTXO.transactionHash.toPrefixedString(),
-        value: wallet.mainUTXO.value.toString(),
-        outputIndex: wallet.mainUTXO.outputIndex.toString(),
+          values.wallet.mainUtxo.transactionHash.toPrefixedString(),
+        value: wallet.mainUtxo.value.toString(),
+        outputIndex: wallet.mainUtxo.outputIndex.toString(),
       },
     }
     openModal(ModalType.InitiateUnminting, {
@@ -212,7 +212,10 @@ type UnmintFormValues = {
 
 type UnmitnFormProps = {
   onSubmitForm: (values: UnmintFormValues) => void
-  findRedemptionWallet: (amount: string) => Promise<RedemptionWalletData>
+  findRedemptionWallet: (
+    amount: string,
+    redeemerOutputScript: string
+  ) => Promise<RedemptionWalletData>
 } & UnmintFormBaseProps
 
 const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
@@ -245,7 +248,10 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
     try {
       setSubmitting(true)
 
-      const wallet = await props.findRedemptionWallet(values.amount)
+      const wallet = await props.findRedemptionWallet(
+        values.amount,
+        values.btcAddress
+      )
       setFieldValue("wallet", wallet, false)
 
       props.onSubmitForm({ ...values, wallet })

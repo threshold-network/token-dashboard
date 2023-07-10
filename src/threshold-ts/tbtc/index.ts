@@ -17,10 +17,12 @@ import {
   ZERO,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
+  isPayToScriptHashTypeAddress,
 } from "../utils"
 import {
   Client,
   computeHash160,
+  createOutputScriptFromAddress,
   decodeBitcoinAddress,
   TransactionHash,
   UnspentTransactionOutput,
@@ -220,7 +222,18 @@ export interface ITBTC {
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
 
-  findWalletForRedemption(amount: BigNumberish): Promise<RedemptionWalletData>
+  /**
+   * Finds the oldest active wallet that has enough BTC to handle a redemption
+   * request.
+   * @param amount The amount to be redeemed in tBTC token precision.
+   * @param btcAddress The Bitcoin address the redeemed funds are supposed to be
+   *        locked on.
+   * @returns Promise with the wallet details needed to request a redemption.
+   */
+  findWalletForRedemption(
+    amount: BigNumberish,
+    btcAddress: string
+  ): Promise<RedemptionWalletData>
 }
 
 export class TBTC implements ITBTC {
@@ -654,15 +667,36 @@ export class TBTC implements ITBTC {
   }
 
   findWalletForRedemption = async (
-    amount: BigNumberish
+    amount: BigNumberish,
+    btcAddress: string
   ): Promise<RedemptionWalletData> => {
+    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+
     const { satoshis } = this._amountToSatoshi(amount)
+
+    const redeemerOutputScript =
+      createOutputScriptFromAddress(btcAddress).toString()
 
     return await findWalletForRedemption(
       satoshis,
+      redeemerOutputScript,
+      this.bitcoinNetwork,
       this._bridge,
-      this._bitcoinClient,
-      this.bitcoinNetwork
+      this._bitcoinClient
+    )
+  }
+
+  private _isValidBitcoinAddressForRedemption = (
+    btcAddress: string
+  ): boolean => {
+    return (
+      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
+      (!isPublicKeyHashTypeAddress(btcAddress) &&
+        !isPayToScriptHashTypeAddress(btcAddress))
     )
   }
 
@@ -672,8 +706,8 @@ export class TBTC implements ITBTC {
    * `amount` is not divisible by SATOSHI_MULTIPLIER, the remainder is left on
    * the caller's account when minting or unminting.
    * @param {BigNumberish} amount Amount of tBTC to be converted.
-   * @return {AmountToSatoshiResult} The object that represnts convertible
-   * amount, remainder and amount in statoshi.
+   * @return {AmountToSatoshiResult} The object that represents convertible
+   *         amount, remainder and amount in satoshi.
    */
   private _amountToSatoshi = (amount: BigNumberish): AmountToSatoshiResult => {
     const _amount = BigNumber.from(amount)
