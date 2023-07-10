@@ -17,10 +17,12 @@ import {
   ZERO,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
+  isPayToScriptHashTypeAddress,
 } from "../utils"
 import {
   Client,
   computeHash160,
+  createOutputScriptFromAddress,
   decodeBitcoinAddress,
   TransactionHash,
   UnspentTransactionOutput,
@@ -37,6 +39,7 @@ import { BigNumber, BigNumberish, Contract } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { Interface } from "ethers/lib/utils"
 import { BlockTag } from "@ethersproject/abstract-provider"
+import { findWalletForRedemption } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -62,6 +65,26 @@ interface RevealedDepositEvent {
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
+export type RedemptionWalletData = Awaited<
+  ReturnType<typeof findWalletForRedemption>
+>
+
+type AmountToSatoshiResult = {
+  /**
+   * Amount of TBTC to be minted/unminted.
+   */
+  convertibleAmount: BigNumber
+  /**
+   * Not convertible remainder if amount is not divisible by satoshi multiplier.
+   */
+  remainder: BigNumber
+  /**
+   * Amount in satoshis - the balance to be transferred for the given
+   * mint/unmint.
+   */
+  satoshis: BigNumber
+}
 
 export interface ITBTC {
   /**
@@ -198,6 +221,19 @@ export interface ITBTC {
   ): string
 
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+
+  /**
+   * Finds the oldest active wallet that has enough BTC to handle a redemption
+   * request.
+   * @param amount The amount to be redeemed in tBTC token precision.
+   * @param btcAddress The Bitcoin address the redeemed funds are supposed to be
+   *        locked on.
+   * @returns Promise with the wallet details needed to request a redemption.
+   */
+  findWalletForRedemption(
+    amount: BigNumberish,
+    btcAddress: string
+  ): Promise<RedemptionWalletData>
 }
 
 export class TBTC implements ITBTC {
@@ -628,5 +664,62 @@ export class TBTC implements ITBTC {
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
+  }
+
+  findWalletForRedemption = async (
+    amount: BigNumberish,
+    btcAddress: string
+  ): Promise<RedemptionWalletData> => {
+    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+
+    const { satoshis } = this._amountToSatoshi(amount)
+
+    const redeemerOutputScript =
+      createOutputScriptFromAddress(btcAddress).toString()
+
+    return await findWalletForRedemption(
+      satoshis,
+      redeemerOutputScript,
+      this.bitcoinNetwork,
+      this._bridge,
+      this._bitcoinClient
+    )
+  }
+
+  private _isValidBitcoinAddressForRedemption = (
+    btcAddress: string
+  ): boolean => {
+    return (
+      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
+      (!isPublicKeyHashTypeAddress(btcAddress) &&
+        !isPayToScriptHashTypeAddress(btcAddress))
+    )
+  }
+
+  /**
+   * Returns the amount of tBTC to be minted/unminted, the remainder, and the
+   * balance to be transferred for the given mint/unmint. Note that if the
+   * `amount` is not divisible by SATOSHI_MULTIPLIER, the remainder is left on
+   * the caller's account when minting or unminting.
+   * @param {BigNumberish} amount Amount of tBTC to be converted.
+   * @return {AmountToSatoshiResult} The object that represents convertible
+   *         amount, remainder and amount in satoshi.
+   */
+  private _amountToSatoshi = (amount: BigNumberish): AmountToSatoshiResult => {
+    const _amount = BigNumber.from(amount)
+
+    const remainder = _amount.mod(this._satoshiMultiplier)
+    const convertibleAmount = _amount.sub(remainder)
+    const satoshis = convertibleAmount.div(this._satoshiMultiplier)
+
+    return {
+      remainder,
+      convertibleAmount,
+      satoshis,
+    }
   }
 }

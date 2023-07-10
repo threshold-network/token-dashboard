@@ -11,10 +11,14 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
-import { BaseModalProps } from "../../../types"
+import {
+  BaseModalProps,
+  UnspentTransactionOutputPlainObject,
+} from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
 import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
+import { InlineTokenBalance } from "../../TokenBalance"
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
@@ -25,18 +29,27 @@ import withBaseModal from "../withBaseModal"
 type InitiateUnmintingProps = {
   unmintAmount: string
   btcAddress: string
+  wallet: {
+    walletPublicKey: string
+    mainUtxo: UnspentTransactionOutputPlainObject
+  }
 } & BaseModalProps
 
 const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   closeModal,
   unmintAmount,
   btcAddress,
+  wallet,
 }) => {
   const navigate = useNavigate()
   // TODO: calculate the BTC amount- take into account fees
-  const btcAmount = "1.25"
+  const btcAmount = unmintAmount
   const thresholdNetworkFee = "0"
   const btcMinerFee = "0"
+
+  // TODO: just to log data. Will be removed in
+  // https://github.com/threshold-network/token-dashboard/pull/537.
+  console.log("wallet data", wallet)
 
   // TODO: implement submit function
   const initiateUnminting = () => {
@@ -51,7 +64,10 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
-          <H5>Through unminting you will get back {btcAmount} BTC</H5>
+          <H5>
+            Through unminting you will get back{" "}
+            <InlineTokenBalance tokenAmount={btcAmount} /> BTC
+          </H5>
           <BodyLg mt="4">
             Unminting tBTC requires one transaction on your end.
           </BodyLg>
