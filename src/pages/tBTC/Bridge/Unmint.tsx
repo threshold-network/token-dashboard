@@ -11,6 +11,7 @@ import {
   Button,
   HStack,
   LabelSm,
+  useColorModeValue,
 } from "@threshold-network/components"
 import {
   Form,
@@ -165,7 +166,9 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
     "unmint",
     bitcoinNetwork
   )
-  const { isSubmitting } = useFormikContext()
+  const { isSubmitting, getFieldMeta } = useFormikContext()
+  const { error } = getFieldMeta("wallet")
+  const errorColor = useColorModeValue("red.500", "red.300")
 
   return (
     <Form mt={10}>
@@ -197,7 +200,18 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
       />
-      <Button size="lg" w="100%" mt="10" type="submit" isLoading={isSubmitting}>
+      {error && (
+        <BodyMd color={errorColor} mt="10" mb="2">
+          {error}
+        </BodyMd>
+      )}
+      <Button
+        size="lg"
+        w="100%"
+        mt={error ? "0" : "10"}
+        type="submit"
+        isLoading={isSubmitting}
+      >
         Unmint
       </Button>
     </Form>
@@ -256,7 +270,7 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
 
       props.onSubmitForm({ ...values, wallet })
     } catch (error) {
-      setFieldError("amount", (error as Error).message)
+      setFieldError("wallet", (error as Error).message)
     } finally {
       setSubmitting(false)
     }
