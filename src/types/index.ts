@@ -1,3 +1,4 @@
+export * from "./array"
 export * from "./modal"
 export * from "./wallet"
 export * from "./sidebar"

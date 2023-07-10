@@ -127,11 +127,16 @@ const useSubscribeToVendingMachineContractEvents = () => {
 
 const AppBody = () => {
   const dispatch = useDispatch()
-  const { connector, account } = useWeb3React()
+  const { connector, account, deactivate } = useWeb3React()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
-      if (
+      // if chain is changed then just deactivate the current provider and reset
+      // store
+      if (update.chainId) {
+        dispatch(resetStoreAction())
+        deactivate()
+      } else if (
         !update.account ||
         !isSameETHAddress(update.account, account as string)
       ) {
