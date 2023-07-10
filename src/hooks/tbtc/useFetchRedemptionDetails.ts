@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { prependScriptPubKeyByLength } from "../../threshold-ts/utils"
+import { isValidType } from "../../threshold-ts/utils/chain"
 import { useGetBlock } from "../../web3/hooks"
+import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 interface RedemptionDetails {
   amount: string
@@ -17,11 +19,13 @@ interface RedemptionDetails {
   btcAddress?: string
 }
 
+type FetchRedemptionDetailsParamType = string | null | undefined
+
 export const useFetchRedemptionDetails = (
-  redemptionRequestedTxHash: string,
-  walletPublicKeyHash: string,
-  redeemerOutputScript: string,
-  redeemer: string
+  redemptionRequestedTxHash: FetchRedemptionDetailsParamType,
+  walletPublicKeyHash: FetchRedemptionDetailsParamType,
+  redeemerOutputScript: FetchRedemptionDetailsParamType,
+  redeemer: FetchRedemptionDetailsParamType
 ) => {
   const threshold = useThreshold()
   const getBlock = useGetBlock()
@@ -32,6 +36,28 @@ export const useFetchRedemptionDetails = (
   >()
 
   useEffect(() => {
+    if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
+      setError("Invalid redeemer value.")
+      return
+    }
+
+    if (
+      !redemptionRequestedTxHash ||
+      !isValidType("bytes32", redemptionRequestedTxHash)
+    ) {
+      setError("Invalid transaction hash format.")
+      return
+    }
+
+    if (!redeemerOutputScript || !isValidType("bytes", redeemerOutputScript)) {
+      setError("Invalid redeemerOutputScript value.")
+      return
+    }
+    if (!walletPublicKeyHash || !isValidType("bytes20", walletPublicKeyHash)) {
+      setError("Invalid walletPublicKeyHash value.")
+      return
+    }
+
     const fetch = async () => {
       setIsFetching(true)
       try {
@@ -195,14 +221,7 @@ export const useFetchRedemptionDetails = (
       }
     }
 
-    if (
-      redemptionRequestedTxHash &&
-      walletPublicKeyHash &&
-      redeemer &&
-      redeemerOutputScript
-    ) {
-      fetch()
-    }
+    fetch()
   }, [
     redemptionRequestedTxHash,
     walletPublicKeyHash,

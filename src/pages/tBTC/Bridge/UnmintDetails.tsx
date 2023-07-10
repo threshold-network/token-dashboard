@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useSearchParams } from "react-router-dom"
 import { IoCheckmarkSharp } from "react-icons/all"
 import {
   Badge,
@@ -70,17 +70,11 @@ const completedRedemption = {
 }
 
 export const UnmintDetails: PageComponent = () => {
-  // TODO: Fetch redemption details by redemption key.
-  const { redemptionKey } = useParams()
-  const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
-    useState(false)
-
-  const {
-    redemptionRequestedTxHash,
-    walletPublicKeyHash,
-    redeemerOutputScript,
-    redeemer,
-  } = pendingRedemption
+  const [searchParams] = useSearchParams()
+  const walletPublicKeyHash = searchParams.get("walletPublicKeyHash")
+  const redeemerOutputScript = searchParams.get("redeemerOutputScript")
+  const redeemer = searchParams.get("redeemer")
+  const { redemptionRequestedTxHash } = useParams()
 
   const { data, isFetching, error } = useFetchRedemptionDetails(
     redemptionRequestedTxHash,
@@ -88,6 +82,9 @@ export const UnmintDetails: PageComponent = () => {
     redeemerOutputScript,
     redeemer
   )
+
+  const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
+    useState(false)
 
   const _isFetching = (isFetching || !data) && !error
   const wasDataFetched = !isFetching && !!data && !error
@@ -346,7 +343,7 @@ const AsideSectionSkeleton: FC = () => {
 }
 
 UnmintDetails.route = {
-  path: "redemption/:redemptionKey",
+  path: "redemption/:redemptionRequestedTxHash",
   index: false,
   isPageEnabled: featureFlags.TBTC_V2_REDEMPTION,
 }

@@ -41,6 +41,8 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   // TODO: implement submit function
   const initiateUnminting = () => {
     // TODO: It's a temporary solution to be able to go through the whole flow.
+    // TODO: Update in
+    // https://github.com/threshold-network/token-dashboard/pull/537
     navigate("/tBTC/unmint/redemption/123456789")
     closeModal()
   }
