@@ -7,7 +7,13 @@ import {
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { useMatch, useResolvedPath } from "react-router-dom"
+import {
+  matchPath,
+  resolvePath,
+  useLocation,
+  useMatch,
+  useResolvedPath,
+} from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"
 
@@ -16,12 +22,12 @@ interface SubNavigationPillsProps {
 }
 
 interface NavPill extends RouteProps {
-  isActive: boolean
+  resolvedPaths: string[]
 }
 
 const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
   const linksWithTitle = links.filter((link) => !!link.title)
-  const navPills = addActiveStatusToPills(linksWithTitle)
+  const resolvedPaths = getResolvedPathsFromPills(linksWithTitle)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
   return (
@@ -43,14 +49,28 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
           height="28px"
           as="ul"
         >
-          {navPills.map(renderPill)}
+          {linksWithTitle.map((linkWithTitle) =>
+            renderPill(linkWithTitle, resolvedPaths)
+          )}
         </HStack>
       </Box>
     </>
   )
 }
 
-const NavPill: FC<NavPill> = ({ path, title, isActive }) => {
+const NavPill: FC<NavPill> = ({ path, pathOverride, title, resolvedPaths }) => {
+  let isActive = false
+  const resolved = useResolvedPath(pathOverride || path)
+  const { pathname } = useLocation()
+  const match = matchPath(resolved.pathname, pathname)
+  if (match) {
+    if (match.params["*"]) {
+      const lastPieceOfPath = match.pathname.replace(match.pathnameBase, "")
+      if (!resolvedPaths.includes(lastPieceOfPath)) isActive = true
+    } else {
+      isActive = true
+    }
+  }
   const activeColor = useColorModeValue("brand.500", "gray.100")
   const underlineColor = useColorModeValue("brand.500", "white")
 
@@ -84,53 +104,18 @@ const NavPill: FC<NavPill> = ({ path, title, isActive }) => {
   )
 }
 
-const renderPill = (pill: NavPill) => <NavPill key={pill.path} {...pill} />
+const renderPill = (pill: RouteProps, resolvedPaths: string[]) => (
+  <NavPill key={pill.path} resolvedPaths={resolvedPaths} {...pill} />
+)
 
-/**
- * Adds `isActive` property to each of the link. If there are two or more links
- * that are active (based on `useMatch` hook) then we only keep the active
- * status for the last one.
- * @param {RouteProps[]} pills Array of links (RouteProps)
- * @return {RouteProps[]} Array of links with active status added to each of them. Only one
- * link can have an active status.
- */
-const addActiveStatusToPills = (pills: RouteProps[]) => {
-  const pillsWithActiveStatus: NavPill[] = []
-  const lastActivePill: {
-    index: number | undefined
-    pathnameBase: string
-  } = {
-    index: undefined,
-    pathnameBase: "",
-  }
+const getResolvedPathsFromPills = (pills: RouteProps[]) => {
+  const resolvedPaths: string[] = []
   for (let i = 0; i < pills.length; i++) {
     const { path, pathOverride } = pills[i]
-    const resolved = useResolvedPath(pathOverride || path)
-    const match = useMatch({ path: resolved.pathname, end: true })
-    // The second condition here checks if the current match pathnameBase
-    // includes the pathnameBase of the last active pill. If it does, then this
-    // pill will be active and we will remove the active status from the
-    // previous pill. This means that if we have multiple paths that start with
-    // the same page, such as "staking/how-it-works" and "staking", the active
-    // one will be the one that useMatch returns true for and has the longest
-    // pathnameBase (so in this case it will be `staking/how-it-works`).
-    const isActive =
-      !!match && match.pathnameBase.includes(lastActivePill.pathnameBase)
-    if (isActive) {
-      // Remove the active status of the previous pill
-      if (lastActivePill.index !== undefined) {
-        pillsWithActiveStatus[lastActivePill.index].isActive = false
-      }
-      lastActivePill.index = i
-      lastActivePill.pathnameBase = match.pathnameBase
-    }
-    const pillWithActiveStatus = {
-      ...pills[i],
-      isActive,
-    }
-    pillsWithActiveStatus.push(pillWithActiveStatus)
+    const resolved = resolvePath(pathOverride || path)
+    resolvedPaths.push(resolved.pathname)
   }
-  return pillsWithActiveStatus
+  return resolvedPaths
 }
 
 export default SubNavigationPills
