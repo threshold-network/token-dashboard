@@ -18,10 +18,12 @@ import {
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
   AddressZero,
+  isPayToScriptHashTypeAddress,
 } from "../utils"
 import {
   Client,
   computeHash160,
+  createOutputScriptFromAddress,
   decodeBitcoinAddress,
   Transaction as BitcoinTransaction,
   TransactionHash,
@@ -30,9 +32,15 @@ import {
 import {
   ElectrumClient,
   EthereumBridge,
+  EthereumTBTCToken,
   Hex,
 } from "@keep-network/tbtc-v2.ts/dist/src"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import {
+  BitcoinConfig,
+  BitcoinNetwork,
+  EthereumConfig,
+  UnspentTransactionOutputPlainObject,
+} from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
@@ -40,6 +48,11 @@ import { BigNumber, BigNumberish, Contract, utils } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
+import {
+  requestRedemption,
+  findWalletForRedemption,
+} from "@keep-network/tbtc-v2.ts/dist/src/redemption"
+import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -115,6 +128,26 @@ interface RedemptionsCompletedEvent {
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+
+export type RedemptionWalletData = Awaited<
+  ReturnType<typeof findWalletForRedemption>
+>
+
+type AmountToSatoshiResult = {
+  /**
+   * Amount of TBTC to be minted/unminted.
+   */
+  convertibleAmount: BigNumber
+  /**
+   * Not convertible remainder if amount is not divisible by satoshi multiplier.
+   */
+  remainder: BigNumber
+  /**
+   * Amount in satoshis - the balance to be transferred for the given
+   * mint/unmint.
+   */
+  satoshis: BigNumber
+}
 
 export interface ITBTC {
   /**
@@ -253,6 +286,37 @@ export interface ITBTC {
   findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
 
   /**
+   * Requests a redemption from the on-chain Bridge contract.
+   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in the
+   * compressed form (33 bytes long with 02 or 03 prefix).
+   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO held
+   * by the on-chain Bridge contract.
+   * @param btcAddress The Bitcoin address that the redeemed funds will be
+   * locked to.
+   * @param amount The amount to be redeemed in tBTC token unit.
+   * @returns Transaction hash of the request redemption transaction.
+   */
+  requestRedemption(
+    walletPublicKey: string,
+    mainUtxo: UnspentTransactionOutputPlainObject,
+    btcAddress: string,
+    amount: BigNumberish
+  ): Promise<string>
+
+  /**
+   * Finds the oldest active wallet that has enough BTC to handle a redemption
+   * request.
+   * @param amount The amount to be redeemed in tBTC token precision.
+   * @param btcAddress The Bitcoin address the redeemed funds are supposed to be
+   *        locked on.
+   * @returns Promise with the wallet details needed to request a redemption.
+   */
+  findWalletForRedemption(
+    amount: BigNumberish,
+    btcAddress: string
+  ): Promise<RedemptionWalletData>
+
+  /**
    * Builds a redemption key required to refer a redemption request.
    * @param walletPublicKeyHash The wallet public key hash that identifies the
    *        pending redemption (along with the redeemer output script).
@@ -265,18 +329,47 @@ export interface ITBTC {
     redeemerOutputScript: string
   ): string
 
+  /**
+   * Gets the full transaction object for given transaction hash.
+   * @param transactionHash Hash of the transaction.
+   * @returns Transaction object.
+   */
   getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
 
+  /**
+   * Gets emitted `RedemptionRequested` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemption requests filtered by filter params.
+   */
   getRedemptionRequestedEvents(
     filter: RedemptionRequestedEventFilter
   ): Promise<RedemptionRequestedEvent[]>
 
+  /**
+   * Gets the redemption details from the on-chain contract by the redemption
+   * key. It also determines if redemption is pending or timed out.
+   * @param redemptionKey The redemption key.
+   * @returns Promise with the redemption details.
+   */
   getRedemptionRequest(redemptionKey: string): Promise<RedemptionRequest>
 
+  /**
+   * Gets emitted `RedemptionTimedOut` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemption timed out events filtered by filter params.
+   */
   getRedemptionTimedOutEvents(
     filter: RedemptionTimedOutEventFilter
   ): Promise<RedemptionTimedOutEvent[]>
 
+  /**
+   * Gets emitted `RedemptionsCompleted` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemptions completed events filtered by filter params.
+   */
   getRedemptionsCompletedEvents(
     filter: RedemptionsCompletedEventFilter
   ): Promise<RedemptionsCompletedEvent[]>
@@ -288,7 +381,8 @@ export class TBTC implements ITBTC {
   private _bitcoinClient: Client
   private _multicall: IMulticall
   private _bridgeContract: Contract
-  private _token: Contract
+  private _token: ChainTBTCToken
+  private _tokenContract: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
@@ -334,7 +428,14 @@ export class TBTC implements ITBTC {
       )
     this._multicall = multicall
     this._bitcoinConfig = bitcoinConfig
-    this._token = getContract(
+    this._token = new EthereumTBTCToken({
+      address: TBTCToken.address,
+      signerOrProvider: getProviderOrSigner(
+        ethereumConfig.providerOrSigner as any,
+        ethereumConfig.account
+      ),
+    })
+    this._tokenContract = getContract(
       TBTCToken.address,
       TBTCToken.abi,
       ethereumConfig.providerOrSigner,
@@ -355,7 +456,7 @@ export class TBTC implements ITBTC {
   }
 
   get tokenContract() {
-    return this._token
+    return this._tokenContract
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {
@@ -667,8 +768,10 @@ export class TBTC implements ITBTC {
 
     // There is only one transfer to depositor account.
     const transferEvent = receipt.logs
-      .filter((log) => isSameETHAddress(log.address, this._token.address))
-      .map((log) => this._token.interface.parseLog(log))
+      .filter((log) =>
+        isSameETHAddress(log.address, this._tokenContract.address)
+      )
+      .map((log) => this._tokenContract.interface.parseLog(log))
       .filter((log) => log.name === "Transfer")
       .find((log) => isSameETHAddress(log.args.to, depositor))
 
@@ -710,6 +813,91 @@ export class TBTC implements ITBTC {
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
+  }
+
+  requestRedemption = async (
+    walletPublicKey: string,
+    mainUtxo: UnspentTransactionOutputPlainObject,
+    btcAddress: string,
+    amount: BigNumberish
+  ): Promise<string> => {
+    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+
+    const _mainUtxo: UnspentTransactionOutput = {
+      transactionHash: Hex.from(mainUtxo.transactionHash),
+      outputIndex: Number(mainUtxo.outputIndex),
+      value: BigNumber.from(mainUtxo.value),
+    }
+
+    const tx = await requestRedemption(
+      walletPublicKey,
+      _mainUtxo,
+      createOutputScriptFromAddress(btcAddress).toString(),
+      BigNumber.from(amount),
+      this._token
+    )
+
+    return tx.toPrefixedString()
+  }
+
+  findWalletForRedemption = async (
+    amount: BigNumberish,
+    btcAddress: string
+  ): Promise<RedemptionWalletData> => {
+    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+    const { satoshis } = this._amountToSatoshi(amount)
+
+    const redeemerOutputScript =
+      createOutputScriptFromAddress(btcAddress).toString()
+
+    return await findWalletForRedemption(
+      satoshis,
+      redeemerOutputScript,
+      this.bitcoinNetwork,
+      this._bridge,
+      this._bitcoinClient
+    )
+  }
+
+  private _isValidBitcoinAddressForRedemption = (
+    btcAddress: string
+  ): boolean => {
+    return (
+      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
+      (!isPublicKeyHashTypeAddress(btcAddress) &&
+        !isPayToScriptHashTypeAddress(btcAddress))
+    )
+  }
+
+  /**
+   * Returns the amount of tBTC to be minted/unminted, the remainder, and the
+   * balance to be transferred for the given mint/unmint. Note that if the
+   * `amount` is not divisible by SATOSHI_MULTIPLIER, the remainder is left on
+   * the caller's account when minting or unminting.
+   * @param {BigNumberish} amount Amount of tBTC to be converted.
+   * @return {AmountToSatoshiResult} The object that represents convertible
+   *         amount, remainder and amount in satoshi.
+   */
+  private _amountToSatoshi = (amount: BigNumberish): AmountToSatoshiResult => {
+    const _amount = BigNumber.from(amount)
+
+    const remainder = _amount.mod(this._satoshiMultiplier)
+    const convertibleAmount = _amount.sub(remainder)
+    const satoshis = convertibleAmount.div(this._satoshiMultiplier)
+
+    return {
+      remainder,
+      convertibleAmount,
+      satoshis,
+    }
   }
 
   buildRedemptionKey = (
