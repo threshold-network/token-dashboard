@@ -235,12 +235,12 @@ export interface ITBTC {
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
-   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in
-   * the compressed form (33 bytes long with 02 or 03 prefix).
-   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO
-   * held by the on-chain Bridge contract.
-   * @param btcAddress - The Bitcoin address that the redeemed funds
-   * will be locked to.
+   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in the
+   * compressed form (33 bytes long with 02 or 03 prefix).
+   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO held
+   * by the on-chain Bridge contract.
+   * @param btcAddress The Bitcoin address that the redeemed funds will be
+   * locked to.
    * @param amount The amount to be redeemed in tBTC token unit.
    * @returns Transaction hash of the request redemption transaction.
    */
