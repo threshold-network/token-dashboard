@@ -1,3 +1,4 @@
+import { createOutputScriptFromAddress } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   BodyLg,
   BodySm,
@@ -18,6 +19,8 @@ import {
   UnspentTransactionOutputPlainObject,
 } from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
+import { buildRedemptionDetailsLink } from "../../../utils/tBTC"
+import { OnSuccessCallback } from "../../../web3/hooks"
 import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
 import { InlineTokenBalance } from "../../TokenBalance"
@@ -27,9 +30,6 @@ import {
 } from "../../TransacionDetails"
 import ModalCloseButton from "../ModalCloseButton"
 import withBaseModal from "../withBaseModal"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { Hex } from "@keep-network/tbtc-v2.ts"
-import { BigNumber } from "ethers"
 
 type InitiateUnmintingProps = {
   unmintAmount: string
@@ -53,33 +53,23 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   const thresholdNetworkFee = "0"
   const btcMinerFee = "0"
 
-  // TODO: just to log data. Will be removed in
-  // https://github.com/threshold-network/token-dashboard/pull/537.
-  console.log("wallet data", wallet)
-
-  const onSuccess = () => {
-    // TODO: build redemption key here and redirect to the redemption details page.
-    const redemptionKey = "test"
-    navigate(`/tBTC/unmint/redemption/${redemptionKey}`)
+  const onSuccess: OnSuccessCallback = (receipt) => {
+    navigate(
+      buildRedemptionDetailsLink(
+        receipt.transactionHash,
+        account!,
+        wallet.walletPublicKey,
+        createOutputScriptFromAddress(btcAddress).toPrefixedString()
+      )
+    )
     closeModal()
   }
 
   const { sendTransaction } = useRequestRedemption(onSuccess)
 
   const initiateUnminting = async () => {
-    // TODO: Temporary solution- we will pass this data via props once we merge
-    // https://github.com/threshold-network/token-dashboard/pull/532
-    const walletPublicKey =
-      "025183c15164e1b2211eb359fce2ceeefc3abad3af6d760cc6355f9de99bf60229"
-    const utxo: UnspentTransactionOutput = {
-      transactionHash: Hex.from(
-        "0xda0e364abb3ed952bcc694e48bbcff19131ba9513fe981b303fa900cff0f9fbc"
-      ),
-      outputIndex: 0,
-      value: BigNumber.from("164380000"),
-    }
-
-    await sendTransaction(walletPublicKey, utxo, btcAddress, unmintAmount)
+    const { walletPublicKey, mainUtxo } = wallet
+    await sendTransaction(walletPublicKey, mainUtxo, btcAddress, unmintAmount)
   }
 
   return (

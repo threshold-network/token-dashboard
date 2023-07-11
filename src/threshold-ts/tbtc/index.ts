@@ -31,8 +31,14 @@ import {
   ElectrumClient,
   EthereumBridge,
   EthereumTBTCToken,
+  Hex,
 } from "@keep-network/tbtc-v2.ts/dist/src"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import {
+  BitcoinConfig,
+  BitcoinNetwork,
+  EthereumConfig,
+  UnspentTransactionOutputPlainObject,
+} from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
@@ -240,7 +246,7 @@ export interface ITBTC {
    */
   requestRedemption(
     walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutput,
+    mainUtxo: UnspentTransactionOutputPlainObject,
     btcAddress: string,
     amount: BigNumberish
   ): Promise<string>
@@ -701,7 +707,7 @@ export class TBTC implements ITBTC {
 
   requestRedemption = async (
     walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutput,
+    mainUtxo: UnspentTransactionOutputPlainObject,
     btcAddress: string,
     amount: BigNumberish
   ): Promise<string> => {
@@ -711,9 +717,15 @@ export class TBTC implements ITBTC {
       )
     }
 
+    const _mainUtxo: UnspentTransactionOutput = {
+      transactionHash: Hex.from(mainUtxo.transactionHash),
+      outputIndex: Number(mainUtxo.outputIndex),
+      value: BigNumber.from(mainUtxo.value),
+    }
+
     const tx = await requestRedemption(
       walletPublicKey,
-      mainUtxo,
+      _mainUtxo,
       createOutputScriptFromAddress(btcAddress).toString(),
       BigNumber.from(amount),
       this._token
