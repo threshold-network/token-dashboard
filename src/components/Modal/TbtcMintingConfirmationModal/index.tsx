@@ -107,13 +107,14 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             </Skeleton>
           </H5>
           <BodyLg>
-            Minting tBTC is a process that requires one transaction on your end.
+            Minting tBTC requires a single transaction on Ethereum network and
+            takes approximately 3 hours.
           </BodyLg>
         </InfoBox>
         <MintingTransactionDetails />
         <BodySm textAlign="center" mt="16">
-          Read more about the&nbsp;
-          <BridgeContractLink text="bridge contract" />.
+          View bridge contract on&nbsp;
+          <BridgeContractLink text="etherscan" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>

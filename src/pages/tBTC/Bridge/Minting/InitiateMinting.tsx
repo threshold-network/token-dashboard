@@ -29,13 +29,6 @@ const InitiateMintingComponent: FC<{
         stepText="Step 3"
         subTitle="Initiate minting"
       />
-      <Alert status="warning" my={6}>
-        <AlertIcon />
-        <AlertDescription>
-          You do not need to wait for the BTC transaction to be mined to
-          initiate minting.
-        </AlertDescription>
-      </Alert>
       <BodyMd color="gray.500" mb={6}>
         This step requires you to sign a transaction in your Ethereum wallet.
       </BodyMd>
@@ -49,7 +42,7 @@ const InitiateMintingComponent: FC<{
           "Confirm deposit & mint (Step 2)"
         }
       >
-        Confirm deposit & mint
+        Initiate minting
       </Button>
     </>
   )

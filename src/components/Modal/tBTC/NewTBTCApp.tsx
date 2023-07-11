@@ -22,7 +22,7 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
 
   return (
     <>
-      <ModalHeader>Take note</ModalHeader>
+      <ModalHeader></ModalHeader>
       <ModalBody>
         <Image
           src={tbtcAppBannerIllustration}
@@ -38,8 +38,8 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
           <TakeNoteList size="sm" />
         </Flex>
         <BodySm mt="4.5rem" px="4" textAlign="center" color="gray.500">
-          By clicking the button below, you agree with the terms and you are
-          aware of the results.
+          By clicking the button below, you acknowledge and accept the above
+          terms.
         </BodySm>
         <Divider mt="2" />
       </ModalBody>

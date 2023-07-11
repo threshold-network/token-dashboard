@@ -1,6 +1,6 @@
 import { FC } from "react"
 import { Outlet } from "react-router-dom"
-import { FormikErrors, withFormik } from "formik"
+import { FormikErrors, useFormikContext, withFormik } from "formik"
 import {
   BodyLg,
   BodyMd,
@@ -11,6 +11,7 @@ import {
   Button,
   HStack,
   LabelSm,
+  useColorModeValue,
 } from "@threshold-network/components"
 import {
   Form,
@@ -55,6 +56,10 @@ import {
 } from "../../../utils/tBTC"
 import { useModal } from "../../../hooks/useModal"
 import { UnmintDetails } from "./UnmintDetails"
+import { UnmintingCard } from "./UnmintingCard"
+import { featureFlags } from "../../../constants"
+import { RedemptionWalletData } from "../../../threshold-ts/tbtc"
+import { UnspentTransactionOutputPlainObject } from "../../../types/tbtc"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -62,14 +67,31 @@ const UnmintFormPage: PageComponent = ({}) => {
   const threshold = useThreshold()
 
   const onSubmitForm = (values: UnmintFormValues) => {
-    console.log("on submittttt")
+    const { wallet } = values
+
+    const walletData: {
+      walletPublicKey: string
+      mainUtxo: UnspentTransactionOutputPlainObject
+    } = {
+      ...wallet,
+      mainUtxo: {
+        ...wallet.mainUtxo,
+        transactionHash:
+          values.wallet.mainUtxo.transactionHash.toPrefixedString(),
+        value: wallet.mainUtxo.value.toString(),
+        outputIndex: wallet.mainUtxo.outputIndex.toString(),
+      },
+    }
     openModal(ModalType.InitiateUnminting, {
       unmintAmount: values.amount,
       btcAddress: values.btcAddress,
+      wallet: walletData,
     })
   }
 
-  return (
+  return !featureFlags.TBTC_V2_REDEMPTION ? (
+    <UnmintingCard />
+  ) : (
     <BridgeLayout>
       <BridgeLayoutMainSection>
         <BridgeProcessCardTitle bridgeProcess="unmint" />
@@ -85,6 +107,7 @@ const UnmintFormPage: PageComponent = ({}) => {
           maxTokenAmount={balance.toString()}
           onSubmitForm={onSubmitForm}
           bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+          findRedemptionWallet={threshold.tbtc.findWalletForRedemption}
         />
         <Box as="p" textAlign="center" mt="4">
           <BridgeContractLink />
@@ -143,6 +166,10 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
     "unmint",
     bitcoinNetwork
   )
+  const { isSubmitting, getFieldMeta } = useFormikContext()
+  const { error } = getFieldMeta("wallet")
+  const errorColor = useColorModeValue("red.500", "red.300")
+
   return (
     <Form mt={10}>
       <FormikTokenBalanceInput
@@ -169,12 +196,22 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
       <FormikInput
         name="btcAddress"
         label="BTC Address"
-        // TODO: add BTC addresse prefixes
         tooltip={`This address needs to start with ${supportedPrefixesText}. This is where your BTC funds are sent.`}
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
       />
-      <Button size="lg" w="100%" mt="10" type="submit">
+      {error && (
+        <BodyMd color={errorColor} mt="10" mb="2">
+          {error}
+        </BodyMd>
+      )}
+      <Button
+        size="lg"
+        w="100%"
+        mt={error ? "0" : "10"}
+        type="submit"
+        isLoading={isSubmitting}
+      >
         Unmint
       </Button>
     </Form>
@@ -184,16 +221,22 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
 type UnmintFormValues = {
   amount: string
   btcAddress: string
+  wallet: RedemptionWalletData
 }
 
 type UnmitnFormProps = {
   onSubmitForm: (values: UnmintFormValues) => void
+  findRedemptionWallet: (
+    amount: string,
+    redeemerOutputScript: string
+  ) => Promise<RedemptionWalletData>
 } & UnmintFormBaseProps
 
 const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
   mapPropsToValues: () => ({
     amount: "",
     btcAddress: "",
+    wallet: {} as RedemptionWalletData,
   }),
   validate: async (values, props) => {
     const errors: FormikErrors<UnmintFormValues> = {}
@@ -207,11 +250,30 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
       props.maxTokenAmount,
       UNMINT_MIN_AMOUNT
     )
+    errors.wallet = undefined
 
+    // @ts-ignore
     return getErrorsObj(errors)
   },
-  handleSubmit: (values, { props }) => {
-    props.onSubmitForm(values)
+  handleSubmit: async (
+    values,
+    { props, setFieldValue, setFieldError, setSubmitting }
+  ) => {
+    try {
+      setSubmitting(true)
+
+      const wallet = await props.findRedemptionWallet(
+        values.amount,
+        values.btcAddress
+      )
+      setFieldValue("wallet", wallet, false)
+
+      props.onSubmitForm({ ...values, wallet })
+    } catch (error) {
+      setFieldError("wallet", (error as Error).message)
+    } finally {
+      setSubmitting(false)
+    }
   },
   displayName: "MintingProcessForm",
   enableReinitialize: true,

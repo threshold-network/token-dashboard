@@ -23,7 +23,7 @@ const supportedAddressPrefixes: Record<
   },
 } as const
 
-const getSupportedAddressPrefixes = (
+const getSupportedAddressPrefixesText = (
   bridgeProcess: BridgeProcess,
   btcNetwork: SupportedBitcoinNetworks
 ) => {
@@ -54,12 +54,12 @@ const supportedAddressPrefixesText: Record<
   Record<SupportedBitcoinNetworks, string>
 > = {
   mint: {
-    mainnet: getSupportedAddressPrefixes("mint", BitcoinNetwork.Mainnet),
-    testnet: getSupportedAddressPrefixes("mint", BitcoinNetwork.Testnet),
+    mainnet: getSupportedAddressPrefixesText("mint", BitcoinNetwork.Mainnet),
+    testnet: getSupportedAddressPrefixesText("mint", BitcoinNetwork.Testnet),
   },
   unmint: {
-    mainnet: getSupportedAddressPrefixes("unmint", BitcoinNetwork.Mainnet),
-    testnet: getSupportedAddressPrefixes("unmint", BitcoinNetwork.Testnet),
+    mainnet: getSupportedAddressPrefixesText("unmint", BitcoinNetwork.Mainnet),
+    testnet: getSupportedAddressPrefixesText("unmint", BitcoinNetwork.Testnet),
   },
 } as const
 

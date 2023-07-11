@@ -26,6 +26,9 @@ import {
   SkeletonCircle,
   BodySm,
   BodyXs,
+  Alert,
+  AlertDescription,
+  AlertIcon,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -220,6 +223,15 @@ export const DepositDetails: PageComponent = () => {
                   // isCompleted
                   inProgressStep={mintingProgressStep}
                 />
+                {mintingProgressStep !== "completed" && (
+                  <Alert status="info" my={6}>
+                    <AlertIcon />
+                    <AlertDescription>
+                      It is safe to close this window. Minting will continue as
+                      a background process and will not be interrupted.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <StepSwitcher />
               </Flex>
               <Flex
