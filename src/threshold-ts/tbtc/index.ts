@@ -329,18 +329,47 @@ export interface ITBTC {
     redeemerOutputScript: string
   ): string
 
+  /**
+   * Gets the full transaction object for given transaction hash.
+   * @param transactionHash Hash of the transaction.
+   * @returns Transaction object.
+   */
   getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
 
+  /**
+   * Gets emitted `RedemptionRequested` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemption requests filtered by filter params.
+   */
   getRedemptionRequestedEvents(
     filter: RedemptionRequestedEventFilter
   ): Promise<RedemptionRequestedEvent[]>
 
+  /**
+   * Gets the redemption details from the on-chain contract by the redemption
+   * key. It also determines if redemption is pending or timed out.
+   * @param redemptionKey The redemption key.
+   * @returns Promise with the redemption details.
+   */
   getRedemptionRequest(redemptionKey: string): Promise<RedemptionRequest>
 
+  /**
+   * Gets emitted `RedemptionTimedOut` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemption timed out events filtered by filter params.
+   */
   getRedemptionTimedOutEvents(
     filter: RedemptionTimedOutEventFilter
   ): Promise<RedemptionTimedOutEvent[]>
 
+  /**
+   * Gets emitted `RedemptionsCompleted` events.
+   * @param filter Filters to find emitted events by indexed params and block
+   *               range.
+   * @returns Redemptions completed events filtered by filter params.
+   */
   getRedemptionsCompletedEvents(
     filter: RedemptionsCompletedEventFilter
   ): Promise<RedemptionsCompletedEvent[]>
