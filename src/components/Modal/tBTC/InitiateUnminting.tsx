@@ -1,3 +1,4 @@
+import { createOutputScriptFromAddress } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   BodyLg,
   BodySm,
@@ -9,13 +10,17 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
+import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
+import { useRequestRedemption } from "../../../hooks/tbtc"
 import {
   BaseModalProps,
   UnspentTransactionOutputPlainObject,
 } from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
+import { buildRedemptionDetailsLink } from "../../../utils/tBTC"
+import { OnSuccessCallback } from "../../../web3/hooks"
 import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
 import { InlineTokenBalance } from "../../TokenBalance"
@@ -42,20 +47,29 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   wallet,
 }) => {
   const navigate = useNavigate()
+  const { account } = useWeb3React()
   // TODO: calculate the BTC amount- take into account fees
   const btcAmount = unmintAmount
   const thresholdNetworkFee = "0"
   const btcMinerFee = "0"
 
-  // TODO: just to log data. Will be removed in
-  // https://github.com/threshold-network/token-dashboard/pull/537.
-  console.log("wallet data", wallet)
-
-  // TODO: implement submit function
-  const initiateUnminting = () => {
-    // TODO: It's a temporary solution to be able to go through the whole flow.
-    navigate("/tBTC/unmint/redemption/123456789")
+  const onSuccess: OnSuccessCallback = (receipt) => {
+    navigate(
+      buildRedemptionDetailsLink(
+        receipt.transactionHash,
+        account!,
+        wallet.walletPublicKey,
+        createOutputScriptFromAddress(btcAddress).toPrefixedString()
+      )
+    )
     closeModal()
+  }
+
+  const { sendTransaction } = useRequestRedemption(onSuccess)
+
+  const initiateUnminting = async () => {
+    const { walletPublicKey, mainUtxo } = wallet
+    await sendTransaction(walletPublicKey, mainUtxo, btcAddress, unmintAmount)
   }
 
   return (

@@ -1,3 +1,4 @@
+import { To } from "react-router-dom"
 import { BitcoinNetwork } from "../threshold-ts/types"
 import { BridgeProcess } from "../types/tbtc"
 
@@ -75,3 +76,20 @@ export const getBridgeBTCSupportedAddressPrefixesText = (
 }
 
 export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01
+
+export const buildRedemptionDetailsLink = (
+  txHash: string,
+  redeemer: string,
+  walletPublicKey: string,
+  redeemerOutputScript: string
+): To => {
+  const queryParams = new URLSearchParams()
+  queryParams.set("redeemer", redeemer)
+  queryParams.set("walletPublicKey", walletPublicKey)
+  queryParams.set("redeemerOutputScript", redeemerOutputScript)
+
+  return {
+    pathname: `/tBTC/unmint/redemption/${txHash}`,
+    search: `?${queryParams.toString()}`,
+  }
+}
