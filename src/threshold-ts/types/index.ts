@@ -1,4 +1,7 @@
-import { Client } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  Client,
+  UnspentTransactionOutput,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
   ClientOptions,
@@ -46,3 +49,7 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
+
+export type UnspentTransactionOutputPlainObject = {
+  [key in keyof UnspentTransactionOutput]: string
+}
