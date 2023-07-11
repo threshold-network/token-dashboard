@@ -14,6 +14,7 @@ import {
   LabelSm,
   List,
   ListItem,
+  SkeletonText,
   useColorModeValue,
 } from "@threshold-network/components"
 import {
@@ -45,10 +46,28 @@ import {
 } from "./BridgeLayout"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
-import { ONE_SEC_IN_MILISECONDS } from "../../../utils/date"
+import { dateToUnixTimestamp, dateAs } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
 import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDetailsIcons"
 import { featureFlags } from "../../../constants"
+import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
+import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
+
+const pendingRedemption = {
+  redemptionRequestedTxHash:
+    "0xf7d0c92c8de4d117d915c2a8a54ee550047f926bc00b91b651c40628751cfe29",
+  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
+  redeemerOutputScript: "0x160014751E76E8199196D454941C45D1B3A323F1433BD6",
+  redeemer: "0x086813525A7dC7dafFf015Cdf03896Fd276eab60",
+}
+
+const completedRedemption = {
+  redemptionRequestedTxHash:
+    "0x0b5d66b89c5fe276ac5b0fd1874142f99329ea6f66485334a558e2bccd977618",
+  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
+  redeemerOutputScript: "0x17A91486884E6BE1525DAB5AE0B451BD2C72CEE67DCF4187",
+  redeemer: "0x68ad60CC5e8f3B7cC53beaB321cf0e6036962dBc",
+}
 
 export const UnmintDetails: PageComponent = () => {
   // TODO: Fetch redemption details by redemption key.
@@ -56,34 +75,54 @@ export const UnmintDetails: PageComponent = () => {
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
     useState(false)
 
-  // TODO: It's a temporary solution to be able to go through the whole flow.
-  // Remove once we implement the correct solution.
-  const [isProcessCompleted, setIsProcessCompleted] = useState(false)
+  const {
+    redemptionRequestedTxHash,
+    walletPublicKeyHash,
+    redeemerOutputScript,
+    redeemer,
+  } = pendingRedemption
+
+  const { data, isFetching, error } = useFetchRedemptionDetails(
+    redemptionRequestedTxHash,
+    walletPublicKeyHash,
+    redeemerOutputScript,
+    redeemer
+  )
+
+  const _isFetching = (isFetching || !data) && !error
+  const wasDataFetched = !isFetching && !!data && !error
+
+  const btcTxHash = data?.redemptionCompletedTxHash?.bitcoin
   useEffect(() => {
-    const id = setTimeout(() => {
-      setIsProcessCompleted(true)
-    }, ONE_SEC_IN_MILISECONDS * 10)
+    if (!!btcTxHash) setShouldDisplaySuccessStep(true)
+  }, [btcTxHash])
 
-    return () => {
-      clearTimeout(id)
-    }
-  }, [])
-
-  // TODO: check if the process is completed based on the redemptions details
-  // data.
-  // const isProcessCompleted = true
-  const unmintedAmount = "1200000000000000000"
-  const btcAddress = "bc1qm34lsc65zpw79lxes69zkqmk6ee3ewf0j77s3h"
+  const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
+  const unmintedAmount = data?.amount ?? "0"
+  const btcAddress = data?.btcAddress
   const fee = "20000000000000000"
+  const time = dateAs(
+    (data?.completedAt ?? dateToUnixTimestamp()) - (data?.requestedAt ?? 0)
+  )
 
   const transactions: {
     label: string
     txHash?: string
     chain: ViewInBlockExplorerChain
   }[] = [
-    { label: "Unwrap", txHash: "0x0", chain: "ethereum" },
-    { label: "BTC sent", txHash: "0x1", chain: "bitcoin" },
+    {
+      label: "Unwrap",
+      txHash: data?.redemptionRequestedTxHash,
+      chain: "ethereum",
+    },
+    {
+      label: "BTC sent",
+      txHash: data?.redemptionCompletedTxHash?.bitcoin,
+      chain: "bitcoin",
+    },
   ]
+
+  const timelineBadgeBgColor = useColorModeValue("white", "brand.800")
 
   return (
     <BridgeLayout
@@ -93,104 +132,113 @@ export const UnmintDetails: PageComponent = () => {
       isProcessCompleted={shouldDisplaySuccessStep}
     >
       <BridgeLayoutMainSection>
-        <BridgeProcessCardTitle bridgeProcess="unmint" />
-        <BridgeProcessCardSubTitle
-          display="flex"
-          stepText={shouldDisplaySuccessStep ? "Unminted" : "Unminting"}
-        >
-          {!shouldDisplaySuccessStep && (
-            <Box as="span" ml="2">
-              {" "}
-              - In progress...
-            </Box>
-          )}
-          <InlineTokenBalance
-            tokenAmount={unmintedAmount}
-            withSymbol
-            tokenSymbol="tBTC"
-            ml="auto"
-            withHigherPrecision
-          />
-        </BridgeProcessCardSubTitle>
-        <Timeline>
-          <Badge
-            variant="subtle"
-            size="sm"
-            bg={useColorModeValue("white", "brand.800")}
-            position="absolute"
-            bottom="10px"
-            left="50%"
-            transform="translateX(-50%)"
-          >
-            usual duration - 5 hours
-          </Badge>
-          <TimelineItem status="active">
-            <TimelineBreakpoint>
-              <TimelineDot position="relative">
-                <Icon
-                  as={IoCheckmarkSharp}
-                  position="absolute"
-                  color="white"
-                  w="22px"
-                  h="22px"
-                  m="auto"
-                  left="0"
-                  right="0"
-                  textAlign="center"
-                />
-              </TimelineDot>
-              <TimelineConnector />
-            </TimelineBreakpoint>
-            <TimelineContent>
-              <BodyXs whiteSpace="pre-line">tBTC unwrapped</BodyXs>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem status={isProcessCompleted ? "active" : "semi-active"}>
-            <TimelineBreakpoint>
-              <TimelineDot position="relative">
-                {isProcessCompleted && (
-                  <Icon
-                    as={IoCheckmarkSharp}
-                    position="absolute"
-                    color="white"
-                    w="22px"
-                    h="22px"
-                    m="auto"
-                    left="0"
-                    right="0"
-                    textAlign="center"
-                  />
-                )}
-              </TimelineDot>
-              <TimelineConnector />
-            </TimelineBreakpoint>
-            <TimelineContent>
-              <BodyXs whiteSpace="pre-line">BTC sent</BodyXs>
-            </TimelineContent>
-          </TimelineItem>
-        </Timeline>
-        {shouldDisplaySuccessStep ? (
-          <SuccessStep
-            unmintedAmount={unmintedAmount}
-            thresholdNetworkFee={fee}
-            btcAddress={btcAddress}
-          />
-        ) : (
-          <BridgeProcessStep
-            title="Unminting in progress"
-            chain="ethereum"
-            txHash={"0x0"}
-            progressBarColor="brand.500"
-            isCompleted={isProcessCompleted}
-            icon={<ProcessCompletedBrandGradientIcon />}
-            onComplete={() => setShouldDisplaySuccessStep(true)}
-            isIndeterminate
-          >
-            <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
-              Your redemption request is being processed. This will take around
-              5 hours.
-            </BodyMd>
-          </BridgeProcessStep>
+        {_isFetching && <BridgeProcessDetailsPageSkeleton />}
+        {error && <>{error}</>}
+        {wasDataFetched && (
+          <>
+            <BridgeProcessCardTitle bridgeProcess="unmint" />
+            <BridgeProcessCardSubTitle
+              display="flex"
+              stepText={shouldDisplaySuccessStep ? "Unminted" : "Unminting"}
+            >
+              {!shouldDisplaySuccessStep && (
+                <Box as="span" ml="2">
+                  {" "}
+                  - In progress...
+                </Box>
+              )}
+              <InlineTokenBalance
+                tokenAmount={unmintedAmount}
+                withSymbol
+                tokenSymbol="tBTC"
+                ml="auto"
+                tokenDecimals={8}
+                withHigherPrecision
+              />
+            </BridgeProcessCardSubTitle>
+            <Timeline>
+              <Badge
+                variant="subtle"
+                size="sm"
+                bg={timelineBadgeBgColor}
+                position="absolute"
+                bottom="10px"
+                left="50%"
+                transform="translateX(-50%)"
+              >
+                usual duration - 5 hours
+              </Badge>
+              <TimelineItem status="active">
+                <TimelineBreakpoint>
+                  <TimelineDot position="relative">
+                    <Icon
+                      as={IoCheckmarkSharp}
+                      position="absolute"
+                      color="white"
+                      w="22px"
+                      h="22px"
+                      m="auto"
+                      left="0"
+                      right="0"
+                      textAlign="center"
+                    />
+                  </TimelineDot>
+                  <TimelineConnector />
+                </TimelineBreakpoint>
+                <TimelineContent>
+                  <BodyXs whiteSpace="pre-line">tBTC unwrapped</BodyXs>
+                </TimelineContent>
+              </TimelineItem>
+              <TimelineItem
+                status={isProcessCompleted ? "active" : "semi-active"}
+              >
+                <TimelineBreakpoint>
+                  <TimelineDot position="relative">
+                    {isProcessCompleted && (
+                      <Icon
+                        as={IoCheckmarkSharp}
+                        position="absolute"
+                        color="white"
+                        w="22px"
+                        h="22px"
+                        m="auto"
+                        left="0"
+                        right="0"
+                        textAlign="center"
+                      />
+                    )}
+                  </TimelineDot>
+                  <TimelineConnector />
+                </TimelineBreakpoint>
+                <TimelineContent>
+                  <BodyXs whiteSpace="pre-line">BTC sent</BodyXs>
+                </TimelineContent>
+              </TimelineItem>
+            </Timeline>
+            {shouldDisplaySuccessStep || isProcessCompleted ? (
+              <SuccessStep
+                unmintedAmount={unmintedAmount}
+                thresholdNetworkFee={fee}
+                btcAddress={btcAddress!}
+              />
+            ) : (
+              <BridgeProcessStep
+                title="Unminting in progress"
+                chain="ethereum"
+                txHash={"0x0"}
+                progressBarColor="brand.500"
+                isCompleted={isProcessCompleted}
+                icon={<ProcessCompletedBrandGradientIcon />}
+                onComplete={() => setShouldDisplaySuccessStep(true)}
+                isIndeterminate
+              >
+                <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
+                  Your redemption request is being processed. This will take
+                  around 5 hours.
+                </BodyMd>
+              </BridgeProcessStep>
+            )}
+          </>
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection
@@ -199,37 +247,45 @@ export const UnmintDetails: PageComponent = () => {
         flex="1"
         flexDirection="column"
       >
-        <LabelSm>{isProcessCompleted ? "total time" : "elapsed time"}</LabelSm>
-        <BodyLg mt="2.5" color="gray.500">
-          15 minutes
-        </BodyLg>
+        {_isFetching ? (
+          <AsideSectionSkeleton />
+        ) : (
+          <>
+            <LabelSm>
+              {isProcessCompleted ? "total time" : "elapsed time"}
+            </LabelSm>
+            <BodyLg mt="2.5" color="gray.500">
+              {`${time.days}d ${time.hours}h ${time.minutes}m`}
+            </BodyLg>
 
-        <LabelSm mt="5">Transacion History</LabelSm>
-        <List mt="6" color="gray.500" spacing="2" mb="20">
-          {transactions
-            .filter((item) => !!item.txHash)
-            .map((item) => (
-              <ListItem key={item.txHash}>
-                <BodySm>
-                  {item.label}{" "}
-                  <ViewInBlockExplorer
-                    id={item.txHash!}
-                    type={ExplorerDataType.TRANSACTION}
-                    chain={item.chain}
-                    text="transaction"
-                  />
-                  .
-                </BodySm>
-              </ListItem>
-            ))}
-        </List>
-        {!shouldDisplaySuccessStep && (
-          <BridgeProcessResource
-            // TODO: set correct props here
-            title="Commodo ullamcorper a lacus vestibulum sed"
-            subtitle="Diam sit amet nisl suscipit adipiscing bibendum est ultricies integer."
-            link="TODO"
-          />
+            <LabelSm mt="5">Transacion History</LabelSm>
+            <List mt="6" color="gray.500" spacing="2" mb="20">
+              {transactions
+                .filter((item) => !!item.txHash)
+                .map((item) => (
+                  <ListItem key={item.txHash}>
+                    <BodySm>
+                      {item.label}{" "}
+                      <ViewInBlockExplorer
+                        id={item.txHash!}
+                        type={ExplorerDataType.TRANSACTION}
+                        chain={item.chain}
+                        text="transaction"
+                      />
+                      .
+                    </BodySm>
+                  </ListItem>
+                ))}
+            </List>
+            {!shouldDisplaySuccessStep && (
+              <BridgeProcessResource
+                // TODO: set correct props here
+                title="Commodo ullamcorper a lacus vestibulum sed"
+                subtitle="Diam sit amet nisl suscipit adipiscing bibendum est ultricies integer."
+                link="TODO"
+              />
+            )}
+          </>
         )}
       </BridgeLayoutAsideSection>
     </BridgeLayout>
@@ -250,6 +306,7 @@ const SuccessStep: FC<{
           label="Unminted Amount"
           tokenAmount={unmintedAmount}
           tokenSymbol="tBTC"
+          tokenDecimals={8}
           precision={6}
           higherPrecision={8}
         />
@@ -263,6 +320,7 @@ const SuccessStep: FC<{
         <TransactionDetailsItem label="BTC address">
           <CopyAddressToClipboard
             address={btcAddress}
+            chain="bitcoin"
             withLinkToBlockExplorer
             fontSize="14px"
           />
@@ -271,6 +329,18 @@ const SuccessStep: FC<{
       <ButtonLink mt="8" size="lg" to="/tBTC/mint" width="100%">
         New Mint
       </ButtonLink>
+    </>
+  )
+}
+
+const AsideSectionSkeleton: FC = () => {
+  return (
+    <>
+      <SkeletonText noOfLines={1} />
+      <SkeletonText noOfLines={1} skeletonHeight={6} mt="4" />
+
+      <SkeletonText noOfLines={1} mt="4" />
+      <SkeletonText noOfLines={2} mt="4" />
     </>
   )
 }
