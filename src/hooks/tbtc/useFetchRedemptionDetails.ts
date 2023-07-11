@@ -43,8 +43,8 @@ export const useFetchRedemptionDetails = (
         // We need to find `RedemptionRequested` event by wallet public key hash
         // and `redeemer` address to get all necessary data and make sure that
         // the request actually happened. We need `redeemer` address as well to
-        // reduce the number of records - any user can request redemption for the
-        // same wallet.
+        // reduce the number of records - any user can request redemption for
+        // the same wallet.
         const redemptionRequest = (
           await threshold.tbtc.getRedemptionRequestedEvents({
             walletPublicKeyHash,
