@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
-import { prependScriptPubKeyByLength } from "../../threshold-ts/utils"
-import { isValidType } from "../../threshold-ts/utils/chain"
+import {
+  createAddressFromOutputScript,
+  prependScriptPubKeyByLength,
+  isValidType,
+} from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 
@@ -206,8 +209,10 @@ export const useFetchRedemptionDetails = (
               requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
               isTimedOut: false,
-              // TODO: convert the `scriptPubKey` to address.
-              btcAddress: "2Mzs2YNphdHmBoE7SE77cGB57JBXveNGtae",
+              btcAddress: createAddressFromOutputScript(
+                scriptPubKey,
+                threshold.tbtc.bitcoinNetwork
+              ),
             })
 
             return
