@@ -277,4 +277,11 @@ export class MockBitcoinClient implements Client {
   async getNetwork(): Promise<BitcoinNetwork> {
     return BitcoinNetwork.Testnet
   }
+
+  async getTransactionHistory(
+    address: string,
+    limit?: number | undefined
+  ): Promise<Transaction[]> {
+    return []
+  }
 }
