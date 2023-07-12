@@ -1,13 +1,17 @@
 import { To } from "react-router-dom"
 import { BitcoinNetwork } from "../threshold-ts/types"
 import { BridgeProcess } from "../types/tbtc"
-import { computeHash160 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  computeHash160,
+  createOutputScriptFromAddress,
+  prependScriptPubKeyByLength,
+} from "../threshold-ts/utils"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
 
 const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1", "3"] as const
-const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "3"] as const
+const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "2"] as const
 
 type SupportedBitcoinNetworks = Exclude<BitcoinNetwork, "unknown">
 
@@ -82,12 +86,17 @@ export const buildRedemptionDetailsLink = (
   txHash: string,
   redeemer: string,
   walletPublicKey: string,
-  redeemerOutputScript: string
+  btcAddress: string
 ): To => {
   const queryParams = new URLSearchParams()
   queryParams.set("redeemer", redeemer)
   queryParams.set("walletPublicKeyHash", `0x${computeHash160(walletPublicKey)}`)
-  queryParams.set("redeemerOutputScript", redeemerOutputScript)
+
+  const redeemerOutputScript = createOutputScriptFromAddress(btcAddress)
+  const prefixedRedeemerOutputScript = prependScriptPubKeyByLength(
+    redeemerOutputScript.toString()
+  )
+  queryParams.set("redeemerOutputScript", prefixedRedeemerOutputScript)
 
   return {
     pathname: `/tBTC/unmint/redemption/${txHash}`,

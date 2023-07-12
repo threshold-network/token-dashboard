@@ -1,4 +1,3 @@
-import { createOutputScriptFromAddress } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   BodyLg,
   BodySm,
@@ -59,7 +58,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         receipt.transactionHash,
         account!,
         wallet.walletPublicKey,
-        createOutputScriptFromAddress(btcAddress).toPrefixedString()
+        btcAddress
       )
     )
     closeModal()
