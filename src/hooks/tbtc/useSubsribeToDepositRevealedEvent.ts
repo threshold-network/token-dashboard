@@ -33,7 +33,7 @@ export const useSubscribeToDepositRevealedEvent = () => {
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
-      const { amountToMint } = await threshold.tbtc.getEstimatedFees(
+      const { amountToMint } = await threshold.tbtc.getEstimatedDepositFees(
         amount.toString()
       )
 

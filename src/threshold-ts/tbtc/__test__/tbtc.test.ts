@@ -447,7 +447,7 @@ describe("TBTC test", () => {
     })
   })
 
-  describe("getEstimatedFees", () => {
+  describe("getEstimatedDepositFees", () => {
     const mockDepositTreasuryFeeDivisor = "5000"
     const mockOptimisticMintingFeeDivisor = "300"
     const mockAmountToMint = "5000"
@@ -478,7 +478,7 @@ describe("TBTC test", () => {
         amountToMint: mockAmountToMint,
         optimisticMintFee: mockOptimisticMintFee,
       })
-      estimatedFees = await tBTC.getEstimatedFees(mockDepositAmount)
+      estimatedFees = await tBTC.getEstimatedDepositFees(mockDepositAmount)
     })
 
     test("should estimate fees", () => {

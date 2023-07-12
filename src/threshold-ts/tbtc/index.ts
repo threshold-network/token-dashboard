@@ -207,11 +207,11 @@ export interface ITBTC {
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
    * of tBTC token that will be minted.
-   * @param depositAmount Amount that will be revealed in Satoshi.
-   * @returns Treasury fee, optitimistic mint fee and estimated amount of tBTC
-   * token that will be minted in ERC20 standart.
+   * @param depositAmount Amount of BTC that will be revealed in Satoshi.
+   * @returns Treasury fee, optimistic mint fee and estimated amount of tBTC
+   * token that will be minted in ERC20 standard.
    */
-  getEstimatedFees(depositAmount: string): Promise<{
+  getEstimatedDepositFees(depositAmount: string): Promise<{
     treasuryFee: string
     optimisticMintFee: string
     amountToMint: string
@@ -524,7 +524,7 @@ export class TBTC implements ITBTC {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
   }
 
-  getEstimatedFees = async (depositAmount: string) => {
+  getEstimatedDepositFees = async (depositAmount: string) => {
     const { depositTreasuryFeeDivisor, optimisticMintingFeeDivisor } =
       await this._getDepositFees()
 
