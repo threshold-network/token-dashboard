@@ -373,6 +373,18 @@ export interface ITBTC {
   getRedemptionsCompletedEvents(
     filter: RedemptionsCompletedEventFilter
   ): Promise<RedemptionsCompletedEvent[]>
+
+  /**
+   * Gets estimated fees that will be payed during a redemption and estimated
+   * amount of BTC that will be redeemed.
+   * @param redemptionAmount Amount of tbtc requested for redemption.
+   * @returns Treasury fee and estimated amount of BTC that will be redeemed (in
+   * satoshi).
+   */
+  getEstimatedRedemptionFees(redemptionAmount: string): Promise<{
+    treasuryFee: string
+    estimatedAmountToBeReceived: string
+  }>
 }
 
 export class TBTC implements ITBTC {
@@ -1114,5 +1126,28 @@ export class TBTC implements ITBTC {
       blockNumber: log.blockNumber,
       txHash: log.transactionHash,
     }))
+  }
+
+  getEstimatedRedemptionFees = async (
+    redemptionAmount: string
+  ): Promise<{
+    treasuryFee: string
+    estimatedAmountToBeReceived: string
+  }> => {
+    const { redemptionTreasuryFeeDivisor } =
+      await this.bridgeContract.redemptionParameters()
+
+    const treasuryFee = BigNumber.from(redemptionTreasuryFeeDivisor).gt(0)
+      ? BigNumber.from(redemptionAmount).div(redemptionTreasuryFeeDivisor)
+      : ZERO
+
+    const estimatedAmountToBeReceived = BigNumber.from(redemptionAmount)
+      .sub(treasuryFee)
+      .mul(this._satoshiMultiplier)
+
+    return {
+      treasuryFee: treasuryFee.toString(),
+      estimatedAmountToBeReceived: estimatedAmountToBeReceived.toString(),
+    }
   }
 }
