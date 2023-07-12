@@ -1,6 +1,7 @@
 import { To } from "react-router-dom"
 import { BitcoinNetwork } from "../threshold-ts/types"
 import { BridgeProcess } from "../types/tbtc"
+import { computeHash160 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
@@ -85,7 +86,7 @@ export const buildRedemptionDetailsLink = (
 ): To => {
   const queryParams = new URLSearchParams()
   queryParams.set("redeemer", redeemer)
-  queryParams.set("walletPublicKey", walletPublicKey)
+  queryParams.set("walletPublicKeyHash", `0x${computeHash160(walletPublicKey)}`)
   queryParams.set("redeemerOutputScript", redeemerOutputScript)
 
   return {
