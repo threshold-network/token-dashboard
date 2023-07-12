@@ -3194,9 +3194,9 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
 "@keep-network/tbtc-v2.ts@development":
-  version "1.3.0-dev.6"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.3.0-dev.6.tgz#46ee9f386a500048df849b8d9ce640d5c6fed820"
-  integrity sha512-hmfWav2lIaK16xgf3ukdip4g2a3TobcBa0N0sL+J7UBU9XrTYPXFGYRSR61hlMsGqMaIwB7XtF4DxleUIgJKxg==
+  version "1.3.0-dev.8"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.3.0-dev.8.tgz#08fb1a06dbe6d78a9c7b0d610363c68a135a6741"
+  integrity sha512-Y5fej8YhBbTZesE+87LNLHGt7I/G97f75J+15ieYyb2nqsJ/CcvMscIEAE/hNgxpnq4IWv/8qwYoldrHY4ix8w==
   dependencies:
     "@keep-network/ecdsa" "2.1.0-dev.15"
     "@keep-network/tbtc-v2" "1.6.0-dev.0"
