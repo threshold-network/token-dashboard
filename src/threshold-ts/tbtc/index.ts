@@ -378,8 +378,8 @@ export interface ITBTC {
    * Gets estimated fees that will be payed during a redemption and estimated
    * amount of BTC that will be redeemed.
    * @param redemptionAmount Amount of tbtc requested for redemption.
-   * @returns Treasury fee and estimated amount of BTC that will be redeemed (in
-   * satoshi).
+   * @returns Treasury fee and estimated amount of BTC that will be redeemed
+   * (both in satoshi).
    */
   getEstimatedRedemptionFees(redemptionAmount: string): Promise<{
     treasuryFee: string
@@ -1143,7 +1143,7 @@ export class TBTC implements ITBTC {
 
     const estimatedAmountToBeReceived = BigNumber.from(redemptionAmount)
       .sub(treasuryFee)
-      .mul(this._satoshiMultiplier)
+      .div(this._satoshiMultiplier)
 
     return {
       treasuryFee: treasuryFee.toString(),
