@@ -3,6 +3,7 @@ import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 export {
   computeHash160,
   createOutputScriptFromAddress,
+  createAddressFromOutputScript,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { toBcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
