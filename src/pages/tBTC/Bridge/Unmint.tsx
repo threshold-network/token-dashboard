@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { useWeb3React } from "@web3-react/core"
 import { Outlet } from "react-router-dom"
 import { FormikErrors, useFormikContext, withFormik } from "formik"
 import {
@@ -60,6 +61,7 @@ import { UnmintingCard } from "./UnmintingCard"
 import { featureFlags } from "../../../constants"
 import { RedemptionWalletData } from "../../../threshold-ts/tbtc"
 import { UnspentTransactionOutputPlainObject } from "../../../types/tbtc"
+import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -92,64 +94,65 @@ const UnmintFormPage: PageComponent = ({}) => {
   return !featureFlags.TBTC_V2_REDEMPTION ? (
     <UnmintingCard />
   ) : (
-    <BridgeLayout>
-      <BridgeLayoutMainSection>
-        <BridgeProcessCardTitle bridgeProcess="unmint" />
-        <BridgeProcessCardSubTitle
-          stepText="Step 1"
-          subTitle="Unmint your tBTC tokens"
-        />
-        <BodyMd color="gray.500">
-          Unminting requires one Ethereum transaction and it takes around 5
-          hours.
-        </BodyMd>
-        <UnmintForm
-          maxTokenAmount={balance.toString()}
-          onSubmitForm={onSubmitForm}
-          bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
-          findRedemptionWallet={threshold.tbtc.findWalletForRedemption}
-        />
-        <Box as="p" textAlign="center" mt="4">
-          <BridgeContractLink />
-        </Box>
-      </BridgeLayoutMainSection>
-      <BridgeLayoutAsideSection>
-        <LabelSm>Duration</LabelSm>
-        <HStack mt="4" spacing="4">
-          <BoxLabel variant="solid" status="primary">
-            ~ 5 Hours
-          </BoxLabel>
-          <Box>
-            <BodyXs as="span" color="gray.500">
-              min.
-            </BodyXs>{" "}
-            <BodyLg as="span" color="gray.500">
-              0.01
-            </BodyLg>{" "}
-            <BodyXs as="span" color="gray.500">
-              BTC
-            </BodyXs>
-          </Box>
-        </HStack>
-        <LabelSm mt="8">Timeline</LabelSm>
-        <Steps mt="6">
-          <Step isActive={true} isComplete={false}>
-            <StepIndicator>Step 1</StepIndicator>
-            <StepBadge>action on Ethereum</StepBadge>
-            <StepBadge>action on Bitcoin</StepBadge>
-            <StepTitle>
-              Unmint <TBTCText />
-            </StepTitle>
-            <StepDescription>
-              Your unwrapped and withdrawn BTC will be sent to the BTC address
-              of your choice, in the next sweep.
-            </StepDescription>
-          </Step>
-        </Steps>
+    <>
+      <BridgeProcessCardTitle bridgeProcess="unmint" />
+      <BridgeProcessCardSubTitle
+        stepText="Step 1"
+        subTitle="Unmint your tBTC tokens"
+      />
+      <BodyMd color="gray.500">
+        Unminting requires one Ethereum transaction and it takes around 5 hours.
+      </BodyMd>
+      <UnmintForm
+        maxTokenAmount={balance.toString()}
+        onSubmitForm={onSubmitForm}
+        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        findRedemptionWallet={threshold.tbtc.findWalletForRedemption}
+      />
+      <Box as="p" textAlign="center" mt="4">
+        <BridgeContractLink />
+      </Box>
+    </>
+  )
+}
 
-        <BridgeProcessIndicator bridgeProcess="unmint" mt="8" />
-      </BridgeLayoutAsideSection>
-    </BridgeLayout>
+const UnmintAsideLayout = () => {
+  return (
+    <BridgeLayoutAsideSection>
+      <LabelSm>Duration</LabelSm>
+      <HStack mt="4" spacing="4">
+        <BoxLabel variant="solid" status="primary">
+          ~ 5 Hours
+        </BoxLabel>
+        <Box>
+          <BodyXs as="span" color="gray.500">
+            min.
+          </BodyXs>{" "}
+          <BodyLg as="span" color="gray.500">
+            0.01
+          </BodyLg>{" "}
+          <BodyXs as="span" color="gray.500">
+            BTC
+          </BodyXs>
+        </Box>
+      </HStack>
+      <LabelSm mt="8">Timeline</LabelSm>
+      <Steps mt="6">
+        <Step isActive={true} isComplete={false}>
+          <StepIndicator>Step 1</StepIndicator>
+          <StepBadge>action on Ethereum</StepBadge>
+          <StepBadge>action on Bitcoin</StepBadge>
+          <StepTitle>
+            Unmint <TBTCText />
+          </StepTitle>
+          <StepDescription>
+            Your unwrapped and withdrawn BTC will be sent to the BTC address of
+            your choice, in the next sweep.
+          </StepDescription>
+        </Step>
+      </Steps>
+      <BridgeProcessIndicator bridgeProcess="unmint" mt="8" />
+    </BridgeLayoutAsideSection>
   )
 }
 
@@ -286,7 +289,22 @@ UnmintFormPage.route = {
 }
 
 export const UnmintPage: PageComponent = ({}) => {
-  return <Outlet />
+  const { active } = useWeb3React()
+
+  return (
+    <BridgeLayout>
+      <BridgeLayoutMainSection>
+        {active ? (
+          <Outlet />
+        ) : (
+          <BridgeProcessEmptyState title="Ready to unmit tBTC?" />
+        )}
+      </BridgeLayoutMainSection>
+      <BridgeLayoutAsideSection>
+        <UnmintAsideLayout />
+      </BridgeLayoutAsideSection>
+    </BridgeLayout>
+  )
 }
 
 UnmintPage.route = {

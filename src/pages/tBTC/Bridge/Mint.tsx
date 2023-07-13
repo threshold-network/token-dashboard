@@ -27,6 +27,7 @@ import {
   BridgeLayoutAsideSection,
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
+import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -80,12 +81,6 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { active } = useWeb3React()
-  const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
-  const [deposits] = useFetchRecentDeposits(3)
-
-  useEffect(() => {
-    fetchTvl()
-  }, [fetchTvl])
 
   return (
     <BridgeLayout>
@@ -93,28 +88,7 @@ const MintPageLayout: PageComponent = () => {
         {active ? (
           <Outlet />
         ) : (
-          <>
-            <BridgeProcessCardTitle />
-            <H5 align={"center"}>Ready to mint tBTC?</H5>
-            <SubmitTxButton mb="6" mt="4" />
-            <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
-            <ProtocolHistoryTitle mt="8" />
-            <ProtocolHistoryRecentDeposits
-              deposits={deposits}
-              _after={{
-                content: `" "`,
-                position: "absolute",
-                bottom: 0,
-                left: 0,
-                width: "100%",
-                height: "100px",
-                opacity: "0.9",
-                background:
-                  "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
-              }}
-            />
-            <ProtocolHistoryViewMoreLink mt="7" />
-          </>
+          <BridgeProcessEmptyState title="Ready to mint tTBC?" />
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
