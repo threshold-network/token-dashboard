@@ -54,9 +54,10 @@ export const tbtcSlice = createSlice({
         amount: string
         depositor: string
         txHash: string
+        blockNumber: number
       }>
     ) => {
-      const { amount, txHash, depositKey } = action.payload
+      const { amount, txHash, depositKey, blockNumber } = action.payload
       const history = state.bridgeActivity.data
       const { itemToUpdate } = findActivityByDepositKey(history, depositKey)
 
@@ -66,7 +67,14 @@ export const tbtcSlice = createSlice({
 
       // Add item only if there is no item with the same deposit key.
       state.bridgeActivity.data = [
-        { amount, txHash, status: BridgeActivityStatus.PENDING, depositKey },
+        {
+          amount,
+          txHash,
+          status: BridgeActivityStatus.PENDING,
+          activityKey: depositKey,
+          bridgeProcess: "mint",
+          blockNumber,
+        },
         ...state.bridgeActivity.data,
       ]
     },
@@ -116,7 +124,7 @@ function findActivityByDepositKey(
   depositKey: string
 ) {
   const activityIndexItemToUpdate = bridgeActivities.findIndex(
-    (item) => item.depositKey === depositKey
+    (item) => item.activityKey === depositKey
   )
 
   if (activityIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }

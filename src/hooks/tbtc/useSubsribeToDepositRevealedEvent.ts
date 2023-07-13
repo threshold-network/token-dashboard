@@ -61,6 +61,7 @@ export const useSubscribeToDepositRevealedEvent = () => {
           txHash: event.transactionHash,
           depositor: depositor,
           depositKey: depositKeyFromEvent,
+          blockNumber: event.blockNumber,
         })
       )
     },

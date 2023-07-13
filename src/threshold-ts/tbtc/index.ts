@@ -58,13 +58,24 @@ export enum BridgeActivityStatus {
   PENDING = "PENDING",
   MINTED = "MINTED",
   ERROR = "ERROR",
+  UNMINTED = "UNMINTED",
 }
 
+export type BridgeProcess = "mint" | "unmint"
+
 export interface BridgeActivity {
+  bridgeProcess: BridgeProcess
   status: BridgeActivityStatus
   txHash: string
   amount: string
-  depositKey: string
+  activityKey: string
+  additionalData?: unknown
+  blockNumber: number
+}
+
+export interface UnminBridgeActivityAdditionalData {
+  redeemerOutputScript: string
+  walletPublicKeyHash: string
 }
 
 export interface RevealedDepositEvent {
@@ -74,7 +85,7 @@ export interface RevealedDepositEvent {
   fundingOutputIndex: string
   depositKey: string
   txHash: string
-  blockNumber: BlockTag
+  blockNumber: number
 }
 
 export interface RedemptionRequestedEvent {
@@ -84,7 +95,7 @@ export interface RedemptionRequestedEvent {
   redeemer: string
   treasuryFee: string
   txMaxFee: string
-  blockNumber: BlockTag
+  blockNumber: number
   txHash: string
 }
 
@@ -113,7 +124,7 @@ interface RedemptionTimedOutEvent {
   walletPublicKeyHash: string
   redeemerOutputScript: string
   txHash: string
-  blockNumber: BlockTag
+  blockNumber: number
 }
 
 type RedemptionsCompletedEventFilter = {
@@ -124,7 +135,7 @@ interface RedemptionsCompletedEvent {
   walletPublicKeyHash: string
   redemptionBitcoinTxHash: string
   txHash: string
-  blockNumber: BlockTag
+  blockNumber: number
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
@@ -258,7 +269,7 @@ export interface ITBTC {
 
   /**
    * Returns the bridge transaction history by depositor in order from the
-   * newest revealed deposit to the oldest.
+   * newest activities to the oldest.
    * @param depositor Depositor Ethereum address.
    * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
@@ -640,6 +651,19 @@ export class TBTC implements ITBTC {
   }
 
   bridgeActivity = async (depositor: string): Promise<BridgeActivity[]> => {
+    const depositActivities = await this._findDepositActivities(depositor)
+
+    const redemptionActivities: BridgeActivity[] =
+      await this._findRedemptionActivities(depositor)
+
+    return depositActivities
+      .concat(redemptionActivities)
+      .sort((a, b) => a.blockNumber - b.blockNumber)
+  }
+
+  private _findDepositActivities = async (
+    depositor: string
+  ): Promise<BridgeActivity[]> => {
     // We can assume that all revealed deposits have `PENDING` status.
     const revealedDeposits = await this.findAllRevealedDeposits(depositor)
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
@@ -674,7 +698,7 @@ export class TBTC implements ITBTC {
     )
 
     return revealedDeposits.map((deposit) => {
-      const { depositKey, txHash: depositTxHash } = deposit
+      const { depositKey, txHash: depositTxHash, blockNumber } = deposit
       let status = BridgeActivityStatus.PENDING
       let txHash = depositTxHash
       let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
@@ -688,7 +712,14 @@ export class TBTC implements ITBTC {
         txHash = cancelledDeposits.get(depositKey)!
       }
 
-      return { amount: amount.toString(), txHash, status, depositKey }
+      return {
+        amount: amount.toString(),
+        txHash,
+        status,
+        activityKey: depositKey,
+        bridgeProcess: "mint",
+        blockNumber,
+      }
     })
   }
 
@@ -800,6 +831,101 @@ export class TBTC implements ITBTC {
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
+  }
+
+  private _findRedemptionActivities = async (
+    redeemer: string
+  ): Promise<BridgeActivity[]> => {
+    const requestedRedemptions = await this.getRedemptionRequestedEvents({
+      redeemer,
+    })
+
+    const redemptionsMap = new Map<
+      string,
+      {
+        redemptionKey: string
+        walletPublicKeyHash: string
+        txHash: string
+        blockNumber: number
+        redeemerOutputScript: string
+        isPending: boolean
+        isTimedOut: boolean
+        requestedAmount: string
+        requestedAt: number
+      }
+    >()
+
+    for (const event of requestedRedemptions) {
+      const { timestamp: eventTimestamp } =
+        await this._bridgeContract.provider.getBlock(event.blockNumber)
+      const redemptionKey = this.buildRedemptionKey(
+        event.walletPublicKeyHash,
+        event.redeemerOutputScript
+      )
+
+      const redemptionDetails = await this.getRedemptionRequest(redemptionKey)
+      // We need to make sure this is the same redemption request. Let's
+      // consider this case:
+      // - redemption X requested,
+      // - redemption X was handled successfully and the redemption X was
+      //   removed from `pendingRedemptions` map,
+      // - the same wallet is still in `live` state and can handle redemption
+      //   request with the same `walletPubKeyHash` and `redeemerOutputScript`
+      //   pair(the same redemption request key),
+      // - the redemption request X exists in the `pendingRedemptions` map.
+      //
+      // In this case we want to mark the first redemption as completed and the
+      // second one as pending. If we do not compare the timestamps both requests
+      // will be considered as pending.
+      const isTheSameRedemption =
+        eventTimestamp === redemptionDetails.requestedAt
+
+      redemptionsMap.set(`${redemptionKey}-${event.txHash}`, {
+        isPending: isTheSameRedemption && redemptionDetails.isPending,
+        isTimedOut: isTheSameRedemption && redemptionDetails.isTimedOut,
+        // We need to get an amount from an event because if the redemption was
+        // handled sucesfully the `getRedemptionRequest` returns `0`. The
+        // `amount` in event is in satoshi, so here we convert to token
+        // precision.
+        requestedAmount: this._satoshiMultiplier.mul(event.amount).toString(),
+        requestedAt: isTheSameRedemption ? redemptionDetails.requestedAt : 0,
+        walletPublicKeyHash: event.walletPublicKeyHash,
+        redeemerOutputScript: event.redeemerOutputScript,
+        txHash: event.txHash,
+        blockNumber: event.blockNumber,
+        redemptionKey,
+      })
+    }
+
+    const redemptionsMapEntries = Array.from(redemptionsMap.entries())
+
+    const pendingRedemptions = redemptionsMapEntries
+      .filter(([, { isPending }]) => isPending)
+      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.PENDING }))
+
+    const timedOutRedemptions = redemptionsMapEntries
+      .filter(([, { isTimedOut }]) => isTimedOut)
+      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.ERROR }))
+
+    const completedRedemptions = redemptionsMapEntries
+      .filter(([, { requestedAt }]) => requestedAt === 0)
+      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.UNMINTED }))
+
+    return pendingRedemptions
+      .concat(timedOutRedemptions)
+      .concat(completedRedemptions)
+      .map((data) => ({
+        status: data.status,
+        txHash: data.txHash,
+        amount: data.requestedAmount,
+        activityKey: data.redemptionKey,
+        bridgeProcess: "unmint",
+        blockNumber: data.blockNumber,
+        additionalData: {
+          redeemerOutputScript: data.redeemerOutputScript,
+          walletPublicKeyHash: data.walletPublicKeyHash,
+        } as UnminBridgeActivityAdditionalData,
+      }))
   }
 
   buildDepositKey = (
@@ -963,6 +1089,7 @@ export class TBTC implements ITBTC {
     const logs = await this.bridgeContract.queryFilter(
       {
         address: this.bridgeContract.address,
+        // @ts-ignore
         topics: filterTopics,
       },
       fromBlock,
@@ -980,13 +1107,15 @@ export class TBTC implements ITBTC {
 
   private _encodeWalletPublicKeyHash = (
     walletPublicKeyHash?: string | string[]
-  ): string | string[] => {
+  ): string | undefined | string[] => {
     const encodeWalletPublicKeyHash = (hash: string) =>
       utils.defaultAbiCoder.encode(["bytes20"], [hash])
 
     return Array.isArray(walletPublicKeyHash)
       ? walletPublicKeyHash.map(encodeWalletPublicKeyHash)
-      : encodeWalletPublicKeyHash(walletPublicKeyHash ?? "0x00")
+      : walletPublicKeyHash
+      ? encodeWalletPublicKeyHash(walletPublicKeyHash)
+      : undefined
   }
 
   _parseRedemptionRequestedEvent = (
@@ -1069,6 +1198,7 @@ export class TBTC implements ITBTC {
     const logs = await this.bridgeContract.queryFilter(
       {
         address: this.bridgeContract.address,
+        // @ts-ignore
         topics: filterTopics,
       },
       fromBlock,
@@ -1100,6 +1230,7 @@ export class TBTC implements ITBTC {
     const logs = await this.bridgeContract.queryFilter(
       {
         address: this.bridgeContract.address,
+        // @ts-ignore
         topics: filterTopics,
       },
       fromBlock,
