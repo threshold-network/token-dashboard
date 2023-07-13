@@ -10,8 +10,9 @@ import {
   ModalHeader,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useRequestRedemption } from "../../../hooks/tbtc"
 import {
   BaseModalProps,
@@ -47,10 +48,22 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
 }) => {
   const navigate = useNavigate()
   const { account } = useWeb3React()
-  // TODO: calculate the BTC amount- take into account fees
-  const btcAmount = unmintAmount
-  const thresholdNetworkFee = "0"
+  const threshold = useThreshold()
+  const [estimatedBTCAmount, setEstimatedBTCAmount] = useState<string>("0")
+  const [thresholdNetworkFee, setThresholdNetworkFee] = useState<string>("0")
   const btcMinerFee = "0"
+
+  useEffect(() => {
+    const getEstimatedDepositFees = async () => {
+      const { treasuryFee, estimatedAmountToBeReceived } =
+        await threshold.tbtc.getEstimatedRedemptionFees(unmintAmount)
+
+      setThresholdNetworkFee(treasuryFee)
+      setEstimatedBTCAmount(estimatedAmountToBeReceived)
+    }
+
+    getEstimatedDepositFees()
+  }, [unmintAmount, threshold])
 
   const onSuccess: OnSuccessCallback = (receipt) => {
     navigate(
@@ -79,7 +92,14 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         <InfoBox variant="modal" mb="6">
           <H5>
             Through unminting you will get back{" "}
-            <InlineTokenBalance tokenAmount={btcAmount} /> BTC
+            <InlineTokenBalance
+              tokenSymbol="BTC"
+              tokenDecimals={8}
+              precision={6}
+              higherPrecision={8}
+              tokenAmount={estimatedBTCAmount}
+            />{" "}
+            BTC
           </H5>
           <BodyLg mt="4">
             Unminting tBTC requires one transaction on your end.
