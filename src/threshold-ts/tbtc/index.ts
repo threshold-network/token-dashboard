@@ -658,7 +658,7 @@ export class TBTC implements ITBTC {
 
     return depositActivities
       .concat(redemptionActivities)
-      .sort((a, b) => a.blockNumber - b.blockNumber)
+      .sort((a, b) => b.blockNumber - a.blockNumber)
   }
 
   private _findDepositActivities = async (
