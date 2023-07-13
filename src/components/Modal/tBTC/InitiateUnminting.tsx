@@ -51,7 +51,6 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   const threshold = useThreshold()
   const [estimatedBTCAmount, setEstimatedBTCAmount] = useState<string>("0")
   const [thresholdNetworkFee, setThresholdNetworkFee] = useState<string>("0")
-  const btcMinerFee = "0"
 
   useEffect(() => {
     const getEstimatedDepositFees = async () => {
@@ -110,14 +109,6 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
             label="Unminted Amount"
             tokenAmount={unmintAmount}
             tokenSymbol="tBTC"
-            precision={6}
-            higherPrecision={8}
-          />
-          <TransactionDetailsAmountItem
-            label="Bitcoin Miner Fee"
-            tokenAmount={btcMinerFee}
-            tokenSymbol="BTC"
-            tokenDecimals={8}
             precision={6}
             higherPrecision={8}
           />
