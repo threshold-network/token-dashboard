@@ -55,6 +55,7 @@ import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDe
 import {
   useSubscribeToOptimisticMintingFinalizedEvent,
   useSubscribeToOptimisticMintingRequestedEvent,
+  useSubscribeToRedemptionRequestedEvent,
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
 
@@ -80,6 +81,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToDepositRevealedEvent()
   useSubscribeToOptimisticMintingFinalizedEvent()
   useSubscribeToOptimisticMintingRequestedEvent()
+  useSubscribeToRedemptionRequestedEvent()
 
   return <></>
 }
