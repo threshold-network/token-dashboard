@@ -377,7 +377,8 @@ export interface ITBTC {
   /**
    * Gets estimated fees that will be payed during a redemption and estimated
    * amount of BTC that will be redeemed.
-   * @param redemptionAmount Amount of tbtc requested for redemption.
+   * @param redemptionAmount Amount of tbtc requested for redemption in ERC20
+   * standard.
    * @returns Treasury fee and estimated amount of BTC that will be redeemed
    * (both in satoshi).
    */
@@ -1134,16 +1135,22 @@ export class TBTC implements ITBTC {
     treasuryFee: string
     estimatedAmountToBeReceived: string
   }> => {
+    const { satoshis: redemptionAmountInSatoshi } =
+      this._amountToSatoshi(redemptionAmount)
+
     const { redemptionTreasuryFeeDivisor } =
       await this.bridgeContract.redemptionParameters()
 
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Redemption.sol#L478
     const treasuryFee = BigNumber.from(redemptionTreasuryFeeDivisor).gt(0)
-      ? BigNumber.from(redemptionAmount).div(redemptionTreasuryFeeDivisor)
+      ? BigNumber.from(redemptionAmountInSatoshi).div(
+          redemptionTreasuryFeeDivisor
+        )
       : ZERO
 
-    const estimatedAmountToBeReceived = BigNumber.from(redemptionAmount)
-      .sub(treasuryFee)
-      .div(this._satoshiMultiplier)
+    const estimatedAmountToBeReceived = BigNumber.from(
+      redemptionAmountInSatoshi
+    ).sub(treasuryFee)
 
     return {
       treasuryFee: treasuryFee.toString(),

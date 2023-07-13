@@ -115,10 +115,11 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
           />
           <TransactionDetailsAmountItem
             label="Threshold Network Fee"
-            tokenAmount={thresholdNetworkFee}
-            tokenSymbol="tBTC"
+            tokenSymbol="BTC"
+            tokenDecimals={8}
             precision={6}
             higherPrecision={8}
+            tokenAmount={thresholdNetworkFee}
           />
           <TransactionDetailsItem
             label="BTC address"
