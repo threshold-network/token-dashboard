@@ -31,6 +31,7 @@ export interface TokenBalanceProps {
   precision?: number
   higherPrecision?: number
   displayTildeBelow?: number
+  isEstimated?: boolean
 }
 
 export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
@@ -43,6 +44,7 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
   higherPrecision = 6,
   withHigherPrecision,
   displayTildeBelow = 1,
+  isEstimated = false,
   ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
@@ -51,7 +53,8 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenFormat,
       tokenDecimals,
       precision,
-      displayTildeBelow
+      displayTildeBelow,
+      isEstimated
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, precision])
 
@@ -60,7 +63,9 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenAmount || 0,
       tokenFormat,
       tokenDecimals,
-      higherPrecision
+      higherPrecision,
+      1,
+      isEstimated
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, higherPrecision])
 

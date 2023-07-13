@@ -14,6 +14,7 @@ interface RedemptionDetails {
   }
   requestedAt: number
   completedAt?: number
+  treasuryFee: string
   isTimedOut: boolean
   redemptionTimedOutTxHash?: string
   btcAddress?: string
@@ -158,6 +159,7 @@ export const useFetchRedemptionDetails = (
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
             redemptionTimedOutTxHash: timedOutTxHash,
+            treasuryFee: redemptionRequest.treasuryFee,
             isTimedOut,
           })
           return
@@ -205,6 +207,7 @@ export const useFetchRedemptionDetails = (
               },
               requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
+              treasuryFee: redemptionRequest.treasuryFee,
               isTimedOut: false,
               // TODO: convert the `scriptPubKey` to address.
               btcAddress: "2Mzs2YNphdHmBoE7SE77cGB57JBXveNGtae",

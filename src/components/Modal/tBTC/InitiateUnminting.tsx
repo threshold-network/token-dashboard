@@ -79,7 +79,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
       <ModalBody>
         <InfoBox variant="modal" mb="6">
           <H5>
-            Through unminting you will get back{" ~"}
+            Through unminting you will get back{" "}
             <InlineTokenBalance
               tokenSymbol="BTC"
               tokenDecimals={8}
@@ -87,6 +87,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
               higherPrecision={8}
               tokenAmount={estimatedBTCAmount}
               displayTildeBelow={0}
+              isEstimated
             />{" "}
             BTC
           </H5>

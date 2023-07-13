@@ -11,7 +11,8 @@ export const formatTokenAmount = (
   format = "0,00.[0]0",
   decimals = 18,
   precision = 2,
-  displayTildeBelow = 1
+  displayTildeBelow = 1,
+  isEstimated = false // adds tilde to the amount no matter the value
 ) => {
   const minAmountToDisplay = BigNumber.from(10).pow(decimals - precision)
   const _rawAmount = BigNumber.from(rawAmount)
@@ -39,9 +40,10 @@ export const formatTokenAmount = (
   const amountFromFormattedValue = numeral(formattedAmount).value() ?? 0
 
   if (
-    Number.parseFloat(amountFromFormattedValue.toString()) !==
+    isEstimated ||
+    (Number.parseFloat(amountFromFormattedValue.toString()) !==
       Number.parseFloat(tokenAmountInHumanReadableFormat) &&
-    displayTildeBelow > amountFromFormattedValue
+      displayTildeBelow > amountFromFormattedValue)
   ) {
     return `~${formattedAmount}`
   }
