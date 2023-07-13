@@ -10,8 +10,12 @@ import {
 } from "../../../../components/tBTC"
 import { useFetchRecentDeposits } from "../../../../hooks/tbtc"
 import { useFetchTvl } from "../../../../hooks/useFetchTvl"
+import { BridgeProcess } from "../../../../types"
 
-export const BridgeProcessEmptyState: FC<{ title: string }> = ({ title }) => {
+export const BridgeProcessEmptyState: FC<{
+  title: string
+  bridgeProcess?: BridgeProcess
+}> = ({ title, bridgeProcess = "mint" }) => {
   const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
   const [deposits] = useFetchRecentDeposits(3)
 
@@ -21,7 +25,7 @@ export const BridgeProcessEmptyState: FC<{ title: string }> = ({ title }) => {
 
   return (
     <>
-      <BridgeProcessCardTitle />
+      <BridgeProcessCardTitle bridgeProcess={bridgeProcess} />
       <H5 align={"center"}>{title}</H5>
       <SubmitTxButton mb="6" mt="4" />
       <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />

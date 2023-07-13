@@ -1,27 +1,15 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
 import { useWeb3React } from "@web3-react/core"
-import { H5 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
-import {
-  useFetchRecentDeposits,
-  useTBTCDepositDataFromLocalStorage,
-} from "../../../hooks/tbtc"
+import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { isSameETHAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
-import { useFetchTvl } from "../../../hooks/useFetchTvl"
-import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
-import SubmitTxButton from "../../../components/SubmitTxButton"
-import {
-  ProtocolHistoryRecentDeposits,
-  ProtocolHistoryTitle,
-  ProtocolHistoryViewMoreLink,
-  TVL,
-} from "../../../components/tBTC"
+
 import {
   BridgeLayout,
   BridgeLayoutAsideSection,
@@ -88,7 +76,7 @@ const MintPageLayout: PageComponent = () => {
         {active ? (
           <Outlet />
         ) : (
-          <BridgeProcessEmptyState title="Ready to mint tTBC?" />
+          <BridgeProcessEmptyState title="Ready to mint tBTC?" />
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>

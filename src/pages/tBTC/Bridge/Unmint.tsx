@@ -288,7 +288,7 @@ UnmintFormPage.route = {
   isPageEnabled: true,
 }
 
-export const UnmintPage: PageComponent = ({}) => {
+export const UnmintPageLayout: PageComponent = ({}) => {
   const { active } = useWeb3React()
 
   return (
@@ -297,7 +297,10 @@ export const UnmintPage: PageComponent = ({}) => {
         {active ? (
           <Outlet />
         ) : (
-          <BridgeProcessEmptyState title="Ready to unmit tBTC?" />
+          <BridgeProcessEmptyState
+            title="Ready to unmit tBTC?"
+            bridgeProcess="unmint"
+          />
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
@@ -307,11 +310,22 @@ export const UnmintPage: PageComponent = ({}) => {
   )
 }
 
+UnmintPageLayout.route = {
+  path: "",
+  index: false,
+  isPageEnabled: true,
+  pages: [UnmintFormPage],
+}
+
+export const UnmintPage: PageComponent = () => {
+  return <Outlet />
+}
+
 UnmintPage.route = {
   path: "unmint",
   pathOverride: "unmint/*",
   index: true,
   title: "Unmint",
-  pages: [UnmintFormPage, UnmintDetails],
+  pages: [UnmintPageLayout, UnmintDetails],
   isPageEnabled: true,
 }
