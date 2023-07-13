@@ -10,10 +10,12 @@ import {
   ModalHeader,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { FC, useEffect, useState } from "react"
+import { FC } from "react"
 import { useNavigate } from "react-router-dom"
-import { useThreshold } from "../../../contexts/ThresholdContext"
-import { useRequestRedemption } from "../../../hooks/tbtc"
+import {
+  useRedemptionEstimatedFees,
+  useRequestRedemption,
+} from "../../../hooks/tbtc"
 import {
   BaseModalProps,
   UnspentTransactionOutputPlainObject,
@@ -48,21 +50,8 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
 }) => {
   const navigate = useNavigate()
   const { account } = useWeb3React()
-  const threshold = useThreshold()
-  const [estimatedBTCAmount, setEstimatedBTCAmount] = useState<string>("0")
-  const [thresholdNetworkFee, setThresholdNetworkFee] = useState<string>("0")
-
-  useEffect(() => {
-    const getEstimatedDepositFees = async () => {
-      const { treasuryFee, estimatedAmountToBeReceived } =
-        await threshold.tbtc.getEstimatedRedemptionFees(unmintAmount)
-
-      setThresholdNetworkFee(treasuryFee)
-      setEstimatedBTCAmount(estimatedAmountToBeReceived)
-    }
-
-    getEstimatedDepositFees()
-  }, [unmintAmount, threshold])
+  const { estimatedBTCAmount, thresholdNetworkFee } =
+    useRedemptionEstimatedFees(unmintAmount)
 
   const onSuccess: OnSuccessCallback = (receipt) => {
     navigate(
