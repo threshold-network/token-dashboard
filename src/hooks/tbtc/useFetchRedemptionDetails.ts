@@ -10,8 +10,8 @@ import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 interface RedemptionDetails {
-  requestedAmount: string
-  receivedAmount?: string
+  requestedAmount: string // in token precision
+  receivedAmount?: string // in satoshi
   redemptionRequestedTxHash: string
   redemptionCompletedTxHash?: {
     chain: string
@@ -159,7 +159,11 @@ export const useFetchRedemptionDetails = (
           requestedAt === redemptionRequestedEventTimestamp
         ) {
           setRedemptionData({
-            requestedAmount: redemptionRequestedEvent.amount,
+            // TODO: Use satoshi <-> IERC20 conversion function from
+            // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
+            requestedAmount: BigNumber.from(redemptionRequestedEvent.amount)
+              .mul(BigNumber.from(10).pow(10))
+              .toString(),
             redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
