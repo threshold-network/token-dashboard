@@ -8,11 +8,15 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Skeleton,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
-import { useRequestRedemption } from "../../../hooks/tbtc"
+import {
+  useRedemptionEstimatedFees,
+  useRequestRedemption,
+} from "../../../hooks/tbtc"
 import {
   BaseModalProps,
   UnspentTransactionOutputPlainObject,
@@ -47,10 +51,8 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
 }) => {
   const navigate = useNavigate()
   const { account } = useWeb3React()
-  // TODO: calculate the BTC amount- take into account fees
-  const btcAmount = unmintAmount
-  const thresholdNetworkFee = "0"
-  const btcMinerFee = "0"
+  const { estimatedBTCAmount, thresholdNetworkFee } =
+    useRedemptionEstimatedFees(unmintAmount)
 
   const onSuccess: OnSuccessCallback = (receipt) => {
     navigate(
@@ -79,7 +81,18 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         <InfoBox variant="modal" mb="6">
           <H5>
             Through unminting you will get back{" "}
-            <InlineTokenBalance tokenAmount={btcAmount} /> BTC
+            <Skeleton isLoaded={!!estimatedBTCAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenSymbol="BTC"
+                tokenDecimals={8}
+                precision={6}
+                higherPrecision={8}
+                tokenAmount={estimatedBTCAmount!}
+                displayTildeBelow={0}
+                isEstimated
+              />{" "}
+            </Skeleton>
+            BTC
           </H5>
           <BodyLg mt="4">
             Unminting tBTC requires one transaction on your end.
@@ -94,19 +107,11 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
             higherPrecision={8}
           />
           <TransactionDetailsAmountItem
-            label="Bitcoin Miner Fee"
-            tokenAmount={btcMinerFee}
-            tokenSymbol="BTC"
-            tokenDecimals={8}
-            precision={6}
-            higherPrecision={8}
-          />
-          <TransactionDetailsAmountItem
             label="Threshold Network Fee"
-            tokenAmount={thresholdNetworkFee}
             tokenSymbol="tBTC"
             precision={6}
             higherPrecision={8}
+            tokenAmount={thresholdNetworkFee}
           />
           <TransactionDetailsItem
             label="BTC address"

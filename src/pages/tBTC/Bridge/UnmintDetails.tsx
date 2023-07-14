@@ -52,6 +52,7 @@ import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDet
 import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
+import { BigNumber } from "ethers"
 import { ExternalHref } from "../../../enums"
 
 const pendingRedemption = {
@@ -96,9 +97,11 @@ export const UnmintDetails: PageComponent = () => {
   }, [btcTxHash])
 
   const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
-  const unmintedAmount = data?.amount ?? "0"
+  const requestedAmount = data?.requestedAmount ?? "0"
+  const receivedAmount = data?.receivedAmount ?? "0"
+
+  const thresholdNetworkFee = data?.treasuryFee ?? "0"
   const btcAddress = data?.btcAddress
-  const fee = "20000000000000000"
   const time = dateAs(
     (data?.completedAt ?? dateToUnixTimestamp()) - (data?.requestedAt ?? 0)
   )
@@ -146,12 +149,12 @@ export const UnmintDetails: PageComponent = () => {
                 </Box>
               )}
               <InlineTokenBalance
-                tokenAmount={unmintedAmount}
+                tokenAmount={requestedAmount}
                 withSymbol
                 tokenSymbol="tBTC"
                 ml="auto"
-                tokenDecimals={8}
-                withHigherPrecision
+                precision={6}
+                higherPrecision={8}
               />
             </BridgeProcessCardSubTitle>
             <Timeline>
@@ -215,8 +218,9 @@ export const UnmintDetails: PageComponent = () => {
             </Timeline>
             {shouldDisplaySuccessStep || isProcessCompleted ? (
               <SuccessStep
-                unmintedAmount={unmintedAmount}
-                thresholdNetworkFee={fee}
+                requestedAmount={requestedAmount}
+                receivedAmount={receivedAmount}
+                thresholdNetworkFee={thresholdNetworkFee}
                 btcAddress={btcAddress!}
               />
             ) : (
@@ -290,10 +294,11 @@ export const UnmintDetails: PageComponent = () => {
 }
 
 const SuccessStep: FC<{
-  unmintedAmount: string
+  requestedAmount: string
+  receivedAmount: string
   thresholdNetworkFee: string
   btcAddress: string
-}> = ({ unmintedAmount, thresholdNetworkFee, btcAddress }) => {
+}> = ({ requestedAmount, receivedAmount, thresholdNetworkFee, btcAddress }) => {
   return (
     <>
       <H5 mt="4">Success!</H5>
@@ -301,11 +306,19 @@ const SuccessStep: FC<{
       <List spacing="4">
         <TransactionDetailsAmountItem
           label="Unminted Amount"
-          tokenAmount={unmintedAmount}
+          tokenAmount={requestedAmount}
           tokenSymbol="tBTC"
+          precision={6}
+          higherPrecision={8}
+        />
+        <TransactionDetailsAmountItem
+          label="Received Amount"
+          tokenAmount={receivedAmount}
+          tokenSymbol="BTC"
           tokenDecimals={8}
           precision={6}
           higherPrecision={8}
+          withHigherPrecision
         />
         <TransactionDetailsAmountItem
           label="Threshold Network Fee"

@@ -222,11 +222,11 @@ export interface ITBTC {
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
    * of tBTC token that will be minted.
-   * @param depositAmount Amount that will be revealed in Satoshi.
-   * @returns Treasury fee, optitimistic mint fee and estimated amount of tBTC
-   * token that will be minted in ERC20 standart.
+   * @param depositAmount Amount of BTC that will be revealed in Satoshi.
+   * @returns Treasury fee, optimistic mint fee and estimated amount of tBTC
+   * token that will be minted in ERC20 standard.
    */
-  getEstimatedFees(depositAmount: string): Promise<{
+  getEstimatedDepositFees(depositAmount: string): Promise<{
     treasuryFee: string
     optimisticMintFee: string
     amountToMint: string
@@ -388,6 +388,19 @@ export interface ITBTC {
   getRedemptionsCompletedEvents(
     filter: RedemptionsCompletedEventFilter
   ): Promise<RedemptionsCompletedEvent[]>
+
+  /**
+   * Gets estimated fees that will be payed during a redemption and estimated
+   * amount of BTC that will be redeemed.
+   * @param redemptionAmount Amount of tbtc requested for redemption in ERC20
+   * standard.
+   * @returns Treasury fee (in token precision) and estimated amount of BTC that
+   * will be redeemed (in satoshi).
+   */
+  getEstimatedRedemptionFees(redemptionAmount: string): Promise<{
+    treasuryFee: string
+    estimatedAmountToBeReceived: string
+  }>
 }
 
 export class TBTC implements ITBTC {
@@ -405,6 +418,8 @@ export class TBTC implements ITBTC {
   private _depositRefundLocktimDuration = 23328000
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
+
+  private _redemptionTreasuryFeeDivisor: BigNumber | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -539,7 +554,7 @@ export class TBTC implements ITBTC {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
   }
 
-  getEstimatedFees = async (depositAmount: string) => {
+  getEstimatedDepositFees = async (depositAmount: string) => {
     const { depositTreasuryFeeDivisor, optimisticMintingFeeDivisor } =
       await this._getDepositFees()
 
@@ -1218,5 +1233,48 @@ export class TBTC implements ITBTC {
       blockNumber: log.blockNumber,
       txHash: log.transactionHash,
     }))
+  }
+
+  getEstimatedRedemptionFees = async (
+    redemptionAmount: string
+  ): Promise<{
+    treasuryFee: string
+    estimatedAmountToBeReceived: string
+  }> => {
+    const { satoshis: redemptionAmountInSatoshi } =
+      this._amountToSatoshi(redemptionAmount)
+
+    const redemptionTreasuryFeeDivisor =
+      await this.getRedemptionTreasuryFeeDivisor()
+
+    if (!redemptionTreasuryFeeDivisor) {
+      throw new Error("Redemption treasury fee divisor not found.")
+    }
+
+    // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Redemption.sol#L478
+    const treasuryFee = BigNumber.from(redemptionTreasuryFeeDivisor).gt(0)
+      ? BigNumber.from(redemptionAmountInSatoshi).div(
+          redemptionTreasuryFeeDivisor
+        )
+      : ZERO
+
+    const estimatedAmountToBeReceived = BigNumber.from(
+      redemptionAmountInSatoshi
+    ).sub(treasuryFee)
+
+    return {
+      treasuryFee: fromSatoshiToTokenPrecision(treasuryFee).toString(),
+      estimatedAmountToBeReceived: estimatedAmountToBeReceived.toString(),
+    }
+  }
+
+  private getRedemptionTreasuryFeeDivisor = async () => {
+    if (!this._redemptionTreasuryFeeDivisor) {
+      const { redemptionTreasuryFeeDivisor } =
+        await this.bridgeContract.redemptionParameters()
+      this._redemptionTreasuryFeeDivisor = redemptionTreasuryFeeDivisor
+    }
+
+    return this._redemptionTreasuryFeeDivisor
   }
 }

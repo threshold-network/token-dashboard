@@ -1,15 +1,18 @@
+import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import {
   createAddressFromOutputScript,
   prependScriptPubKeyByLength,
   isValidType,
+  fromSatoshiToTokenPrecision,
 } from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 interface RedemptionDetails {
-  amount: string
+  requestedAmount: string // in token precision
+  receivedAmount?: string // in satoshi
   redemptionRequestedTxHash: string
   redemptionCompletedTxHash?: {
     chain: string
@@ -17,6 +20,7 @@ interface RedemptionDetails {
   }
   requestedAt: number
   completedAt?: number
+  treasuryFee: string // in token precision
   isTimedOut: boolean
   redemptionTimedOutTxHash?: string
   btcAddress?: string
@@ -74,7 +78,7 @@ export const useFetchRedemptionDetails = (
         // the request actually happened. We need `redeemer` address as well to
         // reduce the number of records - any user can request redemption for
         // the same wallet.
-        const redemptionRequest = (
+        const redemptionRequestedEvent = (
           await threshold.tbtc.getRedemptionRequestedEvents({
             walletPublicKeyHash,
             redeemer,
@@ -107,12 +111,12 @@ export const useFetchRedemptionDetails = (
             ) === redemptionKey
         )
 
-        if (!redemptionRequest) {
+        if (!redemptionRequestedEvent) {
           throw new Error("Redemption not found...")
         }
 
         const { timestamp: redemptionRequestedEventTimestamp } = await getBlock(
-          redemptionRequest.blockNumber
+          redemptionRequestedEvent.blockNumber
         )
 
         // We need to check if the redemption has `pending` or `timedOut` status.
@@ -131,7 +135,7 @@ export const useFetchRedemptionDetails = (
           ? (
               await threshold.tbtc.getRedemptionTimedOutEvents({
                 walletPublicKeyHash,
-                fromBlock: redemptionRequest.blockNumber,
+                fromBlock: redemptionRequestedEvent.blockNumber,
               })
             ).find(
               (event) => event.redeemerOutputScript === redeemerOutputScript
@@ -156,11 +160,16 @@ export const useFetchRedemptionDetails = (
           requestedAt === redemptionRequestedEventTimestamp
         ) {
           setRedemptionData({
-            amount: redemptionRequest.amount,
-            redemptionRequestedTxHash: redemptionRequest.txHash,
+            requestedAmount: fromSatoshiToTokenPrecision(
+              redemptionRequestedEvent.amount
+            ).toString(),
+            redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
             redemptionTimedOutTxHash: timedOutTxHash,
+            treasuryFee: fromSatoshiToTokenPrecision(
+              redemptionRequestedEvent.treasuryFee
+            ).toString(),
             isTimedOut,
           })
           return
@@ -173,7 +182,7 @@ export const useFetchRedemptionDetails = (
         const redemptionCompletedEvents =
           await threshold.tbtc.getRedemptionsCompletedEvents({
             walletPublicKeyHash,
-            fromBlock: redemptionRequest.blockNumber,
+            fromBlock: redemptionRequestedEvent.blockNumber,
           })
 
         // For each event we should take `redemptionTxHash` param from
@@ -189,10 +198,10 @@ export const useFetchRedemptionDetails = (
             redemptionBitcoinTxHash
           )
 
-          for (const { scriptPubKey } of outputs) {
+          for (const { scriptPubKey, value } of outputs) {
             if (
               prependScriptPubKeyByLength(scriptPubKey.toString()) !==
-              redemptionRequest.redeemerOutputScript
+              redemptionRequestedEvent.redeemerOutputScript
             )
               continue
 
@@ -200,14 +209,20 @@ export const useFetchRedemptionDetails = (
               redemptionCompletedBlockNumber
             )
             setRedemptionData({
-              amount: redemptionRequest.amount,
-              redemptionRequestedTxHash: redemptionRequest.txHash,
+              requestedAmount: fromSatoshiToTokenPrecision(
+                redemptionRequestedEvent.amount
+              ).toString(),
+              receivedAmount: value.toString(),
+              redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
               redemptionCompletedTxHash: {
                 chain: txHash,
                 bitcoin: redemptionBitcoinTxHash,
               },
               requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
+              treasuryFee: fromSatoshiToTokenPrecision(
+                redemptionRequestedEvent.treasuryFee
+              ).toString(),
               isTimedOut: false,
               btcAddress: createAddressFromOutputScript(
                 scriptPubKey,

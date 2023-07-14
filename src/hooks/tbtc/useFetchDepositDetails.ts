@@ -74,7 +74,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
           threshold.tbtc.minimumNumberOfConfirmationsNeeded(deposit.amount)
 
         const { treasuryFee, optimisticMintFee, amountToMint } =
-          await threshold.tbtc.getEstimatedFees(deposit.amount)
+          await threshold.tbtc.getEstimatedDepositFees(deposit.amount)
 
         setDepositData({
           btcTxHash: btcTxHash.toString(),
