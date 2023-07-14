@@ -18,3 +18,12 @@ export const min = (a: BigNumberish, b: BigNumberish) => {
 export const max = (a: BigNumberish, b: BigNumberish) => {
   return compare(a, b, "gt")
 }
+
+export function to1ePrecision(n: BigNumberish, precision: number): BigNumber {
+  const decimalMultiplier = BigNumber.from(10).pow(precision)
+  return BigNumber.from(n).mul(decimalMultiplier)
+}
+
+export function to1e18(n: BigNumberish): BigNumber {
+  return to1ePrecision(n, 18)
+}

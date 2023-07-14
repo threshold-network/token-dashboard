@@ -6,6 +6,7 @@ import { useBridgeContract } from "./useBridgeContract"
 import { tbtcSlice } from "../../store/tbtc"
 import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
+import { fromSatoshiToTokenPrecision } from "../../threshold-ts/utils"
 
 export const useSubscribeToRedemptionRequestedEvent = () => {
   const contract = useBridgeContract()
@@ -37,7 +38,7 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
         tbtcSlice.actions.redemptionRequested({
           // TODO: Take into account fees, see
           // https://github.com/threshold-network/token-dashboard/pull/569
-          amount: requestedAmount.mul(BigNumber.from(10).pow(10)).toString(),
+          amount: fromSatoshiToTokenPrecision(requestedAmount).toString(),
           txHash: event.transactionHash,
           redemptionKey,
           blockNumber: event.blockNumber,

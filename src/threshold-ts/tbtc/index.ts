@@ -19,6 +19,7 @@ import {
   isSameETHAddress,
   AddressZero,
   isPayToScriptHashTypeAddress,
+  fromSatoshiToTokenPrecision,
 } from "../utils"
 import {
   Client,
@@ -883,7 +884,7 @@ export class TBTC implements ITBTC {
         // handled sucesfully the `getRedemptionRequest` returns `0`. The
         // `amount` in event is in satoshi, so here we convert to token
         // precision.
-        amount: this._satoshiMultiplier.mul(event.amount).toString(),
+        amount: fromSatoshiToTokenPrecision(event.amount).toString(),
         activityKey: redemptionKey,
         bridgeProcess: "unmint",
         blockNumber: event.blockNumber,
