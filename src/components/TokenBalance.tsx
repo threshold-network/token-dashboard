@@ -53,8 +53,7 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenFormat,
       tokenDecimals,
       precision,
-      displayTildeBelow,
-      isEstimated
+      displayTildeBelow
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, precision])
 
@@ -64,14 +63,16 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenFormat,
       tokenDecimals,
       higherPrecision,
-      1,
-      isEstimated
+      1
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, higherPrecision])
 
   return (
-    <Tooltip label={_tokenAmountWithHigherPrecision} placement="top">
-      <Box as="span" {...restProps}>{`${_tokenAmount}${
+    <Tooltip
+      label={`${isEstimated ? "~" : ""}${_tokenAmountWithHigherPrecision}`}
+      placement="top"
+    >
+      <Box as="span" {...restProps}>{`${isEstimated ? "`" : ""}${_tokenAmount}${
         withSymbol ? ` ${tokenSymbol}` : ""
       }`}</Box>
     </Tooltip>
