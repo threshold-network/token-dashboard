@@ -152,7 +152,7 @@ export const UnmintDetails: PageComponent = () => {
               <InlineTokenBalance
                 tokenAmount={requestedAmount}
                 withSymbol
-                tokenSymbol="BTC"
+                tokenSymbol="tBTC"
                 ml="auto"
                 precision={6}
                 higherPrecision={8}
