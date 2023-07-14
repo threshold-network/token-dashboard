@@ -309,7 +309,7 @@ const SuccessStep: FC<{
         <TransactionDetailsAmountItem
           label="Unminted Amount"
           tokenAmount={requestedAmount}
-          tokenSymbol="TBTC"
+          tokenSymbol="tBTC"
           precision={6}
           higherPrecision={8}
         />
