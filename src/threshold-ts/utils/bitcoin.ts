@@ -13,6 +13,8 @@ import {
   validate,
 } from "bitcoin-address-validation"
 
+export const BITCOIN_PRECISION = 8
+
 export const isValidBtcAddress = (
   address: string,
   network: BitcoinNetwork = BitcoinNetwork.Mainnet
