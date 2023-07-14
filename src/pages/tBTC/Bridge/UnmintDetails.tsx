@@ -98,12 +98,10 @@ export const UnmintDetails: PageComponent = () => {
   const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
   // requested unmint amount of tBTC in satoshi!. This means that this value is
   // the amount before subtracting the fees.
-  const unmintAmount = data?.amount ?? "0"
+  const requestedAmount = data?.requestedAmount ?? "0"
+  const receivedAmount = data?.receivedAmount ?? "0"
 
   const thresholdNetworkFee = data?.treasuryFee ?? "0"
-  const estimatedAmountToBeReceived = BigNumber.from(unmintAmount)
-    .sub(thresholdNetworkFee)
-    .toString()
   const btcAddress = data?.btcAddress
   const time = dateAs(
     (data?.completedAt ?? dateToUnixTimestamp()) - (data?.requestedAt ?? 0)
@@ -152,15 +150,12 @@ export const UnmintDetails: PageComponent = () => {
                 </Box>
               )}
               <InlineTokenBalance
-                tokenAmount={estimatedAmountToBeReceived}
+                tokenAmount={requestedAmount}
                 withSymbol
                 tokenSymbol="BTC"
                 ml="auto"
-                tokenDecimals={8}
                 precision={6}
                 higherPrecision={8}
-                withHigherPrecision
-                isEstimated
               />
             </BridgeProcessCardSubTitle>
             <Timeline>
@@ -224,7 +219,8 @@ export const UnmintDetails: PageComponent = () => {
             </Timeline>
             {shouldDisplaySuccessStep || isProcessCompleted ? (
               <SuccessStep
-                estimatedAmountToBeReceived={estimatedAmountToBeReceived}
+                requestedAmount={requestedAmount}
+                receivedAmount={receivedAmount}
                 thresholdNetworkFee={thresholdNetworkFee}
                 btcAddress={btcAddress!}
               />
@@ -300,10 +296,11 @@ export const UnmintDetails: PageComponent = () => {
 }
 
 const SuccessStep: FC<{
-  estimatedAmountToBeReceived: string
+  requestedAmount: string
+  receivedAmount: string
   thresholdNetworkFee: string
   btcAddress: string
-}> = ({ estimatedAmountToBeReceived, thresholdNetworkFee, btcAddress }) => {
+}> = ({ requestedAmount, receivedAmount, thresholdNetworkFee, btcAddress }) => {
   return (
     <>
       <H5 mt="4">Success!</H5>
@@ -311,13 +308,19 @@ const SuccessStep: FC<{
       <List spacing="4">
         <TransactionDetailsAmountItem
           label="Unminted Amount"
-          tokenAmount={estimatedAmountToBeReceived}
+          tokenAmount={requestedAmount}
+          tokenSymbol="TBTC"
+          precision={6}
+          higherPrecision={8}
+        />
+        <TransactionDetailsAmountItem
+          label="Received Amount"
+          tokenAmount={receivedAmount}
           tokenSymbol="BTC"
           tokenDecimals={8}
           precision={6}
           higherPrecision={8}
           withHigherPrecision
-          isEstimated
         />
         <TransactionDetailsAmountItem
           label="Threshold Network Fee"

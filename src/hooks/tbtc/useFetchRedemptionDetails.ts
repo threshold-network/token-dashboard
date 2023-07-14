@@ -1,3 +1,4 @@
+import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import {
@@ -9,7 +10,8 @@ import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 interface RedemptionDetails {
-  amount: string
+  requestedAmount: string
+  receivedAmount?: string
   redemptionRequestedTxHash: string
   redemptionCompletedTxHash?: {
     chain: string
@@ -157,7 +159,7 @@ export const useFetchRedemptionDetails = (
           requestedAt === redemptionRequestedEventTimestamp
         ) {
           setRedemptionData({
-            amount: redemptionRequestedEvent.amount,
+            requestedAmount: redemptionRequestedEvent.amount,
             redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
@@ -191,7 +193,7 @@ export const useFetchRedemptionDetails = (
             redemptionBitcoinTxHash
           )
 
-          for (const { scriptPubKey } of outputs) {
+          for (const { scriptPubKey, value } of outputs) {
             if (
               prependScriptPubKeyByLength(scriptPubKey.toString()) !==
               redemptionRequestedEvent.redeemerOutputScript
@@ -202,7 +204,10 @@ export const useFetchRedemptionDetails = (
               redemptionCompletedBlockNumber
             )
             setRedemptionData({
-              amount: redemptionRequestedEvent.amount,
+              requestedAmount: BigNumber.from(redemptionRequestedEvent.amount)
+                .mul(BigNumber.from(10).pow(10))
+                .toString(),
+              receivedAmount: value.toString(),
               redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
               redemptionCompletedTxHash: {
                 chain: txHash,
