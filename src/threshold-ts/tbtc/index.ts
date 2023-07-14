@@ -840,20 +840,7 @@ export class TBTC implements ITBTC {
       redeemer,
     })
 
-    const redemptionsMap = new Map<
-      string,
-      {
-        redemptionKey: string
-        walletPublicKeyHash: string
-        txHash: string
-        blockNumber: number
-        redeemerOutputScript: string
-        isPending: boolean
-        isTimedOut: boolean
-        requestedAmount: string
-        requestedAt: number
-      }
-    >()
+    const redemptions: BridgeActivity[] = []
 
     for (const event of requestedRedemptions) {
       const { timestamp: eventTimestamp } =
@@ -880,52 +867,34 @@ export class TBTC implements ITBTC {
       const isTheSameRedemption =
         eventTimestamp === redemptionDetails.requestedAt
 
-      redemptionsMap.set(`${redemptionKey}-${event.txHash}`, {
-        isPending: isTheSameRedemption && redemptionDetails.isPending,
-        isTimedOut: isTheSameRedemption && redemptionDetails.isTimedOut,
+      const isTimedOut = isTheSameRedemption && redemptionDetails.isTimedOut
+      const requestedAt = isTheSameRedemption
+        ? redemptionDetails.requestedAt
+        : 0
+
+      let status = BridgeActivityStatus.PENDING
+      if (isTimedOut) status = BridgeActivityStatus.ERROR
+      if (requestedAt === 0) status = BridgeActivityStatus.UNMINTED
+
+      redemptions.push({
+        status,
+        txHash: event.txHash,
         // We need to get an amount from an event because if the redemption was
         // handled sucesfully the `getRedemptionRequest` returns `0`. The
         // `amount` in event is in satoshi, so here we convert to token
         // precision.
-        requestedAmount: this._satoshiMultiplier.mul(event.amount).toString(),
-        requestedAt: isTheSameRedemption ? redemptionDetails.requestedAt : 0,
-        walletPublicKeyHash: event.walletPublicKeyHash,
-        redeemerOutputScript: event.redeemerOutputScript,
-        txHash: event.txHash,
+        amount: this._satoshiMultiplier.mul(event.amount).toString(),
+        activityKey: redemptionKey,
+        bridgeProcess: "unmint",
         blockNumber: event.blockNumber,
-        redemptionKey,
+        additionalData: {
+          redeemerOutputScript: event.redeemerOutputScript,
+          walletPublicKeyHash: event.walletPublicKeyHash,
+        } as UnminBridgeActivityAdditionalData,
       })
     }
 
-    const redemptionsMapEntries = Array.from(redemptionsMap.entries())
-
-    const pendingRedemptions = redemptionsMapEntries
-      .filter(([, { isPending }]) => isPending)
-      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.PENDING }))
-
-    const timedOutRedemptions = redemptionsMapEntries
-      .filter(([, { isTimedOut }]) => isTimedOut)
-      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.ERROR }))
-
-    const completedRedemptions = redemptionsMapEntries
-      .filter(([, { requestedAt }]) => requestedAt === 0)
-      .map(([, data]) => ({ ...data, status: BridgeActivityStatus.UNMINTED }))
-
-    return pendingRedemptions
-      .concat(timedOutRedemptions)
-      .concat(completedRedemptions)
-      .map((data) => ({
-        status: data.status,
-        txHash: data.txHash,
-        amount: data.requestedAmount,
-        activityKey: data.redemptionKey,
-        bridgeProcess: "unmint",
-        blockNumber: data.blockNumber,
-        additionalData: {
-          redeemerOutputScript: data.redeemerOutputScript,
-          walletPublicKeyHash: data.walletPublicKeyHash,
-        } as UnminBridgeActivityAdditionalData,
-      }))
+    return redemptions
   }
 
   buildDepositKey = (
