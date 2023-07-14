@@ -419,6 +419,8 @@ export class TBTC implements ITBTC {
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
 
+  private _redemptionTreasuryFeeDivisor: BigNumber | undefined
+
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
@@ -1242,8 +1244,12 @@ export class TBTC implements ITBTC {
     const { satoshis: redemptionAmountInSatoshi } =
       this._amountToSatoshi(redemptionAmount)
 
-    const { redemptionTreasuryFeeDivisor } =
-      await this.bridgeContract.redemptionParameters()
+    const redemptionTreasuryFeeDivisor =
+      await this.getRedemptionTreasuryFeeDivisor()
+
+    if (!redemptionTreasuryFeeDivisor) {
+      throw new Error("Redemption treasury fee divisor not found.")
+    }
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Redemption.sol#L478
     const treasuryFee = BigNumber.from(redemptionTreasuryFeeDivisor).gt(0)
@@ -1260,5 +1266,15 @@ export class TBTC implements ITBTC {
       treasuryFee: fromSatoshiToTokenPrecision(treasuryFee).toString(),
       estimatedAmountToBeReceived: estimatedAmountToBeReceived.toString(),
     }
+  }
+
+  private getRedemptionTreasuryFeeDivisor = async () => {
+    if (!this._redemptionTreasuryFeeDivisor) {
+      const { redemptionTreasuryFeeDivisor } =
+        await this.bridgeContract.redemptionParameters()
+      this._redemptionTreasuryFeeDivisor = redemptionTreasuryFeeDivisor
+    }
+
+    return this._redemptionTreasuryFeeDivisor
   }
 }
