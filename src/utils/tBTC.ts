@@ -127,13 +127,26 @@ export class RedemptionDetailsLinkBuilder {
   }
 
   build = () => {
+    const params = [
+      { label: "transaction hash", value: this.txHash },
+      { label: "wallet public key hash", value: this.walletPublicKeyHash },
+      { label: "redeemer output script", value: this.redeemerOutputScript },
+      { label: "redeemer", value: this.redeemer },
+    ]
+
     if (
       !this.txHash ||
       !this.walletPublicKeyHash ||
       !this.redeemerOutputScript ||
       !this.redeemer
     ) {
-      throw new Error("Required parameters not set")
+      const missingParams = params.filter((_) => !_.value)
+
+      throw new Error(
+        `Required parameters not set. Set ${missingParams
+          .map((_) => _.label)
+          .join(", ")}.`
+      )
     }
 
     const queryParams = new URLSearchParams()
