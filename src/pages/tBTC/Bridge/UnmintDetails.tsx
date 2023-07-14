@@ -97,8 +97,6 @@ export const UnmintDetails: PageComponent = () => {
   }, [btcTxHash])
 
   const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
-  // requested unmint amount of tBTC in satoshi!. This means that this value is
-  // the amount before subtracting the fees.
   const requestedAmount = data?.requestedAmount ?? "0"
   const receivedAmount = data?.receivedAmount ?? "0"
 
