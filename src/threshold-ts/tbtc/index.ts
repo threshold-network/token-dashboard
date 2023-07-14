@@ -270,10 +270,10 @@ export interface ITBTC {
   /**
    * Returns the bridge transaction history by depositor in order from the
    * newest activities to the oldest.
-   * @param depositor Depositor Ethereum address.
+   * @param account Ethereum address.
    * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
-  bridgeActivity(depositor: string): Promise<BridgeActivity[]>
+  bridgeActivity(account: string): Promise<BridgeActivity[]>
 
   /**
    * Builds the deposit key required to refer a revealed deposit.
@@ -650,11 +650,11 @@ export class TBTC implements ITBTC {
     return 6
   }
 
-  bridgeActivity = async (depositor: string): Promise<BridgeActivity[]> => {
-    const depositActivities = await this._findDepositActivities(depositor)
+  bridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
+    const depositActivities = await this._findDepositActivities(account)
 
     const redemptionActivities: BridgeActivity[] =
-      await this._findRedemptionActivities(depositor)
+      await this._findRedemptionActivities(account)
 
     return depositActivities
       .concat(redemptionActivities)
