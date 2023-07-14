@@ -19,7 +19,7 @@ interface RedemptionDetails {
   }
   requestedAt: number
   completedAt?: number
-  treasuryFee: string
+  treasuryFee: string // in token precision
   isTimedOut: boolean
   redemptionTimedOutTxHash?: string
   btcAddress?: string
@@ -168,7 +168,11 @@ export const useFetchRedemptionDetails = (
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
             redemptionTimedOutTxHash: timedOutTxHash,
-            treasuryFee: redemptionRequestedEvent.treasuryFee,
+            // TODO: Use satoshi <-> IERC20 conversion function from
+            // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
+            treasuryFee: BigNumber.from(redemptionRequestedEvent.treasuryFee)
+              .mul(BigNumber.from(10).pow(10))
+              .toString(),
             isTimedOut,
           })
           return
@@ -221,7 +225,11 @@ export const useFetchRedemptionDetails = (
               },
               requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
-              treasuryFee: redemptionRequestedEvent.treasuryFee,
+              // TODO: Use satoshi <-> IERC20 conversion function from
+              // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
+              treasuryFee: BigNumber.from(redemptionRequestedEvent.treasuryFee)
+                .mul(BigNumber.from(10).pow(10))
+                .toString(),
               isTimedOut: false,
               btcAddress: createAddressFromOutputScript(
                 scriptPubKey,

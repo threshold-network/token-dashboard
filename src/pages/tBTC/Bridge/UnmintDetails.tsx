@@ -325,8 +325,7 @@ const SuccessStep: FC<{
         <TransactionDetailsAmountItem
           label="Threshold Network Fee"
           tokenAmount={thresholdNetworkFee}
-          tokenSymbol="BTC"
-          tokenDecimals={8}
+          tokenSymbol="tBTC"
           precision={6}
           higherPrecision={8}
         />

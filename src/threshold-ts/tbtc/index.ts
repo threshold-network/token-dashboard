@@ -379,8 +379,8 @@ export interface ITBTC {
    * amount of BTC that will be redeemed.
    * @param redemptionAmount Amount of tbtc requested for redemption in ERC20
    * standard.
-   * @returns Treasury fee and estimated amount of BTC that will be redeemed
-   * (both in satoshi).
+   * @returns Treasury fee (in token precision) and estimated amount of BTC that
+   * will be redeemed (in satoshi).
    */
   getEstimatedRedemptionFees(redemptionAmount: string): Promise<{
     treasuryFee: string
@@ -1152,8 +1152,11 @@ export class TBTC implements ITBTC {
       redemptionAmountInSatoshi
     ).sub(treasuryFee)
 
+    // // TODO: Use satoshi <-> IERC20 conversion function from
+    //https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
+
     return {
-      treasuryFee: treasuryFee.toString(),
+      treasuryFee: treasuryFee.mul(BigNumber.from(10).pow(10)).toString(),
       estimatedAmountToBeReceived: estimatedAmountToBeReceived.toString(),
     }
   }
