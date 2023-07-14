@@ -69,6 +69,9 @@ export interface BridgeActivity {
   status: BridgeActivityStatus
   txHash: string
   amount: string
+  /**
+   * Stores the deposit key for deposit and redemption key for redemption.
+   */
   activityKey: string
   additionalData?: unknown
   blockNumber: number
