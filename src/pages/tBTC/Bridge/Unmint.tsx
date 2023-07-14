@@ -101,7 +101,7 @@ const UnmintFormPage: PageComponent = ({}) => {
         subTitle="Unmint your tBTC tokens"
       />
       <BodyMd color="gray.500">
-        Unminting requires one Ethereum transaction and it takes around 5 hours.
+        Unminting requires one Ethereum transaction and it takes around 3 hours.
       </BodyMd>
       <UnmintForm
         maxTokenAmount={balance.toString()}
@@ -122,7 +122,7 @@ const UnmintAsideLayout = () => {
       <LabelSm>Duration</LabelSm>
       <HStack mt="4" spacing="4">
         <BoxLabel variant="solid" status="primary">
-          ~ 5 Hours
+          ~ 3 Hours
         </BoxLabel>
         <Box>
           <BodyXs as="span" color="gray.500">

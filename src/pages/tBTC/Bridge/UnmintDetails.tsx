@@ -52,6 +52,7 @@ import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDet
 import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
+import { ExternalHref } from "../../../enums"
 
 const pendingRedemption = {
   redemptionRequestedTxHash:
@@ -163,7 +164,7 @@ export const UnmintDetails: PageComponent = () => {
                 left="50%"
                 transform="translateX(-50%)"
               >
-                usual duration - 5 hours
+                usual duration - 3 hours
               </Badge>
               <TimelineItem status="active">
                 <TimelineBreakpoint>
@@ -276,10 +277,9 @@ export const UnmintDetails: PageComponent = () => {
             </List>
             {!shouldDisplaySuccessStep && (
               <BridgeProcessResource
-                // TODO: set correct props here
-                title="Commodo ullamcorper a lacus vestibulum sed"
-                subtitle="Diam sit amet nisl suscipit adipiscing bibendum est ultricies integer."
-                link="TODO"
+                title="Minters and Guardians in Optimistic Minting"
+                subtitle="A phased approach with two main roles: Minters and Guardians."
+                link={ExternalHref.mintersAndGuardiansDocs}
               />
             )}
           </>
