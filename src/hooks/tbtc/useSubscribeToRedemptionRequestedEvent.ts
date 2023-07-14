@@ -36,8 +36,6 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
 
       dispatch(
         tbtcSlice.actions.redemptionRequested({
-          // TODO: Take into account fees, see
-          // https://github.com/threshold-network/token-dashboard/pull/569
           amount: fromSatoshiToTokenPrecision(requestedAmount).toString(),
           txHash: event.transactionHash,
           redemptionKey,
