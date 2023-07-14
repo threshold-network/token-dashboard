@@ -1256,11 +1256,8 @@ export class TBTC implements ITBTC {
       redemptionAmountInSatoshi
     ).sub(treasuryFee)
 
-    // // TODO: Use satoshi <-> IERC20 conversion function from
-    //https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
-
     return {
-      treasuryFee: treasuryFee.mul(BigNumber.from(10).pow(10)).toString(),
+      treasuryFee: fromSatoshiToTokenPrecision(treasuryFee).toString(),
       estimatedAmountToBeReceived: estimatedAmountToBeReceived.toString(),
     }
   }

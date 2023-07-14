@@ -5,6 +5,7 @@ import {
   createAddressFromOutputScript,
   prependScriptPubKeyByLength,
   isValidType,
+  fromSatoshiToTokenPrecision,
 } from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
@@ -159,20 +160,16 @@ export const useFetchRedemptionDetails = (
           requestedAt === redemptionRequestedEventTimestamp
         ) {
           setRedemptionData({
-            // TODO: Use satoshi <-> IERC20 conversion function from
-            // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
-            requestedAmount: BigNumber.from(redemptionRequestedEvent.amount)
-              .mul(BigNumber.from(10).pow(10))
-              .toString(),
+            requestedAmount: fromSatoshiToTokenPrecision(
+              redemptionRequestedEvent.amount
+            ).toString(),
             redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
             redemptionCompletedTxHash: undefined,
             requestedAt: requestedAt,
             redemptionTimedOutTxHash: timedOutTxHash,
-            // TODO: Use satoshi <-> IERC20 conversion function from
-            // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
-            treasuryFee: BigNumber.from(redemptionRequestedEvent.treasuryFee)
-              .mul(BigNumber.from(10).pow(10))
-              .toString(),
+            treasuryFee: fromSatoshiToTokenPrecision(
+              redemptionRequestedEvent.treasuryFee
+            ).toString(),
             isTimedOut,
           })
           return
@@ -212,11 +209,9 @@ export const useFetchRedemptionDetails = (
               redemptionCompletedBlockNumber
             )
             setRedemptionData({
-              // TODO: Use satoshi <-> IERC20 conversion function from
-              // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
-              requestedAmount: BigNumber.from(redemptionRequestedEvent.amount)
-                .mul(BigNumber.from(10).pow(10))
-                .toString(),
+              requestedAmount: fromSatoshiToTokenPrecision(
+                redemptionRequestedEvent.amount
+              ).toString(),
               receivedAmount: value.toString(),
               redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
               redemptionCompletedTxHash: {
@@ -225,11 +220,9 @@ export const useFetchRedemptionDetails = (
               },
               requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
-              // TODO: Use satoshi <-> IERC20 conversion function from
-              // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
-              treasuryFee: BigNumber.from(redemptionRequestedEvent.treasuryFee)
-                .mul(BigNumber.from(10).pow(10))
-                .toString(),
+              treasuryFee: fromSatoshiToTokenPrecision(
+                redemptionRequestedEvent.treasuryFee
+              ).toString(),
               isTimedOut: false,
               btcAddress: createAddressFromOutputScript(
                 scriptPubKey,
