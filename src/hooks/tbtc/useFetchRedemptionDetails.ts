@@ -204,6 +204,8 @@ export const useFetchRedemptionDetails = (
               redemptionCompletedBlockNumber
             )
             setRedemptionData({
+              // TODO: Use satoshi <-> IERC20 conversion function from
+              // https://github.com/threshold-network/token-dashboard/commit/fe8b96e24e013c4e86e8faff74f4bc056fd3e0b4
               requestedAmount: BigNumber.from(redemptionRequestedEvent.amount)
                 .mul(BigNumber.from(10).pow(10))
                 .toString(),
