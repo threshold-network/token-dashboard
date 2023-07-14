@@ -1,4 +1,5 @@
 import { FC, createContext, useContext, ReactElement } from "react"
+import { useWeb3React } from "@web3-react/core"
 import {
   Badge,
   BodyMd,
@@ -18,12 +19,14 @@ import {
 import {
   BridgeActivityStatus,
   BridgeActivity as BridgeActivityType,
+  UnminBridgeActivityAdditionalData,
 } from "../../threshold-ts/tbtc"
 import emptyHistoryImageSrcDark from "../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../static/images/tBTC-bridge-no-history-light.svg"
 import { InlineTokenBalance } from "../TokenBalance"
 import Link from "../Link"
 import { OutlineListItem } from "../OutlineListItem"
+import { RedemptionDetailsLinkBuilder } from "../../utils/tBTC"
 
 export type BridgeActivityProps = {
   data: BridgeActivityType[]
@@ -97,8 +100,28 @@ export const BridgeActivityData: FC<ListProps> = (props) => {
 const ActivityItem: FC<BridgeActivityType> = ({
   amount,
   status,
-  depositKey,
+  activityKey,
+  bridgeProcess,
+  additionalData,
+  txHash,
 }) => {
+  const { account } = useWeb3React()
+
+  const link =
+    bridgeProcess === "unmint"
+      ? RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+          .withRedeemer(account!)
+          .withRedeemerOutputScript(
+            (additionalData as UnminBridgeActivityAdditionalData)
+              .redeemerOutputScript
+          )
+          .withWalletPublicKeyHash(
+            (additionalData as UnminBridgeActivityAdditionalData)
+              .walletPublicKeyHash
+          )
+          .build()
+      : `/tBTC/mint/deposit/${activityKey}`
+
   return (
     <ActivityItemWrapper>
       <LinkOverlay
@@ -106,7 +129,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
         textDecoration="none"
         _hover={{ textDecoration: "none" }}
         color="inherit"
-        to={`/tBTC/mint/deposit/${depositKey}`}
+        to={link}
       >
         <InlineTokenBalance tokenAmount={amount} />
       </LinkOverlay>
@@ -116,7 +139,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
 }
 
 const renderActivityItem = (item: BridgeActivityType) => (
-  <ActivityItem key={item.depositKey} {...item} />
+  <ActivityItem key={`${item.activityKey}-${item.txHash}`} {...item} />
 )
 
 const bridgeActivityStatusToBadgeProps: Record<
@@ -124,6 +147,9 @@ const bridgeActivityStatusToBadgeProps: Record<
   { colorScheme: string }
 > = {
   [BridgeActivityStatus.MINTED]: {
+    colorScheme: "green",
+  },
+  [BridgeActivityStatus.UNMINTED]: {
     colorScheme: "green",
   },
   [BridgeActivityStatus.PENDING]: {
