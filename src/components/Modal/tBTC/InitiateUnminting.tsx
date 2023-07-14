@@ -8,6 +8,7 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Skeleton,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
@@ -80,15 +81,17 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         <InfoBox variant="modal" mb="6">
           <H5>
             Through unminting you will get back{" "}
-            <InlineTokenBalance
-              tokenSymbol="BTC"
-              tokenDecimals={8}
-              precision={6}
-              higherPrecision={8}
-              tokenAmount={estimatedBTCAmount}
-              displayTildeBelow={0}
-              isEstimated
-            />{" "}
+            <Skeleton isLoaded={!!estimatedBTCAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenSymbol="BTC"
+                tokenDecimals={8}
+                precision={6}
+                higherPrecision={8}
+                tokenAmount={estimatedBTCAmount!}
+                displayTildeBelow={0}
+                isEstimated
+              />{" "}
+            </Skeleton>
             BTC
           </H5>
           <BodyLg mt="4">

@@ -3,8 +3,12 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const useRedemptionEstimatedFees = (unmintedAmount: string) => {
   const threshold = useThreshold()
-  const [estimatedBTCAmount, setEstimatedBTCAmount] = useState<string>("0")
-  const [thresholdNetworkFee, setThresholdNetworkFee] = useState<string>("0")
+  const [estimatedBTCAmount, setEstimatedBTCAmount] = useState<
+    string | undefined
+  >(undefined)
+  const [thresholdNetworkFee, setThresholdNetworkFee] = useState<
+    string | undefined
+  >(undefined)
 
   useEffect(() => {
     const getEstimatedRedemptionFees = async () => {
