@@ -1,30 +1,23 @@
-FROM node:14-alpine
+FROM node:14-buster-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Install the dependencies
-RUN apk add --update --no-cache python3 make g++ && \
-    apk update && apk add --no-cache git openssh-client ca-certificates && \
-    git config --global url."https://".insteadOf git://
+RUN apt-get update && apt-get install -y python3 make g++ git openssh-client ca-certificates && \
+    git config --global url."https://".insteadOf git:// && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
 
 ENV PYTHON /usr/bin/python3
 
-# Copy package.json and yarn.lock to the working directory
 COPY package*.json yarn.lock ./
 
-# Clean yarn cache and install dependencies
 RUN yarn cache clean && yarn install
 
-# Copy the app's source code to the working directory
 COPY . .
 
-# Build the React app
-ENV NODE_OPTIONS=--max_old_space_size=4096
+ENV NODE_OPTIONS=--max_old_space_size=3072
 RUN yarn build
 
-# Expose the container's port
 EXPOSE 3000
 
-# Set the command to run when the container starts
 CMD ["yarn", "start"]
