@@ -18,9 +18,11 @@ const WalletConnectionAlert: FC<{
   const { error } = useWeb3React()
   const [alertDescription, setAlertDescription] = useState("")
 
+  const errorMessage = error?.message
+
   useEffect(() => {
-    if (error) {
-      setAlertDescription(error.message)
+    if (errorMessage) {
+      setAlertDescription(errorMessage)
       setHideAlert(false)
       return
     }
@@ -39,7 +41,7 @@ const WalletConnectionAlert: FC<{
       setHideAlert(false)
       return
     }
-  }, [account, chainId, error?.message])
+  }, [account, chainId, errorMessage])
 
   const resetAlert = () => {
     setHideAlert(true)
