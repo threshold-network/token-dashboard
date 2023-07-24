@@ -55,9 +55,12 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 
   public async activate(): Promise<ConnectorUpdate> {
+    if (!this.supportedChainIds) {
+      throw new Error("Supported chain ids are not defined.")
+    }
     let account = ""
     const connectKit = await this.connectKitPromise
-    const chainId = Number(Object.keys(this.rpc)[0])
+    const chainId = this.supportedChainIds[0]
     const checkSupportResult = connectKit.checkSupport({
       chains: [chainId],
       walletConnectVersion: 2,
