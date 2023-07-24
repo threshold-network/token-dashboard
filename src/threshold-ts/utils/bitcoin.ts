@@ -5,7 +5,6 @@ export {
   createOutputScriptFromAddress,
   createAddressFromOutputScript,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { toBcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
   AddressType,
   getAddressInfo,
@@ -19,7 +18,7 @@ export const isValidBtcAddress = (
   address: string,
   network: BitcoinNetwork = BitcoinNetwork.Mainnet
 ): boolean => {
-  return validate(address, toBcoinNetwork(network) as Network)
+  return validate(address, network.valueOf() as Network)
 }
 
 // P2PKH, P2WPKH, P2SH, or P2WSH
