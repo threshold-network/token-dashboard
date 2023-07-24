@@ -1,5 +1,7 @@
 import { FC } from "react"
-import { FormikErrors, withFormik } from "formik"
+import { useWeb3React } from "@web3-react/core"
+import { Outlet } from "react-router-dom"
+import { FormikErrors, useFormikContext, withFormik } from "formik"
 import {
   BodyLg,
   BodyMd,
@@ -10,6 +12,7 @@ import {
   Button,
   HStack,
   LabelSm,
+  useColorModeValue,
 } from "@threshold-network/components"
 import {
   Form,
@@ -53,82 +56,103 @@ import {
   UNMINT_MIN_AMOUNT,
 } from "../../../utils/tBTC"
 import { useModal } from "../../../hooks/useModal"
+import { UnmintDetails } from "./UnmintDetails"
 import { UnmintingCard } from "./UnmintingCard"
 import { featureFlags } from "../../../constants"
+import { RedemptionWalletData } from "../../../threshold-ts/tbtc"
+import { UnspentTransactionOutputPlainObject } from "../../../types/tbtc"
+import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
-export const UnmintPage: PageComponent = ({}) => {
+const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
   const { openModal } = useModal()
   const threshold = useThreshold()
 
   const onSubmitForm = (values: UnmintFormValues) => {
-    console.log("on submittttt")
+    const { wallet } = values
+
+    const walletData: {
+      walletPublicKey: string
+      mainUtxo: UnspentTransactionOutputPlainObject
+    } = {
+      ...wallet,
+      mainUtxo: {
+        ...wallet.mainUtxo,
+        transactionHash:
+          values.wallet.mainUtxo.transactionHash.toPrefixedString(),
+        value: wallet.mainUtxo.value.toString(),
+        outputIndex: wallet.mainUtxo.outputIndex.toString(),
+      },
+    }
     openModal(ModalType.InitiateUnminting, {
       unmintAmount: values.amount,
       btcAddress: values.btcAddress,
+      wallet: walletData,
     })
   }
 
   return !featureFlags.TBTC_V2_REDEMPTION ? (
     <UnmintingCard />
   ) : (
-    <BridgeLayout>
-      <BridgeLayoutMainSection>
-        <BridgeProcessCardTitle bridgeProcess="unmint" />
-        <BridgeProcessCardSubTitle
-          stepText="Step 1"
-          subTitle="Unmint your tBTC tokens"
-        />
-        <BodyMd color="gray.500">
-          Unminting requires one Ethereum transaction and it takes around 5
-          hours.
-        </BodyMd>
-        <UnmintForm
-          maxTokenAmount={balance.toString()}
-          onSubmitForm={onSubmitForm}
-          bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
-        />
-        <Box as="p" textAlign="center" mt="4">
-          <BridgeContractLink />
-        </Box>
-      </BridgeLayoutMainSection>
-      <BridgeLayoutAsideSection>
-        <LabelSm>Duration</LabelSm>
-        <HStack mt="4" spacing="4">
-          <BoxLabel variant="solid" status="primary">
-            ~ 5 Hours
-          </BoxLabel>
-          <Box>
-            <BodyXs as="span" color="gray.500">
-              min.
-            </BodyXs>{" "}
-            <BodyLg as="span" color="gray.500">
-              0.01
-            </BodyLg>{" "}
-            <BodyXs as="span" color="gray.500">
-              BTC
-            </BodyXs>
-          </Box>
-        </HStack>
-        <LabelSm mt="8">Timeline</LabelSm>
-        <Steps mt="6">
-          <Step isActive={true} isComplete={false}>
-            <StepIndicator>Step 1</StepIndicator>
-            <StepBadge>action on Ethereum</StepBadge>
-            <StepBadge>action on Bitcoin</StepBadge>
-            <StepTitle>
-              Unmint <TBTCText />
-            </StepTitle>
-            <StepDescription>
-              Your unwrapped and withdrawn BTC will be sent to the BTC address
-              of your choice, in the next sweep.
-            </StepDescription>
-          </Step>
-        </Steps>
+    <>
+      <BridgeProcessCardTitle bridgeProcess="unmint" />
+      <BridgeProcessCardSubTitle
+        stepText="Step 1"
+        subTitle="Unmint your tBTC tokens"
+      />
+      <BodyMd color="gray.500">
+        Unminting requires one Ethereum transaction and it takes around 3 hours.
+      </BodyMd>
+      <UnmintForm
+        maxTokenAmount={balance.toString()}
+        onSubmitForm={onSubmitForm}
+        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        findRedemptionWallet={threshold.tbtc.findWalletForRedemption}
+      />
+      <Box as="p" textAlign="center" mt="4">
+        <BridgeContractLink />
+      </Box>
+    </>
+  )
+}
 
-        <BridgeProcessIndicator bridgeProcess="unmint" mt="8" />
-      </BridgeLayoutAsideSection>
-    </BridgeLayout>
+const UnmintAsideLayout = () => {
+  return (
+    <BridgeLayoutAsideSection>
+      <LabelSm>Duration</LabelSm>
+      <HStack mt="4" spacing="4">
+        <BoxLabel variant="solid" status="primary">
+          ~ 3 Hours
+        </BoxLabel>
+        <Box>
+          <BodyXs as="span" color="gray.500">
+            min.
+          </BodyXs>{" "}
+          <BodyLg as="span" color="gray.500">
+            0.01
+          </BodyLg>{" "}
+          <BodyXs as="span" color="gray.500">
+            BTC
+          </BodyXs>
+        </Box>
+      </HStack>
+      <LabelSm mt="8">Timeline</LabelSm>
+      <Steps mt="6">
+        <Step isActive={true} isComplete={false}>
+          <StepIndicator>Step 1</StepIndicator>
+          <StepBadge>action on Ethereum</StepBadge>
+          <StepBadge>action on Bitcoin</StepBadge>
+          <StepTitle>
+            Unmint <TBTCText />
+          </StepTitle>
+          <StepDescription>
+            Your unwrapped and withdrawn BTC will be sent to the BTC address of
+            your choice, in the next sweep.
+          </StepDescription>
+        </Step>
+      </Steps>
+      <BridgeProcessIndicator bridgeProcess="unmint" mt="8" />
+    </BridgeLayoutAsideSection>
   )
 }
 
@@ -145,6 +169,10 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
     "unmint",
     bitcoinNetwork
   )
+  const { isSubmitting, getFieldMeta } = useFormikContext()
+  const { error } = getFieldMeta("wallet")
+  const errorColor = useColorModeValue("red.500", "red.300")
+
   return (
     <Form mt={10}>
       <FormikTokenBalanceInput
@@ -175,7 +203,18 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
         placeholder={`BTC Address should start with ${supportedPrefixesText}`}
         mt="6"
       />
-      <Button size="lg" w="100%" mt="10" type="submit">
+      {error && (
+        <BodyMd color={errorColor} mt="10" mb="2">
+          {error}
+        </BodyMd>
+      )}
+      <Button
+        size="lg"
+        w="100%"
+        mt={error ? "0" : "10"}
+        type="submit"
+        isLoading={isSubmitting}
+      >
         Unmint
       </Button>
     </Form>
@@ -185,16 +224,22 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
 type UnmintFormValues = {
   amount: string
   btcAddress: string
+  wallet: RedemptionWalletData
 }
 
 type UnmitnFormProps = {
   onSubmitForm: (values: UnmintFormValues) => void
+  findRedemptionWallet: (
+    amount: string,
+    redeemerOutputScript: string
+  ) => Promise<RedemptionWalletData>
 } & UnmintFormBaseProps
 
 const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
   mapPropsToValues: () => ({
     amount: "",
     btcAddress: "",
+    wallet: {} as RedemptionWalletData,
   }),
   validate: async (values, props) => {
     const errors: FormikErrors<UnmintFormValues> = {}
@@ -208,19 +253,79 @@ const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
       props.maxTokenAmount,
       UNMINT_MIN_AMOUNT
     )
+    errors.wallet = undefined
 
+    // @ts-ignore
     return getErrorsObj(errors)
   },
-  handleSubmit: (values, { props }) => {
-    props.onSubmitForm(values)
+  handleSubmit: async (
+    values,
+    { props, setFieldValue, setFieldError, setSubmitting }
+  ) => {
+    try {
+      setSubmitting(true)
+
+      const wallet = await props.findRedemptionWallet(
+        values.amount,
+        values.btcAddress
+      )
+      setFieldValue("wallet", wallet, false)
+
+      props.onSubmitForm({ ...values, wallet })
+    } catch (error) {
+      setFieldError("wallet", (error as Error).message)
+    } finally {
+      setSubmitting(false)
+    }
   },
   displayName: "MintingProcessForm",
   enableReinitialize: true,
 })(UnmintFormBase)
 
+UnmintFormPage.route = {
+  path: "",
+  index: false,
+  isPageEnabled: true,
+}
+
+export const UnmintPageLayout: PageComponent = ({}) => {
+  const { active } = useWeb3React()
+
+  return (
+    <BridgeLayout>
+      <BridgeLayoutMainSection>
+        {active ? (
+          <Outlet />
+        ) : (
+          <BridgeProcessEmptyState
+            title="Ready to unmit tBTC?"
+            bridgeProcess="unmint"
+          />
+        )}
+      </BridgeLayoutMainSection>
+      <BridgeLayoutAsideSection>
+        <UnmintAsideLayout />
+      </BridgeLayoutAsideSection>
+    </BridgeLayout>
+  )
+}
+
+UnmintPageLayout.route = {
+  path: "",
+  index: false,
+  isPageEnabled: true,
+  pages: [UnmintFormPage],
+}
+
+export const UnmintPage: PageComponent = () => {
+  return <Outlet />
+}
+
 UnmintPage.route = {
   path: "unmint",
-  index: false,
+  pathOverride: "unmint/*",
+  index: true,
   title: "Unmint",
+  pages: [UnmintPageLayout, UnmintDetails],
   isPageEnabled: true,
 }

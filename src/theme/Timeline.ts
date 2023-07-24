@@ -3,6 +3,7 @@ import {
   anatomy,
   SystemStyleObject,
   SystemStyleFunction,
+  mode,
 } from "@chakra-ui/theme-tools"
 
 const parts = anatomy("timeline").parts(
@@ -18,6 +19,7 @@ const baseStyleContainer: SystemStyleFunction = (props) => {
     listStyle: "none",
     listStyleType: "none",
     marginInlineStart: "0",
+    position: "relative",
   }
 }
 
@@ -167,7 +169,7 @@ const horizontalVariant: PartsStyleFunction<typeof parts> = (props) => {
       justifyContent: "space-between",
       py: 2,
       px: 3.5,
-      backgroundColor: `${colorScheme}.50`,
+      backgroundColor: mode(`${colorScheme}.50`, `${colorScheme}.700`)(props),
       borderRadius: "0.5rem",
     },
   }

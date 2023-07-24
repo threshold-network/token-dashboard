@@ -1,5 +1,10 @@
 import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+export {
+  computeHash160,
+  createOutputScriptFromAddress,
+  createAddressFromOutputScript,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { toBcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
 import {
   AddressType,
@@ -7,6 +12,8 @@ import {
   Network,
   validate,
 } from "bitcoin-address-validation"
+
+export const BITCOIN_PRECISION = 8
 
 export const isValidBtcAddress = (
   address: string,
@@ -39,4 +46,14 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  */
 export const reverseTxHash = (txHash: string): TransactionHash => {
   return TransactionHash.from(txHash).reverse()
+}
+
+export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
+  const rawRedeemerOutputScript = Buffer.from(scriptPubKey.toString(), "hex")
+
+  // Prefix the output script bytes buffer with 0x and its own length.
+  return `0x${Buffer.concat([
+    Buffer.from([rawRedeemerOutputScript.length]),
+    rawRedeemerOutputScript,
+  ]).toString("hex")}`
 }

@@ -8,12 +8,25 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
+  Skeleton,
 } from "@threshold-network/components"
+import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
-import { BaseModalProps } from "../../../types"
+import { useNavigate } from "react-router-dom"
+import {
+  useRedemptionEstimatedFees,
+  useRequestRedemption,
+} from "../../../hooks/tbtc"
+import {
+  BaseModalProps,
+  UnspentTransactionOutputPlainObject,
+} from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
+import { buildRedemptionDetailsLink } from "../../../utils/tBTC"
+import { OnSuccessCallback } from "../../../web3/hooks"
 import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
+import { InlineTokenBalance } from "../../TokenBalance"
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
@@ -24,21 +37,40 @@ import withBaseModal from "../withBaseModal"
 type InitiateUnmintingProps = {
   unmintAmount: string
   btcAddress: string
+  wallet: {
+    walletPublicKey: string
+    mainUtxo: UnspentTransactionOutputPlainObject
+  }
 } & BaseModalProps
 
 const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   closeModal,
   unmintAmount,
   btcAddress,
+  wallet,
 }) => {
-  // TODO: calculate the BTC amount- take into account fees
-  const btcAmount = "1.25"
-  const thresholdNetworkFee = "0"
-  const btcMinerFee = "0"
+  const navigate = useNavigate()
+  const { account } = useWeb3React()
+  const { estimatedBTCAmount, thresholdNetworkFee } =
+    useRedemptionEstimatedFees(unmintAmount)
 
-  // TODO: implement submit function
-  const initiateUnminting = () => {
-    console.log("unminting")
+  const onSuccess: OnSuccessCallback = (receipt) => {
+    navigate(
+      buildRedemptionDetailsLink(
+        receipt.transactionHash,
+        account!,
+        wallet.walletPublicKey,
+        btcAddress
+      )
+    )
+    closeModal()
+  }
+
+  const { sendTransaction } = useRequestRedemption(onSuccess)
+
+  const initiateUnminting = async () => {
+    const { walletPublicKey, mainUtxo } = wallet
+    await sendTransaction(walletPublicKey, mainUtxo, btcAddress, unmintAmount)
   }
 
   return (
@@ -47,7 +79,21 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" mb="6">
-          <H5>Through unminting you will get back {btcAmount} BTC</H5>
+          <H5>
+            Through unminting you will get back{" "}
+            <Skeleton isLoaded={!!estimatedBTCAmount} maxW="105px" as="span">
+              <InlineTokenBalance
+                tokenSymbol="BTC"
+                tokenDecimals={8}
+                precision={6}
+                higherPrecision={8}
+                tokenAmount={estimatedBTCAmount!}
+                displayTildeBelow={0}
+                isEstimated
+              />{" "}
+            </Skeleton>
+            BTC
+          </H5>
           <BodyLg mt="4">
             Unminting tBTC requires one transaction on your end.
           </BodyLg>
@@ -61,19 +107,11 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
             higherPrecision={8}
           />
           <TransactionDetailsAmountItem
-            label="Bitcoin Miner Fee"
-            tokenAmount={btcMinerFee}
-            tokenSymbol="BTC"
-            tokenDecimals={8}
-            precision={6}
-            higherPrecision={8}
-          />
-          <TransactionDetailsAmountItem
             label="Threshold Network Fee"
-            tokenAmount={thresholdNetworkFee}
             tokenSymbol="tBTC"
             precision={6}
             higherPrecision={8}
+            tokenAmount={thresholdNetworkFee}
           />
           <TransactionDetailsItem
             label="BTC address"

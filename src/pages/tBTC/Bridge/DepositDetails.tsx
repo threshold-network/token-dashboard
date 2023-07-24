@@ -13,9 +13,7 @@ import {
   BodyLg,
   BodyMd,
   Box,
-  Card,
   Flex,
-  HStack,
   LabelSm,
   List,
   ListItem,
@@ -24,12 +22,13 @@ import {
   StackDivider,
   Icon,
   Divider,
-  H5,
   SkeletonText,
   SkeletonCircle,
-  Image,
   BodySm,
   BodyXs,
+  Alert,
+  AlertDescription,
+  AlertIcon,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -53,9 +52,10 @@ import {
 import { Step1, Step2, Step3, Step4 } from "./components/DepositDetailsStep"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import {
-  MintingProcessResource,
-  MintingProcessResourceProps,
-} from "./components/MintingProcessResource"
+  BridgeProcessResource,
+  BridgeProcessResourceProps,
+} from "./components/BridgeProcessResource"
+import { BridgeProcessDetailsCard } from "./components/BridgeProcessDetailsCard"
 import { useAppDispatch } from "../../../hooks/store"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import {
@@ -67,11 +67,11 @@ import {
 import { tbtcSlice } from "../../../store/tbtc"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { PageComponent } from "../../../types"
-import mainCardBackground from "../../../static/images/minting-completed-card-bg.png"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
+import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -170,15 +170,6 @@ export const DepositDetails: PageComponent = () => {
     },
   ]
 
-  const mainCardProps =
-    mintingProgressStep === "completed"
-      ? {
-          backgroundImage: mainCardBackground,
-          backgroundPosition: "bottom -10px right",
-          backgroundRepeat: "no-repeat",
-        }
-      : {}
-
   return (
     <DepositDetailsPageContext.Provider
       value={{
@@ -196,8 +187,12 @@ export const DepositDetails: PageComponent = () => {
         mintingFee,
       }}
     >
-      <Card {...mainCardProps}>
-        {(isFetching || !data) && !error && <DepositDetailsPageSkeleton />}
+      <BridgeProcessDetailsCard
+        isProcessCompleted={mintingProgressStep === "completed"}
+      >
+        {(isFetching || !data) && !error && (
+          <BridgeProcessDetailsPageSkeleton />
+        )}
         {error && <>{error}</>}
         {!isFetching && !!data && !error && (
           <>
@@ -231,6 +226,15 @@ export const DepositDetails: PageComponent = () => {
                   // isCompleted
                   inProgressStep={mintingProgressStep}
                 />
+                {mintingProgressStep !== "completed" && (
+                  <Alert status="info" my={6}>
+                    <AlertIcon />
+                    <AlertDescription>
+                      It is safe to close this window. Minting will continue as
+                      a background process and will not be interrupted.
+                    </AlertDescription>
+                  </Alert>
+                )}
                 <StepSwitcher />
               </Flex>
               <Flex
@@ -277,7 +281,7 @@ export const DepositDetails: PageComponent = () => {
                       mt="auto"
                       mb="10"
                     />
-                    <MintingProcessResource
+                    <BridgeProcessResource
                       {...stepToResourceData[mintingProgressStep]}
                     />
                   </>
@@ -300,7 +304,7 @@ export const DepositDetails: PageComponent = () => {
             )}
           </>
         )}
-      </Card>
+      </BridgeProcessDetailsCard>
       {mintingProgressStep === "completed" && (
         <ExternalPool
           title={"tBTC Curve Pool"}
@@ -344,20 +348,6 @@ const useDepositDetailsPageContext = () => {
     )
   }
   return context
-}
-
-const DepositDetailsPageSkeleton: FC = () => {
-  return (
-    <>
-      <SkeletonText noOfLines={1} skeletonHeight={6} />
-
-      <Skeleton height="80px" mt="4" />
-
-      <SkeletonText noOfLines={1} width="40%" skeletonHeight={6} mt="8" />
-      <SkeletonCircle mt="4" size="160px" mx="auto" />
-      <SkeletonText mt="4" noOfLines={4} spacing={2} skeletonHeight={4} />
-    </>
-  )
 }
 
 type DepositDetailsTimelineStep =
@@ -619,7 +609,7 @@ const useSubscribeToOptimisticMintingEvents = (depositKey?: string) => {
 
 const stepToResourceData: Record<
   Exclude<DepositDetailsTimelineStep, "completed">,
-  MintingProcessResourceProps
+  BridgeProcessResourceProps
 > = {
   "bitcoin-confirmations": {
     title: "Bitcoin Confirmations Requirement",

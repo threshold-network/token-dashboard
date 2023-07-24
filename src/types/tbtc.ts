@@ -1,7 +1,8 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
 import { FetchingState } from "."
-import { BridgeActivity } from "../threshold-ts/tbtc"
+import { BridgeActivity, BridgeProcess } from "../threshold-ts/tbtc"
+export type { UnspentTransactionOutputPlainObject } from "../threshold-ts/types"
 
 export interface TbtcState {
   mintingStep: MintingStep
@@ -60,4 +61,4 @@ export type ExternalPoolData = {
   tvl: number
 }
 
-export type BridgeProcess = "mint" | "unmint"
+export { type BridgeProcess }

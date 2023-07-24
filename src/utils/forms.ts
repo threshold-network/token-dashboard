@@ -87,7 +87,7 @@ export const validateBTCAddress = (
   if (!address) {
     return "Required."
   } else if (
-    !isValidBtcAddress(address) ||
+    !isValidBtcAddress(address, network) ||
     !isPublicKeyHashTypeAddress(address)
   ) {
     return `The BTC Recovery address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
