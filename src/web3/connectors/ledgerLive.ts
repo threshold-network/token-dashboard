@@ -59,9 +59,11 @@ export class LedgerLiveConnector extends AbstractConnector {
     const connectKit = await this.connectKitPromise
     const chainId = Number(Object.keys(this.rpc)[0])
     const checkSupportResult = connectKit.checkSupport({
-      chainId: chainId,
+      chains: [chainId],
+      walletConnectVersion: 2,
+      projectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
       providerType: SupportedProviders.Ethereum,
-      rpc: this.rpc,
+      rpcMap: this.rpc,
     })
 
     if (!checkSupportResult.isChainIdSupported) {
