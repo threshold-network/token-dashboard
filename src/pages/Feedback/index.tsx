@@ -7,7 +7,13 @@ import Settings from "./Settings"
 import { featureFlags } from "../../constants"
 
 const FeedbackPage: PageComponent = (props) => {
-  return <PageLayout title={props.title} pages={props.pages} />
+  return (
+    <PageLayout
+      title={props.title}
+      pages={props.pages}
+      parentPathBase={props.parentPathBase}
+    />
+  )
 }
 
 FeedbackPage.route = {

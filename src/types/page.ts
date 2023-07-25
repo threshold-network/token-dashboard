@@ -10,4 +10,11 @@ export type RouteProps = {
   isPageEnabled: boolean
 }
 
-export type PageComponent = FC<RouteProps> & { route: RouteProps }
+export type PageComponent = FC<
+  RouteProps & {
+    // Paths combined from all Route parents of the current Route
+    parentPathBase: string
+  }
+> & {
+  route: RouteProps
+}

@@ -197,15 +197,22 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map(renderPageComponent)}
+        {pages.map((page) => renderPageComponent(page))}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
   )
 }
 
-const renderPageComponent = (PageComponent: PageComponent) => {
+const renderPageComponent = (
+  PageComponent: PageComponent,
+  /** @see PageComponent type */
+  parentPathBase: string = ""
+) => {
   if (!PageComponent.route.isPageEnabled) return null
+  const updatedParentPathBase = PageComponent.route.path
+    ? `${parentPathBase}/${PageComponent.route.path}`
+    : parentPathBase
 
   return (
     <Fragment key={PageComponent.route.path}>
@@ -217,9 +224,16 @@ const renderPageComponent = (PageComponent: PageComponent) => {
       )}
       <Route
         path={PageComponent.route.path}
-        element={<PageComponent {...PageComponent.route} />}
+        element={
+          <PageComponent
+            {...PageComponent.route}
+            parentPathBase={updatedParentPathBase}
+          />
+        }
       >
-        {PageComponent.route.pages?.map(renderPageComponent)}
+        {PageComponent.route.pages?.map((page) =>
+          renderPageComponent(page, updatedParentPathBase)
+        )}
       </Route>
     </Fragment>
   )

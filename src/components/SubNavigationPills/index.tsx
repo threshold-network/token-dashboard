@@ -7,27 +7,33 @@ import {
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import {
-  matchPath,
-  resolvePath,
-  useLocation,
-  useMatch,
-  useResolvedPath,
-} from "react-router-dom"
+import { matchPath, resolvePath } from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"
 
 interface SubNavigationPillsProps {
   links: RouteProps[]
+  /** @see PageComponent type */
+  parentPathBase: string
 }
 
+interface PathMatchResult {
+  index: number
+  path: string
+  pathOverride?: string
+  resolvedPath: string
+  match: any
+}
 interface NavPill extends RouteProps {
-  resolvedPaths: string[]
+  isActive?: boolean
 }
 
-const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({
+  links,
+  parentPathBase,
+}) => {
   const linksWithTitle = links.filter((link) => !!link.title)
-  const resolvedPaths = getResolvedPathsFromPills(linksWithTitle)
+  const activePillIndex = getActivePillIndex(linksWithTitle, parentPathBase)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
   return (
@@ -49,27 +55,17 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
           height="28px"
           as="ul"
         >
-          {linksWithTitle.map((linkWithTitle) =>
-            renderPill(linkWithTitle, resolvedPaths)
-          )}
+          {linksWithTitle.map((linkWithTitle, index) => {
+            const isActive = index === activePillIndex
+            return renderPill(linkWithTitle, isActive)
+          })}
         </HStack>
       </Box>
     </>
   )
 }
 
-const NavPill: FC<NavPill> = ({ path, pathOverride, title, resolvedPaths }) => {
-  let isActive = false
-  const resolved = useResolvedPath(pathOverride || path)
-  const match = useMatch({ path: resolved.pathname, end: true })
-  if (match) {
-    if (match.params["*"]) {
-      const lastPieceOfPath = match.pathname.replace(match.pathnameBase, "")
-      if (!resolvedPaths.includes(lastPieceOfPath)) isActive = true
-    } else {
-      isActive = true
-    }
-  }
+const NavPill: FC<NavPill> = ({ path, title, isActive = false }) => {
   const activeColor = useColorModeValue("brand.500", "gray.100")
   const underlineColor = useColorModeValue("brand.500", "white")
 
@@ -103,18 +99,51 @@ const NavPill: FC<NavPill> = ({ path, pathOverride, title, resolvedPaths }) => {
   )
 }
 
-const renderPill = (pill: RouteProps, resolvedPaths: string[]) => (
-  <NavPill key={pill.path} resolvedPaths={resolvedPaths} {...pill} />
+const renderPill = (pill: RouteProps, isActive = false) => (
+  <NavPill key={pill.path} isActive={isActive} {...pill} />
 )
 
-const getResolvedPathsFromPills = (pills: RouteProps[]) => {
-  const resolvedPaths: string[] = []
+const getPathMatches = (pills: RouteProps[], parentPathBase: string = "") => {
+  const pathMatches: PathMatchResult[] = []
   for (let i = 0; i < pills.length; i++) {
     const { path, pathOverride } = pills[i]
-    const resolved = resolvePath(pathOverride || path)
-    resolvedPaths.push(resolved.pathname)
+    const location = window.location.pathname
+    const resolved = resolvePath(
+      pathOverride
+        ? `${parentPathBase}/${pathOverride}`
+        : `${parentPathBase}/${path}`
+    )
+    const match = matchPath({ path: resolved.pathname, end: true }, location)
+    pathMatches.push({
+      index: i,
+      path,
+      pathOverride,
+      resolvedPath: resolved.pathname,
+      match,
+    })
   }
-  return resolvedPaths
+  return pathMatches
+}
+
+const getActivePillIndex = (pills: RouteProps[], parentPathBase: string) => {
+  const pathMatches = getPathMatches(pills, parentPathBase)
+  const matchedPaths = pathMatches.filter((_) => {
+    return !!_.match
+  })
+
+  if (matchedPaths.length === 0) return undefined
+  if (matchedPaths.length === 1) return matchedPaths[0].index
+
+  const matchedElementWithLongestPathnameBase = matchedPaths.reduce(
+    (maxElement, currentElement) => {
+      return currentElement.match.pathnameBase.length >
+        maxElement.match.pathnameBase.length
+        ? currentElement
+        : maxElement
+    }
+  )
+
+  return matchedElementWithLongestPathnameBase.index
 }
 
 export default SubNavigationPills
