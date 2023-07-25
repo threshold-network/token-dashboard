@@ -35,6 +35,7 @@ const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
       }
       tryAgain={connectionRejected ? () => activate(ledgerLive) : undefined}
       walletType={WalletType.LedgerLive}
+      shouldForceCloseModal
     />
   )
 }
