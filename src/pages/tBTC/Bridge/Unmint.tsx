@@ -227,7 +227,7 @@ type UnmintFormValues = {
   wallet: RedemptionWalletData
 }
 
-type UnmitnFormProps = {
+type UnmintFormProps = {
   onSubmitForm: (values: UnmintFormValues) => void
   findRedemptionWallet: (
     amount: string,
@@ -235,7 +235,7 @@ type UnmitnFormProps = {
   ) => Promise<RedemptionWalletData>
 } & UnmintFormBaseProps
 
-const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
+const UnmintForm = withFormik<UnmintFormProps, UnmintFormValues>({
   mapPropsToValues: () => ({
     amount: "",
     btcAddress: "",
@@ -298,7 +298,7 @@ export const UnmintPageLayout: PageComponent = ({}) => {
           <Outlet />
         ) : (
           <BridgeProcessEmptyState
-            title="Ready to unmit tBTC?"
+            title="Ready to unmint tBTC?"
             bridgeProcess="unmint"
           />
         )}
