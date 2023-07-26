@@ -28,7 +28,7 @@ import {
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
-} from "../../../components/TransacionDetails"
+} from "../../../components/TransactionDetails"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
@@ -260,7 +260,7 @@ export const UnmintDetails: PageComponent = () => {
               {`${time.days}d ${time.hours}h ${time.minutes}m`}
             </BodyLg>
 
-            <LabelSm mt="5">Transacion History</LabelSm>
+            <LabelSm mt="5">Transaction History</LabelSm>
             <List mt="6" color="gray.500" spacing="2" mb="20">
               {transactions
                 .filter((item) => !!item.txHash)

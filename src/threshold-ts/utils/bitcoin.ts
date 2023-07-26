@@ -40,7 +40,7 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * Bitcoin transaction hash is stored on Ethereum in native Bitcoin
  * little-endian format but to get the confirmations for this transaction we
  * need to reverse its hash.
- * @param {string} txHash Transacion hash as string.
+ * @param {string} txHash Transaction hash as string.
  * @return {TransactionHash} Reversed transaction hash.
  */
 export const reverseTxHash = (txHash: string): TransactionHash => {
