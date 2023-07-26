@@ -7,7 +7,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { matchPath, resolvePath } from "react-router-dom"
+import { matchPath, resolvePath, useLocation } from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"
 
@@ -32,8 +32,13 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({
   links,
   parentPathBase,
 }) => {
+  const { pathname } = useLocation()
   const linksWithTitle = links.filter((link) => !!link.title)
-  const activePillIndex = getActivePillIndex(linksWithTitle, parentPathBase)
+  const activePillIndex = getActivePillIndex(
+    linksWithTitle,
+    parentPathBase,
+    pathname
+  )
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
   return (
@@ -103,18 +108,24 @@ const renderPill = (pill: RouteProps, isActive = false) => (
   <NavPill key={pill.path} isActive={isActive} {...pill} />
 )
 
-const getPathMatches = (pills: RouteProps[], parentPathBase: string = "") => {
+const getPathMatches = (
+  pills: RouteProps[],
+  parentPathBase: string = "",
+  locationPathname: string
+) => {
   const pathMatches: PathMatchResult[] = []
   for (let i = 0; i < pills.length; i++) {
     const { path, pathOverride } = pills[i]
-    const location = window.location.pathname
     // This is a workaround for preview links. We have to remove the branch name
     // from the pathname
     const currentPathname =
-      location.includes(parentPathBase) &&
-      location.indexOf(parentPathBase) !== 0
-        ? location.substring(location.indexOf(parentPathBase), location.length)
-        : location
+      locationPathname.includes(parentPathBase) &&
+      locationPathname.indexOf(parentPathBase) !== 0
+        ? locationPathname.substring(
+            locationPathname.indexOf(parentPathBase),
+            locationPathname.length
+          )
+        : locationPathname
     const resolved = resolvePath(
       pathOverride
         ? `${parentPathBase}/${pathOverride}`
@@ -135,8 +146,12 @@ const getPathMatches = (pills: RouteProps[], parentPathBase: string = "") => {
   return pathMatches
 }
 
-const getActivePillIndex = (pills: RouteProps[], parentPathBase: string) => {
-  const pathMatches = getPathMatches(pills, parentPathBase)
+const getActivePillIndex = (
+  pills: RouteProps[],
+  parentPathBase: string,
+  locationPathname: string
+) => {
+  const pathMatches = getPathMatches(pills, parentPathBase, locationPathname)
   const matchedPaths = pathMatches.filter((_) => {
     return !!_.match
   })
