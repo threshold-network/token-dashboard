@@ -108,12 +108,22 @@ const getPathMatches = (pills: RouteProps[], parentPathBase: string = "") => {
   for (let i = 0; i < pills.length; i++) {
     const { path, pathOverride } = pills[i]
     const location = window.location.pathname
+    // This is a workaround for preview links. We have to remove the branch name
+    // from the pathname
+    const currentPathname =
+      location.includes(parentPathBase) &&
+      location.indexOf(parentPathBase) !== 0
+        ? location.substring(location.indexOf(parentPathBase), location.length)
+        : location
     const resolved = resolvePath(
       pathOverride
         ? `${parentPathBase}/${pathOverride}`
         : `${parentPathBase}/${path}`
     )
-    const match = matchPath({ path: resolved.pathname, end: true }, location)
+    const match = matchPath(
+      { path: resolved.pathname, end: true },
+      currentPathname
+    )
     pathMatches.push({
       index: i,
       path,
@@ -130,7 +140,6 @@ const getActivePillIndex = (pills: RouteProps[], parentPathBase: string) => {
   const matchedPaths = pathMatches.filter((_) => {
     return !!_.match
   })
-
   if (matchedPaths.length === 0) return undefined
   if (matchedPaths.length === 1) return matchedPaths[0].index
 
