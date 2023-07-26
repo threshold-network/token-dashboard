@@ -167,7 +167,7 @@ export const UnmintDetails: PageComponent = () => {
                 left="50%"
                 transform="translateX(-50%)"
               >
-                usual duration - 3 hours
+                usual duration - 3-5 hours
               </Badge>
               <TimelineItem status="active">
                 <TimelineBreakpoint>
@@ -236,7 +236,7 @@ export const UnmintDetails: PageComponent = () => {
               >
                 <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
                   Your redemption request is being processed. This will take
-                  around 5 hours.
+                  around 3-5 hours.
                 </BodyMd>
               </BridgeProcessStep>
             )}
