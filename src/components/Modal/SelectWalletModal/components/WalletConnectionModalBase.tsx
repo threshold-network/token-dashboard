@@ -59,7 +59,13 @@ const WalletConnectionModalBase: FC<Props> = ({
     captureWalletConnected({ walletType })
     activate(connector)
     if (shouldForceCloseModal) closeModal()
-  }, [activate, connector, captureWalletConnected, walletType])
+  }, [
+    activate,
+    connector,
+    captureWalletConnected,
+    walletType,
+    shouldForceCloseModal,
+  ])
 
   return (
     <>
