@@ -101,7 +101,8 @@ const UnmintFormPage: PageComponent = ({}) => {
         subTitle="Unmint your tBTC tokens"
       />
       <BodyMd color="gray.500">
-        Unminting requires one Ethereum transaction and it takes around 3 hours.
+        Unminting requires one Ethereum transaction and it takes around 3-5
+        hours.
       </BodyMd>
       <UnmintForm
         maxTokenAmount={balance.toString()}
@@ -122,7 +123,7 @@ const UnmintAsideLayout = () => {
       <LabelSm>Duration</LabelSm>
       <HStack mt="4" spacing="4">
         <BoxLabel variant="solid" status="primary">
-          ~ 3 Hours
+          ~ 3-5 Hours
         </BoxLabel>
         <Box>
           <BodyXs as="span" color="gray.500">
@@ -227,7 +228,7 @@ type UnmintFormValues = {
   wallet: RedemptionWalletData
 }
 
-type UnmitnFormProps = {
+type UnmintFormProps = {
   onSubmitForm: (values: UnmintFormValues) => void
   findRedemptionWallet: (
     amount: string,
@@ -235,7 +236,7 @@ type UnmitnFormProps = {
   ) => Promise<RedemptionWalletData>
 } & UnmintFormBaseProps
 
-const UnmintForm = withFormik<UnmitnFormProps, UnmintFormValues>({
+const UnmintForm = withFormik<UnmintFormProps, UnmintFormValues>({
   mapPropsToValues: () => ({
     amount: "",
     btcAddress: "",
@@ -298,7 +299,7 @@ export const UnmintPageLayout: PageComponent = ({}) => {
           <Outlet />
         ) : (
           <BridgeProcessEmptyState
-            title="Ready to unmit tBTC?"
+            title="Ready to unmint tBTC?"
             bridgeProcess="unmint"
           />
         )}

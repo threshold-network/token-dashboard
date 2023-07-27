@@ -2,7 +2,7 @@ import { List } from "@threshold-network/components"
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
-} from "../../../../components/TransacionDetails"
+} from "../../../../components/TransactionDetails"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
 

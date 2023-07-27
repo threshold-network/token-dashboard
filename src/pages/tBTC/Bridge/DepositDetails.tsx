@@ -70,7 +70,7 @@ import { PageComponent } from "../../../types"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
-import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
+import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 
 export const DepositDetails: PageComponent = () => {

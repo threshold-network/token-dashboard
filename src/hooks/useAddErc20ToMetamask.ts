@@ -25,7 +25,7 @@ const useAddErc20ToMetamask = (tokenContract?: Contract | null) => {
       }
       // Based on the docs, the result from request should be `boolean` but it
       // returns an object in Chrome. On Firefox browser, this request blocks
-      // the MM provider and the dapp can't trigger transacion and fetch
+      // the MM provider and the dapp can't trigger transaction and fetch
       // on-chain data. Also the MM provider doesn't return any result from this
       // request. On Chrome browser, this request returns a result as an object,
       // even if the user does not make any interaction in the MM popup.

@@ -14,6 +14,7 @@ import {
   LabelSm,
   List,
   ListItem,
+  ONE_MINUTE_IN_SECONDS,
   SkeletonText,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -28,7 +29,7 @@ import {
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
-} from "../../../components/TransacionDetails"
+} from "../../../components/TransactionDetails"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
@@ -52,24 +53,7 @@ import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDet
 import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
-import { BigNumber } from "ethers"
 import { ExternalHref } from "../../../enums"
-
-const pendingRedemption = {
-  redemptionRequestedTxHash:
-    "0xf7d0c92c8de4d117d915c2a8a54ee550047f926bc00b91b651c40628751cfe29",
-  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
-  redeemerOutputScript: "0x160014751E76E8199196D454941C45D1B3A323F1433BD6",
-  redeemer: "0x086813525A7dC7dafFf015Cdf03896Fd276eab60",
-}
-
-const completedRedemption = {
-  redemptionRequestedTxHash:
-    "0x0b5d66b89c5fe276ac5b0fd1874142f99329ea6f66485334a558e2bccd977618",
-  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
-  redeemerOutputScript: "0x17A91486884E6BE1525DAB5AE0B451BD2C72CEE67DCF4187",
-  redeemer: "0x68ad60CC5e8f3B7cC53beaB321cf0e6036962dBc",
-}
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
@@ -93,7 +77,7 @@ export const UnmintDetails: PageComponent = () => {
 
   const btcTxHash = data?.redemptionCompletedTxHash?.bitcoin
   useEffect(() => {
-    if (!!btcTxHash) setShouldDisplaySuccessStep(true)
+    setShouldDisplaySuccessStep(!!btcTxHash)
   }, [btcTxHash])
 
   const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
@@ -102,9 +86,38 @@ export const UnmintDetails: PageComponent = () => {
 
   const thresholdNetworkFee = data?.treasuryFee ?? "0"
   const btcAddress = data?.btcAddress
-  const time = dateAs(
-    (data?.completedAt ?? dateToUnixTimestamp()) - (data?.requestedAt ?? 0)
-  )
+  const redemptionCompletedAt = data?.completedAt
+  const redemptionRequestedAt = data?.requestedAt
+  const [redemptionTime, setRedemptionTime] = useState<
+    ReturnType<typeof dateAs>
+  >({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>
+
+    if (!redemptionCompletedAt && redemptionRequestedAt) {
+      intervalId = setInterval(() => {
+        setRedemptionTime(
+          dateAs(
+            redemptionCompletedAt ??
+              dateToUnixTimestamp() - (data?.requestedAt ?? 0)
+          )
+        )
+      }, ONE_MINUTE_IN_SECONDS)
+    } else if (redemptionCompletedAt && redemptionRequestedAt) {
+      setRedemptionTime(dateAs(redemptionCompletedAt - redemptionRequestedAt))
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [redemptionCompletedAt, redemptionRequestedAt])
 
   const transactions: {
     label: string
@@ -167,7 +180,7 @@ export const UnmintDetails: PageComponent = () => {
                 left="50%"
                 transform="translateX(-50%)"
               >
-                usual duration - 3 hours
+                usual duration - 3-5 hours
               </Badge>
               <TimelineItem status="active">
                 <TimelineBreakpoint>
@@ -236,7 +249,7 @@ export const UnmintDetails: PageComponent = () => {
               >
                 <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
                   Your redemption request is being processed. This will take
-                  around 5 hours.
+                  around 3-5 hours.
                 </BodyMd>
               </BridgeProcessStep>
             )}
@@ -257,10 +270,10 @@ export const UnmintDetails: PageComponent = () => {
               {isProcessCompleted ? "total time" : "elapsed time"}
             </LabelSm>
             <BodyLg mt="2.5" color="gray.500">
-              {`${time.days}d ${time.hours}h ${time.minutes}m`}
+              {`${redemptionTime.days}d ${redemptionTime.hours}h ${redemptionTime.minutes}m`}
             </BodyLg>
 
-            <LabelSm mt="5">Transacion History</LabelSm>
+            <LabelSm mt="5">Transaction History</LabelSm>
             <List mt="6" color="gray.500" spacing="2" mb="20">
               {transactions
                 .filter((item) => !!item.txHash)

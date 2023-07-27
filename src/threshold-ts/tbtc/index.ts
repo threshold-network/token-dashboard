@@ -1028,10 +1028,10 @@ export class TBTC implements ITBTC {
   }
 
   getBitcoinTransaction = async (
-    transacionHash: string
+    transactionHash: string
   ): Promise<BitcoinTransaction> => {
     return this._bitcoinClient.getTransaction(
-      TransactionHash.from(transacionHash)
+      TransactionHash.from(transactionHash)
     )
   }
 
