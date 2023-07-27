@@ -19,6 +19,7 @@ import ConnectTaho from "./ConnectTaho"
 import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
+import { featureFlags } from "../../../constants"
 
 const walletOptions: WalletOption[] = [
   {
@@ -37,14 +38,18 @@ const walletOptions: WalletOption[] = [
       dark: MetaMaskIcon,
     },
   },
-  {
-    id: WalletType.LedgerLive,
-    title: "Ledger Live",
-    icon: {
-      light: LedgerLight,
-      dark: LedgerDark,
-    },
-  },
+  ...(featureFlags.LEDGER_LIVE
+    ? [
+        {
+          id: WalletType.LedgerLive,
+          title: "Ledger Live",
+          icon: {
+            light: LedgerLight,
+            dark: LedgerDark,
+          },
+        },
+      ]
+    : []),
   {
     id: WalletType.WalletConnect,
     title: "WalletConnect",
