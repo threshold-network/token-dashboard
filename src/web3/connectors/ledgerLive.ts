@@ -14,12 +14,14 @@ interface LedgerLiveConnectorArguments extends AbstractConnectorArguments {
   rpc: {
     [chainId: number]: string
   }
+  walletConnectProjectId: string
 }
 
 export class LedgerLiveConnector extends AbstractConnector {
   private rpc: LedgerLiveConnectorArguments["rpc"]
   private provider?: EthereumProvider
   private connectKitPromise: Promise<LedgerConnectKit>
+  private walletConnectProjectId: string
 
   constructor(args: Required<LedgerLiveConnectorArguments>) {
     super({
@@ -29,6 +31,7 @@ export class LedgerLiveConnector extends AbstractConnector {
     })
 
     this.rpc = args.rpc
+    this.walletConnectProjectId = args.walletConnectProjectId
 
     this.handleNetworkChanged = this.handleNetworkChanged.bind(this)
     this.handleChainChanged = this.handleChainChanged.bind(this)
@@ -64,7 +67,7 @@ export class LedgerLiveConnector extends AbstractConnector {
     const checkSupportResult = connectKit.checkSupport({
       chains: [chainId],
       walletConnectVersion: 2,
-      projectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
+      projectId: this.walletConnectProjectId,
       providerType: SupportedProviders.Ethereum,
       rpcMap: this.rpc,
     })
@@ -129,6 +132,7 @@ export const ledgerLive = new LedgerLiveConnector({
   rpc: {
     [Number(supportedChainId)]: rpcUrl as string,
   },
+  walletConnectProjectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
 })
 
 class ConnectorNotAcivatedError extends Error {
