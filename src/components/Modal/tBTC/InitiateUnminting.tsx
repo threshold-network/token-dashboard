@@ -30,7 +30,7 @@ import { InlineTokenBalance } from "../../TokenBalance"
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
-} from "../../TransacionDetails"
+} from "../../TransactionDetails"
 import ModalCloseButton from "../ModalCloseButton"
 import withBaseModal from "../withBaseModal"
 
