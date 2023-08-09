@@ -54,6 +54,10 @@ import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 import { ExternalHref } from "../../../enums"
+import {
+  useFindRedemptionInBitcoinTx,
+  useSubscribeToRedemptionsCompletedEventBase,
+} from "../../../hooks/tbtc"
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
@@ -68,6 +72,27 @@ export const UnmintDetails: PageComponent = () => {
     redeemerOutputScript,
     redeemer
   )
+  const findRedemptionInBitcoinTx = useFindRedemptionInBitcoinTx()
+  const [redemptionFromBitcoinTx, setRedemptionFromBitcoinTx] = useState<
+    Awaited<ReturnType<typeof findRedemptionInBitcoinTx>> | undefined
+  >(undefined)
+
+  useSubscribeToRedemptionsCompletedEventBase(
+    async (eventWalletPublicKeyHash, redemptionTxHash, event) => {
+      if (eventWalletPublicKeyHash !== walletPublicKeyHash) return
+
+      const redemption = await findRedemptionInBitcoinTx(
+        redemptionTxHash,
+        event.blockNumber,
+        redeemerOutputScript!
+      )
+      if (!redemption) return
+
+      setRedemptionFromBitcoinTx(redemption)
+    },
+    [],
+    true
+  )
 
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
     useState(false)
@@ -75,18 +100,21 @@ export const UnmintDetails: PageComponent = () => {
   const _isFetching = (isFetching || !data) && !error
   const wasDataFetched = !isFetching && !!data && !error
 
-  const btcTxHash = data?.redemptionCompletedTxHash?.bitcoin
-  useEffect(() => {
-    setShouldDisplaySuccessStep(!!btcTxHash)
-  }, [btcTxHash])
+  const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
+  const shoudlForceIsProcessCompleted =
+    !!data?.redemptionCompletedTxHash?.bitcoin
 
-  const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
   const requestedAmount = data?.requestedAmount ?? "0"
-  const receivedAmount = data?.receivedAmount ?? "0"
+  const receivedAmount =
+    data?.receivedAmount ?? redemptionFromBitcoinTx?.receivedAmount ?? "0"
+  const btcTxHash =
+    data?.redemptionCompletedTxHash?.bitcoin ??
+    redemptionFromBitcoinTx?.bitcoinTxHash
 
   const thresholdNetworkFee = data?.treasuryFee ?? "0"
-  const btcAddress = data?.btcAddress
-  const redemptionCompletedAt = data?.completedAt
+  const btcAddress = data?.btcAddress ?? redemptionFromBitcoinTx?.btcAddress
+  const redemptionCompletedAt =
+    data?.completedAt ?? redemptionFromBitcoinTx?.redemptionCompletedTimestamp
   const redemptionRequestedAt = data?.requestedAt
   const [redemptionTime, setRedemptionTime] = useState<
     ReturnType<typeof dateAs>
@@ -131,7 +159,7 @@ export const UnmintDetails: PageComponent = () => {
     },
     {
       label: "BTC sent",
-      txHash: data?.redemptionCompletedTxHash?.bitcoin,
+      txHash: btcTxHash,
       chain: "bitcoin",
     },
   ]
@@ -204,23 +232,28 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
               <TimelineItem
-                status={isProcessCompleted ? "active" : "semi-active"}
+                status={
+                  isProcessCompleted || shoudlForceIsProcessCompleted
+                    ? "active"
+                    : "semi-active"
+                }
               >
                 <TimelineBreakpoint>
                   <TimelineDot position="relative">
-                    {isProcessCompleted && (
-                      <Icon
-                        as={IoCheckmarkSharp}
-                        position="absolute"
-                        color="white"
-                        w="22px"
-                        h="22px"
-                        m="auto"
-                        left="0"
-                        right="0"
-                        textAlign="center"
-                      />
-                    )}
+                    {isProcessCompleted ||
+                      (shoudlForceIsProcessCompleted && (
+                        <Icon
+                          as={IoCheckmarkSharp}
+                          position="absolute"
+                          color="white"
+                          w="22px"
+                          h="22px"
+                          m="auto"
+                          left="0"
+                          right="0"
+                          textAlign="center"
+                        />
+                      ))}
                   </TimelineDot>
                   <TimelineConnector />
                 </TimelineBreakpoint>
@@ -229,7 +262,7 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
             </Timeline>
-            {shouldDisplaySuccessStep || isProcessCompleted ? (
+            {shouldDisplaySuccessStep || shoudlForceIsProcessCompleted ? (
               <SuccessStep
                 requestedAmount={requestedAmount}
                 receivedAmount={receivedAmount}
@@ -240,7 +273,7 @@ export const UnmintDetails: PageComponent = () => {
               <BridgeProcessStep
                 title="Unminting in progress"
                 chain="ethereum"
-                txHash={"0x0"}
+                txHash={redemptionRequestedTxHash}
                 progressBarColor="brand.500"
                 isCompleted={isProcessCompleted}
                 icon={<ProcessCompletedBrandGradientIcon />}
