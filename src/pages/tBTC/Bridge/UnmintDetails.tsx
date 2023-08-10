@@ -240,20 +240,19 @@ export const UnmintDetails: PageComponent = () => {
               >
                 <TimelineBreakpoint>
                   <TimelineDot position="relative">
-                    {isProcessCompleted ||
-                      (shoudlForceIsProcessCompleted && (
-                        <Icon
-                          as={IoCheckmarkSharp}
-                          position="absolute"
-                          color="white"
-                          w="22px"
-                          h="22px"
-                          m="auto"
-                          left="0"
-                          right="0"
-                          textAlign="center"
-                        />
-                      ))}
+                    {(isProcessCompleted || shoudlForceIsProcessCompleted) && (
+                      <Icon
+                        as={IoCheckmarkSharp}
+                        position="absolute"
+                        color="white"
+                        w="22px"
+                        h="22px"
+                        m="auto"
+                        left="0"
+                        right="0"
+                        textAlign="center"
+                      />
+                    )}
                   </TimelineDot>
                   <TimelineConnector />
                 </TimelineBreakpoint>
