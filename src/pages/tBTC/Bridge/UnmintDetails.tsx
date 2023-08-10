@@ -58,6 +58,9 @@ import {
   useFindRedemptionInBitcoinTx,
   useSubscribeToRedemptionsCompletedEventBase,
 } from "../../../hooks/tbtc"
+import { useAppDispatch } from "../../../hooks/store"
+import { tbtcSlice } from "../../../store/tbtc"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
@@ -65,6 +68,8 @@ export const UnmintDetails: PageComponent = () => {
   const redeemerOutputScript = searchParams.get("redeemerOutputScript")
   const redeemer = searchParams.get("redeemer")
   const { redemptionRequestedTxHash } = useParams()
+  const dispatch = useAppDispatch()
+  const threshold = useThreshold()
 
   const { data, isFetching, error } = useFetchRedemptionDetails(
     redemptionRequestedTxHash,
@@ -89,6 +94,18 @@ export const UnmintDetails: PageComponent = () => {
       if (!redemption) return
 
       setRedemptionFromBitcoinTx(redemption)
+
+      if (redemptionRequestedTxHash && redeemerOutputScript) {
+        dispatch(
+          tbtcSlice.actions.redemptionCompleted({
+            redemptionKey: threshold.tbtc.buildRedemptionKey(
+              walletPublicKeyHash,
+              redeemerOutputScript
+            ),
+            redemptionRequestedTxHash,
+          })
+        )
+      }
     },
     [],
     true

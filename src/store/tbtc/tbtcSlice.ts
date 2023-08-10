@@ -159,6 +159,32 @@ export const tbtcSlice = createSlice({
         ...state.bridgeActivity.data,
       ]
     },
+    redemptionCompleted: (
+      state,
+      action: PayloadAction<{
+        redemptionKey: string
+        redemptionRequestedTxHash: string
+      }>
+    ) => {
+      const {
+        payload: { redemptionKey, redemptionRequestedTxHash },
+      } = action
+
+      const { itemToUpdate, index } = findRedemptionActivity(
+        state.bridgeActivity.data,
+        redemptionKey,
+        redemptionRequestedTxHash
+      )
+
+      if (!itemToUpdate) return
+
+      state.bridgeActivity.data[index] = {
+        ...itemToUpdate,
+        activityKey: redemptionKey,
+        txHash: redemptionRequestedTxHash,
+        status: BridgeActivityStatus.UNMINTED,
+      }
+    },
   },
 })
 
