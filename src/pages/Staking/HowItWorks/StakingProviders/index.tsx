@@ -8,10 +8,7 @@ import {
 } from "@threshold-network/components"
 import { PageComponent } from "../../../../types"
 import { featureFlags } from "../../../../constants"
-import {
-  AllAppsProvidersList,
-  PreOnlyProvidersList,
-} from "../../../../components/StakingProvidersList"
+import { AllAppsProvidersList } from "../../../../components/StakingProvidersList"
 
 const StakingProviders: PageComponent = () => {
   return (
@@ -32,18 +29,12 @@ const StakingProviders: PageComponent = () => {
             "providers"
             "pre-providers"
           `,
-          xl: `"providers   pre-providers"`,
         }}
         gridGap="4"
       >
         <Card gridArea="providers" h="fit-content">
           <BoxLabel status="secondary">All Applications</BoxLabel>
           <AllAppsProvidersList />
-        </Card>
-
-        <Card gridArea="pre-providers" h="fit-content">
-          <BoxLabel status="secondary">Pre only</BoxLabel>
-          <PreOnlyProvidersList />
         </Card>
       </Grid>
     </Card>
