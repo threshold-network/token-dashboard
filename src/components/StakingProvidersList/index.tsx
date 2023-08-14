@@ -6,6 +6,7 @@ import StakedLogo from "../../static/images/stakingProviders/StakedLogo.png"
 import BoarLogo from "../../static/images/stakingProviders/BoarLogo.png"
 import P2PValidatorLogo from "../../static/images/stakingProviders/P2PValidatorLogo.png"
 import InfStonesLogo from "../../static/images/stakingProviders/InfStonesLogo.png"
+import DelightLogo from "../../static/images/stakingProviders/DelightLogo.svg"
 
 type ProviderItem = {
   name: string
@@ -35,8 +36,7 @@ const providers: ProviderItem[] = [
     name: "DELIGHT",
     email: "contact@delightlabs.io",
     link: ExternalHref.delight,
-    // TODO: add img
-    imgSrc: undefined,
+    imgSrc: DelightLogo,
   },
   {
     name: "InfStones",
@@ -60,7 +60,7 @@ const providers: ProviderItem[] = [
 
 export const AllAppsProvidersList: FC<ListProps> = (props) => {
   return (
-    <List mt="6" spacing="4" {...props}>
+    <List spacing="4" {...props}>
       {providers.map(renderProviderListItem)}
     </List>
   )

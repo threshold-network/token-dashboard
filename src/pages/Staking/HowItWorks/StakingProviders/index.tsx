@@ -33,7 +33,6 @@ const StakingProviders: PageComponent = () => {
         gridGap="4"
       >
         <Card gridArea="providers" h="fit-content">
-          <BoxLabel status="secondary">All Applications</BoxLabel>
           <AllAppsProvidersList />
         </Card>
       </Grid>
