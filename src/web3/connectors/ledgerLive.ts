@@ -61,6 +61,12 @@ export class LedgerLiveConnector extends AbstractConnector {
     if (!this.supportedChainIds) {
       throw new Error("Supported chain ids are not defined.")
     }
+    // Removes all local storage entries that starts with "wc@2"
+    // This is a workaround for "Cannot convert undefined or null to object"
+    // error that sometime occur with WalletConnect
+    Object.keys(localStorage)
+      .filter((x) => x.startsWith("wc@2"))
+      .forEach((x) => localStorage.removeItem(x))
     let account = ""
     const connectKit = await this.connectKitPromise
     const chainId = this.supportedChainIds[0]

@@ -82,6 +82,12 @@ export class WalletConnectConnector extends AbstractConnector {
   }
 
   public async activate(): Promise<ConnectorUpdate> {
+    // Removes all local storage entries that starts with "wc@2"
+    // This is a workaround for "Cannot convert undefined or null to object"
+    // error that sometime occur with WalletConnect
+    Object.keys(localStorage)
+      .filter((x) => x.startsWith("wc@2"))
+      .forEach((x) => localStorage.removeItem(x))
     if (!this.provider) {
       const chains = getSupportedChains(this.config)
       if (chains.length === 0) throw new Error("Chains not specified!")
