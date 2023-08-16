@@ -27,6 +27,14 @@ interface Props extends BaseModalProps {
   goBack: () => void
   connector?: AbstractConnector
   walletType: WalletType
+  /**
+   * This is required for some of the providers (for example WalletConnect v2),
+   * because they have their own modal that is being opened. In that case we
+   * can't display our loading modal because it has larger z-index than
+   * provider's one and it's too problematic to change that.
+   *
+   */
+  shouldForceCloseModal?: boolean
 }
 
 const WalletConnectionModalBase: FC<Props> = ({
@@ -40,6 +48,7 @@ const WalletConnectionModalBase: FC<Props> = ({
   onContinue,
   connector,
   walletType,
+  shouldForceCloseModal,
 }) => {
   const { activate, active, account } = useWeb3React()
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
@@ -49,8 +58,14 @@ const WalletConnectionModalBase: FC<Props> = ({
 
     captureWalletConnected({ walletType })
     activate(connector)
-    if (walletType === WalletType.WalletConnect) closeModal()
-  }, [activate, connector, captureWalletConnected, walletType])
+    if (shouldForceCloseModal) closeModal()
+  }, [
+    activate,
+    connector,
+    captureWalletConnected,
+    walletType,
+    shouldForceCloseModal,
+  ])
 
   return (
     <>
