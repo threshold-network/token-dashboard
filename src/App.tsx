@@ -197,7 +197,7 @@ const Routing = () => {
     <Routes>
       <Route path="*" element={<Layout />}>
         <Route index element={<Navigate to="overview" />} />
-        {pages.map((page) => renderPageComponent(page))}
+        {pages.map(renderPageComponent)}
         <Route path="*" element={<Navigate to="overview" />} />
       </Route>
     </Routes>
