@@ -8,6 +8,10 @@ export type RouteProps = {
   pages?: PageComponent[]
   hideFromMenu?: boolean
   isPageEnabled: boolean
+  // Paths combined from all Route parents of the current Route
+  parentPathBase?: string
 }
 
-export type PageComponent = FC<RouteProps> & { route: RouteProps }
+export type PageComponent = FC<RouteProps> & {
+  route: RouteProps
+}
