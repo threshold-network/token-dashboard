@@ -6,13 +6,7 @@ import { featureFlags } from "../../constants"
 import { ExplorerPage } from "./Explorer"
 
 const MainTBTCPage: PageComponent = (props) => {
-  return (
-    <PageLayout
-      title={props.title}
-      pages={props.pages}
-      parentPathBase={props.parentPathBase}
-    />
-  )
+  return <PageLayout title={props.title} pages={props.pages} />
 }
 
 MainTBTCPage.route = {

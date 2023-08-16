@@ -204,12 +204,10 @@ const Routing = () => {
   )
 }
 
-const renderPageComponent = (
-  PageComponent: PageComponent,
-  /** @see PageComponent type */
-  parentPathBase: string = ""
-) => {
+const renderPageComponent = (PageComponent: PageComponent) => {
   if (!PageComponent.route.isPageEnabled) return null
+  const { parentPathBase: parentPathBaseFromRoute } = PageComponent.route
+  const parentPathBase = parentPathBaseFromRoute || ""
   const updatedParentPathBase = PageComponent.route.path
     ? `${parentPathBase}/${PageComponent.route.path}`
     : parentPathBase
@@ -231,9 +229,10 @@ const renderPageComponent = (
           />
         }
       >
-        {PageComponent.route.pages?.map((page) =>
-          renderPageComponent(page, updatedParentPathBase)
-        )}
+        {PageComponent.route.pages?.map((page) => {
+          page.route.parentPathBase = updatedParentPathBase
+          return renderPageComponent(page)
+        })}
       </Route>
     </Fragment>
   )

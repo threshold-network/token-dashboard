@@ -13,8 +13,6 @@ import Link from "../Link"
 
 interface SubNavigationPillsProps {
   links: RouteProps[]
-  /** @see PageComponent type */
-  parentPathBase: string
 }
 
 interface PathMatchResult {
@@ -28,17 +26,10 @@ interface NavPill extends RouteProps {
   isActive?: boolean
 }
 
-const SubNavigationPills: FC<SubNavigationPillsProps> = ({
-  links,
-  parentPathBase,
-}) => {
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
   const { pathname } = useLocation()
   const linksWithTitle = links.filter((link) => !!link.title)
-  const activePillIndex = getActivePillIndex(
-    linksWithTitle,
-    parentPathBase,
-    pathname
-  )
+  const activePillIndex = getActivePillIndex(linksWithTitle, pathname)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
   return (
@@ -108,24 +99,28 @@ const renderPill = (pill: RouteProps, isActive = false) => (
   <NavPill key={pill.path} isActive={isActive} {...pill} />
 )
 
-const getPathMatches = (
-  pills: RouteProps[],
-  parentPathBase: string = "",
-  locationPathname: string
-) => {
+const getPathMatches = (pills: RouteProps[], locationPathname: string) => {
   const pathMatches: PathMatchResult[] = []
   for (let i = 0; i < pills.length; i++) {
-    const { path, pathOverride } = pills[i]
+    const { path, pathOverride, parentPathBase } = pills[i]
     // This is a workaround for preview links. We have to remove the branch name
-    // from the pathname
-    const currentPathname =
-      locationPathname.includes(parentPathBase) &&
-      locationPathname.indexOf(parentPathBase) !== 0
+    // from the pathname so first we check if `parentPathBase` is not an
+    // undefined. If it is then it means that this is the main page without any
+    // additional paths so we can just use an empty string here. If it's not
+    // undefined then we have to remove all the characters (if there are any)
+    // that are before the occurrence of the `parentPathBase`. If this is a
+    // preview then those removed characters should be a name of the branch. In
+    // other cases there should not be any character before the occurrence of
+    // the `parentPathBase` so nothing happens.
+    const currentPathname = parentPathBase
+      ? locationPathname.includes(parentPathBase) &&
+        locationPathname.indexOf(parentPathBase) !== 0
         ? locationPathname.substring(
             locationPathname.indexOf(parentPathBase),
             locationPathname.length
           )
         : locationPathname
+      : ""
     const resolved = resolvePath(
       pathOverride
         ? `${parentPathBase}/${pathOverride}`
@@ -146,12 +141,8 @@ const getPathMatches = (
   return pathMatches
 }
 
-const getActivePillIndex = (
-  pills: RouteProps[],
-  parentPathBase: string,
-  locationPathname: string
-) => {
-  const pathMatches = getPathMatches(pills, parentPathBase, locationPathname)
+const getActivePillIndex = (pills: RouteProps[], locationPathname: string) => {
+  const pathMatches = getPathMatches(pills, locationPathname)
   const matchedPaths = pathMatches.filter((_) => {
     return !!_.match
   })

@@ -64,12 +64,7 @@ const StakingPage: PageComponent = (props) => {
   } = useAppSelector((state) => state.account)
 
   return (
-    <PageLayout
-      pages={props.pages}
-      title={props.title}
-      maxW={"100%"}
-      parentPathBase={props.parentPathBase}
-    >
+    <PageLayout pages={props.pages} title={props.title} maxW={"100%"}>
       <HStack
         alignItems={{ base: "flex-end", lg: "flex-start" }}
         w={"100%"}
@@ -191,7 +186,6 @@ const MainStakingPage: PageComponent = (props) => {
       pages={props.pages}
       title={props.title}
       maxW={{ base: "2xl", lg: "4xl", xl: "6xl" }}
-      parentPathBase={props.parentPathBase}
     />
   )
 }

@@ -8,15 +8,12 @@ import useDocumentTitle from "../hooks/useDocumentTitle"
 export interface PageLayoutProps extends ContainerProps {
   pages?: PageComponent[]
   title?: string
-  /** @see PageComponent type */
-  parentPathBase: string
 }
 
 const PageLayout: FC<PageLayoutProps> = ({
   pages,
   title,
   children,
-  parentPathBase,
   ...restProps
 }) => {
   useDocumentTitle(`Threshold - ${title}`)
@@ -26,9 +23,7 @@ const PageLayout: FC<PageLayoutProps> = ({
 
   return (
     <>
-      {links.length > 0 && (
-        <SubNavigationPills links={links} parentPathBase={parentPathBase} />
-      )}
+      {links.length > 0 && <SubNavigationPills links={links} />}
       <Container
         maxW={{ base: "2xl", xl: "6xl" }}
         mt="6.25rem"
