@@ -40,7 +40,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
               <Box as="span" color="brand.500">
                 ~ 1 to 3 hours
               </Box>{" "}
-              after you initiate minting.
+              after you initiate minting, depending on your deposited amount.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
@@ -56,6 +56,17 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
               </Box>
               . Depositing less than the minimum can mean losing access to your
               funds.
+            </BodyComponent>
+          </ListItemWithIcon>
+        </List>
+      </ListItem>
+      <ListItem>
+        <LabelComponent mb="2">Bridging back btc is LIVE</LabelComponent>
+        <List spacing="2">
+          <ListItemWithIcon>
+            <BodyComponent>
+              You can bridge your BTC back whenever you want. Redemptions are
+              now live.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
