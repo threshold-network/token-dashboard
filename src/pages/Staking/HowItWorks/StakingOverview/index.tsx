@@ -8,7 +8,6 @@ import { useTStakingContract } from "../../../../web3/hooks"
 import { AuthorizingApplicationsCard } from "./AuthorizingApplicationsCard"
 import { PageComponent } from "../../../../types"
 import { featureFlags } from "../../../../constants"
-import { ProvidersCardNonMAS } from "./ProvidersCardNonMAS"
 
 const gridTemplate = featureFlags.MULTI_APP_STAKING
   ? {
@@ -71,9 +70,6 @@ const StakingOverview: PageComponent = () => {
       )}
       <StakingActionsCard gridArea="staking-actions" />
       <AboutAddressesCard gridArea="addresses" alignSelf="flex-start" />
-      {!featureFlags.MULTI_APP_STAKING && (
-        <ProvidersCardNonMAS gridArea="providers-card-non-mas" />
-      )}
     </Grid>
   )
 }
