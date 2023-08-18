@@ -33,5 +33,4 @@ export enum ExternalHref {
   btcConfirmations = "https://en.bitcoin.it/wiki/Confirmation",
   mintersAndGuardiansDocs = "https://blog.threshold.network/minters-guardians-and-a-strong-tbtc/",
   tBTCDuneDashboard = "https://dune.com/threshold/tbtc",
-  delight = "https://delightlabs.io",
 }
