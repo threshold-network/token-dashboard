@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react"
-import { H5 } from "@threshold-network/components"
+import { H5, useColorModeValue } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "./BridgeProcessCardTitle"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import {
@@ -40,8 +40,10 @@ export const BridgeProcessEmptyState: FC<{
           width: "100%",
           height: "100px",
           opacity: "0.9",
-          background:
+          background: useColorModeValue(
             "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
+            "linear-gradient(360deg, #4A5568 0%, rgba(255, 255, 255, 0) 117.78%)"
+          ),
         }}
       />
       <ProtocolHistoryViewMoreLink mt="7" />
