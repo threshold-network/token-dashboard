@@ -5,6 +5,7 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Flex,
+  useColorModeValue,
 } from "@threshold-network/components"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
@@ -51,7 +52,7 @@ export const BridgeProcessStep: FC<BridgeProcessStepProps> = ({
   return (
     <Flex flexDirection="column" alignItems="center" height="100%">
       <BodyLg
-        color="gray.700"
+        color={useColorModeValue("gray.700", "gray.300")}
         mt="8"
         alignSelf="flex-start"
         fontSize="20px"
