@@ -46,6 +46,7 @@ const WalletConnectionAlert: FC<{
   const resetAlert = () => {
     setHideAlert(true)
     setAlertDescription("")
+    if (error) error.message = ""
   }
 
   if (hideAlert) {
