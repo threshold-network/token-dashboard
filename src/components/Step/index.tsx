@@ -14,6 +14,7 @@ import {
   Badge,
   ImageProps,
   Image,
+  useColorModeValue,
 } from "@threshold-network/components"
 
 type Sizes = "sm" | "md" | "lg"
@@ -139,7 +140,11 @@ export const Step: FC<StepProps> = ({
         w="full"
         borderLeftWidth="4px"
         borderLeftStyle="solid"
-        borderColor={isActive || isComplete ? "brand.500" : "gray.300"}
+        borderColor={
+          isActive || isComplete
+            ? useColorModeValue("brand.500", "brand.300")
+            : "gray.300"
+        }
         {...restProps}
       >
         {children}
@@ -157,7 +162,7 @@ export const StepIndicator: FC<ComponentProps<typeof LabelSm>> = ({
   const Label = stepSizeMap[size].label.component
 
   return (
-    <Label color="brand.500" {...restProps}>
+    <Label color={useColorModeValue("brand.500", "brand.300")} {...restProps}>
       {children}
     </Label>
   )
