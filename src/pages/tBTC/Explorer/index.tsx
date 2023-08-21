@@ -220,7 +220,7 @@ const MetricBox: FC = ({ children }) => {
       textAlign="center"
       borderRadius="2"
       minWidth="294px"
-      color="grat.700"
+      color="gray.700"
     >
       {children}
     </Box>
