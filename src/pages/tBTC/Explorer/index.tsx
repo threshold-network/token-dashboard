@@ -24,6 +24,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import tBTCExplorerBg from "../../../static/images/tBTC-explorer-bg.svg"
@@ -155,7 +156,7 @@ const HistoryRow: FC<RecentDeposit> = ({ txHash, address, amount, date }) => {
     <LinkBox
       as={Tr}
       key={`latest-mints-${txHash}`}
-      _odd={{ backgroundColor: "gray.50" }}
+      _odd={{ backgroundColor: useColorModeValue("gray.50", "gray.700") }}
       sx={{ td: { borderBottom: "none" } }}
       transform="scale(1)"
     >
@@ -216,7 +217,7 @@ const MetricBox: FC = ({ children }) => {
       border="1px solid"
       borderColor="gray.100"
       p="3.25rem"
-      bg="white"
+      bg={useColorModeValue("white", "gray.700")}
       textAlign="center"
       borderRadius="2"
       minWidth="294px"
