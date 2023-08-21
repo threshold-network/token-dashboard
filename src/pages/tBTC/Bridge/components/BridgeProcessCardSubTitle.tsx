@@ -1,5 +1,5 @@
 import { ComponentProps, FC } from "react"
-import { BodyLg, Box } from "@threshold-network/components"
+import { BodyLg, Box, useColorModeValue } from "@threshold-network/components"
 
 export const BridgeProcessCardSubTitle: FC<
   {
@@ -9,7 +9,11 @@ export const BridgeProcessCardSubTitle: FC<
 > = ({ stepText, subTitle, children, ...restProps }) => {
   return (
     <BodyLg mb={4} {...restProps}>
-      <Box as="span" fontWeight="bold" color="brand.500">
+      <Box
+        as="span"
+        fontWeight="bold"
+        color={useColorModeValue("brand.500", "brand.300")}
+      >
         {stepText}
       </Box>
       {subTitle ? ` - ${subTitle}` : children}

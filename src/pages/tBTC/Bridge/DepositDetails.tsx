@@ -17,18 +17,16 @@ import {
   LabelSm,
   List,
   ListItem,
-  Skeleton,
   Stack,
   StackDivider,
   Icon,
   Divider,
-  SkeletonText,
-  SkeletonCircle,
   BodySm,
   BodyXs,
   Alert,
   AlertDescription,
   AlertIcon,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -208,7 +206,11 @@ export const DepositDetails: PageComponent = () => {
                 <BridgeProcessCardTitle />
                 <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
-                    <Box as="span" fontWeight="600" color="brand.500">
+                    <Box
+                      as="span"
+                      fontWeight="600"
+                      color={useColorModeValue("brand.500", "brand.300")}
+                    >
                       {mintingProgressStep === "completed"
                         ? "Minted"
                         : "Minting"}
