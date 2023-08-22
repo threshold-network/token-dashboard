@@ -78,20 +78,31 @@ export const findUtxoEffect = async (
           continue
         }
 
-        // UTXOs returned from `findAllUnspentTransactionOutputs` are in
-        // reversed order so we have to get the last element of the `utxos`
-        // array to get the oldest utxo related to this deposit address.
-        const utxo = utxos.pop()!
+        let utxo = utxos[0]
+        let areAllDepositRevealed = true
 
-        // Check if deposit is revealed.
-        const deposit = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getRevealedDeposit(utxo)
-        )
+        // We have to find the first utxo that is revealed. The UTXOs returned
+        // from `findAllUnspentTransactionOutputs` are in reversed order so
+        // that's why we start our search from the last elements of the `utxos`.
+        // If all deposits are revealed then we just use the first utxo (which
+        // should be the most recent transaction)
+        for (let i = utxos.length - 1; i >= 0; i--) {
+          // Check if deposit is revealed.
+          const deposit = await forkApi.pause(
+            listenerApi.extra.threshold.tbtc.getRevealedDeposit(utxos[i])
+          )
+          const isDepositRevealed = deposit.revealedAt !== 0
 
-        const isDepositRevealed = deposit.revealedAt !== 0
+          if (!isDepositRevealed) {
+            utxo = utxos[i]
+            areAllDepositRevealed = false
+            break
+          }
+        }
 
-        if (isDepositRevealed) {
-          // Deposit already revealed, force start from step 1 and remove deposit data.
+        if (areAllDepositRevealed) {
+          // All deposits are already revealed. Force start from step 1 and
+          // remove deposit data.
           removeDataForAccount(
             depositor,
             JSON.parse(
