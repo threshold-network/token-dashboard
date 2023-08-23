@@ -81,11 +81,14 @@ export const findUtxoEffect = async (
         let utxo = utxos[0]
         let areAllDepositRevealed = true
 
-        // We have to find the first utxo that is revealed. The UTXOs returned
-        // from `findAllUnspentTransactionOutputs` are in reversed order so
-        // that's why we start our search from the last elements of the `utxos`.
-        // If all deposits are revealed then we just use the first utxo (which
-        // should be the most recent transaction)
+        // We have to find the first UTXO that is not revealed. The UTXOs
+        // returned from `findAllUnspentTransactionOutputs` are in reversed
+        // order so we have to start our search from the last element of the
+        // `utxos` so that we search them in the order they were done. We go
+        // through all of them up to the first one to find the oldest UTXO that
+        // is not revealed.
+        // If all deposits are revealed then we just use the first UTXO (which
+        // should be the most recent transaction).
         for (let i = utxos.length - 1; i >= 0; i--) {
           // Check if deposit is revealed.
           const deposit = await forkApi.pause(
