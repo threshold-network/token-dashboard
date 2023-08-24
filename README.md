@@ -126,3 +126,53 @@ The following procedure allows to deploy T token dashboard to production:
    approval of someone else from the development team.
 5. Once the release action is approved, the new version is automatically
    deployed to `dashboard.threshold.network`.
+
+
+## Local Development
+
+Update `package.json` to contain:
+
+```json
+    "@keep-network/coverage-pools": "goerli",
+    "@keep-network/ecdsa": "goerli",
+    "@keep-network/keep-core": "1.8.1-goerli.0",
+    "@keep-network/keep-ecdsa": "goerli",
+    "@keep-network/random-beacon": "goerli",
+    "@keep-network/tbtc": "goerli",
+    "@keep-network/tbtc-v2": "goerli",
+    "@keep-network/tbtc-v2.ts": "development",
+    "@threshold-network/components": "development",
+    "@threshold-network/solidity-contracts": "goerli",
+```
+
+Update `.env` to contain:
+
+```
+REACT_APP_SUPPORTED_CHAIN_ID=5
+REACT_APP_ETH_HOSTNAME_HTTP=https://goerli.infura.io/v3/<your API key here>
+REACT_APP_ETH_HOSTNAME_WS=wss://goerli.infura.io/v3/<your API key here>
+REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
+
+REACT_APP_FEATURE_FLAG_TBTC_V2=true
+REACT_APP_FEATURE_FLAG_TBTC_V2_REDEMPTION=true
+REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING=true
+REACT_APP_FEATURE_FLAG_FEEDBACK_MODULE=false
+REACT_APP_FEATURE_FLAG_POSTHOG=false
+REACT_APP_FEATURE_FLAG_SENTRY=$SENTRY_SUPPORT
+REACT_APP_SENTRY_DSN=$SENTRY_DSN
+
+REACT_APP_ELECTRUM_PROTOCOL=wss
+REACT_APP_ELECTRUM_HOST=electrumx-server.test.tbtc.network
+REACT_APP_ELECTRUM_PORT=8443
+REACT_APP_MOCK_BITCOIN_CLIENT=false
+
+REACT_APP_WALLET_CONNECT_PROJECT_ID=$WALLET_CONNECT_PROJECT_ID
+```
+
+Then build the docker container and run the dashboard:
+
+```bash
+docker build -t dashboard:latest .
+docker run -p 3000:3000 -d dashboard
+```
+
