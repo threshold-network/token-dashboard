@@ -16,6 +16,8 @@ import randomBeaconAppIllustrationLight from "../../../../static/images/randomBe
 import randomBeaconAppIllustrationDark from "../../../../static/images/randomBeaconAppIllustrationDark.png"
 import preAppIllustrationLight from "../../../../static/images/preAppIllustrationLight.png"
 import preAppIllustrationDark from "../../../../static/images/preAppIllustrationDark.png"
+// import tacoAppIllustrationLight from "../../../../static/images/tacoAppIllustrationLight.png"
+// import tacoAppIllustrationDark from "../../../../static/images/tacoAppIllustrationDark.png"
 import listIconStarLight from "../../../../static/images/ListIconStarLight.png"
 import listIconStarDark from "../../../../static/images/ListIconStarDark.png"
 import listIconStockLight from "../../../../static/images/ListIconStockLight.png"
@@ -42,6 +44,11 @@ const tbtcNodeSteps = [
   "Authorize a portion of your stake to tBTC",
   "Have a staked balance",
 ]
+const tacoNodeSteps = [
+  "Run a TACO node",
+  "Authorize a portion of your stake to TACO",
+  "Have a staked balance",
+]
 
 const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
   star: { light: listIconStarLight, dark: listIconStarDark },
@@ -62,6 +69,10 @@ const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
   randomBeacon: {
     light: randomBeaconAppIllustrationLight,
     dark: randomBeaconAppIllustrationDark,
+  },
+  taco: {
+    light: preAppIllustrationLight,
+    dark: preAppIllustrationDark,
   },
 }
 
@@ -145,6 +156,28 @@ const StakingApplications: PageComponent = () => {
           rewardSteps={tbtcNodeSteps}
         />
         <ApplicationDetailsCard
+          preTitle="TACO APP"
+          title="TACo is an access control plug-in that makes your Web3 application more secure, more private, and much more decentralized."
+          description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
+          imgSrc={iconMap.taco[colorMode]}
+          ctaButtons={
+            <VStack mb={6}>
+              <ButtonLink to="/staking" isFullWidth>
+                Authorize TACO
+              </ButtonLink>
+              <ButtonLink
+                isExternal
+                href={ExternalHref.tacoNodeDocs}
+                isFullWidth
+                variant="outline"
+              >
+                TACO Node Docs
+              </ButtonLink>
+            </VStack>
+          }
+          rewardSteps={tacoNodeSteps}
+        />
+        <ApplicationDetailsCard
           preTitle="Random Beacon APP"
           title="Random Beacon is a threshold relay that can generate verifiable randomness."
           description="The Random Beacon application provides a trusted source of randomness for the process of trustless group election in the Threshold Network."
@@ -183,8 +216,16 @@ const StakingApplications: PageComponent = () => {
             </ButtonLink>
           }
           rewardSteps={preNodeSteps}
-        />
-      </Stack>
+          />
+          <ApplicationDetailsCard
+            preTitle="TACO APP"
+            title="TACo is an access control plug-in that makes your Web3 application more secure, more private, and much more decentralized."
+            description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
+            imgSrc={iconMap.taco[colorMode]}
+            ctaButtons={null}
+            rewardSteps={[]}
+          />
+          </Stack>
     </Card>
   )
 }
