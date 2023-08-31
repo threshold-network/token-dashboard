@@ -33,7 +33,6 @@ import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 import ButtonLink from "../../../../components/ButtonLink"
 
-const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
 const randomBeaconNodeSteps = [
   "Run a Random Beacon node",
   "Authorize a portion of your stake to Random Beacon",
@@ -61,10 +60,6 @@ const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
   tbtc: {
     light: tbtcAppIllustrationLight,
     dark: tbtcAppIllustrationDark,
-  },
-  pre: {
-    light: preAppIllustrationLight,
-    dark: preAppIllustrationDark,
   },
   randomBeacon: {
     light: randomBeaconAppIllustrationLight,
@@ -199,33 +194,7 @@ const StakingApplications: PageComponent = () => {
           }
           rewardSteps={randomBeaconNodeSteps}
         />
-        <ApplicationDetailsCard
-          preTitle="PRE APP"
-          title="Proxy Re-Encryption, or PRE, is cryptographic middleware for developing privacy-preserving applications."
-          description="PRE is a scalable end-to-end encryption protocol that allows a proxy entity to transform (or re-encrypt) encrypted data from one encryption key to another, without revealing the plaintext data. The nodes on the Threshold Network act as these proxy entities and use threshold cryptography to securely and cooperatively re-encrypt data for recipients based on access conditions defined by the data owner. "
-          imgSrc={iconMap.pre[colorMode]}
-          ctaButtons={
-            <ButtonLink
-              isExternal
-              href={ExternalHref.preNodeSetup}
-              mb={6}
-              isFullWidth
-              variant="outline"
-            >
-              PRE Node Docs
-            </ButtonLink>
-          }
-          rewardSteps={preNodeSteps}
-          />
-          <ApplicationDetailsCard
-            preTitle="TACO APP"
-            title="TACo is an access control plug-in that makes your Web3 application more secure, more private, and much more decentralized."
-            description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
-            imgSrc={iconMap.taco[colorMode]}
-            ctaButtons={null}
-            rewardSteps={[]}
-          />
-          </Stack>
+      </Stack>
     </Card>
   )
 }
