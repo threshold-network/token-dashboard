@@ -61,6 +61,11 @@ const StakeDetailsPage: FC = () => {
     stakingProviderAddress || AddressZero
   )
 
+  const tacoApp = useStakingAppDataByStakingProvider(
+    "taco",
+    stakingProviderAddress || AddressZero
+  )
+
   const isInActiveStake = BigNumber.from(stake?.totalInTStake ?? "0").isZero()
 
   const { total: rewardsForStake } = useAppSelector((state) =>
@@ -134,8 +139,8 @@ const StakeDetailsPage: FC = () => {
             isAddress
             address={stake.beneficiary}
           />
-          <StakeDetailRow label="PRE Node Status">
-            <NodeStatusLabel isAuthorized />
+          <StakeDetailRow label="TACo Node Status">
+            <NodeStatusLabel isAuthorized={tacoApp.isAuthorized} />
           </StakeDetailRow>
           <StakeDetailRow label="tBTC Node Status">
             <NodeStatusLabel isAuthorized={tbtcApp.isAuthorized} />
