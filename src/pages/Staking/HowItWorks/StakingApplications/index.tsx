@@ -16,6 +16,8 @@ import randomBeaconAppIllustrationLight from "../../../../static/images/randomBe
 import randomBeaconAppIllustrationDark from "../../../../static/images/randomBeaconAppIllustrationDark.png"
 import preAppIllustrationLight from "../../../../static/images/preAppIllustrationLight.png"
 import preAppIllustrationDark from "../../../../static/images/preAppIllustrationDark.png"
+// import tacoAppIllustrationLight from "../../../../static/images/tacoAppIllustrationLight.png"
+// import tacoAppIllustrationDark from "../../../../static/images/tacoAppIllustrationDark.png"
 import listIconStarLight from "../../../../static/images/ListIconStarLight.png"
 import listIconStarDark from "../../../../static/images/ListIconStarDark.png"
 import listIconStockLight from "../../../../static/images/ListIconStockLight.png"
@@ -31,7 +33,6 @@ import { Link as RouterLink } from "react-router-dom"
 import { ColorMode, List, ListItem, useColorMode } from "@chakra-ui/react"
 import ButtonLink from "../../../../components/ButtonLink"
 
-const preNodeSteps = ["Run a PRE node", "Have a staked balance"]
 const randomBeaconNodeSteps = [
   "Run a Random Beacon node",
   "Authorize a portion of your stake to Random Beacon",
@@ -40,6 +41,11 @@ const randomBeaconNodeSteps = [
 const tbtcNodeSteps = [
   "Run a tBTC node",
   "Authorize a portion of your stake to tBTC",
+  "Have a staked balance",
+]
+const tacoNodeSteps = [
+  "Run a TACO node",
+  "Authorize a portion of your stake to TACO",
   "Have a staked balance",
 ]
 
@@ -55,13 +61,13 @@ const iconMap: { [iconName: string]: Record<ColorMode, string> } = {
     light: tbtcAppIllustrationLight,
     dark: tbtcAppIllustrationDark,
   },
-  pre: {
-    light: preAppIllustrationLight,
-    dark: preAppIllustrationDark,
-  },
   randomBeacon: {
     light: randomBeaconAppIllustrationLight,
     dark: randomBeaconAppIllustrationDark,
+  },
+  taco: {
+    light: preAppIllustrationLight,
+    dark: preAppIllustrationDark,
   },
 }
 
@@ -145,6 +151,28 @@ const StakingApplications: PageComponent = () => {
           rewardSteps={tbtcNodeSteps}
         />
         <ApplicationDetailsCard
+          preTitle="TACO APP"
+          title="TACo is an access control plug-in that makes your Web3 application more secure, more private, and much more decentralized."
+          description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
+          imgSrc={iconMap.taco[colorMode]}
+          ctaButtons={
+            <VStack mb={6}>
+              <ButtonLink to="/staking" isFullWidth>
+                Authorize TACO
+              </ButtonLink>
+              <ButtonLink
+                isExternal
+                href={ExternalHref.tacoNodeDocs}
+                isFullWidth
+                variant="outline"
+              >
+                TACO Node Docs
+              </ButtonLink>
+            </VStack>
+          }
+          rewardSteps={tacoNodeSteps}
+        />
+        <ApplicationDetailsCard
           preTitle="Random Beacon APP"
           title="Random Beacon is a threshold relay that can generate verifiable randomness."
           description="The Random Beacon application provides a trusted source of randomness for the process of trustless group election in the Threshold Network."
@@ -165,24 +193,6 @@ const StakingApplications: PageComponent = () => {
             </VStack>
           }
           rewardSteps={randomBeaconNodeSteps}
-        />
-        <ApplicationDetailsCard
-          preTitle="PRE APP"
-          title="Proxy Re-Encryption, or PRE, is cryptographic middleware for developing privacy-preserving applications."
-          description="PRE is a scalable end-to-end encryption protocol that allows a proxy entity to transform (or re-encrypt) encrypted data from one encryption key to another, without revealing the plaintext data. The nodes on the Threshold Network act as these proxy entities and use threshold cryptography to securely and cooperatively re-encrypt data for recipients based on access conditions defined by the data owner. "
-          imgSrc={iconMap.pre[colorMode]}
-          ctaButtons={
-            <ButtonLink
-              isExternal
-              href={ExternalHref.preNodeSetup}
-              mb={6}
-              isFullWidth
-              variant="outline"
-            >
-              PRE Node Docs
-            </ButtonLink>
-          }
-          rewardSteps={preNodeSteps}
         />
       </Stack>
     </Card>

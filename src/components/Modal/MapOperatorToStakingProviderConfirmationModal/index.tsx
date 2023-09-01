@@ -60,6 +60,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   operator,
   isOperatorMappedOnlyInTbtc,
   isOperatorMappedOnlyInRandomBeacon,
+  isOperatorMappedOnlyInTaco,
   closeModal,
 }) => {
   const { account } = useWeb3React()
@@ -151,6 +152,13 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
         {!isOperatorMappedOnlyInRandomBeacon && (
           <OperatorMappingConfirmation
             appName="random beacon"
+            operator={operator}
+            stakingProvider={account ? account : AddressZero}
+          />
+        )}
+        {!isOperatorMappedOnlyInTaco && (
+          <OperatorMappingConfirmation
+            appName="taco"
             operator={operator}
             stakingProvider={account ? account : AddressZero}
           />

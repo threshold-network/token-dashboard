@@ -90,7 +90,7 @@ const MapOperatorToStakingProviderModal: FC<
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc ? (
+          {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc || isOperatorMappedOnlyInTaco ? (
             <H5>
               We noticed you've only mapped 1 application's Operator Address.
             </H5>
