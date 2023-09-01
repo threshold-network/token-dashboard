@@ -42,7 +42,7 @@ export const BridgeProcessEmptyState: FC<{
           opacity: "0.9",
           background: useColorModeValue(
             "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
-            "linear-gradient(360deg, #4A5568 0%, rgba(255, 255, 255, 0) 117.78%)"
+            "linear-gradient(360deg, #333A47 0%, rgba(255, 255, 255, 0) 117.78%)"
           ),
         }}
       />
