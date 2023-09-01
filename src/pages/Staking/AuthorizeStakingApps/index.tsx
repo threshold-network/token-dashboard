@@ -46,27 +46,28 @@ const AuthorizeStakingAppsPage: FC = () => {
   const { openModal } = useModal()
   const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
   const randomBeaconAppFormRef = useRef<FormikProps<FormValues>>(null)
-  const preAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const tacoAppFormRef = useRef<FormikProps<FormValues>>(null)
   const stakinAppNameToFormRef: Record<
     AppAuthDataProps["stakingAppId"],
     RefObject<FormikProps<FormValues>>
   > = {
     tbtc: tbtcAppFormRef,
     randomBeacon: randomBeaconAppFormRef,
-    pre: preAppFormRef,
+    taco: tacoAppFormRef,
   }
 
   const dispatch = useAppDispatch()
 
   const tbtcAppAddress = useStakingApplicationAddress("tbtc")
   const randomBeaconAddress = useStakingApplicationAddress("randomBeacon")
+  const TACoAddress = useStakingApplicationAddress("taco")
   const stakinAppNameToAddress: Record<
     AppAuthDataProps["stakingAppId"],
     string
   > = {
     tbtc: tbtcAppAddress,
     randomBeacon: randomBeaconAddress,
-    pre: AddressZero,
+    taco: TACoAddress,
   }
 
   useEffect(() => {
@@ -91,6 +92,10 @@ const AuthorizeStakingAppsPage: FC = () => {
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )
+  const TACoApp = useStakingAppDataByStakingProvider(
+    "taco",
+    stakingProviderAddress || AddressZero
+  )
 
   const appsAuthData: {
     [appName: string]: AppAuthDataProps & { address?: string }
@@ -108,9 +113,10 @@ const AuthorizeStakingAppsPage: FC = () => {
       label: "Random Beacon",
     },
     pre: {
-      stakingAppId: "pre",
-      label: "PRE",
-      status: "authorization-not-required",
+      ...TACoApp,
+      stakingAppId: "taco",
+      label: "TACo",
+      address: TACoAddress,
     },
   }
 
@@ -295,10 +301,10 @@ const AuthorizeStakingAppsPage: FC = () => {
             />
             <AuthorizeApplicationsCardCheckbox
               mt={5}
-              appAuthData={appsAuthData.pre}
+              appAuthData={appsAuthData.taco}
               totalInTStake={stake.totalInTStake}
               onCheckboxClick={onCheckboxClick}
-              isSelected={isAppSelected("pre")}
+              isSelected={isAppSelected("taco")}
               maxAuthAmount={stake.totalInTStake}
               minAuthAmount={"0"}
               stakingProvider={stakingProviderAddress!}
