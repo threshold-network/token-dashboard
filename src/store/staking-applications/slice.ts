@@ -38,6 +38,7 @@ export type StakingApplicationState = {
 export interface StakingApplicationsState {
   tbtc: StakingApplicationState
   randomBeacon: StakingApplicationState
+  taco: StakingApplicationState
 }
 
 export type StakingAppName = "tbtc" | "randomBeacon" | "taco"
