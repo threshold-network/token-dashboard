@@ -17,6 +17,10 @@ const iconMap: Record<StakingAppName, Record<Operation, string>> = {
     increase: randomBeaconIncrease,
     decrease: randomBeaconDecrease,
   },
+  taco: {
+    increase: tbtcIncrease,
+    decrease: tbtcDecrease,
+  },
 }
 
 const StakingApplicationOperationIcon: FC<

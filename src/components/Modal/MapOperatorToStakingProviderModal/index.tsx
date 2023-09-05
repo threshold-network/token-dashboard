@@ -36,6 +36,7 @@ import ModalCloseButton from "../ModalCloseButton"
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
   mappedOperatorRandomBeacon: string
+  mappedOperatorTaco: string
 }
 
 const MapOperatorToStakingProviderModal: FC<
@@ -50,8 +51,10 @@ const MapOperatorToStakingProviderModal: FC<
   const {
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
+    mappedOperatorTaco,
     isOperatorMappedOnlyInRandomBeacon,
     isOperatorMappedOnlyInTbtc,
+    isOperatorMappedOnlyInTaco,
   } = useAppSelector(selectMappedOperators)
 
   const onSubmit = async ({
@@ -62,6 +65,7 @@ const MapOperatorToStakingProviderModal: FC<
         operator,
         isOperatorMappedOnlyInTbtc,
         isOperatorMappedOnlyInRandomBeacon,
+        isOperatorMappedOnlyInTaco,
       })
     }
   }

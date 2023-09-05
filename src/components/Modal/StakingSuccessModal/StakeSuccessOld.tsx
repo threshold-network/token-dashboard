@@ -19,7 +19,7 @@ import { useStakingState } from "../../../hooks/useStakingState"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import InfoBox from "../../InfoBox"
-import { PreSetupSteps } from "../../StakingTimeline"
+import { TacoSetupSteps } from "../../StakingTimeline"
 import ModalCloseButton from "../ModalCloseButton"
 
 const StakeSuccessOld: FC<BaseModalProps & { transactionHash: string }> = ({
@@ -52,7 +52,7 @@ const StakeSuccessOld: FC<BaseModalProps & { transactionHash: string }> = ({
               Go through Step 2 to make sure you get Rewards
             </H5>
           </InfoBox>
-          <PreSetupSteps />
+          <TacoSetupSteps />
           {transactionHash && (
             <BodySm mt="2.5rem !important" align="center">
               <ViewInBlockExplorer

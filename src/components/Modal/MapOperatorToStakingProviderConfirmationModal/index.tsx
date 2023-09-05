@@ -55,6 +55,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
     operator: string
     isOperatorMappedOnlyInTbtc: boolean
     isOperatorMappedOnlyInRandomBeacon: boolean
+    isOperatorMappedOnlyInTaco: boolean
   }
 > = ({
   operator,
