@@ -12,11 +12,13 @@ import { EthereumConfig } from "../types"
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
   randomBeacon: AuthorizationParameters
+  taco: AuthorizationParameters
 }
 
 export interface MappedOperatorsForStakingProvider {
   tbtc: string
   randomBeacon: string
+  taco: string
 }
 
 export class MultiAppStaking {
@@ -24,6 +26,7 @@ export class MultiAppStaking {
   private _multicall: IMulticall
   public readonly randomBeacon: IApplication
   public readonly ecdsa: IApplication
+  public readonly taco: IApplication
 
   constructor(
     staking: IStaking,
@@ -42,6 +45,11 @@ export class MultiAppStaking {
       abi: WalletRegistry.abi,
       ...config,
     })
+    this.taco = new Application(this._staking, this._multicall, {
+      address: WalletRegistry.address, // TODO
+      abi: WalletRegistry.abi, // TODO
+      ...config,
+    })
   }
 
   async getSupportedAppsAuthParameters(): Promise<SupportedAppAuthorizationParameters> {
@@ -58,14 +66,21 @@ export class MultiAppStaking {
         method: "authorizationParameters",
         args: [],
       },
+      {
+        interface: this.taco.contract.interface,
+        address: this.taco.address,
+        method: "authorizationParameters",
+        args: [],
+      },
     ]
 
-    const [tbtcMinAuthorizationParams, randomBeaconMinAuthorizationParams] =
+    const [tbtcMinAuthorizationParams, randomBeaconMinAuthorizationParams, tacoMinAuthorizationParams] =
       await this._multicall.aggregate(calls)
 
     return {
       tbtc: tbtcMinAuthorizationParams,
       randomBeacon: randomBeaconMinAuthorizationParams,
+      taco: tacoMinAuthorizationParams,
     }
   }
 
@@ -85,14 +100,21 @@ export class MultiAppStaking {
         method: "stakingProviderToOperator",
         args: [stakingProvider],
       },
+      {
+        interface: this.taco.contract.interface,
+        address: this.taco.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
     ]
 
-    const [mappedOperatorTbtc, mappedOperatorRandomBeacon] =
+    const [mappedOperatorTbtc, mappedOperatorRandomBeacon, mappedOperatorTaco] =
       await this._multicall.aggregate(calls)
 
     return {
       tbtc: mappedOperatorTbtc.toString(),
       randomBeacon: mappedOperatorRandomBeacon.toString(),
+      taco: mappedOperatorTaco.toString(),
     }
   }
 }
