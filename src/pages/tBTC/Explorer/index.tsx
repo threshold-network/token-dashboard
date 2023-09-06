@@ -118,7 +118,7 @@ export const ExplorerPage: PageComponent = () => {
         <LabelSm as="header">History</LabelSm>
         <TableContainer mt="6">
           <Table variant="simple">
-            <Thead color="gray.500">
+            <Thead>
               <Tr>
                 <Th paddingLeft={12}>
                   <LabelXs color="gray.500">
@@ -126,13 +126,13 @@ export const ExplorerPage: PageComponent = () => {
                   </LabelXs>
                 </Th>
                 <Th>
-                  <LabelXs>Wallet Address</LabelXs>
+                  <LabelXs color="gray.500">Wallet Address</LabelXs>
                 </Th>
                 <Th>
-                  <LabelXs>TX Hash</LabelXs>
+                  <LabelXs color="gray.500">TX Hash</LabelXs>
                 </Th>
                 <Th textAlign={"right"}>
-                  <LabelXs>Timestamp</LabelXs>
+                  <LabelXs color="gray.500">Timestamp</LabelXs>
                 </Th>
               </Tr>
             </Thead>
