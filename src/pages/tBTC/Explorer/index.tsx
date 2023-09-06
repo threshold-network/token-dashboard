@@ -215,7 +215,7 @@ const MetricBox: FC = ({ children }) => {
   return (
     <Box
       border="1px solid"
-      borderColor="gray.100"
+      borderColor={useColorModeValue("gray.100", "gray.500")}
       p="3.25rem"
       bg={useColorModeValue("white", "gray.700")}
       textAlign="center"
