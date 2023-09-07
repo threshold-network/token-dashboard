@@ -118,7 +118,7 @@ export const UnmintDetails: PageComponent = () => {
   const wasDataFetched = !isFetching && !!data && !error
 
   const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
-  const shoudlForceIsProcessCompleted =
+  const shouldForceIsProcessCompleted =
     !!data?.redemptionCompletedTxHash?.bitcoin
 
   const requestedAmount = data?.requestedAmount ?? "0"
@@ -250,14 +250,14 @@ export const UnmintDetails: PageComponent = () => {
               </TimelineItem>
               <TimelineItem
                 status={
-                  isProcessCompleted || shoudlForceIsProcessCompleted
+                  isProcessCompleted || shouldForceIsProcessCompleted
                     ? "active"
                     : "semi-active"
                 }
               >
                 <TimelineBreakpoint>
                   <TimelineDot position="relative">
-                    {(isProcessCompleted || shoudlForceIsProcessCompleted) && (
+                    {(isProcessCompleted || shouldForceIsProcessCompleted) && (
                       <Icon
                         as={IoCheckmarkSharp}
                         position="absolute"
@@ -278,7 +278,7 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
             </Timeline>
-            {shouldDisplaySuccessStep || shoudlForceIsProcessCompleted ? (
+            {shouldDisplaySuccessStep || shouldForceIsProcessCompleted ? (
               <SuccessStep
                 requestedAmount={requestedAmount}
                 receivedAmount={receivedAmount}
