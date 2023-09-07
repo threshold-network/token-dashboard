@@ -126,6 +126,7 @@ export const Step: FC<StepProps> = ({
   ...restProps
 }) => {
   const { size } = useStepsContext()
+  const activeBorderColor = useColorModeValue("brand.500", "brand.300")
 
   return (
     <StepContext.Provider
@@ -140,11 +141,7 @@ export const Step: FC<StepProps> = ({
         w="full"
         borderLeftWidth="4px"
         borderLeftStyle="solid"
-        borderColor={
-          isActive || isComplete
-            ? useColorModeValue("brand.500", "brand.300")
-            : "gray.300"
-        }
+        borderColor={isActive || isComplete ? activeBorderColor : "gray.300"}
         {...restProps}
       >
         {children}
@@ -158,11 +155,12 @@ export const StepIndicator: FC<ComponentProps<typeof LabelSm>> = ({
   ...restProps
 }) => {
   const { size } = useStepContext()
+  const textColor = useColorModeValue("brand.500", "brand.300")
 
   const Label = stepSizeMap[size].label.component
 
   return (
-    <Label color={useColorModeValue("brand.500", "brand.300")} {...restProps}>
+    <Label color={textColor} {...restProps}>
       {children}
     </Label>
   )

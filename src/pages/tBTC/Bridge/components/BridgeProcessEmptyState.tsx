@@ -18,6 +18,10 @@ export const BridgeProcessEmptyState: FC<{
 }> = ({ title, bridgeProcess = "mint" }) => {
   const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
   const [deposits] = useFetchRecentDeposits(3)
+  const protocolHistoryBackgroundColor = useColorModeValue(
+    "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
+    "linear-gradient(360deg, #333A47 0%, rgba(255, 255, 255, 0) 117.78%)"
+  )
 
   useEffect(() => {
     fetchTvl()
@@ -40,10 +44,7 @@ export const BridgeProcessEmptyState: FC<{
           width: "100%",
           height: "100px",
           opacity: "0.9",
-          background: useColorModeValue(
-            "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
-            "linear-gradient(360deg, #333A47 0%, rgba(255, 255, 255, 0) 117.78%)"
-          ),
+          background: protocolHistoryBackgroundColor,
         }}
       />
       <ProtocolHistoryViewMoreLink mt="7" />

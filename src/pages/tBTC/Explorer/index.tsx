@@ -152,11 +152,13 @@ const renderHistoryRow = (item: RecentDeposit) => (
 )
 
 const HistoryRow: FC<RecentDeposit> = ({ txHash, address, amount, date }) => {
+  const oddRowBackgroundColor = useColorModeValue("gray.50", "gray.700")
+
   return (
     <LinkBox
       as={Tr}
       key={`latest-mints-${txHash}`}
-      _odd={{ backgroundColor: useColorModeValue("gray.50", "gray.700") }}
+      _odd={{ backgroundColor: oddRowBackgroundColor }}
       sx={{ td: { borderBottom: "none" } }}
       transform="scale(1)"
     >
@@ -212,12 +214,15 @@ const SimpleMetricBox: FC<{ value: string; label: string }> = ({
 }
 
 const MetricBox: FC = ({ children }) => {
+  const borderColor = useColorModeValue("gray.100", "gray.500")
+  const backgroundColor = useColorModeValue("white", "gray.700")
+
   return (
     <Box
       border="1px solid"
-      borderColor={useColorModeValue("gray.100", "gray.500")}
+      borderColor={borderColor}
       p="3.25rem"
-      bg={useColorModeValue("white", "gray.700")}
+      bg={backgroundColor}
       textAlign="center"
       borderRadius="2"
       minWidth="294px"

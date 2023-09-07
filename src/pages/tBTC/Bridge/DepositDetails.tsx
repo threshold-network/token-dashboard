@@ -88,6 +88,8 @@ export const DepositDetails: PageComponent = () => {
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
     useSubscribeToOptimisticMintingEvents(depositKey)
 
+  const depositStatusTextColor = useColorModeValue("brand.500", "brand.300")
+
   // Cache the location state in component state.
   const [locationStateCache] = useState<{ shouldStartFromFirstStep?: boolean }>(
     (state as { shouldStartFromFirstStep?: boolean }) || {}
@@ -209,7 +211,7 @@ export const DepositDetails: PageComponent = () => {
                     <Box
                       as="span"
                       fontWeight="600"
-                      color={useColorModeValue("brand.500", "brand.300")}
+                      color={depositStatusTextColor}
                     >
                       {mintingProgressStep === "completed"
                         ? "Minted"

@@ -7,13 +7,11 @@ export const BridgeProcessCardSubTitle: FC<
     subTitle?: string
   } & ComponentProps<typeof BodyLg>
 > = ({ stepText, subTitle, children, ...restProps }) => {
+  const mainTextColor = useColorModeValue("brand.500", "brand.300")
+
   return (
     <BodyLg mb={4} {...restProps}>
-      <Box
-        as="span"
-        fontWeight="bold"
-        color={useColorModeValue("brand.500", "brand.300")}
-      >
+      <Box as="span" fontWeight="bold" color={mainTextColor}>
         {stepText}
       </Box>
       {subTitle ? ` - ${subTitle}` : children}

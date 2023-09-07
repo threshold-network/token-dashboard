@@ -39,6 +39,8 @@ const RecentDepositItem: FC<RecentDeposit> = ({
   date,
   txHash,
 }) => {
+  const tokenBalanceTextColor = useColorModeValue("brand.500", "brand.300")
+
   return (
     <LinkBox as={OutlineListItem}>
       <LinkOverlay
@@ -64,7 +66,7 @@ const RecentDepositItem: FC<RecentDeposit> = ({
             tokenAmount={amount}
             withSymbol
             tokenSymbol="tBTC"
-            color={useColorModeValue("brand.500", "brand.300")}
+            color={tokenBalanceTextColor}
           />
         </BodySm>
       </LinkOverlay>
