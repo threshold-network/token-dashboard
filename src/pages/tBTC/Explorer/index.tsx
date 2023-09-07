@@ -24,6 +24,7 @@ import {
   Th,
   Thead,
   Tr,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import tBTCExplorerBg from "../../../static/images/tBTC-explorer-bg.svg"
@@ -117,7 +118,7 @@ export const ExplorerPage: PageComponent = () => {
         <LabelSm as="header">History</LabelSm>
         <TableContainer mt="6">
           <Table variant="simple">
-            <Thead color="gray.500">
+            <Thead>
               <Tr>
                 <Th paddingLeft={12}>
                   <LabelXs color="gray.500">
@@ -125,13 +126,13 @@ export const ExplorerPage: PageComponent = () => {
                   </LabelXs>
                 </Th>
                 <Th>
-                  <LabelXs>Wallet Address</LabelXs>
+                  <LabelXs color="gray.500">Wallet Address</LabelXs>
                 </Th>
                 <Th>
-                  <LabelXs>TX Hash</LabelXs>
+                  <LabelXs color="gray.500">TX Hash</LabelXs>
                 </Th>
                 <Th textAlign={"right"}>
-                  <LabelXs>Timestamp</LabelXs>
+                  <LabelXs color="gray.500">Timestamp</LabelXs>
                 </Th>
               </Tr>
             </Thead>
@@ -151,11 +152,13 @@ const renderHistoryRow = (item: RecentDeposit) => (
 )
 
 const HistoryRow: FC<RecentDeposit> = ({ txHash, address, amount, date }) => {
+  const oddRowBackgroundColor = useColorModeValue("gray.50", "gray.700")
+
   return (
     <LinkBox
       as={Tr}
       key={`latest-mints-${txHash}`}
-      _odd={{ backgroundColor: "gray.50" }}
+      _odd={{ backgroundColor: oddRowBackgroundColor }}
       sx={{ td: { borderBottom: "none" } }}
       transform="scale(1)"
     >
@@ -211,16 +214,19 @@ const SimpleMetricBox: FC<{ value: string; label: string }> = ({
 }
 
 const MetricBox: FC = ({ children }) => {
+  const borderColor = useColorModeValue("gray.100", "gray.500")
+  const backgroundColor = useColorModeValue("white", "gray.700")
+
   return (
     <Box
       border="1px solid"
-      borderColor="gray.100"
+      borderColor={borderColor}
       p="3.25rem"
-      bg="white"
+      bg={backgroundColor}
       textAlign="center"
       borderRadius="2"
       minWidth="294px"
-      color="grat.700"
+      color="gray.700"
     >
       {children}
     </Box>

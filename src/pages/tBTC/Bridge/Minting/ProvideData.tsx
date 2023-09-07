@@ -1,6 +1,10 @@
 import { FC, Ref, useRef, useState } from "react"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { Button, BodyMd } from "@threshold-network/components"
+import {
+  Button,
+  BodyMd,
+  useColorModeValue,
+} from "@threshold-network/components"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
@@ -107,6 +111,8 @@ export const ProvideDataComponent: FC<{
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
+  const textColor = useColorModeValue("gray.500", "gray.300")
+
   const onSubmit = async (values: FormValues) => {
     if (account && !isSameETHAddress(values.ethAddress, account)) {
       throw new Error(
@@ -167,7 +173,7 @@ export const ProvideDataComponent: FC<{
         stepText="Step 1"
         subTitle="Generate a Deposit Address"
       />
-      <BodyMd color="gray.500" mb={12}>
+      <BodyMd color={textColor} mb={12}>
         Based on these two addresses, the system will generate for you a unique
         BTC deposit address. There is no minting limit.
       </BodyMd>
