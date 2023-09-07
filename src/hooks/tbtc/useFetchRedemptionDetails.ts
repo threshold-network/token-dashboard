@@ -202,23 +202,26 @@ export const useFetchRedemptionDetails = (
 
           if (!redemptionBitcoinTransfer) continue
 
+          const { receivedAmount, redemptionCompletedTimestamp, btcAddress } =
+            redemptionBitcoinTransfer
+
           setRedemptionData({
             requestedAmount: fromSatoshiToTokenPrecision(
               redemptionRequestedEvent.amount
             ).toString(),
-            receivedAmount: redemptionBitcoinTransfer.receivedAmount,
+            receivedAmount,
             redemptionRequestedTxHash: redemptionRequestedEvent.txHash,
             redemptionCompletedTxHash: {
               chain: txHash,
               bitcoin: redemptionBitcoinTxHash,
             },
             requestedAt: redemptionRequestedEventTimestamp,
-            completedAt: redemptionBitcoinTransfer.redemptionCompletedTimestamp,
+            completedAt: redemptionCompletedTimestamp,
             treasuryFee: fromSatoshiToTokenPrecision(
               redemptionRequestedEvent.treasuryFee
             ).toString(),
             isTimedOut: false,
-            btcAddress: redemptionBitcoinTransfer.btcAddress,
+            btcAddress,
           })
 
           return
