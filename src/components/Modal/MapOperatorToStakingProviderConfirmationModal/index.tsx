@@ -136,10 +136,10 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
             You are about to map Operator Addresses to your Provider Address
           </H5>
           <BodyLg mt="4">
-            This will require{" "}
-            {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
-              ? "1 transaction"
-              : "2 transactions"}
+            This will require{" "}            
+            {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc || isOperatorMappedOnlyInTaco
+              ? "2 transaction"
+              : "3 transactions"}
             . Each mapping is one transaction
           </BodyLg>
         </InfoBox>
