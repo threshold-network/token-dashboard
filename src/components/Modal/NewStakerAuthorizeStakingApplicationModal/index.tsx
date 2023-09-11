@@ -34,6 +34,8 @@ const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
   const randomBeaconMinAuthAmount =
     useStakingAppMinAuthorizationAmount("randomBeacon")
 
+  const tacoMinAuthAmount = useStakingAppMinAuthorizationAmount("taco")
+
   const tbtcInputConstraints = useMemo(
     () => ({
       min: tbtcMinAuthAmount,
@@ -50,8 +52,17 @@ const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
     [stakeAmount, randomBeaconMinAuthAmount]
   )
 
+  const tacoInputConstraints = useMemo(
+    () => ({
+      min: tacoMinAuthAmount,
+      max: stakeAmount,
+    }),
+    [stakeAmount, tacoMinAuthAmount]
+  )
+
   const tbtcAppAddress = useStakingApplicationAddress("tbtc")
   const randomBeaconAppAddress = useStakingApplicationAddress("randomBeacon")
+  const tacoAppAddress = useStakingApplicationAddress("taco")
 
   const handleSubmit = (vals: FormValues) => {
     const tbtcAppInfo = {
@@ -66,9 +77,16 @@ const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
       authorizationAmount: vals.randomBeaconAmountToAuthorize,
     }
 
+    const tacoAppInfo = {
+      appName: "taco",
+      address: tacoAppAddress,
+      authorizationAmount: vals.tacoAmountToAuthorize,
+    }
+
     const applications = [
       vals.isRandomBeaconChecked ? randomBeaconAppInfo : null,
       vals.isTbtcChecked ? tbtcAppInfo : null,
+      vals.isTacoChecked ? tacoAppInfo: null,
     ].filter(Boolean)
 
     openModal(ModalType.AuthorizeStakingApps, {
@@ -104,6 +122,7 @@ const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
           <NewStakerAuthorizationForm
             tbtcInputConstraints={tbtcInputConstraints}
             randomBeaconInputConstraints={randomBeaconInputConstraints}
+            tacoInputConstraints={tacoInputConstraints}
             onSubmitForm={handleSubmit}
           />
         </Stack>
