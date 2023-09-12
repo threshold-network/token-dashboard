@@ -54,6 +54,13 @@ import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 import { ExternalHref } from "../../../enums"
+import {
+  useFindRedemptionInBitcoinTx,
+  useSubscribeToRedemptionsCompletedEventBase,
+} from "../../../hooks/tbtc"
+import { useAppDispatch } from "../../../hooks/store"
+import { tbtcSlice } from "../../../store/tbtc"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
@@ -61,12 +68,47 @@ export const UnmintDetails: PageComponent = () => {
   const redeemerOutputScript = searchParams.get("redeemerOutputScript")
   const redeemer = searchParams.get("redeemer")
   const { redemptionRequestedTxHash } = useParams()
+  const dispatch = useAppDispatch()
+  const threshold = useThreshold()
 
   const { data, isFetching, error } = useFetchRedemptionDetails(
     redemptionRequestedTxHash,
     walletPublicKeyHash,
     redeemerOutputScript,
     redeemer
+  )
+  const findRedemptionInBitcoinTx = useFindRedemptionInBitcoinTx()
+  const [redemptionFromBitcoinTx, setRedemptionFromBitcoinTx] = useState<
+    Awaited<ReturnType<typeof findRedemptionInBitcoinTx>> | undefined
+  >(undefined)
+
+  useSubscribeToRedemptionsCompletedEventBase(
+    async (eventWalletPublicKeyHash, redemptionTxHash, event) => {
+      if (eventWalletPublicKeyHash !== walletPublicKeyHash) return
+
+      const redemption = await findRedemptionInBitcoinTx(
+        redemptionTxHash,
+        event.blockNumber,
+        redeemerOutputScript!
+      )
+      if (!redemption) return
+
+      setRedemptionFromBitcoinTx(redemption)
+
+      if (redemptionRequestedTxHash && redeemerOutputScript) {
+        dispatch(
+          tbtcSlice.actions.redemptionCompleted({
+            redemptionKey: threshold.tbtc.buildRedemptionKey(
+              walletPublicKeyHash,
+              redeemerOutputScript
+            ),
+            redemptionRequestedTxHash,
+          })
+        )
+      }
+    },
+    [],
+    true
   )
 
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
@@ -75,18 +117,21 @@ export const UnmintDetails: PageComponent = () => {
   const _isFetching = (isFetching || !data) && !error
   const wasDataFetched = !isFetching && !!data && !error
 
-  const btcTxHash = data?.redemptionCompletedTxHash?.bitcoin
-  useEffect(() => {
-    setShouldDisplaySuccessStep(!!btcTxHash)
-  }, [btcTxHash])
+  const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
+  const shouldForceIsProcessCompleted =
+    !!data?.redemptionCompletedTxHash?.bitcoin
 
-  const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
   const requestedAmount = data?.requestedAmount ?? "0"
-  const receivedAmount = data?.receivedAmount ?? "0"
+  const receivedAmount =
+    data?.receivedAmount ?? redemptionFromBitcoinTx?.receivedAmount ?? "0"
+  const btcTxHash =
+    data?.redemptionCompletedTxHash?.bitcoin ??
+    redemptionFromBitcoinTx?.bitcoinTxHash
 
   const thresholdNetworkFee = data?.treasuryFee ?? "0"
-  const btcAddress = data?.btcAddress
-  const redemptionCompletedAt = data?.completedAt
+  const btcAddress = data?.btcAddress ?? redemptionFromBitcoinTx?.btcAddress
+  const redemptionCompletedAt =
+    data?.completedAt ?? redemptionFromBitcoinTx?.redemptionCompletedTimestamp
   const redemptionRequestedAt = data?.requestedAt
   const [redemptionTime, setRedemptionTime] = useState<
     ReturnType<typeof dateAs>
@@ -131,7 +176,7 @@ export const UnmintDetails: PageComponent = () => {
     },
     {
       label: "BTC sent",
-      txHash: data?.redemptionCompletedTxHash?.bitcoin,
+      txHash: btcTxHash,
       chain: "bitcoin",
     },
   ]
@@ -204,11 +249,15 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
               <TimelineItem
-                status={isProcessCompleted ? "active" : "semi-active"}
+                status={
+                  isProcessCompleted || shouldForceIsProcessCompleted
+                    ? "active"
+                    : "semi-active"
+                }
               >
                 <TimelineBreakpoint>
                   <TimelineDot position="relative">
-                    {isProcessCompleted && (
+                    {(isProcessCompleted || shouldForceIsProcessCompleted) && (
                       <Icon
                         as={IoCheckmarkSharp}
                         position="absolute"
@@ -229,7 +278,7 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
             </Timeline>
-            {shouldDisplaySuccessStep || isProcessCompleted ? (
+            {shouldDisplaySuccessStep || shouldForceIsProcessCompleted ? (
               <SuccessStep
                 requestedAmount={requestedAmount}
                 receivedAmount={receivedAmount}
@@ -240,7 +289,7 @@ export const UnmintDetails: PageComponent = () => {
               <BridgeProcessStep
                 title="Unminting in progress"
                 chain="ethereum"
-                txHash={"0x0"}
+                txHash={redemptionRequestedTxHash}
                 progressBarColor="brand.500"
                 isCompleted={isProcessCompleted}
                 icon={<ProcessCompletedBrandGradientIcon />}
