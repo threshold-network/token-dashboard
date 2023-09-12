@@ -82,7 +82,7 @@ export class LedgerLiveConnector extends AbstractConnector {
       throw new Error(
         `The ${chainIdToNetworkName(
           chainId
-        )} network is not supported for LedgerLive.`
+        )} network is not supported by LedgerLive.`
       )
     }
 
