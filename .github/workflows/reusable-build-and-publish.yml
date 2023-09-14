@@ -106,7 +106,7 @@ jobs:
 
       - name: Run token-dashboard post-install script
         shell: bash
-        run: yarn run postinstall
+        run: yarn run postinstall ; cp .env.example .env
 
       - name: Get upstream packages versions
         if: inputs.useUpstreamBuilds == true
