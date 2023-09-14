@@ -152,7 +152,7 @@ const StakingApplications: PageComponent = () => {
         />
         <ApplicationDetailsCard
           preTitle="TACO APP"
-          title="TACo is an access control plug-in that makes your Web3 application more secure, more private, and much more decentralized."
+          title="TACo is an access control layer that enables decentralized e2e encrypted data sharing in Web3 applications."
           description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
           imgSrc={iconMap.taco[colorMode]}
           ctaButtons={
