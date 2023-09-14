@@ -153,7 +153,7 @@ const StakingApplications: PageComponent = () => {
         <ApplicationDetailsCard
           preTitle="TACO APP"
           title="TACo is an access control layer that enables decentralized e2e encrypted data sharing in Web3 applications."
-          description="TACo is a plug-in service that enables the sharing of any form of private or sensitive data within Web3 applications. Private data is encrypted by a data owner and remains encrypted until it reaches the device of a recipient."
+          description="TACo is a plug-in access control layer and cryptographic primitive, operationally distributed across a cohort of Threshold nodes. Private data are encrypted by a data owner along with embedded access conditions. The data remain encrypted until it reaches the device of a qualifying recipient."
           imgSrc={iconMap.taco[colorMode]}
           ctaButtons={
             <VStack mb={6}>
