@@ -20,7 +20,7 @@ export enum ExternalHref {
   infStones = "https://infstones.com/",
   setupNodes = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   tbtcNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
-  tacoNodeDocs = "https://docs.threshold.network/applications/threshold-access-control",
+  tacoNodeDocs = "https://docs.threshold.network/staking-and-running-a-node/running-a-node/self-managed/taco-node-setup",
   randomBeaconNodeDocs = "https://docs.threshold.network/guides/threshold-applications/tbtc-v2-client-setup",
   analyticsReports = "SOME_URL",
   btcRecoveryAddress = "https://github.com/keep-network/tbtc-v2/blob/main/docs/rfc/rfc-1.adoc",
