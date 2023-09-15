@@ -61,14 +61,3 @@ export const StatHighlightValue: FC<{ value: string & TextProps }> = ({
     </H1>
   )
 }
-
-export const StatHighlightLink: FC<{ href: string & TextProps }> = ({
-  href,
-  ...restProps
-}) => {
-  return (
-    <H1 mt="10" mb="9" textAlign="center" {...restProps}>
-      {href}
-    </H1>
-  )
-}
