@@ -1,22 +1,54 @@
 import { FC } from "react"
-import { H1, BoxProps } from "@threshold-network/components"
+import { H1, BoxProps, Center } from "@threshold-network/components"
 import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
-import CardTemplate from "../../Overview/Network/CardTemplate"
+import {
+  StatHighlightCard,
+  StatHighlightTitle,
+  StatHighlightTitleTooltip,
+  StatHighlightValue,
+} from "../../../components/StatHighlightCard"
+import Link, { LinkProps } from "../../../components/Link"
+import { ExternalHref } from "../../../enums"
 
 export interface CoveragePoolsTVLCardProps extends BoxProps {
-  tvl: string
+  coveragePoolTVL: string
+}
+
+type LearnMoreLinkProps = Omit<LinkProps, "isExternal" | "to">
+
+const LearnMoreLink: FC<LearnMoreLinkProps> = ({ children, ...restProps }) => {
+  return (
+    <Link isExternal href={ExternalHref.coveragePoolsDocs} {...restProps}>
+      {children}
+    </Link>
+  )
 }
 
 export const CoveragePoolsTVLCard: FC<CoveragePoolsTVLCardProps> = ({
-  tvl,
+  coveragePoolTVL,
   ...restProps
 }) => {
-  const coveragePoolTVL = formatFiatCurrencyAmount(tvl)
+  const formattedTVL = formatFiatCurrencyAmount(coveragePoolTVL)
+  const tooltipLabel = (
+    <>
+      Threshold Coverage Pool serves as a backstop for assets secured by the
+      tBTC protocol. In the event that secured Bitcoin is los from protocol,
+      assets from the coverage pool are withdrawn by the risk manager, converted
+      to BTC, an put back into the protocol to achieve the supply peg as closely
+      as possible. <LearnMoreLink>Learn more</LearnMoreLink>
+    </>
+  )
   return (
-    <CardTemplate title="COVERAGE POOL TVL" {...restProps}>
-      <H1 mt="10" mb="9" textAlign="center">
-        {formatFiatCurrencyAmount(coveragePoolTVL)}
-      </H1>
-    </CardTemplate>
+    <StatHighlightCard {...restProps}>
+      <StatHighlightTitle title={"coverage pool tvl"}>
+        <StatHighlightTitleTooltip label={tooltipLabel} />
+      </StatHighlightTitle>
+      <StatHighlightValue value={formattedTVL} />
+      <Center>
+        <LearnMoreLink m={"0 auto"}>
+          Learn more about Coverage Pools
+        </LearnMoreLink>
+      </Center>
+    </StatHighlightCard>
   )
 }

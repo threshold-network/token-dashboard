@@ -106,7 +106,7 @@ const StakingPage: PageComponent = (props) => {
             totalRewardsBalance={totalRewardsBalance}
           />
           <StakedPortfolioCard />
-          <StakingTVLCard tvl={data.total} />
+          <StakingTVLCard stakingTVL={data.total} />
           {hasStakes && <NewStakeCard />}
         </VStack>
       </HStack>
