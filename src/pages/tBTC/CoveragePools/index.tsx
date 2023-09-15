@@ -1,1 +1,1 @@
-export * from "./CoveragePoolsTVLCard"
+export * from "./CoveragePoolsTvlCard"

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react"
-import StakingTVLCard from "./StakingTVLCard"
+import StakingTvlCard from "./StakingTvlCard"
 import StakedPortfolioCard from "./StakedPortfolioCard"
 import PageLayout from "../PageLayout"
 import StakeCard from "./StakeCard"
@@ -106,7 +106,7 @@ const StakingPage: PageComponent = (props) => {
             totalRewardsBalance={totalRewardsBalance}
           />
           <StakedPortfolioCard />
-          <StakingTVLCard stakingTVL={data.total} />
+          <StakingTvlCard stakingTvl={data.total} />
           {hasStakes && <NewStakeCard />}
         </VStack>
       </HStack>

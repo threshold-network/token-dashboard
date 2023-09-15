@@ -10,8 +10,8 @@ import {
 import Link, { LinkProps } from "../../../components/Link"
 import { ExternalHref } from "../../../enums"
 
-export interface CoveragePoolsTVLCardProps extends BoxProps {
-  coveragePoolTVL: string
+export interface CoveragePoolsTvlCardProps extends BoxProps {
+  coveragePoolTvl: string
 }
 
 type LearnMoreLinkProps = Omit<LinkProps, "isExternal" | "to">
@@ -24,11 +24,11 @@ const LearnMoreLink: FC<LearnMoreLinkProps> = ({ children, ...restProps }) => {
   )
 }
 
-export const CoveragePoolsTVLCard: FC<CoveragePoolsTVLCardProps> = ({
-  coveragePoolTVL,
+export const CoveragePoolsTvlCard: FC<CoveragePoolsTvlCardProps> = ({
+  coveragePoolTvl,
   ...restProps
 }) => {
-  const formattedTVL = formatFiatCurrencyAmount(coveragePoolTVL)
+  const formattedTvl = formatFiatCurrencyAmount(coveragePoolTvl)
   const tooltipLabel = (
     <>
       Threshold Coverage Pool serves as a backstop for assets secured by the
@@ -43,7 +43,7 @@ export const CoveragePoolsTVLCard: FC<CoveragePoolsTVLCardProps> = ({
       <StatHighlightTitle title={"coverage pool tvl"}>
         <StatHighlightTitleTooltip label={tooltipLabel} />
       </StatHighlightTitle>
-      <StatHighlightValue value={formattedTVL} />
+      <StatHighlightValue value={formattedTvl} />
       <Center>
         <LearnMoreLink m={"0 auto"}>
           Learn more about Coverage Pools

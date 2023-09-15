@@ -4,11 +4,11 @@ import {
   ProtocolHistory,
   ProtocolHistoryProps,
   TBTCText,
-  TVL,
-  TVLProps,
+  Tvl,
+  TvlProps,
 } from "../../../components/tBTC"
 
-type TBTCBridgeStatsProps = ProtocolHistoryProps & TVLProps
+type TBTCBridgeStatsProps = ProtocolHistoryProps & TvlProps
 
 export const TBTCBridgeStats: FC<TBTCBridgeStatsProps> = ({
   tvl,
@@ -20,7 +20,7 @@ export const TBTCBridgeStats: FC<TBTCBridgeStatsProps> = ({
       <LabelSm mb="4">
         <TBTCText /> Bridge Stats
       </LabelSm>
-      <TVL tvl={tvl} tvlInUSD={tvlInUSD} />
+      <Tvl tvl={tvl} tvlInUSD={tvlInUSD} />
       <Divider my="6" />
       <ProtocolHistory deposits={deposits} />
     </Card>

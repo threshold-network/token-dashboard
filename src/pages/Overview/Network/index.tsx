@@ -21,7 +21,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
 import ButtonLink from "../../../components/ButtonLink"
 import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
-import { CoveragePoolsTVLCard } from "../../tBTC/CoveragePools"
+import { CoveragePoolsTvlCard } from "../../tBTC/CoveragePools"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
@@ -59,7 +59,7 @@ const Network: PageComponent = () => {
         isBridgeActivityFetching={isBridgeActivityFetching}
       />
       <VStack spacing="4">
-        <CoveragePoolsTVLCard coveragePoolTVL={tvlInUSD.coveragePool} />
+        <CoveragePoolsTvlCard coveragePoolTvl={tvlInUSD.coveragePool} />
         <TotalValueLocked totalValueLocked={tvlInUSD.total} />
         <Card>
           <HStack spacing="6">

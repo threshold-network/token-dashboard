@@ -8,19 +8,19 @@ import {
 } from "../../components/StatHighlightCard"
 
 export interface StakingTvlCardProps extends BoxProps {
-  stakingTVL: string
+  stakingTvl: string
 }
 
-const StakingTVLCard: FC<StakingTvlCardProps> = ({
-  stakingTVL,
+const StakingTvlCard: FC<StakingTvlCardProps> = ({
+  stakingTvl,
   ...restProps
 }) => {
-  const formattedStakingTVL = formatFiatCurrencyAmount(stakingTVL)
+  const formattedStakingTvl = formatFiatCurrencyAmount(stakingTvl)
 
   return (
     <StatHighlightCard>
       <StatHighlightTitle title={"staking tvl"} />
-      <StatHighlightValue value={formattedStakingTVL} />
+      <StatHighlightValue value={formattedStakingTvl} />
     </StatHighlightCard>
   )
   return (
@@ -28,9 +28,9 @@ const StakingTVLCard: FC<StakingTvlCardProps> = ({
       <LabelSm mb={8} textTransform="uppercase">
         staking tvl
       </LabelSm>
-      <H1 textAlign="center">{formatFiatCurrencyAmount(stakingTVL)}</H1>
+      <H1 textAlign="center">{formatFiatCurrencyAmount(stakingTvl)}</H1>
     </Card>
   )
 }
 
-export default StakingTVLCard
+export default StakingTvlCard
