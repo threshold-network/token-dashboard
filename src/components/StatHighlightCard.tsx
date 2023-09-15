@@ -37,7 +37,18 @@ export const StatHighlightTitle: FC<{ title: string } & TextProps> = ({
 export const StatHighlightTitleTooltip: FC<
   { label: string | JSX.Element } & IconProps
 > = ({ label, ...restProps }) => {
-  return <TooltipIcon label={label} {...restProps} />
+  return (
+    <TooltipIcon
+      color="unset"
+      label={label}
+      width="20px"
+      height="20px"
+      alignSelf="center"
+      m="auto"
+      verticalAlign="text-top"
+      {...restProps}
+    />
+  )
 }
 
 export const StatHighlightValue: FC<{ value: string & TextProps }> = ({
