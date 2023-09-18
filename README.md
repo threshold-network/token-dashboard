@@ -113,7 +113,6 @@ The following procedure allows to deploy T token dashboard to production:
 5. Once the release action is approved, the new version is automatically
    deployed to `dashboard.threshold.network`.
 
-
 ## Local Development
 
 Update `package.json` to contain:
@@ -161,4 +160,3 @@ Then build the docker container and run the dashboard:
 docker build -t dashboard:latest .
 docker run -p 3000:3000 -d dashboard
 ```
-
