@@ -128,7 +128,7 @@ const MapOperatorToStakingProviderModal: FC<
           ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>random beacon app</LabelSm>
           ) : (
-            <LabelSm>tBTC + Random Beacon + TACo apps (requires 3txs)</LabelSm>
+            <LabelSm>tBTC + Random Beacon + TACo (requires 3txs)</LabelSm>
           )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
@@ -139,6 +139,8 @@ const MapOperatorToStakingProviderModal: FC<
                 ? mappedOperatorRandomBeacon
                 : isOperatorMappedOnlyInTbtc
                 ? mappedOperatorTbtc
+                : isOperatorMappedOnlyInTaco
+                ? mappedOperatorTaco
                 : ""
             }
             onSubmitForm={onSubmit}
@@ -147,6 +149,7 @@ const MapOperatorToStakingProviderModal: FC<
             }
             mappedOperatorTbtc={mappedOperatorTbtc}
             mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
+            mappedOperatorTaco={mappedOperatorTaco}
           />
         </Box>
         <AlertBox
