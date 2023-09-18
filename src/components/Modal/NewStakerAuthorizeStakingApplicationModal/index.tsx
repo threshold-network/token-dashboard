@@ -86,7 +86,7 @@ const NewStakerAuthorizeStakingApplicationModal: FC<BaseModalProps> = () => {
     const applications = [
       vals.isRandomBeaconChecked ? randomBeaconAppInfo : null,
       vals.isTbtcChecked ? tbtcAppInfo : null,
-      vals.isTacoChecked ? tacoAppInfo: null,
+      vals.isTacoChecked ? tacoAppInfo : null,
     ].filter(Boolean)
 
     openModal(ModalType.AuthorizeStakingApps, {

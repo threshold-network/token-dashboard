@@ -4,7 +4,7 @@ import { StakingAppName } from "../store/staking-applications"
 const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
   tbtc: "tBTC",
   randomBeacon: "Random Beacon",
-  taco: "TACo"
+  taco: "TACo",
 }
 
 const stakingAppAddressToAppName: Record<string, StakingAppName> = {
