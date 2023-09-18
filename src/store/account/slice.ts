@@ -27,6 +27,7 @@ export const accountSlice = createSlice({
       data: {
         tbtc: AddressZero,
         randomBeacon: AddressZero,
+        taco: AddressZero,
       },
       isFetching: false,
       isInitialFetchDone: false,
@@ -47,11 +48,13 @@ export const accountSlice = createSlice({
       action: PayloadAction<{
         tbtc: string
         randomBeacon: string
+        taco: string
       }>
     ) => {
-      const { tbtc, randomBeacon } = action.payload
+      const { tbtc, randomBeacon, taco } = action.payload
       state.operatorMapping.data.tbtc = tbtc
       state.operatorMapping.data.randomBeacon = randomBeacon
+      state.operatorMapping.data.taco = taco
       state.operatorMapping.isFetching = false
       state.operatorMapping.isInitialFetchDone = true
       state.operatorMapping.error = ""
