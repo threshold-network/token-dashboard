@@ -216,12 +216,9 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           status={statuses[1] ?? FlowStepStatus.inactive}
           isDescriptionArrowHidden
         >
-          <BodySm>
-            For each stake, there are three applications available. PRE does not
-            require authorization. To authorize tBTC and Random Beacon, go to
-            the <Link to="/staking">Staking page</Link> and select “Configure
-            Stake”.
-          </BodySm>
+          For each stake, there are three applications available.
+          To authorize tBTC, Random Beacon, and TACo, go to the{" "}
+          <Link to="/staking">Staking page</Link> and select “Configure Stake”.
         </FlowStep>
         <FlowStep
           size="sm"
