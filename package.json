@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "1.10.0-pre",
+  "version": "1.11.0-pre",
   "private": true,
   "dependencies": {
     "@chakra-ui/icons": "^1.0.15",
