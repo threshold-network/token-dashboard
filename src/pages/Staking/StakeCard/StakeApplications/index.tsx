@@ -31,7 +31,9 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   return (
     <Box>
       <BodyMd mb="4">Applications</BodyMd>
-      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized || !tacoApp.isAuthorized) &&
+      {(!tbtcApp.isAuthorized ||
+        !randomBeaconApp.isAuthorized ||
+        !tacoApp.isAuthorized) &&
         !isTbtcFetching &&
         !isTacoFetching &&
         !isRandomBeaconFetching && <BundledRewardsAlert mb="4" />}
