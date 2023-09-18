@@ -92,7 +92,7 @@ const AuthorizeStakingAppsPage: FC = () => {
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )
-  const TACoApp = useStakingAppDataByStakingProvider(
+  const tacoApp = useStakingAppDataByStakingProvider(
     "taco",
     stakingProviderAddress || AddressZero
   )
@@ -112,8 +112,8 @@ const AuthorizeStakingAppsPage: FC = () => {
       address: randomBeaconAddress,
       label: "Random Beacon",
     },
-    pre: {
-      ...TACoApp,
+    taco: {
+      ...tacoApp,
       stakingAppId: "taco",
       label: "TACo",
       address: TACoAddress,
@@ -134,11 +134,18 @@ const AuthorizeStakingAppsPage: FC = () => {
         )
       )
     }
-  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized])
+
+    if (tacoApp.isAuthorized) {
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(({ stakingAppId }) => stakingAppId !== "taco")
+      )
+    }
+  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized, tacoApp.isAuthorized])
 
   const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
   const randomBeaconMinAuthAmount =
     useStakingAppMinAuthorizationAmount("randomBeacon")
+  const tacoMinAuthAmount = useStakingAppMinAuthorizationAmount("taco")
 
   const stake = useSelector((state: RootState) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -158,6 +165,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   const onAuthorizeApps = async () => {
     const isTbtcSelected = isAppSelected("tbtc")
     const isRandomBeaconSelected = isAppSelected("randomBeacon")
+    const isTacoSelected = isAppSelected("taco")
 
     if (isTbtcSelected) {
       await tbtcAppFormRef.current?.validateForm()
@@ -166,6 +174,10 @@ const AuthorizeStakingAppsPage: FC = () => {
     if (isRandomBeaconSelected) {
       await randomBeaconAppFormRef.current?.validateForm()
       randomBeaconAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    }
+    if (isTacoSelected) {
+      await tacoAppFormRef.current?.validateForm()
+      tacoAppFormRef.current?.setTouched({ tokenAmount: true }, false)
     }
     if (
       (isRandomBeaconSelected &&
@@ -301,7 +313,7 @@ const AuthorizeStakingAppsPage: FC = () => {
             />
           </>
         )}
-        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized || !tacoApp.isAuthorized) && (
           <Button
             disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
             variant="outline"
