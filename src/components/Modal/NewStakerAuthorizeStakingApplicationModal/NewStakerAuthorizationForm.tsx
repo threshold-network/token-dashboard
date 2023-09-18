@@ -84,7 +84,7 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
   const { closeModal } = useModal()
   const [, { value: isTbtcChecked }] = useField("isTbtcChecked")
   const [, { value: isRandomBeaconChecked }] = useField("isRandomBeaconChecked")
-  const [, { value: isTacoChecked }] = useField("isTbtcChecked")
+  const [, { value: isTacoChecked }] = useField("isTacoChecked")
   const bothAppsChecked = isTbtcChecked && isRandomBeaconChecked
 
   return (
@@ -122,25 +122,17 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
           min={tacoInputConstraints.min}
           max={tacoInputConstraints.max}
           inputId="tacoAmountToAuthorize"
-          checkBoxId="isTacoBeaconChecked"
+          checkBoxId="isTacoChecked"
           label="TACo"
           mb={6}
         />
       </Box>
-      <Card bg="gray.50" boxShadow="none" mb={6}>
-        <HStack justifyContent="space-between">
-          <LabelMd color="gray.500">PRE</LabelMd>
-          <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
-            Authorization not required
-          </Badge>
-        </HStack>
-      </Card>
       <HStack mb={6} justifyContent="flex-end">
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
         <Button
-          disabled={isTbtcChecked === false && isRandomBeaconChecked === false}
+          disabled={isTbtcChecked === false && isRandomBeaconChecked === false && isTacoChecked === false}
           type="submit"
         >
           Authorize Selected Apps

@@ -12,7 +12,9 @@ export const useRegisterMultipleOperatorsTransaction = () => {
   const {
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
-    isOperatorMappedInBothApps,
+    mappedOperatorTaco,
+    isOperatorMappedOnlyInTaco,
+    isOperatorMappedInAllApps,
     isOperatorMappedOnlyInRandomBeacon,
     isOperatorMappedOnlyInTbtc,
   } = useAppSelector((state) => selectMappedOperators(state))
@@ -28,6 +30,10 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     sendTransaction: sendRegisterOperatorTransactionRandomBeacon,
     status: registerOperatorRandomBeaconStatus,
   } = useRegisterOperatorTransaction("randomBeacon")
+  const {
+    sendTransaction: sendRegisterOperatorTransactionTaco,
+    status: registerOperatorTacoStatus,
+  } = useRegisterOperatorTransaction("taco")
 
   const registerMultipleOperators = useCallback(
     async (operator: string) => {
@@ -36,8 +42,8 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           throw new Error("Connect to the staking provider account first!")
         }
 
-        if (isOperatorMappedInBothApps)
-          throw new Error("Both apps already have mapped operator!")
+        if (isOperatorMappedInAllApps)
+          throw new Error("All apps already have mapped operator!")
 
         if (isOperatorMappedOnlyInRandomBeacon)
           throw new Error("Random beacon app already has mapped operator!")
@@ -45,6 +51,8 @@ export const useRegisterMultipleOperatorsTransaction = () => {
         if (isOperatorMappedOnlyInTbtc)
           throw new Error("Tbtc app already have mapped operator!")
 
+        if (isOperatorMappedOnlyInTaco)
+          throw new Error("TACo app already have mapped operator!")
         // TODO: might also add a check if the operator is already used by another staking provider
 
         const successfullTxs: OperatorMappedSuccessTx[] = []
@@ -71,11 +79,22 @@ export const useRegisterMultipleOperatorsTransaction = () => {
             txHash: randomBeaconReceipt.transactionHash,
           })
         }
+        const tacoReceipt = await sendRegisterOperatorTransactionTaco(operator)
+        if (tacoReceipt) {
+          successfullTxs.push({
+            application: {
+              appName: "taco",
+              operator: operator,
+              stakingProvider: account,
+            },
+            txHash: tacoReceipt.transactionHash,
+          })
+        }
 
-        if (successfullTxs.length < 2) {
+        if (successfullTxs.length < 3) {
           openModal(ModalType.TransactionFailed, {
             error: new Error(
-              "Transaction rejected. You are required to map the Operator Address for both apps."
+              "Transaction rejected. You are required to map the Operator Address for all apps."
             ),
             closeModal: () => {
               closeModal()
@@ -84,7 +103,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           })
         }
 
-        if (successfullTxs.length === 2) {
+        if (successfullTxs.length === 3) {
           openModal(ModalType.MapOperatorToStakingProviderSuccess, {
             transactions: successfullTxs,
           })
@@ -106,8 +125,10 @@ export const useRegisterMultipleOperatorsTransaction = () => {
       account,
       mappedOperatorRandomBeacon,
       mappedOperatorTbtc,
+      mappedOperatorTaco,
       sendRegisterOperatorTransactionTbtc,
       sendRegisterOperatorTransactionRandomBeacon,
+      sendRegisterOperatorTransactionTaco,
       openModal,
     ]
   )
@@ -116,5 +137,6 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     registerMultipleOperators,
     registerOperatorTbtcStatus,
     registerOperatorRandomBeaconStatus,
+    registerOperatorTacoStatus,
   }
 }
