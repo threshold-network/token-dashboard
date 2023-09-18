@@ -4,14 +4,14 @@ import { StakingAppName } from "../store/staking-applications"
 const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
   tbtc: "tBTC",
   randomBeacon: "Random Beacon",
-  taco: "TACo"
+  taco: "TACo",
 }
 
 const stakingAppAddressToName: { [key: string]: string } = {
   [threshold.multiAppStaking.ecdsa.address]: stakingAppNameToAppLabel.tbtc,
   [threshold.multiAppStaking.randomBeacon.address]:
     stakingAppNameToAppLabel.randomBeacon,
-  [threshold.multiAppStaking.taco.address]: stakingAppNameToAppLabel.taco
+  [threshold.multiAppStaking.taco.address]: stakingAppNameToAppLabel.taco,
 }
 
 export const getStakingAppNameFromAddress = (stakingAppAddress: string) => {
