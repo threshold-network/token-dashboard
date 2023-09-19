@@ -6,7 +6,7 @@ import {
   ProtocolHistoryRecentDeposits,
   ProtocolHistoryTitle,
   ProtocolHistoryViewMoreLink,
-  TVL,
+  Tvl,
 } from "../../../../components/tBTC"
 import { useFetchRecentDeposits } from "../../../../hooks/tbtc"
 import { useFetchTvl } from "../../../../hooks/useFetchTvl"
@@ -32,7 +32,7 @@ export const BridgeProcessEmptyState: FC<{
       <BridgeProcessCardTitle bridgeProcess={bridgeProcess} />
       <H5 align={"center"}>{title}</H5>
       <SubmitTxButton mb="6" mt="4" />
-      <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
+      <Tvl tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
       <ProtocolHistoryTitle mt="8" />
       <ProtocolHistoryRecentDeposits
         deposits={deposits}
