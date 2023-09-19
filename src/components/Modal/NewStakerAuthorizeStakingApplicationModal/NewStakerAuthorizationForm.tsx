@@ -132,7 +132,11 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
           Cancel
         </Button>
         <Button
-          disabled={isTbtcChecked === false && isRandomBeaconChecked === false && isTacoChecked === false}
+          disabled={
+            isTbtcChecked === false &&
+            isRandomBeaconChecked === false &&
+            isTacoChecked === false
+          }
           type="submit"
         >
           Authorize Selected Apps

@@ -8,8 +8,7 @@ export const TACO_DEPLOYMENT_BLOCK = supportedChainId === "1" ? 14141140 : 0
 
 const TACO_ADDRESSESS = {
   // https://etherscan.io/address/0x7E01c9c03FD3737294dbD7630a34845B0F70E5Dd
-  [ChainID.Ethereum.valueOf().toString()]:
-    AddressZero,
+  [ChainID.Ethereum.valueOf().toString()]: AddressZero,
   [ChainID.Goerli.valueOf().toString()]:
     "0xA7FD8E3A4731FA6C3b9Bb65C21D7082151B38c36",
   [ChainID.Localhost.valueOf().toString()]: AddressZero,
