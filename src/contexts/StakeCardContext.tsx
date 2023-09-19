@@ -5,7 +5,6 @@ interface StakeCardContext {
   canTopUpKepp: boolean
   canTopUpNu: boolean
   hasLegacyStakes: boolean
-  isPRESet: boolean // TODO THEREF
 }
 
 export const StakeCardContext = createContext<StakeCardContext | undefined>(
