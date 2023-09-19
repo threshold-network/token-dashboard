@@ -294,7 +294,7 @@ export const stakingApplicationsSlice = createSlice({
         }
         state.tbtc.stakingProviders.data[stakingProvider] = {
           ...defaultAuthData,
-        
+        }
         state.taco.stakingProviders.data[stakingProvider] = {
           ...defaultAuthData,
         }
