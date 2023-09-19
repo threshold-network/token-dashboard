@@ -105,10 +105,12 @@ describe("Multi app staking test", () => {
     const mockOperator = "0x4"
     const mappedOperatorTbtc = mockOperator
     const mappedOperatorRandomBeacon = mockOperator
+    const mappedOperatorTaco = mockOperator
 
     const mulitcallMockResult = [
       [mappedOperatorTbtc],
       [mappedOperatorRandomBeacon],
+      [mappedOperatorTaco],
     ]
     const spyOnMulticall = jest
       .spyOn(multicall, "aggregate")
@@ -131,10 +133,17 @@ describe("Multi app staking test", () => {
         method: "stakingProviderToOperator",
         args: [mockStakingProvider],
       },
+      {
+        interface: mas.taco.contract.interface,
+        address: mas.taco.address,
+        method: "stakingProviderToOperator",
+        args: [mockStakingProvider],
+      },
     ])
     expect(result).toEqual({
       tbtc: mappedOperatorTbtc,
       randomBeacon: mappedOperatorRandomBeacon,
+      taco: mappedOperatorTaco,
     })
   })
 })

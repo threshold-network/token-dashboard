@@ -33,12 +33,14 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
   const {
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
+    mappedOperatorTaco,
     isOneOfTheAppsNotMapped,
   } = useAppSelector(selectMappedOperators)
 
   const shoudlDisplaySuccessState =
     !isAddressZero(mappedOperatorTbtc) &&
-    !isAddressZero(mappedOperatorRandomBeacon)
+    !isAddressZero(mappedOperatorRandomBeacon) &&
+    !isAddressZero(mappedOperatorTaco)
 
   const onStartMappingClick = () => {
     openModal(ModalType.MapOperatorToStakingProvider)
@@ -47,6 +49,7 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
   const mappedOperators = {
     tbtc: mappedOperatorTbtc,
     randomBeacon: mappedOperatorRandomBeacon,
+    taco: mappedOperatorTaco
   }
 
   return (
