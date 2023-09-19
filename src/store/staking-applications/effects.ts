@@ -117,6 +117,12 @@ export const getSupportedAppsStakingProvidersData = async (
       "randomBeacon",
       listenerApi
     )
+    await getKeepStakingAppStakingProvidersData(
+      stakingProviders,
+      listenerApi.extra.threshold.multiAppStaking.taco,
+      "taco",
+      listenerApi
+    )
   } catch (error) {
     console.log("Could not fetch apps data for staking providers ", error)
     listenerApi.subscribe()
