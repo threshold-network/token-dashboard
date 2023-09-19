@@ -63,8 +63,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-  const { isInactiveStake, canTopUpKepp, canTopUpNu } =
-    useStakeCardContext()
+  const { isInactiveStake, canTopUpKepp, canTopUpNu } = useStakeCardContext()
   const { account } = useWeb3React()
   const availableAmountToUnstake = useAppSelector((state) =>
     selectAvailableAmountToUnstakeByStakingProvider(

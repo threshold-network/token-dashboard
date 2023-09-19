@@ -49,7 +49,7 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
   const mappedOperators = {
     tbtc: mappedOperatorTbtc,
     randomBeacon: mappedOperatorRandomBeacon,
-    taco: mappedOperatorTaco
+    taco: mappedOperatorTaco,
   }
 
   return (

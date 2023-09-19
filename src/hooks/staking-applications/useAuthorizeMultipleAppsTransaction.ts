@@ -72,7 +72,13 @@ export const useAuthorizeMultipleAppsTransaction = () => {
         })
       }
     },
-    [sendTransaction, randomBeaconAppAddress, tbtcAppAddress, tacoAppAddress, openModal]
+    [
+      sendTransaction,
+      randomBeaconAppAddress,
+      tbtcAppAddress,
+      tacoAppAddress,
+      openModal,
+    ]
   )
 
   return { authorizeMultipleApps, status }

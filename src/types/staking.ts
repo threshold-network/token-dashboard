@@ -26,7 +26,8 @@ export interface UseStakingState {
   }
 }
 
-export interface PreConfig { // TODO THEREF
+export interface PreConfig {
+  // TODO THEREF
   operator: string
   isOperatorConfirmed: boolean
   operatorStartTimestamp: string

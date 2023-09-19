@@ -24,9 +24,13 @@ export const selectMappedOperators = createSelector(
       isOperatorMappedOnlyInRandomBeacon,
       isOperatorMappedOnlyInTaco,
       isOneOfTheAppsNotMapped:
-        isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc || isOperatorMappedOnlyInTaco,
+        isOperatorMappedOnlyInRandomBeacon ||
+        isOperatorMappedOnlyInTbtc ||
+        isOperatorMappedOnlyInTaco,
       isOperatorMappedInAllApps:
-        !isAddressZero(randomBeacon) && !isAddressZero(tbtc) && !isAddressZero(taco),
+        !isAddressZero(randomBeacon) &&
+        !isAddressZero(tbtc) &&
+        !isAddressZero(taco),
     }
   }
 )

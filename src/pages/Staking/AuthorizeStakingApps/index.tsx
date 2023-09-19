@@ -323,7 +323,9 @@ const AuthorizeStakingAppsPage: FC = () => {
             />
           </>
         )}
-        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized || !tacoApp.isAuthorized) && (
+        {(!tbtcApp.isAuthorized ||
+          !randomBeaconApp.isAuthorized ||
+          !tacoApp.isAuthorized) && (
           <Button
             disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
             variant="outline"
