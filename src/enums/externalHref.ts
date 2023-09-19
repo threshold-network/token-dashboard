@@ -3,8 +3,8 @@ export enum ExternalHref {
   thresholdDiscord = "https://discord.gg/WXK9PC6SRF",
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
-  tacoNodeSetup = "https://docs.nucypher.com/en/latest/pre_application/running_a_node.html",
-  tacoStakingProvidersList = "https://docs.nucypher.com/en/latest/pre_application/node_providers.html",
+  tacoNodeSetup = "https://docs.nucypher.com/en/latest/pre_application/running_a_node.html", // TODO THEREF
+  tacoStakingProvidersList = "https://docs.nucypher.com/en/latest/pre_application/node_providers.html", // TODO THEREF
   exchangeRateLearnMore = "https://blog.threshold.network/threshold-launch/",
   keepDapp = "https://dashboard.keep.network/",
   keepDappAuthPage = "https://dashboard.keep.network/applications/threshold",

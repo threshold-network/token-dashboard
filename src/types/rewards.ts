@@ -11,7 +11,7 @@ export interface RewardsJSONData {
 }
 
 export interface BonusEligibility {
-  hasPREConfigured: boolean
+  hasPREConfigured: boolean // TODO THEREF
   hasActiveStake: boolean
   // No unstaking after the bonus deadline and until mid-July (not even partial
   // amounts).
