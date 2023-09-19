@@ -196,12 +196,14 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
     const {
       tbtc: mappedOperatorTbtc,
       randomBeacon: mappedOperatorRandomBeacon,
+      taco: mappedOperatorTaco,
     } = action.payload
 
     if (
       isStakingProvider &&
       (isAddressZero(mappedOperatorTbtc) ||
-        isAddressZero(mappedOperatorRandomBeacon))
+        isAddressZero(mappedOperatorRandomBeacon) ||
+        isAddressZero(mappedOperatorTaco))
     ) {
       listenerApi.dispatch(
         openModal({
@@ -210,6 +212,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
             address,
             mappedOperatorTbtc: mappedOperatorTbtc,
             mappedOperatorRandomBeacon: mappedOperatorRandomBeacon,
+            mappedOperatorTaco: mappedOperatorTaco,
           },
         })
       )
