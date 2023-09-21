@@ -2,6 +2,7 @@ import { renderHook } from "@testing-library/react-hooks"
 import * as ethersUnits from "@ethersproject/units"
 import { Token } from "../../enums"
 import {
+  useAssetPoolContract,
   useKeepAssetPoolContract,
   useKeepBondingContract,
   useKeepTokenStakingContract,
@@ -15,9 +16,11 @@ import * as useTokenModule from "../useToken"
 import { TokenContext } from "../../contexts/TokenContext"
 import * as usdUtils from "../../utils/getUsdBalance"
 import { useTBTCv2TokenContract } from "../../web3/hooks/useTBTCv2TokenContract"
+import { FC } from "react"
 
 jest.mock("../../web3/hooks", () => ({
   ...(jest.requireActual("../../web3/hooks") as {}),
+  useAssetPoolContract: jest.fn(),
   useKeepAssetPoolContract: jest.fn(),
   useKeepBondingContract: jest.fn(),
   useKeepTokenStakingContract: jest.fn(),
@@ -63,10 +66,11 @@ describe("Test `useFetchTvl` hook", () => {
   const mockedKeepBondingContract = { address: "0x0" }
   const mockedTStakingContract = { address: "0x2" }
   const mockedMultiCallContract = { interface: {}, address: "0x3" }
-  const mockedKeepAssetPoolContract = { interface: {}, address: "0x4" }
-  const mockedtBTCTokenContract = { interface: {}, address: "0x5" }
+  const mockedAssetPoolContract = { interface: {}, address: "0x4" }
+  const mockedKeepAssetPoolContract = { interface: {}, address: "0x5" }
+  const mockedtBTCTokenContract = { interface: {}, address: "0x6" }
 
-  const wrapper = ({ children }) => (
+  const wrapper: FC = ({ children }) => (
     <TokenContext.Provider
       value={{
         [Token.Keep]: keepContext,
@@ -92,6 +96,9 @@ describe("Test `useFetchTvl` hook", () => {
     ;(useMulticallContract as jest.Mock).mockReturnValue(
       mockedMultiCallContract
     )
+    ;(useAssetPoolContract as jest.Mock).mockReturnValue(
+      mockedAssetPoolContract
+    )
     ;(useKeepAssetPoolContract as jest.Mock).mockReturnValue(
       mockedKeepAssetPoolContract
     )
@@ -108,7 +115,11 @@ describe("Test `useFetchTvl` hook", () => {
     // given
     const ethInKeepBonding = { raw: "10000000000000000000", format: "10.0" }
     const tbtcTokenTotalSupply = { raw: "5000000000000000000", format: "5.0" }
-    const coveragePoolTvl = { raw: "300000000000000000000", format: "300.0" }
+    const coveragePoolTvl = { raw: "500000000000000000000", format: "500.0" }
+    const keepCoveragePoolTvl = {
+      raw: "300000000000000000000",
+      format: "300.0",
+    }
     const keepStaking = { raw: "500000000000000000000", format: "500.0" }
     const tStaking = { raw: "600000000000000000000", format: "600.0" }
     const tBTC = { raw: "700000000000000000000", format: "700.0" }
@@ -117,6 +128,7 @@ describe("Test `useFetchTvl` hook", () => {
       ethInKeepBonding.raw,
       tbtcTokenTotalSupply.raw,
       coveragePoolTvl.raw,
+      keepCoveragePoolTvl.raw,
       keepStaking.raw,
       tStaking.raw,
       tBTC.raw,
@@ -131,7 +143,8 @@ describe("Test `useFetchTvl` hook", () => {
     const _expectedResult = {
       ecdsa: +ethInKeepBonding.format * mockedETHData.usdPrice,
       tbtc: +tbtcTokenTotalSupply.format * tbtcv1Context.usdConversion,
-      keepCoveragePool: +coveragePoolTvl.format * keepContext.usdConversion,
+      coveragePool: +coveragePoolTvl.format * tContext.usdConversion,
+      keepCoveragePool: +keepCoveragePoolTvl.format * keepContext.usdConversion,
       keepStaking: +keepStaking.format * keepContext.usdConversion,
       tStaking: +tStaking.format * tContext.usdConversion,
       tBTC: +tBTC.format * tBTCContext.usdConversion,
@@ -142,6 +155,7 @@ describe("Test `useFetchTvl` hook", () => {
     const expectedResult = {
       ecdsa: `${_expectedResult.ecdsa.toString()}.0`,
       tbtcv1: `${_expectedResult.tbtc.toString()}.0`,
+      coveragePool: `${_expectedResult.coveragePool.toString()}.0`,
       keepCoveragePool: `${_expectedResult.keepCoveragePool.toString()}.0`,
       keepStaking: `${_expectedResult.keepStaking.toString()}.0`,
       tStaking: `${_expectedResult.tStaking.toString()}.0`,
@@ -149,6 +163,7 @@ describe("Test `useFetchTvl` hook", () => {
       total: `${
         _expectedResult.ecdsa +
         _expectedResult.tbtc +
+        _expectedResult.coveragePool +
         _expectedResult.keepCoveragePool +
         _expectedResult.keepStaking +
         _expectedResult.tStaking +
@@ -169,6 +184,7 @@ describe("Test `useFetchTvl` hook", () => {
     expect(spyOnUseToken).toHaveBeenCalledWith(Token.TBTCV2)
     expect(useKeepBondingContract).toHaveBeenCalled()
     expect(useMulticallContract).toHaveBeenCalled()
+    expect(useAssetPoolContract).toHaveBeenCalled()
     expect(useKeepAssetPoolContract).toHaveBeenCalled()
     expect(useTStakingContract).toHaveBeenCalled()
     expect(useKeepTokenStakingContract).toHaveBeenCalled()
@@ -183,6 +199,11 @@ describe("Test `useFetchTvl` hook", () => {
         interface: tbtcv1Context.contract.interface,
         address: tbtcv1Context.contract.address,
         method: "totalSupply",
+      },
+      {
+        interface: mockedAssetPoolContract.interface,
+        address: mockedAssetPoolContract.address,
+        method: "totalValue",
       },
       {
         interface: mockedKeepAssetPoolContract.interface,
@@ -225,32 +246,37 @@ describe("Test `useFetchTvl` hook", () => {
     )
 
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      7,
+      8,
       ethInKeepBonding.format,
       mockedETHData.usdPrice
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      8,
+      9,
       tbtcTokenTotalSupply.format,
       tbtcv1Context.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      9,
+      10,
       tBTC.format,
       tBTCContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      10,
+      11,
       coveragePoolTvl.format,
+      tContext.usdConversion
+    )
+    expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
+      12,
+      keepCoveragePoolTvl.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      11,
+      13,
       keepStaking.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      12,
+      14,
       tStaking.format,
       tContext.usdConversion
     )

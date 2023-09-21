@@ -5,6 +5,7 @@ import {
   useKeepBondingContract,
   useMulticall,
   useMulticallContract,
+  useAssetPoolContract,
   useKeepAssetPoolContract,
   useTStakingContract,
   useKeepTokenStakingContract,
@@ -13,7 +14,6 @@ import { useETHData } from "./useETHData"
 import { useToken } from "./useToken"
 import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
-import { useAssetPoolContract } from "../web3/hooks/useAssetPoolContract"
 
 interface TvlRawData {
   ecdsaTvl: string
@@ -177,6 +177,7 @@ export const useFetchTvl = (): [
       tBTC: tBTCUSD.toString(),
       total: ecdsa
         .addUnsafe(tbtcv1USD)
+        .addUnsafe(coveragePool)
         .addUnsafe(keepCoveragePool)
         .addUnsafe(keepStaking)
         .addUnsafe(tStaking)
