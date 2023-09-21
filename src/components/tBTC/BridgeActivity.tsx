@@ -19,7 +19,7 @@ import {
 import {
   BridgeActivityStatus,
   BridgeActivity as BridgeActivityType,
-  UnminBridgeActivityAdditionalData,
+  UnmintBridgeActivityAdditionalData,
 } from "../../threshold-ts/tbtc"
 import emptyHistoryImageSrcDark from "../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../static/images/tBTC-bridge-no-history-light.svg"
@@ -112,11 +112,11 @@ const ActivityItem: FC<BridgeActivityType> = ({
       ? RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
           .withRedeemer(account!)
           .withRedeemerOutputScript(
-            (additionalData as UnminBridgeActivityAdditionalData)
+            (additionalData as UnmintBridgeActivityAdditionalData)
               .redeemerOutputScript
           )
           .withWalletPublicKeyHash(
-            (additionalData as UnminBridgeActivityAdditionalData)
+            (additionalData as UnmintBridgeActivityAdditionalData)
               .walletPublicKeyHash
           )
           .build()
