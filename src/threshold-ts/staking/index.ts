@@ -325,19 +325,19 @@ export class Staking implements IStaking {
     )
 
     // For each staking provider, we need to verify that the current owner of
-    // the stake is indeed the one we are looking for(the `owner` argumment).
+    // the stake is indeed the one we are looking for (the `owner` argument).
     // It's possible that the owner can be changed multiple times. Instead of
     // iterating through the `OwnerRefreshed` events and comparing the
-    // `oldOwner` and `newOner` params from that event, we can just check the
+    // `oldOwner` and `newOwner` params from that event, we can just check the
     // current owner for a given staking provider by calling `rolesOf`.
     const rolesOf = await this._multicall.aggregate(multicalls)
 
-    // Staking provideres are owned by the `owner` address.
+    // The current staking providers for a given `owner` address.
     const stakingProviders: string[] = rolesOf
       .filter((rolesOf) => isSameETHAddress(rolesOf.owner, owner))
       .map((_, index) => possibleStakingProviders[index])
 
-    // Outdated staking providers- the `owner` address is no longer an owner of
+    // Outdated staking providers - the `owner` address is no longer an owner of
     // these stakes.
     const outdatedStakingProviders: string[] = possibleStakingProviders.filter(
       (stakingProvider) => !stakingProviders.includes(stakingProvider)
