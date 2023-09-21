@@ -1,13 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { PayloadAction } from "@reduxjs/toolkit/dist/createAction"
-import {
-  MintingStep,
-  TbtcMintingType,
-  TbtcStateKey,
-  TbtcState,
-} from "../../types/tbtc"
+import { MintingStep, TbtcStateKey, TbtcState } from "../../types/tbtc"
 import { UpdateStateActionPayload } from "../../types/state"
-import { BridgeActivityStatus, BridgeActivity } from "../../threshold-ts/tbtc"
+import {
+  BridgeActivityStatus,
+  BridgeActivity,
+  UnminBridgeActivityAdditionalData,
+} from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import {
@@ -19,7 +18,6 @@ import {
 export const tbtcSlice = createSlice({
   name: "tbtc",
   initialState: {
-    mintingType: TbtcMintingType.mint,
     mintingStep: MintingStep.ProvideData,
     bridgeActivity: {
       isFetching: false,
@@ -60,9 +58,10 @@ export const tbtcSlice = createSlice({
         amount: string
         depositor: string
         txHash: string
+        blockNumber: number
       }>
     ) => {
-      const { amount, txHash, depositKey } = action.payload
+      const { amount, txHash, depositKey, blockNumber } = action.payload
       const history = state.bridgeActivity.data
       const { itemToUpdate } = findActivityByDepositKey(history, depositKey)
 
@@ -72,7 +71,14 @@ export const tbtcSlice = createSlice({
 
       // Add item only if there is no item with the same deposit key.
       state.bridgeActivity.data = [
-        { amount, txHash, status: BridgeActivityStatus.PENDING, depositKey },
+        {
+          amount,
+          txHash,
+          status: BridgeActivityStatus.PENDING,
+          activityKey: depositKey,
+          bridgeProcess: "mint",
+          blockNumber,
+        },
         ...state.bridgeActivity.data,
       ]
     },
@@ -114,6 +120,71 @@ export const tbtcSlice = createSlice({
         }
       }>
     ) => {},
+    redemptionRequested: (
+      state,
+      action: PayloadAction<{
+        redemptionKey: string
+        blockNumber: number
+        amount: string
+        txHash: string
+        additionalData: UnminBridgeActivityAdditionalData
+      }>
+    ) => {
+      const {
+        payload: { amount, redemptionKey, blockNumber, txHash, additionalData },
+      } = action
+
+      const { itemToUpdate } = findRedemptionActivity(
+        state.bridgeActivity.data,
+        redemptionKey,
+        txHash
+      )
+
+      // Do not update an array if there is already an item with the same
+      // redemption key and transaction hash- just in case duplicated Ethereum
+      // events.
+      if (itemToUpdate) return
+
+      // Add item only if there is no item with the same deposit key.
+      state.bridgeActivity.data = [
+        {
+          amount,
+          txHash,
+          status: BridgeActivityStatus.PENDING,
+          activityKey: redemptionKey,
+          bridgeProcess: "unmint",
+          blockNumber,
+          additionalData,
+        },
+        ...state.bridgeActivity.data,
+      ]
+    },
+    redemptionCompleted: (
+      state,
+      action: PayloadAction<{
+        redemptionKey: string
+        redemptionRequestedTxHash: string
+      }>
+    ) => {
+      const {
+        payload: { redemptionKey, redemptionRequestedTxHash },
+      } = action
+
+      const { itemToUpdate, index } = findRedemptionActivity(
+        state.bridgeActivity.data,
+        redemptionKey,
+        redemptionRequestedTxHash
+      )
+
+      if (!itemToUpdate) return
+
+      state.bridgeActivity.data[index] = {
+        ...itemToUpdate,
+        activityKey: redemptionKey,
+        txHash: redemptionRequestedTxHash,
+        status: BridgeActivityStatus.UNMINTED,
+      }
+    },
   },
 })
 
@@ -122,7 +193,26 @@ function findActivityByDepositKey(
   depositKey: string
 ) {
   const activityIndexItemToUpdate = bridgeActivities.findIndex(
-    (item) => item.depositKey === depositKey
+    (item) => item.activityKey === depositKey
+  )
+
+  if (activityIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }
+
+  const activityItemToUpdate = bridgeActivities[activityIndexItemToUpdate]
+
+  return {
+    index: activityIndexItemToUpdate,
+    itemToUpdate: activityItemToUpdate,
+  }
+}
+
+function findRedemptionActivity(
+  bridgeActivities: BridgeActivity[],
+  redemptionKey: string,
+  txHash: string
+) {
+  const activityIndexItemToUpdate = bridgeActivities.findIndex(
+    (item) => item.activityKey === redemptionKey && item.txHash === txHash
   )
 
   if (activityIndexItemToUpdate < 0) return { index: -1, itemToUpdate: null }

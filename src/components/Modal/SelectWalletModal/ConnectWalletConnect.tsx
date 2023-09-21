@@ -1,13 +1,13 @@
 import { FC } from "react"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import { useWeb3React } from "@web3-react/core"
-import { walletconnect } from "../../../web3/connectors/walletConnect"
 import {
   WalletConnectionModalBase,
   WalletConnectStatusAlert,
 } from "./components"
 import { ConnectionError, WalletType } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
+import { walletConnect } from "../../../web3/connectors/walletConnect"
 
 const ConnectWalletConnect: FC<{
   goBack: () => void
@@ -22,7 +22,7 @@ const ConnectWalletConnect: FC<{
 
   return (
     <WalletConnectionModalBase
-      connector={walletconnect}
+      connector={walletConnect}
       goBack={goBack}
       closeModal={closeModal}
       WalletIcon={WalletConnectIcon}
@@ -32,10 +32,11 @@ const ConnectWalletConnect: FC<{
       }
       tryAgain={() => {
         // the user has already tried to connect, so we manually reset the connector to allow the QR popup to work again
-        walletconnect.walletConnectProvider = undefined
-        activate(walletconnect)
+        walletConnect.provider = undefined
+        activate(walletConnect)
       }}
       walletType={WalletType.WalletConnect}
+      shouldForceCloseModal
     >
       <WalletConnectStatusAlert
         connectionRejected={connectionRejected}

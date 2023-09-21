@@ -11,21 +11,30 @@ import {
 } from "@chakra-ui/react"
 import { BiLeftArrowAlt } from "react-icons/all"
 import { useWeb3React } from "@web3-react/core"
-import { WalletConnectionModalProps } from "../../../../types"
+import { BaseModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
 import { AbstractConnector } from "../../../../web3/connectors"
 import { WalletType } from "../../../../enums"
 import { useCapture } from "../../../../hooks/posthog"
 import { PosthogEvent } from "../../../../types/posthog"
 
-interface Props extends WalletConnectionModalProps {
+interface Props extends BaseModalProps {
   WalletIcon: any
   title: string
   subTitle?: string
   tryAgain?: () => void
   onContinue?: () => void
+  goBack: () => void
   connector?: AbstractConnector
   walletType: WalletType
+  /**
+   * This is required for some of the providers (for example WalletConnect v2),
+   * because they have their own modal that is being opened. In that case we
+   * can't display our loading modal because it has larger z-index than
+   * provider's one and it's too problematic to change that.
+   *
+   */
+  shouldForceCloseModal?: boolean
 }
 
 const WalletConnectionModalBase: FC<Props> = ({
@@ -39,6 +48,7 @@ const WalletConnectionModalBase: FC<Props> = ({
   onContinue,
   connector,
   walletType,
+  shouldForceCloseModal,
 }) => {
   const { activate, active, account } = useWeb3React()
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
@@ -48,7 +58,14 @@ const WalletConnectionModalBase: FC<Props> = ({
 
     captureWalletConnected({ walletType })
     activate(connector)
-  }, [activate, connector, captureWalletConnected, walletType])
+    if (shouldForceCloseModal) closeModal()
+  }, [
+    activate,
+    connector,
+    captureWalletConnected,
+    walletType,
+    shouldForceCloseModal,
+  ])
 
   return (
     <>

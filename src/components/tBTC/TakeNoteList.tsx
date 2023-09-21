@@ -40,7 +40,7 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
               <Box as="span" color="brand.500">
                 ~ 1 to 3 hours
               </Box>{" "}
-              after you initiate minting.
+              after you initiate minting, depending on your deposited amount.
             </BodyComponent>
           </ListItemWithIcon>
         </List>
@@ -61,12 +61,12 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
         </List>
       </ListItem>
       <ListItem>
-        <LabelComponent mb="2">Bridging back BTC</LabelComponent>
+        <LabelComponent mb="2">Bridging back btc is LIVE</LabelComponent>
         <List spacing="2">
           <ListItemWithIcon>
             <BodyComponent>
-              Bridging back is under construction! The ability to bridge BTC
-              back to the Bitcoin network won't be enabled for 3 to 6 months.
+              You can bridge your BTC back whenever you want. Redemptions are
+              now live.
             </BodyComponent>
           </ListItemWithIcon>
         </List>

@@ -74,6 +74,7 @@ export const FormikInput: FC<
         isInvalid={isError}
         errorBorderColor="red.300"
         placeholder={placeholder}
+        _placeholder={{ color: useColorModeValue("gray.400", "gray.500") }}
         {...field}
         value={meta.value}
       />

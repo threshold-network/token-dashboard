@@ -13,6 +13,7 @@ import { AnnouncementBanner } from "./AnnouncementBanner"
 import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
 import { Timeline } from "./Timeline"
 import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
+import { Tooltip } from "./Tooltip"
 
 const index = extendTheme({
   ...defaultTheme,
@@ -47,6 +48,7 @@ const index = extendTheme({
     Checkbox,
     Timeline,
     DotsLoadingIndicator,
+    Tooltip,
   },
 })
 

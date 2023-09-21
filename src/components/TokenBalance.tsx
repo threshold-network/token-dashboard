@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react"
+import { ComponentType, FC, useMemo } from "react"
 import {
   BodyLg,
   BodySm,
@@ -10,10 +10,11 @@ import {
   useColorModeValue,
   Tooltip,
   BoxProps,
+  Icon,
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import Icon from "./Icon"
 import { formatTokenAmount } from "../utils/formatAmount"
+import tokenIconMap, { TokenIcon } from "../static/icons/tokenIconMap"
 
 export interface TokenBalanceProps {
   tokenAmount: string | number
@@ -22,13 +23,15 @@ export interface TokenBalanceProps {
   withUSDBalance?: boolean
   withSymbol?: boolean
   tokenDecimals?: number
-  icon?: any
+  icon?: TokenIcon | ComponentType
   iconSize?: string
   isLarge?: boolean
   tokenFormat?: string
   withHigherPrecision?: boolean
   precision?: number
   higherPrecision?: number
+  displayTildeBelow?: number
+  isEstimated?: boolean
 }
 
 export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
@@ -40,6 +43,8 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
   precision = 2,
   higherPrecision = 6,
   withHigherPrecision,
+  displayTildeBelow = 1,
+  isEstimated = false,
   ...restProps
 }) => {
   const _tokenAmount = useMemo(() => {
@@ -47,7 +52,8 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenAmount || 0,
       tokenFormat,
       tokenDecimals,
-      precision
+      precision,
+      isEstimated ? 0 : displayTildeBelow
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, precision])
 
@@ -56,13 +62,17 @@ export const InlineTokenBalance: FC<TokenBalanceProps & BoxProps> = ({
       tokenAmount || 0,
       tokenFormat,
       tokenDecimals,
-      higherPrecision
+      higherPrecision,
+      isEstimated ? 0 : 1
     )
   }, [tokenAmount, tokenFormat, tokenDecimals, higherPrecision])
 
   return (
-    <Tooltip label={_tokenAmountWithHigherPrecision} placement="top">
-      <Box as="span" {...restProps}>{`${_tokenAmount}${
+    <Tooltip
+      label={`${isEstimated ? "~" : ""}${_tokenAmountWithHigherPrecision}`}
+      placement="top"
+    >
+      <Box as="span" {...restProps}>{`${isEstimated ? "~" : ""}${_tokenAmount}${
         withSymbol ? ` ${tokenSymbol}` : ""
       }`}</Box>
     </Tooltip>
@@ -100,7 +110,12 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   return (
     <Box>
       <HStack alignItems="center">
-        {icon && <Icon as={icon} boxSize={iconSize} />}{" "}
+        {icon && (
+          <Icon
+            as={tokenIconMap[icon as TokenIcon] ?? icon}
+            boxSize={iconSize}
+          />
+        )}{" "}
         <BalanceTag {...restProps}>
           {shouldRenderTokenAmount ? (
             withHigherPrecision ? (

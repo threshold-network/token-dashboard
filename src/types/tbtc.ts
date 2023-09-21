@@ -1,13 +1,11 @@
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { UpdateStateActionPayload } from "./state"
 import { FetchingState } from "."
-import { BridgeActivity } from "../threshold-ts/tbtc"
+import { BridgeActivity, BridgeProcess } from "../threshold-ts/tbtc"
+export type { UnspentTransactionOutputPlainObject } from "../threshold-ts/types"
 
 export interface TbtcState {
   mintingStep: MintingStep
-  unmintingStep: UnmintingStep
-  mintingType: TbtcMintingType
-
   // deposit data
   btcRecoveryAddress: string
   btcDepositAddress: string
@@ -30,11 +28,6 @@ export interface TbtcState {
 
 export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">
 
-export enum TbtcMintingType {
-  mint = "MINT",
-  unmint = "UNMINT",
-}
-
 export enum MintingStep {
   ProvideData = "PROVIDE_DATA",
   Deposit = "DEPOSIT",
@@ -42,21 +35,11 @@ export enum MintingStep {
   MintingSuccess = "MINTING_SUCCESS",
 }
 
-export enum UnmintingStep {
-  ProvideData = "PROVIDE_DATA",
-  Success = "SUCCESS",
-}
-
 export const MintingSteps: MintingStep[] = [
   MintingStep.ProvideData,
   MintingStep.Deposit,
   MintingStep.InitiateMinting,
   MintingStep.MintingSuccess,
-]
-
-export const UnmintingSteps: UnmintingStep[] = [
-  UnmintingStep.ProvideData,
-  UnmintingStep.Success,
 ]
 
 export interface UpdateTbtcState {
@@ -77,3 +60,5 @@ export type ExternalPoolData = {
   apy: number[]
   tvl: number
 }
+
+export { type BridgeProcess }

@@ -1,4 +1,10 @@
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+export {
+  computeHash160,
+  createOutputScriptFromAddress,
+  createAddressFromOutputScript,
+} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   AddressType,
   getAddressInfo,
@@ -6,16 +12,24 @@ import {
   validate,
 } from "bitcoin-address-validation"
 
+export const BITCOIN_PRECISION = 8
+
 export const isValidBtcAddress = (
   address: string,
-  network: Network = Network.mainnet
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
 ): boolean => {
-  return validate(address, network)
+  return validate(address, network.valueOf() as Network)
 }
 
+// P2PKH, P2WPKH, P2SH, or P2WSH
 export const isPublicKeyHashTypeAddress = (address: string): boolean => {
   const { type } = getAddressInfo(address)
   return type === AddressType.p2pkh || type === AddressType.p2wpkh
+}
+
+export const isPayToScriptHashTypeAddress = (address: string): boolean => {
+  const { type } = getAddressInfo(address)
+  return type === AddressType.p2sh || type === AddressType.p2wsh
 }
 
 /**
@@ -26,9 +40,19 @@ export const isPublicKeyHashTypeAddress = (address: string): boolean => {
  * Bitcoin transaction hash is stored on Ethereum in native Bitcoin
  * little-endian format but to get the confirmations for this transaction we
  * need to reverse its hash.
- * @param {string} txHash Transacion hash as string.
+ * @param {string} txHash Transaction hash as string.
  * @return {TransactionHash} Reversed transaction hash.
  */
 export const reverseTxHash = (txHash: string): TransactionHash => {
   return TransactionHash.from(txHash).reverse()
+}
+
+export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
+  const rawRedeemerOutputScript = Buffer.from(scriptPubKey.toString(), "hex")
+
+  // Prefix the output script bytes buffer with 0x and its own length.
+  return `0x${Buffer.concat([
+    Buffer.from([rawRedeemerOutputScript.length]),
+    rawRedeemerOutputScript,
+  ]).toString("hex")}`
 }

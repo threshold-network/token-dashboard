@@ -1,12 +1,14 @@
 import { BigNumber } from "@ethersproject/bignumber"
 import { WeiPerEther } from "@ethersproject/constants"
-import { Network } from "bitcoin-address-validation"
+import { BitcoinNetwork } from "../threshold-ts/types"
 import {
+  isPayToScriptHashTypeAddress,
   isPublicKeyHashTypeAddress,
   isValidBtcAddress,
 } from "../threshold-ts/utils"
 import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
+import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
 type ValidationMsg = string | ((amount: string) => string)
 type ValidationOptions = {
@@ -80,7 +82,7 @@ export const validateETHAddress = (address: string) => {
 
 export const validateBTCAddress = (
   address: string,
-  network: Network = Network.mainnet
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
 ) => {
   if (!address) {
     return "Required."
@@ -88,8 +90,27 @@ export const validateBTCAddress = (
     !isValidBtcAddress(address, network) ||
     !isPublicKeyHashTypeAddress(address)
   ) {
-    return `The BTC Recovery address has to start with ${
-      network === Network.mainnet ? `"1" or "bc1"` : `"m", "n" or "tb1"`
-    }, meaning it is P2PKH or P2WPKH compliant.`
+    return `The BTC Recovery address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
+      "mint",
+      network
+    )}, meaning it is P2PKH or P2WPKH compliant.`
+  }
+}
+
+export const validateUnmintBTCAddress = (
+  address: string,
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
+) => {
+  if (!address) {
+    return "Required."
+  } else if (
+    !isValidBtcAddress(address, network) ||
+    (!isPublicKeyHashTypeAddress(address) &&
+      !isPayToScriptHashTypeAddress(address))
+  ) {
+    return `The BTC address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
+      "unmint",
+      network
+    )}, meaning it is P2PKH, P2WPKH, P2SH or P2WSH compliant.`
   }
 }

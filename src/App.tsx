@@ -55,6 +55,7 @@ import { useSubscribeToDepositRevealedEvent } from "./hooks/tbtc/useSubsribeToDe
 import {
   useSubscribeToOptimisticMintingFinalizedEvent,
   useSubscribeToOptimisticMintingRequestedEvent,
+  useSubscribeToRedemptionRequestedEvent,
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
 
@@ -80,6 +81,7 @@ const Web3EventHandlerComponent = () => {
   useSubscribeToDepositRevealedEvent()
   useSubscribeToOptimisticMintingFinalizedEvent()
   useSubscribeToOptimisticMintingRequestedEvent()
+  useSubscribeToRedemptionRequestedEvent()
 
   return <></>
 }
@@ -127,11 +129,16 @@ const useSubscribeToVendingMachineContractEvents = () => {
 
 const AppBody = () => {
   const dispatch = useDispatch()
-  const { connector, account } = useWeb3React()
+  const { connector, account, deactivate } = useWeb3React()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
-      if (
+      // if chain is changed then just deactivate the current provider and reset
+      // store
+      if (update.chainId) {
+        dispatch(resetStoreAction())
+        deactivate()
+      } else if (
         !update.account ||
         !isSameETHAddress(update.account, account as string)
       ) {
@@ -206,6 +213,11 @@ const Routing = () => {
 
 const renderPageComponent = (PageComponent: PageComponent) => {
   if (!PageComponent.route.isPageEnabled) return null
+  const { parentPathBase: parentPathBaseFromRoute } = PageComponent.route
+  const parentPathBase = parentPathBaseFromRoute || ""
+  const updatedParentPathBase = PageComponent.route.path
+    ? `${parentPathBase}/${PageComponent.route.path}`
+    : parentPathBase
 
   return (
     <Fragment key={PageComponent.route.path}>
@@ -217,9 +229,17 @@ const renderPageComponent = (PageComponent: PageComponent) => {
       )}
       <Route
         path={PageComponent.route.path}
-        element={<PageComponent {...PageComponent.route} />}
+        element={
+          <PageComponent
+            {...PageComponent.route}
+            parentPathBase={updatedParentPathBase}
+          />
+        }
       >
-        {PageComponent.route.pages?.map(renderPageComponent)}
+        {PageComponent.route.pages?.map((page) => {
+          page.route.parentPathBase = updatedParentPathBase
+          return renderPageComponent(page)
+        })}
       </Route>
     </Fragment>
   )

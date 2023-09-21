@@ -73,16 +73,16 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   const amount = BigNumber.from(utxo.value).toString()
 
   useEffect(() => {
-    const getEstimatedFees = async () => {
+    const getEstimatedDepositFees = async () => {
       const { treasuryFee, optimisticMintFee, amountToMint } =
-        await threshold.tbtc.getEstimatedFees(amount)
+        await threshold.tbtc.getEstimatedDepositFees(amount)
 
       updateState("mintingFee", optimisticMintFee)
       updateState("thresholdNetworkFee", treasuryFee)
       updateState("tBTCMintAmount", amountToMint)
     }
 
-    getEstimatedFees()
+    getEstimatedDepositFees()
   }, [amount, updateState, threshold])
 
   return (
@@ -107,13 +107,14 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
             </Skeleton>
           </H5>
           <BodyLg>
-            Minting tBTC is a process that requires one transaction.
+            Minting tBTC requires a single transaction on Ethereum network and
+            takes approximately 3 hours.
           </BodyLg>
         </InfoBox>
         <MintingTransactionDetails />
         <BodySm textAlign="center" mt="16">
-          Read more about the&nbsp;
-          <BridgeContractLink text="bridge contract" />.
+          View bridge contract on&nbsp;
+          <BridgeContractLink text="etherscan" />.
         </BodySm>
       </ModalBody>
       <ModalFooter>

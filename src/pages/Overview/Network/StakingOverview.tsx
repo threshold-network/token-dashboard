@@ -1,6 +1,4 @@
 import { FC } from "react"
-import { Link as RouterLink } from "react-router-dom"
-import { Button } from "@chakra-ui/react"
 import CardTemplate from "./CardTemplate"
 import { BodyMd } from "@threshold-network/components"
 import { useTokenState } from "../../../hooks/useTokenState"

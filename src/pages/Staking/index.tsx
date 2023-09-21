@@ -212,6 +212,7 @@ Auth.route = {
 StakingPage.route = {
   path: "",
   index: false,
+  pathOverride: "*",
   title: "Staking",
   isPageEnabled: true,
 }

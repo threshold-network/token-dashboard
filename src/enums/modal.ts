@@ -19,7 +19,6 @@ export enum ModalType {
   NewAppsToAuthorize = "NEW_APPS_TO_AUTHORIZE",
   TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
   TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
-  UseDesktop = "USE_DESKTOP",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   SubmitStake = "SUBMIT_STAKE",
   NewStakerAuthorizeStakingApplication = "NEW_STAKER_AUTHORIZE_STAKING_APPLICATION",
@@ -38,4 +37,5 @@ export enum ModalType {
   NewTBTCApp = "NEW_TBTC_APP",
   FeedbackSubmission = "FEEDBACK_SUBMIT",
   GenerateNewDepositAddress = "TBTC_GENERATE_NEW_DEPOSIT_ADDRESS",
+  InitiateUnminting = "INITIATE_UNMINTING",
 }

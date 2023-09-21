@@ -18,3 +18,32 @@ export const downloadFile = (
   a.dispatchEvent(clickEvt)
   a.remove()
 }
+
+export class InvalidJSONFileError extends Error {
+  constructor() {
+    super("Invalid .JSON file.")
+  }
+}
+
+const tryParseJSON = (data: string) => {
+  return new Promise((resolve, reject) => {
+    try {
+      resolve(JSON.parse(data))
+    } catch (error) {
+      console.error("Failed to parse JSON object: ", error)
+      reject(new InvalidJSONFileError())
+    }
+  })
+}
+
+export async function parseJSONFile(file: File) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader()
+    fileReader.onload = (event) =>
+      tryParseJSON(event?.target?.result?.toString() ?? "")
+        .then(resolve)
+        .catch(reject)
+    fileReader.onerror = (error) => reject(error)
+    fileReader.readAsText(file)
+  })
+}

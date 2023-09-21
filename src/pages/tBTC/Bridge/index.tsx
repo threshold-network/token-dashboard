@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Grid, Box, Skeleton, Stack } from "@threshold-network/components"
+import { Grid, Box } from "@threshold-network/components"
 import { PageComponent } from "../../../types"
 import { TbtcBalanceCard } from "./TbtcBalanceCard"
 import { MintUnmintNav } from "./MintUnmintNav"
@@ -70,7 +70,7 @@ const TBTCBridge: PageComponent = (props) => {
 TBTCBridge.route = {
   path: "",
   index: false,
-  pathOverride: "/tBTC/*",
+  pathOverride: "*",
   pages: [MintPage, UnmintPage],
   title: "Bridge",
   isPageEnabled: true,

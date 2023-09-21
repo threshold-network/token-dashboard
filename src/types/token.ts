@@ -1,13 +1,13 @@
 import { Contract } from "@ethersproject/contracts"
 import { Token } from "../enums"
 import { TransactionType } from "../enums/transactionType"
-import Icon from "../enums/icon"
+import { TokenIcon } from "../static/icons/tokenIconMap"
 
 export interface TokenState {
   loading: boolean
   conversionRate: number | string
   text: string
-  icon: Icon
+  icon: TokenIcon
   balance: number | string
   usdConversion: number
   usdBalance: string
