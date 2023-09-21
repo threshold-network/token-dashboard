@@ -302,11 +302,28 @@ export class Staking implements IStaking {
   ): Promise<OwnerRefreshedResult> => {
     // Find all events where the `owner` was set as a new owner or old owner of
     // the stake.
-    const ownerRefreshedEvents = await getContractPastEvents(this._staking, {
-      eventName: "OwnerRefreshed",
-      filterParams: [null, owner, owner],
-      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-    })
+    const ownerRefreshedEventsFilteredByNewOwner = await getContractPastEvents(
+      this._staking,
+      {
+        eventName: "OwnerRefreshed",
+        filterParams: [null, null, owner],
+        fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      }
+    )
+
+    const ownerRefreshedEventsFilteredByOldOwner = await getContractPastEvents(
+      this._staking,
+      {
+        eventName: "OwnerRefreshed",
+        filterParams: [null, owner, null],
+        fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      }
+    )
+
+    const ownerRefreshedEvents = [
+      ...ownerRefreshedEventsFilteredByNewOwner,
+      ...ownerRefreshedEventsFilteredByOldOwner,
+    ].sort((a, b) => a.blockNumber - b.blockNumber)
 
     // Convert to `Set` to remove duplicated staking provider addresses(the
     // owner can be changed multiple times for the same staking provider) and
