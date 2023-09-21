@@ -45,9 +45,7 @@ export const CoveragePoolsTvlCard: FC<CoveragePoolsTvlCardProps> = ({
       </StatHighlightTitle>
       <StatHighlightValue value={formattedTvl} />
       <Center>
-        <LearnMoreLink m={"0 auto"}>
-          Learn more about Coverage Pools
-        </LearnMoreLink>
+        <LearnMoreLink>Learn more about Coverage Pools</LearnMoreLink>
       </Center>
     </StatHighlightCard>
   )
