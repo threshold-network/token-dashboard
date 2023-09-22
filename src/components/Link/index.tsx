@@ -17,9 +17,9 @@ type ConditionalLinkProps =
   | { isExternal?: false; to: string; href?: never }
   | { isExternal: true; to?: never; href: string }
 
-export type LinkProps = CommonLinkProps & ConditionalLinkProps
+export type LinkProps = ChakraLinkProps & CommonLinkProps & ConditionalLinkProps
 
-const Link: FC<ChakraLinkProps & LinkProps> = forwardRef(
+const Link: FC<LinkProps> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
