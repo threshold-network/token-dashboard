@@ -297,12 +297,24 @@ describe("Staking test", () => {
   })
 
   describe("findRefreshedKeepStakes test", () => {
-    const ownerRefreshedEventEmittedExpectation = () => {
-      expect(getContractPastEvents).toHaveBeenLastCalledWith(
+    const ownerRefreshedEventEmittedExpectation = (
+      ownerFilterParam: string = owner
+    ) => {
+      expect(getContractPastEvents).toHaveBeenNthCalledWith(
+        1,
         mockStakingContract,
         {
           eventName: "OwnerRefreshed",
-          filterParams: [null, owner, owner],
+          filterParams: [null, null, ownerFilterParam],
+          fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        }
+      )
+      expect(getContractPastEvents).toHaveBeenNthCalledWith(
+        2,
+        mockStakingContract,
+        {
+          eventName: "OwnerRefreshed",
+          filterParams: [null, ownerFilterParam, null],
           fromBlock: staking.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
         }
       )
@@ -340,9 +352,9 @@ describe("Staking test", () => {
       const ownerRefreshedEvent = {
         args: { stakingProvider: stakingProvider, newOwner: owner },
       }
-      ;(getContractPastEvents as jest.Mock).mockResolvedValue([
-        ownerRefreshedEvent,
-      ])
+      ;(getContractPastEvents as jest.Mock)
+        .mockResolvedValueOnce([ownerRefreshedEvent])
+        .mockResolvedValue([])
 
       const rolesOfMulticallSpyOn = jest
         .spyOn(multicall, "aggregate")
@@ -358,12 +370,18 @@ describe("Staking test", () => {
     })
 
     test("should return outdated staking providers if the owner was updated multiple times", async () => {
+      const newOwner = "0x81022dfd91e2d9d15Dc6ce73d752B4b94698252d"
+
       // `OwnerRefreshed` event emitted with `newOwner = owner`.
       const ownerRefreshedEvent = {
         args: { stakingProvider: stakingProvider, newOwner: owner },
       }
+      const ownerRefreshedEvent2 = {
+        args: { stakingProvider: stakingProvider, newOwner, oldOwner: owner },
+      }
       ;(getContractPastEvents as jest.Mock).mockResolvedValue([
         ownerRefreshedEvent,
+        ownerRefreshedEvent2,
       ])
 
       // `rolesOf` method for the staking provider address from `OwnerRefreshed`
@@ -371,7 +389,7 @@ describe("Staking test", () => {
       // means the owner has been updated again.
       const rolesOfMulticallSpyOn = jest
         .spyOn(multicall, "aggregate")
-        .mockResolvedValue([{ owner: stakingProvider }])
+        .mockResolvedValue([{ owner: newOwner }])
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
@@ -403,6 +421,59 @@ describe("Staking test", () => {
         stakingProvider,
       ])
       expect(result).toEqual({ current: [stakingProvider], outdated: [] })
+    })
+
+    test("should return correct data when a given owner was marked as newOwner and oldOwner", async () => {
+      const stakingProvider2 = "0x8d606db3C6E79690D654C23ACc47A909AdA931b3"
+      const newOwner = "0x5DeCc535329ad47E036bd02CE88EC3bd5f491461"
+      const oldOwner = "0x35E69e541e1D31fE04923071692F9Cc1ECf922FD"
+      const newOwner2 = "0x484A80Ea09ef9FfDE88Fb8dfB7C04f68028D0717"
+
+      const ownerRefreshedEvent = {
+        args: {
+          stakingProvider: stakingProvider,
+          oldOwner: owner,
+          newOwner,
+        },
+      }
+
+      const ownerRefreshedEvent2 = {
+        args: {
+          stakingProvider: stakingProvider2,
+          oldOwner,
+          newOwner,
+        },
+      }
+
+      const ownerRefreshedEvent3 = {
+        args: {
+          stakingProvider: ownerRefreshedEvent.args.stakingProvider,
+          oldOwner: ownerRefreshedEvent.args.newOwner,
+          newOwner: newOwner2,
+        },
+      }
+      // `OwnerRefreshed` event emitted with `newOwner = owner` two times.
+      ;(getContractPastEvents as jest.Mock).mockResolvedValue([
+        ownerRefreshedEvent,
+        ownerRefreshedEvent2,
+        ownerRefreshedEvent3,
+      ])
+
+      const rolesOfMulticallSpyOn = jest
+        .spyOn(multicall, "aggregate")
+        .mockResolvedValue([{ owner: newOwner2 }, { owner: newOwner }])
+
+      const result = await staking.findRefreshedKeepStakes(newOwner)
+
+      ownerRefreshedEventEmittedExpectation(newOwner)
+      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
+        stakingProvider,
+        stakingProvider2,
+      ])
+      expect(result).toEqual({
+        current: [stakingProvider2],
+        outdated: [stakingProvider],
+      })
     })
   })
 })
