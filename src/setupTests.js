@@ -44,6 +44,7 @@ jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
 jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
   ElectrumClient: jest.fn(),
+  EthereumTBTCToken: jest.fn(),
 }))
 
 jest.mock("crypto-js")

@@ -5,7 +5,7 @@ import { UpdateStateActionPayload } from "../../types/state"
 import {
   BridgeActivityStatus,
   BridgeActivity,
-  UnminBridgeActivityAdditionalData,
+  UnmintBridgeActivityAdditionalData,
 } from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
@@ -127,7 +127,7 @@ export const tbtcSlice = createSlice({
         blockNumber: number
         amount: string
         txHash: string
-        additionalData: UnminBridgeActivityAdditionalData
+        additionalData: UnmintBridgeActivityAdditionalData
       }>
     ) => {
       const {
