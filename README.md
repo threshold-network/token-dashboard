@@ -61,18 +61,30 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ## Install Görli contracts
 
 ```
-yarn upgrade @threshold-network/solidity-contracts@goerli \
-  @keep-network/keep-core@1.8.1-goerli.0 \
+yarn upgrade @keep-network/coverage-pools@goerli \
+  @keep-network/ecdsa@goerli \
+  @keep-network/keep-core@goerli \
   @keep-network/keep-ecdsa@goerli \
+  @keep-network/random-beacon@goerli \
   @keep-network/tbtc@goerli \
-  @keep-network/coverage-pools@goerli
+  @keep-network/tbtc-v2@goerli \
+  @keep-network/tbtc-v2.ts@goerli \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@goerli \
+  @threshold-network/solidity-contracts@goerli \
 ```
 
-**NOTE 1:** We provide explicit version of the `keep-core` package, because
-using `goerli` tag results in `expected manifest` error - probably caused by bug
-in Yarn: https://github.com/yarnpkg/yarn/issues/4731.
+**NOTE 1:** We use the same Goerli versions for both
+`@keep-network/coverage-pools` and `@threshold-network/coverage-pools`, because
+we don't have the newest version of the package on Goerli network, only on the
+Mainnet.
 
-**NOTE 2:** The `token-dashboard` package contains an indirect dependency to
+**NOTE 2:** If you encounter an `expected manifest` error while executing this,
+then try providing an explicit version of the `keep-core` package:
+`@keep-network/keep-core@1.8.1-goerli.0`
+The error is probably caused by a bug in Yarn:
+https://github.com/yarnpkg/yarn/issues/4731.
+
+**NOTE 3:** The `token-dashboard` package contains an indirect dependency to
 `@summa-tx/relay-sol@2.0.2` package, which downloads one of its sub-dependencies
 via unathenticated `git://` protocol. That protocol is no longer supported by
 GitHub. This means that in certain situations installation of the package or

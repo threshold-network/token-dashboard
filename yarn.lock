@@ -4086,6 +4086,17 @@
   resolved "https://registry.npmjs.org/@threshold-network/components/-/components-1.0.0-dev.31.tgz#7767a9f136156f8d4f3044d90e87a1014eb07a67"
   integrity sha512-ftzJV6p2He3Co0wLYky+sX0NAFVGrJCRvBDI0n3KF4POBO425Qy3yodS7HOkT1TgGRNU8AGO0KebS2X7gfgAEA==
 
+"@threshold-network/coverage-pools@npm:@keep-network/coverage-pools@development":
+  version "2.1.0-dev.3"
+  resolved "https://registry.yarnpkg.com/@keep-network/coverage-pools/-/coverage-pools-2.1.0-dev.3.tgz#95b2c7df4a109a6d82fcb067ea1f4bbac4e9434a"
+  integrity sha512-b6UMu5/8Rd/OS33T6RwMAHyyJtIInzJVwVFx4ZxMwKvPBE/orRAIVkgkCUWUNM04WWexgt/i5h393lia9d00IQ==
+  dependencies:
+    "@keep-network/keep-core" "1.8.1-dev.0"
+    "@keep-network/tbtc" "1.1.2-dev.1"
+    "@openzeppelin/contracts" "^4.8"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+    "@threshold-network/solidity-contracts" "1.3.0-dev.5"
+
 "@threshold-network/solidity-contracts@1.3.0-dev.5", "@threshold-network/solidity-contracts@development":
   version "1.3.0-dev.5"
   resolved "https://registry.yarnpkg.com/@threshold-network/solidity-contracts/-/solidity-contracts-1.3.0-dev.5.tgz#f7a2727d627a10218f0667bc0d33e19ed8f87fdc"

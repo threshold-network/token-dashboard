@@ -1,7 +1,10 @@
 import { FC } from "react"
-import CardTemplate from "./CardTemplate"
-import { H1 } from "@threshold-network/components"
 import { formatFiatCurrencyAmount } from "../../../utils/formatAmount"
+import {
+  StatHighlightCard,
+  StatHighlightTitle,
+  StatHighlightValue,
+} from "../../../components/StatHighlightCard"
 
 const TotalValueLocked: FC<{ totalValueLocked: number | string }> = ({
   totalValueLocked,
@@ -9,11 +12,10 @@ const TotalValueLocked: FC<{ totalValueLocked: number | string }> = ({
   const tvl = formatFiatCurrencyAmount(totalValueLocked)
 
   return (
-    <CardTemplate title="TOTAL VALUE LOCKED">
-      <H1 mt="10" mb="9" textAlign="center">
-        {tvl}
-      </H1>
-    </CardTemplate>
+    <StatHighlightCard>
+      <StatHighlightTitle title={"total value locked"} />
+      <StatHighlightValue value={tvl} />
+    </StatHighlightCard>
   )
 }
 
