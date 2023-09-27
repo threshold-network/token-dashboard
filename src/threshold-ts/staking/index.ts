@@ -347,9 +347,7 @@ export class Staking implements IStaking {
     // iterating through the `OwnerRefreshed` events and comparing the
     // `oldOwner` and `newOwner` params from that event, we can just check the
     // current owner for a given staking provider by calling `rolesOf`.
-    const rolesOf: { owner: string }[] = await this._multicall.aggregate(
-      multicalls
-    )
+    const rolesOf: RolesOf[] = await this._multicall.aggregate(multicalls)
 
     // The current staking providers for a given `owner` address.
     const stakingProviders: string[] = rolesOf
