@@ -297,7 +297,7 @@ describe("Staking test", () => {
   })
 
   describe("findRefreshedKeepStakes test", () => {
-    const ownerRefreshedEventEmittedExpectation = (
+    const expectOwnerRefreshedEventEmitted = (
       ownerFilterParam: string = owner
     ) => {
       expect(getContractPastEvents).toHaveBeenNthCalledWith(
@@ -320,7 +320,7 @@ describe("Staking test", () => {
       )
     }
 
-    const rolesOfMulticallCalledExpectation = (
+    const expectRolesOfMulticall = (
       aggregateSpyOn: jest.SpyInstance,
       stakingProviders: string[]
     ) => {
@@ -343,8 +343,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      ownerRefreshedEventEmittedExpectation()
-      rolesOfMulticallCalledExpectation(aggregateSpyOn, [])
+      expectOwnerRefreshedEventEmitted()
+      expectRolesOfMulticall(aggregateSpyOn, [])
       expect(result).toEqual({ current: [], outdated: [] })
     })
 
@@ -362,10 +362,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      ownerRefreshedEventEmittedExpectation()
-      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
-        stakingProvider,
-      ])
+      expectOwnerRefreshedEventEmitted()
+      expectRolesOfMulticall(rolesOfMulticallSpyOn, [stakingProvider])
       expect(result).toEqual({ current: [stakingProvider], outdated: [] })
     })
 
@@ -393,10 +391,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      ownerRefreshedEventEmittedExpectation()
-      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
-        stakingProvider,
-      ])
+      expectOwnerRefreshedEventEmitted()
+      expectRolesOfMulticall(rolesOfMulticallSpyOn, [stakingProvider])
       expect(result).toEqual({ current: [], outdated: [stakingProvider] })
     })
 
@@ -416,10 +412,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(owner)
 
-      ownerRefreshedEventEmittedExpectation()
-      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
-        stakingProvider,
-      ])
+      expectOwnerRefreshedEventEmitted()
+      expectRolesOfMulticall(rolesOfMulticallSpyOn, [stakingProvider])
       expect(result).toEqual({ current: [stakingProvider], outdated: [] })
     })
 
@@ -465,8 +459,8 @@ describe("Staking test", () => {
 
       const result = await staking.findRefreshedKeepStakes(newOwner)
 
-      ownerRefreshedEventEmittedExpectation(newOwner)
-      rolesOfMulticallCalledExpectation(rolesOfMulticallSpyOn, [
+      expectOwnerRefreshedEventEmitted(newOwner)
+      expectRolesOfMulticall(rolesOfMulticallSpyOn, [
         stakingProvider,
         stakingProvider2,
       ])
