@@ -321,10 +321,10 @@ describe("Staking test", () => {
     }
 
     const rolesOfMulticallCalledExpectation = (
-      aggregateSpyon: jest.SpyInstance,
+      aggregateSpyOn: jest.SpyInstance,
       stakingProviders: string[]
     ) => {
-      expect(aggregateSpyon).toHaveBeenCalledWith(
+      expect(aggregateSpyOn).toHaveBeenCalledWith(
         stakingProviders.map((stakingProvider) => ({
           address: staking.stakingContract.address,
           interface: staking.stakingContract.interface,
