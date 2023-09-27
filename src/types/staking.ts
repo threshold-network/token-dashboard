@@ -1,5 +1,6 @@
 import { BigNumberish } from "@ethersproject/bignumber"
 import { StakeType, TopUpType, UnstakeType } from "../enums"
+import { Stake } from "../threshold-ts/staking"
 import { UpdateStateActionPayload } from "./state"
 
 export type StakingStateKey =
@@ -35,22 +36,8 @@ export interface PreConfigData {
   [stakingProvider: string]: PreConfig
 }
 
-export interface StakeData {
-  stakeType: StakeType
-  owner: string
-  stakingProvider: string
-  beneficiary: string
-  authorizer: string
-  blockNumber: number
-  blockHash: string
-  transactionHash: string
-  nuInTStake: string
-  keepInTStake: string
-  tStake: string
-  totalInTStake: string
+export interface StakeData extends Stake<string> {
   preConfig: PreConfig
-  possibleKeepTopUpInT: string
-  possibleNuTopUpInT: string
 }
 
 export interface ProviderStakedEvent {
