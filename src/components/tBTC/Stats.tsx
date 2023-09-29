@@ -15,7 +15,9 @@ export type TvlProps = {
 export const Tvl: FC<TvlProps> = ({ tvl, tvlInUSD }) => {
   return (
     <>
-      <BodyMd mb="1.5">TVL</BodyMd>
+      <BodyMd mb="1.5" textTransform="uppercase">
+        Total supply
+      </BodyMd>
       <H1 textAlign="center">
         <InlineTokenBalance tokenAmount={tvl} /> <H5 as="span">tBTC</H5>
       </H1>
