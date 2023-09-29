@@ -115,8 +115,9 @@ const AuthorizeStakingAppsPage: FC = () => {
   }
 
   const isFullyAuthorized = Object.values(appsAuthData).every(
-    ({ status }) =>
-      status === "authorized" || status === "authorization-not-required"
+    ({ status, percentage }) =>
+      (status === "authorized" && percentage === 100) ||
+      status === "authorization-not-required"
   )
 
   useEffect(() => {
