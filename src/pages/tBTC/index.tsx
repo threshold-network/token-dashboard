@@ -14,7 +14,7 @@ MainTBTCPage.route = {
   index: false,
   pages: [TBTCBridge, HowItWorksPage, ExplorerPage],
   title: "tBTC",
-  isPageEnabled: featureFlags.TBTC_V2,
+  isPageEnabled: featureFlags.TBTC_V2 || featureFlags.BUILD_TBTC_V2_ONLY,
 }
 
 export default MainTBTCPage

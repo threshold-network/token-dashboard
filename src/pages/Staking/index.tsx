@@ -37,6 +37,7 @@ import NewStakeCard from "./NewStakeCard"
 import OperatorAddressMappingCard from "./OperatorAddressMappingCard"
 import { isAddressZero } from "../../web3/utils"
 import { useAppSelector } from "../../hooks/store"
+import { featureFlags } from "../../constants"
 
 const StakingPage: PageComponent = (props) => {
   const [data, fetchtTvlData] = useFetchTvl()
@@ -222,7 +223,7 @@ MainStakingPage.route = {
   index: true,
   pages: [HowItWorksPage, StakingPage, StakingProviderDetails],
   title: "Staking",
-  isPageEnabled: true,
+  isPageEnabled: !featureFlags.BUILD_TBTC_V2_ONLY,
 }
 
 export default MainStakingPage

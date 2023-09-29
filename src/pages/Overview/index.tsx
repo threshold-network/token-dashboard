@@ -32,6 +32,7 @@ const Overview: PageComponent = () => {
 
 Overview.route = {
   path: "overview",
+  title: "Overview",
   index: false,
   pages: [Network],
   isPageEnabled: true,

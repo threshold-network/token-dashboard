@@ -15,7 +15,8 @@ FeedbackPage.route = {
   index: true,
   pages: [UsabilitySurvey, Suggestions, BugReport, Settings],
   title: "Feedback",
-  isPageEnabled: featureFlags.FEEDBACK_MODULE,
+  isPageEnabled:
+    featureFlags.FEEDBACK_MODULE && !featureFlags.BUILD_TBTC_V2_ONLY,
 }
 
 export default FeedbackPage
