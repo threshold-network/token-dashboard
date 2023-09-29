@@ -13,7 +13,7 @@ const TotalValueLocked: FC<{ totalValueLocked: number | string }> = ({
 
   return (
     <StatHighlightCard>
-      <StatHighlightTitle title={"total value locked"} />
+      <StatHighlightTitle title={"Total TVL (BTC + Staking)"} />
       <StatHighlightValue value={tvl} />
     </StatHighlightCard>
   )
