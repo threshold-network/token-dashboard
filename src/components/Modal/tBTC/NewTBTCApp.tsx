@@ -53,7 +53,7 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
             closeModal()
           }}
         >
-          How It Works
+          How it Works
         </Button>
         <Button
           onClick={() => {
