@@ -13,6 +13,7 @@ import Link from "../Link"
 
 interface SubNavigationPillsProps {
   links: RouteProps[]
+  order?: string[]
 }
 
 interface PathMatchResult {
@@ -26,9 +27,24 @@ interface NavPill extends RouteProps {
   isActive?: boolean
 }
 
-const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({
+  links,
+  order = [],
+}) => {
   const { pathname } = useLocation()
-  const linksWithTitle = links.filter((link) => !!link.title)
+  const reorderedLinks =
+    order.length > 0
+      ? [
+          ...order.map(
+            (pathInOrder) =>
+              links.find(
+                ({ path: linkPath }) => pathInOrder === linkPath
+              ) as RouteProps
+          ),
+          ...links.filter(({ path }) => !order.includes(path)),
+        ].filter((item) => !!item)
+      : links
+  const linksWithTitle = reorderedLinks.filter((link) => !!link.title)
   const activePillIndex = getActivePillIndex(linksWithTitle, pathname)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 

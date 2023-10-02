@@ -23,7 +23,9 @@ const PageLayout: FC<PageLayoutProps> = ({
 
   return (
     <>
-      {links.length > 0 && <SubNavigationPills links={links} />}
+      {links.length > 0 && (
+        <SubNavigationPills links={links} order={["how-it-works"]} />
+      )}
       <Container
         maxW={{ base: "2xl", xl: "6xl" }}
         mt="6.25rem"
