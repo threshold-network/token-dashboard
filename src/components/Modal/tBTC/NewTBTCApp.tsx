@@ -1,28 +1,30 @@
-import { FC } from "react"
 import {
+  BodyLg,
+  BodySm,
   Button,
   Divider,
+  Flex,
+  H5,
+  Image,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  BodyLg,
-  H5,
-  BodySm,
-  Flex,
-  Image,
 } from "@threshold-network/components"
+import { FC } from "react"
+import { useNavigate } from "react-router-dom"
+import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
+import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
+import { BaseModalProps } from "../../../types"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
-import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
-import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
-import { BaseModalProps } from "../../../types"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
+  const navigate = useNavigate()
 
   return (
     <>
-      <ModalHeader></ModalHeader>
+      <ModalHeader />
       <ModalBody>
         <Image
           src={tbtcAppBannerIllustration}
@@ -43,7 +45,16 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         </BodySm>
         <Divider mt="2" />
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter gap="4">
+        <Button
+          variant="outline"
+          onClick={() => {
+            navigate("/tBTC/how-it-works")
+            closeModal()
+          }}
+        >
+          How It Works
+        </Button>
         <Button
           onClick={() => {
             accept()
