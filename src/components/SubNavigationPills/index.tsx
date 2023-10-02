@@ -31,6 +31,18 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({
   links,
   order = [],
 }) => {
+  const isOrderPropValid =
+    order.length > 0 &&
+    order.every((pathInOrder) => {
+      const linksPaths = links.map(({ path }) => path)
+      return linksPaths.includes(pathInOrder)
+    })
+  if (!isOrderPropValid) {
+    throw new Error(
+      `${SubNavigationPills.name}: Invalid order keys provided. It should match with route paths.`
+    )
+  }
+
   const { pathname } = useLocation()
   const reorderedLinks =
     order.length > 0
