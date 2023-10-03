@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react"
+import { ChangeEventHandler, FC, useEffect, useRef, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import {
   BodyLg,
@@ -14,6 +14,7 @@ import {
   List,
   ListItem,
   HStack,
+  Checkbox,
 } from "@threshold-network/components"
 import { FormikProps } from "formik"
 import withBaseModal from "../withBaseModal"
@@ -29,6 +30,7 @@ import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
+import Link from "../../Link"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -39,6 +41,18 @@ const ConfirmStakingParamsModal: FC<
   const { account } = useWeb3React()
   const { updateState } = useStakingState()
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
+  const [isAcknowledgementChecked, setIsAcknowledgementChecked] =
+    useState(false)
+
+  const handleAcknowledgementCheckbox: ChangeEventHandler<HTMLInputElement> = (
+    event
+  ) => {
+    const {
+      target: { checked },
+    } = event
+
+    setIsAcknowledgementChecked(checked)
+  }
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
@@ -123,12 +137,26 @@ const ConfirmStakingParamsModal: FC<
 
         <StakingContractLearnMore textAlign="center" mt="8" />
         <Divider mt="4" />
+
+        <Checkbox onChange={handleAcknowledgementCheckbox} mt="6">
+          I acknowledge that staking in Threshold requires running a node.&nbsp;
+          <Link
+            href="https://docs.threshold.network/staking-and-running-a-node/running-a-node"
+            isExternal
+          >
+            Read more
+          </Link>
+        </Checkbox>
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button type="submit" form="advanced-staking-params-form">
+        <Button
+          type="submit"
+          form="advanced-staking-params-form"
+          disabled={!isAcknowledgementChecked}
+        >
           {featureFlags.MULTI_APP_STAKING ? "Continue" : "Stake"}
         </Button>
       </ModalFooter>
