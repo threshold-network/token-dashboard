@@ -1,15 +1,17 @@
 import { FC } from "react"
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Button,
   Divider,
-  Flex,
   ModalBody,
   ModalFooter,
   ModalHeader,
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+import { BodyLg, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
@@ -28,23 +30,27 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
   return (
     <>
       <ModalHeader display="flex" alignItems="baseline">
-        <H5 mr={2}>Stake Tokens</H5>
-        <BodySm>(Step 1)</BodySm>
+        <H5 mr={2}>Staking timeline</H5>
       </ModalHeader>
       <ModalCloseButton />
       <ModalBody>
         <Stack spacing={6}>
           <InfoBox variant="modal">
             <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-              <H5 mb={4}>Staking in Threshold requires running a node</H5>
-              <BodyLg>
-                Please review the staking timeline below for a handy overview of
-                the staking requirements.
-              </BodyLg>
+              <H5 as="h4">
+                Review the timeline carefully for an overview of the
+                requirements.
+              </H5>
             </BodyLg>
           </InfoBox>
           <Divider />
           <StakingTimeline />
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertDescription>
+              Staking in Threshold requires running a node.
+            </AlertDescription>
+          </Alert>
           <StakingContractLearnMore mt="4rem !important" />
           <Divider />
         </Stack>
