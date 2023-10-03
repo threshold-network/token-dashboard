@@ -2,14 +2,16 @@ import {
   stakingApplicationsSlice,
   StakingAppName,
 } from "../../store/staking-applications"
-import { useSubscribeToContractEvent } from "../../web3/hooks"
+import {
+  useSubscribeToContractEvent,
+  useTStakingContract,
+} from "../../web3/hooks"
 import { useAppDispatch } from "../store"
-import { useStakingAppContract } from "./useStakingAppContract"
 
 export const useSubscribeToAuthorizationIncreasedEvent = (
   appName: StakingAppName
 ) => {
-  const contract = useStakingAppContract(appName)
+  const contract = useTStakingContract()
   const dispatch = useAppDispatch()
 
   useSubscribeToContractEvent(
