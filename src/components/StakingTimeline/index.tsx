@@ -192,38 +192,45 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
 }) => {
   if (featureFlags.MULTI_APP_STAKING) {
     return (
-      <Stack spacing={6}>
+      <Stack spacing={6} {...restProps}>
         <BoxLabel status="secondary">Staking Timeline</BoxLabel>
         <FlowStep
           size="sm"
+          fontSize="sm"
           title="Stake Tokens"
           preTitle="Step 1"
           status={statuses[0] ?? FlowStepStatus.active}
+          isDescriptionArrowHidden
         >
           Enter the Provider, Beneficiary, and Authorizer addresses. These will
           be automatically set to your wallet address. If you want to use a
-          Staking Provider, here is{" "}
+          Staking Provider, here is &nbsp;
           <Link to={STAKING_PROVIDER_URL}>a list</Link>.
         </FlowStep>
         <FlowStep
           size="sm"
+          fontSize="sm"
           title="Authorize Apps"
           preTitle="Step 2"
           status={statuses[1] ?? FlowStepStatus.inactive}
+          isDescriptionArrowHidden
         >
           For each stake, there are three applications available. PRE does not
-          require authorization. To authorize tBTC and Random Beacon, go to the{" "}
+          require authorization. To authorize tBTC and Random Beacon, go to the
+          &nbsp;
           <Link to="/staking">Staking page</Link> and select “Configure Stake”.
         </FlowStep>
         <FlowStep
           size="sm"
+          fontSize="sm"
           title="Set up node"
           preTitle="Step 3"
           status={statuses[2] ?? FlowStepStatus.inactive}
+          isDescriptionArrowHidden
         >
           You will need to run a node for applications that you have authorized
-          to earn rewards. If you don’t have one, learn how to do it{" "}
-          <Link to={APPLICATION_DOCS_URL}>here</Link> or contact a{" "}
+          to earn rewards. If you don’t have one, learn how to do it &nbsp;
+          <Link to={APPLICATION_DOCS_URL}>here</Link> or contact a &nbsp;
           <Link to={STAKING_PROVIDER_URL}>Staking Provider</Link>.
         </FlowStep>
       </Stack>

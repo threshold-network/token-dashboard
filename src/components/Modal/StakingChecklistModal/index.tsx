@@ -11,7 +11,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BodyLg, H5 } from "@threshold-network/components"
+import { BodyLg, FlowStepStatus, H5 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
@@ -32,31 +32,27 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
       <ModalHeader display="flex" alignItems="baseline">
         <H5 mr={2}>Staking timeline</H5>
       </ModalHeader>
-      <ModalCloseButton />
-      <ModalBody>
-        <Stack spacing={6}>
-          <InfoBox variant="modal">
-            <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-              <H5 as="h4">
-                Review the timeline carefully for an overview of the
-                requirements.
-              </H5>
-            </BodyLg>
-          </InfoBox>
-          <Divider />
-          <StakingTimeline />
-          <Alert status="warning">
-            <AlertIcon />
-            <AlertDescription>
-              Staking in Threshold requires running a node.
-            </AlertDescription>
-          </Alert>
-          <StakingContractLearnMore mt="4rem !important" />
-          <Divider />
-        </Stack>
+      <ModalCloseButton top="3" />
+      <ModalBody py="0">
+        <InfoBox variant="modal">
+          <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
+            <H5 as="h4">
+              Review the timeline carefully for an overview of the requirements.
+            </H5>
+          </BodyLg>
+        </InfoBox>
+        <StakingTimeline mt="4" statuses={[FlowStepStatus.inactive]} />
+        <Alert status="warning" mt="6">
+          <AlertIcon />
+          <AlertDescription>
+            Staking in Threshold requires running a node.
+          </AlertDescription>
+        </Alert>
+        <StakingContractLearnMore mt="10" mb="4" />
+        <Divider />
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
+      <ModalFooter p="6">
+        <Button onClick={closeModal} variant="outline" mr={3}>
           Cancel
         </Button>
         <Button
