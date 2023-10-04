@@ -23,7 +23,7 @@ export function useContract<T extends Contract = Contract>(
       ABI,
       active
         ? library
-        : new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)),
+        : new JsonRpcProvider(getEnvVariable(EnvVariable.CHAIN_HOSTNAME_HTTP)),
       withSignerIfPossible && account ? account : undefined
     )
   }, [address, ABI, library, chainId, withSignerIfPossible, account]) as T

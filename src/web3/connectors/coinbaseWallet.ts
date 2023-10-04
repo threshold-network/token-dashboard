@@ -10,7 +10,7 @@ interface CoinbaseWalletProvider {
   providers: CoinbaseWalletProvider[]
 }
 
-const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
+const rpcUrl = getEnvVariable(EnvVariable.CHAIN_HOSTNAME_HTTP)
 
 class CoinbaseWalletConnector extends WalletLinkConnector {
   activate = async (): Promise<ConnectorUpdate<string | number>> => {

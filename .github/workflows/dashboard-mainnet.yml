@@ -48,9 +48,11 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.ref_name }}
+          # TODO: Set `CHAIN_ID` env variable using the `vars` context. See
+          # https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values
           CHAIN_ID: 1
-          ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          CHAIN_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
+          CHAIN_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
@@ -64,9 +66,11 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
+          # TODO: Set `CHAIN_ID` env variable using the `vars` context. See
+          # https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values
           CHAIN_ID: 1
-          ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          CHAIN_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
+          CHAIN_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
           NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true
           POSTHOG_API_KEY: ${{ secrets.MAINNET_POSTHOG_API_KEY }}

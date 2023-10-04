@@ -62,7 +62,9 @@ describe("Test the `useContract` hook", () => {
 
       const { result } = renderHook(() => useContract(address, abi))
 
-      expect(getEnvVariable).toHaveBeenCalledWith(EnvVariable.ETH_HOSTNAME_HTTP)
+      expect(getEnvVariable).toHaveBeenCalledWith(
+        EnvVariable.CHAIN_HOSTNAME_HTTP
+      )
       expect(JsonRpcProvider).toHaveBeenCalledWith(mockedEthNodeUrl)
       expect(result.current).toEqual(mockedContract)
     })

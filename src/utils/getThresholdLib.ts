@@ -37,7 +37,7 @@ function getBitcoinConfig(): BitcoinConfig {
 }
 
 export const getDefaultThresholdLibProvider = () => {
-  return new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
+  return new JsonRpcProvider(getEnvVariable(EnvVariable.CHAIN_HOSTNAME_HTTP))
 }
 
 export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
@@ -51,5 +51,5 @@ export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
 }
 
 export const threshold = getThresholdLib(
-  new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
+  new JsonRpcProvider(getEnvVariable(EnvVariable.CHAIN_HOSTNAME_HTTP))
 )

@@ -130,7 +130,7 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 }
 
-const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
+const rpcUrl = getEnvVariable(EnvVariable.CHAIN_HOSTNAME_HTTP)
 const chainId = +supportedChainId
 
 export const ledgerLive = new LedgerLiveConnector({

@@ -50,11 +50,11 @@ on:
         default: false
         type: boolean
     secrets:
-      ethUrlHttp:
-        description: The HTTP ETH API URL.
+      chainUrlHttp:
+        description: The HTTP CHAIN API URL.
         required: true
-      ethUrlWS:
-        description: The WebSocket ETH API URL.
+      chainUrlWS:
+        description: The WebSocket CHAIN API URL.
         required: true
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
@@ -175,8 +175,8 @@ jobs:
         env:
           PUBLIC_URL: /
           CHAIN_ID: ${{ env.NETWORK_ID }}
-          ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
-          ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          CHAIN_HOSTNAME_HTTP: ${{ secrets.chainUrlHttp }}
+          CHAIN_HOSTNAME_WS: ${{ secrets.chainUrlWS }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}
@@ -192,8 +192,8 @@ jobs:
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
           CHAIN_ID: ${{ env.NETWORK_ID }}
-          ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
-          ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          CHAIN_HOSTNAME_HTTP: ${{ secrets.chainUrlHttp }}
+          CHAIN_HOSTNAME_WS: ${{ secrets.chainUrlWS }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
           ELECTRUM_HOST: ${{ secrets.electrumHost }}

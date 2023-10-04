@@ -90,9 +90,11 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
+          # TODO: Set `CHAIN_ID` env variable using the `vars` context. See
+          # https://docs.github.com/en/actions/learn-github-actions/variables#using-the-vars-context-to-access-configuration-variable-values
           CHAIN_ID: 5
-          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          CHAIN_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+          CHAIN_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -125,8 +127,8 @@ jobs:
       gcpBucketPath: ${{ github.head_ref }}
       preview: true
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      chainUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      chainUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -156,8 +158,8 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      chainUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      chainUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -182,8 +184,8 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      chainUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
+      chainUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
