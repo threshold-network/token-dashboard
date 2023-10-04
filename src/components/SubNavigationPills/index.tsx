@@ -1,19 +1,18 @@
-import { FC } from "react"
 import {
-  Box,
   BodyMd,
+  Box,
   Divider,
   HStack,
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
+import { FC } from "react"
 import { matchPath, resolvePath, useLocation } from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"
 
 interface SubNavigationPillsProps {
   links: RouteProps[]
-  order?: string[]
 }
 
 interface PathMatchResult {
@@ -27,36 +26,9 @@ interface NavPill extends RouteProps {
   isActive?: boolean
 }
 
-const SubNavigationPills: FC<SubNavigationPillsProps> = ({
-  links,
-  order = [],
-}) => {
-  const isOrderPropValid =
-    order.length > 0 &&
-    order.every((pathInOrder) => {
-      const linksPaths = links.map(({ path }) => path)
-      return linksPaths.includes(pathInOrder)
-    })
-  if (!isOrderPropValid) {
-    throw new Error(
-      `${SubNavigationPills.name}: Invalid order keys provided. It should match with route paths.`
-    )
-  }
-
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
   const { pathname } = useLocation()
-  const reorderedLinks =
-    order.length > 0
-      ? [
-          ...order.map(
-            (pathInOrder) =>
-              links.find(
-                ({ path: linkPath }) => pathInOrder === linkPath
-              ) as RouteProps
-          ),
-          ...links.filter(({ path }) => !order.includes(path)),
-        ].filter((item) => !!item)
-      : links
-  const linksWithTitle = reorderedLinks.filter((link) => !!link.title)
+  const linksWithTitle = links.filter((link) => !!link.title)
   const activePillIndex = getActivePillIndex(linksWithTitle, pathname)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
 
