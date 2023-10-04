@@ -144,6 +144,22 @@ jobs:
       # in `expected manifest` error - probably caused by bug in Yarn:
       # https://github.com/yarnpkg/yarn/issues/4731.
 
+      # In the `package.json` there are two different versions of
+      # `coverage-pools` used. This is done to allow using contracts from two
+      # different cov pool versions on the mainnet (needed for computations of
+      # the TVL-related fields) - one relates to KEEP token cov pool (<2.0.0)
+      # and one to to T token one (>=2.0.0).
+      # On the testnet environmet we currently don't have the T token cov pool
+      # deployed. The latest `goerli`- tagged version of the cov-pools package
+      # (`1.1.0-goerli.0`) contains KEEP-token related contracts. We want to
+      # stick to this version (we'll need to update it once we switch to
+      # Sepolia). For the `@threshold-network/coverage-pools` ideally we'd want
+      # to use a T token related pool, which if deployed for given environment,
+      # should be present in the latest `goerli`/`sepolia` package. If the
+      # T-related pool is not yet deployed for given environment, KEEP-related
+      # cov-pool contracts will be used in all TVL computations (which differs
+      # from the mainnet behavior, but is acceptable on the test env).
+
       - name: Resolve contracts
         shell: bash
         run: |
@@ -152,7 +168,8 @@ jobs:
             @keep-network/keep-core@1.8.1-goerli.0 \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
-            @keep-network/coverage-pools@${{ inputs.environment }} \
+            @keep-network/coverage-pools@1.1.0-goerli.0 \
+            @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
             @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }} \
