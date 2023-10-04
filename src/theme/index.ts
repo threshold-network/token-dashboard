@@ -14,42 +14,46 @@ import { SecondaryAnnouncementBanner } from "./SecondaryAnnouncementBanner"
 import { Timeline } from "./Timeline"
 import { DotsLoadingIndicator } from "./DotsLoadingIndicator"
 import { Tooltip } from "./Tooltip"
+import { getChainTheme } from "./chain"
 
-const index = extendTheme({
-  ...defaultTheme,
-  colors: {
-    ...defaultTheme.colors,
-    // TODO: move color to components repo.
-    teal: {
-      "500": "#00BACC",
+const index = extendTheme(
+  {
+    ...defaultTheme,
+    colors: {
+      ...defaultTheme.colors,
+      // TODO: move color to components repo.
+      teal: {
+        "500": "#00BACC",
+      },
+    },
+    textStyles: {
+      bodyLg: {
+        fontWeight: "400",
+        fontSize: "18px",
+        lineHeight: "28px",
+      },
+      "chain-identifier": {
+        fontFamily: "IBM Plex Mono, monospace",
+      },
+    },
+    components: {
+      ...defaultTheme.components,
+      AnnouncementBanner,
+      SecondaryAnnouncementBanner,
+      InfoBox,
+      NotificationPill,
+      Tree,
+      Tabs,
+      Badge,
+      DetailedLinkListItem,
+      Radio,
+      Checkbox,
+      Timeline,
+      DotsLoadingIndicator,
+      Tooltip,
     },
   },
-  textStyles: {
-    bodyLg: {
-      fontWeight: "400",
-      fontSize: "18px",
-      lineHeight: "28px",
-    },
-    "chain-identifier": {
-      fontFamily: "IBM Plex Mono, monospace",
-    },
-  },
-  components: {
-    ...defaultTheme.components,
-    AnnouncementBanner,
-    SecondaryAnnouncementBanner,
-    InfoBox,
-    NotificationPill,
-    Tree,
-    Tabs,
-    Badge,
-    DetailedLinkListItem,
-    Radio,
-    Checkbox,
-    Timeline,
-    DotsLoadingIndicator,
-    Tooltip,
-  },
-})
+  getChainTheme()
+)
 
 export default index

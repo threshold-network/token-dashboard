@@ -187,7 +187,7 @@ const Layout = () => {
       <Box
         // 100% - 80px is to account for the sidebar
         w={{ base: "100%", md: "calc(100% - 80px)" }}
-        bg={useColorModeValue("transparent", "gray.900")}
+        bg="mainBackground"
       >
         <Navbar />
         <Box as="main" data-cy="app-container">
