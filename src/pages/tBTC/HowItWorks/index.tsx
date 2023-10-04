@@ -27,7 +27,7 @@ const HowItWorksPage: PageComponent = (props) => {
 HowItWorksPage.route = {
   path: "how-it-works",
   index: false,
-  title: "How it Works",
+  title: "How it works",
   isPageEnabled: true,
 }
 
