@@ -1,5 +1,8 @@
 import { ChangeEventHandler, FC, useState } from "react"
 import {
+  BodyLg,
+  BodySm,
+  H5,
   Button,
   ModalBody,
   ModalFooter,
@@ -9,8 +12,7 @@ import {
   VStack,
   HStack,
   chakra,
-} from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+} from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"

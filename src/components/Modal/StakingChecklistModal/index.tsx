@@ -1,5 +1,8 @@
 import { FC } from "react"
 import {
+  BodyLg,
+  FlowStepStatus,
+  H5,
   Alert,
   AlertDescription,
   AlertIcon,
@@ -8,10 +11,8 @@ import {
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { BodyLg, FlowStepStatus, H5 } from "@threshold-network/components"
+} from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
