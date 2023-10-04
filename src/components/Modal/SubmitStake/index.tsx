@@ -16,7 +16,7 @@ import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
-import { ModalType } from "../../../enums"
+import { ExternalHref, ModalType } from "../../../enums"
 import InfoBox from "../../InfoBox"
 import Link from "../../Link"
 import { StakingContractLearnMore } from "../../Link"
@@ -86,10 +86,7 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
             <chakra.p fontSize="md">
               I acknowledge that staking in Threshold requires running a
               node.&nbsp;
-              <Link
-                href="https://docs.threshold.network/staking-and-running-a-node/running-a-node"
-                isExternal
-              >
+              <Link href={ExternalHref.runningNodeDocs} isExternal>
                 Read more
               </Link>
             </chakra.p>
