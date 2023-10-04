@@ -2,6 +2,8 @@ export enum ChainID {
   Ethereum = 1,
   Goerli = 5,
   Localhost = 1337,
+  Base = 8453,
+  BaseTestnet = 84531,
 }
 
 export enum ConnectionError {

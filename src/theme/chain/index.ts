@@ -1,7 +1,14 @@
+import { ChainID } from "../../enums"
+import { supportedChainId } from "../../utils/getEnvVariable"
 import baseTheme from "./base"
 import ethereumTheme from "./ethereum"
 
 export const getChainTheme = () => {
-  // TODO: return the correct theme based on the env variable.
-  return ethereumTheme
+  switch (+supportedChainId) {
+    case ChainID.Base:
+    case ChainID.BaseTestnet:
+      return baseTheme
+    default:
+      return ethereumTheme
+  }
 }
