@@ -38,6 +38,7 @@ export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
   ...testnetTransaction,
 }
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
+const fee = BigNumber.from(1520)
 
 export class MockBitcoinClient implements Client {
   private _unspentTransactionOutputs = new Map<
@@ -168,10 +169,12 @@ export class MockBitcoinClient implements Client {
       depositUtxo,
       rawTransaction: transaction,
     } = await assembleDepositTransaction(
+      network,
       deposit,
-      [testnetUTXO],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUTXO],
+      fee
     )
 
     // mock second deposit transaction
@@ -192,10 +195,12 @@ export class MockBitcoinClient implements Client {
       depositUtxo: depositUtxo2,
       rawTransaction: transaction2,
     } = await assembleDepositTransaction(
+      network,
       deposit2,
-      [testnetUtxo2],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUtxo2],
+      fee
     )
 
     const utxos = new Map<string, UnspentTransactionOutput[]>()
