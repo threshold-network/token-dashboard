@@ -18,7 +18,7 @@
     "@keep-network/random-beacon": "development",
     "@keep-network/tbtc": "development",
     "@keep-network/tbtc-v2": "development",
-    "@keep-network/tbtc-v2.ts": "development",
+    "@keep-network/tbtc-v2.ts": "1.3.0-dev.9",
     "@ledgerhq/connect-kit-loader": "^1.1.2",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
