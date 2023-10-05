@@ -102,6 +102,7 @@
     "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-class-properties": "^7.22.5",
     "@chakra-ui/cli": "0.0.0-pr-20211126153854",
     "@craco/craco": "6.4.5",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
