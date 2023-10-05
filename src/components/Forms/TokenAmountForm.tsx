@@ -1,16 +1,16 @@
+import { BodySm, Box, ButtonProps, Icon } from "@threshold-network/components"
+import { FormikErrors, FormikProps, withFormik } from "formik"
 import { FC, Ref } from "react"
-import { Icon, Box, ButtonProps, BodySm } from "@threshold-network/components"
-import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
-import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
-import SubmitTxButton from "../SubmitTxButton"
-import { Form } from "./Form"
+import { formatTokenAmount } from "../../utils/formatAmount"
 import {
   DEFAULT_MIN_VALUE,
   getErrorsObj,
   validateAmountInRange,
 } from "../../utils/forms"
-import { formatTokenAmount } from "../../utils/formatAmount"
+import SubmitTxButton from "../SubmitTxButton"
+import { Form } from "./Form"
+import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
 
 export type FormValues = {
   tokenAmount: string
@@ -25,6 +25,7 @@ export type TokenAmountFormBaseProps = {
   isDisabled?: boolean
   shouldValidateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
+  shouldDisableButton?: boolean
   token?: { decimals: number; symbol: string }
   placeholder?: string
   minTokenAmount?: string | number
@@ -43,6 +44,7 @@ export const TokenAmountFormBase: FC<
   isDisabled = false,
   shouldValidateForm = true,
   shouldDisplayMaxAmountInLabel = false,
+  shouldDisableButton = true,
   placeholder,
   submitButtonVariant = "solid",
   ...formikProps
@@ -71,7 +73,7 @@ export const TokenAmountFormBase: FC<
         max={maxTokenAmount}
         helperText={helperText}
         isDisabled={isDisabled}
-        _disabled={{ bg: "gray.50", border: "none" }}
+        _disabled={{ bg: "gray.50", border: "none", cursor: "not-allowed" }}
       />
       <SubmitTxButton
         type="submit"
@@ -79,7 +81,7 @@ export const TokenAmountFormBase: FC<
         mt="6"
         submitText={submitButtonText}
         variant={submitButtonVariant}
-        isDisabled={isDisabled}
+        isDisabled={shouldDisableButton && isDisabled}
       />
     </Form>
   )

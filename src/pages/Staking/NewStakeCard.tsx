@@ -7,11 +7,13 @@ import { useMinStakeAmount } from "../../hooks/useMinStakeAmount"
 import { useModal } from "../../hooks/useModal"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
 import { formatTokenAmount } from "../../utils/formatAmount"
+import { useWeb3React } from "@web3-react/core"
 
 const NewStakeCard: FC<ComponentProps<typeof Card>> = () => {
   const { openModal } = useModal()
   const tBalance = useTokenBalance(Token.T)
   const { minStakeAmount, isLoading, hasError } = useMinStakeAmount()
+  const { active: isWalletConnected } = useWeb3React()
 
   const openStakingModal = async (stakeAmount: string) => {
     openModal(ModalType.StakingChecklist, { stakeAmount })
@@ -39,6 +41,8 @@ const NewStakeCard: FC<ComponentProps<typeof Card>> = () => {
         maxTokenAmount={tBalance}
         placeholder={placeholder}
         minTokenAmount={minStakeAmount}
+        shouldDisableButton={false}
+        isDisabled={!isWalletConnected}
       />
       <StakingContractLearnMore mt="3" />
     </Card>

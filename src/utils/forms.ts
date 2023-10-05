@@ -15,28 +15,26 @@ type ValidationOptions = {
   greaterThanValidationMsg: ValidationMsg
   lessThanValidationMsg: ValidationMsg
   requiredMsg: string
+  insufficientBalanceMsg: string
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultLessThanMsg: (minAmount: string) => string = (
-  minAmount
+export const defaultLessThanMsg: (maxAmount: string) => string = (
+  maxAmount
 ) => {
-  return `The value should be less than or equal ${formatTokenAmount(
-    minAmount
-  )}`
+  return `The maximum stake amount is ${formatTokenAmount(maxAmount)}.`
 }
 
 export const defaultGreaterThanMsg: (minAmount: string) => string = (
-  maxAmount
+  minAmount
 ) => {
-  return `The value should be greater than or equal ${formatTokenAmount(
-    maxAmount
-  )}`
+  return `The minimum stake amount is ${formatTokenAmount(minAmount)}.`
 }
 export const defaultValidationOptions: ValidationOptions = {
   greaterThanValidationMsg: defaultGreaterThanMsg,
   lessThanValidationMsg: defaultLessThanMsg,
-  requiredMsg: "Required",
+  requiredMsg: "The stake amount is required.",
+  insufficientBalanceMsg: "Your wallet balance is insufficient.",
 }
 
 export const validateAmountInRange = (
@@ -45,7 +43,8 @@ export const validateAmountInRange = (
   minValue = DEFAULT_MIN_VALUE,
   options: ValidationOptions = defaultValidationOptions
 ) => {
-  if (!value) {
+  const isValueMissing = !value
+  if (isValueMissing) {
     return options.requiredMsg
   }
 
@@ -53,11 +52,19 @@ export const validateAmountInRange = (
   const maxValueInBN = BigNumber.from(maxValue)
   const minValueInBN = BigNumber.from(minValue)
 
-  if (valueInBN.gt(maxValueInBN)) {
+  const isBalanceInsufficient = maxValueInBN.isZero()
+  const isMaximumValueExceeded = valueInBN.gt(maxValueInBN)
+  const isMinimumValueFulfilled = valueInBN.gte(minValueInBN)
+
+  if (isMinimumValueFulfilled && isBalanceInsufficient) {
+    return options.insufficientBalanceMsg
+  }
+  if (!isBalanceInsufficient && isMaximumValueExceeded) {
     return typeof options.lessThanValidationMsg === "function"
       ? options.lessThanValidationMsg(maxValue)
       : options.lessThanValidationMsg
-  } else if (valueInBN.lt(minValueInBN)) {
+  }
+  if (!isMinimumValueFulfilled) {
     return typeof options.greaterThanValidationMsg === "function"
       ? options.greaterThanValidationMsg(minValue)
       : options.greaterThanValidationMsg
