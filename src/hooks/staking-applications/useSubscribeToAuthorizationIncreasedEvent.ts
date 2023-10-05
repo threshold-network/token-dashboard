@@ -2,15 +2,25 @@ import {
   stakingApplicationsSlice,
   StakingAppName,
 } from "../../store/staking-applications"
+import { threshold } from "../../utils/getThresholdLib"
 import {
   useSubscribeToContractEvent,
   useTStakingContract,
 } from "../../web3/hooks"
 import { useAppDispatch } from "../store"
 
-export const useSubscribeToAuthorizationIncreasedEvent = (
-  appName: StakingAppName
-) => {
+const getApplicationName = (address: string) => {
+  const { multiAppStaking } = threshold
+  const namesDictionary = Object.fromEntries(
+    Object.entries(multiAppStaking).map(([name, { address }]) => [
+      address,
+      name === "ecdsa" ? "tbtc" : name,
+    ])
+  )
+  return namesDictionary[address]
+}
+
+export const useSubscribeToAuthorizationIncreasedEvent = () => {
   const contract = useTStakingContract()
   const dispatch = useAppDispatch()
 
@@ -18,7 +28,9 @@ export const useSubscribeToAuthorizationIncreasedEvent = (
     contract,
     "AuthorizationIncreased",
     // @ts-ignore
-    async (stakingProvider, operator, fromAmount, toAmount) => {
+    async (stakingProvider, applicationAddress, fromAmount, toAmount) => {
+      const appName = getApplicationName(applicationAddress)
+
       dispatch(
         stakingApplicationsSlice.actions.authorizationIncreased({
           stakingProvider,
