@@ -28,8 +28,8 @@ export const useSubscribeToAuthorizationIncreasedEvent = () => {
     contract,
     "AuthorizationIncreased",
     // @ts-ignore
-    async (stakingProvider, applicationAddress, fromAmount, toAmount) => {
-      const appName = getApplicationName(applicationAddress)
+    async (stakingProvider, application, fromAmount, toAmount) => {
+      const appName = getApplicationName(application)
 
       dispatch(
         stakingApplicationsSlice.actions.authorizationIncreased({
