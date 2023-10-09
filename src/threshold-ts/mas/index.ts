@@ -1,6 +1,9 @@
 import RandomBeacon from "@keep-network/random-beacon/artifacts/RandomBeacon.json"
+import WalletRegistry from "@keep-network/ecdsa/artifacts/WalletRegistry.json"
 
-import TacoRegistry from "../../web3/abi/TacoApplication.json" // TODO: use the npm package
+const chainName = process.env.REACT_APP_TACO_NETWORK || "" // Ensure it's a string
+const TacoRegistryFile: any = require(`@nucypher/nucypher-contracts/deployment/artifacts/${chainName}.json`)
+
 import {
   Application,
   AuthorizationParameters,
@@ -10,6 +13,21 @@ import { IMulticall, ContractCall } from "../multicall"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { getArtifact } from "../utils"
+
+interface TacoChains {
+  [key: string]: string
+}
+
+const tacoChains: TacoChains = {
+  lynx: "5",
+  mainnet: "1",
+  tapir: "11155111",
+}
+
+const key = tacoChains[chainName] || ""
+const TacoRegistry = TacoRegistryFile[key]["TACoApplication"]
+
+console.log(TacoRegistry)
 
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
