@@ -129,7 +129,7 @@ The following procedure allows to deploy T token dashboard to production:
 
 ## Local Development
 
-Update `package.json` to contain:
+Replace the following dependencies on `package.json`:
 
 ```json
     "@keep-network/coverage-pools": "goerli",
