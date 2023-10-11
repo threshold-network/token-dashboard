@@ -22,6 +22,7 @@ const tacoChains: TacoChains = {
   lynx: "5",
   mainnet: "1",
   tapir: "11155111",
+  dashboard: "5",
 }
 
 const key = tacoChains[chainName] || ""
