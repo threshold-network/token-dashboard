@@ -3729,6 +3729,11 @@
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
+"@nucypher/nucypher-contracts@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@nucypher/nucypher-contracts/-/nucypher-contracts-0.6.0.tgz#20146aefc30afe729eaee8504bdf181da12f83f0"
+  integrity sha512-fPnyULgCivPH/3YhvNMPtMsV25Nr7MqTkzwB2NCNNt8JgEv0gfn4i3rGtGj7R/0AJtk1h2YKvOz2qmRqHOxfmg==
+
 "@openzeppelin/contracts-ethereum-package@^2.4.0":
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/@openzeppelin/contracts-ethereum-package/-/contracts-ethereum-package-2.5.0.tgz#cfb4b91f8132edde7e04bcd032575d4c6b544f4a"
