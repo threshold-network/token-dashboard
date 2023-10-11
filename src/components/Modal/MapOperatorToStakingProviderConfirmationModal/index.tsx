@@ -140,7 +140,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
             {isOperatorMappedOnlyInRandomBeacon ||
             isOperatorMappedOnlyInTbtc ||
             isOperatorMappedOnlyInTaco
-              ? "2 transaction"
+              ? "2 transactions"
               : "3 transactions"}
             . Each mapping is one transaction
           </BodyLg>
