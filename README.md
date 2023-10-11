@@ -157,5 +157,5 @@ REACT_APP_WALLET_CONNECT_PROJECT_ID=$WALLET_CONNECT_PROJECT_ID
 Then build the docker container and run the dashboard:
 
 ```bash
-docker-compose run --build
+docker-compose up --build
 ```
