@@ -47,4 +47,10 @@ describe("Staking app label utils tests", () => {
     expect(resultTbtcName).toBe(tbtcName)
     expect(resultRandomBeaconName).toBe(randomBeaconName)
   })
+
+  it("returns fallback value if address is unexpected", () => {
+    const resultName = getStakingAppLabelFromAppAddress("0xun3xp3c73d400r3s5")
+
+    expect(resultName).toBe("App")
+  })
 })
