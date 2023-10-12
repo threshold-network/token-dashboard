@@ -9,48 +9,49 @@ import { getThresholdLib } from "../getThresholdLib"
 const mockAddresses: Record<StakingAppName, string> = {
   tbtc: getThresholdLib().multiAppStaking.ecdsa.address,
   randomBeacon: getThresholdLib().multiAppStaking.randomBeacon.address,
+  taco: getThresholdLib().multiAppStaking.taco.address,
 }
 const mockLabels: Record<StakingAppName, string> = {
   tbtc: "tBTC",
   randomBeacon: "Random Beacon",
+  taco: "TACo",
 }
-const mockAppNames: StakingAppName[] = ["tbtc", "randomBeacon"]
+const mockAppNames: StakingAppName[] = ["tbtc", "randomBeacon", "taco"]
 
 describe("Staking app label utils tests", () => {
-  const [tbtcName, randomBeaconName] = mockAppNames
+  const [tbtcName, randomBeaconName, tacoName] = mockAppNames
   const tbtcAddress = mockAddresses[tbtcName]
   const randomBeaconAddress = mockAddresses[randomBeaconName]
+  const tacoAddress = mockAddresses[tacoName]
 
   it("returns correct app label if app address is given", () => {
     const resultTbtcLabel = getStakingAppLabelFromAppAddress(tbtcAddress)
     const resultRandomBeaconLabel =
       getStakingAppLabelFromAppAddress(randomBeaconAddress)
+    const resultTacoLabel = getStakingAppLabelFromAppAddress(tacoAddress)
 
     expect(resultTbtcLabel).toBe(mockLabels[tbtcName])
     expect(resultRandomBeaconLabel).toBe(mockLabels[randomBeaconName])
+    expect(resultTacoLabel).toBe(mockLabels[tacoName]
   })
 
   it("returns correct app label if app name is given", () => {
     const resultTbtcLabel = getStakingAppLabelFromAppName(tbtcName)
-    const resultRandomBeaconLabel =
-      getStakingAppLabelFromAppName(randomBeaconName)
+    const resultRbLabel = getStakingAppLabelFromAppName(randomBeaconName)
+    const resultTacoLabel = getStakingAppLabelFromAppName(randomBeaconName)
 
     expect(resultTbtcLabel).toBe(mockLabels[tbtcName])
-    expect(resultRandomBeaconLabel).toBe(mockLabels[randomBeaconName])
+    expect(resultRbLabel).toBe(mockLabels[randomBeaconName])
+    expect(resultTacoLabel).toBe(mockLabels[tacoName])
   })
 
   it("returns correct app name if address is given", () => {
     const resultTbtcName = getStakingAppNameFromAppAddress(tbtcAddress)
-    const resultRandomBeaconName =
-      getStakingAppNameFromAppAddress(randomBeaconAddress)
+    const resultRbName = getStakingAppNameFromAppAddress(randomBeaconAddress)
+    const resultTacoName = getStakingAppNameFromAppAddress(tacoAddress)
 
     expect(resultTbtcName).toBe(tbtcName)
-    expect(resultRandomBeaconName).toBe(randomBeaconName)
-  })
-
-  it("returns fallback value if address is unexpected", () => {
-    const resultName = getStakingAppLabelFromAppAddress("0xun3xp3c73d400r3s5")
-
-    expect(resultName).toBe("App")
+    expect(resultRbName).toBe(randomBeaconName)
+    expect(resultTacoName).toBe(tacoName)
   })
 })
