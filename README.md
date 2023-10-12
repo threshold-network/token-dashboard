@@ -151,7 +151,7 @@ REACT_APP_MOCK_BITCOIN_CLIENT=false
 
 REACT_APP_WALLET_CONNECT_PROJECT_ID=$WALLET_CONNECT_PROJECT_ID
 
-REACT_APP_TACO_NETWORK=dashboard
+REACT_APP_TACO_DOMAIN=dashboard
 ```
 
 Then build the docker container and run the dashboard:
