@@ -18,7 +18,7 @@ export const getStakingAppNameFromAppAddress = (stakingAppAddress: string) => {
 export const getStakingAppLabelFromAppName = (
   stakingAppName: StakingAppName
 ) => {
-  return stakingAppNameToAppLabel[stakingAppName] || "App"
+  return stakingAppNameToAppLabel[stakingAppName]
 }
 
 export const getStakingAppLabelFromAppAddress = (address: string) => {
