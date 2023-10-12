@@ -44,8 +44,8 @@ const tbtcNodeSteps = [
   "Have a staked balance",
 ]
 const tacoNodeSteps = [
-  "Run a TACO node",
-  "Authorize a portion of your stake to TACO",
+  "Run a TACo node",
+  "Authorize a portion of your stake to TACo",
   "Have a staked balance",
 ]
 
@@ -151,14 +151,14 @@ const StakingApplications: PageComponent = () => {
           rewardSteps={tbtcNodeSteps}
         />
         <ApplicationDetailsCard
-          preTitle="TACO APP"
+          preTitle="TACo APP"
           title="TACo is an access control layer that enables decentralized e2e encrypted data sharing in Web3 applications."
           description="TACo is a plug-in access control layer and cryptographic primitive, operationally distributed across a cohort of Threshold nodes. Private data are encrypted by a data owner along with embedded access conditions. The data remain encrypted until it reaches the device of a qualifying recipient."
           imgSrc={iconMap.taco[colorMode]}
           ctaButtons={
             <VStack mb={6}>
               <ButtonLink to="/staking" isFullWidth>
-                Authorize TACO
+                Authorize TACo
               </ButtonLink>
               <ButtonLink
                 isExternal
@@ -166,7 +166,7 @@ const StakingApplications: PageComponent = () => {
                 isFullWidth
                 variant="outline"
               >
-                TACO Node Docs
+                TACo Node Docs
               </ButtonLink>
             </VStack>
           }
