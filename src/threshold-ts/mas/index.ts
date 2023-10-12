@@ -1,7 +1,7 @@
 import RandomBeacon from "@keep-network/random-beacon/artifacts/RandomBeacon.json"
 import WalletRegistry from "@keep-network/ecdsa/artifacts/WalletRegistry.json"
 
-const chainName = process.env.REACT_APP_TACO_NETWORK || "" // Ensure it's a string
+const chainName = process.env.REACT_APP_TACO_DOMAIN || "" // Ensure it's a string
 const TacoRegistryFile: any = require(`@nucypher/nucypher-contracts/deployment/artifacts/${chainName}.json`)
 
 import {
