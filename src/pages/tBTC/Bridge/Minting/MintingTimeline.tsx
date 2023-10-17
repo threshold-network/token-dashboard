@@ -96,7 +96,7 @@ export const MintingTimelineStep1: FC<MintingTimelineItemProps> = ({
       description={
         <>
           Provide an ETH address and a BTC Return address to generate an unique
-          BTC deposit address. &nbsp;
+          BTC deposit address. <br />
           <Link isExternal href={ExternalHref.btcRecoveryAddress}>
             Read more
           </Link>

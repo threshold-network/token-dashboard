@@ -16,6 +16,7 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { useToast } from "../../../hooks/useToast"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -69,20 +70,26 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { active } = useWeb3React()
+  const { ToastContainer } = useToast("tbtc-bridge-minting", {
+    isDismissable: true,
+  })
 
   return (
-    <BridgeLayout>
-      <BridgeLayoutMainSection>
-        {active ? (
-          <Outlet />
-        ) : (
-          <BridgeProcessEmptyState title="Ready to mint tBTC?" />
-        )}
-      </BridgeLayoutMainSection>
-      <BridgeLayoutAsideSection>
-        <MintingTimeline />
-      </BridgeLayoutAsideSection>
-    </BridgeLayout>
+    <>
+      <ToastContainer />
+      <BridgeLayout>
+        <BridgeLayoutMainSection>
+          {active ? (
+            <Outlet />
+          ) : (
+            <BridgeProcessEmptyState title="Ready to mint tBTC?" />
+          )}
+        </BridgeLayoutMainSection>
+        <BridgeLayoutAsideSection>
+          <MintingTimeline />
+        </BridgeLayoutAsideSection>
+      </BridgeLayout>
+    </>
   )
 }
 

@@ -1,30 +1,31 @@
-import { FC, Ref, useCallback, useRef, useState } from "react"
-import { FormikErrors, FormikProps, withFormik } from "formik"
 import {
-  Button,
   BodyMd,
-  useColorModeValue,
+  Button,
   Checkbox,
+  useColorModeValue,
 } from "@threshold-network/components"
-import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
-import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
+import { useWeb3React } from "@web3-react/core"
+import { FormikErrors, FormikProps, withFormik } from "formik"
+import { FC, Ref, useCallback, useRef, useState } from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
+import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
+import { useTbtcState } from "../../../../hooks/useTbtcState"
+import { useToast } from "../../../../hooks/useToast"
+import { BitcoinNetwork } from "../../../../threshold-ts/types"
+import { MintingStep } from "../../../../types/tbtc"
 import {
   getErrorsObj,
   validateBTCAddress,
   validateETHAddress,
 } from "../../../../utils/forms"
-import { MintingStep } from "../../../../types/tbtc"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { useWeb3React } from "@web3-react/core"
-import { BitcoinNetwork } from "../../../../threshold-ts/types"
-import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
-import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
+import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 
 export interface FormValues {
   ethAddress: string
@@ -118,6 +119,7 @@ export const ProvideDataComponent: FC<{
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
     useState(true)
+  const { toast } = useToast("tbtc-bridge-minting")
 
   const handleDepositReceiptAgreementChange: React.ChangeEventHandler<
     HTMLInputElement
@@ -183,6 +185,10 @@ export const ProvideDataComponent: FC<{
         downloadFile(JSON.stringify(finalData), fileName, "text/json")
       }
       updateState("mintingStep", MintingStep.Deposit)
+      toast({
+        title: "The system is continously checking for new BTC deposits",
+        status: "info",
+      })
     },
     [shouldDownloadDepositReceipt]
   )
