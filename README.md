@@ -139,8 +139,6 @@ Replace the following dependencies on `package.json`:
     "@keep-network/random-beacon": "goerli",
     "@keep-network/tbtc": "goerli",
     "@keep-network/tbtc-v2": "goerli",
-    "@keep-network/tbtc-v2.ts": "development",
-    "@threshold-network/components": "development",
     "@threshold-network/solidity-contracts": "goerli",
 ```
 
