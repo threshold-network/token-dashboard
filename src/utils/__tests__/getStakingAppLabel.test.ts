@@ -32,7 +32,7 @@ describe("Staking app label utils tests", () => {
 
     expect(resultTbtcLabel).toBe(mockLabels[tbtcName])
     expect(resultRandomBeaconLabel).toBe(mockLabels[randomBeaconName])
-    expect(resultTacoLabel).toBe(mockLabels[tacoName]
+    expect(resultTacoLabel).toBe(mockLabels[tacoName])
   })
 
   it("returns correct app label if app name is given", () => {
