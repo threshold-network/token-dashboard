@@ -24,6 +24,7 @@ import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
+import { DurationTiers } from "../../../../components/DurationTiers"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -140,6 +141,26 @@ const MakeDepositComponent: FC<{
         provided.
       </BodyMd>
       <BTCAddressSection btcDepositAddress={btcDepositAddress} />
+      <DurationTiers
+        mt="6"
+        items={[
+          {
+            amount: 0.1,
+            rangeOperator: "less",
+            currency: "BTC",
+          },
+          {
+            amount: 1,
+            rangeOperator: "less",
+            currency: "BTC",
+          },
+          {
+            amount: 1,
+            rangeOperator: "greaterOrEqual",
+            currency: "BTC",
+          },
+        ]}
+      />
       <Stack spacing={4} mt="5" mb={8}>
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />

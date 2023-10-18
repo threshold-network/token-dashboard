@@ -5,6 +5,7 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
+import { BigNumberish, BigNumber } from "ethers"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
@@ -169,4 +170,36 @@ export const buildRedemptionDetailsLink = (
     .withWalletPublicKey(walletPublicKey)
     .withBitcoinAddress(btcAddress)
     .build()
+}
+
+export const getNumberOfConfirmationsByAmount = (
+  amount: BigNumberish
+): number => {
+  const safeAmount = Number.isSafeInteger(amount)
+    ? amount
+    : Math.floor((amount as number) * 1e8)
+  // Only safe integers (not floating-point numbers) can be transformed to BigNumber.
+  // Converting the given amount to a safe integer if it is not already a safe integer.
+  // If the amount is already a safe integer, it is returned as is.
+  const amountInBN = BigNumber.from(safeAmount)
+
+  if (amountInBN.lt(10000000) /* 0.1 BTC */) {
+    return 1
+  }
+  if (amountInBN.lt(100000000) /* 1 BTC */) {
+    return 3
+  }
+  return 6
+}
+
+export const getDurationByAmount = (amount: BigNumberish) => {
+  const confirmations = getNumberOfConfirmationsByAmount(amount)
+
+  if (confirmations < 3) {
+    return 1
+  }
+  if (confirmations >= 3) {
+    return 2
+  }
+  return "+ 2"
 }
