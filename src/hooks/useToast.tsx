@@ -67,9 +67,10 @@ const Component = (props: AlertProps) => {
       width={{ base: "100%", md: "75%" }}
       left="50%"
       boxShadow="lg"
+      alignItems="baseline"
       {...restProps}
     >
-      <AlertIcon />
+      <AlertIcon minH="8" />
       <Stack spacing={2} flex="1">
         {title && description && <AlertTitle>{title}</AlertTitle>}
         {(description || title) && (

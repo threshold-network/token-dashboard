@@ -155,7 +155,7 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
 
   return (
     <Box {...restProps}>
-      <LabelSm mb={8}>Minting Timeline</LabelSm>
+      <LabelSm mb={8}>Timeline</LabelSm>
       <Steps>
         <MintingTimelineStep1
           isActive={_mintingStep === MintingStep.ProvideData}

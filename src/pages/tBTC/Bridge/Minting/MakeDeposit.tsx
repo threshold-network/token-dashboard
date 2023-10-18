@@ -10,6 +10,7 @@ import {
   Divider,
   useColorModeValue,
   Card,
+  Badge,
 } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
@@ -128,10 +129,19 @@ const MakeDepositComponent: FC<{
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
-      <BridgeProcessCardSubTitle
-        stepText="Step 2"
-        subTitle="Make your BTC deposit"
-      />
+      <HStack
+        justifyContent="space-between"
+        alignItems="baseline"
+        mb="4"
+        spacing="0"
+      >
+        <BridgeProcessCardSubTitle
+          stepText="Step 2"
+          subTitle="Make your BTC deposit"
+          mb="0"
+        />
+        <Badge colorScheme="purple">Action on Bitcoin</Badge>
+      </HStack>
       <BodyMd color="gray.500" mb={6}>
         Use this generated address to send minimum 0.01&nbsp;BTC, to mint as
         tBTC.
@@ -161,7 +171,7 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
-      <Stack spacing={4} mt="5" mb={8}>
+      <Stack spacing={4} mt="5" mb="16">
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow
@@ -170,32 +180,6 @@ const MakeDepositComponent: FC<{
           chain="bitcoin"
         />
       </Stack>
-      <Divider mt={4} mb={6} />
-      <ChecklistGroup
-        mb={6}
-        checklistItems={[
-          {
-            itemId: "staking_deposit__0",
-            itemTitle: "",
-            itemSubTitle: (
-              <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
-                Send the funds and come back to this dApp. You do not need to
-                wait for the BTC transaction to be mined.
-              </BodyMd>
-            ),
-          },
-        ]}
-      />
-      {/* TODO: No need to use button here. We can replace it with just some text */}
-      <Button
-        isLoading={true}
-        loadingText={"Waiting for funds to be sent..."}
-        form="tbtc-minting-data-form"
-        isDisabled={true}
-        isFullWidth
-      >
-        I sent the BTC
-      </Button>
     </>
   )
 }
