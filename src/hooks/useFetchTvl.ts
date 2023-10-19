@@ -23,7 +23,6 @@ interface TvlRawData {
   keepStakingTvl: string
   tStakingTvl: string
   tBTC: string
-  // TODO: add PRE and NU TVL
 }
 
 interface TvlData {
