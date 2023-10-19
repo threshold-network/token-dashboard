@@ -95,11 +95,6 @@ export const useCheckBonusEligibility = () => {
       for (const stakingProvider of stakingProviders) {
         const stakingProviderAddress = getAddress(stakingProvider)
 
-        const hasPREConfigured =
-          stakingProviderToPREConfig[stakingProviderAddress]
-            ?.operatorConfirmedAtBlock <=
-          stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER
-
         const hasActiveStake =
           stakingProviderToStakedAmount[stakingProviderAddress]
             ?.stakedAtBlock <= stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER
@@ -124,14 +119,13 @@ export const useCheckBonusEligibility = () => {
             : "0"
 
         stakingProvidersInfo[stakingProviderAddress] = {
-          hasPREConfigured,
           hasActiveStake,
           hasUnstakeAfterBonusDeadline,
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
           isRewardClaimed: claimedRewards.has(stakingProviderAddress),
           isEligible: Boolean(
-            hasActiveStake && !hasUnstakeAfterBonusDeadline && hasPREConfigured
+            hasActiveStake && !hasUnstakeAfterBonusDeadline
           ),
         }
       }
