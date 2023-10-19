@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
 import { useWeb3React } from "@web3-react/core"
-import { PageComponent } from "../../../types"
+import { MintingStep, PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
@@ -17,6 +17,8 @@ import {
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useToast } from "../../../hooks/useToast"
+import { DurationWidget } from "../../../components/DurationWidget"
+import { VStack } from "@chakra-ui/react"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -73,6 +75,11 @@ const MintPageLayout: PageComponent = () => {
   const { ToastContainer } = useToast("tbtc-bridge-minting", {
     isDismissable: true,
   })
+  const { mintingStep } = useTbtcState()
+  const shouldRenderDurationWidget = ![
+    MintingStep.ProvideData,
+    MintingStep.Deposit,
+  ].includes(mintingStep)
 
   return (
     <>
@@ -86,6 +93,9 @@ const MintPageLayout: PageComponent = () => {
           )}
         </BridgeLayoutMainSection>
         <BridgeLayoutAsideSection>
+          {shouldRenderDurationWidget && (
+            <DurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
+          )}
           <MintingTimeline />
         </BridgeLayoutAsideSection>
       </BridgeLayout>

@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef } from "react"
 import { RangeOperatorType } from "../../types"
 
 type BaseProps = ComponentPropsWithoutRef<"li"> & StackProps
-type CurrencyType = "BTC" | "ETH" | "tBTC" | "SOL"
+export type CurrencyType = "BTC" | "ETH" | "tBTC" | "SOL"
 type DurationTiersItemProps = {
   amount: number
   currency: CurrencyType

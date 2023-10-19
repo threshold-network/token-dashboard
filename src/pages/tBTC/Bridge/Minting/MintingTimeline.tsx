@@ -1,21 +1,16 @@
-import { ComponentPropsWithoutRef, FC, ReactNode } from "react"
+import { FC, ReactNode } from "react"
 import {
   LabelSm,
   BodySm,
   Box,
-  Badge,
-  Icon,
   BoxProps,
+  UnorderedList,
 } from "@threshold-network/components"
-import {
-  IoCheckmarkSharp as CompleteIcon,
-  IoTime as TimeIcon,
-} from "react-icons/all"
+import { IoCheckmarkSharp as CompleteIcon } from "react-icons/all"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import Link from "../../../../components/Link"
 import { ExternalHref } from "../../../../enums"
-import { Steps } from "../../../../components/Step"
 
 type MintingTimelineItemBaseProps = {
   isActive: boolean
@@ -155,8 +150,8 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
 
   return (
     <Box {...restProps}>
-      <LabelSm mb={8}>Timeline</LabelSm>
-      <Steps>
+      <LabelSm mb="4">Timeline</LabelSm>
+      <UnorderedList ml="-2.5" listStyleType="none">
         <MintingTimelineStep1
           isActive={_mintingStep === MintingStep.ProvideData}
           isComplete={
@@ -180,7 +175,7 @@ export const MintingTimeline: FC<MintingTimelineProps> = ({
           // we never render the complete state for this step
           isComplete={false}
         />
-      </Steps>
+      </UnorderedList>
     </Box>
   )
 }
