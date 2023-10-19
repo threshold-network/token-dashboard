@@ -2,7 +2,6 @@ import {
   LabelSm,
   Box,
   HStack,
-  Badge,
   BodyLg,
   BodyXs,
   Flex,

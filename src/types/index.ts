@@ -22,3 +22,5 @@ export type RangeOperatorType =
   | "less"
   | "greaterOrEqual"
   | "lessOrEqual"
+
+export type CurrencyType = "BTC" | "ETH" | "tBTC" | "SOL"
