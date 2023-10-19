@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { ToastProps } from "../../hooks/useToast"
+import { ToastProps, ToastInternalProps } from "../../components/Toast/Toast"
 
-type ToastType = { id: number } & ToastProps
+type ToastData = Omit<ToastInternalProps, "onUnmount"> & ToastProps
 
 export interface ToastsState {
-  [x: string]: ToastType[]
+  [x: string]: ToastData[]
 }
 
 export const toastsSlice = createSlice({
@@ -24,7 +24,7 @@ export const toastsSlice = createSlice({
     },
     addToast: (
       state: ToastsState,
-      action: PayloadAction<{ instanceId: string; toastData: ToastType }>
+      action: PayloadAction<{ instanceId: string; toastData: ToastData }>
     ) => {
       const { instanceId, toastData } = action.payload
       state[instanceId] = [...state[instanceId], toastData]
