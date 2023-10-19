@@ -4,10 +4,10 @@ import {
   AlertIcon,
   AlertTitle,
   Stack,
+  VStack,
   AlertProps as AlertPropsBase,
   AlertStatus,
   CloseButton,
-  Box,
 } from "@threshold-network/components"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useCallback } from "react"
@@ -55,17 +55,14 @@ const Component = (props: AlertProps) => {
   return (
     <Alert
       as={motion.div}
-      initial={{ opacity: 0, x: "-50%", y: "-100%" }}
-      animate={{ opacity: 1, x: "-50%", y: 0 }}
+      initial={{ opacity: 0, y: "-100%" }}
+      animate={{ opacity: 1, y: 0 }}
       //@ts-ignore - Known issue: https://github.com/chakra-ui/chakra-ui/issues/1814
       transition={{
         type: "spring",
         damping: 20,
         stiffness: 100,
       }}
-      position="absolute"
-      width={{ base: "100%", md: "75%" }}
-      left="50%"
       boxShadow="lg"
       alignItems="baseline"
       {...restProps}
@@ -92,39 +89,50 @@ function useToast(instanceId: string, defaultToastProps?: DefaultToastProps) {
 
   const addToast = useCallback(
     (props: ToastProps) => {
+      const id = Date.now()
+
       dispatch(
         addToastAction({
           instanceId,
-          toastData: { ...defaultToastProps, ...props },
+          toastData: { id, ...defaultToastProps, ...props },
         })
       )
+      return { id, removeToast: () => removeToast(id) }
     },
     [dispatch, defaultToastProps]
   )
 
   const removeToast = useCallback(
-    (index: number) => {
-      dispatch(removeToastAction({ instanceId, index }))
+    (id?: number) => {
+      dispatch(removeToastAction({ instanceId, id }))
     },
     [dispatch, instanceId]
   )
 
   const ToastContainer = (props = {}) => (
-    <Box {...props} id={`toasts-root-${instanceId}`} position="relative">
+    <VStack
+      {...props}
+      id={`toasts-root-${instanceId}`}
+      position="absolute"
+      left="50%"
+      width="75%"
+      transform="translateX(-50%)"
+      zIndex="toast"
+    >
       <AnimatePresence>
-        {(toasts[instanceId] ?? []).map((toastProps, index) => (
+        {(toasts[instanceId] ?? []).map(({ id, ...toastProps }) => (
           <Component
-            key={`${toastProps.title}-${index}`}
+            key={id}
             {...defaultToastProps}
             {...toastProps}
-            onUnmount={() => removeToast(index)}
+            onUnmount={() => removeToast(id)}
           />
         ))}
       </AnimatePresence>
-    </Box>
+    </VStack>
   )
 
-  return { toast: addToast, ToastContainer }
+  return { addToast, ToastContainer, removeToast }
 }
 
 export { useToast }

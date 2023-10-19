@@ -119,7 +119,7 @@ export const ProvideDataComponent: FC<{
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
     useState(true)
-  const { toast } = useToast("tbtc-bridge-minting")
+  const { addToast } = useToast("tbtc-bridge-minting")
 
   const handleDepositReceiptAgreementChange: React.ChangeEventHandler<
     HTMLInputElement
@@ -185,7 +185,7 @@ export const ProvideDataComponent: FC<{
         downloadFile(JSON.stringify(finalData), fileName, "text/json")
       }
       updateState("mintingStep", MintingStep.Deposit)
-      toast({
+      addToast({
         title: "The system is continously checking for new BTC deposits",
         status: "info",
       })

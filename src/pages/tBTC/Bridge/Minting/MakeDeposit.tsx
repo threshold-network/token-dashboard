@@ -1,4 +1,4 @@
-import { FC, ComponentProps } from "react"
+import { FC, ComponentProps, useEffect } from "react"
 import {
   BodyMd,
   Box,

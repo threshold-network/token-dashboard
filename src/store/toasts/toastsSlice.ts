@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { ToastProps } from "../../hooks/useToast"
 
+type ToastType = { id: number } & ToastProps
+
 export interface ToastsState {
-  [x: string]: ToastProps[]
+  [x: string]: ToastType[]
 }
 
 export const toastsSlice = createSlice({
@@ -22,17 +24,25 @@ export const toastsSlice = createSlice({
     },
     addToast: (
       state: ToastsState,
-      action: PayloadAction<{ instanceId: string; toastData: ToastProps }>
+      action: PayloadAction<{ instanceId: string; toastData: ToastType }>
     ) => {
       const { instanceId, toastData } = action.payload
       state[instanceId] = [...state[instanceId], toastData]
     },
     removeToast: (
       state: ToastsState,
-      action: PayloadAction<{ instanceId: string; index: number }>
+      action: PayloadAction<{ instanceId: string; id?: number }>
     ) => {
-      const { instanceId, index } = action.payload
-      state[instanceId].splice(index, 1)
+      const { instanceId, id } = action.payload
+      if (!id) {
+        // Remove the last toast
+        state[instanceId].pop()
+        return
+      }
+
+      state[instanceId] = state[instanceId].filter(
+        ({ id: idToCompare }) => idToCompare !== id
+      )
     },
   },
 })

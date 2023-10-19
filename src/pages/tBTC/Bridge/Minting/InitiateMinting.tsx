@@ -1,19 +1,29 @@
-import { FC } from "react"
-import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
+import { FC, useEffect } from "react"
+import { BodyMd, Button } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import { AlertDescription } from "@chakra-ui/react"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { useToast } from "../../../../hooks/useToast"
 
 const InitiateMintingComponent: FC<{
   utxo: UnspentTransactionOutput
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()
+  const { addToast, removeToast } = useToast("tbtc-bridge-minting")
+
+  useEffect(() => {
+    removeToast()
+    addToast({
+      title: "Deposit received",
+      status: "success",
+      duration: 5000,
+    })
+  }, [])
 
   const confirmDespotAndMint = async () => {
     openModal(ModalType.TbtcMintingConfirmation, { utxo: utxo })
