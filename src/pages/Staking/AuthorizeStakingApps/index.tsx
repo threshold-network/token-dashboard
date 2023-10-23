@@ -312,14 +312,16 @@ const AuthorizeStakingAppsPage: FC = () => {
               canSubmitForm={isLoggedInAsAuthorizer}
             />
             <AuthorizeApplicationsCardCheckbox
+              formRef={tacoAppFormRef}
               mt={5}
               appAuthData={appsAuthData.taco}
               totalInTStake={stake.totalInTStake}
               onCheckboxClick={onCheckboxClick}
               isSelected={isAppSelected("taco")}
               maxAuthAmount={stake.totalInTStake}
-              minAuthAmount={"0"}
+              minAuthAmount={tacoMinAuthAmount}
               stakingProvider={stakingProviderAddress!}
+              canSubmitForm={isLoggedInAsAuthorizer}
             />
           </>
         )}
