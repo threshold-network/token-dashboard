@@ -52,8 +52,7 @@ export const validateAmountInRange = (
   minValue = DEFAULT_MIN_VALUE,
   options: AmountValidationOptions = defaultAmountValidationOptions
 ) => {
-  const isValueMissing = !value
-  if (isValueMissing) {
+  if (!value) {
     return options.requiredMessage
   }
 
