@@ -23,7 +23,7 @@ import { selectMappedOperators } from "../../store/account/selectors"
 import shortenAddress from "../../utils/shortenAddress"
 import { isAddressZero } from "../../web3/utils"
 import { FcCheckmark, FiLink2 } from "react-icons/all"
-import { getSakingAppLabel } from "../../utils/getStakingAppLabel"
+import { getStakingAppLabelFromAppName } from "../../utils/getStakingAppLabel"
 import { StakingAppName } from "../../store/staking-applications"
 
 const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
@@ -63,7 +63,7 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
             <Box key={`mapped_operator_${appName}_${operator}`}>
               <HStack mt={5}>
                 <BoxLabel status="secondary" size={"sm"}>
-                  {getSakingAppLabel(appName as StakingAppName)} App
+                  {getStakingAppLabelFromAppName(appName as StakingAppName)} App
                 </BoxLabel>
                 <Badge variant="subtle" size={"md"} bgColor={"green.50"} py={1}>
                   <HStack>
