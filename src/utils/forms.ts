@@ -10,42 +10,42 @@ import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
-type ValidationMsg = string | ((amount: string) => string)
-type ValidationOptions = {
-  greaterThanValidationMsg: ValidationMsg
-  lessThanValidationMsg: ValidationMsg
-  requiredMsg: string
-  insufficientBalanceMsg: string
+type AmountValidationMessage = string | ((amount: string) => string)
+type AmountValidationOptions = {
+  greaterThanValidationMessage: AmountValidationMessage
+  lessThanValidationMessage: AmountValidationMessage
+  requiredMessage: string
+  insufficientBalanceMessage: string
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultLessThanMsg: (maxAmount: string) => string = (
+export const defaultStakingLessThanMessage: (maxAmount: string) => string = (
   maxAmount
 ) => {
   return `The maximum stake amount is ${formatTokenAmount(maxAmount)}.`
 }
 
-export const defaultGreaterThanMsg: (minAmount: string) => string = (
+export const defaultStakingGreaterThanMessage: (minAmount: string) => string = (
   minAmount
 ) => {
   return `The minimum stake amount is ${formatTokenAmount(minAmount)}.`
 }
-export const defaultValidationOptions: ValidationOptions = {
-  greaterThanValidationMsg: defaultGreaterThanMsg,
-  lessThanValidationMsg: defaultLessThanMsg,
-  requiredMsg: "The stake amount is required.",
-  insufficientBalanceMsg: "Your wallet balance is insufficient.",
+export const defaultAmountValidationOptions: AmountValidationOptions = {
+  greaterThanValidationMessage: defaultStakingGreaterThanMessage,
+  lessThanValidationMessage: defaultStakingLessThanMessage,
+  requiredMessage: "The stake amount is required.",
+  insufficientBalanceMessage: "Your wallet balance is insufficient.",
 }
 
 export const validateAmountInRange = (
   value: string,
   maxValue: string,
   minValue = DEFAULT_MIN_VALUE,
-  options: ValidationOptions = defaultValidationOptions
+  options: AmountValidationOptions = defaultAmountValidationOptions
 ) => {
   const isValueMissing = !value
   if (isValueMissing) {
-    return options.requiredMsg
+    return options.requiredMessage
   }
 
   const valueInBN = BigNumber.from(value)
@@ -57,17 +57,17 @@ export const validateAmountInRange = (
   const isMinimumValueFulfilled = valueInBN.gte(minValueInBN)
 
   if (isMinimumValueFulfilled && isBalanceInsufficient) {
-    return options.insufficientBalanceMsg
+    return options.insufficientBalanceMessage
   }
   if (!isBalanceInsufficient && isMaximumValueExceeded) {
-    return typeof options.lessThanValidationMsg === "function"
-      ? options.lessThanValidationMsg(maxValue)
-      : options.lessThanValidationMsg
+    return typeof options.lessThanValidationMessage === "function"
+      ? options.lessThanValidationMessage(maxValue)
+      : options.lessThanValidationMessage
   }
   if (!isMinimumValueFulfilled) {
-    return typeof options.greaterThanValidationMsg === "function"
-      ? options.greaterThanValidationMsg(minValue)
-      : options.greaterThanValidationMsg
+    return typeof options.greaterThanValidationMessage === "function"
+      ? options.greaterThanValidationMessage(minValue)
+      : options.greaterThanValidationMessage
   }
 }
 
