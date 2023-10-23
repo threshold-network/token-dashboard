@@ -37,6 +37,15 @@ export const defaultAmountValidationOptions: AmountValidationOptions = {
   insufficientBalanceMessage: "Your wallet balance is insufficient.",
 }
 
+const getAmountInRangeValidationMessage = (
+  validationMessage: AmountValidationMessage,
+  value: string
+) => {
+  return typeof validationMessage === "function"
+    ? validationMessage(value)
+    : validationMessage
+}
+
 export const validateAmountInRange = (
   value: string,
   maxValue: string,
@@ -56,18 +65,21 @@ export const validateAmountInRange = (
   const isMaximumValueExceeded = valueInBN.gt(maxValueInBN)
   const isMinimumValueFulfilled = valueInBN.gte(minValueInBN)
 
-  if (isMinimumValueFulfilled && isBalanceInsufficient) {
+  if (!isMinimumValueFulfilled) {
+    return getAmountInRangeValidationMessage(
+      options.greaterThanValidationMessage,
+      minValue
+    )
+  }
+  if (isBalanceInsufficient) {
     return options.insufficientBalanceMessage
   }
-  if (!isBalanceInsufficient && isMaximumValueExceeded) {
-    return typeof options.lessThanValidationMessage === "function"
-      ? options.lessThanValidationMessage(maxValue)
-      : options.lessThanValidationMessage
-  }
-  if (!isMinimumValueFulfilled) {
-    return typeof options.greaterThanValidationMessage === "function"
-      ? options.greaterThanValidationMessage(minValue)
-      : options.greaterThanValidationMessage
+
+  if (isMaximumValueExceeded) {
+    return getAmountInRangeValidationMessage(
+      options.lessThanValidationMessage,
+      maxValue
+    )
   }
 }
 
