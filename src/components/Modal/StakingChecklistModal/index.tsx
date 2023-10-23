@@ -36,11 +36,9 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
       <ModalCloseButton top="3" />
       <ModalBody py="0">
         <InfoBox variant="modal">
-          <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-            <H5 as="h6">
-              Review the timeline carefully for an overview of the requirements.
-            </H5>
-          </BodyLg>
+          <H5 as="p" color={useColorModeValue("gray.700", "white")}>
+            Review the timeline carefully for an overview of the requirements.
+          </H5>
         </InfoBox>
         <StakingTimeline mt="4" statuses={[FlowStepStatus.inactive]} />
         <Alert status="warning" mt="6">
