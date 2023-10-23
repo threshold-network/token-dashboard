@@ -43,7 +43,7 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
         <StakingTimeline mt="4" statuses={[FlowStepStatus.inactive]} />
         <Alert status="warning" mt="6">
           <AlertIcon />
-          <AlertDescription>
+          <AlertDescription color={useColorModeValue("gray.700", "white")}>
             Staking in Threshold requires running a node.
           </AlertDescription>
         </Alert>

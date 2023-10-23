@@ -63,7 +63,9 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal" gap="4" mb={6}>
-          <H5>You are about to make a deposit into the T Staking Contract.</H5>
+          <H5 as="p">
+            You are about to make a deposit into the T Staking Contract
+          </H5>
           <BodyLg>Staking requires 2 transactions.</BodyLg>
         </InfoBox>
         <StakingStats
