@@ -16,7 +16,7 @@ export const StakingContractLearnMore: FC<StakingContractLearnMoreProps> = (
   if (tStakingContract?.address) {
     return (
       <BodySm color={color} textAlign="center" {...props}>
-        Read the&nbsp;
+        Read the{" "}
         <ViewInBlockExplorer
           id={tStakingContract.address}
           type={ExplorerDataType.ADDRESS}

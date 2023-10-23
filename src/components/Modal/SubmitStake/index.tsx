@@ -86,8 +86,7 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
             spacing="3"
           >
             <BodyMd>
-              I acknowledge that staking in Threshold requires running a
-              node.&nbsp;
+              I acknowledge that staking in Threshold requires running a node.{" "}
               <Link href={ExternalHref.runningNodeDocs} isExternal>
                 Read more
               </Link>
