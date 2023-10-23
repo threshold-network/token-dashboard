@@ -2,6 +2,7 @@ import { ChangeEventHandler, FC, useState } from "react"
 import {
   BodyLg,
   BodySm,
+  BodyMd,
   H5,
   Button,
   ModalBody,
@@ -11,7 +12,6 @@ import {
   Checkbox,
   VStack,
   HStack,
-  chakra,
 } from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
@@ -85,13 +85,13 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
             size="lg"
             spacing="3"
           >
-            <chakra.p fontSize="md">
+            <BodyMd>
               I acknowledge that staking in Threshold requires running a
               node.&nbsp;
               <Link href={ExternalHref.runningNodeDocs} isExternal>
                 Read more
               </Link>
-            </chakra.p>
+            </BodyMd>
           </Checkbox>
           <HStack spacing="3">
             <Button onClick={closeModal} variant="outline">
