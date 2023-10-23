@@ -37,7 +37,7 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
       <ModalBody py="0">
         <InfoBox variant="modal">
           <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-            <H5 as="h4">
+            <H5 as="h6">
               Review the timeline carefully for an overview of the requirements.
             </H5>
           </BodyLg>
