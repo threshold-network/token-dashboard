@@ -29,7 +29,7 @@ import {
   selectStakingAppByStakingProvider,
   StakingAppName,
 } from "../../../store/staking-applications"
-import { getSakingAppLabel } from "../../../utils/getStakingAppLabel"
+import { getStakingAppLabelFromAppName } from "../../../utils/getStakingAppLabel"
 import ModalCloseButton from "../ModalCloseButton"
 
 export type AuthorizeAppsProps = BaseModalProps & {
@@ -125,7 +125,7 @@ const StakingApplicationToAuth: FC<{
     <Card>
       <LabelSm mb="4">
         <CheckCircleIcon color="green.500" verticalAlign="top" mr="2" />
-        {getSakingAppLabel(appName)} app - {percentage}
+        {getStakingAppLabelFromAppName(appName)} app - {percentage}
       </LabelSm>
       <BodyMd mb="3">Authorization Amount</BodyMd>
       <TokenBalance

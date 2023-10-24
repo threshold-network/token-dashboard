@@ -32,7 +32,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
-import { getStakingAppNameFromAddress } from "../../../utils/getStakingAppLabel"
+import { getStakingAppNameFromAppAddress } from "../../../utils/getStakingAppLabel"
 import StakingTimeline from "../../StakingTimeline"
 import ButtonLink from "../../ButtonLink"
 import ModalCloseButton from "../ModalCloseButton"
@@ -79,7 +79,7 @@ const StakingApplicationsAuthorizedBase: FC<
           {authorizedStakingApplications.map((_) => (
             <ListItem key={_.address}>
               <HStack justifyContent="space-between">
-                <BodySm>{`${getStakingAppNameFromAddress(
+                <BodySm>{`${getStakingAppNameFromAppAddress(
                   _.address
                 )} Authorization Amount`}</BodySm>
                 <BodySm>{`${formatTokenAmount(_.amount)} T (${formatPercentage(

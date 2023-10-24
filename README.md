@@ -70,7 +70,7 @@ yarn upgrade @keep-network/coverage-pools@goerli \
   @keep-network/tbtc-v2@goerli \
   @keep-network/tbtc-v2.ts@goerli \
   @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@goerli \
-  @threshold-network/solidity-contracts@goerli \
+  @threshold-network/solidity-contracts@goerli
 ```
 
 **NOTE 1:** We use the same Goerli versions for both
