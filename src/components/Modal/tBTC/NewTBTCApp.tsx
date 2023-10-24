@@ -11,16 +11,15 @@ import {
   ModalHeader,
 } from "@threshold-network/components"
 import { FC } from "react"
-import { useNavigate } from "react-router-dom"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
 import { BaseModalProps } from "../../../types"
+import ButtonLink from "../../ButtonLink"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
-  const navigate = useNavigate()
 
   return (
     <>
@@ -46,15 +45,15 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         <Divider mt="2" />
       </ModalBody>
       <ModalFooter gap="4">
-        <Button
+        <ButtonLink
           variant="outline"
+          to="/tBTC/how-it-works"
           onClick={() => {
-            navigate("/tBTC/how-it-works")
             closeModal()
           }}
         >
           How it Works
-        </Button>
+        </ButtonLink>
         <Button
           onClick={() => {
             accept()
