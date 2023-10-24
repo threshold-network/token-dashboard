@@ -17,6 +17,8 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
 import { BitcoinNetwork } from "../threshold-ts/types"
+import { supportedChainId } from "../utils/getEnvVariable"
+import { ChainID } from "../enums"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -38,6 +40,11 @@ export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
   ...testnetTransaction,
 }
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
+const bitcoinNetwork =
+  supportedChainId === ChainID.Ethereum.toString()
+    ? BitcoinNetwork.Mainnet
+    : BitcoinNetwork.Testnet
+const bitcoinNetworkTransactionFee = BigNumber.from("47000")
 
 export class MockBitcoinClient implements Client {
   private _unspentTransactionOutputs = new Map<
@@ -126,7 +133,10 @@ export class MockBitcoinClient implements Client {
         depositor: getChainIdentifier(ethAddress),
         blindingFactor: blindingFactor,
         walletPublicKeyHash: walletPublicKeyHash,
-        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+        refundPublicKeyHash: decodeBitcoinAddress(
+          btcRecoveryAddress,
+          bitcoinNetwork
+        ),
         refundLocktime: refundLocktime,
       }
 
@@ -162,16 +172,17 @@ export class MockBitcoinClient implements Client {
       ...depositScriptParameters,
       amount: BigNumber.from("1000000"),
     }
-
     const {
       transactionHash,
       depositUtxo,
       rawTransaction: transaction,
     } = await assembleDepositTransaction(
+      bitcoinNetwork,
       deposit,
-      [testnetUTXO],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUTXO],
+      bitcoinNetworkTransactionFee
     )
 
     // mock second deposit transaction
@@ -192,10 +203,12 @@ export class MockBitcoinClient implements Client {
       depositUtxo: depositUtxo2,
       rawTransaction: transaction2,
     } = await assembleDepositTransaction(
+      bitcoinNetwork,
       deposit2,
-      [testnetUtxo2],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUtxo2],
+      bitcoinNetworkTransactionFee
     )
 
     const utxos = new Map<string, UnspentTransactionOutput[]>()

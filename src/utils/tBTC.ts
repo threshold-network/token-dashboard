@@ -5,12 +5,19 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
+import { supportedChainId } from "./getEnvVariable"
+import { ChainID } from "../enums"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
 
 const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1", "3"] as const
 const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "2"] as const
+
+const bitcoinNetwork =
+  supportedChainId === ChainID.Ethereum.toString()
+    ? BitcoinNetwork.Mainnet
+    : BitcoinNetwork.Testnet
 
 type SupportedBitcoinNetworks = Exclude<BitcoinNetwork, "unknown">
 
@@ -104,7 +111,10 @@ export class RedemptionDetailsLinkBuilder {
   }
 
   withBitcoinAddress = (btcAddress: string) => {
-    const redeemerOutputScript = createOutputScriptFromAddress(btcAddress)
+    const redeemerOutputScript = createOutputScriptFromAddress(
+      btcAddress,
+      bitcoinNetwork
+    )
     this.redeemerOutputScript = prependScriptPubKeyByLength(
       redeemerOutputScript.toString()
     )

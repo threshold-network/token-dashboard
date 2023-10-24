@@ -27,6 +27,9 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
+import { supportedChainId } from "../../../utils/getEnvVariable"
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
+import { ChainID } from "../../../enums"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
   utxo: UnspentTransactionOutput
@@ -57,13 +60,19 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
     onSuccessfulDepositReveal
   )
-
+  const bitcoinNetwork =
+    supportedChainId === ChainID.Ethereum.toString()
+      ? BitcoinNetwork.Mainnet
+      : BitcoinNetwork.Testnet
   const initiateMintTransaction = async () => {
     const depositScriptParameters: DepositScriptParameters = {
       depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      refundPublicKeyHash: decodeBitcoinAddress(
+        btcRecoveryAddress,
+        bitcoinNetwork
+      ),
       refundLocktime,
     }
 
