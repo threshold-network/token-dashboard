@@ -1,12 +1,12 @@
+import { FC } from "react"
 import {
-  BodyMd,
   Box,
+  BodyMd,
   Divider,
   HStack,
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { FC } from "react"
 import { matchPath, resolvePath, useLocation } from "react-router-dom"
 import { RouteProps } from "../../types"
 import Link from "../Link"

@@ -1,16 +1,16 @@
+import { FC } from "react"
 import {
-  BodyLg,
-  BodySm,
   Button,
   Divider,
-  Flex,
-  H5,
-  Image,
   ModalBody,
   ModalFooter,
   ModalHeader,
+  BodyLg,
+  H5,
+  BodySm,
+  Flex,
+  Image,
 } from "@threshold-network/components"
-import { FC } from "react"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
 import { BaseModalProps } from "../../../types"
