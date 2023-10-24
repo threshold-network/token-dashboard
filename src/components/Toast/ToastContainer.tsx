@@ -33,16 +33,14 @@ const ToastContainer = (props: ToastContainerProps) => {
       transform="translateX(-50%)"
       zIndex="toast"
     >
-      <AnimatePresence>
-        {(toasts ?? []).map(({ id, ...toastData }) => (
-          <Toast
-            key={id}
-            {...defaultToastData}
-            {...toastData}
-            onUnmount={() => removeToastFn(id)}
-          />
-        ))}
-      </AnimatePresence>
+      {(toasts ?? []).map(({ id, ...toastData }) => (
+        <Toast
+          key={id}
+          {...defaultToastData}
+          {...toastData}
+          onUnmount={() => removeToastFn(id)}
+        />
+      ))}
     </VStack>
   )
 }
