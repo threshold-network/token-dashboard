@@ -1,22 +1,22 @@
+import { stakingApplicationsSlice } from "../../store/staking-applications"
+import { getStakingAppNameFromAppAddress } from "../../utils/getStakingAppLabel"
 import {
-  stakingApplicationsSlice,
-  StakingAppName,
-} from "../../store/staking-applications"
-import { useSubscribeToContractEvent } from "../../web3/hooks"
+  useSubscribeToContractEvent,
+  useTStakingContract,
+} from "../../web3/hooks"
 import { useAppDispatch } from "../store"
-import { useStakingAppContract } from "./useStakingAppContract"
 
-export const useSubscribeToAuthorizationIncreasedEvent = (
-  appName: StakingAppName
-) => {
-  const contract = useStakingAppContract(appName)
+export const useSubscribeToAuthorizationIncreasedEvent = () => {
+  const contract = useTStakingContract()
   const dispatch = useAppDispatch()
 
   useSubscribeToContractEvent(
     contract,
     "AuthorizationIncreased",
     // @ts-ignore
-    async (stakingProvider, operator, fromAmount, toAmount) => {
+    async (stakingProvider, application, fromAmount, toAmount) => {
+      const appName = getStakingAppNameFromAppAddress(application)
+
       dispatch(
         stakingApplicationsSlice.actions.authorizationIncreased({
           stakingProvider,
