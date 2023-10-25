@@ -5,6 +5,7 @@ import {
   useKeepBondingContract,
   useMulticall,
   useMulticallContract,
+  useAssetPoolContract,
   useKeepAssetPoolContract,
   useTStakingContract,
   useKeepTokenStakingContract,
@@ -14,19 +15,21 @@ import { useToken } from "./useToken"
 import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
 
-interface TVLRawData {
-  ecdsaTVL: string
-  tbtcv1TVL: string
-  keepCoveragePoolTVL: string
-  keepStakingTVL: string
-  tStakingTVL: string
+interface TvlRawData {
+  ecdsaTvl: string
+  tbtcv1Tvl: string
+  coveragePoolTvl: string
+  keepCoveragePoolTvl: string
+  keepStakingTvl: string
+  tStakingTvl: string
   tBTC: string
   // TODO: add PRE and NU TVL
 }
 
-interface TVLData {
+interface TvlData {
   ecdsa: string
   tbtcv1: string
+  coveragePool: string
   keepCoveragePool: string
   keepStaking: string
   tStaking: string
@@ -35,27 +38,29 @@ interface TVLData {
 }
 
 const initialState = {
-  ecdsaTVL: "0",
-  tbtcv1TVL: "0",
+  ecdsaTvl: "0",
+  tbtcv1Tvl: "0",
   tBTC: "0",
-  keepCoveragePoolTVL: "0",
-  keepStakingTVL: "0",
-  tStakingTVL: "0",
+  coveragePoolTvl: "0",
+  keepCoveragePoolTvl: "0",
+  keepStakingTvl: "0",
+  tStakingTvl: "0",
 }
 
 export const useFetchTvl = (): [
-  TVLData,
-  () => Promise<TVLRawData>,
-  TVLRawData
+  TvlData,
+  () => Promise<TvlRawData>,
+  TvlRawData
 ] => {
-  const [rawData, setRawData] = useState<TVLRawData>(initialState)
+  const [rawData, setRawData] = useState<TvlRawData>(initialState)
   const {
-    ecdsaTVL,
-    tbtcv1TVL: tbtcTVL,
-    keepCoveragePoolTVL,
-    keepStakingTVL,
-    tStakingTVL,
-    tBTC: tBTCTVL,
+    ecdsaTvl,
+    tbtcv1Tvl: tbtcTvl,
+    coveragePoolTvl,
+    keepCoveragePoolTvl,
+    keepStakingTvl,
+    tStakingTvl,
+    tBTC: tBTCTvl,
   } = rawData
 
   const eth = useETHData()
@@ -64,6 +69,7 @@ export const useFetchTvl = (): [
   const t = useToken(Token.T)
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()
+  const assetPool = useAssetPoolContract()
   const keepAssetPool = useKeepAssetPoolContract()
   const tTokenStaking = useTStakingContract()
   const keepTokenStaking = useKeepTokenStakingContract()
@@ -80,6 +86,11 @@ export const useFetchTvl = (): [
       address: tbtcv1.contract?.address!,
       interface: tbtcv1.contract?.interface!,
       method: "totalSupply",
+    },
+    {
+      address: assetPool?.address!,
+      interface: assetPool?.interface!,
+      method: "totalValue",
     },
     {
       address: keepAssetPool?.address!,
@@ -105,7 +116,7 @@ export const useFetchTvl = (): [
     },
   ])
 
-  const fetchTVLData = useCallback(async () => {
+  const fetchTvlData = useCallback(async () => {
     const chainData = await fetchOnChainData()
     if (chainData.length === 0) return initialState
 
@@ -113,17 +124,19 @@ export const useFetchTvl = (): [
       ethInKeepBonding,
       tbtcv1TokenTotalSupply,
       coveragePoolTvl,
+      keepCoveragePoolTvl,
       keepStaking,
       tStaking,
       tBTCTokenTotalSupply,
     ] = chainData.map((amount: BigNumberish) => amount.toString())
 
-    const data: TVLRawData = {
-      ecdsaTVL: ethInKeepBonding,
-      tbtcv1TVL: tbtcv1TokenTotalSupply,
-      keepCoveragePoolTVL: coveragePoolTvl,
-      keepStakingTVL: keepStaking,
-      tStakingTVL: tStaking,
+    const data: TvlRawData = {
+      ecdsaTvl: ethInKeepBonding,
+      tbtcv1Tvl: tbtcv1TokenTotalSupply,
+      coveragePoolTvl: coveragePoolTvl,
+      keepCoveragePoolTvl: keepCoveragePoolTvl,
+      keepStakingTvl: keepStaking,
+      tStakingTvl: tStaking,
       tBTC: tBTCTokenTotalSupply,
     }
     setRawData(data)
@@ -132,45 +145,52 @@ export const useFetchTvl = (): [
   }, [fetchOnChainData])
 
   const data = useMemo(() => {
-    const ecdsa = toUsdBalance(formatUnits(ecdsaTVL), eth.usdPrice)
+    const ecdsa = toUsdBalance(formatUnits(ecdsaTvl), eth.usdPrice)
 
-    const tbtcv1USD = toUsdBalance(formatUnits(tbtcTVL), tbtcv1.usdConversion)
-    const tBTCUSD = toUsdBalance(formatUnits(tBTCTVL), tBTCToken.usdConversion)
+    const tbtcv1USD = toUsdBalance(formatUnits(tbtcTvl), tbtcv1.usdConversion)
+    const tBTCUSD = toUsdBalance(formatUnits(tBTCTvl), tBTCToken.usdConversion)
+
+    const coveragePool = toUsdBalance(
+      formatUnits(coveragePoolTvl),
+      t.usdConversion
+    )
 
     const keepCoveragePool = toUsdBalance(
-      formatUnits(keepCoveragePoolTVL),
+      formatUnits(keepCoveragePoolTvl),
       keep.usdConversion
     )
 
     const keepStaking = toUsdBalance(
-      formatUnits(keepStakingTVL),
+      formatUnits(keepStakingTvl),
       keep.usdConversion
     )
 
-    const tStaking = toUsdBalance(formatUnits(tStakingTVL), t.usdConversion)
+    const tStaking = toUsdBalance(formatUnits(tStakingTvl), t.usdConversion)
 
     return {
       ecdsa: ecdsa.toString(),
       tbtcv1: tbtcv1USD.toString(),
+      coveragePool: coveragePool.toString(),
       keepCoveragePool: keepCoveragePool.toString(),
       keepStaking: keepStaking.toString(),
       tStaking: tStaking.toString(),
       tBTC: tBTCUSD.toString(),
       total: ecdsa
         .addUnsafe(tbtcv1USD)
+        .addUnsafe(coveragePool)
         .addUnsafe(keepCoveragePool)
         .addUnsafe(keepStaking)
         .addUnsafe(tStaking)
         .addUnsafe(tBTCUSD)
         .toString(),
-    } as TVLData
+    } as TvlData
   }, [
-    ecdsaTVL,
-    keepCoveragePoolTVL,
-    tbtcTVL,
-    keepStakingTVL,
-    tStakingTVL,
-    tBTCTVL,
+    ecdsaTvl,
+    keepCoveragePoolTvl,
+    tbtcTvl,
+    keepStakingTvl,
+    tStakingTvl,
+    tBTCTvl,
     eth.usdPrice,
     keep.usdConversion,
     tbtcv1.usdConversion,
@@ -178,5 +198,5 @@ export const useFetchTvl = (): [
     tBTCToken.usdConversion,
   ])
 
-  return [data, fetchTVLData, rawData]
+  return [data, fetchTvlData, rawData]
 }

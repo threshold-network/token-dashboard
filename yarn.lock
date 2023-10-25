@@ -3193,10 +3193,10 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2.ts@development":
-  version "1.3.0-dev.8"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.3.0-dev.8.tgz#08fb1a06dbe6d78a9c7b0d610363c68a135a6741"
-  integrity sha512-Y5fej8YhBbTZesE+87LNLHGt7I/G97f75J+15ieYyb2nqsJ/CcvMscIEAE/hNgxpnq4IWv/8qwYoldrHY4ix8w==
+"@keep-network/tbtc-v2.ts@1.3.0-dev.9":
+  version "1.3.0-dev.9"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-1.3.0-dev.9.tgz#b8961e2701ec1395da747269fea8cb6b236c4b77"
+  integrity sha512-cGtylB9Rc1Mltltl9NQJ1YKvTcs8HYTRRDsXlqf1VVtZcntngrl5Mu/OymuH84PlmpZpYMS95ZldEH9QoEMaeQ==
   dependencies:
     "@keep-network/ecdsa" "2.1.0-dev.15"
     "@keep-network/tbtc-v2" "1.6.0-dev.0"
@@ -3244,6 +3244,11 @@
     "@summa-tx/bitcoin-spv-sol" "^3.1.0"
     "@summa-tx/relay-sol" "^2.0.2"
     openzeppelin-solidity "2.3.0"
+
+"@ledgerhq/connect-kit-loader@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.1.2.tgz#d550e3c1f046e4c796f32a75324b03606b7e226a"
+  integrity sha512-mscwGroSJQrCTjtNGBu+18FQbZYA4+q6Tyx6K7CXHl6AwgZKbWfZYdgP2F+fyZcRUdGRsMX8QtvU61VcGGtO1A==
 
 "@ledgerhq/cryptoassets@^5.53.0":
   version "5.53.0"
@@ -4080,6 +4085,17 @@
   version "1.0.0-dev.31"
   resolved "https://registry.npmjs.org/@threshold-network/components/-/components-1.0.0-dev.31.tgz#7767a9f136156f8d4f3044d90e87a1014eb07a67"
   integrity sha512-ftzJV6p2He3Co0wLYky+sX0NAFVGrJCRvBDI0n3KF4POBO425Qy3yodS7HOkT1TgGRNU8AGO0KebS2X7gfgAEA==
+
+"@threshold-network/coverage-pools@npm:@keep-network/coverage-pools@development":
+  version "2.1.0-dev.3"
+  resolved "https://registry.yarnpkg.com/@keep-network/coverage-pools/-/coverage-pools-2.1.0-dev.3.tgz#95b2c7df4a109a6d82fcb067ea1f4bbac4e9434a"
+  integrity sha512-b6UMu5/8Rd/OS33T6RwMAHyyJtIInzJVwVFx4ZxMwKvPBE/orRAIVkgkCUWUNM04WWexgt/i5h393lia9d00IQ==
+  dependencies:
+    "@keep-network/keep-core" "1.8.1-dev.0"
+    "@keep-network/tbtc" "1.1.2-dev.1"
+    "@openzeppelin/contracts" "^4.8"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+    "@threshold-network/solidity-contracts" "1.3.0-dev.5"
 
 "@threshold-network/solidity-contracts@1.3.0-dev.5", "@threshold-network/solidity-contracts@development":
   version "1.3.0-dev.5"
@@ -6673,14 +6689,9 @@ bufio@^1.0.6:
   resolved "https://registry.yarnpkg.com/bufio/-/bufio-1.2.0.tgz#b9ad1c06b0d9010363c387c39d2810a7086d143f"
   integrity sha512-UlFk8z/PwdhYQTXSQQagwGAdtRI83gib2n4uy4rQnenxUM2yQi8lBDzF230BNk+3wAoZDxYRoBwVVUPgHa9MCA==
 
-"bufio@git+https://github.com/bcoin-org/bufio.git#semver:~1.0.6":
+"bufio@git+https://github.com/bcoin-org/bufio.git#semver:~1.0.6", bufio@~1.0.7:
   version "1.0.7"
   resolved "git+https://github.com/bcoin-org/bufio.git#91ae6c93899ff9fad7d7cee9afd2a1c4933ca984"
-
-bufio@~1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/bufio/-/bufio-1.0.7.tgz#b7f63a1369a0829ed64cc14edf0573b3e382a33e"
-  integrity sha512-bd1dDQhiC+bEbEfg56IdBv7faWa6OipMs/AFFFvtFnB3wAYjlwQpQRZ0pm6ZkgtfL0pILRXhKxOiQj6UzoMR7A==
 
 builtin-modules@^3.1.0:
   version "3.3.0"
@@ -9842,7 +9853,7 @@ fd-slicer@~1.1.0:
 
 fflate@^0.4.1:
   version "0.4.8"
-  resolved "https://registry.npmjs.org/fflate/-/fflate-0.4.8.tgz#f90b82aefbd8ac174213abb338bd7ef848f0f5ae"
+  resolved "https://registry.yarnpkg.com/fflate/-/fflate-0.4.8.tgz#f90b82aefbd8ac174213abb338bd7ef848f0f5ae"
   integrity sha512-FJqqoDBR00Mdj9ppamLa/Y7vxm+PRmNWA67N846RvsoYVMKB4q3y/de5PA7gUmRMYK/8CMz2GDZQmCRN1wBcWA==
 
 figgy-pudding@^3.5.1:
@@ -12708,14 +12719,9 @@ loader-utils@^2.0.0:
     emojis-list "^3.0.0"
     json5 "^2.1.2"
 
-"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1":
+"loady@git+https://github.com/chjj/loady.git#semver:~0.0.1", loady@~0.0.1, loady@~0.0.5:
   version "0.0.5"
   resolved "git+https://github.com/chjj/loady.git#b94958b7ee061518f4b85ea6da380e7ee93222d5"
-
-loady@~0.0.1, loady@~0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/loady/-/loady-0.0.5.tgz#b17adb52d2fb7e743f107b0928ba0b591da5d881"
-  integrity sha512-uxKD2HIj042/HBx77NBcmEPsD+hxCgAtjEWlYNScuUjIsh/62Uyu39GOR68TBR68v+jqDL9zfftCWoUo4y03sQ==
 
 locate-path@^2.0.0:
   version "2.0.0"
@@ -15071,13 +15077,12 @@ postcss@^8.1.0:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-posthog-js@^1.53.1:
-  version "1.53.1"
-  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.53.1.tgz#7c14aacaed70b4e302257d8534373f832a28f7dd"
-  integrity sha512-sqCIYkq7qR74NhrmW0n7Fe1c90peNz8v6CReIXJ02XlesN8O4Is04DcnReQxcnbKy6hFGkgV6Zn6RPD/Tl+JSg==
+posthog-js@^1.78.1:
+  version "1.78.1"
+  resolved "https://registry.yarnpkg.com/posthog-js/-/posthog-js-1.78.1.tgz#06c951a63c950724f3c34952fb91446e234020ad"
+  integrity sha512-5tJoF56gGg4B4CSlLbWHuTpi7Ch7wksjCkPonHlQAc61ZZRymTB63tRheCvkcf+Omf8PBkO+2NJ0XEgrkRHE0A==
   dependencies:
     fflate "^0.4.1"
-    rrweb-snapshot "^1.1.14"
 
 preact@^10.5.9:
   version "10.8.2"
@@ -16223,11 +16228,6 @@ rollup@^1.31.1:
     "@types/estree" "*"
     "@types/node" "*"
     acorn "^7.1.0"
-
-rrweb-snapshot@^1.1.14:
-  version "1.1.14"
-  resolved "https://registry.npmjs.org/rrweb-snapshot/-/rrweb-snapshot-1.1.14.tgz#9d4d9be54a28a893373428ee4393ec7e5bd83fcc"
-  integrity sha512-eP5pirNjP5+GewQfcOQY4uBiDnpqxNRc65yKPW0eSoU1XamDfc4M8oqpXGMyUyvLyxFDB0q0+DChuxxiU2FXBQ==
 
 rsvp@^4.8.4:
   version "4.8.5"

@@ -7,6 +7,7 @@ import {
   LinkBox,
   LinkOverlay,
   Link,
+  useColorModeValue,
 } from "@threshold-network/components"
 import shortenAddress from "../../utils/shortenAddress"
 import Identicon from "../Identicon"
@@ -38,6 +39,8 @@ const RecentDepositItem: FC<RecentDeposit> = ({
   date,
   txHash,
 }) => {
+  const tokenBalanceTextColor = useColorModeValue("brand.500", "brand.300")
+
   return (
     <LinkBox as={OutlineListItem}>
       <LinkOverlay
@@ -63,7 +66,7 @@ const RecentDepositItem: FC<RecentDeposit> = ({
             tokenAmount={amount}
             withSymbol
             tokenSymbol="tBTC"
-            color="brand.500"
+            color={tokenBalanceTextColor}
           />
         </BodySm>
       </LinkOverlay>

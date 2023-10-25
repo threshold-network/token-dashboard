@@ -7,15 +7,17 @@ import { ExternalHref } from "../../enums"
 import { RecentDeposit } from "../../hooks/tbtc"
 import Link from "../Link"
 
-export type TVLProps = {
+export type TvlProps = {
   tvl: string
   tvlInUSD: string
 }
 
-export const TVL: FC<TVLProps> = ({ tvl, tvlInUSD }) => {
+export const Tvl: FC<TvlProps> = ({ tvl, tvlInUSD }) => {
   return (
     <>
-      <BodyMd mb="1.5">TVL</BodyMd>
+      <BodyMd mb="1.5" textTransform="uppercase">
+        Total supply
+      </BodyMd>
       <H1 textAlign="center">
         <InlineTokenBalance tokenAmount={tvl} /> <H5 as="span">tBTC</H5>
       </H1>

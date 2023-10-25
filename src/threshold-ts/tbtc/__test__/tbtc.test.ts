@@ -89,6 +89,7 @@ describe("TBTC test", () => {
   const mockBridgeContract = {
     interface: {},
     address: Bridge.address,
+    queryFilter: jest.fn(),
   }
 
   const mockTokenContract = {
@@ -610,27 +611,31 @@ describe("TBTC test", () => {
 
   describe("bridgeActivity", () => {
     const mockDepositor = "0xCDAfb5A23A1F1c6f80706Cc101BCcf4b9A1A3e3B"
-    const mockDepositKey =
+    const mockActivityKey =
       "0x53361a338f43dad8c81bc46c11be21fc95ad4a24fc16dc6593462670b87378c6"
     const mockTxHash =
       "0x615b4a8dac2067cc0cff909aca62cd937538fd750920d44a9af0a34b9f49f2c9"
+    const mockBlockNumber = "12345"
     const mockRevealedDeposit = {
       amount: "1000000",
-      depositKey: mockDepositKey,
+      depositKey: mockActivityKey,
       fundingOutputIndex: 0,
       fundingTxHash:
         "0xf178ee999b6550ad172b94683e0497f77d91fc183390cbffecff9cb585961b76",
       txHash: mockTxHash,
       walletPublicKeyHash: "0x56988a974575d42db330193acd7a8d9efc67f830",
+      blockNumber: mockBlockNumber,
     }
     const mockEstimatedAmountToMint = BigNumber.from("9975010000000000")
 
     const expectedBridgeHistory = [
       {
         amount: "9975010000000000",
-        depositKey: mockDepositKey,
+        activityKey: mockActivityKey,
         status: "PENDING",
         txHash: mockTxHash,
+        bridgeProcess: "mint",
+        blockNumber: mockBlockNumber,
       },
     ]
 
@@ -638,6 +643,7 @@ describe("TBTC test", () => {
     let mockFindAllMintedDepositsFunction: jest.SpyInstance
     let mockCalculateEstimatedAmountToMintForRevealedDepositsFunction: jest.SpyInstance
     let mockFindAllCancelledDepositsFunction: jest.SpyInstance
+    let mockFindRedemptionActivities: jest.SpyInstance
 
     let result: BridgeActivity[]
 
@@ -662,7 +668,7 @@ describe("TBTC test", () => {
           "_calculateEstimatedAmountToMintForRevealedDeposits"
         )
       mockCalculateEstimatedAmountToMintForRevealedDepositsFunction.mockResolvedValue(
-        new Map([[mockDepositKey, mockEstimatedAmountToMint]])
+        new Map([[mockActivityKey, mockEstimatedAmountToMint]])
       )
 
       mockFindAllCancelledDepositsFunction = jest.spyOn(
@@ -671,22 +677,29 @@ describe("TBTC test", () => {
       )
       mockFindAllCancelledDepositsFunction.mockResolvedValue([])
 
+      mockFindRedemptionActivities = jest.spyOn(
+        tBTC as any,
+        "_findRedemptionActivities"
+      )
+      mockFindRedemptionActivities.mockResolvedValue([])
+
       result = await tBTC.bridgeActivity(mockDepositor)
     })
 
     test("should fetch the bridge history properly", () => {
+      expect(mockFindRedemptionActivities).toHaveBeenCalledWith(mockDepositor)
       expect(mockFindAllRevealedDepositsFunction).toHaveBeenCalledWith(
         mockDepositor
       )
       expect(mockFindAllMintedDepositsFunction).toHaveBeenCalledWith(
         mockDepositor,
-        [mockDepositKey]
+        [mockActivityKey]
       )
       expect(
         mockCalculateEstimatedAmountToMintForRevealedDepositsFunction
-      ).toHaveBeenCalledWith([mockDepositKey])
+      ).toHaveBeenCalledWith([mockActivityKey])
       expect(mockFindAllCancelledDepositsFunction).toHaveBeenCalledWith([
-        mockDepositKey,
+        mockActivityKey,
       ])
       expect(result).toEqual(expectedBridgeHistory)
     })

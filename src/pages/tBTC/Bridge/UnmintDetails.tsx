@@ -14,6 +14,7 @@ import {
   LabelSm,
   List,
   ListItem,
+  ONE_MINUTE_IN_SECONDS,
   SkeletonText,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -28,7 +29,7 @@ import {
 import {
   TransactionDetailsAmountItem,
   TransactionDetailsItem,
-} from "../../../components/TransacionDetails"
+} from "../../../components/TransactionDetails"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
@@ -52,24 +53,14 @@ import { ProcessCompletedBrandGradientIcon } from "./components/BridgeProcessDet
 import { featureFlags } from "../../../constants"
 import { useFetchRedemptionDetails } from "../../../hooks/tbtc/useFetchRedemptionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
-import { BigNumber } from "ethers"
 import { ExternalHref } from "../../../enums"
-
-const pendingRedemption = {
-  redemptionRequestedTxHash:
-    "0xf7d0c92c8de4d117d915c2a8a54ee550047f926bc00b91b651c40628751cfe29",
-  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
-  redeemerOutputScript: "0x160014751E76E8199196D454941C45D1B3A323F1433BD6",
-  redeemer: "0x086813525A7dC7dafFf015Cdf03896Fd276eab60",
-}
-
-const completedRedemption = {
-  redemptionRequestedTxHash:
-    "0x0b5d66b89c5fe276ac5b0fd1874142f99329ea6f66485334a558e2bccd977618",
-  walletPublicKeyHash: "0x03b74d6893ad46dfdd01b9e0e3b3385f4fce2d1e",
-  redeemerOutputScript: "0x17A91486884E6BE1525DAB5AE0B451BD2C72CEE67DCF4187",
-  redeemer: "0x68ad60CC5e8f3B7cC53beaB321cf0e6036962dBc",
-}
+import {
+  useFindRedemptionInBitcoinTx,
+  useSubscribeToRedemptionsCompletedEventBase,
+} from "../../../hooks/tbtc"
+import { useAppDispatch } from "../../../hooks/store"
+import { tbtcSlice } from "../../../store/tbtc"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
@@ -77,12 +68,47 @@ export const UnmintDetails: PageComponent = () => {
   const redeemerOutputScript = searchParams.get("redeemerOutputScript")
   const redeemer = searchParams.get("redeemer")
   const { redemptionRequestedTxHash } = useParams()
+  const dispatch = useAppDispatch()
+  const threshold = useThreshold()
 
   const { data, isFetching, error } = useFetchRedemptionDetails(
     redemptionRequestedTxHash,
     walletPublicKeyHash,
     redeemerOutputScript,
     redeemer
+  )
+  const findRedemptionInBitcoinTx = useFindRedemptionInBitcoinTx()
+  const [redemptionFromBitcoinTx, setRedemptionFromBitcoinTx] = useState<
+    Awaited<ReturnType<typeof findRedemptionInBitcoinTx>> | undefined
+  >(undefined)
+
+  useSubscribeToRedemptionsCompletedEventBase(
+    async (eventWalletPublicKeyHash, redemptionTxHash, event) => {
+      if (eventWalletPublicKeyHash !== walletPublicKeyHash) return
+
+      const redemption = await findRedemptionInBitcoinTx(
+        redemptionTxHash,
+        event.blockNumber,
+        redeemerOutputScript!
+      )
+      if (!redemption) return
+
+      setRedemptionFromBitcoinTx(redemption)
+
+      if (redemptionRequestedTxHash && redeemerOutputScript) {
+        dispatch(
+          tbtcSlice.actions.redemptionCompleted({
+            redemptionKey: threshold.tbtc.buildRedemptionKey(
+              walletPublicKeyHash,
+              redeemerOutputScript
+            ),
+            redemptionRequestedTxHash,
+          })
+        )
+      }
+    },
+    [],
+    true
   )
 
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
@@ -91,20 +117,52 @@ export const UnmintDetails: PageComponent = () => {
   const _isFetching = (isFetching || !data) && !error
   const wasDataFetched = !isFetching && !!data && !error
 
-  const btcTxHash = data?.redemptionCompletedTxHash?.bitcoin
-  useEffect(() => {
-    if (!!btcTxHash) setShouldDisplaySuccessStep(true)
-  }, [btcTxHash])
+  const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
+  const shouldForceIsProcessCompleted =
+    !!data?.redemptionCompletedTxHash?.bitcoin
 
-  const isProcessCompleted = !!data?.redemptionCompletedTxHash?.bitcoin
   const requestedAmount = data?.requestedAmount ?? "0"
-  const receivedAmount = data?.receivedAmount ?? "0"
+  const receivedAmount =
+    data?.receivedAmount ?? redemptionFromBitcoinTx?.receivedAmount ?? "0"
+  const btcTxHash =
+    data?.redemptionCompletedTxHash?.bitcoin ??
+    redemptionFromBitcoinTx?.bitcoinTxHash
 
   const thresholdNetworkFee = data?.treasuryFee ?? "0"
-  const btcAddress = data?.btcAddress
-  const time = dateAs(
-    (data?.completedAt ?? dateToUnixTimestamp()) - (data?.requestedAt ?? 0)
-  )
+  const btcAddress = data?.btcAddress ?? redemptionFromBitcoinTx?.btcAddress
+  const redemptionCompletedAt =
+    data?.completedAt ?? redemptionFromBitcoinTx?.redemptionCompletedTimestamp
+  const redemptionRequestedAt = data?.requestedAt
+  const [redemptionTime, setRedemptionTime] = useState<
+    ReturnType<typeof dateAs>
+  >({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  })
+  useEffect(() => {
+    let intervalId: ReturnType<typeof setInterval>
+
+    if (!redemptionCompletedAt && redemptionRequestedAt) {
+      intervalId = setInterval(() => {
+        setRedemptionTime(
+          dateAs(
+            redemptionCompletedAt ??
+              dateToUnixTimestamp() - (data?.requestedAt ?? 0)
+          )
+        )
+      }, ONE_MINUTE_IN_SECONDS)
+    } else if (redemptionCompletedAt && redemptionRequestedAt) {
+      setRedemptionTime(dateAs(redemptionCompletedAt - redemptionRequestedAt))
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [redemptionCompletedAt, redemptionRequestedAt])
 
   const transactions: {
     label: string
@@ -118,7 +176,7 @@ export const UnmintDetails: PageComponent = () => {
     },
     {
       label: "BTC sent",
-      txHash: data?.redemptionCompletedTxHash?.bitcoin,
+      txHash: btcTxHash,
       chain: "bitcoin",
     },
   ]
@@ -167,7 +225,7 @@ export const UnmintDetails: PageComponent = () => {
                 left="50%"
                 transform="translateX(-50%)"
               >
-                usual duration - 3 hours
+                usual duration - 3-5 hours
               </Badge>
               <TimelineItem status="active">
                 <TimelineBreakpoint>
@@ -191,11 +249,15 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
               <TimelineItem
-                status={isProcessCompleted ? "active" : "semi-active"}
+                status={
+                  isProcessCompleted || shouldForceIsProcessCompleted
+                    ? "active"
+                    : "semi-active"
+                }
               >
                 <TimelineBreakpoint>
                   <TimelineDot position="relative">
-                    {isProcessCompleted && (
+                    {(isProcessCompleted || shouldForceIsProcessCompleted) && (
                       <Icon
                         as={IoCheckmarkSharp}
                         position="absolute"
@@ -216,7 +278,7 @@ export const UnmintDetails: PageComponent = () => {
                 </TimelineContent>
               </TimelineItem>
             </Timeline>
-            {shouldDisplaySuccessStep || isProcessCompleted ? (
+            {shouldDisplaySuccessStep || shouldForceIsProcessCompleted ? (
               <SuccessStep
                 requestedAmount={requestedAmount}
                 receivedAmount={receivedAmount}
@@ -227,7 +289,7 @@ export const UnmintDetails: PageComponent = () => {
               <BridgeProcessStep
                 title="Unminting in progress"
                 chain="ethereum"
-                txHash={"0x0"}
+                txHash={redemptionRequestedTxHash}
                 progressBarColor="brand.500"
                 isCompleted={isProcessCompleted}
                 icon={<ProcessCompletedBrandGradientIcon />}
@@ -236,7 +298,7 @@ export const UnmintDetails: PageComponent = () => {
               >
                 <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
                   Your redemption request is being processed. This will take
-                  around 5 hours.
+                  around 3-5 hours.
                 </BodyMd>
               </BridgeProcessStep>
             )}
@@ -257,10 +319,10 @@ export const UnmintDetails: PageComponent = () => {
               {isProcessCompleted ? "total time" : "elapsed time"}
             </LabelSm>
             <BodyLg mt="2.5" color="gray.500">
-              {`${time.days}d ${time.hours}h ${time.minutes}m`}
+              {`${redemptionTime.days}d ${redemptionTime.hours}h ${redemptionTime.minutes}m`}
             </BodyLg>
 
-            <LabelSm mt="5">Transacion History</LabelSm>
+            <LabelSm mt="5">Transaction History</LabelSm>
             <List mt="6" color="gray.500" spacing="2" mb="20">
               {transactions
                 .filter((item) => !!item.txHash)

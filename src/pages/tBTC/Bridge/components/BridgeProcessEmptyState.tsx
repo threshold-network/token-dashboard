@@ -1,12 +1,12 @@
 import { FC, useEffect } from "react"
-import { H5 } from "@threshold-network/components"
+import { H5, useColorModeValue } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "./BridgeProcessCardTitle"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import {
   ProtocolHistoryRecentDeposits,
   ProtocolHistoryTitle,
   ProtocolHistoryViewMoreLink,
-  TVL,
+  Tvl,
 } from "../../../../components/tBTC"
 import { useFetchRecentDeposits } from "../../../../hooks/tbtc"
 import { useFetchTvl } from "../../../../hooks/useFetchTvl"
@@ -18,6 +18,10 @@ export const BridgeProcessEmptyState: FC<{
 }> = ({ title, bridgeProcess = "mint" }) => {
   const [tvlInUSD, fetchTvl, tvl] = useFetchTvl()
   const [deposits] = useFetchRecentDeposits(3)
+  const protocolHistoryBackgroundColor = useColorModeValue(
+    "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
+    "linear-gradient(360deg, #333A47 0%, rgba(255, 255, 255, 0) 117.78%)"
+  )
 
   useEffect(() => {
     fetchTvl()
@@ -28,7 +32,7 @@ export const BridgeProcessEmptyState: FC<{
       <BridgeProcessCardTitle bridgeProcess={bridgeProcess} />
       <H5 align={"center"}>{title}</H5>
       <SubmitTxButton mb="6" mt="4" />
-      <TVL tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
+      <Tvl tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
       <ProtocolHistoryTitle mt="8" />
       <ProtocolHistoryRecentDeposits
         deposits={deposits}
@@ -40,8 +44,7 @@ export const BridgeProcessEmptyState: FC<{
           width: "100%",
           height: "100px",
           opacity: "0.9",
-          background:
-            "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
+          background: protocolHistoryBackgroundColor,
         }}
       />
       <ProtocolHistoryViewMoreLink mt="7" />

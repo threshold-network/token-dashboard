@@ -16,4 +16,5 @@ export enum WalletType {
   Metamask = "METAMASK",
   WalletConnect = "WALLET_CONNECT",
   Coinbase = "COINBASE",
+  LedgerLive = "LEDGER_LIVE",
 }

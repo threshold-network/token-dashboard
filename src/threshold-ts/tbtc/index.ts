@@ -77,7 +77,7 @@ export interface BridgeActivity {
   blockNumber: number
 }
 
-export interface UnminBridgeActivityAdditionalData {
+export interface UnmintBridgeActivityAdditionalData {
   redeemerOutputScript: string
   walletPublicKeyHash: string
 }
@@ -909,7 +909,7 @@ export class TBTC implements ITBTC {
         additionalData: {
           redeemerOutputScript: event.redeemerOutputScript,
           walletPublicKeyHash: event.walletPublicKeyHash,
-        } as UnminBridgeActivityAdditionalData,
+        } as UnmintBridgeActivityAdditionalData,
       })
     }
 
@@ -1028,10 +1028,10 @@ export class TBTC implements ITBTC {
   }
 
   getBitcoinTransaction = async (
-    transacionHash: string
+    transactionHash: string
   ): Promise<BitcoinTransaction> => {
     return this._bitcoinClient.getTransaction(
-      TransactionHash.from(transacionHash)
+      TransactionHash.from(transactionHash)
     )
   }
 

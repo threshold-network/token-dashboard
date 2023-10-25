@@ -17,18 +17,16 @@ import {
   LabelSm,
   List,
   ListItem,
-  Skeleton,
   Stack,
   StackDivider,
   Icon,
   Divider,
-  SkeletonText,
-  SkeletonCircle,
   BodySm,
   BodyXs,
   Alert,
   AlertDescription,
   AlertIcon,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { IoCheckmarkSharp, IoTime as TimeIcon } from "react-icons/all"
 import { InlineTokenBalance } from "../../../components/TokenBalance"
@@ -70,7 +68,7 @@ import { PageComponent } from "../../../types"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
-import { TransactionDetailsAmountItem } from "../../../components/TransacionDetails"
+import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 
 export const DepositDetails: PageComponent = () => {
@@ -89,6 +87,8 @@ export const DepositDetails: PageComponent = () => {
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
   const { mintingRequestedTxHash, mintingFinalizedTxHash } =
     useSubscribeToOptimisticMintingEvents(depositKey)
+
+  const depositStatusTextColor = useColorModeValue("brand.500", "brand.300")
 
   // Cache the location state in component state.
   const [locationStateCache] = useState<{ shouldStartFromFirstStep?: boolean }>(
@@ -208,7 +208,11 @@ export const DepositDetails: PageComponent = () => {
                 <BridgeProcessCardTitle />
                 <Flex mb="4" alignItems="center" textStyle="bodyLg">
                   <BodyLg>
-                    <Box as="span" fontWeight="600" color="brand.500">
+                    <Box
+                      as="span"
+                      fontWeight="600"
+                      color={depositStatusTextColor}
+                    >
                       {mintingProgressStep === "completed"
                         ? "Minted"
                         : "Minting"}

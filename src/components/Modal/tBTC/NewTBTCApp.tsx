@@ -34,7 +34,7 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         <BodyLg mb="12" color="gray.500">
           Take note of the following before you proceed.
         </BodyLg>
-        <Flex justifyContent="center">
+        <Flex justifyContent="center" px="10">
           <TakeNoteList size="sm" />
         </Flex>
         <BodySm mt="4.5rem" px="4" textAlign="center" color="gray.500">

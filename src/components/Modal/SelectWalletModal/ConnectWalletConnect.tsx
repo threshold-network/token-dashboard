@@ -36,6 +36,7 @@ const ConnectWalletConnect: FC<{
         activate(walletConnect)
       }}
       walletType={WalletType.WalletConnect}
+      shouldForceCloseModal
     >
       <WalletConnectStatusAlert
         connectionRejected={connectionRejected}

@@ -3,6 +3,9 @@ import { WalletType } from "../enums"
 
 export interface WalletOption {
   id: WalletType
-  icon: FC
   title: string
+  icon: {
+    light: FC
+    dark: FC
+  }
 }

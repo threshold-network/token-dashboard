@@ -114,6 +114,12 @@ const AuthorizeStakingAppsPage: FC = () => {
     },
   }
 
+  const isFullyAuthorized = Object.values(appsAuthData).every(
+    ({ status, percentage }) =>
+      (status === "authorized" && percentage === 100) ||
+      status === "authorization-not-required"
+  )
+
   useEffect(() => {
     if (tbtcApp.isAuthorized) {
       setSelectedApps((selectedApps) =>
@@ -245,13 +251,17 @@ const AuthorizeStakingAppsPage: FC = () => {
             </AlertDescription>
           </AlertBox>
         )}
-        <AlertBox status="magic" alignItems="flex-start">
-          <AlertDescription color={alertTextColor}>
-            In order to earn rewards, please authorize Threshold apps to use
-            your stake. Note that you can authorize 100% of your stake for all
-            of the apps. You can change this amount at any time.
-          </AlertDescription>
-        </AlertBox>
+
+        {!isFullyAuthorized && (
+          <AlertBox status="magic" alignItems="flex-start">
+            <AlertDescription color={alertTextColor}>
+              In order to earn rewards, please authorize Threshold apps to use
+              your stake. Note that you can authorize 100% of your stake for all
+              of the apps. You can change this amount at any time.
+            </AlertDescription>
+          </AlertBox>
+        )}
+
         {stake === undefined ? (
           <BodyLg textAlign="center" mt="4">
             Loading stake data...

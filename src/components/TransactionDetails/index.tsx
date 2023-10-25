@@ -1,5 +1,10 @@
 import { ComponentProps, FC } from "react"
-import { BodySm, ListItem, Skeleton } from "@threshold-network/components"
+import {
+  BodySm,
+  ListItem,
+  Skeleton,
+  useColorModeValue,
+} from "@threshold-network/components"
 import { InlineTokenBalance } from "../TokenBalance"
 
 type TransactionDetailsItemProps = {
@@ -12,10 +17,12 @@ export const TransactionDetailsItem: FC<TransactionDetailsItemProps> = ({
   value,
   children,
 }) => {
+  const valueTextColor = useColorModeValue("gray.700", "gray.300")
+
   return (
     <ListItem display="flex" justifyContent="space-between" alignItems="center">
       <BodySm color="gray.500">{label}</BodySm>
-      {value ? <BodySm color="gray.700">{value}</BodySm> : children}
+      {value ? <BodySm color={valueTextColor}>{value}</BodySm> : children}
     </ListItem>
   )
 }
@@ -29,10 +36,12 @@ type TransactionDetailsAmountItemProps = Omit<
 export const TransactionDetailsAmountItem: FC<
   TransactionDetailsAmountItemProps
 > = ({ label, tokenAmount, ...restProps }) => {
+  const tokenBalanceTextColor = useColorModeValue("gray.700", "gray.300")
+
   return (
     <TransactionDetailsItem label={label}>
       <Skeleton isLoaded={!!tokenAmount}>
-        <BodySm color="gray.700">
+        <BodySm color={tokenBalanceTextColor}>
           <InlineTokenBalance
             withSymbol
             tokenAmount={tokenAmount || "0"}
