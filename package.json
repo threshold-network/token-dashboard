@@ -2,6 +2,9 @@
   "name": "token-dashboard",
   "version": "1.12.0-pre",
   "private": true,
+  "engines": {
+    "node": "<=16"
+  },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.7",
@@ -55,7 +58,7 @@
     "react": "^17.0.2",
     "react-confetti": "^6.0.1",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.3.1",
+    "react-icons": "<=4.3.1",
     "react-number-format": "^4.7.3",
     "react-qr-code": "^2.0.8",
     "react-redux": "^7.2.5",
@@ -65,9 +68,9 @@
     "web-vitals": "^1.0.1"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "craco --openssl-legacy-provider start",
     "start:dev": ". ./scripts/start_dashboard.sh",
-    "build": "craco build",
+    "build": "craco --openssl-legacy-provider build",
     "test": "craco test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js --ext .ts --ext .tsx .",
@@ -78,7 +81,7 @@
     "prepare": "husky install",
     "chromatic": "npx chromatic --exit-zero-on-changes",
     "cypress:open": "cypress open",
-    "gen:theme-typings": "chakra-cli tokens ./src/theme/index.ts",
+    "gen:theme-typings": "chakra-cli tokens ./src/theme/index.ts --out node_modules/@chakra-ui/styled-system/dist/declarations/src/theming.types.d.ts",
     "postinstall": "npm run gen:theme-typings",
     "add-components-lib": ". ./scripts/rebuild_components_package.sh"
   },
@@ -103,7 +106,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-class-properties": "^7.22.5",
-    "@chakra-ui/cli": "0.0.0-pr-20211126153854",
+    "@chakra-ui/cli": "2",
     "@craco/craco": "6.4.5",
     "@keep-network/prettier-config-keep": "github:keep-network/prettier-config-keep#d6ec02e",
     "@testing-library/react-hooks": "7.0.2",
