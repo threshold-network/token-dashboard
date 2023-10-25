@@ -7,10 +7,9 @@ on:
         required: false
         default: false
         type: boolean
-      # Currently the action only supports `environment` = `goerli`.
       environment:
         description: >
-          The environment on which the action should be used. For example `goerli`.
+          The environment on which the action should be used. For example `sepolia`.
           Will be used to deterine environment variables and decide which legacy
           packages should be used for building.
         required: true
@@ -28,7 +27,7 @@ on:
         description: >
           Tag which should be used to pull latest non-legacy `threshold-network` and
           `keep-network` packages with contracts (required if
-          `useUpstreamBuilds==false`). For example `dapp-dev-goerli`.
+          `useUpstreamBuilds==false`). For example `dapp-dev-sepolia`.
         required: false
         type: string
       gcpBucketName:
@@ -134,11 +133,6 @@ jobs:
             echo "tbtc-v2-contracts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}" >> $GITHUB_OUTPUT
             echo "tbtc-v2-ts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-ts-version }}" >> $GITHUB_OUTPUT
           fi
-
-      # Currently we only support `environment` = `goerli`. We provide explicit
-      # version of the `keep-core` package, because using `goerli` tag results
-      # in `expected manifest` error - probably caused by bug in Yarn:
-      # https://github.com/yarnpkg/yarn/issues/4731.
 
       - name: Resolve contracts
         shell: bash

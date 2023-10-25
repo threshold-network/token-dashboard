@@ -15,6 +15,10 @@ const PRE_ADDRESSESS = {
   // we're using a stub contract.
   [ChainID.Goerli.valueOf().toString()]:
     "0x829fdCDf6Be747FEA37518fBd83dF70EE371fCf2",
+  // TODO: deploy the `SimplePreApplication` stub contract on Sepolia and fill
+  // the address below.
+  // [ChainID.Sepolia.valueOf().toString()]:
+  //  "",
   // Set the correct `SimplePREApplication` contract address. If you deployed
   // the `@threshold-network/solidity-contracts` to your local chain and linked
   // package using `yarn link @threshold-network/solidity-contracts` you can

@@ -58,29 +58,29 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 `yarn`
 
-## Install Görli contracts
+## Install Sepolia contracts
 
 ```
-yarn upgrade @keep-network/coverage-pools@goerli \
-  @keep-network/ecdsa@goerli \
-  @keep-network/keep-core@goerli \
-  @keep-network/keep-ecdsa@goerli \
-  @keep-network/random-beacon@goerli \
-  @keep-network/tbtc@goerli \
-  @keep-network/tbtc-v2@goerli \
-  @keep-network/tbtc-v2.ts@goerli \
-  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@goerli \
-  @threshold-network/solidity-contracts@goerli
+yarn upgrade @keep-network/coverage-pools@sepolia \
+  @keep-network/ecdsa@sepolia \
+  @keep-network/keep-core@sepolia \
+  @keep-network/keep-ecdsa@sepolia \
+  @keep-network/random-beacon@sepolia \
+  @keep-network/tbtc@sepolia \
+  @keep-network/tbtc-v2@sepolia \
+  @keep-network/tbtc-v2.ts@sepolia \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
+  @threshold-network/solidity-contracts@sepolia
 ```
 
-**NOTE 1:** We use the same Goerli versions for both
+**NOTE 1:** We use the same Sepolia versions for both
 `@keep-network/coverage-pools` and `@threshold-network/coverage-pools`, because
-we don't have the newest version of the package on Goerli network, only on the
+we don't have the v1 version of the package on Sepolia network, only on the
 Mainnet.
 
 **NOTE 2:** If you encounter an `expected manifest` error while executing this,
 then try providing an explicit version of the `keep-core` package:
-`@keep-network/keep-core@1.8.1-goerli.0`
+`@keep-network/keep-core@1.8.1-sepolia.0`
 The error is probably caused by a bug in Yarn:
 https://github.com/yarnpkg/yarn/issues/4731.
 
@@ -111,7 +111,7 @@ The following procedure allows to deploy T token dashboard to production:
    `releases/mainnet/<version>`. Release branch should never be merged to `main`
    and creating a PR with a release branch is not required.
    Dependencies and project version needs to be updated on the release branch.
-   All `-dev`, `-goerli` dependencies need to be updated to mainnet versions.
+   All `-dev`, `-sepolia` dependencies need to be updated to mainnet versions.
    See [this commit](https://github.com/threshold-network/token-dashboard/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
    for `v1.0.0` release as a good example.
 2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`

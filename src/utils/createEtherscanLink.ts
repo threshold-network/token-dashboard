@@ -1,9 +1,7 @@
 const ETHERSCAN_PREFIXES: { [chainId: number]: string } = {
   1: "",
-  3: "ropsten.",
-  4: "rinkeby.",
   5: "goerli.",
-  42: "kovan.",
+  11155111: "sepolia.",
 }
 
 export enum ExplorerDataType {
