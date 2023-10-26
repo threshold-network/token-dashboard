@@ -9,7 +9,7 @@ const tokenIcons = [
   "T_CIRCLE_BRAND",
 ] as const
 
-export type TokenIcon = typeof tokenIcons[number]
+export type TokenIcon = (typeof tokenIcons)[number]
 
 const tokenIconMap: Record<TokenIcon, ComponentType> = {
   KEEP_CIRCLE_BRAND: KeepCircleBrand,
