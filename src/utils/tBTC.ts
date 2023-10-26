@@ -5,15 +5,12 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
-import { getThresholdLib } from "./getThresholdLib"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
 
 const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1", "3"] as const
 const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "2"] as const
-
-const bitcoinNetwork = getThresholdLib().tbtc.bitcoinNetwork
 
 type SupportedBitcoinNetworks = Exclude<BitcoinNetwork, "unknown">
 

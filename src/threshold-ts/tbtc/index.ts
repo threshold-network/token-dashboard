@@ -54,7 +54,6 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { getThresholdLib } from "../../utils/getThresholdLib"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
