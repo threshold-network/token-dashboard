@@ -76,7 +76,14 @@ export const ExplorerPage: PageComponent = () => {
         </Flex>
         <Divider my="8" />
         <Flex direction={{ base: "column", xl: "row" }} alignItems="center">
-          <H1>{formatFiatCurrencyAmount(tvlInUSD.tBTC, "0,00.00")} USD</H1>
+          <H1
+            fontSize={{
+              base: "clamp(24px, 8vw, 48px)",
+              xl: "60px",
+            }}
+          >
+            {formatFiatCurrencyAmount(tvlInUSD.tBTC, "0,00.00")} USD
+          </H1>
           <ButtonLink
             size="lg"
             variant="outline"
