@@ -5,8 +5,7 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
-import { supportedChainId } from "./getEnvVariable"
-import { ChainID } from "../enums"
+import { getThresholdLib } from "./getThresholdLib"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
@@ -14,10 +13,7 @@ const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
 const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1", "3"] as const
 const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "2"] as const
 
-const bitcoinNetwork =
-  supportedChainId === ChainID.Ethereum.toString()
-    ? BitcoinNetwork.Mainnet
-    : BitcoinNetwork.Testnet
+const bitcoinNetwork = getThresholdLib().tbtc.bitcoinNetwork
 
 type SupportedBitcoinNetworks = Exclude<BitcoinNetwork, "unknown">
 
@@ -110,7 +106,7 @@ export class RedemptionDetailsLinkBuilder {
     return this
   }
 
-  withBitcoinAddress = (btcAddress: string) => {
+  withBitcoinAddress = (btcAddress: string, bitcoinNetwork: BitcoinNetwork) => {
     const redeemerOutputScript = createOutputScriptFromAddress(
       btcAddress,
       bitcoinNetwork
@@ -172,11 +168,12 @@ export const buildRedemptionDetailsLink = (
   txHash: string,
   redeemer: string,
   walletPublicKey: string,
-  btcAddress: string
+  btcAddress: string,
+  bitcoinNetwork: BitcoinNetwork
 ): string => {
   return RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
     .withRedeemer(redeemer)
     .withWalletPublicKey(walletPublicKey)
-    .withBitcoinAddress(btcAddress)
+    .withBitcoinAddress(btcAddress, bitcoinNetwork)
     .build()
 }

@@ -13,6 +13,7 @@ import {
 import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   useRedemptionEstimatedFees,
   useRequestRedemption,
@@ -53,6 +54,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   const { account } = useWeb3React()
   const { estimatedBTCAmount, thresholdNetworkFee } =
     useRedemptionEstimatedFees(unmintAmount)
+  const threshold = useThreshold()
 
   const onSuccess: OnSuccessCallback = (receipt) => {
     navigate(
@@ -60,7 +62,8 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         receipt.transactionHash,
         account!,
         wallet.walletPublicKey,
-        btcAddress
+        btcAddress,
+        threshold.tbtc.bitcoinNetwork
       )
     )
     closeModal()

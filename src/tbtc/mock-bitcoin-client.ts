@@ -17,8 +17,6 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
 import { BitcoinNetwork } from "../threshold-ts/types"
-import { supportedChainId } from "../utils/getEnvVariable"
-import { ChainID } from "../enums"
 
 const testnetTransactionHash = TransactionHash.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
@@ -40,10 +38,11 @@ export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
   ...testnetTransaction,
 }
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
-const bitcoinNetwork =
-  supportedChainId === ChainID.Ethereum.toString()
-    ? BitcoinNetwork.Mainnet
-    : BitcoinNetwork.Testnet
+
+/**
+ * The average transaction fee for the Bitcoin network, ~ 0.00047 BTC.
+ * This value is used to calculate the fee for transactions on the Bitcoin network.
+ */
 const bitcoinNetworkTransactionFee = BigNumber.from("47000")
 
 export class MockBitcoinClient implements Client {
@@ -128,15 +127,13 @@ export class MockBitcoinClient implements Client {
         refundLocktime,
         blindingFactor,
       } = tbtc
+      const network = await this.getNetwork()
 
       const depositScriptParameters: DepositScriptParameters = {
         depositor: getChainIdentifier(ethAddress),
         blindingFactor: blindingFactor,
         walletPublicKeyHash: walletPublicKeyHash,
-        refundPublicKeyHash: decodeBitcoinAddress(
-          btcRecoveryAddress,
-          bitcoinNetwork
-        ),
+        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress, network),
         refundLocktime: refundLocktime,
       }
 
@@ -177,7 +174,7 @@ export class MockBitcoinClient implements Client {
       depositUtxo,
       rawTransaction: transaction,
     } = await assembleDepositTransaction(
-      bitcoinNetwork,
+      network,
       deposit,
       testnetPrivateKey,
       true,
@@ -203,7 +200,7 @@ export class MockBitcoinClient implements Client {
       depositUtxo: depositUtxo2,
       rawTransaction: transaction2,
     } = await assembleDepositTransaction(
-      bitcoinNetwork,
+      network,
       deposit2,
       testnetPrivateKey,
       true,

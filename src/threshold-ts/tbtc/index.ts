@@ -54,8 +54,7 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { supportedChainId } from "../../utils/getEnvVariable"
-import { ChainID } from "../../enums"
+import { getThresholdLib } from "../../utils/getThresholdLib"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -405,11 +404,6 @@ export interface ITBTC {
   }>
 }
 
-const bitcoinNetwork =
-  supportedChainId === ChainID.Ethereum.toString()
-    ? BitcoinNetwork.Mainnet
-    : BitcoinNetwork.Testnet
-
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
   private _tbtcVault: Contract
@@ -529,7 +523,7 @@ export class TBTC implements ITBTC {
 
     const refundPublicKeyHash = decodeBitcoinAddress(
       btcRecoveryAddress,
-      bitcoinNetwork
+      this.bitcoinNetwork
     )
 
     const refundLocktime = calculateDepositRefundLocktime(
@@ -960,7 +954,7 @@ export class TBTC implements ITBTC {
     const tx = await requestRedemption(
       walletPublicKey,
       _mainUtxo,
-      createOutputScriptFromAddress(btcAddress, bitcoinNetwork).toString(),
+      createOutputScriptFromAddress(btcAddress, this.bitcoinNetwork).toString(),
       BigNumber.from(amount),
       this._token
     )
@@ -981,7 +975,7 @@ export class TBTC implements ITBTC {
 
     const redeemerOutputScript = createOutputScriptFromAddress(
       btcAddress,
-      bitcoinNetwork
+      this.bitcoinNetwork
     ).toString()
 
     return await findWalletForRedemption(
