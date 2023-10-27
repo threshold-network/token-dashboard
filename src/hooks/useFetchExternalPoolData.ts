@@ -16,7 +16,7 @@ const pools = {
 } as const
 
 type ExternalPool = keyof typeof pools
-type ExternalPoolId<T extends ExternalPool> = (typeof pools)[T][number]
+type ExternalPoolId<T extends ExternalPool> = typeof pools[T][number]
 
 const fetchCurvePool: (
   poolId: ExternalPoolId<"curve">
