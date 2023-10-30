@@ -11,18 +11,19 @@ import {
   Flex,
   Image,
 } from "@threshold-network/components"
+import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
+import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
+import { BaseModalProps } from "../../../types"
+import ButtonLink from "../../ButtonLink"
 import { TakeNoteList } from "../../tBTC"
 import withBaseModal from "../withBaseModal"
-import tbtcAppBannerIllustration from "../../../static/images/tBTCAppBannerWithGrid.svg"
-import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
-import { BaseModalProps } from "../../../types"
 
 const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
   const { accept } = useTBTCTerms()
 
   return (
     <>
-      <ModalHeader></ModalHeader>
+      <ModalHeader />
       <ModalBody>
         <Image
           src={tbtcAppBannerIllustration}
@@ -43,7 +44,16 @@ const NewTBTCAppBase: FC<BaseModalProps> = ({ closeModal }) => {
         </BodySm>
         <Divider mt="2" />
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter gap="4">
+        <ButtonLink
+          variant="outline"
+          to="/tBTC/how-it-works"
+          onClick={() => {
+            closeModal()
+          }}
+        >
+          How it Works
+        </ButtonLink>
         <Button
           onClick={() => {
             accept()
