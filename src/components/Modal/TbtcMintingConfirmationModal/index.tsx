@@ -63,7 +63,10 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       depositor: getChainIdentifier(ethAddress),
       blindingFactor,
       walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+      refundPublicKeyHash: decodeBitcoinAddress(
+        btcRecoveryAddress,
+        threshold.tbtc.bitcoinNetwork
+      ),
       refundLocktime,
     }
 

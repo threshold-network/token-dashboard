@@ -39,6 +39,12 @@ export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
 }
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
 
+/**
+ * The average transaction fee for the Bitcoin network, ~ 0.00047 BTC.
+ * This value is used to calculate the fee for transactions on the Bitcoin network.
+ */
+const bitcoinNetworkTransactionFee = BigNumber.from("47000")
+
 export class MockBitcoinClient implements Client {
   private _unspentTransactionOutputs = new Map<
     string,
@@ -121,12 +127,13 @@ export class MockBitcoinClient implements Client {
         refundLocktime,
         blindingFactor,
       } = tbtc
+      const network = await this.getNetwork()
 
       const depositScriptParameters: DepositScriptParameters = {
         depositor: getChainIdentifier(ethAddress),
         blindingFactor: blindingFactor,
         walletPublicKeyHash: walletPublicKeyHash,
-        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
+        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress, network),
         refundLocktime: refundLocktime,
       }
 
@@ -162,16 +169,17 @@ export class MockBitcoinClient implements Client {
       ...depositScriptParameters,
       amount: BigNumber.from("1000000"),
     }
-
     const {
       transactionHash,
       depositUtxo,
       rawTransaction: transaction,
     } = await assembleDepositTransaction(
+      network,
       deposit,
-      [testnetUTXO],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUTXO],
+      bitcoinNetworkTransactionFee
     )
 
     // mock second deposit transaction
@@ -192,10 +200,12 @@ export class MockBitcoinClient implements Client {
       depositUtxo: depositUtxo2,
       rawTransaction: transaction2,
     } = await assembleDepositTransaction(
+      network,
       deposit2,
-      [testnetUtxo2],
       testnetPrivateKey,
-      true
+      true,
+      [testnetUtxo2],
+      bitcoinNetworkTransactionFee
     )
 
     const utxos = new Map<string, UnspentTransactionOutput[]>()

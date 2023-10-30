@@ -520,7 +520,10 @@ export class TBTC implements ITBTC {
 
     const walletPublicKeyHash = computeHash160(walletPublicKey)
 
-    const refundPublicKeyHash = decodeBitcoinAddress(btcRecoveryAddress)
+    const refundPublicKeyHash = decodeBitcoinAddress(
+      btcRecoveryAddress,
+      this.bitcoinNetwork
+    )
 
     const refundLocktime = calculateDepositRefundLocktime(
       currentTimestamp,
@@ -950,7 +953,7 @@ export class TBTC implements ITBTC {
     const tx = await requestRedemption(
       walletPublicKey,
       _mainUtxo,
-      createOutputScriptFromAddress(btcAddress).toString(),
+      createOutputScriptFromAddress(btcAddress, this.bitcoinNetwork).toString(),
       BigNumber.from(amount),
       this._token
     )
@@ -969,8 +972,10 @@ export class TBTC implements ITBTC {
     }
     const { satoshis } = this._amountToSatoshi(amount)
 
-    const redeemerOutputScript =
-      createOutputScriptFromAddress(btcAddress).toString()
+    const redeemerOutputScript = createOutputScriptFromAddress(
+      btcAddress,
+      this.bitcoinNetwork
+    ).toString()
 
     return await findWalletForRedemption(
       satoshis,
