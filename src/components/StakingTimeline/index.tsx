@@ -196,13 +196,15 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         <BoxLabel status="secondary">Staking Timeline</BoxLabel>
         <FlowStep
           size="sm"
-          fontSize="sm"
           title="Stake Tokens"
           preTitle="Step 1"
           status={statuses[0] ?? FlowStepStatus.active}
           isDescriptionArrowHidden
         >
-          Enter the Provider, Beneficiary, and Authorizer addresses. These will
+          <BodySm>
+            Enter the Provider, Beneficiary, and Authorizer addresses. These
+            will
+          </BodySm>
           be automatically set to your wallet address. If you want to use a
           Staking Provider, here is{" "}
           <Link to={STAKING_PROVIDER_URL}>a list</Link>.
@@ -215,9 +217,12 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           status={statuses[1] ?? FlowStepStatus.inactive}
           isDescriptionArrowHidden
         >
-          For each stake, there are three applications available. PRE does not
-          require authorization. To authorize tBTC and Random Beacon, go to the{" "}
-          <Link to="/staking">Staking page</Link> and select “Configure Stake”.
+          <BodySm>
+            For each stake, there are three applications available. PRE does not
+            require authorization. To authorize tBTC and Random Beacon, go to
+            the <Link to="/staking">Staking page</Link> and select “Configure
+            Stake”.
+          </BodySm>
         </FlowStep>
         <FlowStep
           size="sm"
@@ -227,10 +232,12 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           status={statuses[2] ?? FlowStepStatus.inactive}
           isDescriptionArrowHidden
         >
-          You will need to run a node for applications that you have authorized
-          to earn rewards. If you don’t have one, learn how to do it{" "}
-          <Link to={APPLICATION_DOCS_URL}>here</Link> or contact a{" "}
-          <Link to={STAKING_PROVIDER_URL}>Staking Provider</Link>.
+          <BodySm>
+            You will need to run a node for applications that you have
+            authorized to earn rewards. If you don’t have one, learn how to do
+            it <Link to={APPLICATION_DOCS_URL}>here</Link> or contact a{" "}
+            <Link to={STAKING_PROVIDER_URL}>Staking Provider</Link>.
+          </BodySm>
         </FlowStep>
       </Stack>
     )
