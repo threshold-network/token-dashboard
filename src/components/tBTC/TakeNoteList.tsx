@@ -60,17 +60,6 @@ export const TakeNoteList: FC<{ size?: "sm" | "md" }> = ({ size = "md" }) => {
           </ListItemWithIcon>
         </List>
       </ListItem>
-      <ListItem>
-        <LabelComponent mb="2">Bridging back btc is LIVE</LabelComponent>
-        <List spacing="2">
-          <ListItemWithIcon>
-            <BodyComponent>
-              You can bridge your BTC back whenever you want. Redemptions are
-              now live.
-            </BodyComponent>
-          </ListItemWithIcon>
-        </List>
-      </ListItem>
     </List>
   )
 }
