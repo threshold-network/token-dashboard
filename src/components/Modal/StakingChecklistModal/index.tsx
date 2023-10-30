@@ -1,15 +1,18 @@
 import { FC } from "react"
 import {
+  BodyLg,
+  FlowStepStatus,
+  H5,
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Button,
   Divider,
-  Flex,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Stack,
   useColorModeValue,
-} from "@chakra-ui/react"
-import { BodyLg, BodySm, H5 } from "@threshold-network/components"
+} from "@threshold-network/components"
 import withBaseModal from "../withBaseModal"
 import { useModal } from "../../../hooks/useModal"
 import { BaseModalProps } from "../../../types"
@@ -28,29 +31,27 @@ const StakingChecklistModal: FC<BaseModalProps & { stakeAmount: string }> = ({
   return (
     <>
       <ModalHeader display="flex" alignItems="baseline">
-        <H5 mr={2}>Stake Tokens</H5>
-        <BodySm>(Step 1)</BodySm>
+        <H5 mr={2}>Staking timeline</H5>
       </ModalHeader>
-      <ModalCloseButton />
-      <ModalBody>
-        <Stack spacing={6}>
-          <InfoBox variant="modal">
-            <BodyLg color={useColorModeValue("gray.700", "white")} as="span">
-              <H5 mb={4}>Staking in Threshold requires running a node</H5>
-              <BodyLg>
-                Please review the staking timeline below for a handy overview of
-                the staking requirements.
-              </BodyLg>
-            </BodyLg>
-          </InfoBox>
-          <Divider />
-          <StakingTimeline />
-          <StakingContractLearnMore mt="4rem !important" />
-          <Divider />
-        </Stack>
+      <ModalCloseButton top="3" />
+      <ModalBody py="0">
+        <InfoBox variant="modal">
+          <H5 as="p" color={useColorModeValue("gray.700", "white")}>
+            Review the timeline carefully for an overview of the requirements.
+          </H5>
+        </InfoBox>
+        <StakingTimeline mt="4" statuses={[FlowStepStatus.inactive]} />
+        <Alert status="warning" mt="6">
+          <AlertIcon />
+          <AlertDescription color={useColorModeValue("gray.700", "white")}>
+            Staking in Threshold requires running a node.
+          </AlertDescription>
+        </Alert>
+        <StakingContractLearnMore mt="10" mb="4" />
+        <Divider />
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={closeModal} variant="outline" mr={2}>
+      <ModalFooter p="6">
+        <Button onClick={closeModal} variant="outline" mr={3}>
           Cancel
         </Button>
         <Button
