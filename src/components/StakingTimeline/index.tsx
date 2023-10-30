@@ -211,7 +211,6 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         </FlowStep>
         <FlowStep
           size="sm"
-          fontSize="sm"
           title="Authorize Apps"
           preTitle="Step 2"
           status={statuses[1] ?? FlowStepStatus.inactive}
@@ -226,7 +225,6 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         </FlowStep>
         <FlowStep
           size="sm"
-          fontSize="sm"
           title="Set up node"
           preTitle="Step 3"
           status={statuses[2] ?? FlowStepStatus.inactive}
