@@ -10,7 +10,7 @@ on:
       environment:
         description: >
           The environment on which the action should be used. For example `sepolia`.
-          Will be used to deterine environment variables and decide which legacy
+          Will be used to determine environment variables and decide which legacy
           packages should be used for building.
         required: true
         type: string
