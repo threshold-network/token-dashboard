@@ -127,6 +127,7 @@ Replace the following dependencies in `package.json`:
     "@keep-network/tbtc-v2": "goerli",
     "@threshold-network/solidity-contracts": "goerli",
     "@threshold-network/coverage-pools": "npm:@keep-network/coverage-pools@goerli",
+    "@keep-network/tbtc-v2.ts": "1.4.1-goerli.0",
 ```
 
 Update `.env` to contain:

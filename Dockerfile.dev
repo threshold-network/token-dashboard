@@ -1,5 +1,5 @@
 # Use the specified image
-FROM node:14-buster-slim
+FROM node:18-buster-slim
 
 # Set the working directory
 WORKDIR /app
@@ -16,6 +16,7 @@ ENV NODE_OPTIONS=--max_old_space_size=3072
 
 # Copy package files and install node modules
 COPY package*.json yarn.lock ./
+RUN npm install -g node-gyp
 RUN yarn install
 
 # Expose port 3000
