@@ -17387,6 +17387,22 @@ tar@^6.0.2:
     mkdirp "^1.0.3"
     yallist "^4.0.0"
 
+"tbtc-sdk-v2@npm:@keep-network/tbtc-v2.ts@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.0.0.tgz#2fa9ae5c11d0fc0516e5c1c74ece107c1c57e575"
+  integrity sha512-rc3A10bXdukDY1ptMUccvFsF/kfYwWIe468o2Ek1aDit3omPZBob3Nc77mn6Ep42peraE6SlJJGbwUro4KSTdg==
+  dependencies:
+    "@keep-network/ecdsa" development
+    "@keep-network/tbtc-v2" development
+    bitcoinjs-lib "^6.1.5"
+    bufio "^1.0.6"
+    ecpair "^2.1.0"
+    electrum-client-js "git+https://github.com/keep-network/electrum-client-js.git#v0.1.1"
+    ethers "^5.5.2"
+    p-timeout "^4.1.0"
+    tiny-secp256k1 "^2.2.3"
+    wif "2.0.6"
+
 temp-dir@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/temp-dir/-/temp-dir-1.0.0.tgz#0a7c0ea26d3a39afa7e0ebea9c1fc0bc4daa011d"
