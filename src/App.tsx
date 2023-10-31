@@ -59,6 +59,7 @@ import {
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
 import { useEmbedFeatureFlag } from "./hooks/useEmbedFeatureFlag"
+import TBTC from "./pages/tBTC"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -207,12 +208,15 @@ const Layout = () => {
 }
 
 const Routing = () => {
+  const { isEmbed } = useEmbedFeatureFlag()
+  const finalPages = isEmbed ? [TBTC] : pages
+  const to = isEmbed ? "tBTC" : "overview"
   return (
     <Routes>
       <Route path="*" element={<Layout />}>
-        <Route index element={<Navigate to="overview" />} />
-        {pages.map(renderPageComponent)}
-        <Route path="*" element={<Navigate to="overview" />} />
+        <Route index element={<Navigate to={to} />} />
+        {finalPages.map(renderPageComponent)}
+        <Route path="*" element={<Navigate to={to} />} />
       </Route>
     </Routes>
   )
