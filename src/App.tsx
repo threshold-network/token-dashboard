@@ -189,12 +189,13 @@ const AppBody = () => {
 }
 
 const Layout = () => {
+  const { isEmbed } = useEmbedFeatureFlag()
   return (
     <Box display="flex">
-      <Sidebar />
+      {!isEmbed && <Sidebar />}
       <Box
         // 100% - 80px is to account for the sidebar
-        w={{ base: "100%", md: "calc(100% - 80px)" }}
+        w={{ base: "100%", md: isEmbed ? "100%" : "calc(100% - 80px)" }}
         bg={useColorModeValue("transparent", "gray.900")}
       >
         <Navbar />
