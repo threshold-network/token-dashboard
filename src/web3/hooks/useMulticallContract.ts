@@ -13,7 +13,6 @@ const MULTICALL_ABI = [
 const MULTICALL_ADDRESSESS = {
   [ChainID.Ethereum.valueOf()]: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
   [ChainID.Goerli.valueOf()]: "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
-  // TODO: Make sure the below address for Sepolia is the one that we can use.
   // The `makerdao/multicall` repo is deprecated and there is a third-party
   // fork that deployed Multicall3:
   // https://github.com/mds1/multicall#existing-deployments.

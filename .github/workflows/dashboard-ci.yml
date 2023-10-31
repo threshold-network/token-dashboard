@@ -91,7 +91,6 @@ jobs:
           ETH_HOSTNAME_HTTP: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
           ETH_HOSTNAME_WS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
           NODE_OPTIONS: --max_old_space_size=4096
-          # TODO: Do below secrets need to be different for Sepolia and Goerli?
           ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
           ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
