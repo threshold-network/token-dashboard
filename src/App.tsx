@@ -58,6 +58,7 @@ import {
   useSubscribeToRedemptionRequestedEvent,
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
+import { useEmbedFeatureFlag } from "./hooks/useEmbedFeatureFlag"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -129,6 +130,13 @@ const useSubscribeToVendingMachineContractEvents = () => {
 const AppBody = () => {
   const dispatch = useDispatch()
   const { connector, account, deactivate } = useWeb3React()
+  const { enableIsEmbedFeatureFlag } = useEmbedFeatureFlag()
+
+  const params = new URLSearchParams(window.location.search)
+  if (params.get("embed")) {
+    console.log("Application is embed.")
+    enableIsEmbedFeatureFlag()
+  }
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
