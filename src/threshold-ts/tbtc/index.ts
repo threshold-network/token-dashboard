@@ -54,6 +54,7 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
+import { TBTC as SDK } from "tbtc-sdk-v2"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -177,6 +178,8 @@ export interface ITBTC {
   readonly vaultContract: Contract
 
   readonly tokenContract: Contract
+
+  readonly sdk: SDK
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -418,8 +421,8 @@ export class TBTC implements ITBTC {
   private _depositRefundLocktimDuration = 23328000
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
-
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
+  private _sdk?: SDK
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -471,6 +474,20 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
+    this._handleSDKInitialization(ethereumConfig)
+  }
+
+  private async _handleSDKInitialization(ethereumConfig: EthereumConfig) {
+    const initailizeFunction =
+      this.bitcoinNetwork === BitcoinNetwork.Mainnet
+        ? SDK.initializeMainnet
+        : SDK.initializeGoerli
+
+    this._sdk = await initailizeFunction(ethereumConfig.providerOrSigner)
+  }
+
+  get sdk(): SDK {
+    return this._sdk!
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
