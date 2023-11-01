@@ -1,22 +1,22 @@
-import { LedgerLiveEthereumSigner } from "./signer"
+import { LedgerLiveAppEthereumSigner } from "./signer"
 import { Provider } from "@ethersproject/providers"
 import { getWalletAPIClient, getWindowMessageTransport } from "../wallet-api"
 import { Account } from "@ledgerhq/wallet-api-client"
 
-export class EthereumManager {
-  private _signer: LedgerLiveEthereumSigner
+export class LedgerLiveAppEthereumManager {
+  private _signer: LedgerLiveAppEthereumSigner
 
   constructor(provider: Provider) {
     const windowMessageTransport = getWindowMessageTransport()
     const walletApiClient = getWalletAPIClient(windowMessageTransport)
-    this._signer = new LedgerLiveEthereumSigner(
+    this._signer = new LedgerLiveAppEthereumSigner(
       provider,
       windowMessageTransport,
       walletApiClient
     )
   }
 
-  get signer(): LedgerLiveEthereumSigner {
+  get signer(): LedgerLiveAppEthereumSigner {
     return this._signer
   }
 
