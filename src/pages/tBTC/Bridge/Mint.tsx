@@ -16,6 +16,8 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { useAppSelector } from "../../../hooks/store"
+import { selectAccountState } from "../../../store/account"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -68,12 +70,12 @@ MintingFormPage.route = {
 }
 
 const MintPageLayout: PageComponent = () => {
-  const { active } = useWeb3React()
+  const { address } = useAppSelector(selectAccountState)
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {active ? (
+        {address ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />
