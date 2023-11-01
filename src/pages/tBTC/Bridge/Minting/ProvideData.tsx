@@ -26,6 +26,8 @@ import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
+import { useAppSelector } from "../../../../hooks/store"
+import { selectAccountState } from "../../../../store/account"
 
 export interface FormValues {
   ethAddress: string
@@ -107,14 +109,14 @@ export const ProvideDataComponent: FC<{
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
-  const { account } = useWeb3React()
+  const { address } = useAppSelector(selectAccountState)
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
   const textColor = useColorModeValue("gray.500", "gray.300")
 
   const onSubmit = async (values: FormValues) => {
-    if (account && !isSameETHAddress(values.ethAddress, account)) {
+    if (address && !isSameETHAddress(values.ethAddress, address)) {
       throw new Error(
         "The account used to generate the deposit address must be the same as the connected wallet."
       )
@@ -180,7 +182,7 @@ export const ProvideDataComponent: FC<{
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={account!}
+        initialEthAddress={address}
         btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
