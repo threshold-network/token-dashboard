@@ -11,7 +11,7 @@ import { Hex } from "@keep-network/tbtc-v2.ts"
 import { AddressZero } from "@ethersproject/constants"
 import { Deferrable } from "@ethersproject/properties"
 
-export class LedgerLiveEthereumSigner extends Signer {
+export class LedgerLiveAppEthereumSigner extends Signer {
   private _walletApiClient: WalletAPIClient
   private _windowMessageTransport: WindowMessageTransport
   private _account: Account | undefined
@@ -158,7 +158,7 @@ export class LedgerLiveEthereumSigner extends Signer {
   }
 
   connect(provider: ethers.providers.Provider): Signer {
-    return new LedgerLiveEthereumSigner(
+    return new LedgerLiveAppEthereumSigner(
       provider,
       this._windowMessageTransport,
       this._walletApiClient
