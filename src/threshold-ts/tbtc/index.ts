@@ -54,6 +54,7 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
+import { LedgerLiveAppManager } from "../../ledger-live-app-manager"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -177,6 +178,8 @@ export interface ITBTC {
   readonly vaultContract: Contract
 
   readonly tokenContract: Contract
+
+  readonly ledgerLiveAppManager: LedgerLiveAppManager | undefined
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -421,10 +424,13 @@ export class TBTC implements ITBTC {
 
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
 
+  private _ledgerLiveAppManager: LedgerLiveAppManager | undefined
+
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
-    multicall: IMulticall
+    multicall: IMulticall,
+    ledgerLiveAppManager?: LedgerLiveAppManager
   ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
@@ -471,6 +477,11 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
+    this._ledgerLiveAppManager = ledgerLiveAppManager
+  }
+
+  get ledgerLiveAppManager(): LedgerLiveAppManager | undefined {
+    return this._ledgerLiveAppManager
   }
 
   get bitcoinNetwork(): BitcoinNetwork {

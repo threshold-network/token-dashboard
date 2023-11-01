@@ -31,7 +31,12 @@ export class Threshold {
       this.multicall,
       config.ethereum
     )
-    this.tbtc = new TBTC(config.ethereum, config.bitcoin, this.multicall)
+    this.tbtc = new TBTC(
+      config.ethereum,
+      config.bitcoin,
+      this.multicall,
+      config.ledgerLiveAppManager
+    )
   }
 
   updateConfig = (config: ThresholdConfig) => {

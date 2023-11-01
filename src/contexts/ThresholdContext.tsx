@@ -25,6 +25,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           account,
         },
         bitcoin: threshold.config.bitcoin,
+        ledgerLiveAppManager: threshold.config.ledgerLiveAppManager,
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
@@ -36,6 +37,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
         bitcoin: threshold.config.bitcoin,
+        ledgerLiveAppManager: threshold.config.ledgerLiveAppManager,
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }
