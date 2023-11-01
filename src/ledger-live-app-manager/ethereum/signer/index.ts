@@ -14,7 +14,7 @@ import { Deferrable } from "@ethersproject/properties"
 export class LedgerLiveEthereumSigner extends Signer {
   private _walletApiClient: WalletAPIClient
   private _windowMessageTransport: WindowMessageTransport
-  account: Account | undefined
+  private _account: Account | undefined
 
   constructor(
     provider: ethers.providers.Provider,
@@ -27,43 +27,47 @@ export class LedgerLiveEthereumSigner extends Signer {
     this._walletApiClient = walletApiClient
   }
 
+  get account() {
+    return this._account
+  }
+
   async requestAccount(
     params: { currencyIds?: string[] | undefined } | undefined
   ): Promise<Account> {
     this._windowMessageTransport.connect()
-    const _account = await this._walletApiClient.account.request(params)
+    const account = await this._walletApiClient.account.request(params)
     this._windowMessageTransport.disconnect()
-    this.account = _account
-    return this.account
+    this._account = account
+    return this._account
   }
 
   getAccountId(): string {
-    if (!this.account || !this.account.id) {
+    if (!this._account || !this._account.id) {
       throw new Error(
         "Account not found. Please use `requestAccount` method first."
       )
     }
-    return this.account.id
+    return this._account.id
   }
 
   async getAddress(): Promise<string> {
-    if (!this.account || !this.account.address) {
+    if (!this._account || !this._account.address) {
       throw new Error(
         "Account not found. Please use `requestAccount` method first."
       )
     }
-    return this.account.address
+    return this._account.address
   }
 
   async signMessage(message: string): Promise<string> {
-    if (!this.account || !this.account.address) {
+    if (!this._account || !this._account.address) {
       throw new Error(
         "Account not found. Please use `requestAccount` method first."
       )
     }
     this._windowMessageTransport.connect()
     const buffer = await this._walletApiClient.message.sign(
-      this.account.id,
+      this._account.id,
       Buffer.from(message)
     )
     this._windowMessageTransport.disconnect()
@@ -73,7 +77,7 @@ export class LedgerLiveEthereumSigner extends Signer {
   async signTransaction(
     transaction: ethers.providers.TransactionRequest
   ): Promise<string> {
-    if (!this.account || !this.account.address) {
+    if (!this._account || !this._account.address) {
       throw new Error(
         "Account not found. Please use `requestAccount` method first."
       )
@@ -100,7 +104,7 @@ export class LedgerLiveEthereumSigner extends Signer {
 
     this._windowMessageTransport.connect()
     const buffer = await this._walletApiClient.transaction.sign(
-      this.account.id,
+      this._account.id,
       ethereumTransaction
     )
     this._windowMessageTransport.disconnect()
@@ -110,7 +114,7 @@ export class LedgerLiveEthereumSigner extends Signer {
   async sendTransaction(
     transaction: Deferrable<ethers.providers.TransactionRequest>
   ): Promise<ethers.providers.TransactionResponse> {
-    if (!this.account || !this.account.address) {
+    if (!this._account || !this._account.address) {
       throw new Error(
         "Account not found. Please use `requestAccount` method first."
       )
@@ -138,7 +142,7 @@ export class LedgerLiveEthereumSigner extends Signer {
     this._windowMessageTransport.connect()
     const transactionHash =
       await this._walletApiClient.transaction.signAndBroadcast(
-        this.account.id,
+        this._account.id,
         ethereumTransaction
       )
     this._windowMessageTransport.disconnect()
