@@ -23,6 +23,7 @@
     "@keep-network/tbtc-v2": "development",
     "@keep-network/tbtc-v2.ts": "2.0.0-dev.0",
     "@ledgerhq/connect-kit-loader": "^1.1.2",
+    "@ledgerhq/wallet-api-client": "^1.2.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
     "@sentry/react": "^7.33.0",
