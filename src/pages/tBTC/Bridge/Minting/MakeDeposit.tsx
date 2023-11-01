@@ -1,4 +1,4 @@
-import { FC, ComponentProps } from "react"
+import { FC, ComponentProps, useCallback } from "react"
 import {
   BodyMd,
   Box,
@@ -24,6 +24,8 @@ import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
+import { useEmbedFeatureFlag } from "../../../../hooks/useEmbedFeatureFlag"
+import { useRequestBitcoinAccount } from "../../../../hooks/ledger-live-app"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -121,6 +123,15 @@ const MakeDepositComponent: FC<{
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
 
+  const { isEmbed } = useEmbedFeatureFlag()
+  const { requestAccount, account: ledgerBitcoinAccount } =
+    useRequestBitcoinAccount()
+
+  const chooseBitcoinAccount = useCallback(async () => {
+    // TODO: Use currencyId based on the chainId that is used
+    await requestAccount({ currencyIds: ["bitcoin_testnet"] })
+  }, [requestAccount])
+
   return (
     <>
       <BridgeProcessCardTitle
@@ -166,14 +177,38 @@ const MakeDepositComponent: FC<{
         ]}
       />
       {/* TODO: No need to use button here. We can replace it with just some text */}
+      {isEmbed && !!ledgerBitcoinAccount?.address && (
+        <AddressRow
+          text="Bitcoin account"
+          address={ledgerBitcoinAccount.address}
+        />
+      )}
+      {isEmbed && (
+        <Button
+          isFullWidth
+          onClick={() => {
+            chooseBitcoinAccount()
+          }}
+          mb="2"
+          variant={ledgerBitcoinAccount?.address ? "brand" : "solid"}
+        >
+          {ledgerBitcoinAccount
+            ? "Change bitcoin account"
+            : "Choose bitcoin account"}
+        </Button>
+      )}
       <Button
-        isLoading={true}
+        isLoading={!isEmbed}
         loadingText={"Waiting for funds to be sent..."}
         form="tbtc-minting-data-form"
-        isDisabled={true}
+        isDisabled={!isEmbed || !ledgerBitcoinAccount}
         isFullWidth
+        onClick={() => {
+          // TODO
+          // if (isEmbed) Send bitcoins
+        }}
       >
-        I sent the BTC
+        {isEmbed ? "Send 0.01 BTC" : "I sent the BTC"}
       </Button>
     </>
   )
