@@ -18,7 +18,6 @@ import { MintingStep } from "../../../../types/tbtc"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { useWeb3React } from "@web3-react/core"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
@@ -26,8 +25,7 @@ import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
-import { useAppSelector } from "../../../../hooks/store"
-import { selectAccountState } from "../../../../store/account"
+import { useIsActive } from "../../../../hooks/useIsActive"
 
 export interface FormValues {
   ethAddress: string
@@ -109,14 +107,14 @@ export const ProvideDataComponent: FC<{
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { openModal } = useModal()
   const threshold = useThreshold()
-  const { address } = useAppSelector(selectAccountState)
+  const { account } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
   const textColor = useColorModeValue("gray.500", "gray.300")
 
   const onSubmit = async (values: FormValues) => {
-    if (address && !isSameETHAddress(values.ethAddress, address)) {
+    if (account && !isSameETHAddress(values.ethAddress, account)) {
       throw new Error(
         "The account used to generate the deposit address must be the same as the connected wallet."
       )
@@ -182,7 +180,7 @@ export const ProvideDataComponent: FC<{
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={address}
+        initialEthAddress={account!}
         btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}

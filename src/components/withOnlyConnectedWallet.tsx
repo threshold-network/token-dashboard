@@ -1,16 +1,15 @@
 import { ComponentType } from "react"
 import { H5 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { useAppSelector } from "../hooks/store"
-import { selectAccountState } from "../store/account"
+import { useIsActive } from "../hooks/useIsActive"
 
 function withOnlyConnectedWallet<T>(
   Component: ComponentType<T>,
   renderNotConnected?: () => JSX.Element
 ) {
   return (props: T & {}) => {
-    const { address } = useAppSelector(selectAccountState)
-    if (!address) {
+    const { account, isActive } = useIsActive()
+    if (!isActive || !account) {
       return renderNotConnected ? (
         renderNotConnected()
       ) : (
