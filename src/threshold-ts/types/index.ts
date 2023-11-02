@@ -8,6 +8,7 @@ import {
   Credentials,
 } from "@keep-network/tbtc-v2.ts/dist/src/electrum"
 import { providers, Signer } from "ethers"
+import { BitcoinClient } from "tbtc-sdk-v2"
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
@@ -30,7 +31,8 @@ export interface BitcoinConfig {
   /**
    * If we want to mock client then we should pass the mock here
    */
-  client?: Client
+  client?: BitcoinClient | Client
+  // TODO: Remove deprecated `Client` fallback when the migration will be fully completed
 
   /**
    * Credentials for electrum client

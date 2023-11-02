@@ -53,9 +53,7 @@ export const ResumeDepositPage: PageComponent = () => {
     const {
       depositParameters: { btcRecoveryAddress, ...restDepositParameters },
     } = values
-    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress(
-      restDepositParameters
-    )
+    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
     setDepositDataInLocalStorage({
       ethAddress: restDepositParameters?.depositor.identifierHex!,

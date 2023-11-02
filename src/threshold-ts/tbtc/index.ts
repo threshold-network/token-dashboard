@@ -20,6 +20,7 @@ import {
   AddressZero,
   isPayToScriptHashTypeAddress,
   fromSatoshiToTokenPrecision,
+  getSigner,
 } from "../utils"
 import {
   Client,
@@ -54,7 +55,8 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { TBTC as SDK } from "tbtc-sdk-v2"
+import { Deposit, TBTC as SDK } from "tbtc-sdk-v2"
+import { Web3Provider } from "@ethersproject/providers"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -181,13 +183,7 @@ export interface ITBTC {
 
   readonly sdk: SDK
 
-  /**
-   * Suggests a wallet that should be used as the deposit target at the given
-   * moment.
-   * @returns Compressed (33 bytes long with 02 or 03 prefix) public key of
-   * the wallet.
-   */
-  suggestDepositWallet(): Promise<string | undefined>
+  readonly deposit: Deposit
 
   /**
    * Creates parameters needed to construct a deposit address from the data that
@@ -198,20 +194,15 @@ export interface ITBTC {
    * receive the bitcoin back in case something goes wrong.
    * @returns All deposit script parameters needed to create a deposit address.
    */
-  createDepositScriptParameters(
-    ethAddress: string,
-    btcRecoveryAddress: string
-  ): Promise<DepositScriptParameters>
+  initiateDeposit(btcRecoveryAddress: string): Promise<Deposit>
 
   /**
    * Calculates the deposit address from the deposit script parameters
    * @param depositScriptParameters Deposit script parameters. You can get them
-   * from @see{createDepositScriptParameters} method
+   * from @see{initiateDeposit} method
    * @returns Deposit address
    */
-  calculateDepositAddress(
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string>
+  calculateDepositAddress(): Promise<string>
 
   /**
    * Finds all unspent transaction outputs (UTXOs) for a given Bitcoin address.
@@ -423,6 +414,7 @@ export class TBTC implements ITBTC {
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
   private _sdk?: SDK
+  private _deposit?: Deposit
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -453,6 +445,7 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
+    // @ts-ignore
     this._bitcoinClient =
       bitcoinConfig.client ??
       new ElectrumClient(
@@ -478,16 +471,31 @@ export class TBTC implements ITBTC {
   }
 
   private async _handleSDKInitialization(ethereumConfig: EthereumConfig) {
+    const { providerOrSigner, account } = ethereumConfig
+
     const initailizeFunction =
       this.bitcoinNetwork === BitcoinNetwork.Mainnet
         ? SDK.initializeMainnet
         : SDK.initializeGoerli
 
-    this._sdk = await initailizeFunction(ethereumConfig.providerOrSigner)
+    const shouldUseSigner = account && providerOrSigner instanceof Web3Provider
+
+    this._sdk = await initailizeFunction(
+      shouldUseSigner
+        ? getSigner(providerOrSigner as Web3Provider, account)
+        : providerOrSigner
+    )
   }
 
   get sdk(): SDK {
     return this._sdk!
+  }
+
+  get deposit(): Deposit {
+    if (!this._deposit) {
+      throw new Error("Deposit not initialized")
+    }
+    return this._deposit
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -506,66 +514,13 @@ export class TBTC implements ITBTC {
     return this._tokenContract
   }
 
-  suggestDepositWallet = async (): Promise<string | undefined> => {
-    return await this._bridge.activeWalletPublicKey()
+  initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
+    this._deposit = await this.sdk.deposits.initiateDeposit(btcRecoveryAddress)
+    return this.deposit
   }
 
-  createDepositScriptParameters = async (
-    ethAddress: string,
-    btcRecoveryAddress: string
-  ): Promise<DepositScriptParameters> => {
-    const { network } = this._bitcoinConfig
-    if (!isValidBtcAddress(btcRecoveryAddress, network as any)) {
-      throw new Error(
-        "Wrong bitcoin address passed to createDepositScriptParameters function"
-      )
-    }
-
-    if (!isPublicKeyHashTypeAddress(btcRecoveryAddress)) {
-      throw new Error("Bitcoin recovery address must be a P2PKH or P2WPKH")
-    }
-
-    const currentTimestamp = Math.floor(new Date().getTime() / 1000)
-    const blindingFactor = CryptoJS.lib.WordArray.random(8).toString(
-      CryptoJS.enc.Hex
-    )
-    const walletPublicKey = await this.suggestDepositWallet()
-
-    if (!walletPublicKey) {
-      throw new Error("Couldn't get active wallet public key!")
-    }
-
-    const walletPublicKeyHash = computeHash160(walletPublicKey)
-
-    const refundPublicKeyHash = decodeBitcoinAddress(
-      btcRecoveryAddress,
-      this.bitcoinNetwork
-    )
-
-    const refundLocktime = calculateDepositRefundLocktime(
-      currentTimestamp,
-      this._depositRefundLocktimDuration
-    )
-
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: getChainIdentifier(ethAddress),
-      blindingFactor,
-      walletPublicKeyHash,
-      refundPublicKeyHash,
-      refundLocktime,
-    }
-
-    return depositScriptParameters
-  }
-
-  calculateDepositAddress = async (
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string> => {
-    return await calculateDepositAddress(
-      depositScriptParameters,
-      this.bitcoinNetwork,
-      true
-    )
+  calculateDepositAddress = async (): Promise<string> => {
+    return this.deposit.getBitcoinAddress()
   }
 
   findAllUnspentTransactionOutputs = async (
@@ -589,6 +544,8 @@ export class TBTC implements ITBTC {
         treasuryFee,
         optimisticMintingFeeDivisor
       )
+
+    await this.deposit.detectFunding().then((x) => console.log(x))
 
     return {
       treasuryFee: treasuryFee.mul(this._satoshiMultiplier).toString(),
