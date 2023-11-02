@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
-import { useWeb3React } from "@web3-react/core"
 import { PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
@@ -25,7 +24,7 @@ export const MintPage: PageComponent = ({}) => {
 export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc

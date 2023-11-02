@@ -6,7 +6,6 @@ import { ProvideData } from "./ProvideData"
 import { InitiateMinting } from "./InitiateMinting"
 import { MintingSuccess } from "./MintingSuccess"
 import { MakeDeposit } from "./MakeDeposit"
-import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
 import { BridgeContractLink } from "../../../../components/tBTC"
@@ -14,10 +13,11 @@ import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
+import { useIsActive } from "../../../../hooks/useIsActive"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()

@@ -26,6 +26,7 @@ import { isSameETHAddress } from "../../../../web3/utils"
 import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 import { useIsActive } from "../../../../hooks/useIsActive"
+import ButtonLink from "../../../../components/ButtonLink"
 
 export interface FormValues {
   ethAddress: string
@@ -195,6 +196,9 @@ export const ProvideDataComponent: FC<{
       >
         Generate Deposit Address
       </Button>
+      <ButtonLink to="continue" mt={3}>
+        Continue mint
+      </ButtonLink>
     </>
   )
 }

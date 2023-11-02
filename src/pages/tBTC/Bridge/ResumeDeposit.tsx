@@ -7,7 +7,6 @@ import {
   FileUploader,
   FormControl,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { useNavigate } from "react-router-dom"
@@ -27,10 +26,11 @@ import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
