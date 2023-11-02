@@ -1,27 +1,26 @@
-import {
-  Client,
-  decodeBitcoinAddress,
-  RawTransaction,
-  Transaction,
-  TransactionHash,
-  TransactionMerkleBranch,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import {
-  assembleDepositTransaction,
-  calculateDepositAddress,
-  Deposit,
-  DepositScriptParameters,
-} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
-import { BitcoinNetwork } from "../threshold-ts/types"
+import {
+  BitcoinAddressConverter,
+  DepositReceipt,
+  DepositScript,
+  DepositFunding,
+  BitcoinRawTx,
+  Hex,
+  BitcoinUtxo,
+  BitcoinClient,
+  BitcoinTx,
+  BitcoinTxMerkleBranch,
+  BitcoinTxHash,
+  BitcoinNetwork,
+} from "tbtc-sdk-v2"
+import { RootState } from "../store"
 
-const testnetTransactionHash = TransactionHash.from(
+const testnetTransactionHash = Hex.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
 )
-const testnetTransaction: RawTransaction = {
+const testnetTransaction: BitcoinRawTx = {
   transactionHex:
     "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +
     "4c9bc7390100000000ffffffff02102700000000000017a914867120d5480a9cc0c11c" +
@@ -31,7 +30,7 @@ const testnetTransaction: RawTransaction = {
     "f68e65aa2727cd4208b5012102ee067a0273f2e3ba88d23140a24fdb290f27bbcd0f94" +
     "117a9c65be3911c5c04e00000000",
 }
-export const testnetUTXO: UnspentTransactionOutput & RawTransaction = {
+export const testnetUTXO: BitcoinUtxo & BitcoinRawTx = {
   transactionHash: testnetTransactionHash,
   outputIndex: 1,
   value: BigNumber.from(3933200),
@@ -45,41 +44,36 @@ const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
  */
 const bitcoinNetworkTransactionFee = BigNumber.from("47000")
 
-export class MockBitcoinClient implements Client {
-  private _unspentTransactionOutputs = new Map<
-    string,
-    UnspentTransactionOutput[]
-  >()
-  private _rawTransactions = new Map<string, RawTransaction>()
-  private _transactions = new Map<string, Transaction>()
+export class MockBitcoinClient implements BitcoinClient {
+  private _unspentTransactionOutputs = new Map<string, BitcoinUtxo[]>()
+  private _rawTransactions = new Map<string, BitcoinRawTx>()
+  private _transactions = new Map<string, BitcoinTx>()
   private _confirmations = new Map<string, number>()
   private _latestHeight = 0
-  private _headersChain = ""
-  private _transactionMerkle: TransactionMerkleBranch = {
+  private _headersChain = Hex.from("")
+  private _transactionMerkle: BitcoinTxMerkleBranch = {
     blockHeight: 0,
     merkle: [],
     position: 0,
   }
-  private _broadcastLog: RawTransaction[] = []
+  private _broadcastLog: BitcoinRawTx[] = []
   private _isMockingDepositTransactionInProgress = false
 
   /**
    * Array of transaction hashed for which we already started the process of
    * confirmations mocking.
    */
-  private _txHashesWithMockedConfirmations: TransactionHash[] = []
+  private _txHashesWithMockedConfirmations: BitcoinTxHash[] = []
 
-  set unspentTransactionOutputs(
-    value: Map<string, UnspentTransactionOutput[]>
-  ) {
+  set unspentTransactionOutputs(value: Map<string, BitcoinUtxo[]>) {
     this._unspentTransactionOutputs = value
   }
 
-  set rawTransactions(value: Map<string, RawTransaction>) {
+  set rawTransactions(value: Map<string, BitcoinRawTx>) {
     this._rawTransactions = value
   }
 
-  set transactions(value: Map<string, Transaction>) {
+  set transactions(value: Map<string, BitcoinTx>) {
     this._transactions = value
   }
 
@@ -91,34 +85,39 @@ export class MockBitcoinClient implements Client {
     this._latestHeight = value
   }
 
-  set headersChain(value: string) {
+  set headersChain(value: Hex) {
     this._headersChain = value
   }
 
-  set transactionMerkle(value: TransactionMerkleBranch) {
+  set transactionMerkle(value: BitcoinTxMerkleBranch) {
     this._transactionMerkle = value
   }
 
-  get broadcastLog(): RawTransaction[] {
+  get broadcastLog(): BitcoinRawTx[] {
     return this._broadcastLog
   }
 
   async findAllUnspentTransactionOutputs(
     address: string
-  ): Promise<UnspentTransactionOutput[]> {
-    let utxos = this._unspentTransactionOutputs.get(
-      address
-    ) as UnspentTransactionOutput[]
-
+  ): Promise<BitcoinUtxo[]> {
+    let utxos = this._unspentTransactionOutputs.get(address) || []
     const isDepositTransactionMocked = utxos && utxos.length > 0
-
-    // Mocks deposit transaction only once for specific deposit address
-    if (
+    const shouldInitiateMocking =
       !isDepositTransactionMocked &&
       !this._isMockingDepositTransactionInProgress
-    ) {
+
+    console.log({
+      utxos,
+      shouldInitiateMocking,
+      isDepositTransactionMocked,
+      isMockingDepositTransactionInProgress:
+        this._isMockingDepositTransactionInProgress,
+    })
+
+    // Mocks deposit transaction only once for specific deposit address
+    if (shouldInitiateMocking) {
       const store = (await import("../store")).default
-      const { tbtc } = store.getState()
+      const { tbtc } = store.getState() as RootState
 
       const {
         ethAddress,
@@ -127,28 +126,31 @@ export class MockBitcoinClient implements Client {
         refundLocktime,
         blindingFactor,
       } = tbtc
+
       const network = await this.getNetwork()
 
-      const depositScriptParameters: DepositScriptParameters = {
+      const depositReceipt: DepositReceipt = {
         depositor: getChainIdentifier(ethAddress),
-        blindingFactor: blindingFactor,
-        walletPublicKeyHash: walletPublicKeyHash,
-        refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress, network),
-        refundLocktime: refundLocktime,
+        blindingFactor: Hex.from(blindingFactor),
+        walletPublicKeyHash: Hex.from(walletPublicKeyHash),
+        refundPublicKeyHash: BitcoinAddressConverter.addressToPublicKeyHash(
+          btcRecoveryAddress,
+          network
+        ),
+        refundLocktime: Hex.from(refundLocktime),
       }
 
-      await this._mockDepositTransaction(depositScriptParameters)
+      await this._mockDepositTransaction(depositReceipt)
     }
 
-    utxos = this._unspentTransactionOutputs.get(
-      address
-    ) as UnspentTransactionOutput[]
+    utxos = this._unspentTransactionOutputs.get(address) as BitcoinUtxo[]
+    // console.log({ utxos })
 
     return utxos.length > 0 ? utxos.reverse() : utxos
   }
 
   private async _mockDepositTransaction(
-    depositScriptParameters: DepositScriptParameters
+    depositReceipt: DepositReceipt
   ): Promise<void> {
     // Since we are using a delay function we don't want to mock multiple
     // deposit transactions here when calling `findAllUnspentTransactionOutputs`
@@ -159,61 +161,56 @@ export class MockBitcoinClient implements Client {
     await delay(5000)
 
     const network = await this.getNetwork()
-    const depositAddress = await calculateDepositAddress(
-      depositScriptParameters,
-      network,
-      true
-    )
 
-    const deposit: Deposit = {
-      ...depositScriptParameters,
-      amount: BigNumber.from("1000000"),
-    }
+    const depositScript = DepositScript.fromReceipt(depositReceipt, true)
+    const depositFunding = DepositFunding.fromScript(depositScript)
+    const depositAddress = await depositScript.deriveAddress(network)
+
+    const primaryDepositAmount = BigNumber.from("1000000")
+    const secondaryDepositAmount = BigNumber.from("1000000")
+
     const {
-      transactionHash,
-      depositUtxo,
-      rawTransaction: transaction,
-    } = await assembleDepositTransaction(
+      transactionHash: primaryTransactionHash,
+      depositUtxo: primaryDepositUtxo,
+      rawTransaction: primaryTransaction,
+    } = await depositFunding.assembleTransaction(
       network,
-      deposit,
-      testnetPrivateKey,
-      true,
+      primaryDepositAmount,
       [testnetUTXO],
-      bitcoinNetworkTransactionFee
+      bitcoinNetworkTransactionFee,
+      testnetPrivateKey
     )
 
-    // mock second deposit transaction
+    // Mocking secondary deposit transaction basing on primary transaction
 
-    const testnetUtxo2 = {
-      ...depositUtxo,
+    const secondaryTestnetUTXO = {
+      ...primaryDepositUtxo,
       outputIndex: 1,
-      ...transaction,
-    }
-
-    const deposit2: Deposit = {
-      ...depositScriptParameters,
-      amount: BigNumber.from("1500000"),
+      ...primaryTransaction,
     }
 
     const {
-      transactionHash: transactionHash2,
-      depositUtxo: depositUtxo2,
-      rawTransaction: transaction2,
-    } = await assembleDepositTransaction(
+      transactionHash: secondaryTransactionHash,
+      depositUtxo: secondaryDepositUtxo,
+      rawTransaction: secondaryTransaction,
+    } = await depositFunding.assembleTransaction(
       network,
-      deposit2,
-      testnetPrivateKey,
-      true,
-      [testnetUtxo2],
-      bitcoinNetworkTransactionFee
+      secondaryDepositAmount,
+      [secondaryTestnetUTXO],
+      bitcoinNetworkTransactionFee,
+      testnetPrivateKey
     )
 
-    const utxos = new Map<string, UnspentTransactionOutput[]>()
-    utxos.set(depositAddress, [depositUtxo, depositUtxo2])
+    const utxos = new Map<string, BitcoinUtxo[]>()
+    utxos.set(depositAddress, [primaryDepositUtxo, secondaryDepositUtxo])
+    console.log({ utxos })
     this.unspentTransactionOutputs = utxos
-    const rawTransactions = new Map<string, RawTransaction>()
-    rawTransactions.set(transactionHash.toString(), transaction)
-    rawTransactions.set(transactionHash2.toString(), transaction2)
+    const rawTransactions = new Map<string, BitcoinRawTx>()
+    rawTransactions.set(primaryTransactionHash.toString(), primaryTransaction)
+    rawTransactions.set(
+      secondaryTransactionHash.toString(),
+      secondaryTransaction
+    )
     this.rawTransactions = rawTransactions
 
     this._isMockingDepositTransactionInProgress = false
@@ -229,7 +226,7 @@ export class MockBitcoinClient implements Client {
    * mock fo the given transaction (default = 10)
    */
   private async _mockConfirmationsForTransaction(
-    transactionHash: TransactionHash,
+    transactionHash: BitcoinTxHash,
     confirmations: number = 10
   ): Promise<void> {
     this._confirmations.set(transactionHash.toString(), 0)
@@ -239,20 +236,18 @@ export class MockBitcoinClient implements Client {
     }
   }
 
-  async getTransaction(transactionHash: TransactionHash): Promise<Transaction> {
-    return this._transactions.get(transactionHash.toString()) as Transaction
+  async getTransaction(transactionHash: BitcoinTxHash): Promise<BitcoinTx> {
+    return this._transactions.get(transactionHash.toString()) as BitcoinTx
   }
 
   async getRawTransaction(
-    transactionHash: TransactionHash
-  ): Promise<RawTransaction> {
-    return this._rawTransactions.get(
-      transactionHash.toString()
-    ) as RawTransaction
+    transactionHash: BitcoinTxHash
+  ): Promise<BitcoinRawTx> {
+    return this._rawTransactions.get(transactionHash.toString()) as BitcoinRawTx
   }
 
   async getTransactionConfirmations(
-    transactionHash: TransactionHash
+    transactionHash: BitcoinTxHash
   ): Promise<number> {
     if (!this._txHashesWithMockedConfirmations.includes(transactionHash)) {
       this._mockConfirmationsForTransaction(transactionHash)
@@ -268,18 +263,18 @@ export class MockBitcoinClient implements Client {
   async getHeadersChain(
     blockHeight: number,
     chainLength: number
-  ): Promise<string> {
+  ): Promise<Hex> {
     return this._headersChain
   }
 
   async getTransactionMerkle(
-    transactionHash: TransactionHash,
+    transactionHash: BitcoinTxHash,
     blockHeight: number
-  ): Promise<TransactionMerkleBranch> {
+  ): Promise<BitcoinTxMerkleBranch> {
     return this._transactionMerkle
   }
 
-  async broadcast(transaction: RawTransaction): Promise<void> {
+  async broadcast(transaction: BitcoinRawTx): Promise<void> {
     this._broadcastLog.push(transaction)
     return
   }
@@ -291,7 +286,7 @@ export class MockBitcoinClient implements Client {
   async getTransactionHistory(
     address: string,
     limit?: number | undefined
-  ): Promise<Transaction[]> {
+  ): Promise<BitcoinTx[]> {
     return []
   }
 }
