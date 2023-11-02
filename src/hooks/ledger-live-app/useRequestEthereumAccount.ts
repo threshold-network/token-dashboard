@@ -23,15 +23,8 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const threshold = useThreshold()
 
   useEffect(() => {
-    // TODO: Get currencyId based on the chainId
-    if (account && account.address && account?.currency === "ethereum_goerli") {
-      setEthAddress(account?.address || undefined)
-      threshold.tbtc.setLedgerLiveAppEthAccount(account)
-    }
-
-    if (!account || !account.address) {
-      setEthAddress(undefined)
-    }
+    setEthAddress(account?.address || undefined)
+    threshold.tbtc.setLedgerLiveAppEthAccount(account ? account : undefined)
   }, [account])
 
   const requestEthereumAccount = useCallback(async () => {

@@ -20,22 +20,12 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { setBtcAddress } = useContext(LedgerLiveAppContext)
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
-  const threshold = useThreshold()
 
   useEffect(() => {
-    // TODO: Get currencyId based on the chainId
-    if (account && account.address && account?.currency === "bitcoin_testnet") {
-      setBtcAddress(account?.address || undefined)
-      threshold.tbtc.setLedgerLiveAppEthAccount(account)
-    }
-
-    if (!account || !account.address) {
-      setBtcAddress(undefined)
-    }
+    setBtcAddress(account?.address || undefined)
   }, [account])
 
   const requestBitcoinAccount = useCallback(async () => {
-    console.log("requesting Bitcoin Account...")
     // TODO: Get currencyId based on the chainId
     await requestAccount({ currencyIds: ["bitcoin_testnet"] })
   }, [requestAccount])
