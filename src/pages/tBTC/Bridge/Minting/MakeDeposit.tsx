@@ -129,7 +129,7 @@ const MakeDepositComponent: FC<{
 
   const chooseBitcoinAccount = useCallback(async () => {
     // TODO: Use currencyId based on the chainId that is used
-    await requestAccount({ currencyIds: ["bitcoin_testnet"] })
+    await requestAccount()
   }, [requestAccount])
 
   return (

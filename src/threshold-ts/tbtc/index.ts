@@ -45,7 +45,7 @@ import {
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, BigNumberish, Contract, utils } from "ethers"
+import { BigNumber, BigNumberish, Contract, ethers, utils } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
@@ -54,7 +54,8 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { LedgerLiveAppManager } from "../../ledger-live-app-manager"
+import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
+import { Account } from "@ledgerhq/wallet-api-client"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -179,7 +180,12 @@ export interface ITBTC {
 
   readonly tokenContract: Contract
 
-  readonly ledgerLiveAppManager: LedgerLiveAppManager | undefined
+  /**
+   * Saves the Account object to the Ledger Live App Ethereum signer.
+   * @param account Account object returned from `requestAccount` function (from
+   * ledger's wallet-api).
+   */
+  setLedgerLiveAppEthAccount(account: Account): void
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -424,13 +430,12 @@ export class TBTC implements ITBTC {
 
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
 
-  private _ledgerLiveAppManager: LedgerLiveAppManager | undefined
+  private _ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
-    multicall: IMulticall,
-    ledgerLiveAppManager?: LedgerLiveAppManager
+    multicall: IMulticall
   ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
@@ -477,11 +482,13 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._ledgerLiveAppManager = ledgerLiveAppManager
-  }
-
-  get ledgerLiveAppManager(): LedgerLiveAppManager | undefined {
-    return this._ledgerLiveAppManager
+    if (ethereumConfig.providerOrSigner instanceof ethers.providers.Provider) {
+      this._ledgerLiveAppEthereumSigner = new LedgerLiveAppEthereumSigner(
+        ethereumConfig.providerOrSigner
+      )
+    } else {
+      this._ledgerLiveAppEthereumSigner = undefined
+    }
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -498,6 +505,15 @@ export class TBTC implements ITBTC {
 
   get tokenContract() {
     return this._tokenContract
+  }
+
+  setLedgerLiveAppEthAccount(account: Account): void {
+    if (!this._ledgerLiveAppEthereumSigner) {
+      throw new Error(
+        "Ledger Live App Ethereum Signer is not defined in threshold-ts lib."
+      )
+    }
+    this._ledgerLiveAppEthereumSigner.setAccount(account)
   }
 
   suggestDepositWallet = async (): Promise<string | undefined> => {

@@ -8,7 +8,6 @@ import {
   Credentials,
 } from "@keep-network/tbtc-v2.ts/dist/src/electrum"
 import { providers, Signer } from "ethers"
-import { LedgerLiveAppManager } from "../../ledger-live-app-manager"
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
@@ -47,7 +46,6 @@ export interface BitcoinConfig {
 export interface ThresholdConfig {
   ethereum: EthereumConfig
   bitcoin: BitcoinConfig
-  ledgerLiveAppManager?: LedgerLiveAppManager
 }
 
 export { BitcoinNetwork }

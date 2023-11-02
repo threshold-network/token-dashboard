@@ -5,6 +5,7 @@ import {
   threshold,
 } from "../utils/getThresholdLib"
 import { supportedChainId } from "../utils/getEnvVariable"
+import { LedgerLiveAppContext } from "./LedgerLiveAppContext"
 
 const ThresholdContext = createContext(threshold)
 
@@ -15,6 +16,7 @@ export const useThreshold = () => {
 export const ThresholdProvider: FC = ({ children }) => {
   const { library, active, account } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
+  const { ethAddress, btcAddress } = useContext(LedgerLiveAppContext)
 
   useEffect(() => {
     if (active && library && account) {
@@ -25,7 +27,6 @@ export const ThresholdProvider: FC = ({ children }) => {
           account,
         },
         bitcoin: threshold.config.bitcoin,
-        ledgerLiveAppManager: threshold.config.ledgerLiveAppManager,
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
@@ -37,11 +38,16 @@ export const ThresholdProvider: FC = ({ children }) => {
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
         bitcoin: threshold.config.bitcoin,
-        ledgerLiveAppManager: threshold.config.ledgerLiveAppManager,
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }
   }, [library, active, account])
+
+  // TODO: Remove this useEffect
+  useEffect(() => {
+    console.log("ethAddress: ", ethAddress)
+    console.log("btcAddress: ", btcAddress)
+  }, [ethAddress, btcAddress])
 
   return (
     <ThresholdContext.Provider value={threshold}>

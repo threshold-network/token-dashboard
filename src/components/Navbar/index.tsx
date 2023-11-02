@@ -25,7 +25,7 @@ const Navbar: FC = () => {
   const openWalletModal = () => {
     if (isEmbed) {
       // TODO: Use proper currency based on chainID
-      requestAccount({ currencyIds: ["ethereum_goerli"] })
+      requestAccount()
     } else {
       openModal(ModalType.SelectWallet)
     }

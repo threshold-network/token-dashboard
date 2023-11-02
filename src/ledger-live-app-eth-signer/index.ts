@@ -10,25 +10,26 @@ import BigNumber from "bignumber.js"
 import { Hex } from "@keep-network/tbtc-v2.ts"
 import { AddressZero } from "@ethersproject/constants"
 import { Deferrable } from "@ethersproject/properties"
+import { getWalletAPIClient, getWindowMessageTransport } from "./utils"
 
 export class LedgerLiveAppEthereumSigner extends Signer {
   private _walletApiClient: WalletAPIClient
   private _windowMessageTransport: WindowMessageTransport
   private _account: Account | undefined
 
-  constructor(
-    provider: ethers.providers.Provider,
-    windowMessageTransport: WindowMessageTransport,
-    walletApiClient: WalletAPIClient
-  ) {
+  constructor(provider: ethers.providers.Provider) {
     super()
     ethers.utils.defineReadOnly(this, "provider", provider || null)
-    this._windowMessageTransport = windowMessageTransport
-    this._walletApiClient = walletApiClient
+    this._windowMessageTransport = getWindowMessageTransport()
+    this._walletApiClient = getWalletAPIClient(this._windowMessageTransport)
   }
 
   get account() {
     return this._account
+  }
+
+  setAccount(account: Account): void {
+    this._account = account
   }
 
   async requestAccount(
@@ -158,10 +159,6 @@ export class LedgerLiveAppEthereumSigner extends Signer {
   }
 
   connect(provider: ethers.providers.Provider): Signer {
-    return new LedgerLiveAppEthereumSigner(
-      provider,
-      this._windowMessageTransport,
-      this._walletApiClient
-    )
+    return new LedgerLiveAppEthereumSigner(provider)
   }
 }
