@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "private": true,
   "engines": {
     "node": ">=16"
