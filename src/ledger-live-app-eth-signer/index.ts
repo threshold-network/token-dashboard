@@ -28,7 +28,7 @@ export class LedgerLiveAppEthereumSigner extends Signer {
     return this._account
   }
 
-  setAccount(account: Account): void {
+  setAccount(account: Account | undefined): void {
     this._account = account
   }
 

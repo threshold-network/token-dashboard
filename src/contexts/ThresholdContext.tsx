@@ -16,7 +16,7 @@ export const useThreshold = () => {
 export const ThresholdProvider: FC = ({ children }) => {
   const { library, active, account } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
-  const { ethAddress, btcAddress } = useContext(LedgerLiveAppContext)
+  const { ethAccount, btcAccount } = useContext(LedgerLiveAppContext)
 
   useEffect(() => {
     if (active && library && account) {
@@ -45,9 +45,9 @@ export const ThresholdProvider: FC = ({ children }) => {
 
   // TODO: Remove this useEffect
   useEffect(() => {
-    console.log("ethAddress: ", ethAddress)
-    console.log("btcAddress: ", btcAddress)
-  }, [ethAddress, btcAddress])
+    console.log("ethAccount: ", ethAccount)
+    console.log("btcAccount: ", btcAccount)
+  }, [ethAccount?.address, btcAccount?.address])
 
   return (
     <ThresholdContext.Provider value={threshold}>

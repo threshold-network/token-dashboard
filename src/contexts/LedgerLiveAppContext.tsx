@@ -1,30 +1,31 @@
+import { Account } from "@ledgerhq/wallet-api-client"
 import React, { createContext, useState } from "react"
 
 interface LedgerLiveAppContextState {
-  ethAddress: string | undefined
-  btcAddress: string | undefined
-  setEthAddress: React.Dispatch<React.SetStateAction<string | undefined>>
-  setBtcAddress: React.Dispatch<React.SetStateAction<string | undefined>>
+  ethAccount: Account | undefined
+  btcAccount: Account | undefined
+  setEthAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
+  setBtcAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
 }
 
 export const LedgerLiveAppContext = createContext<LedgerLiveAppContextState>({
-  ethAddress: undefined,
-  btcAddress: undefined,
-  setEthAddress: () => {},
-  setBtcAddress: () => {},
+  ethAccount: undefined,
+  btcAccount: undefined,
+  setEthAccount: () => {},
+  setBtcAccount: () => {},
 })
 
 export const LedgerLiveAppProvider: React.FC = ({ children }) => {
-  const [ethAddress, setEthAddress] = useState<string | undefined>(undefined)
-  const [btcAddress, setBtcAddress] = useState<string | undefined>(undefined)
+  const [ethAccount, setEthAccount] = useState<Account | undefined>(undefined)
+  const [btcAccount, setBtcAccount] = useState<Account | undefined>(undefined)
 
   return (
     <LedgerLiveAppContext.Provider
       value={{
-        ethAddress,
-        setEthAddress,
-        btcAddress,
-        setBtcAddress,
+        ethAccount,
+        setEthAccount,
+        btcAccount,
+        setBtcAccount,
       }}
     >
       {children}

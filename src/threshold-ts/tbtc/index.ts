@@ -185,7 +185,7 @@ export interface ITBTC {
    * @param account Account object returned from `requestAccount` function (from
    * ledger's wallet-api).
    */
-  setLedgerLiveAppEthAccount(account: Account): void
+  setLedgerLiveAppEthAccount(account: Account | undefined): void
 
   /**
    * Suggests a wallet that should be used as the deposit target at the given
@@ -507,7 +507,7 @@ export class TBTC implements ITBTC {
     return this._tokenContract
   }
 
-  setLedgerLiveAppEthAccount(account: Account): void {
+  setLedgerLiveAppEthAccount(account: Account | undefined): void {
     if (!this._ledgerLiveAppEthereumSigner) {
       throw new Error(
         "Ledger Live App Ethereum Signer is not defined in threshold-ts lib."

@@ -17,14 +17,14 @@ type UseRequestAccountReturn = {
 } & UseRequestAccountState
 
 export function useRequestEthereumAccount(): UseRequestAccountReturn {
-  const { setEthAddress } = useContext(LedgerLiveAppContext)
+  const { setEthAccount } = useContext(LedgerLiveAppContext)
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
   const threshold = useThreshold()
 
   useEffect(() => {
-    setEthAddress(account?.address || undefined)
-    threshold.tbtc.setLedgerLiveAppEthAccount(account ? account : undefined)
+    setEthAccount(account || undefined)
+    threshold.tbtc.setLedgerLiveAppEthAccount(account || undefined)
   }, [account])
 
   const requestEthereumAccount = useCallback(async () => {

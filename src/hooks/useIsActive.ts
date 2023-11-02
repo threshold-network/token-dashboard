@@ -16,7 +16,8 @@ type UseIsActiveResult = {
  */
 export const useIsActive = (): UseIsActiveResult => {
   const { active, account } = useWeb3React()
-  const { ethAddress } = useContext(LedgerLiveAppContext)
+  const { ethAccount } = useContext(LedgerLiveAppContext)
+  const ethAddress = ethAccount?.address || undefined
   const { isEmbed } = useEmbedFeatureFlag()
 
   const isActive = useMemo(() => {

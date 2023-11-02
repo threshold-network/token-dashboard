@@ -17,12 +17,12 @@ type UseRequestAccountReturn = {
 } & UseRequestAccountState
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
-  const { setBtcAddress } = useContext(LedgerLiveAppContext)
+  const { setBtcAccount } = useContext(LedgerLiveAppContext)
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
 
   useEffect(() => {
-    setBtcAddress(account?.address || undefined)
+    setBtcAccount(account || undefined)
   }, [account])
 
   const requestBitcoinAccount = useCallback(async () => {
