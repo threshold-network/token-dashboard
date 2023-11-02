@@ -40,6 +40,7 @@ import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
+import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
 import {
   useSubscribeToAuthorizationIncreasedEvent,
   useSubscribeToAuthorizationDecreaseApprovedEvent,
@@ -261,17 +262,19 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <ThresholdProvider>
-          <ReduxProvider store={reduxStore}>
-            <ChakraProvider theme={theme}>
-              <TokenContextProvider>
-                <Web3EventHandlerComponent />
-                <ModalRoot />
-                <AppBody />
-              </TokenContextProvider>
-            </ChakraProvider>
-          </ReduxProvider>
-        </ThresholdProvider>
+        <LedgerLiveAppProvider>
+          <ThresholdProvider>
+            <ReduxProvider store={reduxStore}>
+              <ChakraProvider theme={theme}>
+                <TokenContextProvider>
+                  <Web3EventHandlerComponent />
+                  <ModalRoot />
+                  <AppBody />
+                </TokenContextProvider>
+              </ChakraProvider>
+            </ReduxProvider>
+          </ThresholdProvider>
+        </LedgerLiveAppProvider>
       </Web3ReactProvider>
     </Router>
   )
