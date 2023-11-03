@@ -25,7 +25,10 @@ import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
 import { useEmbedFeatureFlag } from "../../../../hooks/useEmbedFeatureFlag"
-import { useRequestBitcoinAccount } from "../../../../hooks/ledger-live-app"
+import {
+  useRequestBitcoinAccount,
+  useSendBitcoinTransaction,
+} from "../../../../hooks/ledger-live-app"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -126,11 +129,21 @@ const MakeDepositComponent: FC<{
   const { isEmbed } = useEmbedFeatureFlag()
   const { requestAccount, account: ledgerBitcoinAccount } =
     useRequestBitcoinAccount()
+  const { sendBitcoinTransaction } = useSendBitcoinTransaction()
 
   const chooseBitcoinAccount = useCallback(async () => {
-    // TODO: Use currencyId based on the chainId that is used
     await requestAccount()
   }, [requestAccount])
+
+  const handleSendBitcoinTransaction = useCallback(async () => {
+    try {
+      // TODO: Allow user to specify how many bitcoins he want to send ( + do a
+      // validation [min 0.01 BTC]))
+      await sendBitcoinTransaction("1000000", btcDepositAddress) // 0.01 BTC
+    } catch (e) {
+      console.error(e)
+    }
+  }, [btcDepositAddress, sendBitcoinTransaction])
 
   return (
     <>
@@ -204,8 +217,7 @@ const MakeDepositComponent: FC<{
         isDisabled={!isEmbed || !ledgerBitcoinAccount}
         isFullWidth
         onClick={() => {
-          // TODO
-          // if (isEmbed) Send bitcoins
+          if (isEmbed) handleSendBitcoinTransaction()
         }}
       >
         {isEmbed ? "Send 0.01 BTC" : "I sent the BTC"}
