@@ -22,6 +22,7 @@
     "@keep-network/tbtc": "development",
     "@keep-network/tbtc-v2": "development",
     "@keep-network/tbtc-v2.ts": "2.0.0-dev.0",
+    "@keep-network/sdk-tbtc-v2.ts": "npm:@keep-network/tbtc-v2.ts@2.1.0",
     "@ledgerhq/connect-kit-loader": "^1.1.2",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
