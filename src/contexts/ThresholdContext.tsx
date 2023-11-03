@@ -6,6 +6,7 @@ import {
 } from "../utils/getThresholdLib"
 import { supportedChainId } from "../utils/getEnvVariable"
 import { LedgerLiveAppContext } from "./LedgerLiveAppContext"
+import { useIsActive } from "../hooks/useIsActive"
 
 const ThresholdContext = createContext(threshold)
 
@@ -14,34 +15,41 @@ export const useThreshold = () => {
 }
 
 export const ThresholdProvider: FC = ({ children }) => {
-  const { library, active, account } = useWeb3React()
+  const { library } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
   const { ethAccount, btcAccount } = useContext(LedgerLiveAppContext)
+  const { account, isActive } = useIsActive()
 
   useEffect(() => {
-    if (active && library && account) {
+    if (isActive) {
+      // TODO: Maybe we could pass ledgerLiveAppEthereumSigner as
+      // `providerOrSigner`? This would require some testing.
       threshold.updateConfig({
         ethereum: {
           chainId: supportedChainId,
-          providerOrSigner: library,
+          providerOrSigner: library || getDefaultThresholdLibProvider(),
           account,
+          ledgerLiveAppEthereumSigner:
+            threshold.config.ethereum.ledgerLiveAppEthereumSigner,
         },
         bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = true
     }
 
-    if (!active && !account && hasThresholdLibConfigBeenUpdated.current) {
+    if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
       threshold.updateConfig({
         ethereum: {
           chainId: supportedChainId,
           providerOrSigner: getDefaultThresholdLibProvider(),
+          ledgerLiveAppEthereumSigner:
+            threshold.config.ethereum.ledgerLiveAppEthereumSigner,
         },
         bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }
-  }, [library, active, account])
+  }, [library, isActive, account])
 
   // TODO: Remove this useEffect
   useEffect(() => {

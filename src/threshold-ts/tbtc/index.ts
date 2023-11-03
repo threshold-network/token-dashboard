@@ -45,7 +45,7 @@ import {
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, BigNumberish, Contract, ethers, utils } from "ethers"
+import { BigNumber, BigNumberish, Contract, utils } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
@@ -482,13 +482,8 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    if (ethereumConfig.providerOrSigner instanceof ethers.providers.Provider) {
-      this._ledgerLiveAppEthereumSigner = new LedgerLiveAppEthereumSigner(
-        ethereumConfig.providerOrSigner
-      )
-    } else {
-      this._ledgerLiveAppEthereumSigner = undefined
-    }
+    this._ledgerLiveAppEthereumSigner =
+      ethereumConfig.ledgerLiveAppEthereumSigner
   }
 
   get bitcoinNetwork(): BitcoinNetwork {

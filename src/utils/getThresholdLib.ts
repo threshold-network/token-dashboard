@@ -9,6 +9,7 @@ import {
   BitcoinNetwork,
   BitcoinClientCredentials,
 } from "../threshold-ts/types"
+import { ledgerLiveAppEthereumSigner } from "./getLedgerLiveAppEthereumSigner"
 
 function getBitcoinConfig(): BitcoinConfig {
   const network =
@@ -45,6 +46,7 @@ export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
     ethereum: {
       chainId: supportedChainId,
       providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
+      ledgerLiveAppEthereumSigner: ledgerLiveAppEthereumSigner,
     },
     bitcoin: getBitcoinConfig(),
   })
