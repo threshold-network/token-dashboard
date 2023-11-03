@@ -1,4 +1,4 @@
-import { ethers, Signer } from "ethers"
+import { ethers } from "ethers"
 import {
   Account,
   Transaction,
@@ -11,7 +11,10 @@ import { Hex } from "@keep-network/tbtc-v2.ts"
 import { AddressZero } from "@ethersproject/constants"
 import { Deferrable } from "@ethersproject/properties"
 import { getWalletAPIClient, getWindowMessageTransport } from "./utils"
+import { Signer } from "@ethersproject/abstract-signer"
 
+// TODO: Investigate why it works with `Signer` from
+// `@ethersproject/abstract-signer` and not the one from `ethers` lib.
 export class LedgerLiveAppEthereumSigner extends Signer {
   private _walletApiClient: WalletAPIClient
   private _windowMessageTransport: WindowMessageTransport
