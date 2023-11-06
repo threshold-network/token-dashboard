@@ -151,7 +151,9 @@ export class LedgerLiveAppEthereumSigner extends Signer {
       )
     this._windowMessageTransport.disconnect()
 
-    const transactionResponse = this.provider?.getTransaction(transactionHash)
+    const transactionResponse = await this.provider?.getTransaction(
+      transactionHash
+    )
     console.log("Transaction response: ", transactionResponse)
 
     if (!transactionResponse) {
