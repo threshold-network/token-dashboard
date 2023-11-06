@@ -58,9 +58,7 @@ export const findUtxoEffect = async (
       while (true) {
         // Looking for utxo.
         const utxos = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs(
-            btcDepositAddress
-          )
+          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputsSdkV2()
         )
 
         if (!utxos || utxos.length === 0) {
@@ -92,7 +90,7 @@ export const findUtxoEffect = async (
         for (let i = utxos.length - 1; i >= 0; i--) {
           // Check if deposit is revealed.
           const deposit = await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.getRevealedDeposit(utxos[i])
+            listenerApi.extra.threshold.tbtc.getRevealedDepositSdkV2(utxos[i])
           )
           const isDepositRevealed = deposit.revealedAt !== 0
 

@@ -70,7 +70,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
       refundLocktime,
     }
 
-    await revealDeposit(utxo, depositScriptParameters)
+    await revealDeposit()
   }
 
   const amount = BigNumber.from(utxo.value).toString()

@@ -20,6 +20,7 @@ import {
   AddressZero,
   isPayToScriptHashTypeAddress,
   fromSatoshiToTokenPrecision,
+  getSigner,
 } from "../utils"
 import {
   Client,
@@ -56,6 +57,15 @@ import {
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
 import { Account } from "@ledgerhq/wallet-api-client"
+import {
+  BitcoinUtxo,
+  Deposit,
+  DepositReceipt,
+  DepositRequest,
+  TBTC as SDK,
+} from "@keep-network/sdk-tbtc-v2.ts"
+import { Web3Provider } from "@ethersproject/providers"
+import { ledgerLiveAppEthereumSigner } from "../../utils/getLedgerLiveAppEthereumSigner"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -180,6 +190,8 @@ export interface ITBTC {
 
   readonly tokenContract: Contract
 
+  readonly sdk: SDK | undefined
+
   /**
    * Saves the Account object to the Ledger Live App Ethereum signer.
    * @param account Account object returned from `requestAccount` function (from
@@ -209,6 +221,14 @@ export interface ITBTC {
     btcRecoveryAddress: string
   ): Promise<DepositScriptParameters>
 
+  //TODO: We might remove this when SDK v2 is implemented
+  initiateDepositSdkV2(btcRecoveryAddress: string): Promise<void>
+
+  //TODO: Remove this when SDK v2 is implemented
+  createDepositScriptParametersSdkV2(
+    btcRecoveryAddress: string
+  ): Promise<DepositReceipt>
+
   /**
    * Calculates the deposit address from the deposit script parameters
    * @param depositScriptParameters Deposit script parameters. You can get them
@@ -219,6 +239,9 @@ export interface ITBTC {
     depositScriptParameters: DepositScriptParameters
   ): Promise<string>
 
+  //TODO: Remove this when SDK v2 is implemented
+  calculateDepositAddressSdkV2(): Promise<string>
+
   /**
    * Finds all unspent transaction outputs (UTXOs) for a given Bitcoin address.
    * @param address - Bitcoin address UTXOs should be determined for.
@@ -227,6 +250,9 @@ export interface ITBTC {
   findAllUnspentTransactionOutputs(
     address: string
   ): Promise<UnspentTransactionOutput[]>
+
+  //TODO: Remove this when SDK v2 is implemented
+  findAllUnspentTransactionOutputsSdkV2(): Promise<BitcoinUtxo[]>
 
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
@@ -252,12 +278,18 @@ export interface ITBTC {
     depositScriptParameters: DepositScriptParameters
   ): Promise<string>
 
+  //TODO: Remove this when SDK v2 is implemented
+  revealDepositSdkV2(): Promise<string>
+
   /**
    * Gets a revealed deposit from the bridge.
    * @param utxo Deposit UTXO of the revealed deposit
    * @returns Revealed deposit data.
    */
   getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
+
+  //TODO: Remove this when SDK v2 is implemented
+  getRevealedDepositSdkV2(utxo: BitcoinUtxo): Promise<DepositRequest>
 
   /**
    * Gets the number of confirmations that a given transaction has accumulated
@@ -431,6 +463,8 @@ export class TBTC implements ITBTC {
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
 
   private _ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
+  private _sdk: SDK | undefined
+  private _deposit: Deposit | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -482,8 +516,40 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._ledgerLiveAppEthereumSigner =
-      ethereumConfig.ledgerLiveAppEthereumSigner
+    this._ledgerLiveAppEthereumSigner = ledgerLiveAppEthereumSigner
+    this._handleSDKInitialization(ethereumConfig)
+  }
+
+  private async _handleSDKInitialization(ethereumConfig: EthereumConfig) {
+    const { providerOrSigner, account } = ethereumConfig
+
+    const initializeFunction =
+      this.bitcoinNetwork === BitcoinNetwork.Mainnet
+        ? SDK.initializeMainnet
+        : SDK.initializeGoerli
+
+    const shouldUseSigner = account && providerOrSigner instanceof Web3Provider
+
+    // TODO: This should be checked outside of this class
+    const shouldUseLedgerLiveAppSigner = JSON.parse(
+      localStorage.getItem("isEmbed") || ""
+    )
+
+    if (shouldUseLedgerLiveAppSigner) {
+      this._sdk = await initializeFunction(
+        !!ethereumConfig.account && !!this._ledgerLiveAppEthereumSigner
+          ? this._ledgerLiveAppEthereumSigner
+          : providerOrSigner
+      )
+    } else {
+      this._sdk = await initializeFunction(
+        shouldUseSigner
+          ? getSigner(providerOrSigner as Web3Provider, account)
+          : providerOrSigner
+      )
+    }
+    // TODO: Remove this console log in the future
+    console.log("THIS.sdk: ", this._sdk)
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -500,6 +566,10 @@ export class TBTC implements ITBTC {
 
   get tokenContract() {
     return this._tokenContract
+  }
+
+  get sdk() {
+    return this._sdk
   }
 
   setLedgerLiveAppEthAccount(account: Account | undefined): void {
@@ -563,6 +633,24 @@ export class TBTC implements ITBTC {
     return depositScriptParameters
   }
 
+  //TODO: We might remove/rename this when SDK v2 is implemented
+  initiateDepositSdkV2 = async (btcRecoveryAddress: string) => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+
+    this._deposit = await this._sdk?.deposits.initiateDeposit(
+      btcRecoveryAddress
+    )
+  }
+
+  //TODO: Remove this when SDK v2 is implemented
+  createDepositScriptParametersSdkV2 = async (
+    btcRecoveryAddress: string
+  ): Promise<DepositReceipt> => {
+    await this.initiateDepositSdkV2(btcRecoveryAddress)
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    return this._deposit.getReceipt()
+  }
+
   calculateDepositAddress = async (
     depositScriptParameters: DepositScriptParameters
   ): Promise<string> => {
@@ -573,10 +661,28 @@ export class TBTC implements ITBTC {
     )
   }
 
+  //TODO: Remove this when SDK v2 is implemented
+  calculateDepositAddressSdkV2 = async (): Promise<string> => {
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    const depositAddress = await this._deposit.getBitcoinAddress()
+    if (!depositAddress) {
+      throw new Error("Calculated deposit address is empty.")
+    }
+    return depositAddress
+  }
+
   findAllUnspentTransactionOutputs = async (
     address: string
   ): Promise<UnspentTransactionOutput[]> => {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
+  }
+
+  //TODO: Remove this when SDK v2 is implemented
+  findAllUnspentTransactionOutputsSdkV2 = async (): Promise<BitcoinUtxo[]> => {
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    const fundingDetected = await this._deposit?.detectFunding()
+    console.log("fundingDetected: ", fundingDetected)
+    return fundingDetected || []
   }
 
   getEstimatedDepositFees = async (depositAmount: string) => {
@@ -670,10 +776,35 @@ export class TBTC implements ITBTC {
     )
   }
 
+  //TODO: Remove this when SDK v2 is implemented
+  revealDepositSdkV2 = async (): Promise<string> => {
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    const revealedDepositHash = await this._deposit.initiateMinting()
+    if (!revealedDepositHash) {
+      throw new Error("Revealed deposit hash not found!")
+    }
+    return revealedDepositHash.toString()
+  }
+
   getRevealedDeposit = async (
     utxo: UnspentTransactionOutput
   ): Promise<RevealedDeposit> => {
     return await tBTCgetRevealedDeposit(utxo, this._bridge)
+  }
+
+  //TODO: Remove this when SDK v2 is implemented
+  getRevealedDepositSdkV2 = async (
+    utxo: BitcoinUtxo
+  ): Promise<DepositRequest> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const deposit = await this._sdk?.tbtcContracts.bridge.deposits(
+      utxo.transactionHash,
+      utxo.outputIndex
+    )
+    if (!deposit) {
+      throw new Error("Deposit not found!")
+    }
+    return deposit
   }
 
   getTransactionConfirmations = async (
@@ -1303,5 +1434,17 @@ export class TBTC implements ITBTC {
     }
 
     return this._redemptionTreasuryFeeDivisor
+  }
+}
+
+class EmptySdkObjectError extends Error {
+  constructor() {
+    super("SDK object is not initiated.")
+  }
+}
+
+class EmptyDepositObjectError extends Error {
+  constructor() {
+    super("Deposit object is not initiated.")
   }
 }

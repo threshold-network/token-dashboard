@@ -121,47 +121,57 @@ export const ProvideDataComponent: FC<{
       )
     }
     setSubmitButtonLoading(true)
-    const depositScriptParameters =
-      await threshold.tbtc.createDepositScriptParameters(
-        values.ethAddress,
+
+    const depositScriptParameters2 =
+      await threshold.tbtc.createDepositScriptParametersSdkV2(
         values.btcRecoveryAddress
       )
 
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters
-    )
+    const depositAddress = await threshold.tbtc.calculateDepositAddressSdkV2()
 
     // update state,
     updateState("ethAddress", values.ethAddress)
-    updateState("blindingFactor", depositScriptParameters.blindingFactor)
+    updateState(
+      "blindingFactor",
+      depositScriptParameters2.blindingFactor.toString()
+    )
     updateState("btcRecoveryAddress", values.btcRecoveryAddress)
     updateState(
       "walletPublicKeyHash",
-      depositScriptParameters.walletPublicKeyHash
+      depositScriptParameters2.walletPublicKeyHash.toString()
     )
-    updateState("refundLocktime", depositScriptParameters.refundLocktime)
+    updateState(
+      "refundLocktime",
+      depositScriptParameters2.refundLocktime.toString()
+    )
 
     // create a new deposit address,
     updateState("btcDepositAddress", depositAddress)
 
     setDepositDataInLocalStorage({
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters.blindingFactor,
+      blindingFactor: depositScriptParameters2.blindingFactor.toString(),
       btcRecoveryAddress: values.btcRecoveryAddress,
-      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
-      refundLocktime: depositScriptParameters.refundLocktime,
+      walletPublicKeyHash:
+        depositScriptParameters2.walletPublicKeyHash.toString(),
+      refundLocktime: depositScriptParameters2.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
 
-    depositTelemetry(depositScriptParameters, depositAddress)
+    // TODO: Commenting it out for now to make the deposit flow working. This
+    // probably will be addressed in a separate PR anyway (with SDK
+    // implementation)
+    // depositTelemetry(depositScriptParameters2, depositAddress)
 
     // if the user has NOT declined the json file, ask the user if they want to accept the new file
     openModal(ModalType.TbtcRecoveryJson, {
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters.blindingFactor,
-      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
-      refundPublicKeyHash: depositScriptParameters.refundPublicKeyHash,
-      refundLocktime: depositScriptParameters.refundLocktime,
+      blindingFactor: depositScriptParameters2.blindingFactor.toString(),
+      walletPublicKeyHash:
+        depositScriptParameters2.walletPublicKeyHash.toString(),
+      refundPublicKeyHash:
+        depositScriptParameters2.refundPublicKeyHash.toString(),
+      refundLocktime: depositScriptParameters2.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
     updateState("mintingStep", MintingStep.Deposit)
