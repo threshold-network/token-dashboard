@@ -1,7 +1,8 @@
 import { useSignAndBroadcastTransaction } from "@ledgerhq/wallet-api-client-react"
 import BigNumber from "bignumber.js"
-import { useCallback, useContext, useEffect } from "react"
+import { useCallback, useContext } from "react"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
+import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
 
 type UseSendBitcoinTransactionState = {
   pending: boolean
@@ -21,6 +22,7 @@ type UseSendBitcoinTransactionReturn = {
 
 export function useSendBitcoinTransaction(): UseSendBitcoinTransactionReturn {
   const { btcAccount } = useContext(LedgerLiveAppContext)
+  const { walletApiReactTransport } = useContext(WalletApiReactTransportContext)
   const useSignAndBroadcastTransactionReturn = useSignAndBroadcastTransaction()
   const { signAndBroadcastTransaction, ...rest } =
     useSignAndBroadcastTransactionReturn
@@ -36,10 +38,11 @@ export function useSendBitcoinTransaction(): UseSendBitcoinTransactionReturn {
         amount: new BigNumber(amount),
         recipient: recipient,
       }
-
+      walletApiReactTransport.connect()
       await signAndBroadcastTransaction(btcAccount.id, bitcoinTransaction)
+      walletApiReactTransport.disconnect()
     },
-    [signAndBroadcastTransaction, btcAccount?.id]
+    [signAndBroadcastTransaction, btcAccount?.id, walletApiReactTransport]
   )
 
   return { ...rest, sendBitcoinTransaction }

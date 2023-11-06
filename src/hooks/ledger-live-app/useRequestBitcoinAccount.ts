@@ -2,7 +2,7 @@ import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -18,6 +18,7 @@ type UseRequestAccountReturn = {
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { setBtcAccount } = useContext(LedgerLiveAppContext)
+  const { walletApiReactTransport } = useContext(WalletApiReactTransportContext)
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
 
@@ -27,8 +28,10 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
 
   const requestBitcoinAccount = useCallback(async () => {
     // TODO: Get currencyId based on the chainId
+    walletApiReactTransport.connect()
     await requestAccount({ currencyIds: ["bitcoin_testnet"] })
-  }, [requestAccount])
+    walletApiReactTransport.disconnect()
+  }, [requestAccount, walletApiReactTransport])
 
   return { ...useRequestAccountReturn, requestAccount: requestBitcoinAccount }
 }
