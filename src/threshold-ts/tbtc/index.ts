@@ -224,6 +224,9 @@ export interface ITBTC {
   //TODO: We might remove this when SDK v2 is implemented
   initiateDepositSdkV2(btcRecoveryAddress: string): Promise<void>
 
+  //TODO: We might remove this when SDK v2 is implemented
+  initiateDepositFromReceiptSdkV2(depositReceipt: DepositReceipt): Promise<void>
+
   //TODO: Remove this when SDK v2 is implemented
   createDepositScriptParametersSdkV2(
     btcRecoveryAddress: string
@@ -639,6 +642,17 @@ export class TBTC implements ITBTC {
 
     this._deposit = await this._sdk?.deposits.initiateDeposit(
       btcRecoveryAddress
+    )
+  }
+
+  //TODO: We might remove/rename this when SDK v2 is implemented
+  initiateDepositFromReceiptSdkV2 = async (depositReceipt: DepositReceipt) => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+
+    this._deposit = await Deposit.fromReceipt(
+      depositReceipt,
+      this._sdk.tbtcContracts,
+      this._sdk.bitcoinClient
     )
   }
 

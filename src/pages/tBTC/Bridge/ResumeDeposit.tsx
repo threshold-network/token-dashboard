@@ -27,6 +27,7 @@ import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { DepositReceipt, Hex } from "@keep-network/sdk-tbtc-v2.ts"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -53,9 +54,16 @@ export const ResumeDepositPage: PageComponent = () => {
     const {
       depositParameters: { btcRecoveryAddress, ...restDepositParameters },
     } = values
-    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress(
-      restDepositParameters
-    )
+    const depositReceipt: DepositReceipt = {
+      depositor: restDepositParameters.depositor,
+      blindingFactor: Hex.from(restDepositParameters.blindingFactor),
+      walletPublicKeyHash: Hex.from(restDepositParameters.walletPublicKeyHash),
+      refundPublicKeyHash: Hex.from(restDepositParameters.refundPublicKeyHash),
+      refundLocktime: Hex.from(restDepositParameters.refundLocktime),
+    }
+    await threshold.tbtc.initiateDepositFromReceiptSdkV2(depositReceipt)
+    const btcDepositAddress =
+      await threshold.tbtc.calculateDepositAddressSdkV2()
 
     setDepositDataInLocalStorage({
       ethAddress: restDepositParameters?.depositor.identifierHex!,
