@@ -41,16 +41,17 @@ export const useSendLedgerLiveAppTransactionFromFn = <
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const txHash = await fn(...args)
         const prefixedTxHash = `0x${txHash}`
+
         openModal(ModalType.TransactionIsPending, {
           transactionHash: txHash,
         })
         setTransactionStatus(TransactionStatus.PendingOnChain)
+
+        const tx = await signer!.provider?.getTransaction(prefixedTxHash)
+        if (!tx) throw new Error(`Transaction ${prefixedTxHash} not found!`)
+        const txReceipt = await tx?.wait()
+
         setTransactionStatus(TransactionStatus.Succeeded)
-        const txReceipt = await signer!.provider?.getTransactionReceipt(
-          prefixedTxHash
-        )
-        // TODO: Fix Success modal. It does not appear after successful
-        // transaction in Ledger Live App.
         if (onSuccess && txReceipt) {
           onSuccess(txReceipt)
         }
@@ -74,7 +75,7 @@ export const useSendLedgerLiveAppTransactionFromFn = <
         }
       }
     },
-    [fn, account, onError, onSuccess, openModal]
+    [fn, account, onError, onSuccess, openModal, signer]
   )
 
   return { sendTransaction, status: transactionStatus }

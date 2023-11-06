@@ -154,7 +154,6 @@ export class LedgerLiveAppEthereumSigner extends Signer {
     const transactionResponse = await this.provider?.getTransaction(
       transactionHash
     )
-    console.log("Transaction response: ", transactionResponse)
 
     if (!transactionResponse) {
       throw new Error("Transaction response not found!")
