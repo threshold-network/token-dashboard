@@ -279,4 +279,17 @@ export class MockBitcoinClient implements BitcoinClient {
   ): Promise<BitcoinTx[]> {
     return []
   }
+
+  async getTxHashesForPublicKeyHash(
+    publicKeyHash: Hex
+  ): Promise<BitcoinTxHash[]> {
+    return new Promise<BitcoinTxHash[]>((resolve, _) => {
+      const hashes = [] as BitcoinTxHash[]
+      if (hashes) {
+        resolve(hashes)
+      } else {
+        resolve([])
+      }
+    })
+  }
 }
