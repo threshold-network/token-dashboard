@@ -478,7 +478,9 @@ export class TBTC implements ITBTC {
         ? SDK.initializeMainnet
         : SDK.initializeGoerli
 
-    const shouldUseSigner = account && providerOrSigner instanceof Web3Provider
+    const shouldUseSigner =
+      // Double bang to convert to boolean
+      !!account && providerOrSigner instanceof Web3Provider
 
     this._sdk = await initailizeFunction(
       shouldUseSigner

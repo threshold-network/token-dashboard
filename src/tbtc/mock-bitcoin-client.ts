@@ -39,10 +39,10 @@ export const testnetUTXO: BitcoinUtxo & BitcoinRawTx = {
 const testnetPrivateKey = "cRJvyxtoggjAm9A94cB86hZ7Y62z2ei5VNJHLksFi2xdnz1GJ6xt"
 
 /**
- * The average transaction fee for the Bitcoin network, ~ 0.00047 BTC.
+ * The average transaction fee for the Bitcoin network, ~ 0.0000002 BTC.
  * This value is used to calculate the fee for transactions on the Bitcoin network.
  */
-const bitcoinNetworkTransactionFee = BigNumber.from("47000")
+const bitcoinNetworkTransactionFee = BigNumber.from(1520)
 
 export class MockBitcoinClient implements BitcoinClient {
   private _unspentTransactionOutputs = new Map<string, BitcoinUtxo[]>()
@@ -106,14 +106,6 @@ export class MockBitcoinClient implements BitcoinClient {
       !isDepositTransactionMocked &&
       !this._isMockingDepositTransactionInProgress
 
-    console.log({
-      utxos,
-      shouldInitiateMocking,
-      isDepositTransactionMocked,
-      isMockingDepositTransactionInProgress:
-        this._isMockingDepositTransactionInProgress,
-    })
-
     // Mocks deposit transaction only once for specific deposit address
     if (shouldInitiateMocking) {
       const store = (await import("../store")).default
@@ -126,7 +118,6 @@ export class MockBitcoinClient implements BitcoinClient {
         refundLocktime,
         blindingFactor,
       } = tbtc
-
       const network = await this.getNetwork()
 
       const depositReceipt: DepositReceipt = {
@@ -144,7 +135,6 @@ export class MockBitcoinClient implements BitcoinClient {
     }
 
     utxos = this._unspentTransactionOutputs.get(address) as BitcoinUtxo[]
-    // console.log({ utxos })
 
     return utxos.length > 0 ? utxos.reverse() : utxos
   }
@@ -166,8 +156,8 @@ export class MockBitcoinClient implements BitcoinClient {
     const depositFunding = DepositFunding.fromScript(depositScript)
     const depositAddress = await depositScript.deriveAddress(network)
 
-    const primaryDepositAmount = BigNumber.from("1000000")
-    const secondaryDepositAmount = BigNumber.from("1000000")
+    const primaryDepositAmount = BigNumber.from("1600000")
+    const secondaryDepositAmount = BigNumber.from("1500000")
 
     const {
       transactionHash: primaryTransactionHash,
@@ -203,7 +193,7 @@ export class MockBitcoinClient implements BitcoinClient {
 
     const utxos = new Map<string, BitcoinUtxo[]>()
     utxos.set(depositAddress, [primaryDepositUtxo, secondaryDepositUtxo])
-    console.log({ utxos })
+
     this.unspentTransactionOutputs = utxos
     const rawTransactions = new Map<string, BitcoinRawTx>()
     rawTransactions.set(primaryTransactionHash.toString(), primaryTransaction)
