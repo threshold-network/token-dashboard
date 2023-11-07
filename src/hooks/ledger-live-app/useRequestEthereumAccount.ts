@@ -33,7 +33,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // TODO: Get currencyId based on the chainId
     walletApiReactTransport.connect()
     await requestAccount({ currencyIds: ["ethereum_goerli"] })
-    walletApiReactTransport.connect()
+    walletApiReactTransport.disconnect()
   }, [requestAccount, walletApiReactTransport])
 
   return { ...useRequestAccountReturn, requestAccount: requestEthereumAccount }
