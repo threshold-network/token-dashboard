@@ -1,8 +1,10 @@
 import React, { FC } from "react"
 import { Button, ButtonProps } from "@chakra-ui/react"
 import { ModalType } from "../enums"
-import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../hooks/useModal"
+import { useIsActive } from "../hooks/useIsActive"
+import { useEmbedFeatureFlag } from "../hooks/useEmbedFeatureFlag"
+import { useRequestEthereumAccount } from "../hooks/ledger-live-app"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -14,10 +16,20 @@ const SubmitTxButton: FC<Props> = ({
   submitText = "Upgrade",
   ...buttonProps
 }) => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
+  const { isEmbed } = useEmbedFeatureFlag()
+  const { requestAccount } = useRequestEthereumAccount()
   const { openModal } = useModal()
 
-  if (active) {
+  const connectWallet = () => {
+    if (isEmbed) {
+      requestAccount()
+    } else {
+      openModal(ModalType.SelectWallet)
+    }
+  }
+
+  if (isActive) {
     return (
       <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
         {submitText}
@@ -29,7 +41,7 @@ const SubmitTxButton: FC<Props> = ({
     <Button
       mt={6}
       isFullWidth
-      onClick={() => openModal(ModalType.SelectWallet)}
+      onClick={connectWallet}
       {...buttonProps}
       type="button"
     >
