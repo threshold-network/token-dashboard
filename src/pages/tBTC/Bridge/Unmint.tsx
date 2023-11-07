@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { useWeb3React } from "@web3-react/core"
 import { Outlet } from "react-router-dom"
 import { FormikErrors, useFormikContext, withFormik } from "formik"
 import {
@@ -62,6 +61,7 @@ import { featureFlags } from "../../../constants"
 import { RedemptionWalletData } from "../../../threshold-ts/tbtc"
 import { UnspentTransactionOutputPlainObject } from "../../../types/tbtc"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -290,12 +290,12 @@ UnmintFormPage.route = {
 }
 
 export const UnmintPageLayout: PageComponent = ({}) => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {active ? (
+        {isActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState

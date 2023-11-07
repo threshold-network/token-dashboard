@@ -376,6 +376,9 @@ export interface ITBTC {
     amount: BigNumberish
   ): Promise<string>
 
+  //TODO: Remove this when SDK v2 is implemented
+  requestRedemptionSdkV2(btcAddress: string, amount: string): Promise<string>
+
   /**
    * Finds the oldest active wallet that has enough BTC to handle a redemption
    * request.
@@ -1145,6 +1148,19 @@ export class TBTC implements ITBTC {
     )
 
     return tx.toPrefixedString()
+  }
+
+  requestRedemptionSdkV2 = async (
+    btcAddress: string,
+    amount: string
+  ): Promise<string> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const { targetChainTxHash } = await this._sdk.redemptions.requestRedemption(
+      btcAddress,
+      BigNumber.from(amount)
+    )
+
+    return targetChainTxHash.toPrefixedString()
   }
 
   findWalletForRedemption = async (
