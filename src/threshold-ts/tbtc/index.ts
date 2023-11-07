@@ -46,7 +46,14 @@ import {
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
-import { BigNumber, BigNumberish, Contract, utils } from "ethers"
+import {
+  BigNumber,
+  BigNumberish,
+  Contract,
+  providers,
+  Signer,
+  utils,
+} from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
@@ -191,6 +198,13 @@ export interface ITBTC {
   readonly tokenContract: Contract
 
   readonly sdk: SDK | undefined
+
+  readonly deposit: Deposit | undefined
+
+  initializeSdk(
+    providerOrSigner: providers.Provider | Signer,
+    account?: string
+  ): Promise<SDK>
 
   /**
    * Saves the Account object to the Ledger Live App Ethereum signer.
@@ -520,12 +534,12 @@ export class TBTC implements ITBTC {
       ethereumConfig.account
     )
     this._ledgerLiveAppEthereumSigner = ledgerLiveAppEthereumSigner
-    this._handleSDKInitialization(ethereumConfig)
   }
 
-  private async _handleSDKInitialization(ethereumConfig: EthereumConfig) {
-    const { providerOrSigner, account } = ethereumConfig
-
+  async initializeSdk(
+    providerOrSigner: providers.Provider | Signer,
+    account?: string
+  ): Promise<SDK> {
     const initializeFunction =
       this.bitcoinNetwork === BitcoinNetwork.Mainnet
         ? SDK.initializeMainnet
@@ -540,7 +554,7 @@ export class TBTC implements ITBTC {
 
     if (shouldUseLedgerLiveAppSigner) {
       this._sdk = await initializeFunction(
-        !!ethereumConfig.account && !!this._ledgerLiveAppEthereumSigner
+        !!account && !!this._ledgerLiveAppEthereumSigner
           ? this._ledgerLiveAppEthereumSigner
           : providerOrSigner
       )
@@ -553,6 +567,7 @@ export class TBTC implements ITBTC {
     }
     // TODO: Remove this console log in the future
     console.log("THIS.sdk: ", this._sdk)
+    return this._sdk
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -573,6 +588,10 @@ export class TBTC implements ITBTC {
 
   get sdk() {
     return this._sdk
+  }
+
+  get deposit() {
+    return this._deposit
   }
 
   setLedgerLiveAppEthAccount(account: Account | undefined): void {
@@ -811,7 +830,7 @@ export class TBTC implements ITBTC {
     utxo: BitcoinUtxo
   ): Promise<DepositRequest> => {
     if (!this._sdk) throw new EmptySdkObjectError()
-    const deposit = await this._sdk?.tbtcContracts.bridge.deposits(
+    const deposit = await this._sdk.tbtcContracts.bridge.deposits(
       utxo.transactionHash,
       utxo.outputIndex
     )

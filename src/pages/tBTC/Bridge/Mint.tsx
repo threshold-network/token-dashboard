@@ -16,6 +16,7 @@ import {
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { useIsSdkInitializing } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -25,6 +26,8 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useIsActive()
+  const { isSdkInitializing, isSdkInitializedWithSigner } =
+    useIsSdkInitializing()
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc
@@ -34,7 +37,9 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
       account &&
       tBTCDepositData[account] &&
       isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
-      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
+      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress &&
+      !isSdkInitializing &&
+      isSdkInitializedWithSigner
     ) {
       const {
         btcDepositAddress,
@@ -56,7 +61,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
       updateState("mintingStep", undefined)
       updateState("btcDepositAddress", btcDepositAddress)
     }
-  }, [account])
+  }, [account, isSdkInitializing, isSdkInitializedWithSigner])
 
   return <MintingFlowRouter />
 }

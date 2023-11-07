@@ -10,6 +10,13 @@ import {
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
 import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { getChainIdentifier } from "../../threshold-ts/utils"
+import {
+  BitcoinAddressConverter,
+  BitcoinNetwork,
+  BitcoinScriptUtils,
+  Hex,
+} from "@keep-network/sdk-tbtc-v2.ts"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -44,6 +51,16 @@ export const findUtxoEffect = async (
 ) => {
   const { btcDepositAddress, depositor } = action.payload
 
+  const {
+    tbtc: {
+      ethAddress,
+      blindingFactor,
+      walletPublicKeyHash,
+      refundLocktime,
+      btcRecoveryAddress,
+    },
+  } = listenerApi.getState()
+
   if (
     !btcDepositAddress ||
     (!isAddress(depositor) && !isAddressZero(depositor))
@@ -57,6 +74,40 @@ export const findUtxoEffect = async (
     try {
       while (true) {
         // Looking for utxo.
+        if (!listenerApi.extra.threshold.tbtc.deposit) {
+          //   // TODO: Get bitcoin network by chainId
+          const recoveryOutputScript =
+            BitcoinAddressConverter.addressToOutputScript(
+              btcRecoveryAddress,
+              BitcoinNetwork.Testnet
+            )
+
+          // TODO: We could probably check that with our
+          // `isPublicKeyHashTypeAddress` method from threshold lib utils
+          if (
+            !BitcoinScriptUtils.isP2PKHScript(recoveryOutputScript) &&
+            !BitcoinScriptUtils.isP2WPKHScript(recoveryOutputScript)
+          ) {
+            throw new Error("Bitcoin recovery address must be P2PKH or P2WPKH")
+          }
+
+          // TODO: Get bitcoin network by chainId
+          const refundPublicKeyHash =
+            BitcoinAddressConverter.addressToPublicKeyHash(
+              btcRecoveryAddress,
+              BitcoinNetwork.Testnet
+            )
+
+          await forkApi.pause(
+            listenerApi.extra.threshold.tbtc.initiateDepositFromReceiptSdkV2({
+              depositor: getChainIdentifier(ethAddress),
+              blindingFactor: Hex.from(blindingFactor),
+              walletPublicKeyHash: Hex.from(walletPublicKeyHash),
+              refundPublicKeyHash: refundPublicKeyHash,
+              refundLocktime: Hex.from(refundLocktime),
+            })
+          )
+        }
         const utxos = await forkApi.pause(
           listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputsSdkV2()
         )
