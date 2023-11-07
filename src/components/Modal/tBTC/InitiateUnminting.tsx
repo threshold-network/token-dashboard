@@ -10,7 +10,6 @@ import {
   ModalHeader,
   Skeleton,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { FC } from "react"
 import { useNavigate } from "react-router-dom"
 import { useThreshold } from "../../../contexts/ThresholdContext"
@@ -18,6 +17,7 @@ import {
   useRedemptionEstimatedFees,
   useRequestRedemption,
 } from "../../../hooks/tbtc"
+import { useIsActive } from "../../../hooks/useIsActive"
 import {
   BaseModalProps,
   UnspentTransactionOutputPlainObject,
@@ -51,7 +51,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   wallet,
 }) => {
   const navigate = useNavigate()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { estimatedBTCAmount, thresholdNetworkFee } =
     useRedemptionEstimatedFees(unmintAmount)
   const threshold = useThreshold()
