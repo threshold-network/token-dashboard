@@ -233,6 +233,7 @@ export class MockBitcoinClient implements BitcoinClient {
   async getRawTransaction(
     transactionHash: BitcoinTxHash
   ): Promise<BitcoinRawTx> {
+    console.log(this._rawTransactions)
     return this._rawTransactions.get(transactionHash.toString()) as BitcoinRawTx
   }
 

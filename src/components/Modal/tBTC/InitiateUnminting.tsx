@@ -73,7 +73,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
 
   const initiateUnminting = async () => {
     const { walletPublicKey, mainUtxo } = wallet
-    await sendTransaction(walletPublicKey, mainUtxo, btcAddress, unmintAmount)
+    await sendTransaction(btcAddress, unmintAmount)
   }
 
   return (

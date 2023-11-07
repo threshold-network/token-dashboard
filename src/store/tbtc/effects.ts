@@ -124,7 +124,14 @@ export const findUtxoEffect = async (
           // utxo.
 
           listenerApi.dispatch(
-            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
+            tbtcSlice.actions.updateState({
+              key: "utxo",
+              value: {
+                ...utxo,
+                transactionHash: utxo.transactionHash.toString(),
+                value: utxo.value.toString(),
+              },
+            })
           )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({

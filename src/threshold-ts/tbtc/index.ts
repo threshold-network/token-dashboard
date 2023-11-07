@@ -35,7 +35,6 @@ import {
   ElectrumClient,
   EthereumBridge,
   EthereumTBTCToken,
-  Hex,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import {
   BitcoinConfig,
@@ -55,7 +54,7 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { Deposit, TBTC as SDK } from "tbtc-sdk-v2"
+import { BitcoinUtxo, Deposit, TBTC as SDK, Hex } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
 export enum BridgeActivityStatus {
@@ -232,10 +231,7 @@ export interface ITBTC {
    * @param depositScriptParameters Deposit script parameters. You can get them
    * from @see{createDepositScriptParameters} method
    */
-  revealDeposit(
-    utxo: UnspentTransactionOutput,
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string>
+  revealDeposit(utxo: BitcoinUtxo): Promise<string>
 
   /**
    * Gets a revealed deposit from the bridge.
@@ -305,12 +301,7 @@ export interface ITBTC {
    * @param amount The amount to be redeemed in tBTC token unit.
    * @returns Transaction hash of the request redemption transaction.
    */
-  requestRedemption(
-    walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutputPlainObject,
-    btcAddress: string,
-    amount: BigNumberish
-  ): Promise<string>
+  requestRedemption(btcAddress: string, amount: BigNumberish): Promise<string>
 
   /**
    * Finds the oldest active wallet that has enough BTC to handle a redemption
@@ -547,8 +538,6 @@ export class TBTC implements ITBTC {
         optimisticMintingFeeDivisor
       )
 
-    await this.deposit.detectFunding().then((x) => console.log(x))
-
     return {
       treasuryFee: treasuryFee.mul(this._satoshiMultiplier).toString(),
       optimisticMintFee: optimisticMintFee.toString(),
@@ -611,17 +600,18 @@ export class TBTC implements ITBTC {
     }
   }
 
-  revealDeposit = async (
-    utxo: UnspentTransactionOutput,
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string> => {
-    return await tBTCRevealDeposit(
-      utxo,
-      depositScriptParameters,
-      this._bitcoinClient,
-      this._bridge,
-      getChainIdentifier(this._tbtcVault.address)
-    )
+  revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+    const { value, ...transactionOutpoint } = utxo
+    const chainHash = await this.deposit.initiateMinting(transactionOutpoint)
+
+    return chainHash.toString()
+    // return await tBTCRevealDeposit(
+    //   utxo,
+    //   depositScriptParameters,
+    //   this._bitcoinClient,
+    //   this._bridge,
+    //   getChainIdentifier(this._tbtcVault.address)
+    // )
   }
 
   getRevealedDeposit = async (
@@ -909,8 +899,6 @@ export class TBTC implements ITBTC {
   }
 
   requestRedemption = async (
-    walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutputPlainObject,
     btcAddress: string,
     amount: BigNumberish
   ): Promise<string> => {
@@ -920,21 +908,12 @@ export class TBTC implements ITBTC {
       )
     }
 
-    const _mainUtxo: UnspentTransactionOutput = {
-      transactionHash: Hex.from(mainUtxo.transactionHash),
-      outputIndex: Number(mainUtxo.outputIndex),
-      value: BigNumber.from(mainUtxo.value),
-    }
-
-    const tx = await requestRedemption(
-      walletPublicKey,
-      _mainUtxo,
-      createOutputScriptFromAddress(btcAddress, this.bitcoinNetwork).toString(),
-      BigNumber.from(amount),
-      this._token
+    const { targetChainTxHash } = await this.sdk.redemptions.requestRedemption(
+      btcAddress,
+      BigNumber.from(amount)
     )
 
-    return tx.toPrefixedString()
+    return targetChainTxHash.toString()
   }
 
   findWalletForRedemption = async (

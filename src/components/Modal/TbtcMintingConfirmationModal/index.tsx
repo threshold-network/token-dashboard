@@ -27,9 +27,10 @@ import { BigNumber } from "ethers"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
+import { BitcoinUtxo } from "tbtc-sdk-v2"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
-  utxo: UnspentTransactionOutput
+  utxo: BitcoinUtxo
 }
 
 const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
@@ -59,18 +60,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   )
 
   const initiateMintTransaction = async () => {
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: getChainIdentifier(ethAddress),
-      blindingFactor,
-      walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(
-        btcRecoveryAddress,
-        threshold.tbtc.bitcoinNetwork
-      ),
-      refundLocktime,
-    }
-
-    await revealDeposit(utxo, depositScriptParameters)
+    await revealDeposit(utxo)
   }
 
   const amount = BigNumber.from(utxo.value).toString()
