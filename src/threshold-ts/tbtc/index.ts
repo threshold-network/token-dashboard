@@ -816,7 +816,7 @@ export class TBTC implements ITBTC {
     if (!revealedDepositHash) {
       throw new Error("Revealed deposit hash not found!")
     }
-    return revealedDepositHash.toString()
+    return revealedDepositHash.toPrefixedString()
   }
 
   getRevealedDeposit = async (

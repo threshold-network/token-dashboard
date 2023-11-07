@@ -40,15 +40,13 @@ export const useSendLedgerLiveAppTransactionFromFn = <
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const txHash = await fn(...args)
-        const prefixedTxHash = `0x${txHash}`
 
         openModal(ModalType.TransactionIsPending, {
           transactionHash: txHash,
         })
         setTransactionStatus(TransactionStatus.PendingOnChain)
-
-        const tx = await signer!.provider?.getTransaction(prefixedTxHash)
-        if (!tx) throw new Error(`Transaction ${prefixedTxHash} not found!`)
+        const tx = await signer!.provider?.getTransaction(txHash)
+        if (!tx) throw new Error(`Transaction ${txHash} not found!`)
         const txReceipt = await tx?.wait()
 
         setTransactionStatus(TransactionStatus.Succeeded)
