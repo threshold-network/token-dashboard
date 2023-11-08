@@ -27,6 +27,7 @@ import { supportedChainId } from "../../../../utils/getEnvVariable"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import ButtonLink from "../../../../components/ButtonLink"
+import { useEmbedFeatureFlag } from "../../../../hooks/useEmbedFeatureFlag"
 
 export interface FormValues {
   ethAddress: string
@@ -111,6 +112,7 @@ export const ProvideDataComponent: FC<{
   const { account } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+  const { isEmbed } = useEmbedFeatureFlag()
 
   const textColor = useColorModeValue("gray.500", "gray.300")
 
@@ -206,9 +208,11 @@ export const ProvideDataComponent: FC<{
       >
         Generate Deposit Address
       </Button>
-      <ButtonLink to="continue" mt={3}>
-        Continue mint
-      </ButtonLink>
+      {isEmbed && (
+        <ButtonLink to="continue" mt={3}>
+          Continue mint
+        </ButtonLink>
+      )}
     </>
   )
 }
