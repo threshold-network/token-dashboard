@@ -49,7 +49,10 @@ import { PageComponent } from "../../../types"
 import { useToken } from "../../../hooks/useToken"
 import { ModalType, Token } from "../../../enums"
 import { BitcoinNetwork } from "../../../threshold-ts/types"
-import { useThreshold } from "../../../contexts/ThresholdContext"
+import {
+  useIsSdkInitializing,
+  useThreshold,
+} from "../../../contexts/ThresholdContext"
 import {
   getBridgeBTCSupportedAddressPrefixesText,
   UNMINT_MIN_AMOUNT,
@@ -291,11 +294,13 @@ UnmintFormPage.route = {
 
 export const UnmintPageLayout: PageComponent = ({}) => {
   const { isActive } = useIsActive()
+  const { isSdkInitializing, isSdkInitializedWithSigner } =
+    useIsSdkInitializing()
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive ? (
+        {isActive && isSdkInitializing && isSdkInitializedWithSigner ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState

@@ -74,11 +74,13 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { isActive } = useIsActive()
+  const { isSdkInitializing, isSdkInitializedWithSigner } =
+    useIsSdkInitializing()
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive ? (
+        {isActive && !isSdkInitializing && isSdkInitializedWithSigner ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

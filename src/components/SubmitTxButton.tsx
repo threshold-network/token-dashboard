@@ -5,6 +5,7 @@ import { useModal } from "../hooks/useModal"
 import { useIsActive } from "../hooks/useIsActive"
 import { useEmbedFeatureFlag } from "../hooks/useEmbedFeatureFlag"
 import { useRequestEthereumAccount } from "../hooks/ledger-live-app"
+import { useIsSdkInitializing } from "../contexts/ThresholdContext"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -17,6 +18,7 @@ const SubmitTxButton: FC<Props> = ({
   ...buttonProps
 }) => {
   const { isActive } = useIsActive()
+  const { isSdkInitializedWithSigner } = useIsSdkInitializing()
   const { isEmbed } = useEmbedFeatureFlag()
   const { requestAccount } = useRequestEthereumAccount()
   const { openModal } = useModal()
@@ -29,7 +31,7 @@ const SubmitTxButton: FC<Props> = ({
     }
   }
 
-  if (isActive) {
+  if (isActive && isSdkInitializedWithSigner) {
     return (
       <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
         {submitText}
