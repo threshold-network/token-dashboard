@@ -165,7 +165,6 @@ export class TBTC implements ITBTC {
       bitcoinConfig.client && !bitcoinConfig.credentials
 
     if (hasMockedBitcoinClient) {
-      console.log("Using custom bitcoin client")
       const depositorAddress = await ethereumAddressFromSigner(signer)
       const ethereumNetwork = await ethereumNetworkFromSigner(signer)
 
@@ -184,7 +183,6 @@ export class TBTC implements ITBTC {
       depositorAddress &&
         this._sdk?.deposits.setDefaultDepositor(depositorAddress)
 
-      console.log({ tbtcContracts, bitcoinClient })
       return
     }
 
@@ -319,16 +317,8 @@ export class TBTC implements ITBTC {
   revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
     const { value, ...transactionOutpoint } = utxo
     const chainHash = await this.deposit.initiateMinting(transactionOutpoint)
-    console.log({ chainHash })
 
     return chainHash.toPrefixedString()
-    // return await tBTCRevealDeposit(
-    //   utxo,
-    //   depositScriptParameters,
-    //   this._bitcoinClient,
-    //   this._bridge,
-    //   getChainIdentifier(this._tbtcVault.address)
-    // )
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
@@ -556,8 +546,8 @@ export class TBTC implements ITBTC {
       const { timestamp: eventTimestamp } =
         await this._bridgeContract.provider.getBlock(event.blockNumber)
       const redemptionKey = this.buildRedemptionKey(
-        event.walletPublicKeyHash,
-        event.redeemerOutputScript
+        Hex.from(event.walletPublicKeyHash).toString(),
+        Hex.from(event.redeemerOutputScript).toString()
       )
 
       const redemptionDetails = await this.getRedemptionRequest(redemptionKey)
@@ -624,18 +614,13 @@ export class TBTC implements ITBTC {
     btcAddress: string,
     amount: BigNumberish
   ): Promise<string> => {
-    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
-      throw new Error(
-        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+    const { targetChainTxHash } =
+      await this._sdk!.redemptions.requestRedemption(
+        btcAddress,
+        BigNumber.from(amount)
       )
-    }
 
-    const { targetChainTxHash } = await this.sdk.redemptions.requestRedemption(
-      btcAddress,
-      BigNumber.from(amount)
-    )
-
-    return targetChainTxHash.toString()
+    return targetChainTxHash.toPrefixedString()
   }
 
   findWalletForRedemption = async (
@@ -701,12 +686,9 @@ export class TBTC implements ITBTC {
     walletPublicKeyHash: string,
     redeemerOutputScript: string
   ) => {
-    return utils.solidityKeccak256(
-      ["bytes32", "bytes20"],
-      [
-        utils.solidityKeccak256(["bytes"], [redeemerOutputScript]),
-        walletPublicKeyHash,
-      ]
+    return EthereumBridge.buildRedemptionKey(
+      walletPublicKeyHash,
+      redeemerOutputScript
     )
   }
 
