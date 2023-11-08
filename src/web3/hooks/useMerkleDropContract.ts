@@ -13,9 +13,9 @@ const CONTRACT_ADDRESSESS = {
   // https://goerli.etherscan.io/address/0x55F836777302CE096CC7770142a8262A2627E2e9
   [ChainID.Goerli.valueOf().toString()]:
     "0x55F836777302CE096CC7770142a8262A2627E2e9",
-  // TODO: Set the merkle drop address for Sepolia
-  // [ChainID.Sepolia.valueOf().toString()]:
-  // "",
+  // https://sepolia.etherscan.io/address/0x4621a14bbB5a53f79Ea532bdc032b8ACc383B153
+  [ChainID.Sepolia.valueOf().toString()]:
+    "0x4621a14bbB5a53f79Ea532bdc032b8ACc383B153",
   // TODO: Set local address- how to resolve it in local network?
   [ChainID.Localhost.valueOf().toString()]: AddressZero,
 } as Record<string, string>
