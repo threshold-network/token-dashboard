@@ -20,7 +20,7 @@ import {
   BridgeActivityStatus,
   BridgeActivity as BridgeActivityType,
   UnmintBridgeActivityAdditionalData,
-} from "../../threshold-ts/tbtc"
+} from "../../threshold-ts/types/tbtc"
 import emptyHistoryImageSrcDark from "../../static/images/tBTC-bridge-no-history-dark.svg"
 import emptyHistoryImageSrcLight from "../../static/images/tBTC-bridge-no-history-light.svg"
 import { InlineTokenBalance } from "../TokenBalance"
