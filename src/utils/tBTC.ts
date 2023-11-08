@@ -79,7 +79,8 @@ export const getBridgeBTCSupportedAddressPrefixesText = (
   return supportedAddressPrefixesText[bridgeProcess][btcNetwork]
 }
 
-export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01
+export const MINT_BITCOIN_MIN_AMOUNT = "1000000" // 0.01 BTC
+export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01 ETH
 
 export class RedemptionDetailsLinkBuilder {
   private walletPublicKeyHash?: string

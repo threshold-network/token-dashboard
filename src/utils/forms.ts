@@ -10,7 +10,9 @@ import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
-type ValidationMsg = string | ((amount: string) => string)
+type ValidationMsg =
+  | string
+  | ((amount: string, tokenDecimals?: number, precision?: number) => string)
 type ValidationOptions = {
   greaterThanValidationMsg: ValidationMsg
   lessThanValidationMsg: ValidationMsg
@@ -18,19 +20,29 @@ type ValidationOptions = {
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultLessThanMsg: (minAmount: string) => string = (
-  minAmount
-) => {
+export const defaultLessThanMsg: (
+  minAmount: string,
+  tokenDecimals?: number,
+  precision?: number
+) => string = (minAmount, decimals = 18, precision = 2) => {
   return `The value should be less than or equal ${formatTokenAmount(
-    minAmount
+    minAmount,
+    "0,00.[0]0",
+    decimals,
+    precision
   )}`
 }
 
-export const defaultGreaterThanMsg: (minAmount: string) => string = (
-  maxAmount
-) => {
+export const defaultGreaterThanMsg: (
+  minAmount: string,
+  tokenDecimals?: number,
+  precision?: number
+) => string = (maxAmount, decimals = 18, precision = 2) => {
   return `The value should be greater than or equal ${formatTokenAmount(
-    maxAmount
+    maxAmount,
+    "0,00.[0]0",
+    decimals,
+    precision
   )}`
 }
 export const defaultValidationOptions: ValidationOptions = {
@@ -43,7 +55,9 @@ export const validateAmountInRange = (
   value: string,
   maxValue: string,
   minValue = DEFAULT_MIN_VALUE,
-  options: ValidationOptions = defaultValidationOptions
+  options: ValidationOptions = defaultValidationOptions,
+  tokenDecimals: number = 18,
+  precision: number = 2
 ) => {
   if (!value) {
     return options.requiredMsg
@@ -55,11 +69,11 @@ export const validateAmountInRange = (
 
   if (valueInBN.gt(maxValueInBN)) {
     return typeof options.lessThanValidationMsg === "function"
-      ? options.lessThanValidationMsg(maxValue)
+      ? options.lessThanValidationMsg(maxValue, tokenDecimals, precision)
       : options.lessThanValidationMsg
   } else if (valueInBN.lt(minValueInBN)) {
     return typeof options.greaterThanValidationMsg === "function"
-      ? options.greaterThanValidationMsg(minValue)
+      ? options.greaterThanValidationMsg(minValue, tokenDecimals, precision)
       : options.greaterThanValidationMsg
   }
 }

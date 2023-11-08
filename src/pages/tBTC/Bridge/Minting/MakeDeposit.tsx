@@ -10,6 +10,7 @@ import {
   Divider,
   useColorModeValue,
   Card,
+  BodySm,
 } from "@threshold-network/components"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
@@ -29,6 +30,12 @@ import {
   useRequestBitcoinAccount,
   useSendBitcoinTransaction,
 } from "../../../../hooks/ledger-live-app"
+import { Form, FormikTokenBalanceInput } from "../../../../components/Forms"
+import { InlineTokenBalance } from "../../../../components/TokenBalance"
+import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
+import { FormikErrors, useFormikContext, withFormik } from "formik"
+import { getErrorsObj, validateAmountInRange } from "../../../../utils/forms"
+import { MINT_BITCOIN_MIN_AMOUNT } from "../../../../utils/tBTC"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -135,15 +142,17 @@ const MakeDepositComponent: FC<{
     await requestAccount()
   }, [requestAccount])
 
-  const handleSendBitcoinTransaction = useCallback(async () => {
-    try {
-      // TODO: Allow user to specify how many bitcoins he want to send ( + do a
-      // validation [min 0.01 BTC]))
-      await sendBitcoinTransaction("1000000", btcDepositAddress) // 0.01 BTC
-    } catch (e) {
-      console.error(e)
-    }
-  }, [btcDepositAddress, sendBitcoinTransaction])
+  const handleSendBitcoinTransaction = useCallback(
+    async (values: SendBitcoinsToDepositAddressFormValues) => {
+      const { amount } = values
+      try {
+        await sendBitcoinTransaction(amount, btcDepositAddress)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    [btcDepositAddress, sendBitcoinTransaction]
+  )
 
   return (
     <>
@@ -210,20 +219,118 @@ const MakeDepositComponent: FC<{
             : "Choose bitcoin account"}
         </Button>
       )}
-      <Button
-        isLoading={!isEmbed}
-        loadingText={"Waiting for funds to be sent..."}
-        form="tbtc-minting-data-form"
-        isDisabled={!isEmbed || !ledgerBitcoinAccount}
-        isFullWidth
-        onClick={() => {
-          if (isEmbed) handleSendBitcoinTransaction()
-        }}
-      >
-        {isEmbed ? "Send 0.01 BTC" : "I sent the BTC"}
-      </Button>
+      {isEmbed && ledgerBitcoinAccount && (
+        <SendBitcoinsToDepositAddressForm
+          maxTokenAmount={ledgerBitcoinAccount.balance.toString()}
+          onSubmitForm={handleSendBitcoinTransaction}
+        />
+      )}
+      {!isEmbed && (
+        /* TODO: No need to use button here. We can replace it with just some text */
+        <Button
+          isLoading={true}
+          loadingText={"Waiting for funds to be sent..."}
+          form="tbtc-minting-data-form"
+          isDisabled={true}
+          isFullWidth
+        >
+          I sent the BTC
+        </Button>
+      )}
     </>
   )
 }
+
+/**
+ * Formik for Ledger Live App where we can send bitcoins without leaving our
+ * T dashboard. It should only be visible with `isEmbed` flag.
+ */
+
+type SendBitcoinsToDepositAddressFormBaseProps = {
+  maxTokenAmount: string
+}
+
+const SendBitcoinsToDepositAddressFormBase: FC<
+  SendBitcoinsToDepositAddressFormBaseProps
+> = ({ maxTokenAmount }) => {
+  const { isSubmitting } =
+    useFormikContext<SendBitcoinsToDepositAddressFormValues>()
+
+  return (
+    <Form mt={10}>
+      <FormikTokenBalanceInput
+        name="amount"
+        label={
+          // TODO: Extract to a shared component - the same layout is used in
+          // `UnmintFormBase` component.
+          <>
+            <Box as="span">Amount </Box>
+            <BodySm as="span" float="right" color="gray.500">
+              Balance:{" "}
+              <InlineTokenBalance
+                tokenAmount={maxTokenAmount}
+                withSymbol
+                tokenSymbol="BTC"
+                tokenDecimals={8}
+                precision={6}
+                higherPrecision={8}
+                withHigherPrecision
+              />
+            </BodySm>
+          </>
+        }
+        placeholder="Amount of bitcoins you want to send to deposit address."
+        max={maxTokenAmount}
+        icon={tBTCFillBlack}
+        tokenDecimals={8}
+      />
+      <Button
+        size="lg"
+        w="100%"
+        mt={"10"}
+        type="submit"
+        isLoading={isSubmitting}
+      >
+        Send Bitcoins
+      </Button>
+    </Form>
+  )
+}
+
+type SendBitcoinsToDepositAddressFormValues = {
+  amount: string
+}
+
+type SendBitcoinsToDepositAddressFormProps = {
+  onSubmitForm: (values: SendBitcoinsToDepositAddressFormValues) => void
+} & SendBitcoinsToDepositAddressFormBaseProps
+
+const SendBitcoinsToDepositAddressForm = withFormik<
+  SendBitcoinsToDepositAddressFormProps,
+  SendBitcoinsToDepositAddressFormValues
+>({
+  mapPropsToValues: () => ({
+    amount: "",
+  }),
+  validate: async (values, props) => {
+    const errors: FormikErrors<SendBitcoinsToDepositAddressFormValues> = {}
+
+    errors.amount = validateAmountInRange(
+      values.amount,
+      props.maxTokenAmount,
+      MINT_BITCOIN_MIN_AMOUNT,
+      undefined,
+      8,
+      8
+    )
+
+    return getErrorsObj(errors)
+  },
+  handleSubmit: (values, { props }) => {
+    props.onSubmitForm(values)
+  },
+  displayName: "SendBitcoinsToDepositAddressForm",
+  enableReinitialize: true,
+})(SendBitcoinsToDepositAddressFormBase)
 
 export const MakeDeposit = withOnlyConnectedWallet(MakeDepositComponent)
