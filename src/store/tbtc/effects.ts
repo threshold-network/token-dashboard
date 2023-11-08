@@ -9,7 +9,7 @@ import {
   key,
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { Hex } from "tbtc-sdk-v2"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -180,7 +180,7 @@ export const fetchUtxoConfirmationsEffect = async (
   if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
     return
 
-  const txHash = TransactionHash.from(utxo.transactionHash)
+  const txHash = Hex.from(utxo.transactionHash)
 
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()

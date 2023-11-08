@@ -1,13 +1,8 @@
+// TODO: Remove ununsed imports
 import {
-  calculateDepositAddress,
-  calculateDepositRefundLocktime,
-  DepositScriptParameters,
-  revealDeposit as tBTCRevealDeposit,
   getRevealedDeposit as tBTCgetRevealedDeposit,
   RevealedDeposit,
 } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-//@ts-ignore
-import * as CryptoJS from "crypto-js"
 import {
   getContract,
   getProviderOrSigner,
@@ -21,6 +16,7 @@ import {
   isPayToScriptHashTypeAddress,
   fromSatoshiToTokenPrecision,
   getSigner,
+  getGoerliDevelopmentContracts,
 } from "../utils"
 import {
   Client,
@@ -32,16 +28,10 @@ import {
   UnspentTransactionOutput,
 } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
-  ElectrumClient,
   EthereumBridge,
   EthereumTBTCToken,
 } from "@keep-network/tbtc-v2.ts/dist/src"
-import {
-  BitcoinConfig,
-  BitcoinNetwork,
-  EthereumConfig,
-  UnspentTransactionOutputPlainObject,
-} from "../types"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
 import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
 import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
@@ -54,7 +44,20 @@ import {
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
-import { BitcoinUtxo, Deposit, TBTC as SDK, Hex } from "tbtc-sdk-v2"
+import {
+  BitcoinUtxo,
+  Deposit,
+  TBTC as SDK,
+  Hex,
+  loadEthereumContracts,
+  ethereumNetworkFromSigner,
+  ethereumAddressFromSigner,
+  BitcoinClient,
+  DepositRequest,
+  ElectrumClient,
+  BitcoinTxHash,
+  BitcoinTx,
+} from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
 export enum BridgeActivityStatus {
@@ -208,9 +211,7 @@ export interface ITBTC {
    * @param address - Bitcoin address UTXOs should be determined for.
    * @returns List of UTXOs.
    */
-  findAllUnspentTransactionOutputs(
-    address: string
-  ): Promise<UnspentTransactionOutput[]>
+  findAllUnspentTransactionOutputs(address: string): Promise<BitcoinUtxo[]>
 
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
@@ -238,7 +239,7 @@ export interface ITBTC {
    * @param utxo Deposit UTXO of the revealed deposit
    * @returns Revealed deposit data.
    */
-  getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
+  getRevealedDeposit(utxo: BitcoinUtxo): Promise<DepositRequest>
 
   /**
    * Gets the number of confirmations that a given transaction has accumulated
@@ -246,7 +247,7 @@ export interface ITBTC {
    * @param transactionHash Hash of the transaction.
    * @returns The number of confirmations.
    */
-  getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
+  getTransactionConfirmations(transactionHash: BitcoinTxHash): Promise<number>
 
   /**
    * Gets the minimum number of confirmations needed for the minter to start the
@@ -334,7 +335,7 @@ export interface ITBTC {
    * @param transactionHash Hash of the transaction.
    * @returns Transaction object.
    */
-  getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
+  getBitcoinTransaction(transactionHash: string): Promise<BitcoinTx>
 
   /**
    * Gets emitted `RedemptionRequested` events.
@@ -391,7 +392,7 @@ export interface ITBTC {
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
   private _tbtcVault: Contract
-  private _bitcoinClient: Client
+  private _bitcoinClient: BitcoinClient
   private _multicall: IMulticall
   private _bridgeContract: Contract
   private _token: ChainTBTCToken
@@ -458,26 +459,54 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._handleSDKInitialization(ethereumConfig)
+    this._handleSDKInitialization(ethereumConfig, bitcoinConfig)
   }
 
-  private async _handleSDKInitialization(ethereumConfig: EthereumConfig) {
+  private async _handleSDKInitialization(
+    ethereumConfig: EthereumConfig,
+    bitcoinConfig: BitcoinConfig
+  ) {
+    // TODO: Revamp SDK/Threshold lib initialization
     const { providerOrSigner, account } = ethereumConfig
+    const signer =
+      // Double bang to convert to boolean
+      !!account && providerOrSigner instanceof Web3Provider
+        ? getSigner(providerOrSigner as Web3Provider, account)
+        : providerOrSigner
+
+    const hasMockedBitcoinClient =
+      bitcoinConfig.client && !bitcoinConfig.credentials
+
+    if (hasMockedBitcoinClient) {
+      console.log("Using custom bitcoin client")
+      const depositorAddress = await ethereumAddressFromSigner(signer)
+      const ethereumNetwork = await ethereumNetworkFromSigner(signer)
+
+      const tbtcContracts =
+        getGoerliDevelopmentContracts(signer) ??
+        (await loadEthereumContracts(signer, ethereumNetwork))
+      const bitcoinClient = (
+        hasMockedBitcoinClient
+          ? bitcoinConfig.client
+          : // It can be assumed, credentials are defined here
+            new ElectrumClient(bitcoinConfig.credentials!)
+      ) as BitcoinClient
+
+      this._sdk = await SDK.initializeCustom(tbtcContracts, bitcoinClient)
+
+      depositorAddress &&
+        this._sdk?.deposits.setDefaultDepositor(depositorAddress)
+
+      console.log({ tbtcContracts, bitcoinClient })
+      return
+    }
 
     const initailizeFunction =
       this.bitcoinNetwork === BitcoinNetwork.Mainnet
         ? SDK.initializeMainnet
         : SDK.initializeGoerli
 
-    const shouldUseSigner =
-      // Double bang to convert to boolean
-      !!account && providerOrSigner instanceof Web3Provider
-
-    this._sdk = await initailizeFunction(
-      shouldUseSigner
-        ? getSigner(providerOrSigner as Web3Provider, account)
-        : providerOrSigner
-    )
+    this._sdk = await initailizeFunction(signer)
   }
 
   get sdk(): SDK {
@@ -518,7 +547,7 @@ export class TBTC implements ITBTC {
 
   findAllUnspentTransactionOutputs = async (
     address: string
-  ): Promise<UnspentTransactionOutput[]> => {
+  ): Promise<BitcoinUtxo[]> => {
     return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
   }
 
@@ -603,8 +632,9 @@ export class TBTC implements ITBTC {
   revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
     const { value, ...transactionOutpoint } = utxo
     const chainHash = await this.deposit.initiateMinting(transactionOutpoint)
+    console.log({ chainHash })
 
-    return chainHash.toString()
+    return chainHash.toPrefixedString()
     // return await tBTCRevealDeposit(
     //   utxo,
     //   depositScriptParameters,
@@ -614,14 +644,19 @@ export class TBTC implements ITBTC {
     // )
   }
 
-  getRevealedDeposit = async (
-    utxo: UnspentTransactionOutput
-  ): Promise<RevealedDeposit> => {
-    return await tBTCgetRevealedDeposit(utxo, this._bridge)
+  getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
+    const deposit = await this._sdk!.tbtcContracts.bridge.deposits(
+      utxo.transactionHash,
+      utxo.outputIndex
+    )
+    if (!deposit) {
+      throw new Error("Deposit not found!")
+    }
+    return deposit
   }
 
   getTransactionConfirmations = async (
-    transactionHash: TransactionHash
+    transactionHash: BitcoinTxHash
   ): Promise<number> => {
     return await this._bitcoinClient.getTransactionConfirmations(
       transactionHash
@@ -937,6 +972,7 @@ export class TBTC implements ITBTC {
       redeemerOutputScript,
       this.bitcoinNetwork,
       this._bridge,
+      //@ts-ignore
       this._bitcoinClient
     )
   }
@@ -989,10 +1025,8 @@ export class TBTC implements ITBTC {
 
   getBitcoinTransaction = async (
     transactionHash: string
-  ): Promise<BitcoinTransaction> => {
-    return this._bitcoinClient.getTransaction(
-      TransactionHash.from(transactionHash)
-    )
+  ): Promise<BitcoinTx> => {
+    return this._bitcoinClient.getTransaction(Hex.from(transactionHash))
   }
 
   getRedemptionRequestedEvents = async (

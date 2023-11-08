@@ -1,9 +1,7 @@
 import { useCallback } from "react"
+import { BitcoinAddressConverter } from "tbtc-sdk-v2"
 import { useThreshold } from "../../contexts/ThresholdContext"
-import {
-  createAddressFromOutputScript,
-  prependScriptPubKeyByLength,
-} from "../../threshold-ts/utils"
+import { prependScriptPubKeyByLength } from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
 
 export const useFindRedemptionInBitcoinTx = () => {
@@ -32,7 +30,7 @@ export const useFindRedemptionInBitcoinTx = () => {
         )
 
         return {
-          btcAddress: createAddressFromOutputScript(
+          btcAddress: BitcoinAddressConverter.outputScriptToAddress(
             scriptPubKey,
             threshold.tbtc.bitcoinNetwork
           ),
