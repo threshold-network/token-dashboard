@@ -37,29 +37,38 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
       account &&
       tBTCDepositData[account] &&
       isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
-      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress &&
-      !isSdkInitializing &&
-      isSdkInitializedWithSigner
+      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
     ) {
-      const {
-        btcDepositAddress,
-        ethAddress,
-        blindingFactor,
-        btcRecoveryAddress,
-        walletPublicKeyHash,
-        refundLocktime,
-      } = tBTCDepositData[account]
+      // When the code enters this if, this means that the deposit data is
+      // placed in tbtc local storage and we need to update the store with that
+      // data. The SDK might still be initializing though, and we need it to be
+      // initialized, because as soon as `btcDepositAddress` is upadted in the
+      // store, it will start searching for UTXOs for it. That's why we update
+      // the mintingStep with `undefined` value, to show the loading state as
+      // soon as possible.
+      if (isSdkInitializing) updateState("mintingStep", undefined)
 
-      updateState("ethAddress", ethAddress)
-      updateState("blindingFactor", blindingFactor)
-      updateState("btcRecoveryAddress", btcRecoveryAddress)
-      updateState("walletPublicKeyHash", walletPublicKeyHash)
-      updateState("refundLocktime", refundLocktime)
-      // We reset the minting step to undefined to show skeleton and the
-      // useEffect in MintingFlowRouter will update and set the proper minting
-      // step when it recognizes the "btcDepositAddress" change.
-      updateState("mintingStep", undefined)
-      updateState("btcDepositAddress", btcDepositAddress)
+      if (!isSdkInitializing && isSdkInitializedWithSigner) {
+        const {
+          btcDepositAddress,
+          ethAddress,
+          blindingFactor,
+          btcRecoveryAddress,
+          walletPublicKeyHash,
+          refundLocktime,
+        } = tBTCDepositData[account]
+
+        updateState("ethAddress", ethAddress)
+        updateState("blindingFactor", blindingFactor)
+        updateState("btcRecoveryAddress", btcRecoveryAddress)
+        updateState("walletPublicKeyHash", walletPublicKeyHash)
+        updateState("refundLocktime", refundLocktime)
+        // We reset the minting step to undefined to show skeleton and the
+        // useEffect in MintingFlowRouter will update and set the proper minting
+        // step when it recognizes the "btcDepositAddress" change.
+        updateState("mintingStep", undefined)
+        updateState("btcDepositAddress", btcDepositAddress)
+      }
     }
   }, [account, isSdkInitializing, isSdkInitializedWithSigner])
 
@@ -80,7 +89,7 @@ const MintPageLayout: PageComponent = () => {
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive && !isSdkInitializing && isSdkInitializedWithSigner ? (
+        {isActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

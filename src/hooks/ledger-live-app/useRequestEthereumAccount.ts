@@ -4,6 +4,9 @@ import { useCallback, useContext, useEffect } from "react"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
+import { walletConnected } from "../../store/account"
+import { useAppDispatch } from "../store/useAppDispatch"
+import { useInitializeSdk } from "../tbtc/useInitializeSdk"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -23,10 +26,19 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
   const threshold = useThreshold()
+  const dispatch = useAppDispatch()
+  const { setIsSdkInitializing } = useInitializeSdk()
 
   useEffect(() => {
+    // Setting the eth account in LedgerLiveAppContext through `setEthAccount`
+    // method will trigger the useEffect in Threshold Context that will
+    // reinitialize the lib and tBTC SDK. We can set the is initializing flag
+    // here to indicate as early as as possible that the sdk is in the
+    // initializing process.
+    setIsSdkInitializing(true)
     setEthAccount(account || undefined)
     threshold.tbtc.setLedgerLiveAppEthAccount(account || undefined)
+    dispatch(walletConnected(account?.address || ""))
   }, [account])
 
   const requestEthereumAccount = useCallback(async () => {

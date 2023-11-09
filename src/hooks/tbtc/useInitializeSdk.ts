@@ -30,7 +30,7 @@ export const useInitializeSdk = () => {
     sdk,
     isSdkInitializing: isInitializing,
     isSdkInitializedWithSigner: isInitializedWithSigner,
-    setIsInitializing,
+    setIsSdkInitializing: setIsInitializing,
     initializeSdk,
   }
 }
