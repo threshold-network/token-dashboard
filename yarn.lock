@@ -1225,6 +1225,14 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bitcoinerlab/secp256k1@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@bitcoinerlab/secp256k1/-/secp256k1-1.0.5.tgz#4643ba73619c24c7c455cc63c6338c69c2cf187c"
+  integrity sha512-8gT+ukTCFN2rTxn4hD9Jq3k+UJwcprgYjfK/SQUSLgznXoIgsBnlPuARMkyyuEjycQK9VvnPiejKdszVTflh+w==
+  dependencies:
+    "@noble/hashes" "^1.1.5"
+    "@noble/secp256k1" "^1.7.1"
+
 "@celo/base@1.5.2":
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/@celo/base/-/base-1.5.2.tgz#168ab5e4e30b374079d8d139fafc52ca6bfd4100"
@@ -3417,6 +3425,16 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" "1.3.0-dev.6"
 
+"@keep-network/random-beacon@2.1.0-dev.17":
+  version "2.1.0-dev.17"
+  resolved "https://registry.yarnpkg.com/@keep-network/random-beacon/-/random-beacon-2.1.0-dev.17.tgz#5fb2621948aa2fe07ceb134ba76f737b7e6d85cd"
+  integrity sha512-alfd2sHdMrX15qKzM4zwkZ3l/CXboLoeos4l3WvChW978VJIwUPm2ZIXd8tNTaHlykQ57eSSX7esaLfIjeO3Kg==
+  dependencies:
+    "@keep-network/sortition-pools" "^2.0.0-pre.16"
+    "@openzeppelin/contracts" "4.7.3"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+    "@threshold-network/solidity-contracts" "1.3.0-dev.8"
+
 "@keep-network/sortition-pools@1.2.0-dev.1":
   version "1.2.0-dev.1"
   resolved "https://registry.yarnpkg.com/@keep-network/sortition-pools/-/sortition-pools-1.2.0-dev.1.tgz#2ee371f1dd1ff71f6d05c9ddc2a83a4a93ff56b3"
@@ -3456,6 +3474,19 @@
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
     "@keep-network/ecdsa" "2.1.0-dev.15"
     "@keep-network/random-beacon" "2.1.0-dev.16"
+    "@keep-network/tbtc" "1.1.2-dev.1"
+    "@openzeppelin/contracts" "^4.8.1"
+    "@openzeppelin/contracts-upgradeable" "^4.8.1"
+    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
+
+"@keep-network/tbtc-v2@1.6.0-dev.5":
+  version "1.6.0-dev.5"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.6.0-dev.5.tgz#849fc3331e95f109426557959f90ebc5499877bb"
+  integrity sha512-i2ilW62RiD+CH/W+vfNdRrQ1pQBKJb2vzG+3bo8AGnQGnCUhCM2tCio9bTOJrRC7a5v3ez3D1kkbf7uFLI8xUg==
+  dependencies:
+    "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
+    "@keep-network/ecdsa" "2.1.0-dev.16"
+    "@keep-network/random-beacon" "2.1.0-dev.17"
     "@keep-network/tbtc" "1.1.2-dev.1"
     "@openzeppelin/contracts" "^4.8.1"
     "@openzeppelin/contracts-upgradeable" "^4.8.1"
@@ -3624,10 +3655,15 @@
     "@motionone/dom" "^10.16.2"
     tslib "^2.3.1"
 
-"@noble/hashes@^1.2.0":
+"@noble/hashes@^1.1.5", "@noble/hashes@^1.2.0":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
   integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
+
+"@noble/secp256k1@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@noble/secp256k1/-/secp256k1-1.7.1.tgz#b251c70f824ce3ca7f8dc3df08d58f005cc0507c"
+  integrity sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -17386,6 +17422,22 @@ tar@^6.0.2:
     minizlib "^2.1.1"
     mkdirp "^1.0.3"
     yallist "^4.0.0"
+
+"tbtc-sdk-v2@npm:@keep-network/tbtc-v2.ts@2.3.0-dev.2":
+  version "2.3.0-dev.2"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.3.0-dev.2.tgz#1ab0d51b61865428dc4491f2e0d8a0aeaaa3acfe"
+  integrity sha512-I5phMWvfCYIxp/JVjpJFFRJUhjSbkTGG/MCK4odMSypC443nhkCqEgWBQDzTzYXahO1MB4ptN0mNAs+0HbGk+A==
+  dependencies:
+    "@bitcoinerlab/secp256k1" "^1.0.5"
+    "@keep-network/ecdsa" "2.1.0-dev.16"
+    "@keep-network/tbtc-v2" "1.6.0-dev.5"
+    bitcoinjs-lib "^6.1.5"
+    bufio "^1.0.6"
+    ecpair "^2.1.0"
+    electrum-client-js "git+https://github.com/keep-network/electrum-client-js.git#v0.1.1"
+    ethers "^5.5.2"
+    p-timeout "^4.1.0"
+    wif "2.0.6"
 
 temp-dir@^1.0.0:
   version "1.0.0"
