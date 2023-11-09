@@ -178,6 +178,17 @@ export type AmountToSatoshiResult = {
    */
   satoshis: BigNumber
 }
+class EmptySdkObjectError extends Error {
+  constructor() {
+    super("SDK object is not initialized.")
+  }
+}
+
+class EmptyDepositObjectError extends Error {
+  constructor() {
+    super("Deposit object is not initiated.")
+  }
+}
 
 export interface ITBTC {
   /**
@@ -211,15 +222,22 @@ export interface ITBTC {
   ): Promise<SDK>
 
   /**
-   * Creates parameters needed to construct a deposit address from the data that
-   * we gather from the user, which are eth address and btc recovery address.
-   * @param ethAddress Eth address in which the user will receive tBTC (it
-   * should be the address that the user is connected to).
+   * Initiates a Deposit object from bitcoin recovery address.
    * @param btcRecoveryAddress The bitcoin address in which the user will
    * receive the bitcoin back in case something goes wrong.
-   * @returns All deposit script parameters needed to create a deposit address.
+   * @returns Deposit object
    */
   initiateDeposit(btcRecoveryAddress: string): Promise<Deposit>
+
+  /**
+   * Initiates a deposit object from DepositReceipt object. This will be used
+   * to either initiate deposit object from JSON file or form local storage.
+   * @param depositReceipt DepositReceipt object that contains all the data
+   * related to the deposit we want to re-initiate
+   * @returns Deposit object
+   */
+  initiateDepositFromReceipt(depositReceipt: DepositReceipt): Promise<Deposit>
+
   /**
    * Calculates the deposit address from the deposit script parameters
    * @param depositScriptParameters Deposit script parameters. You can get them
@@ -525,14 +543,11 @@ export class TBTC implements ITBTC {
     return this._sdk
   }
 
-  get sdk(): SDK {
-    return this._sdk!
+  get sdk(): SDK | undefined {
+    return this._sdk
   }
 
-  get deposit(): Deposit {
-    if (!this._deposit) {
-      throw new Error("Deposit not initialized")
-    }
+  get deposit(): Deposit | undefined {
     return this._deposit
   }
 
@@ -553,12 +568,27 @@ export class TBTC implements ITBTC {
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
-    this._deposit = await this.sdk.deposits.initiateDeposit(btcRecoveryAddress)
-    return this.deposit
+    if (!this._sdk) throw new EmptySdkObjectError()
+    this._deposit = await this._sdk.deposits.initiateDeposit(btcRecoveryAddress)
+    return this._deposit
+  }
+
+  initiateDepositFromReceipt = async (
+    depositReceipt: DepositReceipt
+  ): Promise<Deposit> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+
+    this._deposit = await Deposit.fromReceipt(
+      depositReceipt,
+      this._sdk.tbtcContracts,
+      this._sdk.bitcoinClient
+    )
+    return this._deposit
   }
 
   calculateDepositAddress = async (): Promise<string> => {
-    return this.deposit.getBitcoinAddress()
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    return await this._deposit.getBitcoinAddress()
   }
 
   findAllUnspentTransactionOutputs = async (
@@ -647,13 +677,15 @@ export class TBTC implements ITBTC {
 
   revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
     const { value, ...transactionOutpoint } = utxo
-    const chainHash = await this.deposit.initiateMinting(transactionOutpoint)
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
 
     return chainHash.toPrefixedString()
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
-    const deposit = await this._sdk!.tbtcContracts.bridge.deposits(
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const deposit = await this._sdk.tbtcContracts.bridge.deposits(
       utxo.transactionHash,
       utxo.outputIndex
     )
@@ -666,9 +698,8 @@ export class TBTC implements ITBTC {
   getTransactionConfirmations = async (
     transactionHash: BitcoinTxHash
   ): Promise<number> => {
-    return await this._bitcoinClient.getTransactionConfirmations(
-      transactionHash
-    )
+    if (!this._sdk) throw new EmptySdkObjectError()
+    return this._sdk.bitcoinClient.getTransactionConfirmations(transactionHash)
   }
 
   minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
