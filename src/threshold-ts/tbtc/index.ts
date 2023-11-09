@@ -198,6 +198,19 @@ export interface ITBTC {
   readonly deposit: Deposit | undefined
 
   /**
+   * Initializes tbtc-v2 SDK
+   * @param providerOrSigner Ethers instance of Provider (if wallet is not
+   * connected) or Signer (if wallet is connected).
+   * @param account Connected ethereum address (optional, needed only if user
+   * connected his wallet).
+   * @returns Instance of the TBTC class from tbtc-v2.ts lib
+   */
+  initializeSdk(
+    providerOrSigner: providers.Provider | Signer,
+    account?: string
+  ): Promise<SDK>
+
+  /**
    * Creates parameters needed to construct a deposit address from the data that
    * we gather from the user, which are eth address and btc recovery address.
    * @param ethAddress Eth address in which the user will receive tBTC (it
@@ -414,8 +427,8 @@ export class TBTC implements ITBTC {
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
-  private _sdk?: SDK
-  private _deposit?: Deposit
+  private _sdk: SDK | undefined
+  private _deposit: Deposit | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -468,15 +481,12 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._handleSDKInitialization(ethereumConfig, bitcoinConfig)
   }
 
-  private async _handleSDKInitialization(
-    ethereumConfig: EthereumConfig,
-    bitcoinConfig: BitcoinConfig
-  ) {
-    // TODO: Revamp SDK/Threshold lib initialization
-    const { providerOrSigner, account } = ethereumConfig
+  async initializeSdk(
+    providerOrSigner: providers.Provider | Signer,
+    account?: string
+  ): Promise<SDK> {
     const signer =
       // Double bang to convert to boolean
       !!account && providerOrSigner instanceof Web3Provider
@@ -484,7 +494,7 @@ export class TBTC implements ITBTC {
         : providerOrSigner
 
     const hasMockedBitcoinClient =
-      bitcoinConfig.client && !bitcoinConfig.credentials
+      this._bitcoinConfig.client && !this._bitcoinConfig.credentials
 
     if (hasMockedBitcoinClient) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
@@ -493,19 +503,16 @@ export class TBTC implements ITBTC {
       const tbtcContracts =
         getGoerliDevelopmentContracts(signer) ??
         (await loadEthereumContracts(signer, ethereumNetwork))
-      const bitcoinClient = (
-        hasMockedBitcoinClient
-          ? bitcoinConfig.client
-          : // It can be assumed, credentials are defined here
-            new ElectrumClient(bitcoinConfig.credentials!)
-      ) as BitcoinClient
 
-      this._sdk = await SDK.initializeCustom(tbtcContracts, bitcoinClient)
+      this._sdk = await SDK.initializeCustom(
+        tbtcContracts,
+        this._bitcoinConfig.client as BitcoinClient
+      )
 
       depositorAddress &&
         this._sdk?.deposits.setDefaultDepositor(depositorAddress)
 
-      return
+      return this._sdk
     }
 
     const initializeFunction =
@@ -514,6 +521,8 @@ export class TBTC implements ITBTC {
         : SDK.initializeGoerli
 
     this._sdk = await initializeFunction(signer)
+
+    return this._sdk
   }
 
   get sdk(): SDK {

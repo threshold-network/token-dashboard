@@ -3,6 +3,7 @@ import { Button, ButtonProps } from "@chakra-ui/react"
 import { ModalType } from "../enums"
 import { useWeb3React } from "@web3-react/core"
 import { useModal } from "../hooks/useModal"
+import { useIsSdkInitializing } from "../contexts/ThresholdContext"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -16,8 +17,9 @@ const SubmitTxButton: FC<Props> = ({
 }) => {
   const { active } = useWeb3React()
   const { openModal } = useModal()
+  const { isSdkInitializedWithSigner } = useIsSdkInitializing()
 
-  if (active) {
+  if (active && isSdkInitializedWithSigner) {
     return (
       <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
         {submitText}

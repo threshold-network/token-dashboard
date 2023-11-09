@@ -1,7 +1,10 @@
 import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
 import { Hex } from "tbtc-sdk-v2"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import {
+  useIsSdkInitializing,
+  useThreshold,
+} from "../../contexts/ThresholdContext"
 import {
   isValidType,
   fromSatoshiToTokenPrecision,
@@ -42,8 +45,15 @@ export const useFetchRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     RedemptionDetails | undefined
   >()
+  const { isSdkInitializing, isSdkInitialized } = useIsSdkInitializing()
 
   useEffect(() => {
+    // TODO: Check if it works properly with new SDK
+    if (!isSdkInitializing || !isSdkInitialized) {
+      setError("Sdk is not initialized!")
+      return
+    }
+
     if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
       setError("Invalid redeemer value.")
       return
@@ -80,7 +90,7 @@ export const useFetchRedemptionDetails = (
         // reduce the number of records - any user can request redemption for
         // the same wallet.
         const redemptionRequestedEvent = (
-          await threshold.tbtc.sdk.tbtcContracts.bridge.getRedemptionRequestedEvents()
+          await threshold.tbtc.sdk!.tbtcContracts.bridge.getRedemptionRequestedEvents()
         ).find(
           (event) =>
             // It's not possible that the redemption request with the same
@@ -240,6 +250,7 @@ export const useFetchRedemptionDetails = (
     threshold,
     getBlock,
     findRedemptionInBitcoinTx,
+    isSdkInitialized,
   ])
 
   return { isFetching, data: redemptionData, error }
