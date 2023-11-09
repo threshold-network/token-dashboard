@@ -1,9 +1,8 @@
 import { MultiAppStaking } from "./mas"
 import { IMulticall, Multicall } from "./multicall"
 import { IStaking, Staking } from "./staking"
-import { TBTC } from "./tbtc"
+import { ITBTC, TBTC } from "./tbtc"
 import { ThresholdConfig } from "./types"
-import { ITBTC } from "./types/tbtc"
 import { IVendingMachines, VendingMachines } from "./vending-machine"
 
 export class Threshold {

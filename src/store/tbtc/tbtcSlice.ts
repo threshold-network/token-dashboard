@@ -6,7 +6,7 @@ import {
   BridgeActivityStatus,
   BridgeActivity,
   UnmintBridgeActivityAdditionalData,
-} from "../../threshold-ts/types/tbtc"
+} from "../../threshold-ts/tbtc"
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import {

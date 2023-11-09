@@ -59,8 +59,8 @@ import { useModal } from "../../../hooks/useModal"
 import { UnmintDetails } from "./UnmintDetails"
 import { UnmintingCard } from "./UnmintingCard"
 import { featureFlags } from "../../../constants"
-import { UnspentTransactionOutputPlainObject } from "../../../types"
-import { RedemptionWalletData } from "../../../threshold-ts/types/tbtc"
+import { RedemptionWalletData } from "../../../threshold-ts/tbtc"
+import { UnspentTransactionOutputPlainObject } from "../../../types/tbtc"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
 const UnmintFormPage: PageComponent = ({}) => {
