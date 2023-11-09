@@ -591,10 +591,12 @@ export class TBTC implements ITBTC {
     return await this._deposit.getBitcoinAddress()
   }
 
-  findAllUnspentTransactionOutputs = async (
-    address: string
-  ): Promise<BitcoinUtxo[]> => {
-    return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
+  findAllUnspentTransactionOutputs = async (): Promise<BitcoinUtxo[]> => {
+    if (!this._deposit) throw new EmptyDepositObjectError()
+    const fundingDetected = await this._deposit.detectFunding()
+    // TODO: Remove this console.log
+    console.log("fundingDetected: ", fundingDetected)
+    return fundingDetected || []
   }
 
   getEstimatedDepositFees = async (depositAmount: string) => {
