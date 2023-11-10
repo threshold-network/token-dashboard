@@ -1,14 +1,7 @@
-// TODO: Remove ununsed imports
-import {
-  getRevealedDeposit as tBTCgetRevealedDeposit,
-  RevealedDeposit,
-} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import {
   getContract,
-  getProviderOrSigner,
   isValidBtcAddress,
   getContractPastEvents,
-  getChainIdentifier,
   ZERO,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
@@ -19,19 +12,6 @@ import {
   getGoerliDevelopmentContracts,
   getTbtcV2Artifact,
 } from "../utils"
-import {
-  Client,
-  computeHash160,
-  createOutputScriptFromAddress,
-  decodeBitcoinAddress,
-  Transaction as BitcoinTransaction,
-  TransactionHash,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import {
-  EthereumBridge,
-  EthereumTBTCToken,
-} from "@keep-network/tbtc-v2.ts/dist/src"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import {
   BigNumber,
@@ -44,10 +24,6 @@ import {
 import { ContractCall, IMulticall } from "../multicall"
 import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
-import {
-  requestRedemption,
-  findWalletForRedemption,
-} from "@keep-network/tbtc-v2.ts/dist/src/redemption"
 import {
   BitcoinUtxo,
   Deposit,
@@ -62,7 +38,7 @@ import {
   BitcoinTxHash,
   BitcoinTx,
   DepositReceipt,
-  EthereumBridge as SdkEthereumBridge,
+  EthereumBridge,
 } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
@@ -156,10 +132,6 @@ interface RedemptionsCompletedEvent {
 }
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
-
-export type RedemptionWalletData = Awaited<
-  ReturnType<typeof findWalletForRedemption>
->
 
 type AmountToSatoshiResult = {
   /**
@@ -337,29 +309,24 @@ export interface ITBTC {
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
-   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in the
-   * compressed form (33 bytes long with 02 or 03 prefix).
-   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO held
-   * by the on-chain Bridge contract.
    * @param btcAddress The Bitcoin address that the redeemed funds will be
    * locked to.
    * @param amount The amount to be redeemed in tBTC token unit.
-   * @returns Transaction hash of the request redemption transaction.
+   * @returns Object containing transaction hash of the request redemption
+   * transaction and `additionalParams` object, that contains Bitcoin public key
+   * of the wallet asked to handle the redemption. The key is presented in the
+   * compressed form (33 bytes long with 02 or 03 prefix). Both, transaction
+   * hash and walletPublicKey are also prefixed with `0x`.
    */
-  requestRedemption(btcAddress: string, amount: BigNumberish): Promise<string>
-
-  /**
-   * Finds the oldest active wallet that has enough BTC to handle a redemption
-   * request.
-   * @param amount The amount to be redeemed in tBTC token precision.
-   * @param btcAddress The Bitcoin address the redeemed funds are supposed to be
-   *        locked on.
-   * @returns Promise with the wallet details needed to request a redemption.
-   */
-  findWalletForRedemption(
-    amount: BigNumberish,
-    btcAddress: string
-  ): Promise<RedemptionWalletData>
+  requestRedemption(
+    btcAddress: string,
+    amount: BigNumberish
+  ): Promise<{
+    hash: string
+    additionalParams: {
+      walletPublicKey: string
+    }
+  }>
 
   /**
    * Builds a redemption key required to refer a redemption request.
@@ -434,17 +401,11 @@ export interface ITBTC {
 }
 
 export class TBTC implements ITBTC {
-  private _bridge: EthereumBridge
   private _bridgeContract: Contract
   private _tbtcVaultContract: Contract
   private _tokenContract: Contract
   private _bitcoinClient: BitcoinClient
   private _multicall: IMulticall
-  /**
-   * Deposit refund locktime duration in seconds.
-   * This is 9 month in seconds assuming 1 month = 30 days
-   */
-  private _depositRefundLocktimDuration = 23328000
   private _ethereumConfig: EthereumConfig
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
@@ -486,13 +447,6 @@ export class TBTC implements ITBTC {
       ethereumConfig.providerOrSigner,
       ethereumConfig.account
     )
-    this._bridge = new EthereumBridge({
-      address: bridgeArtifact.address,
-      signerOrProvider: getProviderOrSigner(
-        ethereumConfig.providerOrSigner as any,
-        ethereumConfig.account
-      ),
-    })
     // @ts-ignore
     this._bitcoinClient =
       bitcoinConfig.client ??
@@ -929,8 +883,8 @@ export class TBTC implements ITBTC {
       const { timestamp: eventTimestamp } =
         await this._bridgeContract.provider.getBlock(event.blockNumber)
       const redemptionKey = this.buildRedemptionKey(
-        Hex.from(event.walletPublicKeyHash).toString(),
-        Hex.from(event.redeemerOutputScript).toString()
+        event.walletPublicKeyHash,
+        event.redeemerOutputScript
       )
 
       const redemptionDetails = await this.getRedemptionRequest(redemptionKey)
@@ -987,9 +941,7 @@ export class TBTC implements ITBTC {
   ): string => {
     const _txHash = BitcoinTxHash.from(depositTxHash)
 
-    // TODO: Use just `EthereumBridge` once we get rid of the one from the old
-    // `EthereumBridge` form tbtc-v2.ts.
-    return SdkEthereumBridge.buildDepositKey(
+    return EthereumBridge.buildDepositKey(
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
@@ -998,40 +950,29 @@ export class TBTC implements ITBTC {
   requestRedemption = async (
     btcAddress: string,
     amount: BigNumberish
-  ): Promise<string> => {
-    const { targetChainTxHash } =
-      await this._sdk!.redemptions.requestRedemption(
+  ): Promise<{
+    hash: string
+    additionalParams: {
+      walletPublicKey: string
+    }
+  }> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const { targetChainTxHash, walletPublicKey } =
+      await this._sdk.redemptions.requestRedemption(
         btcAddress,
         BigNumber.from(amount)
       )
 
-    return targetChainTxHash.toPrefixedString()
-  }
-
-  findWalletForRedemption = async (
-    amount: BigNumberish,
-    btcAddress: string
-  ): Promise<RedemptionWalletData> => {
-    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
-      throw new Error(
-        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
-      )
+    return {
+      hash: targetChainTxHash.toPrefixedString(),
+      additionalParams: {
+        // TODO: We might want to use `toString()` here and then get rid of
+        // `unprefixedAndUncheckedAddress` in `withWalletPublicKey` methods of
+        // `RedemptionDetailsLinkBuilder` (src/utils.tBTC.ts). Needs testing
+        // though.
+        walletPublicKey: walletPublicKey.toPrefixedString(),
+      },
     }
-    const { satoshis } = this._amountToSatoshi(amount)
-
-    const redeemerOutputScript = createOutputScriptFromAddress(
-      btcAddress,
-      this.bitcoinNetwork
-    ).toString()
-
-    return await findWalletForRedemption(
-      satoshis,
-      redeemerOutputScript,
-      this.bitcoinNetwork,
-      this._bridge,
-      //@ts-ignore
-      this._bitcoinClient
-    )
   }
 
   private _isValidBitcoinAddressForRedemption = (
@@ -1071,9 +1012,18 @@ export class TBTC implements ITBTC {
     walletPublicKeyHash: string,
     redeemerOutputScript: string
   ) => {
-    return EthereumBridge.buildRedemptionKey(
-      walletPublicKeyHash,
-      redeemerOutputScript
+    // The `buildRedemptionKey` static method from `EthereumBridge` prefixes the
+    // `walletPublicKeyHash` with `0x` and it's length. It also prefixes
+    // walletPublicKeyHash. In our use cases of this method our values are
+    // already prefixed (for example in the deposit details link), so we are
+    // just extracting the needed code from the lib here. We might want to
+    // refactor that in the future.
+    return utils.solidityKeccak256(
+      ["bytes32", "bytes20"],
+      [
+        utils.solidityKeccak256(["bytes"], [redeemerOutputScript]),
+        walletPublicKeyHash,
+      ]
     )
   }
 

@@ -4,6 +4,7 @@ import {
   computeHash160,
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
+  unprefixedAndUncheckedAddress,
 } from "../threshold-ts/utils"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
@@ -94,7 +95,9 @@ export class RedemptionDetailsLinkBuilder {
   }
 
   withWalletPublicKey = (walletPublicKey: string) => {
-    this.walletPublicKeyHash = `0x${computeHash160(walletPublicKey)}`
+    this.walletPublicKeyHash = `0x${computeHash160(
+      unprefixedAndUncheckedAddress(walletPublicKey)
+    )}`
     return this
   }
 
