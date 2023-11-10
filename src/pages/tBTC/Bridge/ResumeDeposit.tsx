@@ -27,6 +27,7 @@ import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
+import { DepositReceipt, Hex } from "tbtc-sdk-v2"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -53,6 +54,14 @@ export const ResumeDepositPage: PageComponent = () => {
     const {
       depositParameters: { btcRecoveryAddress, ...restDepositParameters },
     } = values
+    const depositReceipt: DepositReceipt = {
+      depositor: restDepositParameters.depositor,
+      blindingFactor: Hex.from(restDepositParameters.blindingFactor),
+      walletPublicKeyHash: Hex.from(restDepositParameters.walletPublicKeyHash),
+      refundPublicKeyHash: Hex.from(restDepositParameters.refundPublicKeyHash),
+      refundLocktime: Hex.from(restDepositParameters.refundLocktime),
+    }
+    await threshold.tbtc.initiateDepositFromReceipt(depositReceipt)
     const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
     setDepositDataInLocalStorage({
@@ -92,8 +101,7 @@ export const ResumeDepositPage: PageComponent = () => {
 }
 
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
-  const { setValues, getFieldMeta, setFieldError, values } = props
-
+  const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
 
   const isError = Boolean(error)
@@ -129,8 +137,9 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         size="lg"
         isFullWidth
         mt="6"
-        disabled={!values.depositParameters || isError}
+        disabled={!values.depositParameters || isError || isSubmitting}
         type="submit"
+        isLoading={isSubmitting}
       >
         Upload and Resume
       </Button>
