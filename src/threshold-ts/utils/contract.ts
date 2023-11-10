@@ -10,6 +10,14 @@ import {
 } from "tbtc-sdk-v2"
 import { getEnvVariable } from "../../utils/getEnvVariable"
 import { EnvVariable } from "../../enums"
+import { EthersContractDeployment } from "tbtc-sdk-v2/dist/src/lib/ethereum/adapter"
+
+import BridgeArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/Bridge.json"
+import BridgeArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/Bridge.json"
+import TbtcVaultArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
+import TbtcVaultArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
+import TbtcTokenArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTC.json"
+import TbtcTokenArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTC.json"
 
 // account is not optional
 export function getSigner(
@@ -74,6 +82,29 @@ export function getContractAddressFromTruffleArtifact(
         }
       ).address
     : AddressZero
+}
+
+export const getTbtcV2Artifact = (
+  artifactName: "Bridge" | "TBTCVault" | "TBTC",
+  chainId: string | number
+) => {
+  // TODO: Update this function with goerli development artifact.
+  switch (artifactName) {
+    case "Bridge":
+      return chainId.toString() === "1"
+        ? BridgeArtifactMainnet
+        : BridgeArtifactGoerli
+    case "TBTCVault":
+      return chainId.toString() === "1"
+        ? TbtcVaultArtifactMainnet
+        : TbtcVaultArtifactGoerli
+    case "TBTC":
+      return chainId.toString() === "1"
+        ? TbtcTokenArtifactMainnet
+        : TbtcTokenArtifactGoerli
+    default:
+      throw new Error("Can't get tbtc-v2 artifacts!")
+  }
 }
 
 export const getGoerliDevelopmentContracts = (

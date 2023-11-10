@@ -17,6 +17,7 @@ import {
   fromSatoshiToTokenPrecision,
   getSigner,
   getGoerliDevelopmentContracts,
+  getTbtcV2Artifact,
 } from "../utils"
 import {
   Client,
@@ -32,9 +33,6 @@ import {
   EthereumTBTCToken,
 } from "@keep-network/tbtc-v2.ts/dist/src"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
-import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
-import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
-import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
 import {
   BigNumber,
   BigNumberish,
@@ -50,7 +48,6 @@ import {
   requestRedemption,
   findWalletForRedemption,
 } from "@keep-network/tbtc-v2.ts/dist/src/redemption"
-import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
 import {
   BitcoinUtxo,
   Deposit,
@@ -117,9 +114,9 @@ export interface RedemptionRequestedEvent {
   txHash: string
 }
 
-export type QueryEventFilter = { fromBlock?: BlockTag; toBlock?: BlockTag }
+type QueryEventFilter = { fromBlock?: BlockTag; toBlock?: BlockTag }
 
-export type RedemptionRequestedEventFilter = {
+type RedemptionRequestedEventFilter = {
   walletPublicKeyHash?: string | string[]
   redeemer?: string | string[]
 } & QueryEventFilter
@@ -136,35 +133,35 @@ export interface RedemptionRequest<
   isTimedOut: boolean
 }
 
-export type RedemptionTimedOutEventFilter = {
+type RedemptionTimedOutEventFilter = {
   walletPublicKeyHash?: string | string[]
 } & QueryEventFilter
 
-export interface RedemptionTimedOutEvent {
+interface RedemptionTimedOutEvent {
   walletPublicKeyHash: string
   redeemerOutputScript: string
   txHash: string
   blockNumber: number
 }
 
-export type RedemptionsCompletedEventFilter = {
+type RedemptionsCompletedEventFilter = {
   walletPublicKeyHash: string
 } & QueryEventFilter
 
-export interface RedemptionsCompletedEvent {
+interface RedemptionsCompletedEvent {
   walletPublicKeyHash: string
   redemptionBitcoinTxHash: string
   txHash: string
   blockNumber: number
 }
 
-export type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
+type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
 
 export type RedemptionWalletData = Awaited<
   ReturnType<typeof findWalletForRedemption>
 >
 
-export type AmountToSatoshiResult = {
+type AmountToSatoshiResult = {
   /**
    * Amount of TBTC to be minted/unminted.
    */
@@ -193,8 +190,14 @@ class EmptyDepositObjectError extends Error {
 
 export interface ITBTC {
   /**
+   * Ethereum chain id specified in the ethereum config that we pass to the
+   * threshold lib.
+   * @returns {string | number}
+   */
+  readonly ethereumChainId: string | number
+  /**
    * Bitcoin network specified in the bitcoin config that we pass to the
-   * threshold lib
+   * threshold lib.
    * @returns {BitcoinNetwork}
    */
   readonly bitcoinNetwork: BitcoinNetwork
@@ -432,17 +435,17 @@ export interface ITBTC {
 
 export class TBTC implements ITBTC {
   private _bridge: EthereumBridge
-  private _tbtcVault: Contract
+  private _bridgeContract: Contract
+  private _tbtcVaultContract: Contract
+  private _tokenContract: Contract
   private _bitcoinClient: BitcoinClient
   private _multicall: IMulticall
-  private _bridgeContract: Contract
-  private _token: ChainTBTCToken
-  private _tokenContract: Contract
   /**
    * Deposit refund locktime duration in seconds.
    * This is 9 month in seconds assuming 1 month = 30 days
    */
   private _depositRefundLocktimDuration = 23328000
+  private _ethereumConfig: EthereumConfig
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
@@ -459,25 +462,37 @@ export class TBTC implements ITBTC {
         "Neither bitcoin client nor bitcoin credentials are specified"
       )
     }
+    const tbtcVaultArtifact = getTbtcV2Artifact(
+      "TBTCVault",
+      ethereumConfig.chainId
+    )
+    const bridgeArtifact = getTbtcV2Artifact("Bridge", ethereumConfig.chainId)
+    const tbtcTokenArtifact = getTbtcV2Artifact("TBTC", ethereumConfig.chainId)
+    this._bridgeContract = getContract(
+      bridgeArtifact.address,
+      bridgeArtifact.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
+    this._tbtcVaultContract = getContract(
+      tbtcVaultArtifact.address,
+      tbtcVaultArtifact.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
+    this._tokenContract = getContract(
+      tbtcTokenArtifact.address,
+      tbtcTokenArtifact.abi,
+      ethereumConfig.providerOrSigner,
+      ethereumConfig.account
+    )
     this._bridge = new EthereumBridge({
-      address: Bridge.address,
+      address: bridgeArtifact.address,
       signerOrProvider: getProviderOrSigner(
         ethereumConfig.providerOrSigner as any,
         ethereumConfig.account
       ),
     })
-    this._tbtcVault = getContract(
-      TBTCVault.address,
-      TBTCVault.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
-    )
-    this._bridgeContract = getContract(
-      Bridge.address,
-      Bridge.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
-    )
     // @ts-ignore
     this._bitcoinClient =
       bitcoinConfig.client ??
@@ -486,20 +501,8 @@ export class TBTC implements ITBTC {
         bitcoinConfig.clientOptions
       )
     this._multicall = multicall
+    this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
-    this._token = new EthereumTBTCToken({
-      address: TBTCToken.address,
-      signerOrProvider: getProviderOrSigner(
-        ethereumConfig.providerOrSigner as any,
-        ethereumConfig.account
-      ),
-    })
-    this._tokenContract = getContract(
-      TBTCToken.address,
-      TBTCToken.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
-    )
   }
 
   async initializeSdk(
@@ -554,6 +557,10 @@ export class TBTC implements ITBTC {
     return this._deposit
   }
 
+  get ethereumChainId(): string | number {
+    return this._ethereumConfig.chainId
+  }
+
   get bitcoinNetwork(): BitcoinNetwork {
     return this._bitcoinConfig.network
   }
@@ -563,7 +570,7 @@ export class TBTC implements ITBTC {
   }
 
   get vaultContract() {
-    return this._tbtcVault
+    return this._tbtcVaultContract
   }
 
   get tokenContract() {
@@ -632,13 +639,13 @@ export class TBTC implements ITBTC {
     const calls: ContractCall[] = [
       {
         interface: this._bridgeContract.interface,
-        address: Bridge.address,
+        address: this._bridgeContract.address,
         method: "depositParameters",
         args: [],
       },
       {
-        interface: this._tbtcVault.interface,
-        address: this._tbtcVault.address,
+        interface: this._tbtcVaultContract.interface,
+        address: this._tbtcVaultContract.address,
         method: "optimisticMintingFeeDivisor",
         args: [],
       },
@@ -793,8 +800,9 @@ export class TBTC implements ITBTC {
   findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
+    const bridgeArtifact = getTbtcV2Artifact("Bridge", this.ethereumChainId)
     const deposits = await getContractPastEvents(this._bridgeContract, {
-      fromBlock: Bridge.receipt.blockNumber,
+      fromBlock: bridgeArtifact.receipt.blockNumber,
       filterParams: [null, null, depositor],
       eventName: "DepositRevealed",
     })
@@ -883,8 +891,12 @@ export class TBTC implements ITBTC {
     depositor: string,
     depositKeys: string[] = []
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    return await getContractPastEvents(this._tbtcVault, {
-      fromBlock: TBTCVault.receipt.blockNumber,
+    const tbtcVaultArtifact = getTbtcV2Artifact(
+      "TBTCVault",
+      this.ethereumChainId
+    )
+    return await getContractPastEvents(this._tbtcVaultContract, {
+      fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys, depositor],
       eventName: "OptimisticMintingFinalized",
     })
@@ -893,8 +905,12 @@ export class TBTC implements ITBTC {
   private _findAllCancelledDeposits = async (
     depositKeys: string[]
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    return getContractPastEvents(this._tbtcVault, {
-      fromBlock: TBTCVault.receipt.blockNumber,
+    const tbtcVaultArtifact = getTbtcV2Artifact(
+      "TBTCVault",
+      this.ethereumChainId
+    )
+    return getContractPastEvents(this._tbtcVaultContract, {
+      fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
