@@ -65,6 +65,7 @@ import {
   BitcoinTxHash,
   BitcoinTx,
   DepositReceipt,
+  EthereumBridge as SdkEthereumBridge,
 } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
@@ -968,9 +969,11 @@ export class TBTC implements ITBTC {
     depositOutputIndex: number,
     txHashByteOrder: BitcoinTransactionHashByteOrder = "little-endian"
   ): string => {
-    const _txHash = TransactionHash.from(depositTxHash)
+    const _txHash = BitcoinTxHash.from(depositTxHash)
 
-    return EthereumBridge.buildDepositKey(
+    // TODO: Use just `EthereumBridge` once we get rid of the one from the old
+    // `EthereumBridge` form tbtc-v2.ts.
+    return SdkEthereumBridge.buildDepositKey(
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
       depositOutputIndex
     )
