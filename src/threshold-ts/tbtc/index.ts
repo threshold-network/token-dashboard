@@ -540,6 +540,8 @@ export class TBTC implements ITBTC {
 
     this._sdk = await initializeFunction(signer)
 
+    // TODO: Remove this console log in the future
+    console.log("THIS.sdk: ", this._sdk)
     return this._sdk
   }
 

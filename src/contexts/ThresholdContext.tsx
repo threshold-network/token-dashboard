@@ -114,10 +114,10 @@ export const ThresholdProvider: FC = ({ children }) => {
         bitcoin: threshold.config.bitcoin,
       })
       hasThresholdLibConfigBeenUpdated.current = false
+      initializeSdk(threshold.config.ethereum.providerOrSigner)
     }
-    initializeSdk(threshold.config.ethereum.providerOrSigner)
 
-    if (!sdk) {
+    if (!sdk && !isSdkInitializing && !isSdkInitialized) {
       initializeSdk(threshold.config.ethereum.providerOrSigner)
     }
   }, [library, active, account])
