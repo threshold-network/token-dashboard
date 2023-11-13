@@ -216,8 +216,6 @@ export interface ITBTC {
 
   /**
    * Calculates the deposit address from the deposit script parameters
-   * @param depositScriptParameters Deposit script parameters. You can get them
-   * from @see{initiateDeposit} method
    * @returns Deposit address
    */
   calculateDepositAddress(): Promise<string>
@@ -244,9 +242,8 @@ export interface ITBTC {
 
   /**
    * Reveals the given deposit to the on-chain Bridge contract.
-   * @param utxo Deposit UTXO of the revealed deposit
-   * @param depositScriptParameters Deposit script parameters. You can get them
-   * from @see{createDepositScriptParameters} method
+   * @param utxo Bitcoin UTXO of the revealed deposit
+   * @return Prefixed transaction hash of the reveal.
    */
   revealDeposit(utxo: BitcoinUtxo): Promise<string>
 
@@ -423,29 +420,46 @@ export class TBTC implements ITBTC {
         "Neither bitcoin client nor bitcoin credentials are specified"
       )
     }
+    const {
+      chainId,
+      shouldUseGoerliDevelopmentContracts,
+      providerOrSigner,
+      account,
+    } = ethereumConfig
+
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
-      ethereumConfig.chainId
+      chainId,
+      shouldUseGoerliDevelopmentContracts
     )
-    const bridgeArtifact = getTbtcV2Artifact("Bridge", ethereumConfig.chainId)
-    const tbtcTokenArtifact = getTbtcV2Artifact("TBTC", ethereumConfig.chainId)
+    const bridgeArtifact = getTbtcV2Artifact(
+      "Bridge",
+      chainId,
+      shouldUseGoerliDevelopmentContracts
+    )
+    const tbtcTokenArtifact = getTbtcV2Artifact(
+      "TBTC",
+      chainId,
+      shouldUseGoerliDevelopmentContracts
+    )
+
     this._bridgeContract = getContract(
       bridgeArtifact.address,
       bridgeArtifact.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
+      providerOrSigner,
+      account
     )
     this._tbtcVaultContract = getContract(
       tbtcVaultArtifact.address,
       tbtcVaultArtifact.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
+      providerOrSigner,
+      account
     )
     this._tokenContract = getContract(
       tbtcTokenArtifact.address,
       tbtcTokenArtifact.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
+      providerOrSigner,
+      account
     )
     // @ts-ignore
     this._bitcoinClient =
@@ -454,11 +468,14 @@ export class TBTC implements ITBTC {
         bitcoinConfig.credentials!,
         bitcoinConfig.clientOptions
       )
+
     this._multicall = multicall
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
   }
 
+  // TODO: Remove arguments from this function and just get those values from
+  // this._ethereumConfig
   async initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
@@ -472,22 +489,35 @@ export class TBTC implements ITBTC {
     const hasMockedBitcoinClient =
       this._bitcoinConfig.client && !this._bitcoinConfig.credentials
 
-    if (hasMockedBitcoinClient) {
+    const shouldUseGoerliDevelopmentContracts =
+      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+
+    // For both of these cases we will use SDK.initializeCustom() method
+    if (hasMockedBitcoinClient || shouldUseGoerliDevelopmentContracts) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
       const ethereumNetwork = await ethereumNetworkFromSigner(signer)
 
-      const tbtcContracts =
-        getGoerliDevelopmentContracts(signer) ??
-        (await loadEthereumContracts(signer, ethereumNetwork))
+      const tbtcContracts = shouldUseGoerliDevelopmentContracts
+        ? getGoerliDevelopmentContracts(signer)
+        : await loadEthereumContracts(signer, ethereumNetwork)
+
+      // TODO: Get this from ethereum config
+      const electrumAddress = "wss://electrumx-server.test.tbtc.network:8443"
+
+      const bitcoinClient = hasMockedBitcoinClient
+        ? this._bitcoinConfig.client
+        : ElectrumClient.fromUrl(electrumAddress)
 
       this._sdk = await SDK.initializeCustom(
         tbtcContracts,
-        this._bitcoinConfig.client as BitcoinClient
+        bitcoinClient as BitcoinClient
       )
 
       depositorAddress &&
         this._sdk?.deposits.setDefaultDepositor(depositorAddress)
 
+      // TODO: Remove this console log in the future
+      console.log("THIS.sdk: ", this._sdk)
       return this._sdk
     }
 
@@ -754,7 +784,11 @@ export class TBTC implements ITBTC {
   findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
-    const bridgeArtifact = getTbtcV2Artifact("Bridge", this.ethereumChainId)
+    const bridgeArtifact = getTbtcV2Artifact(
+      "Bridge",
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+    )
     const deposits = await getContractPastEvents(this._bridgeContract, {
       fromBlock: bridgeArtifact.receipt.blockNumber,
       filterParams: [null, null, depositor],
@@ -847,7 +881,8 @@ export class TBTC implements ITBTC {
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
-      this.ethereumChainId
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
     )
     return await getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
@@ -861,7 +896,8 @@ export class TBTC implements ITBTC {
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
-      this.ethereumChainId
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
     )
     return getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
@@ -957,6 +993,7 @@ export class TBTC implements ITBTC {
     }
   }> => {
     if (!this._sdk) throw new EmptySdkObjectError()
+
     const { targetChainTxHash, walletPublicKey } =
       await this._sdk.redemptions.requestRedemption(
         btcAddress,

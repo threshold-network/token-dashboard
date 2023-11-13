@@ -13,6 +13,7 @@ import { BitcoinClient } from "tbtc-sdk-v2"
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
+  shouldUseGoerliDevelopmentContracts: boolean
   account?: string
 }
 

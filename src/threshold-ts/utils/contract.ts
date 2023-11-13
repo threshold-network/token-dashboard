@@ -8,16 +8,16 @@ import {
   EthereumWalletRegistry,
   TBTCContracts,
 } from "tbtc-sdk-v2"
-import { getEnvVariable } from "../../utils/getEnvVariable"
-import { EnvVariable } from "../../enums"
-import { EthersContractDeployment } from "tbtc-sdk-v2/dist/src/lib/ethereum/adapter"
 
 import BridgeArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import BridgeArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/Bridge.json"
+import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
 import TbtcVaultArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
 import TbtcVaultArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
+import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
 import TbtcTokenArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTC.json"
 import TbtcTokenArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTC.json"
+import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
 
 // account is not optional
 export function getSigner(
@@ -86,19 +86,26 @@ export function getContractAddressFromTruffleArtifact(
 
 export const getTbtcV2Artifact = (
   artifactName: "Bridge" | "TBTCVault" | "TBTC",
-  chainId: string | number
+  chainId: string | number,
+  shouldUseGoerliDevelopmentContracts = false
 ) => {
   // TODO: Update this function with goerli development artifact.
   switch (artifactName) {
     case "Bridge":
+      if (shouldUseGoerliDevelopmentContracts)
+        return BridgeArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? BridgeArtifactMainnet
         : BridgeArtifactGoerli
     case "TBTCVault":
+      if (shouldUseGoerliDevelopmentContracts)
+        return TbtcVaultArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? TbtcVaultArtifactMainnet
         : TbtcVaultArtifactGoerli
     case "TBTC":
+      if (shouldUseGoerliDevelopmentContracts)
+        return TbtcTokenArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? TbtcTokenArtifactMainnet
         : TbtcTokenArtifactGoerli
@@ -110,27 +117,22 @@ export const getTbtcV2Artifact = (
 export const getGoerliDevelopmentContracts = (
   signerOrProvider: Signer | providers.Provider
 ): TBTCContracts => {
-  const useGoerliDevelopmentContracts =
-    getEnvVariable(EnvVariable.USE_GOERLI_DEVELOPMENT_CONTRACTS) === "true"
-
-  return useGoerliDevelopmentContracts
-    ? {
-        bridge: new EthereumBridge({
-          address: "0xB07051CE2A47b58C22bdfD1425BCEad27F6072Db",
-          signerOrProvider,
-        }),
-        tbtcToken: new EthereumTBTCToken({
-          address: "0xd33b90D2c792F00d3746eF29cBE9aa0aAef915E1",
-          signerOrProvider,
-        }),
-        tbtcVault: new EthereumTBTCVault({
-          address: "0x0099960098f5A5343Bef3185e7E365d3a558D36a",
-          signerOrProvider,
-        }),
-        walletRegistry: new EthereumWalletRegistry({
-          address: "0x18930D71C7aE52beCB474A39173Def1A09b861a0",
-          signerOrProvider,
-        }),
-      }
-    : ({} as TBTCContracts)
+  return {
+    bridge: new EthereumBridge({
+      address: "0xB07051CE2A47b58C22bdfD1425BCEad27F6072Db",
+      signerOrProvider,
+    }),
+    tbtcToken: new EthereumTBTCToken({
+      address: "0xd33b90D2c792F00d3746eF29cBE9aa0aAef915E1",
+      signerOrProvider,
+    }),
+    tbtcVault: new EthereumTBTCVault({
+      address: "0x0099960098f5A5343Bef3185e7E365d3a558D36a",
+      signerOrProvider,
+    }),
+    walletRegistry: new EthereumWalletRegistry({
+      address: "0x18930D71C7aE52beCB474A39173Def1A09b861a0",
+      signerOrProvider,
+    }),
+  }
 }

@@ -8,9 +8,24 @@ import {
   BitcoinConfig,
   BitcoinNetwork,
   BitcoinClientCredentials,
+  EthereumConfig,
 } from "../threshold-ts/types"
 
-function getBitcoinConfig(): BitcoinConfig {
+function getInitialEthereumConfig(
+  providerOrSigner?: Provider | Signer
+): EthereumConfig {
+  const useGoerliDevelopmentContractsFlag =
+    getEnvVariable(EnvVariable.USE_GOERLI_DEVELOPMENT_CONTRACTS) === "true"
+  return {
+    chainId: supportedChainId,
+    providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
+    shouldUseGoerliDevelopmentContracts:
+      supportedChainId === ChainID.Goerli.toString() &&
+      useGoerliDevelopmentContractsFlag,
+  }
+}
+
+function getInitialBitcoinConfig(): BitcoinConfig {
   const network =
     supportedChainId === ChainID.Ethereum.toString()
       ? BitcoinNetwork.Mainnet
@@ -42,11 +57,8 @@ export const getDefaultThresholdLibProvider = () => {
 
 export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
   return new Threshold({
-    ethereum: {
-      chainId: supportedChainId,
-      providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
-    },
-    bitcoin: getBitcoinConfig(),
+    ethereum: getInitialEthereumConfig(providerOrSigner),
+    bitcoin: getInitialBitcoinConfig(),
   })
 }
 

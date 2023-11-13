@@ -95,7 +95,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     if (active && library && account) {
       threshold.updateConfig({
         ethereum: {
-          chainId: supportedChainId,
+          ...threshold.config.ethereum,
           providerOrSigner: library,
           account,
         },
@@ -108,7 +108,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     if (!active && !account && hasThresholdLibConfigBeenUpdated.current) {
       threshold.updateConfig({
         ethereum: {
-          chainId: supportedChainId,
+          ...threshold.config.ethereum,
           providerOrSigner: getDefaultThresholdLibProvider(),
         },
         bitcoin: threshold.config.bitcoin,
