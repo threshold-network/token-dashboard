@@ -59,7 +59,7 @@ export interface StakingProviderAppInfo<
    * call `joinSortitionPool` or `updateOperatorStatus` to activate the request.
    * In that case we can't estimate when the deauthorization request started.
    */
-  isDeauthorizationReqestActive: boolean
+  isDeauthorizationRequestActive: boolean
   /**
    * Timestamp when the deauthorization request was created.Takes an undefined
    * value if it cannot be estimated
@@ -321,21 +321,21 @@ export class Application implements IApplication {
       remainingAuthorizationDecreaseDelay.toString()
     )
 
-    let isDeauthorizationReqestActive = true
+    let isDeauthorizationRequestActive = true
     if (_remainingAuthorizationDecreaseDelay.eq(MAX_UINT64)) {
       // If a `remainingAuthorizationDecreaseDelay` is equal `MAX_UINT64` the
       // deauthorization reqest is pending and an operator have to call
       // `joinSortitionPool` or `updateOperatorStatus` to activate the request.
       // In that case we can't estimate when the deauthorization request
       // started.
-      isDeauthorizationReqestActive = false
+      isDeauthorizationRequestActive = false
     }
 
     // If the deauthorization request is not active or the
     // `_remainingAuthorizationDecreaseDelay` is equal `0` we can't estimate
     // when the deauthorization was requested.
     const deauthorizationCreatedAt =
-      !isDeauthorizationReqestActive ||
+      !isDeauthorizationRequestActive ||
       _remainingAuthorizationDecreaseDelay.eq(ZERO)
         ? undefined
         : BigNumber.from(requestTimestamp.toString())
@@ -346,7 +346,7 @@ export class Application implements IApplication {
       authorizedStake,
       pendingAuthorizationDecrease,
       remainingAuthorizationDecreaseDelay,
-      isDeauthorizationReqestActive,
+      isDeauthorizationRequestActive,
       deauthorizationCreatedAt,
       isOperatorInPool,
       operator,
