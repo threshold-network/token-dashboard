@@ -17,14 +17,8 @@ import { Skeleton } from "@chakra-ui/react"
 import MintingTransactionDetails from "../../../pages/tBTC/Bridge/components/MintingTransactionDetails"
 import { MintingStep } from "../../../types/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import {
-  decodeBitcoinAddress,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useRevealDepositTransaction } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
-import { getChainIdentifier } from "../../../threshold-ts/utils"
 import { InlineTokenBalance } from "../../TokenBalance"
 import { BridgeContractLink } from "../../tBTC"
 import { BitcoinUtxo } from "tbtc-sdk-v2"
@@ -37,17 +31,8 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   utxo,
   closeModal,
 }) => {
-  const {
-    updateState,
-    tBTCMintAmount,
-    btcRecoveryAddress,
-    ethAddress,
-    refundLocktime,
-    walletPublicKeyHash,
-    blindingFactor,
-    mintingFee,
-    thresholdNetworkFee,
-  } = useTbtcState()
+  const { updateState, tBTCMintAmount, mintingFee, thresholdNetworkFee } =
+    useTbtcState()
   const threshold = useThreshold()
 
   const onSuccessfulDepositReveal = () => {

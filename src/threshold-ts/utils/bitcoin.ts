@@ -1,17 +1,20 @@
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-export {
-  computeHash160,
-  createOutputScriptFromAddress,
-  createAddressFromOutputScript,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { BitcoinNetwork } from "tbtc-sdk-v2"
+// export {
+//   createOutputScriptFromAddress as createOutputScriptFromAddress2,
+//   createAddressFromOutputScript as createAddressFromOutputScript2,
+// } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
   AddressType,
   getAddressInfo,
   Network,
   validate,
 } from "bitcoin-address-validation"
-import { BitcoinTxHash, Hex } from "tbtc-sdk-v2"
+import {
+  BitcoinTxHash,
+  Hex,
+  BitcoinHashUtils,
+  BitcoinAddressConverter,
+} from "tbtc-sdk-v2"
 
 export const BITCOIN_PRECISION = 8
 
@@ -56,4 +59,23 @@ export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
     Buffer.from([rawRedeemerOutputScript.length]),
     rawRedeemerOutputScript,
   ]).toString("hex")}`
+}
+
+export const computeHash160 = (text: string) => {
+  return BitcoinHashUtils.computeHash160(Hex.from(text))
+}
+
+// TODO: Make sure those two return the same value as the one used with old sdk.
+export const createOutputScriptFromAddress = (
+  address: string,
+  bitcoinNetwork: BitcoinNetwork
+) => {
+  return BitcoinAddressConverter.addressToOutputScript(address, bitcoinNetwork)
+}
+
+export const createAddressFromOutputScript = (
+  script: Hex,
+  bitcoinNetwork: BitcoinNetwork
+) => {
+  return BitcoinAddressConverter.outputScriptToAddress(script, bitcoinNetwork)
 }

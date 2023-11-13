@@ -9,7 +9,7 @@ import {
 } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
+import { RecoveryJsonFileData } from "../../../components/Modal/TbtcRecoveryFileModal"
 import { useNavigate } from "react-router-dom"
 import { PageComponent } from "../../../types"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
@@ -147,7 +147,7 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
   )
 }
 
-type DepositDetails = DepositScriptParameters & { btcRecoveryAddress: string }
+type DepositDetails = RecoveryJsonFileData
 
 type FormValues = {
   depositParameters: DepositDetails | null

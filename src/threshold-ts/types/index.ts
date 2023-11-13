@@ -1,14 +1,10 @@
 import {
-  Client,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
-import {
-  ClientOptions,
-  Credentials,
-} from "@keep-network/tbtc-v2.ts/dist/src/electrum"
+  ElectrumClientOptions,
+  ElectrumCredentials,
+  BitcoinClient,
+  BitcoinNetwork,
+} from "tbtc-sdk-v2"
 import { providers, Signer } from "ethers"
-import { BitcoinClient } from "tbtc-sdk-v2"
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
@@ -17,9 +13,9 @@ export interface EthereumConfig {
   account?: string
 }
 
-export type BitcoinClientCredentials = Credentials
+export type BitcoinClientCredentials = ElectrumCredentials
 
-export type BitcoinClientOptions = ClientOptions
+export type BitcoinClientOptions = ElectrumClientOptions
 
 export interface BitcoinConfig {
   /**
@@ -32,7 +28,7 @@ export interface BitcoinConfig {
   /**
    * If we want to mock client then we should pass the mock here
    */
-  client?: BitcoinClient | Client
+  client?: BitcoinClient
   // TODO: Remove deprecated `Client` fallback when the migration will be fully completed
 
   /**
@@ -52,7 +48,3 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
-
-export type UnspentTransactionOutputPlainObject = {
-  [key in keyof UnspentTransactionOutput]: string
-}
