@@ -16,7 +16,7 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useIsSdkInitializing } from "../../../contexts/ThresholdContext"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -26,8 +26,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useWeb3React()
-  const { isSdkInitializing, isSdkInitializedWithSigner } =
-    useIsSdkInitializing()
+  const { sdkStatus } = useThreshold()
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc
@@ -46,9 +45,9 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
       // `mintingStep` as undefined when we notice that sdk is initializing -
       // this will display a loading state for the minting flow, and then
       // redirect to the correct step.
-      if (isSdkInitializing) updateState("mintingStep", undefined)
+      if (sdkStatus.initializing) updateState("mintingStep", undefined)
 
-      if (!isSdkInitializing && isSdkInitializedWithSigner) {
+      if (!sdkStatus.initializing && sdkStatus.initializedWithSigner) {
         const {
           btcDepositAddress,
           ethAddress,
@@ -70,7 +69,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         updateState("btcDepositAddress", btcDepositAddress)
       }
     }
-  }, [account, isSdkInitializing, isSdkInitializedWithSigner])
+  }, [account, sdkStatus])
 
   return <MintingFlowRouter />
 }

@@ -89,7 +89,6 @@ export const getTbtcV2Artifact = (
   chainId: string | number,
   shouldUseGoerliDevelopmentContracts = false
 ) => {
-  // TODO: Update this function with goerli development artifact.
   switch (artifactName) {
     case "Bridge":
       if (shouldUseGoerliDevelopmentContracts)

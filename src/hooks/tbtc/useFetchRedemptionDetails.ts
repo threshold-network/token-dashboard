@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react"
-import {
-  useIsSdkInitializing,
-  useThreshold,
-} from "../../contexts/ThresholdContext"
+import { useThreshold } from "../../contexts/ThresholdContext"
 import {
   isValidType,
   fromSatoshiToTokenPrecision,
@@ -35,7 +32,7 @@ export const useFetchRedemptionDetails = (
   redeemerOutputScript: FetchRedemptionDetailsParamType,
   redeemer: FetchRedemptionDetailsParamType
 ) => {
-  const threshold = useThreshold()
+  const { sdkStatus, ...threshold } = useThreshold()
   const getBlock = useGetBlock()
   const findRedemptionInBitcoinTx = useFindRedemptionInBitcoinTx()
   const [isFetching, setIsFetching] = useState(false)
@@ -43,10 +40,9 @@ export const useFetchRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     RedemptionDetails | undefined
   >()
-  const { isSdkInitializing, isSdkInitialized } = useIsSdkInitializing()
 
   useEffect(() => {
-    if (!isSdkInitialized) return
+    if (!sdkStatus.initialized) return
 
     if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
       setError("Invalid redeemer value.")
@@ -242,7 +238,7 @@ export const useFetchRedemptionDetails = (
     threshold,
     getBlock,
     findRedemptionInBitcoinTx,
-    isSdkInitialized,
+    sdkStatus,
   ])
 
   return { isFetching, data: redemptionData, error }

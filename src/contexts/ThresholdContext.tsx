@@ -14,82 +14,57 @@ import {
   getDefaultThresholdLibProvider,
   threshold,
 } from "../utils/getThresholdLib"
-import { supportedChainId } from "../utils/getEnvVariable"
 import { providers, Signer } from "ethers"
 import { TBTC as SDK } from "tbtc-sdk-v2"
 
-const ThresholdContext = createContext(threshold)
-
-// TODO: We should probably put those values information in ThresholdContext,
-// but that would require a lot of change through app, so for now we will keep
-// it in a separate context.
-const IsSdkInitializingContext = createContext({
-  isSdkInitializing: false,
-  isSdkInitialized: false,
-  isSdkInitializedWithSigner: false,
-  setIsSdkInitializing: (() => {}) as Dispatch<SetStateAction<boolean>>,
-})
+const ThresholdContext = createContext(
+  Object.assign(threshold, {
+    sdkStatus: {
+      initialized: false,
+      initializing: false,
+      initializedWithSigner: false,
+      setInitializing: (() => {}) as Dispatch<SetStateAction<boolean>>,
+    },
+  })
+)
 
 export const useThreshold = () => {
   return useContext(ThresholdContext)
 }
 
-export const useIsSdkInitializing = () => {
-  return useContext(IsSdkInitializingContext)
-}
-
-const useInitializeSdk = () => {
+export const ThresholdProvider: FC = ({ children }) => {
+  const { library, active, account } = useWeb3React()
+  const hasThresholdLibConfigBeenUpdated = useRef(false)
   const [sdk, setSdk] = useState<SDK | undefined>(undefined)
-  const [isInitializing, setIsInitializing] = useState(false)
-  const [isInitialized, setIsInitialized] = useState(false)
-  const [isInitializedWithSigner, setIsInitializedWithSigner] = useState(false)
+  const [isSdkInitializing, setIsSdkInitializing] = useState(false)
+  const [isSdkInitialized, setIsSdkInitialized] = useState(false)
+  const [isSdkInitializedWithSigner, setIsSdkInitializedWithSigner] =
+    useState(false)
   const threshold = useThreshold()
 
   const initializeSdk = useCallback(
     async (providerOrSigner: providers.Provider | Signer, account?: string) => {
-      if (!isInitializing) {
-        setIsInitializing(true)
+      if (!isSdkInitializing) {
+        setIsSdkInitializing(true)
         const sdk = await threshold.tbtc.initializeSdk(
           providerOrSigner,
           account
         )
         setSdk(sdk)
-        setIsInitializing(false)
-        setIsInitialized(true)
+        setIsSdkInitializing(false)
+        setIsSdkInitialized(true)
         const isInitializedWithSigner = account ? true : false
-        setIsInitializedWithSigner(isInitializedWithSigner)
+        setIsSdkInitializedWithSigner(isInitializedWithSigner)
       }
     },
     [
       threshold,
       setSdk,
-      setIsInitializing,
-      setIsInitialized,
-      setIsInitializedWithSigner,
+      setIsSdkInitializing,
+      setIsSdkInitialized,
+      setIsSdkInitializedWithSigner,
     ]
   )
-
-  return {
-    sdk,
-    isSdkInitializing: isInitializing,
-    isSdkInitialized: isInitialized,
-    isSdkInitializedWithSigner: isInitializedWithSigner,
-    setIsSdkInitializing: setIsInitializing,
-    initializeSdk,
-  }
-}
-
-export const ThresholdProvider: FC = ({ children }) => {
-  const { library, active, account } = useWeb3React()
-  const hasThresholdLibConfigBeenUpdated = useRef(false)
-  const {
-    sdk,
-    initializeSdk,
-    isSdkInitializing,
-    isSdkInitialized,
-    isSdkInitializedWithSigner,
-    setIsSdkInitializing,
-  } = useInitializeSdk()
 
   useEffect(() => {
     if (active && library && account) {
@@ -123,17 +98,17 @@ export const ThresholdProvider: FC = ({ children }) => {
   }, [library, active, account])
 
   return (
-    <ThresholdContext.Provider value={threshold}>
-      <IsSdkInitializingContext.Provider
-        value={{
-          isSdkInitializing,
-          isSdkInitialized,
-          isSdkInitializedWithSigner,
-          setIsSdkInitializing,
-        }}
-      >
-        {children}
-      </IsSdkInitializingContext.Provider>
+    <ThresholdContext.Provider
+      value={Object.assign(threshold, {
+        sdkStatus: {
+          initialized: isSdkInitialized,
+          initializing: isSdkInitializing,
+          initializedWithSigner: isSdkInitializedWithSigner,
+          setInitializing: setIsSdkInitializing,
+        },
+      })}
+    >
+      {children}
     </ThresholdContext.Provider>
   )
 }
