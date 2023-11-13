@@ -206,6 +206,11 @@ export interface ITBTC {
   initiateDeposit(btcRecoveryAddress: string): Promise<Deposit>
 
   /**
+   * Removes the deposit data assigned to `this._deposit` property.
+   */
+  removeDepositData(): void
+
+  /**
    * Initiates a deposit object from DepositReceipt object. This will be used
    * to either initiate deposit object from JSON file or form local storage.
    * @param depositReceipt DepositReceipt object that contains all the data
@@ -474,8 +479,6 @@ export class TBTC implements ITBTC {
     this._bitcoinConfig = bitcoinConfig
   }
 
-  // TODO: Remove arguments from this function and just get those values from
-  // this._ethereumConfig
   async initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
@@ -565,6 +568,10 @@ export class TBTC implements ITBTC {
     if (!this._sdk) throw new EmptySdkObjectError()
     this._deposit = await this._sdk.deposits.initiateDeposit(btcRecoveryAddress)
     return this._deposit
+  }
+
+  removeDepositData = (): void => {
+    this._deposit = undefined
   }
 
   initiateDepositFromReceipt = async (
@@ -675,6 +682,7 @@ export class TBTC implements ITBTC {
     const { value, ...transactionOutpoint } = utxo
     if (!this._deposit) throw new EmptyDepositObjectError()
     const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+    this.removeDepositData()
 
     return chainHash.toPrefixedString()
   }
