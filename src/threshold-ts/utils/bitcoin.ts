@@ -65,7 +65,6 @@ export const computeHash160 = (text: string) => {
   return BitcoinHashUtils.computeHash160(Hex.from(text))
 }
 
-// TODO: Make sure those two return the same value as the one used with old sdk.
 export const createOutputScriptFromAddress = (
   address: string,
   bitcoinNetwork: BitcoinNetwork
