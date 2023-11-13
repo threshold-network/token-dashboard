@@ -104,9 +104,7 @@ export const findUtxoEffect = async (
 
         // Looking for utxo.
         const utxos = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs(
-            btcDepositAddress
-          )
+          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs()
         )
 
         if (!utxos || utxos.length === 0) {

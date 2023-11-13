@@ -226,11 +226,12 @@ export interface ITBTC {
   calculateDepositAddress(): Promise<string>
 
   /**
-   * Finds all unspent transaction outputs (UTXOs) for a given Bitcoin address.
-   * @param address - Bitcoin address UTXOs should be determined for.
-   * @returns List of UTXOs.
+   * Finds all unspent transaction outputs (UTXOs) for the initialized deposit,
+   * that is stored in this._deposit property. The UTXOs are returned from
+   * newest to oldest.
+   * @returns List of Bitcoin UTXOs.
    */
-  findAllUnspentTransactionOutputs(address: string): Promise<BitcoinUtxo[]>
+  findAllUnspentTransactionOutputs(): Promise<BitcoinUtxo[]>
 
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
