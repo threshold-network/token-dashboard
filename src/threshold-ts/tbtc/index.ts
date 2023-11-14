@@ -44,6 +44,7 @@ import {
   BitcoinTx,
   DepositReceipt,
   EthereumBridge,
+  ElectrumCredentials,
 } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
@@ -497,11 +498,11 @@ export class TBTC implements ITBTC {
         ? getSigner(providerOrSigner as Web3Provider, account)
         : providerOrSigner
 
-    const hasMockedBitcoinClient =
-      this._bitcoinConfig.client && !this._bitcoinConfig.credentials
+    const { shouldUseGoerliDevelopmentContracts } = this._ethereumConfig
+    const { client: clientFromConfig, credentials: credentialsFromConfig } =
+      this._bitcoinConfig
 
-    const shouldUseGoerliDevelopmentContracts =
-      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+    const hasMockedBitcoinClient = clientFromConfig && !credentialsFromConfig
 
     // For both of these cases we will use SDK.initializeCustom() method
     if (hasMockedBitcoinClient || shouldUseGoerliDevelopmentContracts) {
@@ -512,12 +513,10 @@ export class TBTC implements ITBTC {
         ? getGoerliDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
-      // TODO: Get this from ethereum config
-      const electrumAddress = "wss://electrumx-server.test.tbtc.network:8443"
-
       const bitcoinClient = hasMockedBitcoinClient
-        ? this._bitcoinConfig.client
-        : ElectrumClient.fromUrl(electrumAddress)
+        ? clientFromConfig
+        : // Credentials are confirmed to be defined (`hasMockedBitcoinClient`)
+          new ElectrumClient(credentialsFromConfig!)
 
       this._sdk = await SDK.initializeCustom(
         tbtcContracts,
