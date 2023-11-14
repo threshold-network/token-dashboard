@@ -30,7 +30,6 @@ export interface BitcoinConfig {
    * If we want to mock client then we should pass the mock here
    */
   client?: BitcoinClient
-  // TODO: Remove deprecated `Client` fallback when the migration will be fully completed
 
   /**
    * Credentials for electrum client
