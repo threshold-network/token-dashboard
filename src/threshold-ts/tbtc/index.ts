@@ -1045,9 +1045,10 @@ export class TBTC implements ITBTC {
   private _isValidBitcoinAddressForRedemption = (
     btcAddress: string
   ): boolean => {
+    const network = this.bitcoinNetwork
     return (
-      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
-      (!isPublicKeyHashTypeAddress(btcAddress) &&
+      !isValidBtcAddress(btcAddress, network) ||
+      (!isPublicKeyHashTypeAddress(btcAddress, network) &&
         !isPayToScriptHashTypeAddress(btcAddress))
     )
   }

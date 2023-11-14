@@ -10,7 +10,10 @@ import {
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
 import { BitcoinAddressConverter, BitcoinScriptUtils } from "tbtc-sdk-v2"
-import { getChainIdentifier } from "../../threshold-ts/utils"
+import {
+  getChainIdentifier,
+  isPublicKeyHashTypeAddress,
+} from "../../threshold-ts/utils"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -71,18 +74,7 @@ export const findUtxoEffect = async (
         if (!listenerApi.extra.threshold.tbtc.deposit) {
           const bitcoinNetwork = listenerApi.extra.threshold.tbtc.bitcoinNetwork
 
-          const recoveryOutputScript =
-            BitcoinAddressConverter.addressToOutputScript(
-              btcRecoveryAddress,
-              bitcoinNetwork
-            )
-
-          // TODO: We could probably check that with our
-          // `isPublicKeyHashTypeAddress` method from threshold lib utils
-          if (
-            !BitcoinScriptUtils.isP2PKHScript(recoveryOutputScript) &&
-            !BitcoinScriptUtils.isP2WPKHScript(recoveryOutputScript)
-          ) {
+          if (!isPublicKeyHashTypeAddress(btcRecoveryAddress, bitcoinNetwork)) {
             throw new Error("Bitcoin recovery address must be P2PKH or P2WPKH")
           }
 

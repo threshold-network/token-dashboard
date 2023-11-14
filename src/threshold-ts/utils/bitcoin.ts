@@ -1,4 +1,4 @@
-import { BitcoinNetwork } from "tbtc-sdk-v2"
+import { BitcoinNetwork, BitcoinScriptUtils } from "tbtc-sdk-v2"
 // export {
 //   createOutputScriptFromAddress as createOutputScriptFromAddress2,
 //   createAddressFromOutputScript as createAddressFromOutputScript2,
@@ -21,9 +21,18 @@ export const isValidBtcAddress = (
 }
 
 // P2PKH, P2WPKH, P2SH, or P2WSH
-export const isPublicKeyHashTypeAddress = (address: string): boolean => {
-  const { type } = getAddressInfo(address)
-  return type === AddressType.p2pkh || type === AddressType.p2wpkh
+export const isPublicKeyHashTypeAddress = (
+  address: string,
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
+): boolean => {
+  const outputScript = BitcoinAddressConverter.addressToOutputScript(
+    address,
+    network
+  )
+  const isPublic =
+    BitcoinScriptUtils.isP2PKHScript(outputScript) &&
+    BitcoinScriptUtils.isP2WPKHScript(outputScript)
+  return isPublic
 }
 
 export const isPayToScriptHashTypeAddress = (address: string): boolean => {
