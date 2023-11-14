@@ -9,12 +9,7 @@ import {
   Network,
   validate,
 } from "bitcoin-address-validation"
-import {
-  BitcoinTxHash,
-  Hex,
-  BitcoinHashUtils,
-  BitcoinAddressConverter,
-} from "tbtc-sdk-v2"
+import { Hex, BitcoinHashUtils, BitcoinAddressConverter } from "tbtc-sdk-v2"
 
 export const BITCOIN_PRECISION = 8
 
@@ -47,8 +42,8 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * @param {string} txHash Transaction hash as string.
  * @return {TransactionHash} Reversed transaction hash.
  */
-export const reverseTxHash = (txHash: string): BitcoinTxHash => {
-  return Hex.from(txHash).reverse()
+export const reverseTxHash = (txHash: string): string => {
+  return [...txHash].reverse().join()
 }
 
 export const prependScriptPubKeyByLength = (scriptPubKey: string) => {

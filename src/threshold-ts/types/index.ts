@@ -3,6 +3,7 @@ import {
   ElectrumCredentials,
   BitcoinClient,
   BitcoinNetwork,
+  Hex,
 } from "tbtc-sdk-v2"
 import { providers, Signer } from "ethers"
 
@@ -48,3 +49,7 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
+
+export type HexOrString<T> = {
+  [K in keyof T]: T[K] extends Hex ? Hex | string : T[K]
+}

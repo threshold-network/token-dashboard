@@ -9,7 +9,7 @@ import {
   key,
   removeDataForAccount,
 } from "../../utils/tbtcLocalStorageData"
-import { BitcoinAddressConverter, BitcoinScriptUtils, Hex } from "tbtc-sdk-v2"
+import { BitcoinAddressConverter, BitcoinScriptUtils } from "tbtc-sdk-v2"
 import { getChainIdentifier } from "../../threshold-ts/utils"
 
 export const fetchBridgeactivityEffect = async (
@@ -94,10 +94,10 @@ export const findUtxoEffect = async (
           await forkApi.pause(
             listenerApi.extra.threshold.tbtc.initiateDepositFromReceipt({
               depositor: getChainIdentifier(ethAddress),
-              blindingFactor: Hex.from(blindingFactor),
-              walletPublicKeyHash: Hex.from(walletPublicKeyHash),
-              refundPublicKeyHash: refundPublicKeyHash,
-              refundLocktime: Hex.from(refundLocktime),
+              blindingFactor,
+              walletPublicKeyHash,
+              refundPublicKeyHash,
+              refundLocktime,
             })
           )
         }
@@ -224,8 +224,6 @@ export const fetchUtxoConfirmationsEffect = async (
   if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
     return
 
-  const txHash = Hex.from(utxo.transactionHash)
-
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
 
@@ -234,7 +232,9 @@ export const fetchUtxoConfirmationsEffect = async (
       while (true) {
         // Get confirmations
         const confirmations = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(txHash)
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
+            utxo.transactionHash
+          )
         )
         listenerApi.dispatch(
           tbtcSlice.actions.updateState({

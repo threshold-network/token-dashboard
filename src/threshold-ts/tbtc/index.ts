@@ -12,7 +12,12 @@ import {
   getGoerliDevelopmentContracts,
   getTbtcV2Artifact,
 } from "../utils"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import {
+  BitcoinConfig,
+  BitcoinNetwork,
+  EthereumConfig,
+  HexOrString,
+} from "../types"
 import {
   BigNumber,
   BigNumberish,
@@ -217,7 +222,9 @@ export interface ITBTC {
    * related to the deposit we want to re-initiate
    * @returns Deposit object
    */
-  initiateDepositFromReceipt(depositReceipt: DepositReceipt): Promise<Deposit>
+  initiateDepositFromReceipt(
+    depositReceipt: HexOrString<DepositReceipt>
+  ): Promise<Deposit>
 
   /**
    * Calculates the deposit address from the deposit script parameters
@@ -266,7 +273,7 @@ export interface ITBTC {
    * @param transactionHash Hash of the transaction.
    * @returns The number of confirmations.
    */
-  getTransactionConfirmations(transactionHash: BitcoinTxHash): Promise<number>
+  getTransactionConfirmations(transactionHashString: string): Promise<number>
 
   /**
    * Gets the minimum number of confirmations needed for the minter to start the
@@ -576,12 +583,25 @@ export class TBTC implements ITBTC {
   }
 
   initiateDepositFromReceipt = async (
-    depositReceipt: DepositReceipt
+    depositReceipt: HexOrString<DepositReceipt>
   ): Promise<Deposit> => {
     if (!this._sdk) throw new EmptySdkObjectError()
+    const {
+      blindingFactor,
+      walletPublicKeyHash,
+      refundPublicKeyHash,
+      refundLocktime,
+      ...restDepositReceipt
+    } = depositReceipt
 
     this._deposit = await Deposit.fromReceipt(
-      depositReceipt,
+      {
+        blindingFactor: Hex.from(blindingFactor as string),
+        walletPublicKeyHash: Hex.from(walletPublicKeyHash as string),
+        refundLocktime: Hex.from(refundLocktime as string),
+        refundPublicKeyHash: Hex.from(refundPublicKeyHash as string),
+        ...restDepositReceipt,
+      },
       this._sdk.tbtcContracts,
       this._sdk.bitcoinClient
     )
@@ -701,9 +721,10 @@ export class TBTC implements ITBTC {
   }
 
   getTransactionConfirmations = async (
-    transactionHash: BitcoinTxHash
+    transactionHashString: string
   ): Promise<number> => {
     if (!this._sdk) throw new EmptySdkObjectError()
+    const transactionHash = Hex.from(transactionHashString)
     return this._sdk.bitcoinClient.getTransactionConfirmations(transactionHash)
   }
 
