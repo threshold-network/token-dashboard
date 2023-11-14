@@ -11,6 +11,7 @@ import {
   getSigner,
   getGoerliDevelopmentContracts,
   getTbtcV2Artifact,
+  unprefixedAndUncheckedAddress,
 } from "../utils"
 import {
   BitcoinConfig,
@@ -44,7 +45,6 @@ import {
   BitcoinTx,
   DepositReceipt,
   EthereumBridge,
-  ElectrumCredentials,
 } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
@@ -1026,11 +1026,7 @@ export class TBTC implements ITBTC {
     return {
       hash: targetChainTxHash.toPrefixedString(),
       additionalParams: {
-        // TODO: We might want to use `toString()` here and then get rid of
-        // `unprefixedAndUncheckedAddress` in `withWalletPublicKey` methods of
-        // `RedemptionDetailsLinkBuilder` (src/utils.tBTC.ts). Needs testing
-        // though.
-        walletPublicKey: walletPublicKey.toPrefixedString(),
+        walletPublicKey: walletPublicKey.toString(),
       },
     }
   }

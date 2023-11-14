@@ -30,7 +30,7 @@ export const isPublicKeyHashTypeAddress = (
     network
   )
   const isPublic =
-    BitcoinScriptUtils.isP2PKHScript(outputScript) &&
+    BitcoinScriptUtils.isP2PKHScript(outputScript) ||
     BitcoinScriptUtils.isP2WPKHScript(outputScript)
   return isPublic
 }
@@ -52,7 +52,7 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * @return {TransactionHash} Reversed transaction hash.
  */
 export const reverseTxHash = (txHash: string): string => {
-  return [...txHash].reverse().join()
+  return Hex.from(txHash).reverse().toString()
 }
 
 export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
