@@ -526,8 +526,6 @@ export class TBTC implements ITBTC {
       depositorAddress &&
         this._sdk?.deposits.setDefaultDepositor(depositorAddress)
 
-      // TODO: Remove this console log in the future
-      console.log("THIS.sdk: ", this._sdk)
       return this._sdk
     }
 
@@ -538,8 +536,6 @@ export class TBTC implements ITBTC {
 
     this._sdk = await initializeFunction(signer)
 
-    // TODO: Remove this console log in the future
-    console.log("THIS.sdk: ", this._sdk)
     return this._sdk
   }
 
@@ -615,8 +611,6 @@ export class TBTC implements ITBTC {
   findAllUnspentTransactionOutputs = async (): Promise<BitcoinUtxo[]> => {
     if (!this._deposit) throw new EmptyDepositObjectError()
     const fundingDetected = await this._deposit.detectFunding()
-    // TODO: Remove this console.log
-    console.log("fundingDetected: ", fundingDetected)
     return fundingDetected || []
   }
 
