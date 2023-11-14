@@ -8,6 +8,16 @@ import {
 } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
 
+type StakedEventCallback = (
+  stakeType: number,
+  owner: string,
+  stakingProvider: string,
+  beneficiary: string,
+  authorizer: string,
+  amount: BigNumberish,
+  event: Event
+) => void
+
 export const useSubscribeToStakedEvent = () => {
   const tStakingContract = useTStakingContract()
   const { account } = useWeb3React()
@@ -19,20 +29,10 @@ export const useSubscribeToStakedEvent = () => {
    * Note: It will fire also when owner === staking provider along with the
    * event below
    */
-  useSubscribeToContractEvent(
+  useSubscribeToContractEvent<StakedEventCallback>(
     tStakingContract!,
     "Staked",
-    // TODO: figure out how to type callback.
-    // @ts-ignore
-    (
-      stakeType: number,
-      owner: string,
-      stakingProvider: string,
-      beneficiary: string,
-      authorizer: string,
-      amount: BigNumberish,
-      event: Event
-    ) => {
+    (stakeType, owner, stakingProvider, beneficiary, authorizer, amount) => {
       // TODO: open success modal here
       dispatch(
         providerStaked({
@@ -45,7 +45,7 @@ export const useSubscribeToStakedEvent = () => {
         })
       )
     },
-    [null, account]
+    [null, account as string]
   )
 
   /**
@@ -54,19 +54,17 @@ export const useSubscribeToStakedEvent = () => {
    * Note: It will fire also when staking provider === owner along with the
    * event below
    */
-  useSubscribeToContractEvent(
+  useSubscribeToContractEvent<StakedEventCallback>(
     tStakingContract!,
     "Staked",
-    // TODO: figure out how to type callback.
-    // @ts-ignore
     (
-      stakeType: number,
-      owner: string,
-      stakingProvider: string,
-      beneficiary: string,
-      authorizer: string,
-      amount: BigNumberish,
-      event: Event
+      stakeType,
+      owner,
+      stakingProvider,
+      beneficiary,
+      authorizer,
+      amount,
+      event
     ) => {
       // TODO: open success modal here
       const { blockNumber, blockHash, transactionHash } = event
@@ -84,6 +82,6 @@ export const useSubscribeToStakedEvent = () => {
         })
       )
     },
-    [null, null, account]
+    [null, null, account as string]
   )
 }
