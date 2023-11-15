@@ -8,19 +8,6 @@ import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useTbtcState } from "../useTbtcState"
 
-type DepositRevealedEventCallback = (
-  fundingTxHash: string,
-  fundingOutputIndex: number,
-  depositor: string,
-  amount: BigNumber,
-  blindingFactor: any,
-  walletPubKeyHash: string,
-  refundPubKeyHash: any,
-  refundLocktime: any,
-  vault: string,
-  event: Event
-) => void
-
 export const useSubscribeToDepositRevealedEvent = () => {
   const contract = useBridgeContract()
   const { utxo, updateState } = useTbtcState()
@@ -28,20 +15,21 @@ export const useSubscribeToDepositRevealedEvent = () => {
   const { account } = useWeb3React()
   const threshold = useThreshold()
 
-  useSubscribeToContractEvent<DepositRevealedEventCallback>(
+  useSubscribeToContractEvent(
     contract,
     "DepositRevealed",
+    //@ts-ignore
     async (
-      fundingTxHash,
-      fundingOutputIndex,
-      depositor,
-      amount,
-      blindingFactor,
-      walletPubKeyHash,
-      refundPubKeyHash,
-      refundLocktime,
-      vault,
-      event
+      fundingTxHash: string,
+      fundingOutputIndex: number,
+      depositor: string,
+      amount: BigNumber,
+      blindingFactor: any,
+      walletPubKeyHash: string,
+      refundPubKeyHash: any,
+      refundLocktime: any,
+      vault: string,
+      event: Event
     ) => {
       if (!account || !isSameETHAddress(depositor, account)) return
 
@@ -77,6 +65,6 @@ export const useSubscribeToDepositRevealedEvent = () => {
         })
       )
     },
-    [null, null, account as string]
+    [null, null, account]
   )
 }

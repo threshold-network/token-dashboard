@@ -8,33 +8,24 @@ import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { fromSatoshiToTokenPrecision } from "../../threshold-ts/utils"
 
-type RedemptionRequestedEventCallback = (
-  walletPublicKeyHash: string,
-  redeemerOutputScript: string,
-  redeemer: string,
-  requestedAmount: BigNumber,
-  treasuryFee: BigNumber,
-  txMaxFee: BigNumber,
-  event: Event
-) => void
-
 export const useSubscribeToRedemptionRequestedEvent = () => {
   const contract = useBridgeContract()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
   const threshold = useThreshold()
 
-  useSubscribeToContractEvent<RedemptionRequestedEventCallback>(
+  useSubscribeToContractEvent(
     contract,
     "RedemptionRequested",
+    //@ts-ignore
     async (
-      walletPublicKeyHash,
-      redeemerOutputScript,
-      redeemer,
-      requestedAmount,
-      treasuryFee,
-      txMaxFee,
-      event
+      walletPublicKeyHash: string,
+      redeemerOutputScript: string,
+      redeemer: string,
+      requestedAmount: BigNumber,
+      treasuryFee: BigNumber,
+      txMaxFee: BigNumber,
+      event: Event
     ) => {
       if (!account || !isSameETHAddress(redeemer, account)) return
 
@@ -53,6 +44,6 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
         })
       )
     },
-    [null, null, account as string]
+    [null, null, account]
   )
 }

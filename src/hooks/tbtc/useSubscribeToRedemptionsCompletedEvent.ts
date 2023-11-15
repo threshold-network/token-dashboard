@@ -1,3 +1,5 @@
+// TODO: Refactor this so that it's only imported in our threshold-ts lib
+import { Hex } from "tbtc-sdk-v2"
 import { Event } from "ethers"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { useBridgeContract } from "./useBridgeContract"
@@ -15,13 +17,16 @@ export const useSubscribeToRedemptionsCompletedEventBase = (
 ) => {
   const tBTCBridgeContract = useBridgeContract()
 
-  useSubscribeToContractEvent<RedemptionsCompletedEventCallback>(
+  useSubscribeToContractEvent(
     tBTCBridgeContract,
     "RedemptionsCompleted",
+    //@ts-ignore
     (walletPublicKeyHash, redemptionTxHash, event) => {
-      const reversedRedemptionTxHash = [...redemptionTxHash].reverse().join("")
-
-      callback(walletPublicKeyHash, reversedRedemptionTxHash, event)
+      callback(
+        walletPublicKeyHash,
+        Hex.from(redemptionTxHash).reverse().toString(),
+        event
+      )
     },
     filterParams,
     shouldSubscribeIfUserNotConnected

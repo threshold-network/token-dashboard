@@ -6,11 +6,6 @@ import { isSameETHAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
 import { useStakingAppContract } from "./useStakingAppContract"
 
-type OperatorRegisteredEventCallback = (
-  stakingProvider: string,
-  operator: string
-) => void
-
 export const useSubscribeToOperatorRegisteredEvent = (
   appName: StakingAppName
 ) => {
@@ -18,10 +13,11 @@ export const useSubscribeToOperatorRegisteredEvent = (
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
 
-  useSubscribeToContractEvent<OperatorRegisteredEventCallback>(
+  useSubscribeToContractEvent(
     contract,
     "OperatorRegistered",
-    async (stakingProvider, operator) => {
+    //@ts-ignore
+    async (stakingProvider: string, operator: string) => {
       if (account && isSameETHAddress(stakingProvider, account)) {
         dispatch(
           operatorRegistered({
@@ -31,6 +27,6 @@ export const useSubscribeToOperatorRegisteredEvent = (
         )
       }
     },
-    [account as string]
+    [account]
   )
 }

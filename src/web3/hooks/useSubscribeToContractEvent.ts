@@ -3,19 +3,19 @@ import { Contract, EventFilter } from "@ethersproject/contracts"
 import { useWeb3React } from "@web3-react/core"
 
 // TODO: types
-export const useSubscribeToContractEvent = <CallbackType extends Function>(
+export const useSubscribeToContractEvent = (
   contract: Contract | null,
   eventName: string,
-  callback: CallbackType,
+  callback: (args: any[]) => void,
   // The indexed parameters must be in the correct order. For example if we want
   // to filter the `Transfer` event of ERC20 contract, which is implemented as
   // `event Transfer(address indexed from, address indexed to, uint256 value);`,
   // by `to` param we need to pass `[null, <address>]`.
-  indexedFilterParams: Nullable<string>[] = [],
+  indexedFilterParams: string[] = [],
   shouldSubscribeIfUserNotConnected: boolean = false
 ) => {
   const { active } = useWeb3React()
-  const callbackRef = useRef<CallbackType>()
+  const callbackRef = useRef<(args: any[]) => void>()
   const indexedFilterParamsLength = indexedFilterParams.length
   // An event can have up to 3 indexed params. We want to extract these values
   // from an array and use them in `useEffect` dependency array.
