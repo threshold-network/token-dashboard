@@ -183,6 +183,10 @@ export const UnmintDetails: PageComponent = () => {
 
   const timelineBadgeBgColor = useColorModeValue("white", "brand.800")
 
+  // TODO: Resolve bug with false positive "Unminting in progress" status
+  // Plausible solution: fallback conditional rendering to the
+  // `shouldForceIsProcessCompleted` value
+
   return (
     <BridgeLayout
       as={BridgeProcessDetailsCard}
