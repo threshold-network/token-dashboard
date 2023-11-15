@@ -202,9 +202,13 @@ export const UnmintDetails: PageComponent = () => {
             <BridgeProcessCardTitle bridgeProcess="unmint" />
             <BridgeProcessCardSubTitle
               display="flex"
-              stepText={shouldDisplaySuccessStep ? "Unminted" : "Unminting"}
+              stepText={
+                shouldDisplaySuccessStep || shouldForceIsProcessCompleted
+                  ? "Unminted"
+                  : "Unminting"
+              }
             >
-              {!shouldDisplaySuccessStep && (
+              {!(shouldDisplaySuccessStep || shouldForceIsProcessCompleted) && (
                 <Box as="span" ml="2">
                   {" "}
                   - In progress...
