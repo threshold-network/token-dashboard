@@ -16,7 +16,7 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useIsSdkInitializing } from "../../../contexts/ThresholdContext"
+import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -27,7 +27,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useWeb3React()
   const { isSdkInitializing, isSdkInitializedWithSigner } =
-    useIsSdkInitializing()
+    useIsTbtcSdkInitializing()
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc

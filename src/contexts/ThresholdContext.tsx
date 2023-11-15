@@ -34,11 +34,11 @@ export const useThreshold = () => {
   return useContext(ThresholdContext)
 }
 
-export const useIsSdkInitializing = () => {
+export const useIsTbtcSdkInitializing = () => {
   return useContext(IsSdkInitializingContext)
 }
 
-const useInitializeSdk = () => {
+const useInitializeTbtcSdk = () => {
   const [sdk, setSdk] = useState<SDK | undefined>(undefined)
   const [isInitializing, setIsInitializing] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
@@ -89,7 +89,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     isSdkInitialized,
     isSdkInitializedWithSigner,
     setIsSdkInitializing,
-  } = useInitializeSdk()
+  } = useInitializeTbtcSdk()
 
   useEffect(() => {
     if (active && library && account) {

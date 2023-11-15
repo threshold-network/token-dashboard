@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import {
-  useIsSdkInitializing,
+  useIsTbtcSdkInitializing,
   useThreshold,
 } from "../../contexts/ThresholdContext"
 import {
@@ -43,7 +43,7 @@ export const useFetchRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     RedemptionDetails | undefined
   >()
-  const { isSdkInitializing, isSdkInitialized } = useIsSdkInitializing()
+  const { isSdkInitialized } = useIsTbtcSdkInitializing()
 
   useEffect(() => {
     if (!isSdkInitialized) return
