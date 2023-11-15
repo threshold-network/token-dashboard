@@ -14,7 +14,7 @@ import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
-import { useThreshold } from "../../../../contexts/ThresholdContext"
+import { useIsSdkInitializing } from "../../../../contexts/ThresholdContext"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
@@ -22,7 +22,8 @@ const MintingFlowRouterBase = () => {
   const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
-  const { sdkStatus } = useThreshold()
+  const { isSdkInitializing, isSdkInitializedWithSigner } =
+    useIsSdkInitializing()
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (mintingStep === MintingStep.MintingSuccess) {
@@ -41,15 +42,21 @@ const MintingFlowRouterBase = () => {
     if (
       !btcDepositAddress ||
       !account ||
-      sdkStatus.initializing ||
-      !sdkStatus.initializedWithSigner
+      isSdkInitializing ||
+      !isSdkInitializedWithSigner
     ) {
       return
     }
     dispatch(
       tbtcSlice.actions.findUtxo({ btcDepositAddress, depositor: account })
     )
-  }, [btcDepositAddress, account, dispatch, sdkStatus])
+  }, [
+    btcDepositAddress,
+    account,
+    dispatch,
+    isSdkInitializing,
+    isSdkInitializedWithSigner,
+  ])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
