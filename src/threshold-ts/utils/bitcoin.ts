@@ -1,15 +1,17 @@
-import { BitcoinNetwork, BitcoinScriptUtils } from "tbtc-sdk-v2"
-// export {
-//   createOutputScriptFromAddress as createOutputScriptFromAddress2,
-//   createAddressFromOutputScript as createAddressFromOutputScript2,
-// } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import {
+  BitcoinAddressConverter,
+  BitcoinHashUtils,
+  BitcoinNetwork,
+  BitcoinScriptUtils,
+  BitcoinTxHash,
+  Hex,
+} from "tbtc-sdk-v2"
 import {
   AddressType,
   getAddressInfo,
   Network,
   validate,
 } from "bitcoin-address-validation"
-import { Hex, BitcoinHashUtils, BitcoinAddressConverter } from "tbtc-sdk-v2"
 
 export const BITCOIN_PRECISION = 8
 
@@ -52,7 +54,7 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * @return {TransactionHash} Reversed transaction hash.
  */
 export const reverseTxHash = (txHash: string): string => {
-  return Hex.from(txHash).reverse().toString()
+  return BitcoinTxHash.from(txHash).reverse().toString()
 }
 
 export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
