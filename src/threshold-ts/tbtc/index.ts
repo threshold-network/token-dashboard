@@ -271,10 +271,10 @@ export interface ITBTC {
   /**
    * Gets the number of confirmations that a given transaction has accumulated
    * so far.
-   * @param transactionHash Hash of the transaction.
+   * @param transactionHash Hash of the transaction as a string.
    * @returns The number of confirmations.
    */
-  getTransactionConfirmations(transactionHashString: string): Promise<number>
+  getTransactionConfirmations(transactionHash: string): Promise<number>
 
   /**
    * Gets the minimum number of confirmations needed for the minter to start the
@@ -714,11 +714,11 @@ export class TBTC implements ITBTC {
   }
 
   getTransactionConfirmations = async (
-    transactionHashString: string
+    transactionHash: string
   ): Promise<number> => {
     if (!this._sdk) throw new EmptySdkObjectError()
-    const transactionHash = Hex.from(transactionHashString)
-    return this._sdk.bitcoinClient.getTransactionConfirmations(transactionHash)
+    const hash = Hex.from(transactionHash)
+    return this._sdk.bitcoinClient.getTransactionConfirmations(hash)
   }
 
   minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
