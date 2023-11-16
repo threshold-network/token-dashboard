@@ -31,10 +31,10 @@ export const isPublicKeyHashTypeAddress = (
     address,
     network
   )
-  const isPublic =
+  return (
     BitcoinScriptUtils.isP2PKHScript(outputScript) ||
     BitcoinScriptUtils.isP2WPKHScript(outputScript)
-  return isPublic
+  )
 }
 
 export const isPayToScriptHashTypeAddress = (address: string): boolean => {
