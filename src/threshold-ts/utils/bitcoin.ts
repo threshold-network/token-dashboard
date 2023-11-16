@@ -51,7 +51,7 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * little-endian format but to get the confirmations for this transaction we
  * need to reverse its hash.
  * @param {string} txHash Transaction hash as string.
- * @return {TransactionHash} Reversed transaction hash.
+ * @return {string} Reversed transaction hash.
  */
 export const reverseTxHash = (txHash: string): string => {
   return BitcoinTxHash.from(txHash).reverse().toString()
