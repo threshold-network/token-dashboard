@@ -717,8 +717,10 @@ export class TBTC implements ITBTC {
     transactionHash: string
   ): Promise<number> => {
     if (!this._sdk) throw new EmptySdkObjectError()
-    const hash = Hex.from(transactionHash)
-    return this._sdk.bitcoinClient.getTransactionConfirmations(hash)
+    const bitcoinTransactionHash = BitcoinTxHash.from(transactionHash)
+    return this._sdk.bitcoinClient.getTransactionConfirmations(
+      bitcoinTransactionHash
+    )
   }
 
   minimumNumberOfConfirmationsNeeded = (amount: BigNumberish): number => {
