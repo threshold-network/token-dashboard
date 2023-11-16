@@ -27,7 +27,6 @@ import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
-import { DepositReceipt, Hex } from "tbtc-sdk-v2"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -51,25 +50,18 @@ export const ResumeDepositPage: PageComponent = () => {
   const onSubmit = async (values: FormValues) => {
     if (!values.depositParameters) return
 
-    const {
-      depositParameters: { btcRecoveryAddress, ...restDepositParameters },
-    } = values
-    const depositReceipt: DepositReceipt = {
-      depositor: restDepositParameters.depositor,
-      blindingFactor: Hex.from(restDepositParameters.blindingFactor),
-      walletPublicKeyHash: Hex.from(restDepositParameters.walletPublicKeyHash),
-      refundPublicKeyHash: Hex.from(restDepositParameters.refundPublicKeyHash),
-      refundLocktime: Hex.from(restDepositParameters.refundLocktime),
-    }
-    await threshold.tbtc.initiateDepositFromReceipt(depositReceipt)
+    const { depositParameters } = values
+    await threshold.tbtc.initiateDepositFromDepositScriptParameters(
+      depositParameters
+    )
     const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
     setDepositDataInLocalStorage({
-      ethAddress: restDepositParameters?.depositor.identifierHex!,
-      blindingFactor: restDepositParameters?.blindingFactor!,
-      btcRecoveryAddress: btcRecoveryAddress!,
-      walletPublicKeyHash: restDepositParameters?.walletPublicKeyHash!,
-      refundLocktime: restDepositParameters?.refundLocktime!,
+      ethAddress: depositParameters?.depositor.identifierHex!,
+      blindingFactor: depositParameters?.blindingFactor!,
+      btcRecoveryAddress: depositParameters?.btcRecoveryAddress!,
+      walletPublicKeyHash: depositParameters?.walletPublicKeyHash!,
+      refundLocktime: depositParameters?.refundLocktime!,
       btcDepositAddress,
     })
 

@@ -82,15 +82,17 @@ export const findUtxoEffect = async (
             BitcoinAddressConverter.addressToPublicKeyHash(
               btcRecoveryAddress,
               bitcoinNetwork
-            )
+            ).toString()
           await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.initiateDepositFromReceipt({
-              depositor: getChainIdentifier(ethAddress),
-              blindingFactor,
-              walletPublicKeyHash,
-              refundPublicKeyHash,
-              refundLocktime,
-            })
+            listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+              {
+                depositor: getChainIdentifier(ethAddress),
+                blindingFactor,
+                walletPublicKeyHash,
+                refundPublicKeyHash,
+                refundLocktime,
+              }
+            )
           )
         }
 

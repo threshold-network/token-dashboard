@@ -48,7 +48,3 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
-
-export type HexOrString<T> = {
-  [K in keyof T]: T[K] extends Hex ? Hex | string : T[K]
-}

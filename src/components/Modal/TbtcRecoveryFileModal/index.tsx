@@ -17,16 +17,11 @@ import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
 import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
 import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { ChainIdentifier } from "tbtc-sdk-v2"
 
-export type RecoveryJsonFileData = {
-  depositor: ChainIdentifier
-  blindingFactor: string
-  walletPublicKeyHash: string
-  refundPublicKeyHash: string
-  refundLocktime: string
+export type RecoveryJsonFileData = DepositScriptParameters & {
   btcRecoveryAddress: string
 }
 

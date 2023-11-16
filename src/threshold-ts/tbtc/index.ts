@@ -13,12 +13,7 @@ import {
   getTbtcV2Artifact,
   unprefixedAndUncheckedAddress,
 } from "../utils"
-import {
-  BitcoinConfig,
-  BitcoinNetwork,
-  EthereumConfig,
-  HexOrString,
-} from "../types"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import {
   BigNumber,
   BigNumberish,
@@ -45,6 +40,7 @@ import {
   BitcoinTx,
   DepositReceipt,
   EthereumBridge,
+  ChainIdentifier,
 } from "tbtc-sdk-v2"
 import { Web3Provider } from "@ethersproject/providers"
 
@@ -154,6 +150,15 @@ type AmountToSatoshiResult = {
    */
   satoshis: BigNumber
 }
+
+export type DepositScriptParameters = {
+  depositor: ChainIdentifier
+  blindingFactor: string
+  walletPublicKeyHash: string
+  refundPublicKeyHash: string
+  refundLocktime: string
+}
+
 class EmptySdkObjectError extends Error {
   constructor() {
     super("SDK object is not initialized.")
@@ -223,8 +228,8 @@ export interface ITBTC {
    * related to the deposit we want to re-initiate
    * @returns Deposit object
    */
-  initiateDepositFromReceipt(
-    depositReceipt: HexOrString<DepositReceipt>
+  initiateDepositFromDepositScriptParameters(
+    depositScriptParameters: DepositScriptParameters
   ): Promise<Deposit>
 
   /**
@@ -577,8 +582,8 @@ export class TBTC implements ITBTC {
     this._deposit = undefined
   }
 
-  initiateDepositFromReceipt = async (
-    depositReceipt: HexOrString<DepositReceipt>
+  initiateDepositFromDepositScriptParameters = async (
+    depositScriptParameters: DepositScriptParameters
   ): Promise<Deposit> => {
     if (!this._sdk) throw new EmptySdkObjectError()
     const {
@@ -586,17 +591,19 @@ export class TBTC implements ITBTC {
       walletPublicKeyHash,
       refundPublicKeyHash,
       refundLocktime,
-      ...restDepositReceipt
-    } = depositReceipt
+      ...restDepositScriptParameters
+    } = depositScriptParameters
+
+    const depositReceipt = {
+      blindingFactor: Hex.from(blindingFactor),
+      walletPublicKeyHash: Hex.from(walletPublicKeyHash),
+      refundLocktime: Hex.from(refundLocktime),
+      refundPublicKeyHash: Hex.from(refundPublicKeyHash),
+      ...restDepositScriptParameters,
+    }
 
     this._deposit = await Deposit.fromReceipt(
-      {
-        blindingFactor: Hex.from(blindingFactor as string),
-        walletPublicKeyHash: Hex.from(walletPublicKeyHash as string),
-        refundLocktime: Hex.from(refundLocktime as string),
-        refundPublicKeyHash: Hex.from(refundPublicKeyHash as string),
-        ...restDepositReceipt,
-      },
+      depositReceipt,
       this._sdk.tbtcContracts,
       this._sdk.bitcoinClient
     )
