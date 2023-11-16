@@ -1026,6 +1026,12 @@ export class TBTC implements ITBTC {
   }> => {
     if (!this._sdk) throw new EmptySdkObjectError()
 
+    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
+      throw new Error(
+        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
+      )
+    }
+
     const { targetChainTxHash, walletPublicKey } =
       await this._sdk.redemptions.requestRedemption(
         btcAddress,
