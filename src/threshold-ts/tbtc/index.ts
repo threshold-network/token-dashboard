@@ -358,8 +358,8 @@ export interface ITBTC {
 
   /**
    * Gets the full transaction object for given transaction hash.
-   * @param transactionHash Hash of the transaction.
-   * @returns Transaction object.
+   * @param transactionHash Hash of the transaction as a string.
+   * @returns Bitcoin Transaction object.
    */
   getBitcoinTransaction(transactionHash: string): Promise<BitcoinTx>
 
