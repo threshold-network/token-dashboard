@@ -232,8 +232,8 @@ export interface ITBTC {
   ): Promise<Deposit>
 
   /**
-   * Calculates the deposit address from the deposit script parameters
-   * @returns Deposit address
+   * Calculates the deposit address from the deposit object stored in
+   * this._deposit. Throws error if deposit object is not initiated.
    */
   calculateDepositAddress(): Promise<string>
 
