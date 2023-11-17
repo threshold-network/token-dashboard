@@ -504,8 +504,7 @@ export class TBTC implements ITBTC {
         : providerOrSigner
 
     const { shouldUseGoerliDevelopmentContracts } = this._ethereumConfig
-    const { client: clientFromConfig, credentials: credentialsFromConfig } =
-      this._bitcoinConfig
+    const { client: clientFromConfig } = this._bitcoinConfig
 
     // For both of these cases we will use SDK.initializeCustom() method
     if (clientFromConfig || shouldUseGoerliDevelopmentContracts) {
@@ -516,14 +515,7 @@ export class TBTC implements ITBTC {
         ? getGoerliDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
-      const bitcoinClient = credentialsFromConfig
-        ? new ElectrumClient(credentialsFromConfig)
-        : clientFromConfig
-
-      this._sdk = await SDK.initializeCustom(
-        tbtcContracts,
-        bitcoinClient as BitcoinClient
-      )
+      this._sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
 
       depositorAddress &&
         this._sdk?.deposits.setDefaultDepositor(depositorAddress)
