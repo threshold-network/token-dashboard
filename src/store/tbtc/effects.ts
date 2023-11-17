@@ -1,19 +1,19 @@
-import { AppListenerEffectAPI } from "../listener"
-import { tbtcSlice } from "./tbtcSlice"
-import { isAddress, isAddressZero } from "../../web3/utils"
-import { MintingStep } from "../../types/tbtc"
-import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import { BitcoinAddressConverter } from "@keep-network/tbtc-v2.ts"
 import { TaskAbortError } from "@reduxjs/toolkit"
-import {
-  TBTCLocalStorageDepositData,
-  key,
-  removeDataForAccount,
-} from "../../utils/tbtcLocalStorageData"
-import { BitcoinAddressConverter, BitcoinScriptUtils } from "tbtc-sdk-v2"
 import {
   getChainIdentifier,
   isPublicKeyHashTypeAddress,
 } from "../../threshold-ts/utils"
+import { MintingStep } from "../../types/tbtc"
+import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import {
+  key,
+  removeDataForAccount,
+  TBTCLocalStorageDepositData,
+} from "../../utils/tbtcLocalStorageData"
+import { isAddress, isAddressZero } from "../../web3/utils"
+import { AppListenerEffectAPI } from "../listener"
+import { tbtcSlice } from "./tbtcSlice"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,

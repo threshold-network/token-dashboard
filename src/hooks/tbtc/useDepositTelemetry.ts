@@ -1,8 +1,8 @@
+import { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 import { useCallback } from "react"
-import { useCaptureMessage } from "../sentry"
-import { verifyDepositAddress } from "../../utils/verifyDepositAddress"
 import { BitcoinNetwork } from "../../threshold-ts/types"
-import { DepositReceipt } from "tbtc-sdk-v2"
+import { verifyDepositAddress } from "../../utils/verifyDepositAddress"
+import { useCaptureMessage } from "../sentry"
 
 export const useDepositTelemetry = (network: BitcoinNetwork) => {
   const captureMessage = useCaptureMessage()

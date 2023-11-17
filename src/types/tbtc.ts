@@ -1,7 +1,7 @@
-import { UpdateStateActionPayload } from "./state"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { FetchingState } from "."
 import { BridgeActivity, BridgeProcess } from "../threshold-ts/tbtc"
-import { BitcoinUtxo } from "tbtc-sdk-v2"
+import { UpdateStateActionPayload } from "./state"
 
 export interface TbtcState {
   mintingStep: MintingStep

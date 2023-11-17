@@ -5,7 +5,7 @@ import {
   BitcoinScriptUtils,
   BitcoinTxHash,
   Hex,
-} from "tbtc-sdk-v2"
+} from "@keep-network/tbtc-v2.ts"
 import {
   AddressType,
   getAddressInfo,

@@ -1,23 +1,23 @@
-import { JsonRpcSigner, Web3Provider, BlockTag } from "@ethersproject/providers"
-import { Contract, ContractInterface, providers, Signer, Event } from "ethers"
-import { AddressZero, getAddress, isAddressZero } from "./address"
+import { BlockTag, JsonRpcSigner, Web3Provider } from "@ethersproject/providers"
 import {
   EthereumBridge,
   EthereumTBTCToken,
   EthereumTBTCVault,
   EthereumWalletRegistry,
   TBTCContracts,
-} from "tbtc-sdk-v2"
+} from "@keep-network/tbtc-v2.ts"
+import { Contract, ContractInterface, Event, providers, Signer } from "ethers"
+import { AddressZero, getAddress, isAddressZero } from "./address"
 
-import BridgeArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/Bridge.json"
-import BridgeArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/Bridge.json"
+import BridgeArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/Bridge.json"
+import TbtcTokenArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTC.json"
+import TbtcVaultArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
+import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
+import TbtcTokenArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTC.json"
+import TbtcVaultArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
 import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
-import TbtcVaultArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
-import TbtcVaultArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
-import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
-import TbtcTokenArtifactMainnet from "tbtc-sdk-v2/src/lib/ethereum/artifacts/mainnet/TBTC.json"
-import TbtcTokenArtifactGoerli from "tbtc-sdk-v2/src/lib/ethereum/artifacts/goerli/TBTC.json"
 import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
+import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
 
 // account is not optional
 export function getSigner(

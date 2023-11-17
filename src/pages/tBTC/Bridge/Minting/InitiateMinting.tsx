@@ -1,12 +1,12 @@
-import { FC } from "react"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { BodyMd, Button } from "@threshold-network/components"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import { FC } from "react"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { ModalType } from "../../../../enums"
+import { useModal } from "../../../../hooks/useModal"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import { useModal } from "../../../../hooks/useModal"
-import { ModalType } from "../../../../enums"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { BitcoinUtxo } from "tbtc-sdk-v2"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo

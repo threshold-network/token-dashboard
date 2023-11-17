@@ -1,21 +1,21 @@
-import { BigNumber } from "ethers"
-import { getChainIdentifier } from "../threshold-ts/utils"
-import { delay } from "../utils/helpers"
 import {
   BitcoinAddressConverter,
+  BitcoinClient,
+  BitcoinNetwork,
+  BitcoinRawTx,
+  BitcoinTx,
+  BitcoinTxHash,
+  BitcoinTxMerkleBranch,
+  BitcoinUtxo,
+  DepositFunding,
   DepositReceipt,
   DepositScript,
-  DepositFunding,
-  BitcoinRawTx,
   Hex,
-  BitcoinUtxo,
-  BitcoinClient,
-  BitcoinTx,
-  BitcoinTxMerkleBranch,
-  BitcoinTxHash,
-  BitcoinNetwork,
-} from "tbtc-sdk-v2"
+} from "@keep-network/tbtc-v2.ts"
+import { BigNumber } from "ethers"
 import { RootState } from "../store"
+import { getChainIdentifier } from "../threshold-ts/utils"
+import { delay } from "../utils/helpers"
 
 const testnetTransactionHash = Hex.from(
   "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"

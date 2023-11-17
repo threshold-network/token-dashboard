@@ -1,19 +1,21 @@
+import { BlockTag } from "@ethersproject/abstract-provider"
+import { Web3Provider } from "@ethersproject/providers"
 import {
-  getContract,
-  isValidBtcAddress,
-  getContractPastEvents,
-  ZERO,
-  isPublicKeyHashTypeAddress,
-  isSameETHAddress,
-  AddressZero,
-  isPayToScriptHashTypeAddress,
-  fromSatoshiToTokenPrecision,
-  getSigner,
-  getGoerliDevelopmentContracts,
-  getTbtcV2Artifact,
-  unprefixedAndUncheckedAddress,
-} from "../utils"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+  BitcoinClient,
+  BitcoinTx,
+  BitcoinTxHash,
+  BitcoinUtxo,
+  ChainIdentifier,
+  Deposit,
+  DepositRequest,
+  ElectrumClient,
+  ethereumAddressFromSigner,
+  EthereumBridge,
+  ethereumNetworkFromSigner,
+  Hex,
+  loadEthereumContracts,
+  TBTC as SDK,
+} from "@keep-network/tbtc-v2.ts"
 import {
   BigNumber,
   BigNumberish,
@@ -22,27 +24,23 @@ import {
   Signer,
   utils,
 } from "ethers"
-import { ContractCall, IMulticall } from "../multicall"
-import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
+import { ContractCall, IMulticall } from "../multicall"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import {
-  BitcoinUtxo,
-  Deposit,
-  TBTC as SDK,
-  Hex,
-  loadEthereumContracts,
-  ethereumNetworkFromSigner,
-  ethereumAddressFromSigner,
-  BitcoinClient,
-  DepositRequest,
-  ElectrumClient,
-  BitcoinTxHash,
-  BitcoinTx,
-  DepositReceipt,
-  EthereumBridge,
-  ChainIdentifier,
-} from "tbtc-sdk-v2"
-import { Web3Provider } from "@ethersproject/providers"
+  AddressZero,
+  fromSatoshiToTokenPrecision,
+  getContract,
+  getContractPastEvents,
+  getGoerliDevelopmentContracts,
+  getSigner,
+  getTbtcV2Artifact,
+  isPayToScriptHashTypeAddress,
+  isPublicKeyHashTypeAddress,
+  isSameETHAddress,
+  isValidBtcAddress,
+  ZERO,
+} from "../utils"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",

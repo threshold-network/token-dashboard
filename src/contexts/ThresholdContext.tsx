@@ -1,22 +1,21 @@
+import { TBTC as SDK } from "@keep-network/tbtc-v2.ts"
+import { useWeb3React } from "@web3-react/core"
+import { providers, Signer } from "ethers"
 import {
   createContext,
-  FC,
   Dispatch,
+  FC,
   SetStateAction,
+  useCallback,
   useContext,
   useEffect,
   useRef,
-  useCallback,
   useState,
 } from "react"
-import { useWeb3React } from "@web3-react/core"
 import {
   getDefaultThresholdLibProvider,
   threshold,
 } from "../utils/getThresholdLib"
-import { supportedChainId } from "../utils/getEnvVariable"
-import { providers, Signer } from "ethers"
-import { TBTC as SDK } from "tbtc-sdk-v2"
 
 const ThresholdContext = createContext(threshold)
 

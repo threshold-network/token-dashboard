@@ -1,10 +1,9 @@
 import {
-  ElectrumClientOptions,
-  ElectrumCredentials,
   BitcoinClient,
   BitcoinNetwork,
-  Hex,
-} from "tbtc-sdk-v2"
+  ElectrumClientOptions,
+  ElectrumCredentials,
+} from "@keep-network/tbtc-v2.ts"
 import { providers, Signer } from "ethers"
 
 export interface EthereumConfig {

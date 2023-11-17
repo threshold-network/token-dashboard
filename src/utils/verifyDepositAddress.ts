@@ -1,6 +1,6 @@
+import { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 import axios from "axios"
 import { BitcoinNetwork } from "../threshold-ts/types"
-import { DepositReceipt } from "tbtc-sdk-v2"
 
 export interface VerificationOutcome {
   status: "valid" | "invalid" | "error"

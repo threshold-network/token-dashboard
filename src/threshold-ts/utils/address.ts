@@ -1,9 +1,9 @@
 import {
-  isAddress as ethersIsAddress,
   getAddress as ethersGetAddress,
+  isAddress as ethersIsAddress,
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
-import { EthereumAddress } from "tbtc-sdk-v2"
+import { EthereumAddress } from "@keep-network/tbtc-v2.ts"
 
 export const unprefixedAndUncheckedAddress = (address: string): string => {
   const prefix = address.substring(0, 2)
