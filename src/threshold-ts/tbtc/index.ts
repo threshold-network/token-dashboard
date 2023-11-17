@@ -220,10 +220,11 @@ export interface ITBTC {
   removeDepositData(): void
 
   /**
-   * Initiates a deposit object from DepositReceipt object. This will be used
-   * to either initiate deposit object from JSON file or form local storage.
-   * @param depositReceipt DepositReceipt object that contains all the data
-   * related to the deposit we want to re-initiate
+   * Initiates a deposit object from DepositScriptParameters object. Most of the
+   * parameters are passed as strings and converted to hexes inside the
+   * function.
+   * @param depositScriptParameters DepositScriptParameters object that contains
+   * all the data related to the deposit we want to re-initiate.
    * @returns Deposit object
    */
   initiateDepositFromDepositScriptParameters(
