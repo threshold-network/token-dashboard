@@ -507,10 +507,8 @@ export class TBTC implements ITBTC {
     const { client: clientFromConfig, credentials: credentialsFromConfig } =
       this._bitcoinConfig
 
-    const hasMockedBitcoinClient = clientFromConfig && !credentialsFromConfig
-
     // For both of these cases we will use SDK.initializeCustom() method
-    if (hasMockedBitcoinClient || shouldUseGoerliDevelopmentContracts) {
+    if (clientFromConfig || shouldUseGoerliDevelopmentContracts) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
       const ethereumNetwork = await ethereumNetworkFromSigner(signer)
 
@@ -518,10 +516,9 @@ export class TBTC implements ITBTC {
         ? getGoerliDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
-      const bitcoinClient = hasMockedBitcoinClient
-        ? clientFromConfig
-        : // Credentials are confirmed to be defined (`hasMockedBitcoinClient`)
-          new ElectrumClient(credentialsFromConfig!)
+      const bitcoinClient = credentialsFromConfig
+        ? new ElectrumClient(credentialsFromConfig)
+        : clientFromConfig
 
       this._sdk = await SDK.initializeCustom(
         tbtcContracts,
