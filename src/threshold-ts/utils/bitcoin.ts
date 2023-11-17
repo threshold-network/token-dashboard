@@ -6,12 +6,8 @@ import {
   BitcoinTxHash,
   Hex,
 } from "@keep-network/tbtc-v2.ts"
-import {
-  AddressType,
-  getAddressInfo,
-  Network,
-  validate,
-} from "bitcoin-address-validation"
+// TODO: remove this and use equivalents from `@keep-network/tbtc-v2`
+import { Network, validate } from "bitcoin-address-validation"
 
 export const BITCOIN_PRECISION = 8
 
@@ -37,9 +33,18 @@ export const isPublicKeyHashTypeAddress = (
   )
 }
 
-export const isPayToScriptHashTypeAddress = (address: string): boolean => {
-  const { type } = getAddressInfo(address)
-  return type === AddressType.p2sh || type === AddressType.p2wsh
+export const isPayToScriptHashTypeAddress = (
+  address: string,
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
+): boolean => {
+  const outputScript = BitcoinAddressConverter.addressToOutputScript(
+    address,
+    network
+  )
+  return (
+    BitcoinScriptUtils.isP2SHScript(outputScript) ||
+    BitcoinScriptUtils.isP2WSHScript(outputScript)
+  )
 }
 
 /**
