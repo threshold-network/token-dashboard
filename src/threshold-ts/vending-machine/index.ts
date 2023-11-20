@@ -2,7 +2,11 @@ import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/
 import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
 import { BigNumber, BigNumberish, Contract } from "ethers"
 import { EthereumConfig } from "../types"
-import { getContract, STANDARD_ERC20_DECIMALS } from "../utils"
+import {
+  getContract,
+  getVendingMachineArtifact,
+  STANDARD_ERC20_DECIMALS,
+} from "../utils"
 /**
  * An interface representing the T token amount and the reminder that can't be
  * upgraded.
@@ -120,7 +124,18 @@ export class VendingMachines implements IVendingMachines {
   public readonly keep: IVendingMachine
 
   constructor(config: EthereumConfig) {
-    this.nu = new VendingMachine(config, VendingMachineNuCypher)
-    this.keep = new VendingMachine(config, VendingMachineKeep)
+    const vendingMachineNuArtifact = getVendingMachineArtifact(
+      "NuCypher",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
+    const vendingMachineKeepArtifact = getVendingMachineArtifact(
+      "Keep",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
+
+    this.nu = new VendingMachine(config, vendingMachineNuArtifact)
+    this.keep = new VendingMachine(config, vendingMachineKeepArtifact)
   }
 }
