@@ -15,9 +15,11 @@ import TbtcVaultArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/a
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import TbtcTokenArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTC.json"
 import TbtcVaultArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
+import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
 import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
 import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
 import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
+import WalletRegistryArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/WalletRegistry.json"
 
 // account is not optional
 export function getSigner(
@@ -85,30 +87,35 @@ export function getContractAddressFromTruffleArtifact(
 }
 
 export const getTbtcV2Artifact = (
-  artifactName: "Bridge" | "TBTCVault" | "TBTC",
+  artifactName: "Bridge" | "TBTCVault" | "TBTC" | "WalletRegistry",
   chainId: string | number,
-  shouldUseGoerliDevelopmentContracts = false
+  shouldUseTestnetDevelopmentContracts = false
 ) => {
-  // TODO: Update this function with goerli development artifact.
   switch (artifactName) {
     case "Bridge":
-      if (shouldUseGoerliDevelopmentContracts)
+      if (shouldUseTestnetDevelopmentContracts)
         return BridgeArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? BridgeArtifactMainnet
         : BridgeArtifactGoerli
     case "TBTCVault":
-      if (shouldUseGoerliDevelopmentContracts)
+      if (shouldUseTestnetDevelopmentContracts)
         return TbtcVaultArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? TbtcVaultArtifactMainnet
         : TbtcVaultArtifactGoerli
     case "TBTC":
-      if (shouldUseGoerliDevelopmentContracts)
+      if (shouldUseTestnetDevelopmentContracts)
         return TbtcTokenArtifactDappDevelopmentGoerli
       return chainId.toString() === "1"
         ? TbtcTokenArtifactMainnet
         : TbtcTokenArtifactGoerli
+    case "WalletRegistry":
+      if (shouldUseTestnetDevelopmentContracts)
+        return WalletRegistryArtifactDappDevelopmentGoerli
+      return chainId.toString() === "1"
+        ? WalletRegistryArtifactMainnet
+        : WalletRegistryArtifactDappDevelopmentGoerli
     default:
       throw new Error("Can't get tbtc-v2 artifacts!")
   }

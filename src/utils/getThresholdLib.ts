@@ -14,14 +14,14 @@ import {
 function getInitialEthereumConfig(
   providerOrSigner?: Provider | Signer
 ): EthereumConfig {
-  const useGoerliDevelopmentContractsFlag =
+  const useTestnetDevelopmentContractsFlag =
     getEnvVariable(EnvVariable.DAPP_DEVELOPMENT_TESTNET_CONTRACTS) === "true"
   return {
     chainId: supportedChainId,
     providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
-    shouldUseGoerliDevelopmentContracts:
+    shouldUseTestnetDevelopmentContracts:
       supportedChainId === ChainID.Goerli.toString() &&
-      useGoerliDevelopmentContractsFlag,
+      useTestnetDevelopmentContractsFlag,
   }
 }
 

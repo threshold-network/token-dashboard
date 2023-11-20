@@ -9,7 +9,7 @@ import { providers, Signer } from "ethers"
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
-  shouldUseGoerliDevelopmentContracts: boolean
+  shouldUseTestnetDevelopmentContracts: boolean
   account?: string
 }
 

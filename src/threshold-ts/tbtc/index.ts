@@ -440,7 +440,7 @@ export class TBTC implements ITBTC {
     }
     const {
       chainId,
-      shouldUseGoerliDevelopmentContracts,
+      shouldUseTestnetDevelopmentContracts,
       providerOrSigner,
       account,
     } = ethereumConfig
@@ -448,17 +448,17 @@ export class TBTC implements ITBTC {
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
       chainId,
-      shouldUseGoerliDevelopmentContracts
+      shouldUseTestnetDevelopmentContracts
     )
     const bridgeArtifact = getTbtcV2Artifact(
       "Bridge",
       chainId,
-      shouldUseGoerliDevelopmentContracts
+      shouldUseTestnetDevelopmentContracts
     )
     const tbtcTokenArtifact = getTbtcV2Artifact(
       "TBTC",
       chainId,
-      shouldUseGoerliDevelopmentContracts
+      shouldUseTestnetDevelopmentContracts
     )
 
     this._bridgeContract = getContract(
@@ -502,15 +502,15 @@ export class TBTC implements ITBTC {
         ? getSigner(providerOrSigner as Web3Provider, account)
         : providerOrSigner
 
-    const { shouldUseGoerliDevelopmentContracts } = this._ethereumConfig
+    const { shouldUseTestnetDevelopmentContracts } = this._ethereumConfig
     const { client: clientFromConfig } = this._bitcoinConfig
 
     // For both of these cases we will use SDK.initializeCustom() method
-    if (clientFromConfig || shouldUseGoerliDevelopmentContracts) {
+    if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
       const ethereumNetwork = await ethereumNetworkFromSigner(signer)
 
-      const tbtcContracts = shouldUseGoerliDevelopmentContracts
+      const tbtcContracts = shouldUseTestnetDevelopmentContracts
         ? getGoerliDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
@@ -807,7 +807,7 @@ export class TBTC implements ITBTC {
     const bridgeArtifact = getTbtcV2Artifact(
       "Bridge",
       this.ethereumChainId,
-      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
     const deposits = await getContractPastEvents(this._bridgeContract, {
       fromBlock: bridgeArtifact.receipt.blockNumber,
@@ -902,7 +902,7 @@ export class TBTC implements ITBTC {
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
       this.ethereumChainId,
-      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
     return await getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
@@ -917,7 +917,7 @@ export class TBTC implements ITBTC {
     const tbtcVaultArtifact = getTbtcV2Artifact(
       "TBTCVault",
       this.ethereumChainId,
-      this._ethereumConfig.shouldUseGoerliDevelopmentContracts
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
     return getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
