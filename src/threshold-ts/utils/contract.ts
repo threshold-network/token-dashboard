@@ -12,10 +12,13 @@ import { AddressZero, getAddress, isAddressZero } from "./address"
 import BridgeArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/Bridge.json"
 import TbtcTokenArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTC.json"
 import TbtcVaultArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
+import WalletRegistryArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/WalletRegistry.json"
+
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import TbtcTokenArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTC.json"
 import TbtcVaultArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
 import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
+
 import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
 import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
 import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
@@ -37,7 +40,7 @@ const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["Bridge", BridgeArtifactGoerli],
   ["TBTCVault", TbtcVaultArtifactGoerli],
   ["TBTC", TbtcTokenArtifactGoerli],
-  ["WalletRegistry", WalletRegistryArtifactMainnet],
+  ["WalletRegistry", WalletRegistryArtifactGoerli],
 ])
 const testnetDevelopmentArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["Bridge", BridgeArtifactDappDevelopmentGoerli],
