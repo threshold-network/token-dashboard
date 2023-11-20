@@ -143,7 +143,6 @@ jobs:
             @keep-network/tbtc@${{ inputs.environment }} \
             @keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
-      # TODO: ⬆️⬆️⬆️ Revert this line when SDK 2.0.0 migration is completed.
       - name: Run postinstall script
         shell: bash
         # `yarn upgrade` doesn't trigger the `postinstall` script.
