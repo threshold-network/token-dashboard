@@ -3507,7 +3507,7 @@
     "@summa-tx/relay-sol" "^2.0.2"
     openzeppelin-solidity "2.3.0"
 
-"@keep-network/tbtc@1.1.2-dev.1", "@keep-network/tbtc@development":
+"@keep-network/tbtc@1.1.2-dev.1":
   version "1.1.2-dev.1"
   resolved "https://registry.yarnpkg.com/@keep-network/tbtc/-/tbtc-1.1.2-dev.1.tgz#dd1e734c0fed50474c74d7170c8749127231d1f9"
   integrity sha512-IRa0j1D7JBG8UpduaFxkaq2Ii6F61HhNMUBmxr7kAIZwj/yx8sYXWi921mn0L2Z+hAYNcwEUVhCM91VKQH29pQ==

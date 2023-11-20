@@ -19,7 +19,6 @@
     "@keep-network/keep-core": "development",
     "@keep-network/keep-ecdsa": "development",
     "@keep-network/random-beacon": "development",
-    "@keep-network/tbtc": "development",
     "@keep-network/tbtc-v2": "development",
     "@keep-network/tbtc-v2.ts": "2.3.0",
     "@ledgerhq/connect-kit-loader": "^1.1.2",
