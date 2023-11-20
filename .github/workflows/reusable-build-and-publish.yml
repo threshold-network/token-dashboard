@@ -124,11 +124,9 @@ jobs:
           if [ ${{ inputs.useUpstreamBuilds }} = 'false' ]; then
             echo "threshold-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
           else
             echo "threshold-contracts-version=${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-ts-version }}" >> $GITHUB_OUTPUT
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
