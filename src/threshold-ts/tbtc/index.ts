@@ -34,7 +34,7 @@ import {
   getContractPastEvents,
   getGoerliDevelopmentContracts,
   getSigner,
-  getTbtcV2Artifact,
+  getArtifact,
   isPayToScriptHashTypeAddress,
   isPublicKeyHashTypeAddress,
   isSameETHAddress,
@@ -445,17 +445,17 @@ export class TBTC implements ITBTC {
       account,
     } = ethereumConfig
 
-    const tbtcVaultArtifact = getTbtcV2Artifact(
+    const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
       chainId,
       shouldUseTestnetDevelopmentContracts
     )
-    const bridgeArtifact = getTbtcV2Artifact(
+    const bridgeArtifact = getArtifact(
       "Bridge",
       chainId,
       shouldUseTestnetDevelopmentContracts
     )
-    const tbtcTokenArtifact = getTbtcV2Artifact(
+    const tbtcTokenArtifact = getArtifact(
       "TBTC",
       chainId,
       shouldUseTestnetDevelopmentContracts
@@ -804,7 +804,7 @@ export class TBTC implements ITBTC {
   findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
-    const bridgeArtifact = getTbtcV2Artifact(
+    const bridgeArtifact = getArtifact(
       "Bridge",
       this.ethereumChainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
@@ -899,7 +899,7 @@ export class TBTC implements ITBTC {
     depositor: string,
     depositKeys: string[] = []
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    const tbtcVaultArtifact = getTbtcV2Artifact(
+    const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
       this.ethereumChainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
@@ -914,7 +914,7 @@ export class TBTC implements ITBTC {
   private _findAllCancelledDeposits = async (
     depositKeys: string[]
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    const tbtcVaultArtifact = getTbtcV2Artifact(
+    const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
       this.ethereumChainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts

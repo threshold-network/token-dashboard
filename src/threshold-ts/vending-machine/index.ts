@@ -1,10 +1,6 @@
 import { BigNumber, BigNumberish, Contract } from "ethers"
 import { EthereumConfig } from "../types"
-import {
-  getContract,
-  getVendingMachineArtifact,
-  STANDARD_ERC20_DECIMALS,
-} from "../utils"
+import { getContract, getArtifact, STANDARD_ERC20_DECIMALS } from "../utils"
 /**
  * An interface representing the T token amount and the reminder that can't be
  * upgraded.
@@ -122,13 +118,13 @@ export class VendingMachines implements IVendingMachines {
   public readonly keep: IVendingMachine
 
   constructor(config: EthereumConfig) {
-    const vendingMachineNuArtifact = getVendingMachineArtifact(
-      "NuCypher",
+    const vendingMachineNuArtifact = getArtifact(
+      "VendingMachineNuCypher",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
-    const vendingMachineKeepArtifact = getVendingMachineArtifact(
-      "Keep",
+    const vendingMachineKeepArtifact = getArtifact(
+      "VendingMachineKeep",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )

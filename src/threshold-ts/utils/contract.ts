@@ -10,40 +10,51 @@ import { Contract, ContractInterface, Event, providers, Signer } from "ethers"
 import { AddressZero, getAddress, isAddressZero } from "./address"
 
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
+import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
+import NuCypherTokenMainnet from "../tokens/mainnet-artifacts/NuCypherToken.json"
 import TbtcTokenArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTC.json"
 import TbtcVaultArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/TBTCVault.json"
-import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
 import VendingMachineKeepMainnet from "../vending-machine/mainnet-artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypherMainnet from "../vending-machine/mainnet-artifacts/VendingMachineNuCypher.json"
+import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
 
 import BridgeArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/Bridge.json"
+import NuCypherStakingEscrowGoerli from "../staking/goerli-artifacts/NuCypherStakingEscrow.json"
+import NuCypherTokenGoerli from "../tokens/goerli-artifacts/NuCypherToken.json"
 import TbtcTokenArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTC.json"
 import TbtcVaultArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
-import WalletRegistryArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/WalletRegistry.json"
 import VendingMachineKeepGoerli from "../vending-machine/goerli-artifacts/VendingMachineKeep.json"
-import VendingMachineNuCypheGoerli from "../vending-machine/goerli-artifacts/VendingMachineNuCypher.json"
+import VendingMachineNuCypherGoerli from "../vending-machine/goerli-artifacts/VendingMachineNuCypher.json"
+import WalletRegistryArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/WalletRegistry.json"
 
 import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
+import NuCypherStakingEscrowDappDevelopmentGoerli from "../staking/dapp-development-goerli-artifacts/NuCypherStakingEscrow.json"
+import NuCypherTokenDappDevelopmentGoerli from "../tokens/dapp-development-goerli-artifacts/NuCypherToken.json"
 import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
 import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
-import WalletRegistryArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/WalletRegistry.json"
 import VendingMachineKeepDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineKeep.json"
-import VendingMachineNuCypheDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineNuCypher.json"
+import VendingMachineNuCypherDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineNuCypher.json"
+import WalletRegistryArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/WalletRegistry.json"
 
-type ArtifactNameType = TbtcArtifactNameType | VendingMachineArtifactType
+type ArtifactNameType =
+  | "Bridge"
+  | "NuCypherStakingEscrow"
+  | "NuCypherToken"
+  | "TBTCVault"
+  | "TBTC"
+  | "VendingMachineKeep"
+  | "VendingMachineNuCypher"
+  | "WalletRegistry"
 type ArtifactType = {
   address: string
   abi: ContractInterface
   [key: string]: any
 }
 
-type TbtcArtifactNameType = "Bridge" | "TBTCVault" | "TBTC" | "WalletRegistry"
-type VendingMachineArtifactType =
-  | "VendingMachineKeep"
-  | "VendingMachineNuCypher"
-
 const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["Bridge", BridgeArtifactMainnet],
+  ["NuCypherStakingEscrow", NuCypherStakingEscrowMainnet],
+  ["NuCypherToken", NuCypherTokenMainnet],
   ["TBTCVault", TbtcVaultArtifactMainnet],
   ["TBTC", TbtcTokenArtifactMainnet],
   ["WalletRegistry", WalletRegistryArtifactMainnet],
@@ -52,19 +63,23 @@ const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
 ])
 const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["Bridge", BridgeArtifactGoerli],
+  ["NuCypherStakingEscrow", NuCypherStakingEscrowGoerli],
+  ["NuCypherToken", NuCypherTokenGoerli],
   ["TBTCVault", TbtcVaultArtifactGoerli],
   ["TBTC", TbtcTokenArtifactGoerli],
   ["WalletRegistry", WalletRegistryArtifactGoerli],
   ["VendingMachineKeep", VendingMachineKeepGoerli],
-  ["VendingMachineNuCypher", VendingMachineNuCypheGoerli],
+  ["VendingMachineNuCypher", VendingMachineNuCypherGoerli],
 ])
 const testnetDevelopmentArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["Bridge", BridgeArtifactDappDevelopmentGoerli],
+  ["NuCypherStakingEscrow", NuCypherStakingEscrowDappDevelopmentGoerli],
+  ["NuCypherToken", NuCypherTokenDappDevelopmentGoerli],
   ["TBTCVault", TbtcVaultArtifactDappDevelopmentGoerli],
   ["TBTC", TbtcTokenArtifactDappDevelopmentGoerli],
   ["WalletRegistry", WalletRegistryArtifactDappDevelopmentGoerli],
   ["VendingMachineKeep", VendingMachineKeepDappDevelopmentGoerli],
-  ["VendingMachineNuCypher", VendingMachineNuCypheDappDevelopmentGoerli],
+  ["VendingMachineNuCypher", VendingMachineNuCypherDappDevelopmentGoerli],
 ])
 
 // account is not optional
@@ -132,7 +147,7 @@ export function getContractAddressFromTruffleArtifact(
     : AddressZero
 }
 
-export const getTbtcV2Artifact = (
+export const getArtifact = (
   artifactName: ArtifactNameType,
   chainId: string | number,
   shouldUseTestnetDevelopmentContracts = false
@@ -147,25 +162,6 @@ export const getTbtcV2Artifact = (
       return artifacts.get(artifactName)!
     default:
       throw new Error("Can't get tbtc-v2 artifacts!")
-  }
-}
-
-export const getVendingMachineArtifact = (
-  type: "Keep" | "NuCypher",
-  chainId: string | number,
-  shouldUseTestnetDevelopmentContracts = false
-): ArtifactType => {
-  const artifactName = `VendingMachine${type}` as ArtifactNameType
-  switch (chainId.toString()) {
-    case "1":
-      return mainnetArtifacts.get(artifactName)!
-    case "5":
-      const artifacts = shouldUseTestnetDevelopmentContracts
-        ? testnetDevelopmentArtifacts
-        : testnetArtifacts
-      return artifacts.get(artifactName)!
-    default:
-      throw new Error("Can't get vending machine artifacts!")
   }
 }
 

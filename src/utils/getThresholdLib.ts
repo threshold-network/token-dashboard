@@ -2,7 +2,11 @@ import { JsonRpcProvider, Provider } from "@ethersproject/providers"
 import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { ChainID, EnvVariable } from "../enums"
-import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
+import {
+  getEnvVariable,
+  shouldUseTestnetDevelopmentContracts,
+  supportedChainId,
+} from "../utils/getEnvVariable"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
 import {
   BitcoinConfig,
@@ -14,14 +18,12 @@ import {
 function getInitialEthereumConfig(
   providerOrSigner?: Provider | Signer
 ): EthereumConfig {
-  const useTestnetDevelopmentContractsFlag =
-    getEnvVariable(EnvVariable.DAPP_DEVELOPMENT_TESTNET_CONTRACTS) === "true"
   return {
     chainId: supportedChainId,
     providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
     shouldUseTestnetDevelopmentContracts:
       supportedChainId === ChainID.Goerli.toString() &&
-      useTestnetDevelopmentContractsFlag,
+      shouldUseTestnetDevelopmentContracts,
   }
 }
 

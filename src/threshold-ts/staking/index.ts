@@ -1,10 +1,10 @@
 import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
-import NuCypherStakingEscrow from "@threshold-network/solidity-contracts/artifacts/NuCypherStakingEscrow.json"
 import KeepTokenStaking from "@keep-network/keep-core/artifacts/TokenStaking.json"
 import { BigNumber, BigNumberish, Contract, ContractTransaction } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
 import {
+  getArtifact,
   getContract,
   getContractAddressFromTruffleArtifact,
   getContractPastEvents,
@@ -50,6 +50,7 @@ interface OwnerRefreshedResult {
 
 export interface IStaking {
   stakingContract: Contract
+  legacyNuStakingContract: Contract
   STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
   /**
    * Returns the authorized stake amount of the staking provider for the application.
@@ -144,9 +145,14 @@ export class Staking implements IStaking {
       config.providerOrSigner,
       config.account
     )
+    const NuCypherStakingEscrowArtifact = getArtifact(
+      "NuCypherStakingEscrow",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
     this._legacyNuStaking = getContract(
-      NuCypherStakingEscrow.address,
-      NuCypherStakingEscrow.abi,
+      NuCypherStakingEscrowArtifact.address,
+      NuCypherStakingEscrowArtifact.abi,
       config.providerOrSigner,
       config.account
     )
@@ -163,6 +169,10 @@ export class Staking implements IStaking {
 
   get stakingContract() {
     return this._staking
+  }
+
+  get legacyNuStakingContract() {
+    return this._legacyNuStaking
   }
 
   increaseAuthorization = async (

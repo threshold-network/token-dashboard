@@ -7,7 +7,7 @@ import {
 import { IMulticall, ContractCall } from "../multicall"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
-import { getTbtcV2Artifact } from "../utils"
+import { getArtifact } from "../utils"
 
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
@@ -37,7 +37,7 @@ export class MultiAppStaking {
       abi: RandomBeacon.abi,
       ...config,
     })
-    const walletRegistryArtifacts = getTbtcV2Artifact(
+    const walletRegistryArtifacts = getArtifact(
       "WalletRegistry",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
