@@ -18,10 +18,7 @@ import {
   useRedemptionEstimatedFees,
   useRequestRedemption,
 } from "../../../hooks/tbtc"
-import {
-  BaseModalProps,
-  UnspentTransactionOutputPlainObject,
-} from "../../../types"
+import { BaseModalProps } from "../../../types"
 import shortenAddress from "../../../utils/shortenAddress"
 import { buildRedemptionDetailsLink } from "../../../utils/tBTC"
 import { OnSuccessCallback } from "../../../web3/hooks"
@@ -38,17 +35,12 @@ import withBaseModal from "../withBaseModal"
 type InitiateUnmintingProps = {
   unmintAmount: string
   btcAddress: string
-  wallet: {
-    walletPublicKey: string
-    mainUtxo: UnspentTransactionOutputPlainObject
-  }
 } & BaseModalProps
 
 const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   closeModal,
   unmintAmount,
   btcAddress,
-  wallet,
 }) => {
   const navigate = useNavigate()
   const { account } = useWeb3React()
@@ -56,24 +48,27 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
     useRedemptionEstimatedFees(unmintAmount)
   const threshold = useThreshold()
 
-  const onSuccess: OnSuccessCallback = (receipt) => {
-    navigate(
-      buildRedemptionDetailsLink(
-        receipt.transactionHash,
-        account!,
-        wallet.walletPublicKey,
-        btcAddress,
-        threshold.tbtc.bitcoinNetwork
+  const onSuccess: OnSuccessCallback = (receipt, additionalParams) => {
+    //@ts-ignore
+    const { walletPublicKey } = additionalParams
+    if (walletPublicKey) {
+      navigate(
+        buildRedemptionDetailsLink(
+          receipt.transactionHash,
+          account!,
+          walletPublicKey,
+          btcAddress,
+          threshold.tbtc.bitcoinNetwork
+        )
       )
-    )
+    }
     closeModal()
   }
 
   const { sendTransaction } = useRequestRedemption(onSuccess)
 
   const initiateUnminting = async () => {
-    const { walletPublicKey, mainUtxo } = wallet
-    await sendTransaction(walletPublicKey, mainUtxo, btcAddress, unmintAmount)
+    await sendTransaction(btcAddress, unmintAmount)
   }
 
   return (

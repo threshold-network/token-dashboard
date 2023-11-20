@@ -1,16 +1,13 @@
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-export {
-  computeHash160,
-  createOutputScriptFromAddress,
-  createAddressFromOutputScript,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import {
-  AddressType,
-  getAddressInfo,
-  Network,
-  validate,
-} from "bitcoin-address-validation"
+  BitcoinAddressConverter,
+  BitcoinHashUtils,
+  BitcoinNetwork,
+  BitcoinScriptUtils,
+  BitcoinTxHash,
+  Hex,
+} from "@keep-network/tbtc-v2.ts"
+// TODO: remove this and use equivalents from `@keep-network/tbtc-v2`
+import { Network, validate } from "bitcoin-address-validation"
 
 export const BITCOIN_PRECISION = 8
 
@@ -22,14 +19,32 @@ export const isValidBtcAddress = (
 }
 
 // P2PKH, P2WPKH, P2SH, or P2WSH
-export const isPublicKeyHashTypeAddress = (address: string): boolean => {
-  const { type } = getAddressInfo(address)
-  return type === AddressType.p2pkh || type === AddressType.p2wpkh
+export const isPublicKeyHashTypeAddress = (
+  address: string,
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
+): boolean => {
+  const outputScript = BitcoinAddressConverter.addressToOutputScript(
+    address,
+    network
+  )
+  return (
+    BitcoinScriptUtils.isP2PKHScript(outputScript) ||
+    BitcoinScriptUtils.isP2WPKHScript(outputScript)
+  )
 }
 
-export const isPayToScriptHashTypeAddress = (address: string): boolean => {
-  const { type } = getAddressInfo(address)
-  return type === AddressType.p2sh || type === AddressType.p2wsh
+export const isPayToScriptHashTypeAddress = (
+  address: string,
+  network: BitcoinNetwork = BitcoinNetwork.Mainnet
+): boolean => {
+  const outputScript = BitcoinAddressConverter.addressToOutputScript(
+    address,
+    network
+  )
+  return (
+    BitcoinScriptUtils.isP2SHScript(outputScript) ||
+    BitcoinScriptUtils.isP2WSHScript(outputScript)
+  )
 }
 
 /**
@@ -41,10 +56,10 @@ export const isPayToScriptHashTypeAddress = (address: string): boolean => {
  * little-endian format but to get the confirmations for this transaction we
  * need to reverse its hash.
  * @param {string} txHash Transaction hash as string.
- * @return {TransactionHash} Reversed transaction hash.
+ * @return {string} Reversed transaction hash.
  */
-export const reverseTxHash = (txHash: string): TransactionHash => {
-  return TransactionHash.from(txHash).reverse()
+export const reverseTxHash = (txHash: string): string => {
+  return BitcoinTxHash.from(txHash).reverse().toString()
 }
 
 export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
@@ -55,4 +70,22 @@ export const prependScriptPubKeyByLength = (scriptPubKey: string) => {
     Buffer.from([rawRedeemerOutputScript.length]),
     rawRedeemerOutputScript,
   ]).toString("hex")}`
+}
+
+export const computeHash160 = (text: string) => {
+  return BitcoinHashUtils.computeHash160(Hex.from(text))
+}
+
+export const createOutputScriptFromAddress = (
+  address: string,
+  bitcoinNetwork: BitcoinNetwork
+) => {
+  return BitcoinAddressConverter.addressToOutputScript(address, bitcoinNetwork)
+}
+
+export const createAddressFromOutputScript = (
+  script: Hex,
+  bitcoinNetwork: BitcoinNetwork
+) => {
+  return BitcoinAddressConverter.outputScriptToAddress(script, bitcoinNetwork)
 }

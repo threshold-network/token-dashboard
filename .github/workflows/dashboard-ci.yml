@@ -74,9 +74,6 @@ jobs:
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
             @keep-network/coverage-pools \
-            @keep-network/tbtc-v2 \
-            @keep-network/tbtc-v2.ts \
-            @keep-network/ecdsa \
             @keep-network/random-beacon
 
       - name: Run postinstall script

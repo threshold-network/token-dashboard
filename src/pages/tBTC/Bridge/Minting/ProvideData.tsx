@@ -120,47 +120,40 @@ export const ProvideDataComponent: FC<{
       )
     }
     setSubmitButtonLoading(true)
-    const depositScriptParameters =
-      await threshold.tbtc.createDepositScriptParameters(
-        values.ethAddress,
-        values.btcRecoveryAddress
-      )
-
-    const depositAddress = await threshold.tbtc.calculateDepositAddress(
-      depositScriptParameters
+    const deposit = await threshold.tbtc.initiateDeposit(
+      values.btcRecoveryAddress
     )
+    const depositAddress = await threshold.tbtc.calculateDepositAddress()
+    const receipt = deposit.getReceipt()
 
     // update state,
     updateState("ethAddress", values.ethAddress)
-    updateState("blindingFactor", depositScriptParameters.blindingFactor)
+    updateState("blindingFactor", receipt.blindingFactor.toString())
     updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-    updateState(
-      "walletPublicKeyHash",
-      depositScriptParameters.walletPublicKeyHash
-    )
-    updateState("refundLocktime", depositScriptParameters.refundLocktime)
+    updateState("walletPublicKeyHash", receipt.walletPublicKeyHash.toString())
+    updateState("refundLocktime", receipt.refundLocktime.toString())
 
     // create a new deposit address,
     updateState("btcDepositAddress", depositAddress)
 
     setDepositDataInLocalStorage({
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters.blindingFactor,
+      blindingFactor: receipt.blindingFactor.toString(),
       btcRecoveryAddress: values.btcRecoveryAddress,
-      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
-      refundLocktime: depositScriptParameters.refundLocktime,
+      walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+      refundLocktime: receipt.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
 
-    depositTelemetry(depositScriptParameters, depositAddress)
+    depositTelemetry(receipt, depositAddress)
 
     // if the user has NOT declined the json file, ask the user if they want to accept the new file
     openModal(ModalType.TbtcRecoveryJson, {
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters.blindingFactor,
-      walletPublicKeyHash: depositScriptParameters.walletPublicKeyHash,
-      refundPublicKeyHash: depositScriptParameters.refundPublicKeyHash,
-      refundLocktime: depositScriptParameters.refundLocktime,
+      blindingFactor: receipt.blindingFactor.toString(),
+      walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+      refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
+      refundLocktime: receipt.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
     updateState("mintingStep", MintingStep.Deposit)
