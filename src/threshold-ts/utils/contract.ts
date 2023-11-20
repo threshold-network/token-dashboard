@@ -170,19 +170,19 @@ export const getGoerliDevelopmentContracts = (
 ): TBTCContracts => {
   return {
     bridge: new EthereumBridge({
-      address: "0xB07051CE2A47b58C22bdfD1425BCEad27F6072Db",
+      address: BridgeArtifactDappDevelopmentGoerli.address,
       signerOrProvider,
     }),
     tbtcToken: new EthereumTBTCToken({
-      address: "0xd33b90D2c792F00d3746eF29cBE9aa0aAef915E1",
+      address: TbtcTokenArtifactDappDevelopmentGoerli.address,
       signerOrProvider,
     }),
     tbtcVault: new EthereumTBTCVault({
-      address: "0x0099960098f5A5343Bef3185e7E365d3a558D36a",
+      address: TbtcVaultArtifactDappDevelopmentGoerli.address,
       signerOrProvider,
     }),
     walletRegistry: new EthereumWalletRegistry({
-      address: "0x18930D71C7aE52beCB474A39173Def1A09b861a0",
+      address: WalletRegistryArtifactDappDevelopmentGoerli.address,
       signerOrProvider,
     }),
   }
