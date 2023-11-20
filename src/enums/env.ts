@@ -17,7 +17,7 @@ const envVariables = [
   "FEATURE_FLAG_SENTRY",
   "SENTRY_DSN",
   "WALLET_CONNECT_PROJECT_ID",
-  "USE_GOERLI_DEVELOPMENT_CONTRACTS",
+  "DAPP_DEVELOPMENT_TESTNET_CONTRACTS",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]
