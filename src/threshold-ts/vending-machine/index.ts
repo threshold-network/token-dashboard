@@ -1,5 +1,3 @@
-import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
-import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
 import { BigNumber, BigNumberish, Contract } from "ethers"
 import { EthereumConfig } from "../types"
 import {
