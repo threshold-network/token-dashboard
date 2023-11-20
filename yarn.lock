@@ -3321,7 +3321,7 @@
     "@openzeppelin/contracts-upgradeable" "^4.6.0"
     "@threshold-network/solidity-contracts" "1.2.1"
 
-"@keep-network/ecdsa@2.1.0-dev.11", "@keep-network/ecdsa@development":
+"@keep-network/ecdsa@development":
   version "2.1.0-dev.11"
   resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.11.tgz#c25fa6cfebe1ca7964329b54c44526a782391234"
   integrity sha512-5tTJr9UyW+H0HnV3bu8MkKcy+K9Gi6gaHZ+1WK8LQvba/T38ay//9Gg6dZWmhPT9mKIlW4s0zjOYkjQwq7W7fw==
@@ -3480,19 +3480,6 @@
     "@keep-network/ecdsa" "2.0.0"
     "@keep-network/random-beacon" "2.0.0"
     "@keep-network/tbtc" "1.1.0"
-    "@openzeppelin/contracts" "^4.8.1"
-    "@openzeppelin/contracts-upgradeable" "^4.8.1"
-    "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
-
-"@keep-network/tbtc-v2@development":
-  version "1.5.0-dev.2"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.5.0-dev.2.tgz#2e5b6adb5b265e998e2d296883c68d6587a7fedb"
-  integrity sha512-L3lPNzVb1N6uEMABixx/5hR3t6dxGFMEuuCVWqaQ/jTocODru+0pwd5obYoD9aNIqtzuboezoBBorZsOoheiPw==
-  dependencies:
-    "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
-    "@keep-network/ecdsa" "2.1.0-dev.11"
-    "@keep-network/random-beacon" "2.1.0-dev.10"
-    "@keep-network/tbtc" "1.1.2-dev.1"
     "@openzeppelin/contracts" "^4.8.1"
     "@openzeppelin/contracts-upgradeable" "^4.8.1"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
