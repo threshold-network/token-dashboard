@@ -28,7 +28,6 @@ const tacoChains: TacoChains = {
 const key = tacoChains[chainName] || ""
 const TacoRegistry = TacoRegistryFile[key]["TACoApplication"]
 
-console.log(TacoRegistry)
 
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
