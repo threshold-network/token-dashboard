@@ -21,3 +21,6 @@ cypress/plugins
 # Yarn
 node_modules/
 yarn-error.log
+
+# Environmental variables
+.env
