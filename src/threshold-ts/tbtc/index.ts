@@ -1041,7 +1041,7 @@ export class TBTC implements ITBTC {
     return (
       !isValidBtcAddress(btcAddress, network) ||
       (!isPublicKeyHashTypeAddress(btcAddress, network) &&
-        !isPayToScriptHashTypeAddress(btcAddress))
+        !isPayToScriptHashTypeAddress(btcAddress, network))
     )
   }
 

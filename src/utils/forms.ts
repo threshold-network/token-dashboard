@@ -106,7 +106,7 @@ export const validateUnmintBTCAddress = (
   } else if (
     !isValidBtcAddress(address, network) ||
     (!isPublicKeyHashTypeAddress(address, network) &&
-      !isPayToScriptHashTypeAddress(address))
+      !isPayToScriptHashTypeAddress(address, network))
   ) {
     return `The BTC address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
       "unmint",
