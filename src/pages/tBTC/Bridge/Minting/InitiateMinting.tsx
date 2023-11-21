@@ -1,16 +1,15 @@
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
+import { BodyMd, Button } from "@threshold-network/components"
 import { FC } from "react"
-import { Alert, AlertIcon, BodyMd, Button } from "@threshold-network/components"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import { ModalType } from "../../../../enums"
+import { useModal } from "../../../../hooks/useModal"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import { AlertDescription } from "@chakra-ui/react"
-import { useModal } from "../../../../hooks/useModal"
-import { ModalType } from "../../../../enums"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 
 const InitiateMintingComponent: FC<{
-  utxo: UnspentTransactionOutput
+  utxo: BitcoinUtxo
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
   const { openModal } = useModal()

@@ -1,15 +1,19 @@
-import { AppListenerEffectAPI } from "../listener"
-import { tbtcSlice } from "./tbtcSlice"
-import { isAddress, isAddressZero } from "../../web3/utils"
-import { MintingStep } from "../../types/tbtc"
-import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import { BitcoinAddressConverter } from "@keep-network/tbtc-v2.ts"
 import { TaskAbortError } from "@reduxjs/toolkit"
 import {
-  TBTCLocalStorageDepositData,
+  getChainIdentifier,
+  isPublicKeyHashTypeAddress,
+} from "../../threshold-ts/utils"
+import { MintingStep } from "../../types/tbtc"
+import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import {
   key,
   removeDataForAccount,
+  TBTCLocalStorageDepositData,
 } from "../../utils/tbtcLocalStorageData"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+import { isAddress, isAddressZero } from "../../web3/utils"
+import { AppListenerEffectAPI } from "../listener"
+import { tbtcSlice } from "./tbtcSlice"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -44,6 +48,16 @@ export const findUtxoEffect = async (
 ) => {
   const { btcDepositAddress, depositor } = action.payload
 
+  const {
+    tbtc: {
+      ethAddress,
+      blindingFactor,
+      walletPublicKeyHash,
+      refundLocktime,
+      btcRecoveryAddress,
+    },
+  } = listenerApi.getState()
+
   if (
     !btcDepositAddress ||
     (!isAddress(depositor) && !isAddressZero(depositor))
@@ -56,11 +70,35 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
+        // Initiating deposit from redux store (if deposit object is empty)
+        if (!listenerApi.extra.threshold.tbtc.deposit) {
+          const bitcoinNetwork = listenerApi.extra.threshold.tbtc.bitcoinNetwork
+
+          if (!isPublicKeyHashTypeAddress(btcRecoveryAddress, bitcoinNetwork)) {
+            throw new Error("Bitcoin recovery address must be P2PKH or P2WPKH")
+          }
+
+          const refundPublicKeyHash =
+            BitcoinAddressConverter.addressToPublicKeyHash(
+              btcRecoveryAddress,
+              bitcoinNetwork
+            ).toString()
+          await forkApi.pause(
+            listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+              {
+                depositor: getChainIdentifier(ethAddress),
+                blindingFactor,
+                walletPublicKeyHash,
+                refundPublicKeyHash,
+                refundLocktime,
+              }
+            )
+          )
+        }
+
         // Looking for utxo.
         const utxos = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs(
-            btcDepositAddress
-          )
+          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs()
         )
 
         if (!utxos || utxos.length === 0) {
@@ -124,7 +162,14 @@ export const findUtxoEffect = async (
           // utxo.
 
           listenerApi.dispatch(
-            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
+            tbtcSlice.actions.updateState({
+              key: "utxo",
+              value: {
+                ...utxo,
+                transactionHash: utxo.transactionHash.toString(),
+                value: utxo.value.toString(),
+              },
+            })
           )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
@@ -173,8 +218,6 @@ export const fetchUtxoConfirmationsEffect = async (
   if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
     return
 
-  const txHash = TransactionHash.from(utxo.transactionHash)
-
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
 
@@ -183,7 +226,9 @@ export const fetchUtxoConfirmationsEffect = async (
       while (true) {
         // Get confirmations
         const confirmations = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(txHash)
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
+            utxo.transactionHash
+          )
         )
         listenerApi.dispatch(
           tbtcSlice.actions.updateState({

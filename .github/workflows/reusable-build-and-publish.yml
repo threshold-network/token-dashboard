@@ -124,15 +124,9 @@ jobs:
           if [ ${{ inputs.useUpstreamBuilds }} = 'false' ]; then
             echo "threshold-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "ecdsa-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
           else
             echo "threshold-contracts-version=${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "ecdsa-contracts-version=${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-contracts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-ts-version }}" >> $GITHUB_OUTPUT
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
@@ -148,11 +142,7 @@ jobs:
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
             @keep-network/coverage-pools@${{ inputs.environment }} \
-            @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
-            @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }} \
-            @keep-network/tbtc-v2.ts@1.4.1-goerli.0
-      # TODO: ⬆️⬆️⬆️ Revert this line when SDK 2.0.0 migration is completed.
       - name: Run postinstall script
         shell: bash
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -179,6 +169,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -196,6 +187,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0
