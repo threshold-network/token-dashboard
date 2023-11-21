@@ -15,11 +15,15 @@ import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import btcJsonFile from "../../../static/images/tbtc-json-file.png"
 import withBaseModal from "../withBaseModal"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { downloadFile } from "../../../web3/utils"
 import { getChainIdentifier } from "../../../threshold-ts/utils"
+import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
 import { BridgeContractLink } from "../../tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
+
+export type RecoveryJsonFileData = DepositScriptParameters & {
+  btcRecoveryAddress: string
+}
 
 const TbtcRecoveryFileModalModal: FC<
   BaseModalProps & {
@@ -47,21 +51,17 @@ const TbtcRecoveryFileModalModal: FC<
     closeModal()
   }
 
-  const depositScriptParameters: DepositScriptParameters = {
-    depositor: getChainIdentifier(ethAddress),
-    blindingFactor,
-    walletPublicKeyHash,
-    refundPublicKeyHash,
-    refundLocktime,
-  }
-
   const handleDownloadClick = () => {
     const date = new Date().toISOString().split("T")[0]
 
     const fileName = `${ethAddress}_${btcDepositAddress}_${date}`
 
-    const finalData = {
-      ...depositScriptParameters,
+    const finalData: RecoveryJsonFileData = {
+      depositor: getChainIdentifier(ethAddress),
+      blindingFactor,
+      walletPublicKeyHash,
+      refundPublicKeyHash,
+      refundLocktime,
       btcRecoveryAddress: btcRecoveryAddress,
     }
     downloadFile(JSON.stringify(finalData), fileName, "text/json")
