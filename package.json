@@ -23,7 +23,7 @@
     "@ledgerhq/connect-kit-loader": "^1.1.2",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
-    "@nucypher/nucypher-contracts": "7.0.0-rc.1",
+    "@nucypher/nucypher-contracts": "0.11.1",
     "@sentry/react": "^7.33.0",
     "@sentry/tracing": "^7.33.0",
     "@testing-library/jest-dom": "^5.11.4",
