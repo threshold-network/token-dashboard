@@ -41,17 +41,16 @@ To make sure the changes made in local depository of `components` lib are implem
 
 `yarn add-components-lib`
 
-# Run T dapp against the Görli network
+# Run T dapp against the Testnet network
 
-## Update the `.env` file:
+## Create local copy of the `.env` file:
+
+Copy the `.env.example` file, rename it to the `.env` and apply the following changes:
 
 ```
 REACT_APP_SUPPORTED_CHAIN_ID=5
 REACT_APP_ETH_HOSTNAME_HTTP=<your http ETH hostname- eg. Infura>
 REACT_APP_ETH_HOSTNAME_WS=<your ws ETH hostname- eg. Infura>
-// We can skip this env variable- the dapp uses the correct address
-// of Multicall contract for Görli under the hood.
-REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ```
 
 ## Setup
@@ -62,12 +61,10 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 ```
 yarn upgrade @keep-network/coverage-pools@goerli \
-  @keep-network/ecdsa@goerli \
   @keep-network/keep-core@goerli \
   @keep-network/keep-ecdsa@goerli \
   @keep-network/random-beacon@goerli \
   @keep-network/tbtc@goerli \
-  @keep-network/tbtc-v2@goerli \
   @keep-network/tbtc-v2.ts@goerli \
   @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@goerli \
   @threshold-network/solidity-contracts@goerli
