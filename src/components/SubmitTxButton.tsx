@@ -32,6 +32,7 @@ const SubmitTxButton: FC<Props> = ({
       onClick={() => openModal(ModalType.SelectWallet)}
       {...buttonProps}
       type="button"
+      isDisabled={false}
     >
       Connect Wallet
     </Button>

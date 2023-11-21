@@ -41,7 +41,6 @@ const NewStakeCard: FC<ComponentProps<typeof Card>> = () => {
         maxTokenAmount={tBalance}
         placeholder={placeholder}
         minTokenAmount={minStakeAmount}
-        shouldDisableButton={false}
         isDisabled={!active}
       />
       <StakingContractLearnMore mt="3" />
