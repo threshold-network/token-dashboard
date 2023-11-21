@@ -4,7 +4,7 @@ import { FormikErrors, FormikProps, withFormik } from "formik"
 import { FC, Ref, useEffect, useState } from "react"
 import { formatTokenAmount } from "../../utils/formatAmount"
 import {
-  defaultStakingLessThanMessage,
+  defaultLessThanMessage,
   defaultAmountValidationOptions,
   DEFAULT_MIN_VALUE,
   getErrorsObj,
@@ -150,7 +150,7 @@ const deauthorizationValidation = (
       {
         ...defaultAmountValidationOptions,
         lessThanValidationMessage(amount) {
-          return `${defaultStakingLessThanMessage(
+          return `${defaultLessThanMessage(
             amount
           )} or equal to ${formatTokenAmount(authorizedAmount.toString())} T`
         },

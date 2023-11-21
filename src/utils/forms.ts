@@ -19,21 +19,25 @@ type AmountValidationOptions = {
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultStakingLessThanMessage: (maxAmount: string) => string = (
+export const defaultLessThanMessage: (maxAmount: string) => string = (
   maxAmount
 ) => {
-  return `The maximum stake amount is ${formatTokenAmount(maxAmount)}.`
+  return `The value should be less than or equal ${formatTokenAmount(
+    maxAmount
+  )}`
 }
 
-export const defaultStakingGreaterThanMessage: (minAmount: string) => string = (
+export const defaultGreaterThanMessage: (minAmount: string) => string = (
   minAmount
 ) => {
-  return `The minimum stake amount is ${formatTokenAmount(minAmount)}.`
+  return `The value should be greater than or equal ${formatTokenAmount(
+    minAmount
+  )}`
 }
 export const defaultAmountValidationOptions: AmountValidationOptions = {
-  greaterThanValidationMessage: defaultStakingGreaterThanMessage,
-  lessThanValidationMessage: defaultStakingLessThanMessage,
-  requiredMessage: "The stake amount is required.",
+  greaterThanValidationMessage: defaultGreaterThanMessage,
+  lessThanValidationMessage: defaultLessThanMessage,
+  requiredMessage: "Required.",
   insufficientBalanceMessage: "Your wallet balance is insufficient.",
 }
 

@@ -25,7 +25,6 @@ export type TokenAmountFormBaseProps = {
   isDisabled?: boolean
   shouldValidateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
-  shouldDisableButton?: boolean
   token?: { decimals: number; symbol: string }
   placeholder?: string
   minTokenAmount?: string | number
@@ -44,7 +43,6 @@ export const TokenAmountFormBase: FC<
   isDisabled = false,
   shouldValidateForm = true,
   shouldDisplayMaxAmountInLabel = false,
-  shouldDisableButton = true,
   placeholder,
   submitButtonVariant = "solid",
   ...formikProps
@@ -81,7 +79,7 @@ export const TokenAmountFormBase: FC<
         mt="6"
         submitText={submitButtonText}
         variant={submitButtonVariant}
-        isDisabled={shouldDisableButton && isDisabled}
+        isDisabled={isDisabled}
       />
     </Form>
   )
