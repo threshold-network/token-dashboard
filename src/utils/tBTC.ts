@@ -104,8 +104,11 @@ export class RedemptionDetailsLinkBuilder {
     return this
   }
 
-  withBitcoinAddress = (btcAddress: string) => {
-    const redeemerOutputScript = createOutputScriptFromAddress(btcAddress)
+  withBitcoinAddress = (btcAddress: string, bitcoinNetwork: BitcoinNetwork) => {
+    const redeemerOutputScript = createOutputScriptFromAddress(
+      btcAddress,
+      bitcoinNetwork
+    )
     this.redeemerOutputScript = prependScriptPubKeyByLength(
       redeemerOutputScript.toString()
     )
@@ -163,12 +166,13 @@ export const buildRedemptionDetailsLink = (
   txHash: string,
   redeemer: string,
   walletPublicKey: string,
-  btcAddress: string
+  btcAddress: string,
+  bitcoinNetwork: BitcoinNetwork
 ): string => {
   return RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
     .withRedeemer(redeemer)
     .withWalletPublicKey(walletPublicKey)
-    .withBitcoinAddress(btcAddress)
+    .withBitcoinAddress(btcAddress, bitcoinNetwork)
     .build()
 }
 

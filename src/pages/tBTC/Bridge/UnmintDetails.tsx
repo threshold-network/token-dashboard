@@ -188,7 +188,9 @@ export const UnmintDetails: PageComponent = () => {
       as={BridgeProcessDetailsCard}
       spacing="4"
       // @ts-ignore
-      isProcessCompleted={shouldDisplaySuccessStep}
+      isProcessCompleted={
+        shouldDisplaySuccessStep || shouldForceIsProcessCompleted
+      }
     >
       <BridgeLayoutMainSection>
         {_isFetching && <BridgeProcessDetailsPageSkeleton />}
@@ -198,9 +200,13 @@ export const UnmintDetails: PageComponent = () => {
             <BridgeProcessCardTitle bridgeProcess="unmint" />
             <BridgeProcessCardSubTitle
               display="flex"
-              stepText={shouldDisplaySuccessStep ? "Unminted" : "Unminting"}
+              stepText={
+                shouldDisplaySuccessStep || shouldForceIsProcessCompleted
+                  ? "Unminted"
+                  : "Unminting"
+              }
             >
-              {!shouldDisplaySuccessStep && (
+              {!(shouldDisplaySuccessStep || shouldForceIsProcessCompleted) && (
                 <Box as="span" ml="2">
                   {" "}
                   - In progress...
@@ -341,7 +347,7 @@ export const UnmintDetails: PageComponent = () => {
                   </ListItem>
                 ))}
             </List>
-            {!shouldDisplaySuccessStep && (
+            {!(shouldDisplaySuccessStep || shouldForceIsProcessCompleted) && (
               <BridgeProcessResource
                 title="Minters and Guardians in Optimistic Minting"
                 subtitle="A phased approach with two main roles: Minters and Guardians."

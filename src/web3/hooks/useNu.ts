@@ -1,9 +1,18 @@
-import NuCypherToken from "@threshold-network/solidity-contracts/artifacts/NuCypherToken.json"
 import { Contract } from "@ethersproject/contracts"
 import { useErc20TokenContract } from "./useERC20"
 import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
+import { getArtifact } from "../../threshold-ts/utils"
+import {
+  shouldUseTestnetDevelopmentContracts,
+  supportedChainId,
+} from "../../utils/getEnvVariable"
 
+const nuCupherTokenArtifact = getArtifact(
+  "NuCypherToken",
+  supportedChainId,
+  shouldUseTestnetDevelopmentContracts
+)
 export interface UseNu {
   (): {
     approveNu: () => void
@@ -14,9 +23,9 @@ export interface UseNu {
 
 export const useNu: UseNu = () => {
   const { balanceOf, approve, contract } = useErc20TokenContract(
-    NuCypherToken.address,
+    nuCupherTokenArtifact.address,
     undefined,
-    NuCypherToken.abi
+    nuCupherTokenArtifact.abi
   )
 
   const approveNu = () => {

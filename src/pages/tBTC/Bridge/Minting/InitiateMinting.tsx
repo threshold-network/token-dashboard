@@ -1,13 +1,10 @@
-import { FC, useEffect } from "react"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { BodyLg, Button, H5 } from "@threshold-network/components"
+import { FC, useEffect } from "react"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import {
-  decodeBitcoinAddress,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
 import { useToast } from "../../../../hooks/useToast"
 import InfoBox from "../../../../components/InfoBox"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
@@ -15,24 +12,14 @@ import MintingTransactionDetails from "../components/MintingTransactionDetails"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { BigNumber } from "ethers"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import { getChainIdentifier } from "../../../../threshold-ts/utils"
 import { useRevealDepositTransaction } from "../../../../hooks/tbtc"
 
 const InitiateMintingComponent: FC<{
-  utxo: UnspentTransactionOutput
+  utxo: BitcoinUtxo
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
   const { addToast, removeToast } = useToast("tbtc-bridge-minting")
-  const {
-    tBTCMintAmount,
-    updateState,
-    ethAddress,
-    blindingFactor,
-    walletPublicKeyHash,
-    btcRecoveryAddress,
-    refundLocktime,
-  } = useTbtcState()
+  const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
 
   const onSuccessfulDepositReveal = () => {
@@ -68,15 +55,7 @@ const InitiateMintingComponent: FC<{
   }, [depositedAmount, updateState, threshold])
 
   const initiateMintTransaction = async () => {
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: getChainIdentifier(ethAddress),
-      blindingFactor,
-      walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(btcRecoveryAddress),
-      refundLocktime,
-    }
-
-    await revealDeposit(utxo, depositScriptParameters)
+    await revealDeposit(utxo)
   }
 
   return (

@@ -1,6 +1,6 @@
 import {
-  isAddress as ethersIsAddress,
   getAddress as ethersGetAddress,
+  isAddress as ethersIsAddress,
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 import { EthereumAddress } from "@keep-network/tbtc-v2.ts"

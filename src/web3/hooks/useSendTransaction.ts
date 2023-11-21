@@ -6,15 +6,34 @@ import { useModal } from "../../hooks/useModal"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 import { TransactionReceipt } from "@ethersproject/providers"
 
+type TransactionHashWithAdditionalParams = {
+  hash: string
+  additionalParams: any
+}
+
 export type ContractTransactionFunction =
   | Promise<ContractTransaction>
   | Promise<string>
+  | Promise<TransactionHashWithAdditionalParams>
 
 export type OnSuccessCallback = (
-  receipt: TransactionReceipt
+  receipt: TransactionReceipt,
+  additionalParams?: any[]
 ) => void | Promise<void>
 
 export type OnErrorCallback = (error: any) => void | Promise<void>
+
+const isContractTransaction = (
+  tx: string | ContractTransaction | TransactionHashWithAdditionalParams
+): boolean => {
+  return typeof tx !== "string" && "wait" in tx
+}
+
+const isTransactionHashWithAdditionalParams = (
+  tx: string | ContractTransaction | TransactionHashWithAdditionalParams
+): boolean => {
+  return typeof tx !== "string" && "additionalParams" in tx
+}
 
 export const useSendTransactionFromFn = <
   F extends (...args: never[]) => ContractTransactionFunction
@@ -47,13 +66,16 @@ export const useSendTransactionFromFn = <
         })
         setTransactionStatus(TransactionStatus.PendingOnChain)
 
-        const txReceipt = (await (typeof tx === "string"
-          ? library.waitForTransaction(tx)
-          : tx.wait())) as TransactionReceipt
+        const txReceipt = await (isContractTransaction(tx)
+          ? (tx as ContractTransaction).wait()
+          : library.waitForTransaction(txHash))
 
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
-          onSuccess(txReceipt)
+          const additionalParams = isTransactionHashWithAdditionalParams(tx)
+            ? (tx as TransactionHashWithAdditionalParams).additionalParams
+            : null
+          onSuccess(txReceipt, additionalParams)
         }
         return txReceipt
       } catch (error: any) {

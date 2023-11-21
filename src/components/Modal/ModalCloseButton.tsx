@@ -1,8 +1,11 @@
 import { FC } from "react"
-import { ModalCloseButton as _ModalCloseButton } from "@threshold-network/components"
+import {
+  ModalCloseButton as _ModalCloseButton,
+  CloseButtonProps,
+} from "@threshold-network/components"
 
-const ModalCloseButton: FC = () => {
-  return <_ModalCloseButton className="ph-no-capture" />
+const ModalCloseButton: FC<CloseButtonProps> = (props) => {
+  return <_ModalCloseButton className="ph-no-capture" {...props} />
 }
 
 export default ModalCloseButton
