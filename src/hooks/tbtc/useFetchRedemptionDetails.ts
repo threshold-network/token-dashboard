@@ -1,6 +1,8 @@
-import { BigNumber } from "ethers"
 import { useEffect, useState } from "react"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../contexts/ThresholdContext"
 import {
   isValidType,
   fromSatoshiToTokenPrecision,
@@ -41,8 +43,11 @@ export const useFetchRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     RedemptionDetails | undefined
   >()
+  const { isSdkInitialized } = useIsTbtcSdkInitializing()
 
   useEffect(() => {
+    if (!isSdkInitialized) return
+
     if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
       setError("Invalid redeemer value.")
       return
@@ -83,34 +88,34 @@ export const useFetchRedemptionDetails = (
             walletPublicKeyHash,
             redeemer,
           })
-        ).find(
-          (event) =>
-            // It's not possible that the redemption request with the same
-            // redemption key can be created in the same transaction - it means
-            // that redemption key is unique and can be used for only one
-            // pending request at the same time. We also need to find an event
-            // by transaction hash because it's possible that there can be
-            // multiple `RedemptionRequest` events with the same redemption key
-            // but created at different times eg:
-            // - redemption X requested,
-            // - redemption X was handled successfully and the redemption X was
-            //   removed from `pendingRedemptions` map,
-            // - the same wallet is still in `live` state and can handle
-            //   redemption request with the same `walletPubKeyHash` and
-            //   `redeemerOutputScript` pair,
-            // - now 2 `RedemptionRequested` events exist with the same
-            //   redemption key(the same `walletPubKeyHash` and
-            //   `redeemerOutputScript` pair).
-            //
-            // In that case we must know exactly which redemption request we
-            // want to fetch.
+        ).find((event) => {
+          // It's not possible that the redemption request with the same
+          // redemption key can be created in the same transaction - it means
+          // that redemption key is unique and can be used for only one
+          // pending request at the same time. We also need to find an event
+          // by transaction hash because it's possible that there can be
+          // multiple `RedemptionRequest` events with the same redemption key
+          // but created at different times eg:
+          // - redemption X requested,
+          // - redemption X was handled successfully and the redemption X was
+          //   removed from `pendingRedemptions` map,
+          // - the same wallet is still in `live` state and can handle
+          //   redemption request with the same `walletPubKeyHash` and
+          //   `redeemerOutputScript` pair,
+          // - now 2 `RedemptionRequested` events exist with the same
+          //   redemption key(the same `walletPubKeyHash` and
+          //   `redeemerOutputScript` pair).
+          //
+          // In that case we must know exactly which redemption request we
+          // want to fetch.
+          return (
             event.txHash === redemptionRequestedTxHash &&
             threshold.tbtc.buildRedemptionKey(
               event.walletPublicKeyHash,
               event.redeemerOutputScript
             ) === redemptionKey
-        )
-
+          )
+        })
         if (!redemptionRequestedEvent) {
           throw new Error("Redemption not found...")
         }
@@ -121,12 +126,7 @@ export const useFetchRedemptionDetails = (
 
         // We need to check if the redemption has `pending` or `timedOut` status.
         const { isPending, isTimedOut, requestedAt } =
-          await threshold.tbtc.getRedemptionRequest(
-            threshold.tbtc.buildRedemptionKey(
-              walletPublicKeyHash,
-              redeemerOutputScript
-            )
-          )
+          await threshold.tbtc.getRedemptionRequest(redemptionKey)
 
         // Find the transaction hash where the timeout was reported by
         // scanning the `RedemptionTimedOut` event by the `walletPubKeyHash`
@@ -174,7 +174,6 @@ export const useFetchRedemptionDetails = (
           })
           return
         }
-
         // If we are here it means that the redemption request was handled
         // successfully and we need to find all `RedemptionCompleted` events
         // that happened after `redemptionRequest` block and filter by
@@ -197,7 +196,7 @@ export const useFetchRedemptionDetails = (
           const redemptionBitcoinTransfer = await findRedemptionInBitcoinTx(
             redemptionBitcoinTxHash,
             redemptionCompletedBlockNumber,
-            redemptionRequestedEvent.redeemerOutputScript
+            redemptionRequestedEvent.redeemerOutputScript.toString()
           )
 
           if (!redemptionBitcoinTransfer) continue
@@ -243,6 +242,7 @@ export const useFetchRedemptionDetails = (
     threshold,
     getBlock,
     findRedemptionInBitcoinTx,
+    isSdkInitialized,
   ])
 
   return { isFetching, data: redemptionData, error }

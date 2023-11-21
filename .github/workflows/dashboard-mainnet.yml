@@ -17,7 +17,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "18"
           cache: "yarn"
 
       # This step forces Git to download dependencies using `https://` protocol,
@@ -30,10 +30,7 @@ jobs:
         run: git config --global url."https://".insteadOf git://
 
       - name: Install dependencies
-        run: yarn install --ignore-scripts --frozen-lockfile
-
-      - name: Run token-dashboard post-install script
-        run: yarn run postinstall
+        run: yarn install --frozen-lockfile
 
       # FIXME: It's work in progress, the contracts are not yet published.
       # - name: Resolve latest mainnet contracts

@@ -1,5 +1,5 @@
+import { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 import axios from "axios"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
 import { BitcoinNetwork } from "../threshold-ts/types"
 
 export interface VerificationOutcome {
@@ -8,7 +8,7 @@ export interface VerificationOutcome {
 }
 
 export const verifyDepositAddress = async (
-  deposit: DepositScriptParameters,
+  deposit: DepositReceipt,
   depositAddress: string,
   network: BitcoinNetwork
 ): Promise<VerificationOutcome> => {

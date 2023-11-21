@@ -1,24 +1,36 @@
+import { DepositReceipt } from "@keep-network/tbtc-v2.ts"
 import { useCallback } from "react"
-import { useCaptureMessage } from "../sentry"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import { verifyDepositAddress } from "../../utils/verifyDepositAddress"
 import { BitcoinNetwork } from "../../threshold-ts/types"
+import { verifyDepositAddress } from "../../utils/verifyDepositAddress"
+import { useCaptureMessage } from "../sentry"
 
 export const useDepositTelemetry = (network: BitcoinNetwork) => {
   const captureMessage = useCaptureMessage()
 
   return useCallback(
-    async (deposit: DepositScriptParameters, depositAddress: string) => {
+    async (deposit: DepositReceipt, depositAddress: string) => {
       const { status, response } = await verifyDepositAddress(
         deposit,
         depositAddress,
         network
       )
 
+      const {
+        depositor,
+        blindingFactor,
+        walletPublicKeyHash,
+        refundPublicKeyHash,
+        refundLocktime,
+      } = deposit
+
       captureMessage(
         `Generated deposit [${depositAddress}]`,
         {
-          ...deposit,
+          depositor: depositor.identifierHex,
+          blindingFactor: blindingFactor.toString(),
+          walletPublicKeyHash: walletPublicKeyHash.toString(),
+          refundPublicKeyHash: refundPublicKeyHash.toString(),
+          refundLocktime: refundLocktime.toString(),
           verificationStatus: status,
           verificationResponse: response,
         },

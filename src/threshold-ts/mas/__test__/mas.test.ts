@@ -7,6 +7,8 @@ import { IMulticall } from "../../multicall"
 import { IStaking } from "../../staking"
 import { EthereumConfig } from "../../types"
 
+// TODO: Update tests to use the new source of `WalletRegistry` artifacts.
+
 jest.mock("../../applications", () => ({
   ...(jest.requireActual("../../applications") as {}),
   Application: jest.fn(),

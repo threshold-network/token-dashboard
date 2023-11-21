@@ -110,7 +110,7 @@ export const validateBTCAddress = (
     return "Required."
   } else if (
     !isValidBtcAddress(address, network) ||
-    !isPublicKeyHashTypeAddress(address)
+    !isPublicKeyHashTypeAddress(address, network)
   ) {
     return `The BTC Recovery address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
       "mint",
@@ -127,8 +127,8 @@ export const validateUnmintBTCAddress = (
     return "Required."
   } else if (
     !isValidBtcAddress(address, network) ||
-    (!isPublicKeyHashTypeAddress(address) &&
-      !isPayToScriptHashTypeAddress(address))
+    (!isPublicKeyHashTypeAddress(address, network) &&
+      !isPayToScriptHashTypeAddress(address, network))
   ) {
     return `The BTC address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
       "unmint",
