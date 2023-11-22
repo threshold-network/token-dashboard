@@ -101,7 +101,11 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: yarn install --frozen-lockfile
+        run: yarn install --ignore-scripts --frozen-lockfile
+
+      - name: Run token-dashboard post-install script
+        shell: bash
+        run: yarn run postinstall
 
       - name: Get upstream packages versions
         if: inputs.useUpstreamBuilds == true
