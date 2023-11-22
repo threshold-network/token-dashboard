@@ -129,6 +129,11 @@ jobs:
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
           fi
 
+      # Currently we only support `environment` = `sepolia`. We provide explicit
+      # version of the `solidity-contracts` package, because using `sepolia` tag
+      # results in `expected manifest` error - probably caused by bug in Yarn:
+      # https://github.com/yarnpkg/yarn/issues/4731.
+
       # In the `package.json` there are two different versions of
       # `coverage-pools` used. This is done to allow using contracts from two
       # different cov pool versions on the mainnet (needed for computations of
@@ -142,7 +147,7 @@ jobs:
         shell: bash
         run: |
           yarn upgrade \
-            @threshold-network/solidity-contracts@${{ steps.set-packages-versions.outputs.threshold-contracts-version }} \
+            @threshold-network/solidity-contracts@$1.3.0-dapp-dev-sepolia.0 \
             @keep-network/keep-core@${{ inputs.environment }} \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
