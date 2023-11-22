@@ -113,9 +113,6 @@ jobs:
           query: |
             threshold-contracts-version = github.com/threshold-network/solidity-contracts#version
             random-beacon-contracts-version = github.com/keep-network/keep-core/random-beacon#version
-            ecdsa-contracts-version = github.com/keep-network/keep-core/ecdsa#version
-            tbtc-v2-contracts-version = github.com/keep-network/tbtc-v2#version
-            tbtc-v2-ts-version = github.com/keep-network/tbtc-v2.ts#version
 
       - name: Set packages versions
         shell: bash
@@ -160,7 +157,8 @@ jobs:
             @keep-network/tbtc@${{ inputs.environment }} \
             @keep-network/coverage-pools@1.1.0-goerli.0 \
             @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
-            @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
+            @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }}
+
       - name: Run postinstall script
         shell: bash
         # `yarn upgrade` doesn't trigger the `postinstall` script.
