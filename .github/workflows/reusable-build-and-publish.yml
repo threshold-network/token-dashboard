@@ -88,7 +88,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "18"
           cache: "yarn"
 
       # We need this step because the `@keep-network/tbtc` which we update in
@@ -102,11 +102,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: yarn install --ignore-scripts --frozen-lockfile
-
-      - name: Run token-dashboard post-install script
-        shell: bash
-        run: yarn run postinstall
+        run: yarn install --frozen-lockfile
 
       - name: Get upstream packages versions
         if: inputs.useUpstreamBuilds == true
@@ -128,15 +124,9 @@ jobs:
           if [ ${{ inputs.useUpstreamBuilds }} = 'false' ]; then
             echo "threshold-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "ecdsa-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-contracts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ inputs.dependentPackagesTag }}" >> $GITHUB_OUTPUT
           else
             echo "threshold-contracts-version=${{ steps.upstream-builds-query.outputs.threshold-contracts-version }}" >> $GITHUB_OUTPUT
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "ecdsa-contracts-version=${{ steps.upstream-builds-query.outputs.ecdsa-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-contracts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-contracts-version }}" >> $GITHUB_OUTPUT
-            echo "tbtc-v2-ts-version=${{ steps.upstream-builds-query.outputs.tbtc-v2-ts-version }}" >> $GITHUB_OUTPUT
           fi
 
       # Currently we only support `environment` = `goerli`. We provide explicit
@@ -170,11 +160,7 @@ jobs:
             @keep-network/tbtc@${{ inputs.environment }} \
             @keep-network/coverage-pools@1.1.0-goerli.0 \
             @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
-            @keep-network/ecdsa@${{ steps.set-packages-versions.outputs.ecdsa-contracts-version }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
-            @keep-network/tbtc-v2@${{ steps.set-packages-versions.outputs.tbtc-v2-contracts-version }} \
-            @keep-network/tbtc-v2.ts@${{ inputs.environment }}
-
       - name: Run postinstall script
         shell: bash
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -201,6 +187,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -218,6 +205,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0

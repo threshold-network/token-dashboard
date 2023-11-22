@@ -2,15 +2,32 @@ import { JsonRpcProvider, Provider } from "@ethersproject/providers"
 import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { ChainID, EnvVariable } from "../enums"
-import { getEnvVariable, supportedChainId } from "../utils/getEnvVariable"
+import {
+  getEnvVariable,
+  shouldUseTestnetDevelopmentContracts,
+  supportedChainId,
+} from "../utils/getEnvVariable"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
 import {
   BitcoinConfig,
   BitcoinNetwork,
   BitcoinClientCredentials,
+  EthereumConfig,
 } from "../threshold-ts/types"
 
-function getBitcoinConfig(): BitcoinConfig {
+function getInitialEthereumConfig(
+  providerOrSigner?: Provider | Signer
+): EthereumConfig {
+  return {
+    chainId: supportedChainId,
+    providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
+    shouldUseTestnetDevelopmentContracts:
+      supportedChainId === ChainID.Goerli.toString() &&
+      shouldUseTestnetDevelopmentContracts,
+  }
+}
+
+function getInitialBitcoinConfig(): BitcoinConfig {
   const network =
     supportedChainId === ChainID.Ethereum.toString()
       ? BitcoinNetwork.Mainnet
@@ -42,11 +59,8 @@ export const getDefaultThresholdLibProvider = () => {
 
 export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
   return new Threshold({
-    ethereum: {
-      chainId: supportedChainId,
-      providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
-    },
-    bitcoin: getBitcoinConfig(),
+    ethereum: getInitialEthereumConfig(providerOrSigner),
+    bitcoin: getInitialBitcoinConfig(),
   })
 }
 

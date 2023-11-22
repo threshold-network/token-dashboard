@@ -49,7 +49,7 @@ const Sidebar = () => {
         text: "tBTC",
         activeIcon: tBTCFill,
         passiveIcon: tBTCOutline,
-        href: "/tBTC",
+        href: "/tBTC/how-it-works",
       } as NavItemDetail)
     }
 

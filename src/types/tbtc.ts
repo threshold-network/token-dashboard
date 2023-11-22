@@ -1,8 +1,7 @@
-import { UnspentTransactionOutput } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { UpdateStateActionPayload } from "./state"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { FetchingState } from "."
 import { BridgeActivity, BridgeProcess } from "../threshold-ts/tbtc"
-export type { UnspentTransactionOutputPlainObject } from "../threshold-ts/types"
+import { UpdateStateActionPayload } from "./state"
 
 export interface TbtcState {
   mintingStep: MintingStep
@@ -13,7 +12,7 @@ export interface TbtcState {
   refundLocktime: string
   blindingFactor: string
   walletPublicKeyHash: string
-  utxo: UnspentTransactionOutput
+  utxo: BitcoinUtxo
   txConfirmations: number
   nextBridgeCrossingInUnix?: number
   depositRevealedTxHash?: string
