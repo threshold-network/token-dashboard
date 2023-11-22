@@ -146,8 +146,6 @@ jobs:
             @keep-network/keep-core@${{ inputs.environment }} \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
-            @keep-network/coverage-pools@1.1.0-sepolia.0 \
-            @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/coverage-pools@${{ inputs.environment }} \
             @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }}
