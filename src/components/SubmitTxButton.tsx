@@ -5,7 +5,7 @@ import { useModal } from "../hooks/useModal"
 import { useIsActive } from "../hooks/useIsActive"
 import { useEmbedFeatureFlag } from "../hooks/useEmbedFeatureFlag"
 import { useRequestEthereumAccount } from "../hooks/ledger-live-app"
-import { useIsSdkInitializing } from "../contexts/ThresholdContext"
+import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -18,10 +18,10 @@ const SubmitTxButton: FC<Props> = ({
   ...buttonProps
 }) => {
   const { isActive } = useIsActive()
-  const { isSdkInitializedWithSigner } = useIsSdkInitializing()
   const { isEmbed } = useEmbedFeatureFlag()
   const { requestAccount } = useRequestEthereumAccount()
   const { openModal } = useModal()
+  const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
 
   const connectWallet = () => {
     if (isEmbed) {
@@ -46,6 +46,7 @@ const SubmitTxButton: FC<Props> = ({
       onClick={connectWallet}
       {...buttonProps}
       type="button"
+      isDisabled={false}
     >
       Connect Wallet
     </Button>

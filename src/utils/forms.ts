@@ -10,71 +10,101 @@ import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
-type ValidationMsg =
+type AmountValidationMessage =
   | string
   | ((amount: string, tokenDecimals?: number, precision?: number) => string)
-type ValidationOptions = {
-  greaterThanValidationMsg: ValidationMsg
-  lessThanValidationMsg: ValidationMsg
-  requiredMsg: string
+type AmountValidationOptions = {
+  greaterThanValidationMessage: AmountValidationMessage
+  lessThanValidationMessage: AmountValidationMessage
+  requiredMessage: string
+  insufficientBalanceMessage: string
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultLessThanMsg: (
-  minAmount: string,
-  tokenDecimals?: number,
-  precision?: number
-) => string = (minAmount, decimals = 18, precision = 2) => {
-  return `The value should be less than or equal ${formatTokenAmount(
-    minAmount,
-    "0,00.[0]0",
-    decimals,
-    precision
-  )}`
-}
-
-export const defaultGreaterThanMsg: (
-  minAmount: string,
+export const defaultLessThanMessage: (
+  maxAmount: string,
   tokenDecimals?: number,
   precision?: number
 ) => string = (maxAmount, decimals = 18, precision = 2) => {
-  return `The value should be greater than or equal ${formatTokenAmount(
+  return `The value should be less than or equal ${formatTokenAmount(
     maxAmount,
     "0,00.[0]0",
     decimals,
     precision
   )}`
 }
-export const defaultValidationOptions: ValidationOptions = {
-  greaterThanValidationMsg: defaultGreaterThanMsg,
-  lessThanValidationMsg: defaultLessThanMsg,
-  requiredMsg: "Required",
+
+export const defaultGreaterThanMessage: (
+  minAmount: string,
+  tokenDecimals?: number,
+  precision?: number
+) => string = (minAmount, decimals = 18, precision = 2) => {
+  return `The value should be greater than or equal ${formatTokenAmount(
+    minAmount,
+    "0,00.[0]0",
+    decimals,
+    precision
+  )}`
+}
+export const defaultAmountValidationOptions: AmountValidationOptions = {
+  greaterThanValidationMessage: defaultGreaterThanMessage,
+  lessThanValidationMessage: defaultLessThanMessage,
+  requiredMessage: "Required.",
+  insufficientBalanceMessage: "Your wallet balance is insufficient.",
+}
+
+const getAmountInRangeValidationMessage = (
+  validationMessage: AmountValidationMessage,
+  value: string,
+  tokenDecimals: number = 18,
+  precision: number = 2
+) => {
+  // TODO: Check again if this (validation for btc amount) works. I might have
+  // messed something up when resolving conflicts.
+  return typeof validationMessage === "function"
+    ? validationMessage(value, tokenDecimals, precision)
+    : validationMessage
 }
 
 export const validateAmountInRange = (
   value: string,
   maxValue: string,
   minValue = DEFAULT_MIN_VALUE,
-  options: ValidationOptions = defaultValidationOptions,
+  options: AmountValidationOptions = defaultAmountValidationOptions,
   tokenDecimals: number = 18,
   precision: number = 2
 ) => {
   if (!value) {
-    return options.requiredMsg
+    return options.requiredMessage
   }
 
   const valueInBN = BigNumber.from(value)
   const maxValueInBN = BigNumber.from(maxValue)
   const minValueInBN = BigNumber.from(minValue)
 
-  if (valueInBN.gt(maxValueInBN)) {
-    return typeof options.lessThanValidationMsg === "function"
-      ? options.lessThanValidationMsg(maxValue, tokenDecimals, precision)
-      : options.lessThanValidationMsg
-  } else if (valueInBN.lt(minValueInBN)) {
-    return typeof options.greaterThanValidationMsg === "function"
-      ? options.greaterThanValidationMsg(minValue, tokenDecimals, precision)
-      : options.greaterThanValidationMsg
+  const isBalanceInsufficient = maxValueInBN.isZero()
+  const isMaximumValueExceeded = valueInBN.gt(maxValueInBN)
+  const isMinimumValueFulfilled = valueInBN.gte(minValueInBN)
+
+  if (!isMinimumValueFulfilled) {
+    return getAmountInRangeValidationMessage(
+      options.greaterThanValidationMessage,
+      minValue,
+      tokenDecimals,
+      precision
+    )
+  }
+  if (isBalanceInsufficient) {
+    return options.insufficientBalanceMessage
+  }
+
+  if (isMaximumValueExceeded) {
+    return getAmountInRangeValidationMessage(
+      options.lessThanValidationMessage,
+      maxValue,
+      tokenDecimals,
+      precision
+    )
   }
 }
 
@@ -102,7 +132,7 @@ export const validateBTCAddress = (
     return "Required."
   } else if (
     !isValidBtcAddress(address, network) ||
-    !isPublicKeyHashTypeAddress(address)
+    !isPublicKeyHashTypeAddress(address, network)
   ) {
     return `The BTC Recovery address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
       "mint",
@@ -119,8 +149,8 @@ export const validateUnmintBTCAddress = (
     return "Required."
   } else if (
     !isValidBtcAddress(address, network) ||
-    (!isPublicKeyHashTypeAddress(address) &&
-      !isPayToScriptHashTypeAddress(address))
+    (!isPublicKeyHashTypeAddress(address, network) &&
+      !isPayToScriptHashTypeAddress(address, network))
   ) {
     return `The BTC address has to start with ${getBridgeBTCSupportedAddressPrefixesText(
       "unmint",

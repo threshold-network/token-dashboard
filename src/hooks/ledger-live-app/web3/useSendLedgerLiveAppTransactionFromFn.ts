@@ -5,14 +5,30 @@ import { TransactionStatus, ModalType } from "../../../enums"
 import { isWalletRejectionError } from "../../../utils/isWalletRejectionError"
 import { useIsActive } from "../../useIsActive"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { Contract, ContractTransaction } from "@ethersproject/contracts"
 
-export type ContractTransactionFunction = Promise<string>
+type TransactionHashWithAdditionalParams = {
+  hash: string
+  additionalParams: any
+}
+
+export type ContractTransactionFunction =
+  | Promise<ContractTransaction>
+  | Promise<string>
+  | Promise<TransactionHashWithAdditionalParams>
 
 export type OnSuccessCallback = (
-  receipt: TransactionReceipt
+  receipt: TransactionReceipt,
+  additionalParams?: any[]
 ) => void | Promise<void>
 
 export type OnErrorCallback = (error: any) => void | Promise<void>
+
+const isTransactionHashWithAdditionalParams = (
+  tx: string | ContractTransaction | TransactionHashWithAdditionalParams
+): boolean => {
+  return typeof tx !== "string" && "additionalParams" in tx
+}
 
 export const useSendLedgerLiveAppTransactionFromFn = <
   F extends (...args: never[]) => ContractTransactionFunction
@@ -39,19 +55,25 @@ export const useSendLedgerLiveAppTransactionFromFn = <
       try {
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
-        const txHash = await fn(...args)
+        const tx = await fn(...args)
+
+        const txHash = typeof tx === "string" ? tx : tx.hash
 
         openModal(ModalType.TransactionIsPending, {
           transactionHash: txHash,
         })
         setTransactionStatus(TransactionStatus.PendingOnChain)
-        const tx = await signer!.provider?.getTransaction(txHash)
-        if (!tx) throw new Error(`Transaction ${txHash} not found!`)
-        const txReceipt = await tx?.wait()
+        const transaction = await signer!.provider?.getTransaction(txHash)
+        if (!transaction)
+          throw new Error(`Transaction ${transaction} not found!`)
+        const txReceipt = await transaction?.wait()
 
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess && txReceipt) {
-          onSuccess(txReceipt)
+          const additionalParams = isTransactionHashWithAdditionalParams(tx)
+            ? (tx as TransactionHashWithAdditionalParams).additionalParams
+            : null
+          onSuccess(txReceipt, additionalParams)
         }
         return txReceipt
       } catch (error: any) {

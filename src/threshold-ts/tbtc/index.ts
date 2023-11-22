@@ -1,51 +1,21 @@
+import { BlockTag } from "@ethersproject/abstract-provider"
+import { Web3Provider } from "@ethersproject/providers"
 import {
-  calculateDepositAddress,
-  calculateDepositRefundLocktime,
-  DepositScriptParameters,
-  revealDeposit as tBTCRevealDeposit,
-  getRevealedDeposit as tBTCgetRevealedDeposit,
-  RevealedDeposit,
-} from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-//@ts-ignore
-import * as CryptoJS from "crypto-js"
-import {
-  getContract,
-  getProviderOrSigner,
-  isValidBtcAddress,
-  getContractPastEvents,
-  getChainIdentifier,
-  ZERO,
-  isPublicKeyHashTypeAddress,
-  isSameETHAddress,
-  AddressZero,
-  isPayToScriptHashTypeAddress,
-  fromSatoshiToTokenPrecision,
-  getSigner,
-} from "../utils"
-import {
-  Client,
-  computeHash160,
-  createOutputScriptFromAddress,
-  decodeBitcoinAddress,
-  Transaction as BitcoinTransaction,
-  TransactionHash,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import {
+  BitcoinClient,
+  BitcoinTx,
+  BitcoinTxHash,
+  BitcoinUtxo,
+  ChainIdentifier,
+  Deposit,
+  DepositRequest,
   ElectrumClient,
+  ethereumAddressFromSigner,
   EthereumBridge,
-  EthereumTBTCToken,
+  ethereumNetworkFromSigner,
   Hex,
-} from "@keep-network/tbtc-v2.ts/dist/src"
-import {
-  BitcoinConfig,
-  BitcoinNetwork,
-  EthereumConfig,
-  UnspentTransactionOutputPlainObject,
-} from "../types"
-import TBTCVault from "@keep-network/tbtc-v2/artifacts/TBTCVault.json"
-import Bridge from "@keep-network/tbtc-v2/artifacts/Bridge.json"
-import TBTCToken from "@keep-network/tbtc-v2/artifacts/TBTC.json"
+  loadEthereumContracts,
+  TBTC as SDK,
+} from "@keep-network/tbtc-v2.ts"
 import {
   BigNumber,
   BigNumberish,
@@ -54,25 +24,26 @@ import {
   Signer,
   utils,
 } from "ethers"
-import { ContractCall, IMulticall } from "../multicall"
-import { BlockTag } from "@ethersproject/abstract-provider"
 import { LogDescription } from "ethers/lib/utils"
+import { ContractCall, IMulticall } from "../multicall"
+import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import {
-  requestRedemption,
-  findWalletForRedemption,
-} from "@keep-network/tbtc-v2.ts/dist/src/redemption"
-import { TBTCToken as ChainTBTCToken } from "@keep-network/tbtc-v2.ts/dist/src/chain"
+  AddressZero,
+  fromSatoshiToTokenPrecision,
+  getContract,
+  getContractPastEvents,
+  getGoerliDevelopmentContracts,
+  getSigner,
+  getArtifact,
+  isPayToScriptHashTypeAddress,
+  isPublicKeyHashTypeAddress,
+  isSameETHAddress,
+  isValidBtcAddress,
+  ZERO,
+} from "../utils"
 import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
-import { Account } from "@ledgerhq/wallet-api-client"
-import {
-  BitcoinUtxo,
-  Deposit,
-  DepositReceipt,
-  DepositRequest,
-  TBTC as SDK,
-} from "@keep-network/sdk-tbtc-v2.ts"
-import { Web3Provider } from "@ethersproject/providers"
 import { ledgerLiveAppEthereumSigner } from "../../utils/getLedgerLiveAppEthereumSigner"
+import { Account } from "@ledgerhq/wallet-api-client"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -129,7 +100,9 @@ type RedemptionRequestedEventFilter = {
   redeemer?: string | string[]
 } & QueryEventFilter
 
-interface RedemptionRequest<NumberType extends BigNumberish = BigNumber> {
+export interface RedemptionRequest<
+  NumberType extends BigNumberish = BigNumber
+> {
   redeemer: string
   requestedAmount: NumberType
   treasuryFee: NumberType
@@ -163,10 +136,6 @@ interface RedemptionsCompletedEvent {
 
 type BitcoinTransactionHashByteOrder = "little-endian" | "big-endian"
 
-export type RedemptionWalletData = Awaited<
-  ReturnType<typeof findWalletForRedemption>
->
-
 type AmountToSatoshiResult = {
   /**
    * Amount of TBTC to be minted/unminted.
@@ -183,10 +152,36 @@ type AmountToSatoshiResult = {
   satoshis: BigNumber
 }
 
+export type DepositScriptParameters = {
+  depositor: ChainIdentifier
+  blindingFactor: string
+  walletPublicKeyHash: string
+  refundPublicKeyHash: string
+  refundLocktime: string
+}
+
+class EmptySdkObjectError extends Error {
+  constructor() {
+    super("SDK object is not initialized.")
+  }
+}
+
+class EmptyDepositObjectError extends Error {
+  constructor() {
+    super("Deposit object is not initiated.")
+  }
+}
+
 export interface ITBTC {
   /**
+   * Ethereum chain id specified in the ethereum config that we pass to the
+   * threshold lib.
+   * @returns {string | number}
+   */
+  readonly ethereumChainId: string | number
+  /**
    * Bitcoin network specified in the bitcoin config that we pass to the
-   * threshold lib
+   * threshold lib.
    * @returns {BitcoinNetwork}
    */
   readonly bitcoinNetwork: BitcoinNetwork
@@ -201,6 +196,14 @@ export interface ITBTC {
 
   readonly deposit: Deposit | undefined
 
+  /**
+   * Initializes tbtc-v2 SDK
+   * @param providerOrSigner Ethers instance of Provider (if wallet is not
+   * connected) or Signer (if wallet is connected).
+   * @param account Connected ethereum address (optional, needed only if user
+   * connected his wallet).
+   * @returns Instance of the TBTC class from tbtc-v2.ts lib
+   */
   initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
@@ -214,62 +217,43 @@ export interface ITBTC {
   setLedgerLiveAppEthAccount(account: Account | undefined): void
 
   /**
-   * Suggests a wallet that should be used as the deposit target at the given
-   * moment.
-   * @returns Compressed (33 bytes long with 02 or 03 prefix) public key of
-   * the wallet.
-   */
-  suggestDepositWallet(): Promise<string | undefined>
-
-  /**
-   * Creates parameters needed to construct a deposit address from the data that
-   * we gather from the user, which are eth address and btc recovery address.
-   * @param ethAddress Eth address in which the user will receive tBTC (it
-   * should be the address that the user is connected to).
+   * Initiates a Deposit object from bitcoin recovery address.
    * @param btcRecoveryAddress The bitcoin address in which the user will
    * receive the bitcoin back in case something goes wrong.
-   * @returns All deposit script parameters needed to create a deposit address.
+   * @returns Deposit object
    */
-  createDepositScriptParameters(
-    ethAddress: string,
-    btcRecoveryAddress: string
-  ): Promise<DepositScriptParameters>
-
-  //TODO: We might remove this when SDK v2 is implemented
-  initiateDepositSdkV2(btcRecoveryAddress: string): Promise<void>
-
-  //TODO: We might remove this when SDK v2 is implemented
-  initiateDepositFromReceiptSdkV2(depositReceipt: DepositReceipt): Promise<void>
-
-  //TODO: Remove this when SDK v2 is implemented
-  createDepositScriptParametersSdkV2(
-    btcRecoveryAddress: string
-  ): Promise<DepositReceipt>
+  initiateDeposit(btcRecoveryAddress: string): Promise<Deposit>
 
   /**
-   * Calculates the deposit address from the deposit script parameters
-   * @param depositScriptParameters Deposit script parameters. You can get them
-   * from @see{createDepositScriptParameters} method
-   * @returns Deposit address
+   * Removes the deposit data assigned to `this._deposit` property.
    */
-  calculateDepositAddress(
+  removeDepositData(): void
+
+  /**
+   * Initiates a deposit object from DepositScriptParameters object. Most of the
+   * parameters are passed as strings and converted to hexes inside the
+   * function.
+   * @param depositScriptParameters DepositScriptParameters object that contains
+   * all the data related to the deposit we want to re-initiate.
+   * @returns Deposit object
+   */
+  initiateDepositFromDepositScriptParameters(
     depositScriptParameters: DepositScriptParameters
-  ): Promise<string>
-
-  //TODO: Remove this when SDK v2 is implemented
-  calculateDepositAddressSdkV2(): Promise<string>
+  ): Promise<Deposit>
 
   /**
-   * Finds all unspent transaction outputs (UTXOs) for a given Bitcoin address.
-   * @param address - Bitcoin address UTXOs should be determined for.
-   * @returns List of UTXOs.
+   * Calculates the deposit address from the deposit object stored in
+   * this._deposit. Throws error if deposit object is not initiated.
    */
-  findAllUnspentTransactionOutputs(
-    address: string
-  ): Promise<UnspentTransactionOutput[]>
+  calculateDepositAddress(): Promise<string>
 
-  //TODO: Remove this when SDK v2 is implemented
-  findAllUnspentTransactionOutputsSdkV2(): Promise<BitcoinUtxo[]>
+  /**
+   * Finds all unspent transaction outputs (UTXOs) for the initialized deposit,
+   * that is stored in this._deposit property. The UTXOs are returned from
+   * newest to oldest.
+   * @returns List of Bitcoin UTXOs.
+   */
+  findAllUnspentTransactionOutputs(): Promise<BitcoinUtxo[]>
 
   /**
    * Gets estimated fees that will be payed during a reveal and estimated amount
@@ -286,35 +270,25 @@ export interface ITBTC {
 
   /**
    * Reveals the given deposit to the on-chain Bridge contract.
-   * @param utxo Deposit UTXO of the revealed deposit
-   * @param depositScriptParameters Deposit script parameters. You can get them
-   * from @see{createDepositScriptParameters} method
+   * @param utxo Bitcoin UTXO of the revealed deposit
+   * @return Prefixed transaction hash of the reveal.
    */
-  revealDeposit(
-    utxo: UnspentTransactionOutput,
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string>
-
-  //TODO: Remove this when SDK v2 is implemented
-  revealDepositSdkV2(): Promise<string>
+  revealDeposit(utxo: BitcoinUtxo): Promise<string>
 
   /**
    * Gets a revealed deposit from the bridge.
    * @param utxo Deposit UTXO of the revealed deposit
    * @returns Revealed deposit data.
    */
-  getRevealedDeposit(utxo: UnspentTransactionOutput): Promise<RevealedDeposit>
-
-  //TODO: Remove this when SDK v2 is implemented
-  getRevealedDepositSdkV2(utxo: BitcoinUtxo): Promise<DepositRequest>
+  getRevealedDeposit(utxo: BitcoinUtxo): Promise<DepositRequest>
 
   /**
    * Gets the number of confirmations that a given transaction has accumulated
    * so far.
-   * @param transactionHash Hash of the transaction.
+   * @param transactionHash Hash of the transaction as a string.
    * @returns The number of confirmations.
    */
-  getTransactionConfirmations(transactionHash: TransactionHash): Promise<number>
+  getTransactionConfirmations(transactionHash: string): Promise<number>
 
   /**
    * Gets the minimum number of confirmations needed for the minter to start the
@@ -360,37 +334,24 @@ export interface ITBTC {
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
-   * @param walletPublicKey The Bitcoin public key of the wallet. Must be in the
-   * compressed form (33 bytes long with 02 or 03 prefix).
-   * @param mainUtxo The main UTXO of the wallet. Must match the main UTXO held
-   * by the on-chain Bridge contract.
    * @param btcAddress The Bitcoin address that the redeemed funds will be
    * locked to.
    * @param amount The amount to be redeemed in tBTC token unit.
-   * @returns Transaction hash of the request redemption transaction.
+   * @returns Object containing transaction hash of the request redemption
+   * transaction and `additionalParams` object, that contains Bitcoin public key
+   * of the wallet asked to handle the redemption. The key is presented in the
+   * compressed form (33 bytes long with 02 or 03 prefix). Both, transaction
+   * hash and walletPublicKey are also prefixed with `0x`.
    */
   requestRedemption(
-    walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutputPlainObject,
     btcAddress: string,
     amount: BigNumberish
-  ): Promise<string>
-
-  //TODO: Remove this when SDK v2 is implemented
-  requestRedemptionSdkV2(btcAddress: string, amount: string): Promise<string>
-
-  /**
-   * Finds the oldest active wallet that has enough BTC to handle a redemption
-   * request.
-   * @param amount The amount to be redeemed in tBTC token precision.
-   * @param btcAddress The Bitcoin address the redeemed funds are supposed to be
-   *        locked on.
-   * @returns Promise with the wallet details needed to request a redemption.
-   */
-  findWalletForRedemption(
-    amount: BigNumberish,
-    btcAddress: string
-  ): Promise<RedemptionWalletData>
+  ): Promise<{
+    hash: string
+    additionalParams: {
+      walletPublicKey: string
+    }
+  }>
 
   /**
    * Builds a redemption key required to refer a redemption request.
@@ -407,10 +368,10 @@ export interface ITBTC {
 
   /**
    * Gets the full transaction object for given transaction hash.
-   * @param transactionHash Hash of the transaction.
-   * @returns Transaction object.
+   * @param transactionHash Hash of the transaction as a string.
+   * @returns Bitcoin Transaction object.
    */
-  getBitcoinTransaction(transactionHash: string): Promise<BitcoinTransaction>
+  getBitcoinTransaction(transactionHash: string): Promise<BitcoinTx>
 
   /**
    * Gets emitted `RedemptionRequested` events.
@@ -465,26 +426,18 @@ export interface ITBTC {
 }
 
 export class TBTC implements ITBTC {
-  private _bridge: EthereumBridge
-  private _tbtcVault: Contract
-  private _bitcoinClient: Client
-  private _multicall: IMulticall
   private _bridgeContract: Contract
-  private _token: ChainTBTCToken
+  private _tbtcVaultContract: Contract
   private _tokenContract: Contract
-  /**
-   * Deposit refund locktime duration in seconds.
-   * This is 9 month in seconds assuming 1 month = 30 days
-   */
-  private _depositRefundLocktimDuration = 23328000
+  private _bitcoinClient: BitcoinClient
+  private _multicall: IMulticall
+  private _ethereumConfig: EthereumConfig
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
-
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
-
-  private _ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
   private _sdk: SDK | undefined
   private _deposit: Deposit | undefined
+  private _ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -496,46 +449,58 @@ export class TBTC implements ITBTC {
         "Neither bitcoin client nor bitcoin credentials are specified"
       )
     }
-    this._bridge = new EthereumBridge({
-      address: Bridge.address,
-      signerOrProvider: getProviderOrSigner(
-        ethereumConfig.providerOrSigner as any,
-        ethereumConfig.account
-      ),
-    })
-    this._tbtcVault = getContract(
-      TBTCVault.address,
-      TBTCVault.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
+    const {
+      chainId,
+      shouldUseTestnetDevelopmentContracts,
+      providerOrSigner,
+      account,
+    } = ethereumConfig
+
+    const tbtcVaultArtifact = getArtifact(
+      "TBTCVault",
+      chainId,
+      shouldUseTestnetDevelopmentContracts
     )
+    const bridgeArtifact = getArtifact(
+      "Bridge",
+      chainId,
+      shouldUseTestnetDevelopmentContracts
+    )
+    const tbtcTokenArtifact = getArtifact(
+      "TBTC",
+      chainId,
+      shouldUseTestnetDevelopmentContracts
+    )
+
     this._bridgeContract = getContract(
-      Bridge.address,
-      Bridge.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
+      bridgeArtifact.address,
+      bridgeArtifact.abi,
+      providerOrSigner,
+      account
     )
+    this._tbtcVaultContract = getContract(
+      tbtcVaultArtifact.address,
+      tbtcVaultArtifact.abi,
+      providerOrSigner,
+      account
+    )
+    this._tokenContract = getContract(
+      tbtcTokenArtifact.address,
+      tbtcTokenArtifact.abi,
+      providerOrSigner,
+      account
+    )
+    // @ts-ignore
     this._bitcoinClient =
       bitcoinConfig.client ??
       new ElectrumClient(
         bitcoinConfig.credentials!,
         bitcoinConfig.clientOptions
       )
+
     this._multicall = multicall
+    this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
-    this._token = new EthereumTBTCToken({
-      address: TBTCToken.address,
-      signerOrProvider: getProviderOrSigner(
-        ethereumConfig.providerOrSigner as any,
-        ethereumConfig.account
-      ),
-    })
-    this._tokenContract = getContract(
-      TBTCToken.address,
-      TBTCToken.abi,
-      ethereumConfig.providerOrSigner,
-      ethereumConfig.account
-    )
     this._ledgerLiveAppEthereumSigner = ledgerLiveAppEthereumSigner
   }
 
@@ -543,34 +508,60 @@ export class TBTC implements ITBTC {
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK> {
-    const initializeFunction =
-      this.bitcoinNetwork === BitcoinNetwork.Mainnet
-        ? SDK.initializeMainnet
-        : SDK.initializeGoerli
-
-    const shouldUseSigner = account && providerOrSigner instanceof Web3Provider
-
     // TODO: This should be checked outside of this class
     const shouldUseLedgerLiveAppSigner = JSON.parse(
       localStorage.getItem("isEmbed") || ""
     )
 
-    if (shouldUseLedgerLiveAppSigner) {
-      this._sdk = await initializeFunction(
-        !!account && !!this._ledgerLiveAppEthereumSigner
-          ? this._ledgerLiveAppEthereumSigner
-          : providerOrSigner
-      )
-    } else {
-      this._sdk = await initializeFunction(
-        shouldUseSigner
-          ? getSigner(providerOrSigner as Web3Provider, account)
-          : providerOrSigner
-      )
+    const signer =
+      // TODO: Check if it works properly:
+      !!account && !!this._ledgerLiveAppEthereumSigner
+        ? this._ledgerLiveAppEthereumSigner
+        : // Double bang to convert to boolean
+        !!account && providerOrSigner instanceof Web3Provider
+        ? getSigner(providerOrSigner as Web3Provider, account)
+        : providerOrSigner
+
+    const { shouldUseTestnetDevelopmentContracts } = this._ethereumConfig
+    const { client: clientFromConfig } = this._bitcoinConfig
+
+    // For both of these cases we will use SDK.initializeCustom() method
+    if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
+      const depositorAddress = await ethereumAddressFromSigner(signer)
+      const ethereumNetwork = await ethereumNetworkFromSigner(signer)
+
+      const tbtcContracts = shouldUseTestnetDevelopmentContracts
+        ? getGoerliDevelopmentContracts(signer)
+        : await loadEthereumContracts(signer, ethereumNetwork)
+
+      this._sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
+
+      depositorAddress &&
+        this._sdk?.deposits.setDefaultDepositor(depositorAddress)
+
+      return this._sdk
     }
-    // TODO: Remove this console log in the future
-    console.log("THIS.sdk: ", this._sdk)
+
+    const initializeFunction =
+      this.bitcoinNetwork === BitcoinNetwork.Mainnet
+        ? SDK.initializeMainnet
+        : SDK.initializeGoerli
+
+    this._sdk = await initializeFunction(signer)
+
     return this._sdk
+  }
+
+  get sdk(): SDK | undefined {
+    return this._sdk
+  }
+
+  get deposit(): Deposit | undefined {
+    return this._deposit
+  }
+
+  get ethereumChainId(): string | number {
+    return this._ethereumConfig.chainId
   }
 
   get bitcoinNetwork(): BitcoinNetwork {
@@ -582,19 +573,11 @@ export class TBTC implements ITBTC {
   }
 
   get vaultContract() {
-    return this._tbtcVault
+    return this._tbtcVaultContract
   }
 
   get tokenContract() {
     return this._tokenContract
-  }
-
-  get sdk() {
-    return this._sdk
-  }
-
-  get deposit() {
-    return this._deposit
   }
 
   setLedgerLiveAppEthAccount(account: Account | undefined): void {
@@ -606,118 +589,52 @@ export class TBTC implements ITBTC {
     this._ledgerLiveAppEthereumSigner.setAccount(account)
   }
 
-  suggestDepositWallet = async (): Promise<string | undefined> => {
-    return await this._bridge.activeWalletPublicKey()
+  initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+    this._deposit = await this._sdk.deposits.initiateDeposit(btcRecoveryAddress)
+    return this._deposit
   }
 
-  createDepositScriptParameters = async (
-    ethAddress: string,
-    btcRecoveryAddress: string
-  ): Promise<DepositScriptParameters> => {
-    const { network } = this._bitcoinConfig
-    if (!isValidBtcAddress(btcRecoveryAddress, network as any)) {
-      throw new Error(
-        "Wrong bitcoin address passed to createDepositScriptParameters function"
-      )
-    }
+  removeDepositData = (): void => {
+    this._deposit = undefined
+  }
 
-    if (!isPublicKeyHashTypeAddress(btcRecoveryAddress)) {
-      throw new Error("Bitcoin recovery address must be a P2PKH or P2WPKH")
-    }
-
-    const currentTimestamp = Math.floor(new Date().getTime() / 1000)
-    const blindingFactor = CryptoJS.lib.WordArray.random(8).toString(
-      CryptoJS.enc.Hex
-    )
-    const walletPublicKey = await this.suggestDepositWallet()
-
-    if (!walletPublicKey) {
-      throw new Error("Couldn't get active wallet public key!")
-    }
-
-    const walletPublicKeyHash = computeHash160(walletPublicKey)
-
-    const refundPublicKeyHash = decodeBitcoinAddress(
-      btcRecoveryAddress,
-      this.bitcoinNetwork
-    )
-
-    const refundLocktime = calculateDepositRefundLocktime(
-      currentTimestamp,
-      this._depositRefundLocktimDuration
-    )
-
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: getChainIdentifier(ethAddress),
+  initiateDepositFromDepositScriptParameters = async (
+    depositScriptParameters: DepositScriptParameters
+  ): Promise<Deposit> => {
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const {
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
       refundLocktime,
+      ...restDepositScriptParameters
+    } = depositScriptParameters
+
+    const depositReceipt = {
+      blindingFactor: Hex.from(blindingFactor),
+      walletPublicKeyHash: Hex.from(walletPublicKeyHash),
+      refundLocktime: Hex.from(refundLocktime),
+      refundPublicKeyHash: Hex.from(refundPublicKeyHash),
+      ...restDepositScriptParameters,
     }
-
-    return depositScriptParameters
-  }
-
-  //TODO: We might remove/rename this when SDK v2 is implemented
-  initiateDepositSdkV2 = async (btcRecoveryAddress: string) => {
-    if (!this._sdk) throw new EmptySdkObjectError()
-
-    this._deposit = await this._sdk?.deposits.initiateDeposit(
-      btcRecoveryAddress
-    )
-  }
-
-  //TODO: We might remove/rename this when SDK v2 is implemented
-  initiateDepositFromReceiptSdkV2 = async (depositReceipt: DepositReceipt) => {
-    if (!this._sdk) throw new EmptySdkObjectError()
 
     this._deposit = await Deposit.fromReceipt(
       depositReceipt,
       this._sdk.tbtcContracts,
       this._sdk.bitcoinClient
     )
+    return this._deposit
   }
 
-  //TODO: Remove this when SDK v2 is implemented
-  createDepositScriptParametersSdkV2 = async (
-    btcRecoveryAddress: string
-  ): Promise<DepositReceipt> => {
-    await this.initiateDepositSdkV2(btcRecoveryAddress)
+  calculateDepositAddress = async (): Promise<string> => {
     if (!this._deposit) throw new EmptyDepositObjectError()
-    return this._deposit.getReceipt()
+    return await this._deposit.getBitcoinAddress()
   }
 
-  calculateDepositAddress = async (
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string> => {
-    return await calculateDepositAddress(
-      depositScriptParameters,
-      this.bitcoinNetwork,
-      true
-    )
-  }
-
-  //TODO: Remove this when SDK v2 is implemented
-  calculateDepositAddressSdkV2 = async (): Promise<string> => {
+  findAllUnspentTransactionOutputs = async (): Promise<BitcoinUtxo[]> => {
     if (!this._deposit) throw new EmptyDepositObjectError()
-    const depositAddress = await this._deposit.getBitcoinAddress()
-    if (!depositAddress) {
-      throw new Error("Calculated deposit address is empty.")
-    }
-    return depositAddress
-  }
-
-  findAllUnspentTransactionOutputs = async (
-    address: string
-  ): Promise<UnspentTransactionOutput[]> => {
-    return await this._bitcoinClient.findAllUnspentTransactionOutputs(address)
-  }
-
-  //TODO: Remove this when SDK v2 is implemented
-  findAllUnspentTransactionOutputsSdkV2 = async (): Promise<BitcoinUtxo[]> => {
-    if (!this._deposit) throw new EmptyDepositObjectError()
-    const fundingDetected = await this._deposit?.detectFunding()
-    console.log("fundingDetected: ", fundingDetected)
+    const fundingDetected = await this._deposit.detectFunding()
     return fundingDetected || []
   }
 
@@ -751,13 +668,13 @@ export class TBTC implements ITBTC {
     const calls: ContractCall[] = [
       {
         interface: this._bridgeContract.interface,
-        address: Bridge.address,
+        address: this._bridgeContract.address,
         method: "depositParameters",
         args: [],
       },
       {
-        interface: this._tbtcVault.interface,
-        address: this._tbtcVault.address,
+        interface: this._tbtcVaultContract.interface,
+        address: this._tbtcVaultContract.address,
         method: "optimisticMintingFeeDivisor",
         args: [],
       },
@@ -799,39 +716,16 @@ export class TBTC implements ITBTC {
     }
   }
 
-  revealDeposit = async (
-    utxo: UnspentTransactionOutput,
-    depositScriptParameters: DepositScriptParameters
-  ): Promise<string> => {
-    return await tBTCRevealDeposit(
-      utxo,
-      depositScriptParameters,
-      this._bitcoinClient,
-      this._bridge,
-      getChainIdentifier(this._tbtcVault.address)
-    )
-  }
-
-  //TODO: Remove this when SDK v2 is implemented
-  revealDepositSdkV2 = async (): Promise<string> => {
+  revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+    const { value, ...transactionOutpoint } = utxo
     if (!this._deposit) throw new EmptyDepositObjectError()
-    const revealedDepositHash = await this._deposit.initiateMinting()
-    if (!revealedDepositHash) {
-      throw new Error("Revealed deposit hash not found!")
-    }
-    return revealedDepositHash.toPrefixedString()
+    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+    this.removeDepositData()
+
+    return chainHash.toPrefixedString()
   }
 
-  getRevealedDeposit = async (
-    utxo: UnspentTransactionOutput
-  ): Promise<RevealedDeposit> => {
-    return await tBTCgetRevealedDeposit(utxo, this._bridge)
-  }
-
-  //TODO: Remove this when SDK v2 is implemented
-  getRevealedDepositSdkV2 = async (
-    utxo: BitcoinUtxo
-  ): Promise<DepositRequest> => {
+  getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
     if (!this._sdk) throw new EmptySdkObjectError()
     const deposit = await this._sdk.tbtcContracts.bridge.deposits(
       utxo.transactionHash,
@@ -844,10 +738,12 @@ export class TBTC implements ITBTC {
   }
 
   getTransactionConfirmations = async (
-    transactionHash: TransactionHash
+    transactionHash: string
   ): Promise<number> => {
-    return await this._bitcoinClient.getTransactionConfirmations(
-      transactionHash
+    if (!this._sdk) throw new EmptySdkObjectError()
+    const bitcoinTransactionHash = BitcoinTxHash.from(transactionHash)
+    return this._sdk.bitcoinClient.getTransactionConfirmations(
+      bitcoinTransactionHash
     )
   }
 
@@ -937,8 +833,13 @@ export class TBTC implements ITBTC {
   findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
+    const bridgeArtifact = getArtifact(
+      "Bridge",
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
     const deposits = await getContractPastEvents(this._bridgeContract, {
-      fromBlock: Bridge.receipt.blockNumber,
+      fromBlock: bridgeArtifact.receipt.blockNumber,
       filterParams: [null, null, depositor],
       eventName: "DepositRevealed",
     })
@@ -1027,8 +928,13 @@ export class TBTC implements ITBTC {
     depositor: string,
     depositKeys: string[] = []
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    return await getContractPastEvents(this._tbtcVault, {
-      fromBlock: TBTCVault.receipt.blockNumber,
+    const tbtcVaultArtifact = getArtifact(
+      "TBTCVault",
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+    return await getContractPastEvents(this._tbtcVaultContract, {
+      fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys, depositor],
       eventName: "OptimisticMintingFinalized",
     })
@@ -1037,8 +943,13 @@ export class TBTC implements ITBTC {
   private _findAllCancelledDeposits = async (
     depositKeys: string[]
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
-    return getContractPastEvents(this._tbtcVault, {
-      fromBlock: TBTCVault.receipt.blockNumber,
+    const tbtcVaultArtifact = getArtifact(
+      "TBTCVault",
+      this.ethereumChainId,
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+    return getContractPastEvents(this._tbtcVaultContract, {
+      fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
     })
@@ -1113,7 +1024,7 @@ export class TBTC implements ITBTC {
     depositOutputIndex: number,
     txHashByteOrder: BitcoinTransactionHashByteOrder = "little-endian"
   ): string => {
-    const _txHash = TransactionHash.from(depositTxHash)
+    const _txHash = BitcoinTxHash.from(depositTxHash)
 
     return EthereumBridge.buildDepositKey(
       txHashByteOrder === "little-endian" ? _txHash.reverse() : _txHash,
@@ -1122,79 +1033,44 @@ export class TBTC implements ITBTC {
   }
 
   requestRedemption = async (
-    walletPublicKey: string,
-    mainUtxo: UnspentTransactionOutputPlainObject,
     btcAddress: string,
     amount: BigNumberish
-  ): Promise<string> => {
-    if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
-      throw new Error(
-        "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
-      )
+  ): Promise<{
+    hash: string
+    additionalParams: {
+      walletPublicKey: string
     }
-
-    const _mainUtxo: UnspentTransactionOutput = {
-      transactionHash: Hex.from(mainUtxo.transactionHash),
-      outputIndex: Number(mainUtxo.outputIndex),
-      value: BigNumber.from(mainUtxo.value),
-    }
-
-    const tx = await requestRedemption(
-      walletPublicKey,
-      _mainUtxo,
-      createOutputScriptFromAddress(btcAddress, this.bitcoinNetwork).toString(),
-      BigNumber.from(amount),
-      this._token
-    )
-
-    return tx.toPrefixedString()
-  }
-
-  requestRedemptionSdkV2 = async (
-    btcAddress: string,
-    amount: string
-  ): Promise<string> => {
+  }> => {
     if (!this._sdk) throw new EmptySdkObjectError()
-    const { targetChainTxHash } = await this._sdk.redemptions.requestRedemption(
-      btcAddress,
-      BigNumber.from(amount)
-    )
 
-    return targetChainTxHash.toPrefixedString()
-  }
-
-  findWalletForRedemption = async (
-    amount: BigNumberish,
-    btcAddress: string
-  ): Promise<RedemptionWalletData> => {
     if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
       throw new Error(
         "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
       )
     }
-    const { satoshis } = this._amountToSatoshi(amount)
 
-    const redeemerOutputScript = createOutputScriptFromAddress(
-      btcAddress,
-      this.bitcoinNetwork
-    ).toString()
+    const { targetChainTxHash, walletPublicKey } =
+      await this._sdk.redemptions.requestRedemption(
+        btcAddress,
+        BigNumber.from(amount)
+      )
 
-    return await findWalletForRedemption(
-      satoshis,
-      redeemerOutputScript,
-      this.bitcoinNetwork,
-      this._bridge,
-      this._bitcoinClient
-    )
+    return {
+      hash: targetChainTxHash.toPrefixedString(),
+      additionalParams: {
+        walletPublicKey: walletPublicKey.toString(),
+      },
+    }
   }
 
   private _isValidBitcoinAddressForRedemption = (
     btcAddress: string
   ): boolean => {
+    const network = this.bitcoinNetwork
     return (
-      !isValidBtcAddress(btcAddress, this.bitcoinNetwork) ||
-      (!isPublicKeyHashTypeAddress(btcAddress) &&
-        !isPayToScriptHashTypeAddress(btcAddress))
+      !isValidBtcAddress(btcAddress, network) ||
+      (!isPublicKeyHashTypeAddress(btcAddress, network) &&
+        !isPayToScriptHashTypeAddress(btcAddress, network))
     )
   }
 
@@ -1225,6 +1101,12 @@ export class TBTC implements ITBTC {
     walletPublicKeyHash: string,
     redeemerOutputScript: string
   ) => {
+    // The `buildRedemptionKey` static method from `EthereumBridge` prefixes the
+    // `walletPublicKeyHash` with `0x` and it's length. It also prefixes
+    // walletPublicKeyHash. In our use cases of this method our values are
+    // already prefixed (for example in the deposit details link), so we are
+    // just extracting the needed code from the lib here. We might want to
+    // refactor that in the future.
     return utils.solidityKeccak256(
       ["bytes32", "bytes20"],
       [
@@ -1236,10 +1118,8 @@ export class TBTC implements ITBTC {
 
   getBitcoinTransaction = async (
     transactionHash: string
-  ): Promise<BitcoinTransaction> => {
-    return this._bitcoinClient.getTransaction(
-      TransactionHash.from(transactionHash)
-    )
+  ): Promise<BitcoinTx> => {
+    return this._bitcoinClient.getTransaction(Hex.from(transactionHash))
   }
 
   getRedemptionRequestedEvents = async (
@@ -1483,17 +1363,5 @@ export class TBTC implements ITBTC {
     }
 
     return this._redemptionTreasuryFeeDivisor
-  }
-}
-
-class EmptySdkObjectError extends Error {
-  constructor() {
-    super("SDK object is not initiated.")
-  }
-}
-
-class EmptyDepositObjectError extends Error {
-  constructor() {
-    super("Deposit object is not initiated.")
   }
 }

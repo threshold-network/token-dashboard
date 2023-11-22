@@ -1,22 +1,19 @@
-import { AppListenerEffectAPI } from "../listener"
-import { tbtcSlice } from "./tbtcSlice"
-import { isAddress, isAddressZero } from "../../web3/utils"
-import { MintingStep } from "../../types/tbtc"
-import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import { BitcoinAddressConverter } from "@keep-network/tbtc-v2.ts"
 import { TaskAbortError } from "@reduxjs/toolkit"
 import {
-  TBTCLocalStorageDepositData,
+  getChainIdentifier,
+  isPublicKeyHashTypeAddress,
+} from "../../threshold-ts/utils"
+import { MintingStep } from "../../types/tbtc"
+import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
+import {
   key,
   removeDataForAccount,
+  TBTCLocalStorageDepositData,
 } from "../../utils/tbtcLocalStorageData"
-import { TransactionHash } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { getChainIdentifier } from "../../threshold-ts/utils"
-import {
-  BitcoinAddressConverter,
-  BitcoinNetwork,
-  BitcoinScriptUtils,
-  Hex,
-} from "@keep-network/sdk-tbtc-v2.ts"
+import { isAddress, isAddressZero } from "../../web3/utils"
+import { AppListenerEffectAPI } from "../listener"
+import { tbtcSlice } from "./tbtcSlice"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -73,43 +70,35 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
-        // Looking for utxo.
+        // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
-          //   // TODO: Get bitcoin network by chainId
-          const recoveryOutputScript =
-            BitcoinAddressConverter.addressToOutputScript(
-              btcRecoveryAddress,
-              BitcoinNetwork.Testnet
-            )
+          const bitcoinNetwork = listenerApi.extra.threshold.tbtc.bitcoinNetwork
 
-          // TODO: We could probably check that with our
-          // `isPublicKeyHashTypeAddress` method from threshold lib utils
-          if (
-            !BitcoinScriptUtils.isP2PKHScript(recoveryOutputScript) &&
-            !BitcoinScriptUtils.isP2WPKHScript(recoveryOutputScript)
-          ) {
+          if (!isPublicKeyHashTypeAddress(btcRecoveryAddress, bitcoinNetwork)) {
             throw new Error("Bitcoin recovery address must be P2PKH or P2WPKH")
           }
 
-          // TODO: Get bitcoin network by chainId
           const refundPublicKeyHash =
             BitcoinAddressConverter.addressToPublicKeyHash(
               btcRecoveryAddress,
-              BitcoinNetwork.Testnet
-            )
-
+              bitcoinNetwork
+            ).toString()
           await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.initiateDepositFromReceiptSdkV2({
-              depositor: getChainIdentifier(ethAddress),
-              blindingFactor: Hex.from(blindingFactor),
-              walletPublicKeyHash: Hex.from(walletPublicKeyHash),
-              refundPublicKeyHash: refundPublicKeyHash,
-              refundLocktime: Hex.from(refundLocktime),
-            })
+            listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+              {
+                depositor: getChainIdentifier(ethAddress),
+                blindingFactor,
+                walletPublicKeyHash,
+                refundPublicKeyHash,
+                refundLocktime,
+              }
+            )
           )
         }
+
+        // Looking for utxo.
         const utxos = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputsSdkV2()
+          listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs()
         )
 
         if (!utxos || utxos.length === 0) {
@@ -141,7 +130,7 @@ export const findUtxoEffect = async (
         for (let i = utxos.length - 1; i >= 0; i--) {
           // Check if deposit is revealed.
           const deposit = await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.getRevealedDepositSdkV2(utxos[i])
+            listenerApi.extra.threshold.tbtc.getRevealedDeposit(utxos[i])
           )
           const isDepositRevealed = deposit.revealedAt !== 0
 
@@ -173,7 +162,14 @@ export const findUtxoEffect = async (
           // utxo.
 
           listenerApi.dispatch(
-            tbtcSlice.actions.updateState({ key: "utxo", value: utxo })
+            tbtcSlice.actions.updateState({
+              key: "utxo",
+              value: {
+                ...utxo,
+                transactionHash: utxo.transactionHash.toString(),
+                value: utxo.value.toString(),
+              },
+            })
           )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
@@ -222,8 +218,6 @@ export const fetchUtxoConfirmationsEffect = async (
   if (txConfirmations && txConfirmations >= minimumNumberOfConfirmationsNeeded)
     return
 
-  const txHash = TransactionHash.from(utxo.transactionHash)
-
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
 
@@ -232,7 +226,9 @@ export const fetchUtxoConfirmationsEffect = async (
       while (true) {
         // Get confirmations
         const confirmations = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(txHash)
+          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
+            utxo.transactionHash
+          )
         )
         listenerApi.dispatch(
           tbtcSlice.actions.updateState({

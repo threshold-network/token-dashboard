@@ -1,3 +1,4 @@
+// TODO: Refactor this so that it's only imported in our threshold-ts lib
 import { Hex } from "@keep-network/tbtc-v2.ts"
 import { Event } from "ethers"
 import { useSubscribeToContractEvent } from "../../web3/hooks"

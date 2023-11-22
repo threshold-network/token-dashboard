@@ -1,18 +1,16 @@
 import {
-  Client,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts/dist/src/bitcoin-network"
-import {
-  ClientOptions,
-  Credentials,
-} from "@keep-network/tbtc-v2.ts/dist/src/electrum"
+  BitcoinClient,
+  BitcoinNetwork,
+  ElectrumClientOptions,
+  ElectrumCredentials,
+} from "@keep-network/tbtc-v2.ts"
 import { providers, Signer } from "ethers"
 import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
+  shouldUseTestnetDevelopmentContracts: boolean
   account?: string
   /**
    * Ethereum Signer for Ledger Live App, that allows us to communicate with
@@ -21,9 +19,9 @@ export interface EthereumConfig {
   ledgerLiveAppEthereumSigner?: LedgerLiveAppEthereumSigner
 }
 
-export type BitcoinClientCredentials = Credentials
+export type BitcoinClientCredentials = ElectrumCredentials
 
-export type BitcoinClientOptions = ClientOptions
+export type BitcoinClientOptions = ElectrumClientOptions
 
 export interface BitcoinConfig {
   /**
@@ -36,7 +34,7 @@ export interface BitcoinConfig {
   /**
    * If we want to mock client then we should pass the mock here
    */
-  client?: Client
+  client?: BitcoinClient
 
   /**
    * Credentials for electrum client
@@ -55,7 +53,3 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
-
-export type UnspentTransactionOutputPlainObject = {
-  [key in keyof UnspentTransactionOutput]: string
-}

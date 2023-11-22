@@ -16,12 +16,12 @@ export const useRequestRedemption = (
 
   return isEmbed
     ? useSendLedgerLiveAppTransactionFromFn(
-        threshold.tbtc.requestRedemptionSdkV2,
+        threshold.tbtc.requestRedemption,
         onSuccess,
         onError
       )
     : useSendTransactionFromFn(
-        threshold.tbtc.requestRedemptionSdkV2,
+        threshold.tbtc.requestRedemption,
         onSuccess,
         onError
       )

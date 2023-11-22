@@ -16,13 +16,9 @@ export const useRevealDepositTransaction = (
 
   return isEmbed
     ? useSendLedgerLiveAppTransactionFromFn(
-        threshold.tbtc.revealDepositSdkV2,
+        threshold.tbtc.revealDeposit,
         onSuccess,
         onError
       )
-    : useSendTransactionFromFn(
-        threshold.tbtc.revealDepositSdkV2,
-        onSuccess,
-        onError
-      )
+    : useSendTransactionFromFn(threshold.tbtc.revealDeposit, onSuccess, onError)
 }

@@ -1,4 +1,5 @@
-import { FC, useEffect } from "react"
+import { Skeleton } from "@chakra-ui/react"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import {
   BodyLg,
   BodySm,
@@ -9,44 +10,29 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@threshold-network/components"
-import InfoBox from "../../InfoBox"
-import { BaseModalProps } from "../../../types"
-import withBaseModal from "../withBaseModal"
-import { useTbtcState } from "../../../hooks/useTbtcState"
-import { Skeleton } from "@chakra-ui/react"
-import MintingTransactionDetails from "../../../pages/tBTC/Bridge/components/MintingTransactionDetails"
-import { MintingStep } from "../../../types/tbtc"
-import { useThreshold } from "../../../contexts/ThresholdContext"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
-import {
-  decodeBitcoinAddress,
-  UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
-import { useRevealDepositTransaction } from "../../../hooks/tbtc"
 import { BigNumber } from "ethers"
-import { getChainIdentifier } from "../../../threshold-ts/utils"
-import { InlineTokenBalance } from "../../TokenBalance"
+import { FC, useEffect } from "react"
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useRevealDepositTransaction } from "../../../hooks/tbtc"
+import { useTbtcState } from "../../../hooks/useTbtcState"
+import MintingTransactionDetails from "../../../pages/tBTC/Bridge/components/MintingTransactionDetails"
+import { BaseModalProps } from "../../../types"
+import { MintingStep } from "../../../types/tbtc"
+import InfoBox from "../../InfoBox"
 import { BridgeContractLink } from "../../tBTC"
+import { InlineTokenBalance } from "../../TokenBalance"
+import withBaseModal from "../withBaseModal"
 
 export interface TbtcMintingConfirmationModalProps extends BaseModalProps {
-  utxo: UnspentTransactionOutput
+  utxo: BitcoinUtxo
 }
 
 const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   utxo,
   closeModal,
 }) => {
-  const {
-    updateState,
-    tBTCMintAmount,
-    btcRecoveryAddress,
-    ethAddress,
-    refundLocktime,
-    walletPublicKeyHash,
-    blindingFactor,
-    mintingFee,
-    thresholdNetworkFee,
-  } = useTbtcState()
+  const { updateState, tBTCMintAmount, mintingFee, thresholdNetworkFee } =
+    useTbtcState()
   const threshold = useThreshold()
 
   const onSuccessfulDepositReveal = () => {
@@ -59,18 +45,7 @@ const TbtcMintingConfirmationModal: FC<TbtcMintingConfirmationModalProps> = ({
   )
 
   const initiateMintTransaction = async () => {
-    const depositScriptParameters: DepositScriptParameters = {
-      depositor: getChainIdentifier(ethAddress),
-      blindingFactor,
-      walletPublicKeyHash: walletPublicKeyHash,
-      refundPublicKeyHash: decodeBitcoinAddress(
-        btcRecoveryAddress,
-        threshold.tbtc.bitcoinNetwork
-      ),
-      refundLocktime,
-    }
-
-    await revealDeposit()
+    await revealDeposit(utxo)
   }
 
   const amount = BigNumber.from(utxo.value).toString()

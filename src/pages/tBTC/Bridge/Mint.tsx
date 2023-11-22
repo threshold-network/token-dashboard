@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
+import { useIsActive } from "../../../hooks/useIsActive"
 import { PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
@@ -15,8 +16,7 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useIsActive } from "../../../hooks/useIsActive"
-import { useIsSdkInitializing } from "../../../contexts/ThresholdContext"
+import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -27,7 +27,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { btcDepositAddress, updateState } = useTbtcState()
   const { account } = useIsActive()
   const { isSdkInitializing, isSdkInitializedWithSigner } =
-    useIsSdkInitializing()
+    useIsTbtcSdkInitializing()
 
   useEffect(() => {
     // Update the store with the deposit data if the account is placed in tbtc
@@ -40,12 +40,12 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
       tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
     ) {
       // When the code enters this if, this means that the deposit data is
-      // placed in tbtc local storage and we need to update the store with that
-      // data. The SDK might still be initializing though, and we need it to be
-      // initialized, because as soon as `btcDepositAddress` is upadted in the
-      // store, it will start searching for UTXOs for it. That's why we update
-      // the mintingStep with `undefined` value, to show the loading state as
-      // soon as possible.
+      // placed in tBTC local storage and we need to update the store with that
+      // data. The SDK might still be initializing though, so we should show the
+      // loading state as soon as possible. That's why we are setting the
+      // `mintingStep` as undefined when we notice that sdk is initializing -
+      // this will display a loading state for the minting flow, and then
+      // redirect to the correct step.
       if (isSdkInitializing) updateState("mintingStep", undefined)
 
       if (!isSdkInitializing && isSdkInitializedWithSigner) {
@@ -83,8 +83,6 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { isActive } = useIsActive()
-  const { isSdkInitializing, isSdkInitializedWithSigner } =
-    useIsSdkInitializing()
 
   return (
     <BridgeLayout>

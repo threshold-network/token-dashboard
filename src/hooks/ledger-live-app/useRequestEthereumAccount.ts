@@ -2,11 +2,13 @@ import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useContext, useEffect } from "react"
 import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../contexts/ThresholdContext"
 import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { useAppDispatch } from "../store/useAppDispatch"
-import { useInitializeSdk } from "../tbtc/useInitializeSdk"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -27,7 +29,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { account, requestAccount } = useRequestAccountReturn
   const threshold = useThreshold()
   const dispatch = useAppDispatch()
-  const { setIsSdkInitializing } = useInitializeSdk()
+  const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
 
   useEffect(() => {
     // Setting the eth account in LedgerLiveAppContext through `setEthAccount`

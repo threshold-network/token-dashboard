@@ -8,7 +8,7 @@ import {
   FormControl,
 } from "@threshold-network/components"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { DepositScriptParameters } from "@keep-network/tbtc-v2.ts/dist/src/deposit"
+import { RecoveryJsonFileData } from "../../../components/Modal/TbtcRecoveryFileModal"
 import { useNavigate } from "react-router-dom"
 import { PageComponent } from "../../../types"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
@@ -27,7 +27,6 @@ import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
 import { useIsActive } from "../../../hooks/useIsActive"
-import { DepositReceipt, Hex } from "@keep-network/sdk-tbtc-v2.ts"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -51,26 +50,18 @@ export const ResumeDepositPage: PageComponent = () => {
   const onSubmit = async (values: FormValues) => {
     if (!values.depositParameters) return
 
-    const {
-      depositParameters: { btcRecoveryAddress, ...restDepositParameters },
-    } = values
-    const depositReceipt: DepositReceipt = {
-      depositor: restDepositParameters.depositor,
-      blindingFactor: Hex.from(restDepositParameters.blindingFactor),
-      walletPublicKeyHash: Hex.from(restDepositParameters.walletPublicKeyHash),
-      refundPublicKeyHash: Hex.from(restDepositParameters.refundPublicKeyHash),
-      refundLocktime: Hex.from(restDepositParameters.refundLocktime),
-    }
-    await threshold.tbtc.initiateDepositFromReceiptSdkV2(depositReceipt)
-    const btcDepositAddress =
-      await threshold.tbtc.calculateDepositAddressSdkV2()
+    const { depositParameters } = values
+    await threshold.tbtc.initiateDepositFromDepositScriptParameters(
+      depositParameters
+    )
+    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
     setDepositDataInLocalStorage({
-      ethAddress: restDepositParameters?.depositor.identifierHex!,
-      blindingFactor: restDepositParameters?.blindingFactor!,
-      btcRecoveryAddress: btcRecoveryAddress!,
-      walletPublicKeyHash: restDepositParameters?.walletPublicKeyHash!,
-      refundLocktime: restDepositParameters?.refundLocktime!,
+      ethAddress: depositParameters?.depositor.identifierHex!,
+      blindingFactor: depositParameters?.blindingFactor!,
+      btcRecoveryAddress: depositParameters?.btcRecoveryAddress!,
+      walletPublicKeyHash: depositParameters?.walletPublicKeyHash!,
+      refundLocktime: depositParameters?.refundLocktime!,
       btcDepositAddress,
     })
 
@@ -102,8 +93,7 @@ export const ResumeDepositPage: PageComponent = () => {
 }
 
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
-  const { setValues, getFieldMeta, setFieldError, values } = props
-
+  const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
 
   const isError = Boolean(error)
@@ -139,8 +129,9 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         size="lg"
         isFullWidth
         mt="6"
-        disabled={!values.depositParameters || isError}
+        disabled={!values.depositParameters || isError || isSubmitting}
         type="submit"
+        isLoading={isSubmitting}
       >
         Upload and Resume
       </Button>
@@ -148,7 +139,7 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
   )
 }
 
-type DepositDetails = DepositScriptParameters & { btcRecoveryAddress: string }
+type DepositDetails = RecoveryJsonFileData
 
 type FormValues = {
   depositParameters: DepositDetails | null

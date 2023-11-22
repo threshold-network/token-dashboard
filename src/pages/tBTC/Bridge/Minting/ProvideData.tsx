@@ -123,57 +123,40 @@ export const ProvideDataComponent: FC<{
       )
     }
     setSubmitButtonLoading(true)
-
-    const depositScriptParameters2 =
-      await threshold.tbtc.createDepositScriptParametersSdkV2(
-        values.btcRecoveryAddress
-      )
-
-    const depositAddress = await threshold.tbtc.calculateDepositAddressSdkV2()
+    const deposit = await threshold.tbtc.initiateDeposit(
+      values.btcRecoveryAddress
+    )
+    const depositAddress = await threshold.tbtc.calculateDepositAddress()
+    const receipt = deposit.getReceipt()
 
     // update state,
     updateState("ethAddress", values.ethAddress)
-    updateState(
-      "blindingFactor",
-      depositScriptParameters2.blindingFactor.toString()
-    )
+    updateState("blindingFactor", receipt.blindingFactor.toString())
     updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-    updateState(
-      "walletPublicKeyHash",
-      depositScriptParameters2.walletPublicKeyHash.toString()
-    )
-    updateState(
-      "refundLocktime",
-      depositScriptParameters2.refundLocktime.toString()
-    )
+    updateState("walletPublicKeyHash", receipt.walletPublicKeyHash.toString())
+    updateState("refundLocktime", receipt.refundLocktime.toString())
 
     // create a new deposit address,
     updateState("btcDepositAddress", depositAddress)
 
     setDepositDataInLocalStorage({
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters2.blindingFactor.toString(),
+      blindingFactor: receipt.blindingFactor.toString(),
       btcRecoveryAddress: values.btcRecoveryAddress,
-      walletPublicKeyHash:
-        depositScriptParameters2.walletPublicKeyHash.toString(),
-      refundLocktime: depositScriptParameters2.refundLocktime.toString(),
+      walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+      refundLocktime: receipt.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
 
-    // TODO: Commenting it out for now to make the deposit flow working. This
-    // probably will be addressed in a separate PR anyway (with SDK
-    // implementation)
-    // depositTelemetry(depositScriptParameters2, depositAddress)
+    depositTelemetry(receipt, depositAddress)
 
     // if the user has NOT declined the json file, ask the user if they want to accept the new file
     openModal(ModalType.TbtcRecoveryJson, {
       ethAddress: values.ethAddress,
-      blindingFactor: depositScriptParameters2.blindingFactor.toString(),
-      walletPublicKeyHash:
-        depositScriptParameters2.walletPublicKeyHash.toString(),
-      refundPublicKeyHash:
-        depositScriptParameters2.refundPublicKeyHash.toString(),
-      refundLocktime: depositScriptParameters2.refundLocktime.toString(),
+      blindingFactor: receipt.blindingFactor.toString(),
+      walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+      refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
+      refundLocktime: receipt.refundLocktime.toString(),
       btcDepositAddress: depositAddress,
     })
     updateState("mintingStep", MintingStep.Deposit)

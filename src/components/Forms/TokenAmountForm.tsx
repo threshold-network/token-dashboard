@@ -1,16 +1,16 @@
+import { BodySm, Box, ButtonProps, Icon } from "@threshold-network/components"
+import { FormikErrors, FormikProps, withFormik } from "formik"
 import { FC, Ref } from "react"
-import { Icon, Box, ButtonProps, BodySm } from "@threshold-network/components"
-import { withFormik, FormikProps, FormikErrors } from "formik"
 import ThresholdCircleBrand from "../../static/icons/ThresholdCircleBrand"
-import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
-import SubmitTxButton from "../SubmitTxButton"
-import { Form } from "./Form"
+import { formatTokenAmount } from "../../utils/formatAmount"
 import {
   DEFAULT_MIN_VALUE,
   getErrorsObj,
   validateAmountInRange,
 } from "../../utils/forms"
-import { formatTokenAmount } from "../../utils/formatAmount"
+import SubmitTxButton from "../SubmitTxButton"
+import { Form } from "./Form"
+import { FormikTokenBalanceInput } from "./FormikTokenBalanceInput"
 
 export type FormValues = {
   tokenAmount: string
@@ -71,7 +71,7 @@ export const TokenAmountFormBase: FC<
         max={maxTokenAmount}
         helperText={helperText}
         isDisabled={isDisabled}
-        _disabled={{ bg: "gray.50", border: "none" }}
+        _disabled={{ bg: "gray.50", border: "none", cursor: "not-allowed" }}
       />
       <SubmitTxButton
         type="submit"
