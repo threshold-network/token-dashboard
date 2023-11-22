@@ -112,9 +112,6 @@ jobs:
           query: |
             threshold-contracts-version = github.com/threshold-network/solidity-contracts#version
             random-beacon-contracts-version = github.com/keep-network/keep-core/random-beacon#version
-            ecdsa-contracts-version = github.com/keep-network/keep-core/ecdsa#version
-            tbtc-v2-contracts-version = github.com/keep-network/tbtc-v2#version
-            tbtc-v2-ts-version = github.com/keep-network/tbtc-v2.ts#version
 
       - name: Set packages versions
         shell: bash
@@ -128,6 +125,15 @@ jobs:
             echo "random-beacon-contracts-version=${{ steps.upstream-builds-query.outputs.random-beacon-contracts-version }}" >> $GITHUB_OUTPUT
           fi
 
+      # In the `package.json` there are two different versions of
+      # `coverage-pools` used. This is done to allow using contracts from two
+      # different cov pool versions on the mainnet (needed for computations of
+      # the TVL-related fields) - one relates to KEEP token cov pool (<2.0.0)
+      # and one to to T token one (>=2.0.0).
+      # On the testnet environmet we currently don't have the KEEP token cov
+      # pool deployed. The T-related cov-pool contracts will be used in all TVL
+      # computations (which differs from the mainnet behavior, but is acceptable
+      # on the test env).
       - name: Resolve contracts
         shell: bash
         run: |
@@ -136,8 +142,12 @@ jobs:
             @keep-network/keep-core@${{ inputs.environment }} \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
             @keep-network/tbtc@${{ inputs.environment }} \
+            @keep-network/coverage-pools@1.1.0-sepolia.0 \
+            @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
             @keep-network/coverage-pools@${{ inputs.environment }} \
-            @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }} \
+            @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@${{ inputs.environment }} \
+            @keep-network/random-beacon@${{ steps.set-packages-versions.outputs.random-beacon-contracts-version }}
+
       - name: Run postinstall script
         shell: bash
         # `yarn upgrade` doesn't trigger the `postinstall` script.

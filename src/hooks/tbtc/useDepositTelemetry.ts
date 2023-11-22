@@ -15,10 +15,22 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
         network
       )
 
+      const {
+        depositor,
+        blindingFactor,
+        walletPublicKeyHash,
+        refundPublicKeyHash,
+        refundLocktime,
+      } = deposit
+
       captureMessage(
         `Generated deposit [${depositAddress}]`,
         {
-          ...deposit,
+          depositor: depositor.identifierHex,
+          blindingFactor: blindingFactor.toString(),
+          walletPublicKeyHash: walletPublicKeyHash.toString(),
+          refundPublicKeyHash: refundPublicKeyHash.toString(),
+          refundLocktime: refundLocktime.toString(),
           verificationStatus: status,
           verificationResponse: response,
         },
