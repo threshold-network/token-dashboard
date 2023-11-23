@@ -14,7 +14,6 @@ import {
   BitcoinClientCredentials,
   EthereumConfig,
 } from "../threshold-ts/types"
-import { ledgerLiveAppEthereumSigner } from "./getLedgerLiveAppEthereumSigner"
 
 function getInitialEthereumConfig(
   providerOrSigner?: Provider | Signer
@@ -25,7 +24,6 @@ function getInitialEthereumConfig(
     shouldUseTestnetDevelopmentContracts:
       supportedChainId === ChainID.Goerli.toString() &&
       shouldUseTestnetDevelopmentContracts,
-    ledgerLiveAppEthereumSigner: ledgerLiveAppEthereumSigner,
   }
 }
 

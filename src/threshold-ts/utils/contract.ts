@@ -35,6 +35,7 @@ import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goe
 import VendingMachineKeepDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypherDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineNuCypher.json"
 import WalletRegistryArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/WalletRegistry.json"
+import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
 
 type ArtifactNameType =
   | "Bridge"
@@ -107,11 +108,13 @@ export const getContract = (
   if (!getAddress(address) || isAddressZero(address)) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
-  return new Contract(
-    address,
-    abi,
-    getProviderOrSigner(providerOrSigner as any, account) as any
-  )
+  // Sets the correct provider for ledger live app if the instance of
+  // LedgerLiveAppEthereumSigner is passed as providerOrSigner.
+  const _providerOrSigner =
+    providerOrSigner instanceof LedgerLiveAppEthereumSigner
+      ? providerOrSigner
+      : (getProviderOrSigner(providerOrSigner as any, account) as any)
+  return new Contract(address, abi, _providerOrSigner)
 }
 
 interface EventFilterOptions {

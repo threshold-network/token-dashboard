@@ -1,11 +1,14 @@
 import { Account } from "@ledgerhq/wallet-api-client"
-import React, { createContext, useState } from "react"
+import React, { createContext, useCallback, useState } from "react"
+import { LedgerLiveAppEthereumSigner } from "../ledger-live-app-eth-signer"
+import { ledgerLiveAppEthereumSigner } from "../utils/getLedgerLiveAppEthereumSigner"
 
 interface LedgerLiveAppContextState {
   ethAccount: Account | undefined
   btcAccount: Account | undefined
-  setEthAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
-  setBtcAccount: React.Dispatch<React.SetStateAction<Account | undefined>>
+  setEthAccount: (ethAccount: Account | undefined) => void
+  setBtcAccount: (btcAccount: Account | undefined) => void
+  ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
 }
 
 export const LedgerLiveAppContext = createContext<LedgerLiveAppContextState>({
@@ -13,11 +16,17 @@ export const LedgerLiveAppContext = createContext<LedgerLiveAppContextState>({
   btcAccount: undefined,
   setEthAccount: () => {},
   setBtcAccount: () => {},
+  ledgerLiveAppEthereumSigner: undefined,
 })
 
 export const LedgerLiveAppProvider: React.FC = ({ children }) => {
-  const [ethAccount, setEthAccount] = useState<Account | undefined>(undefined)
+  const [ethAccount, _setEthAccount] = useState<Account | undefined>(undefined)
   const [btcAccount, setBtcAccount] = useState<Account | undefined>(undefined)
+
+  const setEthAccount = useCallback((ethAccount: Account | undefined) => {
+    ledgerLiveAppEthereumSigner.setAccount(ethAccount)
+    _setEthAccount(ethAccount)
+  }, [])
 
   return (
     <LedgerLiveAppContext.Provider
@@ -26,6 +35,7 @@ export const LedgerLiveAppProvider: React.FC = ({ children }) => {
         setEthAccount,
         btcAccount,
         setBtcAccount,
+        ledgerLiveAppEthereumSigner,
       }}
     >
       {children}

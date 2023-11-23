@@ -42,8 +42,6 @@ import {
   ZERO,
 } from "../utils"
 import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
-import { ledgerLiveAppEthereumSigner } from "../../utils/getLedgerLiveAppEthereumSigner"
-import { Account } from "@ledgerhq/wallet-api-client"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -208,14 +206,6 @@ export interface ITBTC {
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK>
-
-  /**
-   * Saves the Account object to the Ledger Live App Ethereum signer.
-   * @param account Account object returned from `requestAccount` function (from
-   * ledger's wallet-api).
-   */
-  setLedgerLiveAppEthAccount(account: Account | undefined): void
-
   /**
    * Initiates a Deposit object from bitcoin recovery address.
    * @param btcRecoveryAddress The bitcoin address in which the user will
@@ -437,7 +427,6 @@ export class TBTC implements ITBTC {
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
   private _sdk: SDK | undefined
   private _deposit: Deposit | undefined
-  private _ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
 
   constructor(
     ethereumConfig: EthereumConfig,
@@ -501,24 +490,14 @@ export class TBTC implements ITBTC {
     this._multicall = multicall
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
-    this._ledgerLiveAppEthereumSigner = ledgerLiveAppEthereumSigner
   }
 
   async initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK> {
-    // TODO: This should be checked outside of this class
-    const shouldUseLedgerLiveAppSigner = JSON.parse(
-      localStorage.getItem("isEmbed") || ""
-    )
-
     const signer =
-      // TODO: Check if it works properly:
-      !!account && !!this._ledgerLiveAppEthereumSigner
-        ? this._ledgerLiveAppEthereumSigner
-        : // Double bang to convert to boolean
-        !!account && providerOrSigner instanceof Web3Provider
+      !!account && providerOrSigner instanceof Web3Provider
         ? getSigner(providerOrSigner as Web3Provider, account)
         : providerOrSigner
 
@@ -578,15 +557,6 @@ export class TBTC implements ITBTC {
 
   get tokenContract() {
     return this._tokenContract
-  }
-
-  setLedgerLiveAppEthAccount(account: Account | undefined): void {
-    if (!this._ledgerLiveAppEthereumSigner) {
-      throw new Error(
-        "Ledger Live App Ethereum Signer is not defined in threshold-ts lib."
-      )
-    }
-    this._ledgerLiveAppEthereumSigner.setAccount(account)
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {

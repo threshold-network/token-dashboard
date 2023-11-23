@@ -39,7 +39,6 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // initializing process.
     setIsSdkInitializing(true)
     setEthAccount(account || undefined)
-    threshold.tbtc.setLedgerLiveAppEthAccount(account || undefined)
     dispatch(walletConnected(account?.address || ""))
   }, [account])
 
