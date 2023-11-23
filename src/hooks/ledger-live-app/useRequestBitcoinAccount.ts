@@ -1,8 +1,8 @@
 import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
-import { useCallback, useContext, useEffect } from "react"
-import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
-import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
+import { useCallback, useEffect } from "react"
+import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
+import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -17,8 +17,8 @@ type UseRequestAccountReturn = {
 } & UseRequestAccountState
 
 export function useRequestBitcoinAccount(): UseRequestAccountReturn {
-  const { setBtcAccount } = useContext(LedgerLiveAppContext)
-  const { walletApiReactTransport } = useContext(WalletApiReactTransportContext)
+  const { setBtcAccount } = useLedgerLiveApp()
+  const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
 

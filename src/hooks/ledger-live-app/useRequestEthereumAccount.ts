@@ -1,12 +1,12 @@
 import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
-import { useCallback, useContext, useEffect } from "react"
-import { LedgerLiveAppContext } from "../../contexts/LedgerLiveAppContext"
+import { useCallback, useEffect } from "react"
+import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import {
   useIsTbtcSdkInitializing,
   useThreshold,
 } from "../../contexts/ThresholdContext"
-import { WalletApiReactTransportContext } from "../../contexts/TransportProvider"
+import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { useAppDispatch } from "../store/useAppDispatch"
 
@@ -23,8 +23,8 @@ type UseRequestAccountReturn = {
 } & UseRequestAccountState
 
 export function useRequestEthereumAccount(): UseRequestAccountReturn {
-  const { setEthAccount } = useContext(LedgerLiveAppContext)
-  const { walletApiReactTransport } = useContext(WalletApiReactTransportContext)
+  const { setEthAccount } = useLedgerLiveApp()
+  const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
   const threshold = useThreshold()

@@ -1,6 +1,6 @@
 import { WalletAPIProvider } from "@ledgerhq/wallet-api-client-react"
 import { WindowMessageTransport } from "@ledgerhq/wallet-api-client"
-import { createContext, FC } from "react"
+import { createContext, FC, useContext } from "react"
 
 const getWalletAPITransport = (): WindowMessageTransport => {
   // if (typeof window === "undefined") {
@@ -20,10 +20,13 @@ interface TransportContextState {
   walletApiReactTransport: WindowMessageTransport
 }
 
-export const WalletApiReactTransportContext =
-  createContext<TransportContextState>({
-    walletApiReactTransport: walletApiReactTransport,
-  })
+export const useWalletApiReactTransport = () => {
+  return useContext(WalletApiReactTransportContext)
+}
+
+const WalletApiReactTransportContext = createContext<TransportContextState>({
+  walletApiReactTransport: walletApiReactTransport,
+})
 
 export const WalletApiReactTransportProvider: React.FC = ({ children }) => {
   return (

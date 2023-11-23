@@ -1,8 +1,7 @@
 import { useWeb3React } from "@web3-react/core"
-import { useContext, useMemo } from "react"
-import { LedgerLiveAppContext } from "../contexts/LedgerLiveAppContext"
+import { useMemo } from "react"
+import { useLedgerLiveApp } from "../contexts/LedgerLiveAppContext"
 import { useEmbedFeatureFlag } from "./useEmbedFeatureFlag"
-import { useLocalStorage } from "./useLocalStorage"
 
 type UseIsActiveResult = {
   account: string | undefined
@@ -16,7 +15,7 @@ type UseIsActiveResult = {
  */
 export const useIsActive = (): UseIsActiveResult => {
   const { active, account } = useWeb3React()
-  const { ethAccount } = useContext(LedgerLiveAppContext)
+  const { ethAccount } = useLedgerLiveApp()
   const ethAddress = ethAccount?.address || undefined
   const { isEmbed } = useEmbedFeatureFlag()
 
