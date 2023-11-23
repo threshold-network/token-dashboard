@@ -10,11 +10,11 @@ const PRE_ADDRESSESS = {
   // https://etherscan.io/address/0x7E01c9c03FD3737294dbD7630a34845B0F70E5Dd
   [ChainID.Ethereum.valueOf().toString()]:
     "0x7E01c9c03FD3737294dbD7630a34845B0F70E5Dd",
-  // https://goerli.etherscan.io/address/0x829fdCDf6Be747FEA37518fBd83dF70EE371fCf2
-  // As NuCypher hasn't depoyed the `SimplePreApplication` contract on Goerli,
+  // https://sepolia.etherscan.io/address/0x471EA40981D278fb3Cb55587e94ac549aad1ACA9
+  // As NuCypher hasn't depoyed the `SimplePreApplication` contract on Sepolia,
   // we're using a stub contract.
-  [ChainID.Goerli.valueOf().toString()]:
-    "0x829fdCDf6Be747FEA37518fBd83dF70EE371fCf2",
+  [ChainID.Sepolia.valueOf().toString()]:
+    "0x471EA40981D278fb3Cb55587e94ac549aad1ACA9",
   // Set the correct `SimplePREApplication` contract address. If you deployed
   // the `@threshold-network/solidity-contracts` to your local chain and linked
   // package using `yarn link @threshold-network/solidity-contracts` you can

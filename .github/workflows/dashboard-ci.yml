@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Environment (network) for workflow execution, e.g. `goerli`"
+        description: "Environment (network) for workflow execution, e.g. `sepolia`"
         required: false
       upstream_builds:
         description: "Upstream builds"
@@ -42,7 +42,10 @@ jobs:
         run: git config --global url."https://".insteadOf git://
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --ignore-scripts --frozen-lockfile
+
+      - name: Run token-dashboard post-install script
+        run: yarn run postinstall
 
       - name: Check formatting
         run: yarn format
@@ -74,7 +77,7 @@ jobs:
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
             @keep-network/coverage-pools \
-            @keep-network/random-beacon
+            @keep-network/random-beacon --ignore-scripts
 
       - name: Run postinstall script
         # `yarn upgrade` doesn't trigger the `postinstall` script.
@@ -84,9 +87,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          CHAIN_ID: 5
-          ETH_HOSTNAME_HTTP: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+          CHAIN_ID: 11155111
+          ETH_HOSTNAME_HTTP: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
+          ETH_HOSTNAME_WS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -98,7 +101,7 @@ jobs:
       #   run: yarn test
 
   # This job will be triggered for PR updates. It will build the dashboard
-  # using `dapp-development-goerli`-taggeed packages which contain contracts
+  # using `dapp-development-sepolia`-taggeed packages which contain contracts
   # with values modified to help with the testing of dashboard. The code will be
   # published to
   # https://preview.dashboard.test.threshold.network/${{ github.head_ref }}/index.html
@@ -109,18 +112,18 @@ jobs:
     if: github.event_name == 'pull_request'
     uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
-      environment: goerli
+      environment: sepolia
       useUpstreamBuilds: false
-      # We use `dapp-development-goerli`-taggeed packages with modified
+      # We use `dapp-development-sepolia`-taggeed packages with modified
       # contracts. They contain modifications that help with the testing of
       # dashboard features.
-      dependentPackagesTag: dapp-development-goerli
+      dependentPackagesTag: dapp-development-sepolia
       gcpBucketName: preview.dashboard.test.threshold.network
       gcpBucketPath: ${{ github.head_ref }}
       preview: true
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -144,14 +147,14 @@ jobs:
     uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
       requireApproval: true
-      environment: goerli
+      environment: sepolia
       useUpstreamBuilds: true
       upstreamBuilds: ${{ github.event.inputs.upstream_builds }}
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -170,14 +173,14 @@ jobs:
     if: github.event_name == 'push'
     uses: ./.github/workflows/reusable-build-and-publish.yml
     with:
-      environment: goerli
+      environment: sepolia
       useUpstreamBuilds: false
-      dependentPackagesTag: goerli
+      dependentPackagesTag: sepolia
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.GOERLI_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.GOERLI_ETH_HOSTNAME_WS }}
+      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
+      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}

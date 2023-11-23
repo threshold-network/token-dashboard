@@ -22,7 +22,7 @@ function getInitialEthereumConfig(
     chainId: supportedChainId,
     providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
     shouldUseTestnetDevelopmentContracts:
-      supportedChainId === ChainID.Goerli.toString() &&
+      supportedChainId === ChainID.Sepolia.toString() &&
       shouldUseTestnetDevelopmentContracts,
   }
 }
