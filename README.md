@@ -41,16 +41,16 @@ To make sure the changes made in local depository of `components` lib are implem
 
 `yarn add-components-lib`
 
-# Run T dapp against the Görli network
+# Run T dapp against the Sepolia network
 
 ## Update the `.env` file:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=5
+REACT_APP_SUPPORTED_CHAIN_ID=11155111
 REACT_APP_ETH_HOSTNAME_HTTP=<your http ETH hostname- eg. Infura>
 REACT_APP_ETH_HOSTNAME_WS=<your ws ETH hostname- eg. Infura>
 // We can skip this env variable- the dapp uses the correct address
-// of Multicall contract for Görli under the hood.
+// of Multicall contract for Sepolia under the hood.
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ```
 
@@ -68,7 +68,6 @@ yarn upgrade @keep-network/coverage-pools@sepolia \
   @keep-network/random-beacon@sepolia \
   @keep-network/tbtc@sepolia \
   @keep-network/tbtc-v2@sepolia \
-  @keep-network/tbtc-v2.ts@sepolia \
   @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
   @threshold-network/solidity-contracts@sepolia
 ```

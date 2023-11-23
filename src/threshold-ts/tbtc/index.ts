@@ -32,7 +32,7 @@ import {
   fromSatoshiToTokenPrecision,
   getContract,
   getContractPastEvents,
-  getGoerliDevelopmentContracts,
+  getSepoliaDevelopmentContracts,
   getSigner,
   getArtifact,
   isPayToScriptHashTypeAddress,
@@ -511,7 +511,7 @@ export class TBTC implements ITBTC {
       const ethereumNetwork = await ethereumNetworkFromSigner(signer)
 
       const tbtcContracts = shouldUseTestnetDevelopmentContracts
-        ? getGoerliDevelopmentContracts(signer)
+        ? getSepoliaDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
       this._sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
@@ -525,7 +525,7 @@ export class TBTC implements ITBTC {
     const initializeFunction =
       this.bitcoinNetwork === BitcoinNetwork.Mainnet
         ? SDK.initializeMainnet
-        : SDK.initializeGoerli
+        : SDK.initializeSepolia
 
     this._sdk = await initializeFunction(signer)
 

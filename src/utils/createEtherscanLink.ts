@@ -1,6 +1,5 @@
 const ETHERSCAN_PREFIXES: { [chainId: number]: string } = {
   1: "",
-  5: "goerli.",
   11155111: "sepolia.",
 }
 
