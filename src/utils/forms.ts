@@ -59,8 +59,6 @@ const getAmountInRangeValidationMessage = (
   tokenDecimals: number = 18,
   precision: number = 2
 ) => {
-  // TODO: Check again if this (validation for btc amount) works. I might have
-  // messed something up when resolving conflicts.
   return typeof validationMessage === "function"
     ? validationMessage(value, tokenDecimals, precision)
     : validationMessage

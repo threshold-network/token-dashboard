@@ -198,7 +198,6 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
-      {/* TODO: No need to use button here. We can replace it with just some text */}
       {isEmbed && !!ledgerBitcoinAccount?.address && (
         <AddressRow
           text="Bitcoin account"

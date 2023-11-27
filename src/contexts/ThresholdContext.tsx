@@ -99,12 +99,9 @@ export const ThresholdProvider: FC = ({ children }) => {
 
   useEffect(() => {
     if (isActive) {
-      // TODO: Maybe we could pass ledgerLiveAppEthereumSigner as
-      // `providerOrSigner`? This would require some testing.
       threshold.updateConfig({
         ethereum: {
           ...threshold.config.ethereum,
-          // TODO: this is needed for ledger. See the TODO above
           providerOrSigner: isEmbed ? ledgerLiveAppEthereumSigner : library,
           account,
         },
@@ -131,12 +128,6 @@ export const ThresholdProvider: FC = ({ children }) => {
       initializeSdk(threshold.config.ethereum.providerOrSigner)
     }
   }, [library, isActive, account, initializeSdk, isEmbed])
-
-  // TODO: Remove this useEffect
-  useEffect(() => {
-    console.log("ethAccount: ", ethAccount)
-    console.log("btcAccount: ", btcAccount)
-  }, [ethAccount?.address, btcAccount?.address])
 
   return (
     <ThresholdContext.Provider value={threshold}>
