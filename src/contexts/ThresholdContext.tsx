@@ -56,10 +56,10 @@ const useInitializeTbtcSdk = () => {
           account
         )
         setSdk(sdk)
-        setIsInitializing(false)
         setIsInitialized(true)
         const isInitializedWithSigner = account ? true : false
         setIsInitializedWithSigner(isInitializedWithSigner)
+        setIsInitializing(false)
       }
     },
     [
