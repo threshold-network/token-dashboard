@@ -9,15 +9,15 @@ import { useEmbedFeatureFlag } from "../../hooks/useEmbedFeatureFlag"
 import { RootState } from "../../store"
 import { walletConnected } from "../../store/account"
 import { useRequestEthereumAccount } from "../../hooks/ledger-live-app"
+import { useIsActive } from "../../hooks/useIsActive"
 
 const Navbar: FC = () => {
   const { openModal } = useModal()
   // TODO: Determinate if active and deactivate props are necessary for
   // LedgerLive app
-  const { active, chainId: web3ReactChainId, deactivate } = useWeb3React()
+  const { isActive, account, chainId, deactivate } = useIsActive()
   const { isEmbed } = useEmbedFeatureFlag()
   const dispatch = useAppDispatch()
-  const { address } = useSelector((state: RootState) => state.account)
 
   const { account: ledgerLiveAccount, requestAccount } =
     useRequestEthereumAccount()
@@ -37,14 +37,10 @@ const Navbar: FC = () => {
     }
   }, [ledgerLiveAccount])
 
-  const account = address
-  // TODO: Use proper chainId here for ledger live app
-  const chainId = isEmbed ? 5 : web3ReactChainId
-
   return (
     <NavbarComponent
       {...{
-        active,
+        active: isActive,
         account,
         chainId,
         openWalletModal,

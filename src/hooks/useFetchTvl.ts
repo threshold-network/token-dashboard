@@ -14,6 +14,7 @@ import { useETHData } from "./useETHData"
 import { useToken } from "./useToken"
 import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
+import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 
 interface TvlRawData {
   ecdsaTvl: string
@@ -74,6 +75,7 @@ export const useFetchTvl = (): [
   const tTokenStaking = useTStakingContract()
   const keepTokenStaking = useKeepTokenStakingContract()
   const tBTCToken = useToken(Token.TBTCV2)
+  const { isSdkInitializing } = useIsTbtcSdkInitializing()
 
   const fetchOnChainData = useMulticall([
     {
@@ -117,6 +119,7 @@ export const useFetchTvl = (): [
   ])
 
   const fetchTvlData = useCallback(async () => {
+    if (isSdkInitializing) return initialState
     const chainData = await fetchOnChainData()
     if (chainData.length === 0) return initialState
 
@@ -142,7 +145,7 @@ export const useFetchTvl = (): [
     setRawData(data)
 
     return data
-  }, [fetchOnChainData])
+  }, [fetchOnChainData, isSdkInitializing])
 
   const data = useMemo(() => {
     const ecdsa = toUsdBalance(formatUnits(ecdsaTvl), eth.usdPrice)
