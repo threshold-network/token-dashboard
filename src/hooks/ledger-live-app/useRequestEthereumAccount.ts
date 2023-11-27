@@ -2,12 +2,10 @@ import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
-import {
-  useIsTbtcSdkInitializing,
-  useThreshold,
-} from "../../contexts/ThresholdContext"
+import { useIsTbtcSdkInitializing } from "../../contexts/ThresholdContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
+import { supportedChainId } from "../../utils/getEnvVariable"
 import { useAppDispatch } from "../store/useAppDispatch"
 
 type UseRequestAccountState = {
@@ -27,7 +25,6 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
-  const threshold = useThreshold()
   const dispatch = useAppDispatch()
   const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
 
@@ -43,11 +40,11 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   }, [account])
 
   const requestEthereumAccount = useCallback(async () => {
-    // TODO: Get currencyId based on the chainId
+    const currencyId = supportedChainId === "1" ? "ethereum" : "ethereum_goerli"
     walletApiReactTransport.connect()
-    await requestAccount({ currencyIds: ["ethereum_goerli"] })
+    await requestAccount({ currencyIds: [currencyId] })
     walletApiReactTransport.disconnect()
-  }, [requestAccount, walletApiReactTransport])
+  }, [requestAccount, walletApiReactTransport, supportedChainId])
 
   return { ...useRequestAccountReturn, requestAccount: requestEthereumAccount }
 }
