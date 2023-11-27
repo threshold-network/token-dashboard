@@ -17,7 +17,8 @@ ENV NODE_OPTIONS=--max_old_space_size=3072
 # Copy package files and install node modules
 COPY package*.json yarn.lock ./
 RUN npm install -g node-gyp
-RUN yarn install
+RUN yarn install --ignore-scripts
+RUN yarn run postinstall
 
 # Expose port 3000
 EXPOSE 3000

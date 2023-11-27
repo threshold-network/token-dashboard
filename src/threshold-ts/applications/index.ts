@@ -406,7 +406,10 @@ export class Application implements IApplication {
     return await this._application.registerOperator(operator)
   }
 
-  bondOperator = async (stakingProvider: string, operator: string): Promise<ContractTransaction> => {
+  bondOperator = async (
+    stakingProvider: string,
+    operator: string
+  ): Promise<ContractTransaction> => {
     return await this._application.bondOperator(stakingProvider, operator)
   }
 
