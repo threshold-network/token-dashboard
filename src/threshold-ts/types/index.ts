@@ -5,18 +5,12 @@ import {
   ElectrumCredentials,
 } from "@keep-network/tbtc-v2.ts"
 import { providers, Signer } from "ethers"
-import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
 
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
   shouldUseTestnetDevelopmentContracts: boolean
   account?: string
-  /**
-   * Ethereum Signer for Ledger Live App, that allows us to communicate with
-   * ethereum contracts.
-   */
-  ledgerLiveAppEthereumSigner?: LedgerLiveAppEthereumSigner
 }
 
 export type BitcoinClientCredentials = ElectrumCredentials

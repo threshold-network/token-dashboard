@@ -1,6 +1,6 @@
 import { Account } from "@ledgerhq/wallet-api-client"
 import React, { createContext, useCallback, useContext, useState } from "react"
-import { LedgerLiveAppEthereumSigner } from "../ledger-live-app-eth-signer"
+import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
 import { ledgerLiveAppEthereumSigner } from "../utils/getLedgerLiveAppEthereumSigner"
 
 interface LedgerLiveAppContextState {
@@ -8,7 +8,7 @@ interface LedgerLiveAppContextState {
   btcAccount: Account | undefined
   setEthAccount: (ethAccount: Account | undefined) => void
   setBtcAccount: (btcAccount: Account | undefined) => void
-  ledgerLiveAppEthereumSigner: LedgerLiveAppEthereumSigner | undefined
+  ledgerLiveAppEthereumSigner: LedgerLiveEthereumSigner | undefined
 }
 
 export const useLedgerLiveApp = () => {

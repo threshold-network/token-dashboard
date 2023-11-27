@@ -119,8 +119,7 @@ export const ThresholdProvider: FC = ({ children }) => {
         ethereum: {
           ...threshold.config.ethereum,
           providerOrSigner: getDefaultThresholdLibProvider(),
-          ledgerLiveAppEthereumSigner:
-            threshold.config.ethereum.ledgerLiveAppEthereumSigner,
+          account: undefined,
         },
         bitcoin: threshold.config.bitcoin,
       })

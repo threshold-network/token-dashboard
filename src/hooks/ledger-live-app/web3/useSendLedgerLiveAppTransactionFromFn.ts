@@ -4,8 +4,8 @@ import { useModal } from "../../../hooks/useModal"
 import { TransactionStatus, ModalType } from "../../../enums"
 import { isWalletRejectionError } from "../../../utils/isWalletRejectionError"
 import { useIsActive } from "../../useIsActive"
-import { useThreshold } from "../../../contexts/ThresholdContext"
-import { Contract, ContractTransaction } from "@ethersproject/contracts"
+import { ContractTransaction } from "@ethersproject/contracts"
+import { useLedgerLiveApp } from "../../../contexts/LedgerLiveAppContext"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -42,8 +42,7 @@ export const useSendLedgerLiveAppTransactionFromFn = <
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
   )
-  const threshold = useThreshold()
-  const signer = threshold.config.ethereum.ledgerLiveAppEthereumSigner
+  const { ledgerLiveAppEthereumSigner: signer } = useLedgerLiveApp()
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {

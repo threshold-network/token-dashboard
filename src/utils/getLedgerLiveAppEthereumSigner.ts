@@ -1,10 +1,10 @@
 import { JsonRpcProvider, Provider } from "@ethersproject/providers"
 import { EnvVariable } from "../enums"
-import { LedgerLiveAppEthereumSigner } from "../ledger-live-app-eth-signer"
+import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
 import { getEnvVariable } from "./getEnvVariable"
 
 export const getLedgerLiveAppEthereumSigner = (provider: Provider) => {
-  return new LedgerLiveAppEthereumSigner(provider)
+  return new LedgerLiveEthereumSigner(provider)
 }
 
 export const ledgerLiveAppEthereumSigner = getLedgerLiveAppEthereumSigner(

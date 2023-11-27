@@ -41,7 +41,6 @@ import {
   isValidBtcAddress,
   ZERO,
 } from "../utils"
-import { LedgerLiveAppEthereumSigner } from "../../ledger-live-app-eth-signer"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
