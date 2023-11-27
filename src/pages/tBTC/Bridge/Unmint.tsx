@@ -264,7 +264,7 @@ export const UnmintPageLayout: PageComponent = ({}) => {
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive && isSdkInitializing && isSdkInitializedWithSigner ? (
+        {isActive && !isSdkInitializing && isSdkInitializedWithSigner ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState
