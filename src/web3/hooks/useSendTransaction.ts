@@ -5,6 +5,9 @@ import { ModalType, TransactionStatus } from "../../enums"
 import { useModal } from "../../hooks/useModal"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 import { TransactionReceipt } from "@ethersproject/providers"
+import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
+import { useEmbedFeatureFlag } from "../../hooks/useEmbedFeatureFlag"
+import { useIsActive } from "../../hooks/useIsActive"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -42,11 +45,14 @@ export const useSendTransactionFromFn = <
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback
 ) => {
-  const { account, library } = useWeb3React()
+  const { library } = useWeb3React()
+  const { account } = useIsActive()
   const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
   )
+  const { ledgerLiveAppEthereumSigner: signer } = useLedgerLiveApp()
+  const { isEmbed } = useEmbedFeatureFlag()
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
@@ -66,9 +72,17 @@ export const useSendTransactionFromFn = <
         })
         setTransactionStatus(TransactionStatus.PendingOnChain)
 
-        const txReceipt = await (isContractTransaction(tx)
-          ? (tx as ContractTransaction).wait()
-          : library.waitForTransaction(txHash))
+        let txReceipt: TransactionReceipt
+        if (isEmbed) {
+          const transaction = await signer!.provider?.getTransaction(txHash)
+          if (!transaction)
+            throw new Error(`Transaction ${transaction} not found!`)
+          txReceipt = await transaction?.wait()
+        } else {
+          txReceipt = await (isContractTransaction(tx)
+            ? (tx as ContractTransaction).wait()
+            : library.waitForTransaction(txHash))
+        }
 
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
