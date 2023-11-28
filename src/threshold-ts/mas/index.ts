@@ -130,7 +130,7 @@ export class MultiAppStaking {
       {
         interface: this.taco.contract.interface,
         address: this.taco.address,
-        method: "getOperatorFromStakingProvider",
+        method: "stakingProviderToOperator",
         args: [stakingProvider],
       },
     ]

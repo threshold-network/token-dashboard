@@ -115,27 +115,12 @@ The following procedure allows to deploy T token dashboard to production:
 
 ## Local Development
 
-Replace the following dependencies in `package.json`:
-
-```json
-    "@keep-network/coverage-pools": "goerli",
-    "@keep-network/ecdsa": "goerli",
-    "@keep-network/keep-core": "1.8.1-goerli.0",
-    "@keep-network/keep-ecdsa": "goerli",
-    "@keep-network/random-beacon": "goerli",
-    "@keep-network/tbtc": "goerli",
-    "@keep-network/tbtc-v2": "goerli",
-    "@threshold-network/solidity-contracts": "goerli",
-    "@threshold-network/coverage-pools": "npm:@keep-network/coverage-pools@goerli",
-    "@keep-network/tbtc-v2.ts": "1.4.1-goerli.0",
-```
-
 Update `.env` to contain:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=5
-REACT_APP_ETH_HOSTNAME_HTTP=https://goerli.infura.io/v3/<your API key here>
-REACT_APP_ETH_HOSTNAME_WS=wss://goerli.infura.io/v3/<your API key here>
+REACT_APP_SUPPORTED_CHAIN_ID=11155111
+REACT_APP_ETH_HOSTNAME_HTTP=https://sepolia.infura.io/v3/<your API key here>
+REACT_APP_ETH_HOSTNAME_WS=wss://sepolia.infura.io/v3/<your API key here>
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 REACT_APP_FEATURE_FLAG_TBTC_V2=true
