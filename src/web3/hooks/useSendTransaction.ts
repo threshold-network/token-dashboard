@@ -6,7 +6,7 @@ import { useModal } from "../../hooks/useModal"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
 import { TransactionReceipt } from "@ethersproject/providers"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
-import { useEmbedFeatureFlag } from "../../hooks/useEmbedFeatureFlag"
+import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { useIsActive } from "../../hooks/useIsActive"
 
 type TransactionHashWithAdditionalParams = {
@@ -52,7 +52,7 @@ export const useSendTransactionFromFn = <
     TransactionStatus.Idle
   )
   const { ledgerLiveAppEthereumSigner: signer } = useLedgerLiveApp()
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {

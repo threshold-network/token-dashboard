@@ -3,7 +3,7 @@ import { Button, ButtonProps } from "@chakra-ui/react"
 import { ModalType } from "../enums"
 import { useModal } from "../hooks/useModal"
 import { useIsActive } from "../hooks/useIsActive"
-import { useEmbedFeatureFlag } from "../hooks/useEmbedFeatureFlag"
+import { useIsEmbed } from "../hooks/useIsEmbed"
 import { useRequestEthereumAccount } from "../hooks/ledger-live-app"
 import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 
@@ -18,7 +18,7 @@ const SubmitTxButton: FC<Props> = ({
   ...buttonProps
 }) => {
   const { isActive } = useIsActive()
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
   const { requestAccount } = useRequestEthereumAccount()
   const { openModal } = useModal()
   const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()

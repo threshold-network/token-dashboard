@@ -18,7 +18,7 @@ import {
 } from "../utils/getThresholdLib"
 import { useLedgerLiveApp } from "./LedgerLiveAppContext"
 import { useIsActive } from "../hooks/useIsActive"
-import { useEmbedFeatureFlag } from "../hooks/useEmbedFeatureFlag"
+import { useIsEmbed } from "../hooks/useIsEmbed"
 
 const ThresholdContext = createContext(threshold)
 
@@ -92,10 +92,9 @@ export const ThresholdProvider: FC = ({ children }) => {
     isSdkInitializedWithSigner,
     setIsSdkInitializing,
   } = useInitializeTbtcSdk()
-  const { ethAccount, btcAccount, ledgerLiveAppEthereumSigner } =
-    useLedgerLiveApp()
+  const { ledgerLiveAppEthereumSigner } = useLedgerLiveApp()
   const { account, isActive } = useIsActive()
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
 
   useEffect(() => {
     if (isActive) {

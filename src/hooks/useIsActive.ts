@@ -3,7 +3,7 @@ import { useCallback, useMemo } from "react"
 import { useLedgerLiveApp } from "../contexts/LedgerLiveAppContext"
 import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 import { supportedChainId } from "../utils/getEnvVariable"
-import { useEmbedFeatureFlag } from "./useEmbedFeatureFlag"
+import { useIsEmbed } from "./useIsEmbed"
 
 type UseIsActiveResult = {
   account: string | undefined
@@ -26,7 +26,7 @@ export const useIsActive = (): UseIsActiveResult => {
   } = useWeb3React()
   const { ethAccount, setEthAccount } = useLedgerLiveApp()
   const ledgerLiveAppEthAddress = ethAccount?.address || undefined
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
   const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
 
   const isActive = useMemo(() => {

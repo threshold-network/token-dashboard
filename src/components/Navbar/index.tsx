@@ -3,7 +3,7 @@ import { useModal } from "../../hooks/useModal"
 import NavbarComponent from "./NavbarComponent"
 import { ModalType } from "../../enums"
 import { useAppDispatch } from "../../hooks/store"
-import { useEmbedFeatureFlag } from "../../hooks/useEmbedFeatureFlag"
+import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { walletConnected } from "../../store/account"
 import { useRequestEthereumAccount } from "../../hooks/ledger-live-app"
 import { useIsActive } from "../../hooks/useIsActive"
@@ -11,7 +11,7 @@ import { useIsActive } from "../../hooks/useIsActive"
 const Navbar: FC = () => {
   const { openModal } = useModal()
   const { isActive, account, chainId, deactivate } = useIsActive()
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
   const dispatch = useAppDispatch()
 
   const { account: ledgerLiveAccount, requestAccount } =

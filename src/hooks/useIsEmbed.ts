@@ -1,23 +1,23 @@
 import { useCallback } from "react"
 import { useLocalStorage } from "./useLocalStorage"
 
-export const useEmbedFeatureFlag = () => {
+export const useIsEmbed = () => {
   const [isEmbed, setIsEmbed] = useLocalStorage<boolean | undefined>(
     "isEmbed",
     undefined
   )
 
-  const enableIsEmbedFeatureFlag = useCallback(() => {
+  const enableIsEmbed = useCallback(() => {
     setIsEmbed(true)
   }, [setIsEmbed])
 
-  const disableIsEmbedFeatureFlag = useCallback(() => {
+  const disableIsEmbed = useCallback(() => {
     setIsEmbed(false)
   }, [setIsEmbed])
 
   return {
-    enableIsEmbedFeatureFlag,
-    disableIsEmbedFeatureFlag,
+    enableIsEmbed,
+    disableIsEmbed,
     isEmbed,
   }
 }

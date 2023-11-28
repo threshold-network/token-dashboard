@@ -25,7 +25,7 @@ import { MintingStep } from "../../../../types/tbtc"
 import { QRCode } from "../../../../components/QRCode"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
-import { useEmbedFeatureFlag } from "../../../../hooks/useEmbedFeatureFlag"
+import { useIsEmbed } from "../../../../hooks/useIsEmbed"
 import {
   useRequestBitcoinAccount,
   useSendBitcoinTransaction,
@@ -133,7 +133,7 @@ const MakeDepositComponent: FC<{
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
 
-  const { isEmbed } = useEmbedFeatureFlag()
+  const { isEmbed } = useIsEmbed()
   const { requestAccount, account: ledgerBitcoinAccount } =
     useRequestBitcoinAccount()
   const { sendBitcoinTransaction } = useSendBitcoinTransaction()
