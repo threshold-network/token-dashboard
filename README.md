@@ -59,6 +59,30 @@ instead of `git://` by executing:
 git config --global url."https://".insteadOf git://
 ```
 
+**Sepolia-dev contracts**
+
+Ref: https://github.com/keep-network/tbtc-v2/pull/403
+
+Instead of the goerli contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to goerli/mainnet and also allow to manually control mint and unmint process of tbtc-v2 (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403) To install sepolia-dev contracts run:
+
+```
+yarn upgrade @keep-network/coverage-pools@sepolia \
+  @keep-network/keep-core@sepolia \
+  @keep-network/keep-ecdsa@sepolia \
+  @keep-network/random-beacon@dapp-development-sepolia \
+  @keep-network/tbtc@sepolia \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
+  @threshold-network/solidity-contracts@dapp-development-sepolia
+```
+
+and set the `REACT_APP_DAPP_DEVELOPMENT_TESTNET_CONTRACTS` variable in `.env` file to true:
+
+```
+(...)
+REACT_APP_DAPP_DEVELOPMENT_TESTNET_CONTRACTS=true
+(...)
+```
+
 ## Run T dapp
 
 `yarn start`
