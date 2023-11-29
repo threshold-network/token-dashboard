@@ -28,7 +28,7 @@ const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
       icon: <Icon as={ethereumLogo} />,
       bg: "gray.700",
     },
-    [ChainID.Goerli]: {
+    [ChainID.Sepolia]: {
       icon: (
         <Icon
           as={MdOutlineTrain}

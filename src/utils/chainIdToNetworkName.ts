@@ -6,10 +6,7 @@ type NetworkMap = {
 
 const networkMap: NetworkMap = {
   [ChainID.Ethereum]: "Ethereum",
-  // [ChainID.Ropsten]: "Ropsten Test",
-  // 4: "Rinkeby",
-  [ChainID.Goerli]: "Goerli Test",
-  // 42: "Kovan",
+  [ChainID.Sepolia]: "Sepolia Test",
   [ChainID.Localhost]: "Localhost",
 }
 
