@@ -249,6 +249,12 @@ export const displayNewAppsToAuthorizeModalEffect = async (
           .stakingProviders.data
       )
     )
+    .concat(
+      Object.values(
+        selectStakingAppStateByAppName(listenerApi.getState(), "taco")
+          .stakingProviders.data
+      )
+    )
     .some(
       (stakingProviderAppInfo) =>
         stakingProviderAppInfo.authorizedStake &&
@@ -273,6 +279,8 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
       currentState.applications.randomBeacon.stakingProviders.data ?? {}
     ).length > 0 &&
     Object.values(currentState.applications.tbtc.stakingProviders.data ?? {})
+      .length > 0 &&
+    Object.values(currentState.applications.taco.stakingProviders.data ?? {})
       .length > 0
   )
 }
