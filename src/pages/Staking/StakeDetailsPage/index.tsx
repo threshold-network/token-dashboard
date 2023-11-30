@@ -30,6 +30,7 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { isAddress } from "../../../web3/utils"
+import { stakingApplicationsSlice } from "../../../store/staking-applications"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
@@ -40,6 +41,10 @@ const StakeDetailsPage: FC = () => {
   useEffect(() => {
     if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
+
+  useEffect(() => {
+    dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))
+  }, [dispatch])
 
   useEffect(() => {
     dispatch(
