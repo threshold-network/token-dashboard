@@ -41,9 +41,15 @@ export const getSupportedAppsEffect = async (
         appName: "randomBeacon",
       })
     )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.fetchingAppParameters({
+        appName: "taco",
+      })
+    )
     const data =
       await listenerApi.extra.threshold.multiAppStaking.getSupportedAppsAuthParameters()
     // one-off listener
+    console.log(data)
     const payload = {
       tbtc: {
         minimumAuthorization: data.tbtc.minimumAuthorization.toString(),
@@ -63,6 +69,15 @@ export const getSupportedAppsEffect = async (
         authorizationDecreaseChangePeriod:
           data.randomBeacon.authorizationDecreaseChangePeriod.toString(),
       },
+      taco: {
+        minimumAuthorization: data.taco._minimumAuthorization?.toString() ?? "",
+
+        authorizationDecreaseDelay:
+          data.taco.authorizationDecreaseDelay.toString(),
+
+        authorizationDecreaseChangePeriod:
+          data.taco.authorizationDecreaseChangePeriod.toString(),
+      },
     }
     listenerApi.dispatch(
       stakingApplicationsSlice.actions.setAppParameters({
@@ -76,6 +91,12 @@ export const getSupportedAppsEffect = async (
         parameters: payload.tbtc,
       })
     )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setAppParameters({
+        appName: "taco",
+        parameters: payload.taco,
+      })
+    )
   } catch (error) {
     const errorMessage = (error as Error).toString()
     listenerApi.dispatch(
@@ -87,6 +108,12 @@ export const getSupportedAppsEffect = async (
     listenerApi.dispatch(
       stakingApplicationsSlice.actions.setAppParametersError({
         appName: "tbtc",
+        error: errorMessage,
+      })
+    )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setAppParametersError({
+        appName: "taco",
         error: errorMessage,
       })
     )

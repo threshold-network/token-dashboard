@@ -35,6 +35,7 @@ export interface AuthorizationParameters<
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
   authorizationDecreaseChangePeriod: NumberType
+  _minimumAuthorization?: NumberType
 }
 
 export interface StakingProviderAppInfo<
