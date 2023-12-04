@@ -414,6 +414,16 @@ export class Application implements IApplication {
     return await this._application.bondOperator(stakingProvider, operator)
   }
 
+  makeCommitment = async (
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction> => {
+    return await this._application.makeCommitment(
+      stakingProvider,
+      commitmentDuration
+    )
+  }
+
   stakingProviderToOperator = async (
     stakingProvider: string
   ): Promise<string> => {
