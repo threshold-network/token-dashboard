@@ -206,7 +206,7 @@ describe("Application test", () => {
       {
         remainingAuthorizationDecreaseDelay: MAX_UINT64,
         expectedValue: {
-          isDeauthorizationReqestActive: false,
+          isDeauthorizationRequestActive: false,
           deauthorizationCreatedAt: undefined,
         },
         testMessage:
@@ -215,7 +215,7 @@ describe("Application test", () => {
       {
         remainingAuthorizationDecreaseDelay: 0,
         expectedValue: {
-          isDeauthorizationReqestActive: true,
+          isDeauthorizationRequestActive: true,
           deauthorizationCreatedAt: undefined,
         },
         testMessage:
@@ -224,7 +224,7 @@ describe("Application test", () => {
       {
         remainingAuthorizationDecreaseDelay,
         expectedValue: {
-          isDeauthorizationReqestActive: true,
+          isDeauthorizationRequestActive: true,
           deauthorizationCreatedAt: BigNumber.from(createdAt),
         },
         testMessage:

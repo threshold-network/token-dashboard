@@ -51,7 +51,7 @@ export const selectStakingAppByStakingProvider = createSelector(
       status = "authorized"
     } else if (
       hasPendingDeauthorization &&
-      !authData?.isDeauthorizationReqestActive &&
+      !authData?.isDeauthorizationRequestActive &&
       authData.isOperatorInPool !== undefined &&
       !authData.isOperatorInPool
     ) {

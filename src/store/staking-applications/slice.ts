@@ -215,14 +215,14 @@ export const stakingApplicationsSlice = createSlice({
       //    was in the sortition pool. Before authorization decrease delay
       //    starts, the operator needs to update the state of the sortition pool
       //    with a call to `joinSortitionPool` or `updateOperatorStatus`.
-      const isDeauthorizationReqestActive =
+      const isDeauthorizationRequestActive =
         !BigNumber.from(decreasingAt).eq(MAX_UINT64)
 
       state[appName].stakingProviders.data[stakingProvider] = {
         ...stakingProviderData,
-        isDeauthorizationReqestActive,
+        isDeauthorizationRequestActive,
         pendingAuthorizationDecrease: decreaseAmount,
-        remainingAuthorizationDecreaseDelay: isDeauthorizationReqestActive
+        remainingAuthorizationDecreaseDelay: isDeauthorizationRequestActive
           ? "0"
           : MAX_UINT64.toString(),
         deauthorizationCreatedAt: undefined,
@@ -243,7 +243,7 @@ export const stakingApplicationsSlice = createSlice({
       if (!stakingProviderData) return
 
       const deauthorizationCreatedAt =
-        !stakingProviderData.isDeauthorizationReqestActive
+        !stakingProviderData.isDeauthorizationRequestActive
           ? dateToUnixTimestamp().toString()
           : stakingProviderData.deauthorizationCreatedAt
 
@@ -251,7 +251,7 @@ export const stakingApplicationsSlice = createSlice({
         ...stakingProviderData,
         remainingAuthorizationDecreaseDelay:
           state[appName].parameters.data.authorizationDecreaseDelay,
-        isDeauthorizationReqestActive: true,
+        isDeauthorizationRequestActive: true,
         deauthorizationCreatedAt,
       }
     },
@@ -266,7 +266,7 @@ export const stakingApplicationsSlice = createSlice({
           authorizedStake: "0",
           pendingAuthorizationDecrease: "0",
           remainingAuthorizationDecreaseDelay: "0",
-          isDeauthorizationReqestActive: false,
+          isDeauthorizationRequestActive: false,
           deauthorizationCreatedAt: undefined,
           isOperatorInPool: undefined,
           operator: AddressZero,
