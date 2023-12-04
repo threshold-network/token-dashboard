@@ -20,6 +20,7 @@ export interface AuthorizationParameters<
    * providing a malicious DKG result or when a relay entry times out.
    */
   minimumAuthorization: NumberType
+  _minimumAuthorization?: NumberType
   /**
    * Delay in seconds that needs to pass between the time authorization decrease
    * is requested and the time that request gets approved. Protects against
@@ -35,7 +36,6 @@ export interface AuthorizationParameters<
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
   authorizationDecreaseChangePeriod: NumberType
-  _minimumAuthorization?: NumberType
 }
 
 export interface StakingProviderAppInfo<
