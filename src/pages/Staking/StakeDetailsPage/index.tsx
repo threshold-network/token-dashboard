@@ -165,8 +165,8 @@ const StakeDetailsPage: FC = () => {
           </StakeDetailRow>
         </Stack>
       </SimpleGrid>
-      <Button type="submit">
-        Commit to TACo onClick={handleCommitToTaco}{" "}
+      <Button onClick={handleCommitToTaco} type="submit">
+        Commit to TACo
       </Button>
     </Card>
   ) : (

@@ -29,11 +29,7 @@ export type TACoCommitProps = BaseModalProps & {
 // TACo Commitment Modal
 //  has two buttons, one for committing and one for canceling
 const TACoCommitmentModal: FC<TACoCommitProps> = ({}) => {
-  return (
-    <Card>
-      {/* Header */}
-    </Card>
-  )
+  return <Card>{/* Header */}</Card>
 }
 
 export default withBaseModal(TACoCommitmentModal)
