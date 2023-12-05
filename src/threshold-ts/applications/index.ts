@@ -205,6 +205,11 @@ export interface IApplication {
   operatorToStakingProvider(operator: string): Promise<string>
 
   updateOperatorStatus(operator: string): Promise<ContractTransaction>
+
+  makeCommitment(
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
