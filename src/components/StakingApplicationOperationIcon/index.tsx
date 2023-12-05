@@ -4,6 +4,8 @@ import randomBeaconIncrease from "../../static/images/RandomBeaconIncrease.png"
 import randomBeaconDecrease from "../../static/images/RandomBeaconDecrease.png"
 import tbtcIncrease from "../../static/images/TbtcIncrease.png"
 import tbtcDecrease from "../../static/images/TbtcDecrease.png"
+import tacoIncrease from "../../static/images/TACoIncrease.png"
+import tacoDecrease from "../../static/images/TACoDecrease.png"
 import { StakingAppName } from "../../store/staking-applications"
 
 type Operation = "increase" | "decrease"
@@ -18,8 +20,8 @@ const iconMap: Record<StakingAppName, Record<Operation, string>> = {
     decrease: randomBeaconDecrease,
   },
   taco: {
-    increase: tbtcIncrease,
-    decrease: tbtcDecrease,
+    increase: tacoIncrease,
+    decrease: tacoDecrease,
   },
 }
 
