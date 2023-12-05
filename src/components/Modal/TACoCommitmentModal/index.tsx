@@ -77,9 +77,16 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
             <Tbody>
               <Tr>
                 <Td>
+                  <Radio value="7862400" />
+                </Td>
+                <Td>91 days</Td>
+                <Td>0.5%</Td>
+              </Tr>
+              <Tr>
+                <Td>
                   <Radio value="15724800" />
                 </Td>
-                <Td>9 months</Td>
+                <Td>6 months</Td>
                 <Td>0.5%</Td>
               </Tr>
               <Tr>
@@ -87,6 +94,13 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                   <Radio value="31449600" />
                 </Td>
                 <Td>12 months</Td>
+                <Td>1%</Td>
+              </Tr>
+              <Tr>
+                <Td>
+                  <Radio value="47174400" />
+                </Td>
+                <Td>546 days</Td>
                 <Td>1%</Td>
               </Tr>
             </Tbody>
