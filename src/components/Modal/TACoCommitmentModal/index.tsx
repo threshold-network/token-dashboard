@@ -61,7 +61,8 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
           <BodyLg>
             You have the option of locking up your tokens for longer durations
             in order to receive a yield bonus of corresponding size. There are 4
-            choices:
+            choices, note that these durations include the obligatory and
+            universal 6 month deauthorization delay:
           </BodyLg>
         </InfoBox>
         <RadioGroup onChange={setValue} value={value}>
@@ -98,8 +99,14 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
           p={"8px 10px"}
         >
           <BodyXs>
-            Note that these durations include the obligatory and universal 6
-            month deauthorization delay.
+            Once you choose a lock-up duration and hit Authorize below, your
+            tokens will be irreversibly locked until the unlock date at the
+            earliest. This cannot be undone. You may authorize more tokens to
+            the same unlock horizon before the bonus deadline (12/30/23) , but
+            you cannot decrease the amount. You must also manually initiate
+            deauthorization 6 months before the unlock date stated if you wish
+            to withdraw tokens on said date. For more rules and information,
+            head to [link to documentation].
           </BodyXs>
         </AlertBox>
       </ModalBody>
