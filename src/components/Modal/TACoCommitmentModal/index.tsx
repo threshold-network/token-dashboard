@@ -33,17 +33,6 @@ export type TACoCommitProps = BaseModalProps & {
   stakingProvider: string
 }
 
-const submitCommitment = async (stakingProvider: string, choice: string) => {
-  console.log("submitting commitment")
-  console.log(stakingProvider)
-  console.log(parseInt(choice))
-  const threshold = useThreshold()
-  useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService["taco"]]
-      .approveAuthorizationDecrease
-  )
-}
-
 // TACo Commitment Modal
 //  has two buttons, one for committing and one for canceling
 const TACoCommitmentModal: FC<TACoCommitProps> = ({
@@ -51,6 +40,19 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
   closeModal,
 }) => {
   const [value, setValue] = useState("")
+  const threshold = useThreshold()
+  const { sendTransaction } = useSendTransactionFromFn(
+    threshold.multiAppStaking[stakingAppNameToThresholdAppService["taco"]]
+      .makeCommitment
+  )
+
+  const submitCommitment = async (stakingProvider: string, choice: string) => {
+    console.log("submitting commitment")
+    console.log(stakingProvider)
+    console.log(parseInt(choice))
+    sendTransaction(stakingProvider, parseInt(choice))
+  }
+
   return (
     <>
       <ModalHeader>TACo App Commitment</ModalHeader>
@@ -74,31 +76,17 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
             <Tbody>
               <Tr>
                 <Td>
-                  <Radio value="0" />
+                  <Radio value="15724800" />
                 </Td>
                 <Td>9 months</Td>
                 <Td>0.5%</Td>
               </Tr>
               <Tr>
                 <Td>
-                  <Radio value="1" />
+                  <Radio value="31449600" />
                 </Td>
                 <Td>12 months</Td>
                 <Td>1%</Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Radio value="2" />
-                </Td>
-                <Td>18 months</Td>
-                <Td>2%</Td>
-              </Tr>
-              <Tr>
-                <Td>
-                  <Radio value="3" />
-                </Td>
-                <Td>24 months</Td>
-                <Td>3%</Td>
               </Tr>
             </Tbody>
           </Table>
