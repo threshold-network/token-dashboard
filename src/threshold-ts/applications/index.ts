@@ -320,7 +320,14 @@ export class Application implements IApplication {
 
     let isOperatorInPool = undefined
     if (operator && !isAddressZero(operator)) {
-      isOperatorInPool = await this._application.isOperatorInPool(operator)
+      try {
+        isOperatorInPool = await this._application.isOperatorInPool(operator)
+      } catch (error) {
+        console.warn(
+          "isOperatorInPool method does not exist (eg on TACo app)",
+          error
+        )
+      }
     }
 
     const _remainingAuthorizationDecreaseDelay = BigNumber.from(
