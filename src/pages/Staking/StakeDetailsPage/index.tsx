@@ -5,6 +5,7 @@ import {
   BodyLg,
   BodyMd,
   Box,
+  Button,
   Card,
   Flex,
   H5,
@@ -15,6 +16,7 @@ import {
 } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import InfoBox from "../../../components/InfoBox"
+import { ModalType } from "../../../enums"
 import TokenBalance from "../../../components/TokenBalance"
 import StakeDetailRow from "./StakeDetailRow"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
@@ -27,6 +29,7 @@ import { selectRewardsByStakingProvider } from "../../../store/rewards"
 import NodeStatusLabel from "./NodeStatusLabel"
 import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-applications"
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
+import { useModal } from "../../../hooks/useModal"
 import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { isAddress } from "../../../web3/utils"
@@ -35,6 +38,7 @@ import { stakingApplicationsSlice } from "../../../store/staking-applications"
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
   const { account, active } = useWeb3React()
+  const { openModal } = useModal()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 
@@ -79,6 +83,12 @@ const StakeDetailsPage: FC = () => {
 
   if (active && !stake)
     return <BodyLg>No Stake found for address: {stakingProviderAddress}</BodyLg>
+
+  const handleCommitToTaco = () => {
+    openModal(ModalType.TACoCommitment, {
+      stakingProvider: stakingProviderAddress,
+    })
+  }
 
   return active ? (
     <Card>
@@ -155,6 +165,9 @@ const StakeDetailsPage: FC = () => {
           </StakeDetailRow>
         </Stack>
       </SimpleGrid>
+      <Button onClick={handleCommitToTaco} type="submit">
+        Commit to TACo
+      </Button>
     </Card>
   ) : (
     <H5>{`Please connect your wallet.`}</H5>

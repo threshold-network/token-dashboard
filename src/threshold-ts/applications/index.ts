@@ -20,6 +20,7 @@ export interface AuthorizationParameters<
    * providing a malicious DKG result or when a relay entry times out.
    */
   minimumAuthorization: NumberType
+  _minimumAuthorization?: NumberType
   /**
    * Delay in seconds that needs to pass between the time authorization decrease
    * is requested and the time that request gets approved. Protects against
@@ -35,7 +36,6 @@ export interface AuthorizationParameters<
    * `authorizationDecreaseDelay`, request can always be overwritten.
    */
   authorizationDecreaseChangePeriod: NumberType
-  _minimumAuthorization?: NumberType
 }
 
 export interface StakingProviderAppInfo<
@@ -205,6 +205,11 @@ export interface IApplication {
   operatorToStakingProvider(operator: string): Promise<string>
 
   updateOperatorStatus(operator: string): Promise<ContractTransaction>
+
+  makeCommitment(
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -412,6 +417,16 @@ export class Application implements IApplication {
     operator: string
   ): Promise<ContractTransaction> => {
     return await this._application.bondOperator(stakingProvider, operator)
+  }
+
+  makeCommitment = async (
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction> => {
+    return await this._application.makeCommitment(
+      stakingProvider,
+      commitmentDuration
+    )
   }
 
   stakingProviderToOperator = async (
