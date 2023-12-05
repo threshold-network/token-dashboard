@@ -130,28 +130,6 @@ const StakingApplications: PageComponent = () => {
       </Stack>
       <Stack spacing={6}>
         <ApplicationDetailsCard
-          preTitle="tBTC APP"
-          title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
-          description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
-          imgSrc={iconMap.tbtc[colorMode]}
-          ctaButtons={
-            <VStack mb={6}>
-              <ButtonLink to="/staking" isFullWidth>
-                Authorize tBTC
-              </ButtonLink>
-              <ButtonLink
-                isExternal
-                href={ExternalHref.tbtcNodeDocs}
-                isFullWidth
-                variant="outline"
-              >
-                tBTC Node Docs
-              </ButtonLink>
-            </VStack>
-          }
-          rewardSteps={tbtcNodeSteps}
-        />
-        <ApplicationDetailsCard
           preTitle="TACo APP"
           title="TACo is an access control layer that enables decentralized e2e encrypted data sharing in Web3 applications."
           description="TACo is a plug-in access control layer and cryptographic primitive, operationally distributed across a cohort of Threshold nodes. Private data are encrypted by a data owner along with embedded access conditions. The data remain encrypted until it reaches the device of a qualifying recipient."
@@ -172,6 +150,28 @@ const StakingApplications: PageComponent = () => {
             </VStack>
           }
           rewardSteps={tacoNodeSteps}
+        />
+        <ApplicationDetailsCard
+          preTitle="tBTC APP"
+          title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
+          description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
+          imgSrc={iconMap.tbtc[colorMode]}
+          ctaButtons={
+            <VStack mb={6}>
+              <ButtonLink to="/staking" isFullWidth>
+                Authorize tBTC
+              </ButtonLink>
+              <ButtonLink
+                isExternal
+                href={ExternalHref.tbtcNodeDocs}
+                isFullWidth
+                variant="outline"
+              >
+                tBTC Node Docs
+              </ButtonLink>
+            </VStack>
+          }
+          rewardSteps={tbtcNodeSteps}
         />
         <ApplicationDetailsCard
           preTitle="Random Beacon APP"
