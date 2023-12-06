@@ -1,14 +1,19 @@
 import {
-  LabelSm,
-  Box,
-  HStack,
   BodyLg,
   BodyXs,
+  Box,
   Flex,
+  HStack,
+  LabelSm,
 } from "@threshold-network/components"
+import { parseUnits } from "ethers/lib/utils"
 import { getRangeSign } from "../../utils/getRangeSign"
-import { getDurationByAmount } from "../../utils/tBTC"
+import { getThresholdLib } from "../../utils/getThresholdLib"
+import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
 import { DurationWidgetProps } from "./DurationWidget.types"
+
+const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
+  getThresholdLib().tbtc
 
 function DurationWidget(props: DurationWidgetProps) {
   const { label = "Duration", amount, ...restProps } = props
@@ -17,9 +22,10 @@ function DurationWidget(props: DurationWidgetProps) {
   const sign = getRangeSign(operator)
 
   const formattedValue = value.toFixed(2)
-
-  const correctedValue = value + (operator.includes("greater") ? 0.01 : -0.01)
-  const duration = getDurationByAmount(correctedValue)
+  const confirmations = getNumberOfConfirmationsByAmount(
+    parseUnits(formattedValue)
+  )
+  const duration = getDurationByNumberOfConfirmations(confirmations)
   const durationPrefix = Number.isInteger(duration) ? "~" : ""
   const durationSuffix = duration === 1 ? "Hour" : "Hours"
 

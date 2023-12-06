@@ -1,4 +1,5 @@
 import { BodyXs, Box, H5, Stack, VStack } from "@threshold-network/components"
+import { parseUnits } from "ethers/lib/utils"
 import { FC } from "react"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getThresholdLib } from "../../utils/getThresholdLib"
@@ -11,16 +12,16 @@ const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
 const DurationTiers: FC<DurationTiersProps> = ({ items, ...restProps }) => (
   <Stack direction="row" spacing="6" {...restProps}>
     {items.map(({ amount, rangeOperator, currency }, index) => {
-      const correctedAmount =
-        amount + (rangeOperator.includes("greater") ? 0.01 : -0.01)
-      const confirmations = getNumberOfConfirmationsByAmount(correctedAmount)
+      const formattedAmount = amount.toFixed(2)
+      const confirmations = getNumberOfConfirmationsByAmount(
+        parseUnits(formattedAmount)
+      )
       const hours = getDurationByNumberOfConfirmations(confirmations)
 
       const hoursSuffix = hours === 1 ? "hour" : "hours"
       const confirmationsSuffix =
         confirmations === 1 ? "confirmation" : "confirmations"
       const rangeSign = getRangeSign(rangeOperator)
-      const formattedAmount = amount.toFixed(2)
 
       return (
         <Box key={index} flex="1" rounded="md" boxShadow="md">
