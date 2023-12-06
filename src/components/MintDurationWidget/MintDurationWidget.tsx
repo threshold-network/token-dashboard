@@ -38,7 +38,6 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   const duration = Math.round(
     getDurationByNumberOfConfirmations(confirmations) / 60
   )
-  const durationPrefix = Number.isInteger(duration) ? "~" : ""
   const durationSuffix = duration === 1 ? "Hour" : "Hours"
 
   return (
@@ -53,7 +52,7 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
           pr="4"
           py="1"
         >
-          {durationPrefix} {duration} {durationSuffix}
+          ~ {duration} {durationSuffix}
         </BodyXs>
         <Flex alignItems="end">
           <BodyLg color="gray.500">
