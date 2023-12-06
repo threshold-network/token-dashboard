@@ -176,6 +176,12 @@ export const buildRedemptionDetailsLink = (
     .build()
 }
 
+/**
+ * Calculates the number of confirmations required based on the amount of tBTC.
+ *
+ * @param {BigNumberish} amount - The amount of tBTC.
+ * @return {number} The number of confirmations required.
+ */
 export const getNumberOfConfirmationsByAmount = (
   amount: BigNumberish
 ): number => {
@@ -196,14 +202,12 @@ export const getNumberOfConfirmationsByAmount = (
   return 6
 }
 
-export const getDurationByAmount = (amount: BigNumberish) => {
-  const confirmations = getNumberOfConfirmationsByAmount(amount)
-
-  if (confirmations < 3) {
-    return 1
-  }
-  if (confirmations >= 3) {
-    return 2
-  }
-  return "+ 2"
-}
+/**
+ * Calculates the duration in seconds based on the number of confirmations.
+ *
+ * @param {number} numberOfConfirmations The number of confirmations.
+ * @return {number} The duration in minutes.
+ */
+export const getDurationByNumberOfConfirmations = (
+  numberOfConfirmations: number
+) => numberOfConfirmations * 10 + 60

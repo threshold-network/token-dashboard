@@ -2,7 +2,7 @@ import { BodyXs, Box, H5, Stack, VStack } from "@threshold-network/components"
 import { FC } from "react"
 import { getRangeSign } from "../../utils/getRangeSign"
 import {
-  getDurationByAmount,
+  getDurationByNumberOfConfirmations,
   getNumberOfConfirmationsByAmount,
 } from "../../utils/tBTC"
 import { DurationTiersProps } from "./DurationTiers.types"
@@ -12,8 +12,8 @@ const DurationTiers: FC<DurationTiersProps> = ({ items, ...restProps }) => (
     {items.map(({ amount, rangeOperator, currency }, index) => {
       const correctedAmount =
         amount + (rangeOperator.includes("greater") ? 0.01 : -0.01)
-      const hours = getDurationByAmount(correctedAmount)
       const confirmations = getNumberOfConfirmationsByAmount(correctedAmount)
+      const hours = getDurationByNumberOfConfirmations(confirmations)
 
       const hoursSuffix = hours === 1 ? "hour" : "hours"
       const confirmationsSuffix =
