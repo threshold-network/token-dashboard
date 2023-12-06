@@ -57,6 +57,7 @@ const TBTCBridge: PageComponent = (props) => {
         <Outlet />
       </Box>
       <Box gridArea="aside">
+        <TbtcBalanceCard gridArea="balance-card" mb="5" />
         <BridgeActivityCard
           data={bridgeActivity}
           isFetching={isBridgeActivityFetching}
