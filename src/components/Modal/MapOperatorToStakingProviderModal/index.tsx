@@ -43,7 +43,9 @@ const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
 > = () => {
   const { account } = useWeb3React()
-  const formRef =
+  const formRefTbtc =
+    useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
+  const formRefTaco =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
@@ -88,6 +90,16 @@ const MapOperatorToStakingProviderModal: FC<
     )
   }
 
+  const handleSubmit = async () => {
+    if (formRefTbtc.current) {
+      await formRefTbtc.current.handleSubmit()
+    }
+
+    if (formRefTaco.current) {
+      await formRefTaco.current.handleSubmit()
+    }
+  }
+
   return (
     <>
       <ModalHeader>Operator Address Mapping</ModalHeader>
@@ -128,19 +140,17 @@ const MapOperatorToStakingProviderModal: FC<
           ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>random beacon app</LabelSm>
           ) : (
-            <LabelSm>tBTC + Random Beacon + TACo (requires 3txs)</LabelSm>
+            <LabelSm>tBTC + Random Beacon (requires 2txs)</LabelSm>
           )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
-            innerRef={formRef}
-            formId="map-operator-to-staking-provider-form"
+            innerRef={formRefTbtc}
+            formId="map-operator-to-staking-provider-form-tbtc"
             initialAddress={
               isOperatorMappedOnlyInRandomBeacon
                 ? mappedOperatorRandomBeacon
                 : isOperatorMappedOnlyInTbtc
                 ? mappedOperatorTbtc
-                : isOperatorMappedOnlyInTaco
-                ? mappedOperatorTaco
                 : ""
             }
             onSubmitForm={onSubmit}
@@ -149,7 +159,6 @@ const MapOperatorToStakingProviderModal: FC<
             }
             mappedOperatorTbtc={mappedOperatorTbtc}
             mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
-            mappedOperatorTaco={mappedOperatorTaco}
           />
         </Box>
         <AlertBox
@@ -164,12 +173,33 @@ const MapOperatorToStakingProviderModal: FC<
             transactions, one transaction per application.
           </BodyXs>
         </AlertBox>
+        <Box
+          p={"24px"}
+          border={"1px solid"}
+          borderColor={"gray.100"}
+          borderRadius={"12px"}
+          mt={"5"}
+          mb={"5"}
+        >
+          <LabelSm>Taco (requires 1tx)</LabelSm>
+          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
+          <MapOperatorToStakingProviderForm
+            innerRef={formRefTaco}
+            formId="map-operator-to-staking-provider-form-taco"
+            initialAddress={""}
+            onSubmitForm={onSubmit}
+            checkIfOperatorIsMappedToAnotherStakingProvider={
+              checkIfOperatorIsMappedToAnotherStakingProvider
+            }
+            mappedOperatorTaco={mappedOperatorTaco}
+          />
+        </Box>
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button type="submit" form="map-operator-to-staking-provider-form">
+        <Button type="submit" onClick={handleSubmit}>
           Map Address
         </Button>
       </ModalFooter>
