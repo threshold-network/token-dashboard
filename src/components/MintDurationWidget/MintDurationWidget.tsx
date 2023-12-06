@@ -6,6 +6,7 @@ import {
   HStack,
   LabelSm,
 } from "@threshold-network/components"
+import { FC } from "react"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getThresholdLib } from "../../utils/getThresholdLib"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
@@ -14,9 +15,11 @@ import { MintDurationWidgetProps } from "./MintDurationWidget.types"
 const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
   getThresholdLib().tbtc
 
-function MintDurationWidget(props: MintDurationWidgetProps) {
-  const { label = "Duration", amount, ...restProps } = props
-
+const MintDurationWidget: FC<MintDurationWidgetProps> = ({
+  label = "Duration",
+  amount,
+  ...restProps
+}) => {
   const [operator, value, currency] = amount
   const sign = getRangeSign(operator)
 

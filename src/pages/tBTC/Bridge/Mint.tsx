@@ -17,7 +17,7 @@ import {
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useToast } from "../../../hooks/useToast"
-import { DurationWidget } from "../../../components/DurationWidget"
+import { DurationWidget } from "../../../components/MintDurationWidget"
 import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
