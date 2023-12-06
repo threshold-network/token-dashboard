@@ -128,19 +128,17 @@ const MapOperatorToStakingProviderModal: FC<
           ) : isOperatorMappedOnlyInTbtc ? (
             <LabelSm>random beacon app</LabelSm>
           ) : (
-            <LabelSm>tBTC + Random Beacon + TACo (requires 3txs)</LabelSm>
+            <LabelSm>tBTC + Random Beacon (requires 2txs)</LabelSm>
           )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
             innerRef={formRef}
-            formId="map-operator-to-staking-provider-form"
+            formId="map-operator-to-staking-provider-form-tbtc"
             initialAddress={
               isOperatorMappedOnlyInRandomBeacon
                 ? mappedOperatorRandomBeacon
                 : isOperatorMappedOnlyInTbtc
                 ? mappedOperatorTbtc
-                : isOperatorMappedOnlyInTaco
-                ? mappedOperatorTaco
                 : ""
             }
             onSubmitForm={onSubmit}
@@ -149,7 +147,6 @@ const MapOperatorToStakingProviderModal: FC<
             }
             mappedOperatorTbtc={mappedOperatorTbtc}
             mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
-            mappedOperatorTaco={mappedOperatorTaco}
           />
         </Box>
         <AlertBox
@@ -164,6 +161,27 @@ const MapOperatorToStakingProviderModal: FC<
             transactions, one transaction per application.
           </BodyXs>
         </AlertBox>
+        <Box
+          p={"24px"}
+          border={"1px solid"}
+          borderColor={"gray.100"}
+          borderRadius={"12px"}
+          mt={"5"}
+          mb={"5"}
+        >
+          <LabelSm>Taco (requires 1tx)</LabelSm>
+          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
+          <MapOperatorToStakingProviderForm
+            innerRef={formRef}
+            formId="map-operator-to-staking-provider-form-taco"
+            initialAddress={""}
+            onSubmitForm={onSubmit}
+            checkIfOperatorIsMappedToAnotherStakingProvider={
+              checkIfOperatorIsMappedToAnotherStakingProvider
+            }
+            mappedOperatorTaco={mappedOperatorTaco}
+          />
+        </Box>
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>

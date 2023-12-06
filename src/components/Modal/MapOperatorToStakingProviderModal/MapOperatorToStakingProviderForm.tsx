@@ -33,7 +33,6 @@ const validateInputtedOperatorAddress = async (
   ) => Promise<boolean>,
   mappedOperatorTbtc: string,
   mappedOperatorRandomBeacon: string,
-  mappedOperatorTaco: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
 
@@ -47,18 +46,11 @@ const validateInputtedOperatorAddress = async (
 
     const isOperatorMappedOnlyInTbtc =
       !isAddressZero(mappedOperatorTbtc) &&
-      isAddressZero(mappedOperatorRandomBeacon) &&
-      isAddressZero(mappedOperatorTaco)
+      isAddressZero(mappedOperatorRandomBeacon)
 
     const isOperatorMappedOnlyInRandomBeacon =
       isAddressZero(mappedOperatorTbtc) &&
-      !isAddressZero(mappedOperatorRandomBeacon) &&
-      isAddressZero(mappedOperatorTaco)
-
-    const isOperatorMappedOnlyInTaco =
-      isAddressZero(mappedOperatorTbtc) &&
-      isAddressZero(mappedOperatorRandomBeacon) &&
-      !isAddressZero(mappedOperatorTaco)
+      !isAddressZero(mappedOperatorRandomBeacon)
 
     if (
       isOperatorMappedOnlyInRandomBeacon &&
@@ -74,13 +66,6 @@ const validateInputtedOperatorAddress = async (
       validationMsg =
         "The operator address doesn't match the one used in tbtc app"
     }
-    if (
-      isOperatorMappedOnlyInTaco &&
-      !isSameETHAddress(operator, mappedOperatorTaco)
-    ) {
-      validationMsg =
-        "The operator address doesn't match the one used in TACo app"
-    }
   } catch (error) {
     console.error("`MapOperatorToStakingProviderForm` validation error.", error)
     validationMsg = (error as Error)?.message
@@ -91,9 +76,9 @@ const validateInputtedOperatorAddress = async (
 
 type MapOperatorToStakingProviderFormProps = {
   initialAddress: string
-  mappedOperatorTbtc: string
-  mappedOperatorRandomBeacon: string
-  mappedOperatorTaco: string
+  mappedOperatorTbtc?: string
+  mappedOperatorRandomBeacon?: string
+  mappedOperatorTaco?: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
@@ -118,14 +103,28 @@ const MapOperatorToStakingProviderForm = withFormik<
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
     errors.operator = validateETHAddress(values.operator)
-    if (!errors.operator) {
+    if (!errors.operator && mappedOperatorTbtc !== undefined && mappedOperatorRandomBeacon !== undefined) {
       errors.operator = await validateInputtedOperatorAddress(
         values.operator,
         checkIfOperatorIsMappedToAnotherStakingProvider,
         mappedOperatorTbtc,
         mappedOperatorRandomBeacon,
-        mappedOperatorTaco
       )
+    }
+    if (!errors.operator && mappedOperatorTaco !== undefined) {
+      let validationMsg: string | undefined = ""
+      try {
+        const isOperatorMappedToAnotherStakingProvider =
+          await checkIfOperatorIsMappedToAnotherStakingProvider(values.operator)
+        validationMsg = undefined
+        if (isOperatorMappedToAnotherStakingProvider) {
+          validationMsg = "Operator is already mapped to another staking provider."
+        }
+      } catch (error) {
+        console.error("`MapOperatorToStakingProviderForm` validation error.", error)
+        validationMsg = (error as Error)?.message
+      }
+      errors.operator = validationMsg
     }
 
     return getErrorsObj(errors)
