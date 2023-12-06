@@ -1,4 +1,5 @@
 import { useCallback } from "react"
+import { useBondOperatorTransaction } from "./useBondOperatorTransaction"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
@@ -33,7 +34,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
   const {
     sendTransaction: sendRegisterOperatorTransactionTaco,
     status: registerOperatorTacoStatus,
-  } = useRegisterOperatorTransaction("taco")
+  } = useBondOperatorTransaction("taco")
 
   const registerMultipleOperators = useCallback(
     async (operator: string) => {
@@ -79,7 +80,10 @@ export const useRegisterMultipleOperatorsTransaction = () => {
             txHash: randomBeaconReceipt.transactionHash,
           })
         }
-        const tacoReceipt = await sendRegisterOperatorTransactionTaco(operator)
+        const tacoReceipt = await sendRegisterOperatorTransactionTaco(
+          account,
+          operator
+        )
         if (tacoReceipt) {
           successfullTxs.push({
             application: {

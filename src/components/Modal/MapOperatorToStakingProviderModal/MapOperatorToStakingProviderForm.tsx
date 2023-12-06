@@ -6,6 +6,10 @@ import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 export interface MapOperatorToStakingProviderFormValues {
   operator: string
+  appName: string
+  mappedOperatorTbtc: string
+  mappedOperatorRandomBeacon: string
+  mappedOperatorTaco: string
 }
 
 type ComponentProps = {
@@ -102,10 +106,6 @@ const MapOperatorToStakingProviderForm = withFormik<
     } = props
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
-    console.log("tbtc", mappedOperatorTbtc)
-    console.log("random beacon", mappedOperatorRandomBeacon)
-    console.log("taco", mappedOperatorTaco)
-
     errors.operator = validateETHAddress(values.operator)
     if (
       !errors.operator &&
@@ -144,7 +144,7 @@ const MapOperatorToStakingProviderForm = withFormik<
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values)
   },
-  displayName: "MapOperatorToStakingProviderFor",
+  displayName: "MapOperatorToStakingProviderForm",
 })(MapOperatorToStakingProviderFormBase)
 
 export default MapOperatorToStakingProviderForm
