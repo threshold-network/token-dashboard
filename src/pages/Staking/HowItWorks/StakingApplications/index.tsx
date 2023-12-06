@@ -115,7 +115,8 @@ const StakingApplications: PageComponent = () => {
                 <Stack>
                   <BodyMd>Change your authorized amount at any time. </BodyMd>
                   <BodyXs>
-                    There is a deauthorization cooldown period of 45 days.
+                    There is a deauthorization cooldown period of 45 days for 
+                    tBTC and Random Beacon apps and 180 days for TACo.
                   </BodyXs>
                 </Stack>
               </HStack>
@@ -128,28 +129,6 @@ const StakingApplications: PageComponent = () => {
         />
       </Stack>
       <Stack spacing={6}>
-        <ApplicationDetailsCard
-          preTitle="tBTC APP"
-          title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
-          description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
-          imgSrc={iconMap.tbtc[colorMode]}
-          ctaButtons={
-            <VStack mb={6}>
-              <ButtonLink to="/staking" isFullWidth>
-                Authorize tBTC
-              </ButtonLink>
-              <ButtonLink
-                isExternal
-                href={ExternalHref.tbtcNodeDocs}
-                isFullWidth
-                variant="outline"
-              >
-                tBTC Node Docs
-              </ButtonLink>
-            </VStack>
-          }
-          rewardSteps={tbtcNodeSteps}
-        />
         <ApplicationDetailsCard
           preTitle="TACo APP"
           title="TACo is an access control layer that enables decentralized e2e encrypted data sharing in Web3 applications."
@@ -171,6 +150,28 @@ const StakingApplications: PageComponent = () => {
             </VStack>
           }
           rewardSteps={tacoNodeSteps}
+        />
+        <ApplicationDetailsCard
+          preTitle="tBTC APP"
+          title="tBTC is the only truly decentralized solution for bridging Bitcoin to Ethereum."
+          description="tBTC replaces a centralized custodian with a randomly selected group of operators running nodes on the Threshold Network. This group of independent operators works together to secure your deposited Bitcoin through threshold cryptography."
+          imgSrc={iconMap.tbtc[colorMode]}
+          ctaButtons={
+            <VStack mb={6}>
+              <ButtonLink to="/staking" isFullWidth>
+                Authorize tBTC
+              </ButtonLink>
+              <ButtonLink
+                isExternal
+                href={ExternalHref.tbtcNodeDocs}
+                isFullWidth
+                variant="outline"
+              >
+                tBTC Node Docs
+              </ButtonLink>
+            </VStack>
+          }
+          rewardSteps={tbtcNodeSteps}
         />
         <ApplicationDetailsCard
           preTitle="Random Beacon APP"
