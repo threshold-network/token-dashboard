@@ -17,7 +17,7 @@ import {
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useToast } from "../../../hooks/useToast"
-import { DurationWidget } from "../../../components/MintDurationWidget"
+import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
@@ -107,7 +107,7 @@ const MintPageLayout: PageComponent = () => {
         </BridgeLayoutMainSection>
         <BridgeLayoutAsideSection>
           {shouldRenderDurationWidget && (
-            <DurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
+            <MintDurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
           )}
           <MintingTimeline />
         </BridgeLayoutAsideSection>
