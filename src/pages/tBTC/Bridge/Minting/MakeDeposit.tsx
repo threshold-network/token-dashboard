@@ -1,31 +1,28 @@
-import { FC, ComponentProps, useEffect } from "react"
 import {
+  Badge,
   BodyMd,
   Box,
   BoxLabel,
-  Button,
-  ChecklistGroup,
+  Card,
   HStack,
   Stack,
-  Divider,
   useColorModeValue,
-  Card,
-  Badge,
 } from "@threshold-network/components"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
-import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import TooltipIcon from "../../../../components/TooltipIcon"
+import { ComponentProps, FC } from "react"
 import {
   CopyAddressToClipboard,
   CopyToClipboard,
   CopyToClipboardButton,
 } from "../../../../components/CopyToClipboard"
+import { MintDurationTiers } from "../../../../components/MintDurationTiers"
+import { QRCode } from "../../../../components/QRCode"
+import TooltipIcon from "../../../../components/TooltipIcon"
+import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
-import { QRCode } from "../../../../components/QRCode"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
-import { DurationTiers } from "../../../../components/DurationTiers"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -151,7 +148,7 @@ const MakeDepositComponent: FC<{
         provided.
       </BodyMd>
       <BTCAddressSection btcDepositAddress={btcDepositAddress} />
-      <DurationTiers
+      <MintDurationTiers
         mt="6"
         items={[
           {

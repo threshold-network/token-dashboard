@@ -3,12 +3,12 @@ import { ComponentPropsWithoutRef } from "react"
 import { RangeOperatorType, CurrencyType } from "../../types"
 
 type BaseProps = ComponentPropsWithoutRef<"li"> & StackProps
-type DurationTiersItemProps = {
+type MintDurationTiersItemProps = {
   amount: number
   currency: CurrencyType
   rangeOperator: RangeOperatorType
 }
 
-export interface DurationTiersProps extends BaseProps {
-  items: DurationTiersItemProps[]
+export interface MintDurationTiersProps extends BaseProps {
+  items: MintDurationTiersItemProps[]
 }

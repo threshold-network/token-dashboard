@@ -6,16 +6,15 @@ import {
   HStack,
   LabelSm,
 } from "@threshold-network/components"
-import { parseUnits } from "ethers/lib/utils"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getThresholdLib } from "../../utils/getThresholdLib"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
-import { DurationWidgetProps } from "./DurationWidget.types"
+import { MintDurationWidgetProps } from "./MintDurationWidget.types"
 
 const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
   getThresholdLib().tbtc
 
-function DurationWidget(props: DurationWidgetProps) {
+function MintDurationWidget(props: MintDurationWidgetProps) {
   const { label = "Duration", amount, ...restProps } = props
 
   const [operator, value, currency] = amount
@@ -66,4 +65,4 @@ function DurationWidget(props: DurationWidgetProps) {
   )
 }
 
-export default DurationWidget
+export default MintDurationWidget

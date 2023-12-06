@@ -6,19 +6,19 @@ import {
   Stack,
   VStack,
 } from "@threshold-network/components"
-import { FixedNumber } from "ethers"
-import { parseUnits } from "ethers/lib/utils"
 import { FC } from "react"
-import { formatSatoshi } from "../../utils/formatAmount"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getThresholdLib } from "../../utils/getThresholdLib"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
-import { DurationTiersProps } from "./DurationTiers.types"
+import { MintDurationTiersProps } from "./MintDurationTiers.types"
 
 const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
   getThresholdLib().tbtc
 
-const DurationTiers: FC<DurationTiersProps> = ({ items, ...restProps }) => (
+const MintDurationTiers: FC<MintDurationTiersProps> = ({
+  items,
+  ...restProps
+}) => (
   <Stack
     direction={{
       base: "column",
@@ -100,4 +100,4 @@ const DurationTiers: FC<DurationTiersProps> = ({ items, ...restProps }) => (
   </Stack>
 )
 
-export default DurationTiers
+export default MintDurationTiers
