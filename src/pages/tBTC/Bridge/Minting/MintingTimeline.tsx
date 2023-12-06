@@ -33,17 +33,17 @@ const MintingTimelineItem: FC<MintingTimelineItemBaseProps> = (props) => {
   return (
     <Box
       as="li"
+      position="relative"
+      borderLeft="2px solid"
+      ml="2.5"
+      pl="5"
+      pb="8"
+      borderColor="gray.300"
+      _last={{
+        pb: "0",
+        borderColor: "transparent",
+      }}
       sx={{
-        position: "relative",
-        borderLeft: "2px solid",
-        ml: "2.5",
-        pl: "5",
-        pb: "8",
-        borderColor: "gray.300",
-        "&:last-of-type": {
-          pb: "0",
-          borderColor: "transparent",
-        },
         "&:not(:nth-last-of-type(-n+2))": {
           borderColor: isComplete ? "green.400" : "gray.300",
         },
@@ -51,25 +51,23 @@ const MintingTimelineItem: FC<MintingTimelineItemBaseProps> = (props) => {
       {...restProps}
     >
       <LabelSm
-        sx={{
-          position: "absolute",
-          left: "0",
-          transform: "translateX(calc(-50% - 1px))",
-          rounded: "full",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          w: "6",
-          h: "6",
-          border: "2px solid",
-          borderColor: isComplete ? "green.400" : "gray.300",
-          color: isComplete ? "white" : "brand.500",
-          bg: isComplete ? "green.400" : "white",
-        }}
+        position="absolute"
+        left="0"
+        transform="translateX(calc(-50% - 1px))"
+        rounded="full"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        w="6"
+        h="6"
+        border="2px solid"
+        borderColor={isComplete ? "green.400" : "gray.300"}
+        color={isComplete ? "white" : "brand.500"}
+        bg={isComplete ? "green.400" : "white"}
       >
         {isComplete ? <CompleteIcon /> : stepNumber}
       </LabelSm>
-      <LabelSm sx={{ lineHeight: "6", pb: isActive ? "3" : "0" }}>
+      <LabelSm lineHeight="6" pb={isActive ? "3" : "0"}>
         {label}
       </LabelSm>
       {isActive && <BodySm>{description}</BodySm>}
