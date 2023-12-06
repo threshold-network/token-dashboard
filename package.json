@@ -60,7 +60,7 @@
     "react": "^17.0.2",
     "react-confetti": "^6.0.1",
     "react-dom": "^17.0.2",
-    "react-icons": "4.4.0",
+    "react-icons": "^4.3.1",
     "react-number-format": "^4.7.3",
     "react-qr-code": "^2.0.8",
     "react-redux": "^7.2.5",
@@ -103,7 +103,6 @@
     "eslint-plugin-prettier": "^4.0.0",
     "babel-loader": "8.1.0",
     "react-error-overlay": "6.0.9",
-    "react-icons": "4.4.0",
     "@types/react": "17.0.30",
     "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
   },
