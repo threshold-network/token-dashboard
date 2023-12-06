@@ -191,6 +191,11 @@ export interface IApplication {
    */
   registerOperator(operator: string): Promise<ContractTransaction>
 
+  bondOperator(
+    stakingProvider: string,
+    operator: string
+  ): Promise<ContractTransaction>
+
   /**
    * Used to get a registered operator mapped to the given staking provider
    * @param stakingProvider Staking provider address

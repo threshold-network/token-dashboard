@@ -61,13 +61,18 @@ const MapOperatorToStakingProviderModal: FC<
 
   const onSubmit = async ({
     operator,
+    appName,
+    mappedOperatorTbtc,
+    mappedOperatorRandomBeacon,
+    mappedOperatorTaco,
   }: MapOperatorToStakingProviderFormValues) => {
     if (account) {
       openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
         operator,
-        isOperatorMappedOnlyInTbtc,
-        isOperatorMappedOnlyInRandomBeacon,
-        isOperatorMappedOnlyInTaco,
+        appName,
+        mappedOperatorTbtc,
+        mappedOperatorRandomBeacon,
+        mappedOperatorTaco,
       })
     }
   }
@@ -91,11 +96,18 @@ const MapOperatorToStakingProviderModal: FC<
   }
 
   const handleSubmit = async () => {
-    if (formRefTbtc.current) {
+    console.log(
+      mappedOperatorTaco,
+      mappedOperatorTbtc,
+      mappedOperatorRandomBeacon
+    )
+    if (formRefTbtc.current?.values?.operator) {
+      console.log("submitting tbtc", formRefTbtc.current?.values?.operator)
       await formRefTbtc.current.handleSubmit()
     }
 
-    if (formRefTaco.current) {
+    if (formRefTaco.current?.values?.operator) {
+      console.log("submitting taco", formRefTaco.current?.values?.operator)
       await formRefTaco.current.handleSubmit()
     }
   }
@@ -126,6 +138,7 @@ const MapOperatorToStakingProviderModal: FC<
         </InfoBox>
         <BodyLg mt={"10"}>
           Choose an application to map the Operator Address:
+          {/*  JAMES TODO JAMES THEREF do we need another input for tbtc/rb */}
         </BodyLg>
         <Box
           p={"24px"}
@@ -153,7 +166,7 @@ const MapOperatorToStakingProviderModal: FC<
                 ? mappedOperatorTbtc
                 : ""
             }
-            onSubmitForm={onSubmit}
+            onSubmitForm={(operator) => onSubmit({ operator, appName: "tbtc" })}
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
