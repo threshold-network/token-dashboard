@@ -1,11 +1,12 @@
 import { BodyXs, Box, H5, Stack, VStack } from "@threshold-network/components"
 import { FC } from "react"
 import { getRangeSign } from "../../utils/getRangeSign"
-import {
-  getDurationByNumberOfConfirmations,
-  getNumberOfConfirmationsByAmount,
-} from "../../utils/tBTC"
+import { getThresholdLib } from "../../utils/getThresholdLib"
+import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
 import { DurationTiersProps } from "./DurationTiers.types"
+
+const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
+  getThresholdLib().tbtc
 
 const DurationTiers: FC<DurationTiersProps> = ({ items, ...restProps }) => (
   <Stack direction="row" spacing="6" {...restProps}>

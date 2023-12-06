@@ -177,32 +177,6 @@ export const buildRedemptionDetailsLink = (
 }
 
 /**
- * Calculates the number of confirmations required based on the amount of tBTC.
- *
- * @param {BigNumberish} amount - The amount of tBTC.
- * @return {number} The number of confirmations required.
- */
-export const getNumberOfConfirmationsByAmount = (
-  amount: BigNumberish
-): number => {
-  const safeAmount = Number.isSafeInteger(amount)
-    ? amount
-    : Math.floor((amount as number) * 1e8)
-  // Only safe integers (not floating-point numbers) can be transformed to BigNumber.
-  // Converting the given amount to a safe integer if it is not already a safe integer.
-  // If the amount is already a safe integer, it is returned as is.
-  const amountInBN = BigNumber.from(safeAmount)
-
-  if (amountInBN.lt(10000000) /* 0.1 BTC */) {
-    return 1
-  }
-  if (amountInBN.lt(100000000) /* 1 BTC */) {
-    return 3
-  }
-  return 6
-}
-
-/**
  * Calculates the duration in seconds based on the number of confirmations.
  *
  * @param {number} numberOfConfirmations The number of confirmations.
