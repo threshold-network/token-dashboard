@@ -15,7 +15,7 @@ ENV PYTHON=/usr/bin/python3
 ENV NODE_OPTIONS=--max_old_space_size=3072
 
 # Copy package files and install node modules
-COPY package*.json yarn.lock ./
+COPY package*.json ./
 RUN npm install -g node-gyp
 RUN yarn install --ignore-scripts --frozen-lockfile
 RUN yarn upgrade @keep-network/coverage-pools@sepolia \

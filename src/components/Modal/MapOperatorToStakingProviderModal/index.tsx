@@ -43,7 +43,9 @@ const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
 > = () => {
   const { account } = useWeb3React()
-  const formRef =
+  const formRefTbtc =
+    useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
+  const formRefTaco =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
@@ -86,6 +88,16 @@ const MapOperatorToStakingProviderModal: FC<
       (!isAddressZero(stakingProviderMappedRandomBeacon) &&
         !isSameETHAddress(stakingProviderMappedRandomBeacon, account!))
     )
+  }
+
+  const handleSubmit = async () => {
+    if (formRefTbtc.current) {
+      await formRefTbtc.current.handleSubmit()
+    }
+
+    if (formRefTaco.current) {
+      await formRefTaco.current.handleSubmit()
+    }
   }
 
   return (
@@ -132,7 +144,7 @@ const MapOperatorToStakingProviderModal: FC<
           )}
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
-            innerRef={formRef}
+            innerRef={formRefTbtc}
             formId="map-operator-to-staking-provider-form-tbtc"
             initialAddress={
               isOperatorMappedOnlyInRandomBeacon
@@ -172,7 +184,7 @@ const MapOperatorToStakingProviderModal: FC<
           <LabelSm>Taco (requires 1tx)</LabelSm>
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
-            innerRef={formRef}
+            innerRef={formRefTaco}
             formId="map-operator-to-staking-provider-form-taco"
             initialAddress={""}
             onSubmitForm={onSubmit}
@@ -187,7 +199,7 @@ const MapOperatorToStakingProviderModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button type="submit" form="map-operator-to-staking-provider-form">
+        <Button type="submit" onClick={handleSubmit}>
           Map Address
         </Button>
       </ModalFooter>

@@ -32,7 +32,7 @@ const validateInputtedOperatorAddress = async (
     operator: string
   ) => Promise<boolean>,
   mappedOperatorTbtc: string,
-  mappedOperatorRandomBeacon: string,
+  mappedOperatorRandomBeacon: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
 
@@ -102,13 +102,21 @@ const MapOperatorToStakingProviderForm = withFormik<
     } = props
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
+    console.log("tbtc", mappedOperatorTbtc)
+    console.log("random beacon", mappedOperatorRandomBeacon)
+    console.log("taco", mappedOperatorTaco)
+
     errors.operator = validateETHAddress(values.operator)
-    if (!errors.operator && mappedOperatorTbtc !== undefined && mappedOperatorRandomBeacon !== undefined) {
+    if (
+      !errors.operator &&
+      mappedOperatorTbtc !== undefined &&
+      mappedOperatorRandomBeacon !== undefined
+    ) {
       errors.operator = await validateInputtedOperatorAddress(
         values.operator,
         checkIfOperatorIsMappedToAnotherStakingProvider,
         mappedOperatorTbtc,
-        mappedOperatorRandomBeacon,
+        mappedOperatorRandomBeacon
       )
     }
     if (!errors.operator && mappedOperatorTaco !== undefined) {
@@ -118,10 +126,14 @@ const MapOperatorToStakingProviderForm = withFormik<
           await checkIfOperatorIsMappedToAnotherStakingProvider(values.operator)
         validationMsg = undefined
         if (isOperatorMappedToAnotherStakingProvider) {
-          validationMsg = "Operator is already mapped to another staking provider."
+          validationMsg =
+            "Operator is already mapped to another staking provider."
         }
       } catch (error) {
-        console.error("`MapOperatorToStakingProviderForm` validation error.", error)
+        console.error(
+          "`MapOperatorToStakingProviderForm` validation error.",
+          error
+        )
         validationMsg = (error as Error)?.message
       }
       errors.operator = validationMsg
