@@ -7,6 +7,7 @@ import { useApproveTStaking } from "./useApproveTStaking"
 import { BigNumber } from "ethers"
 import { useTStakingAllowance } from "./useTStakingAllowance"
 import doesErrorInclude from "../utils/doesErrorInclude"
+import useApproveAndCallTStaking from "./useApproveAndCallTStaking"
 
 interface StakeRequest {
   amount: string | number
@@ -22,7 +23,7 @@ enum CommonStakingErrors {
 export const useStakeTransaction = (onSuccess: OnSuccessCallback) => {
   const stakingContract = useTStakingContract()
   const { openModal } = useModal()
-  const { approve } = useApproveTStaking()
+  const { approveAndCall } = useApproveAndCallTStaking()
 
   const onError = (error: any) => {
     if (doesErrorInclude(error, CommonStakingErrors.ProviderInUse)) {
@@ -56,11 +57,12 @@ export const useStakeTransaction = (onSuccess: OnSuccessCallback) => {
     }: StakeRequest) => {
       const isApprovedForAmount = BigNumber.from(amount).lte(allowance)
       if (!isApprovedForAmount) {
-        await approve(amount.toString())
+        await approveAndCall(amount.toString())
+      } else {
+        await sendTransaction(stakingProvider, beneficiary, authorizer, amount)
       }
-      await sendTransaction(stakingProvider, beneficiary, authorizer, amount)
     },
-    [sendTransaction, stakingContract?.address, allowance, approve]
+    [sendTransaction, stakingContract?.address, allowance, approveAndCall]
   )
 
   return { stake, status }
