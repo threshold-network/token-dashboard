@@ -11,7 +11,6 @@ services:
       - "3000:3000"
     volumes:
       - .:/app # Bind mount the current directory to /app in the container
-      - /app/node_modules # This will prevent node_modules from being overwritten by the local volume
     command: bash -c "yarn format:fix && yarn start"
     build:
       context: .
