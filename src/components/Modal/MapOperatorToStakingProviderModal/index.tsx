@@ -166,7 +166,16 @@ const MapOperatorToStakingProviderModal: FC<
                 ? mappedOperatorTbtc
                 : ""
             }
-            onSubmitForm={(operator) => onSubmit({ operator, appName: "tbtc" })}
+            onSubmitForm={({ operator }) =>
+              onSubmit({
+                operator,
+                appName: "tbtc",
+                mappedOperatorTaco,
+                mappedOperatorTbtc,
+                mappedOperatorRandomBeacon,
+                // innerRef: undefined,
+              })
+            }
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
@@ -200,7 +209,16 @@ const MapOperatorToStakingProviderModal: FC<
             innerRef={formRefTaco}
             formId="map-operator-to-staking-provider-form-taco"
             initialAddress={""}
-            onSubmitForm={onSubmit}
+            onSubmitForm={({ operator }) =>
+              onSubmit({
+                operator,
+                appName: "taco",
+                mappedOperatorTaco,
+                mappedOperatorTbtc,
+                mappedOperatorRandomBeacon,
+                // innerRef: undefined,
+              })
+            }
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }

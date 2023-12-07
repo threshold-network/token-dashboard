@@ -4,12 +4,13 @@ import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
-export interface MapOperatorToStakingProviderFormValues {
+export type MapOperatorToStakingProviderFormValues = {
   operator: string
-  appName: string
-  mappedOperatorTbtc: string
-  mappedOperatorRandomBeacon: string
-  mappedOperatorTaco: string
+  appName?: string
+  mappedOperatorTbtc?: string
+  mappedOperatorRandomBeacon?: string
+  mappedOperatorTaco?: string
+  innerRef?: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
 }
 
 type ComponentProps = {
@@ -80,10 +81,11 @@ const validateInputtedOperatorAddress = async (
 
 type MapOperatorToStakingProviderFormProps = {
   initialAddress: string
+  appName?: string
   mappedOperatorTbtc?: string
   mappedOperatorRandomBeacon?: string
   mappedOperatorTaco?: string
-  innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
+  innerRef?: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>
@@ -94,8 +96,9 @@ const MapOperatorToStakingProviderForm = withFormik<
   MapOperatorToStakingProviderFormProps,
   MapOperatorToStakingProviderFormValues
 >({
-  mapPropsToValues: ({ initialAddress }) => ({
+  mapPropsToValues: ({ initialAddress, appName }) => ({
     operator: initialAddress,
+    appName,
   }),
   validate: async (values, props) => {
     const {
