@@ -22,6 +22,7 @@ export const BridgeLayout: FC<StackProps> = ({ children, ...restProps }) => {
       minW="0"
       alignItems="flex-start"
       gap="unset"
+      position="relative"
       {...restProps}
     >
       {children}

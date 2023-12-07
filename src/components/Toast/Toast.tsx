@@ -8,7 +8,7 @@ import {
   AlertProps as AlertPropsBase,
   CloseButton,
 } from "@threshold-network/components"
-import { useCallback, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { setTimeout, clearTimeout } from "../../utils/setTimeout"
 
 export interface ToastInternalProps {
@@ -29,25 +29,33 @@ const Toast = (props: AlertProps) => {
     title,
     description,
     duration = Infinity,
-    isDismissable = false,
-    onUnmount,
+    isDismissable = true,
     ...restProps
   } = props
 
-  const handleUnmount = useCallback(() => {
-    onUnmount && onUnmount()
-  }, [onUnmount])
+  const [isMounted, setIsMounted] = useState(true)
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      handleUnmount()
+      setIsMounted(false)
     }, duration)
 
     return () => clearTimeout(timeout)
   }, [])
 
-  return (
-    <Alert boxShadow="lg" alignItems="baseline" {...restProps}>
+  return isMounted ? (
+    <Alert
+      position="absolute"
+      top="0"
+      left="50%"
+      transform="translateX(-50%)"
+      width="auto"
+      boxShadow="lg"
+      alignItems="baseline"
+      border="none"
+      whiteSpace="nowrap"
+      {...restProps}
+    >
       <AlertIcon minH="8" />
       <Stack spacing={2} flex="1">
         {title && description && <AlertTitle>{title}</AlertTitle>}
@@ -55,8 +63,12 @@ const Toast = (props: AlertProps) => {
           <AlertDescription>{description ?? title}</AlertDescription>
         )}
       </Stack>
-      <CloseButton onClick={handleUnmount} />
+      {isDismissable && (
+        <CloseButton onClick={() => setIsMounted(false)} ml="4" />
+      )}
     </Alert>
+  ) : (
+    <></>
   )
 }
 

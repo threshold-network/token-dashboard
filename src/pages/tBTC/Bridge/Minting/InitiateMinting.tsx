@@ -5,7 +5,6 @@ import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { useToast } from "../../../../hooks/useToast"
 import InfoBox from "../../../../components/InfoBox"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import MintingTransactionDetails from "../components/MintingTransactionDetails"
@@ -13,12 +12,12 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { BigNumber } from "ethers"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useRevealDepositTransaction } from "../../../../hooks/tbtc"
+import { Toast } from "../../../../components/Toast"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
-  const { addToast, removeToast } = useToast("tbtc-bridge-minting")
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
 
@@ -30,15 +29,6 @@ const InitiateMintingComponent: FC<{
     onSuccessfulDepositReveal
   )
   const { value: depositedAmount } = utxo
-
-  useEffect(() => {
-    removeToast()
-    addToast({
-      title: "Deposit received",
-      status: "success",
-      duration: 5000,
-    })
-  }, [])
 
   useEffect(() => {
     const getEstimatedDepositFees = async () => {
@@ -60,6 +50,7 @@ const InitiateMintingComponent: FC<{
 
   return (
     <>
+      <Toast title="Deposit received" status="success" duration={3000} />
       <BridgeProcessCardTitle
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}

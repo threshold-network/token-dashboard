@@ -16,7 +16,6 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useToast } from "../../../hooks/useToast"
 import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
 
@@ -85,9 +84,6 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { active } = useWeb3React()
-  const { ToastContainer } = useToast("tbtc-bridge-minting", {
-    isDismissable: true,
-  })
   const { mintingStep } = useTbtcState()
   const shouldRenderDurationWidget = ![
     MintingStep.ProvideData,
@@ -95,24 +91,21 @@ const MintPageLayout: PageComponent = () => {
   ].includes(mintingStep)
 
   return (
-    <>
-      <ToastContainer />
-      <BridgeLayout>
-        <BridgeLayoutMainSection>
-          {active ? (
-            <Outlet />
-          ) : (
-            <BridgeProcessEmptyState title="Ready to mint tBTC?" />
-          )}
-        </BridgeLayoutMainSection>
-        <BridgeLayoutAsideSection>
-          {shouldRenderDurationWidget && (
-            <MintDurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
-          )}
-          <MintingTimeline />
-        </BridgeLayoutAsideSection>
-      </BridgeLayout>
-    </>
+    <BridgeLayout>
+      <BridgeLayoutMainSection>
+        {active ? (
+          <Outlet />
+        ) : (
+          <BridgeProcessEmptyState title="Ready to mint tBTC?" />
+        )}
+      </BridgeLayoutMainSection>
+      <BridgeLayoutAsideSection>
+        {shouldRenderDurationWidget && (
+          <MintDurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
+        )}
+        <MintingTimeline />
+      </BridgeLayoutAsideSection>
+    </BridgeLayout>
   )
 }
 

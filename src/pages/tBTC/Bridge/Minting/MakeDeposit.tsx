@@ -16,6 +16,7 @@ import {
 } from "../../../../components/CopyToClipboard"
 import { MintDurationTiers } from "../../../../components/MintDurationTiers"
 import { QRCode } from "../../../../components/QRCode"
+import { Toast } from "../../../../components/Toast"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
@@ -60,6 +61,10 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
 
   return (
     <>
+      <Toast
+        title="The system is continously checking for new BTC deposits"
+        status="info"
+      />
       <HStack
         alignItems="center"
         mb="3.5"

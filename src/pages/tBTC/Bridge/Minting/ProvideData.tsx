@@ -13,7 +13,6 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { useToast } from "../../../../hooks/useToast"
 import { BitcoinNetwork } from "../../../../threshold-ts/types"
 import { MintingStep } from "../../../../types/tbtc"
 import {
@@ -119,7 +118,6 @@ export const ProvideDataComponent: FC<{
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
     useState(true)
-  const { addToast } = useToast("tbtc-bridge-minting")
 
   const handleDepositReceiptAgreementChange: React.ChangeEventHandler<
     HTMLInputElement
@@ -178,10 +176,6 @@ export const ProvideDataComponent: FC<{
         downloadFile(JSON.stringify(finalData), fileName, "text/json")
       }
       updateState("mintingStep", MintingStep.Deposit)
-      addToast({
-        title: "The system is continously checking for new BTC deposits",
-        status: "info",
-      })
     },
     [shouldDownloadDepositReceipt]
   )

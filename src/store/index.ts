@@ -16,7 +16,6 @@ import {
   registerStakingAppsListeners,
   stakingApplicationsSlice,
 } from "./staking-applications/slice"
-import { toastsSlice } from "./toasts"
 import { listenerMiddleware } from "./listener"
 import { accountSlice, registerAccountListeners } from "./account"
 
@@ -31,7 +30,6 @@ const combinedReducer = combineReducers({
   tbtc: tbtcSlice.reducer,
   rewards: rewardsSlice.reducer,
   applications: stakingApplicationsSlice.reducer,
-  toasts: toastsSlice.reducer,
 })
 
 const APP_RESET_STORE = "app/reset_store"
@@ -65,7 +63,6 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
           isMappingOperatorToStakingProviderModalClosed: false,
         },
       },
-      toasts: {},
     } as RootState
   }
 
