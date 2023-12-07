@@ -148,24 +148,24 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
             . Each mapping is one transaction
           </BodyLg>
         </InfoBox>
-        {mappedOperatorTbtc && (
+        {appName === "tbtc" && (
           <OperatorMappingConfirmation
             appName="tbtc"
-            operator={mappedOperatorTbtc}
+            operator={operator}
             stakingProvider={account ? account : AddressZero}
           />
         )}
-        {mappedOperatorRandomBeacon && (
+        {appName === "randomBeacon" && (
           <OperatorMappingConfirmation
             appName="random beacon"
-            operator={mappedOperatorRandomBeacon}
+            operator={operator}
             stakingProvider={account ? account : AddressZero}
           />
         )}
-        {mappedOperatorTaco && (
+        {appName === "taco" && (
           <OperatorMappingConfirmation
             appName="taco"
-            operator={mappedOperatorTaco}
+            operator={operator}
             stakingProvider={account ? account : AddressZero}
           />
         )}
