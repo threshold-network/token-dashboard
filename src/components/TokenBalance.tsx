@@ -95,8 +95,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   withHigherPrecision = false,
   ...restProps
 }) => {
-  const { isActive } = useIsActive()
-  const shouldRenderTokenAmount = isActive
+  const { isActive: shouldRenderTokenAmount } = useIsActive()
 
   const _tokenAmount = useMemo(() => {
     return formatTokenAmount(tokenAmount || 0, tokenFormat, tokenDecimals)
