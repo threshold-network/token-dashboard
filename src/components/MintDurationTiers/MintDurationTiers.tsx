@@ -1,16 +1,22 @@
-import {
-  BodyXs,
-  Box,
-  Flex,
-  H5,
-  Stack,
-  VStack,
-} from "@threshold-network/components"
+import { BodyXs, Flex, H5, Stack, VStack } from "@threshold-network/components"
 import { FC } from "react"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getThresholdLib } from "../../utils/getThresholdLib"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
-import { MintDurationTiersProps } from "./MintDurationTiers.types"
+import { StackProps } from "@threshold-network/components"
+import { ComponentPropsWithoutRef } from "react"
+import { RangeOperatorType, CurrencyType } from "../../types"
+
+type BaseProps = ComponentPropsWithoutRef<"li"> & StackProps
+type MintDurationTiersItemProps = {
+  amount: number
+  currency: CurrencyType
+  rangeOperator: RangeOperatorType
+}
+
+interface MintDurationTiersProps extends BaseProps {
+  items: MintDurationTiersItemProps[]
+}
 
 const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
   getThresholdLib().tbtc
