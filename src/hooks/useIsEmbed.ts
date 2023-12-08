@@ -6,10 +6,13 @@ export const useIsEmbed = () => {
     "isEmbed",
     undefined
   )
+  const params = new URLSearchParams(window.location.search)
 
   const enableIsEmbed = useCallback(() => {
-    setIsEmbed(true)
-  }, [setIsEmbed])
+    if (params.get("embed")) {
+      setIsEmbed(true)
+    }
+  }, [setIsEmbed, params])
 
   const disableIsEmbed = useCallback(() => {
     setIsEmbed(false)

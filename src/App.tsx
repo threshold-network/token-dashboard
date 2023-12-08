@@ -133,11 +133,7 @@ const AppBody = () => {
   const dispatch = useDispatch()
   const { connector, account, deactivate } = useWeb3React()
   const { enableIsEmbed } = useIsEmbed()
-
-  const params = new URLSearchParams(window.location.search)
-  if (params.get("embed")) {
-    enableIsEmbed()
-  }
+  enableIsEmbed()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
