@@ -3,7 +3,7 @@
   "name": "Threshold",
   "url": "http://localhost:3000?embed=true",
   "homepageUrl": "http://localhost:3000?embed=true",
-  "icon": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAD40lEQVR4AayXAWRVYRTH32sBAGCEspHqBQEFAAEFAAYmElK1giIAaEstULYRUU1tFSAEJDDYaxsqGBS59pRZe+/ddzo/3zv83btdt3T47zvvnPP9v/Pd79y78zVUzEzRHAwGI/J71DHhmHOsuC9z5K6DDBs+Ytw+KvPgaCr3nuKTdPEDop9wzDs6Vl+IXXC0gsf5lbNRtfPY9UGfNO3jQIh7Q/SxK7CJPwT7NFzBKQmlxcUQAejjjlUh6jpyIQ2Y2hBDiE1zQtqOMV0jEErsmPGUPO5dWUgXrRKNY4QD2XJ+uBtaW/zQMx8jUHZturP6UkqkK7UxrnWG0pQn0I4J9XddLwnn7joYV+UYmlp00/HYay/+90kE93QcRZx/K/kNYRzkPWCm6DP241zCjm4IvhRTQuI0hvjL6y1FuBCPPpKo3FJez6YSy8rxzlN/PIbRqHoPyBn6/qA23pp9WjRbe+mjY+2V2eozs82PhthOJ/kAOoKPGGKZgw8OuOCEmzWkIEfZ/UR8ZNgFQds/zG6557LjquOK45rjouPJ2RScfU4+gI7gI4ZY5uCDAy444WYN+VhNkMCcRQIusbvHZ8zuHzWbbTn8tB6eNJs5bPb6gtnPb2Zf3ycfQMeGjxhimYMPDrjglIOIBOZIYGXo6KdCQU8Fpej9NsTaL8xu+KwHx8z6XYCOLfkQYgvzo1AZ47ONrJBAZuGTBCBW9HZS0Opzs5uNtMPeLkDHlnwIscX5hQQAkjX0G09Q5REcMVueNOtsmn15hw+gY8NHTPURFN6yXBKIAkkFc3tYSNeHRTXluOR4es4QzhwfQEfwEUMsc/DBARec8bqWEsiiOOIIeGXWl9MjbS9ytg7X15fMPsz4QufNliaxA3Rs+IghFjtz4YALzv2PgCJE+nEMVQIZu7x7yELQseGrlMRdKEJfsfQaxmdWUXwLZo+zK4BefAuK8+Hc/zWcQBMjASWBBOGxcrYUF+cJ0LHh01gV5S5+iOJTjOR1EphK34FIAB1bzQTKn2Iwr31AsQFRUoqKyr43FgmgY8NXmUCxOVngn5F2vtJGBcoJbLwxu9M0e3Q6EkDHlnwaW9EzMraiJavVkDA1CuzXd7PtDBtAx4ZPYpEyT7kh0ZaMJ1w8inIStV61qr6wrS2ZNqXRjneih1MS+ZbHo0cv/o4YTV65thxjxaY0MBJtuY9b0cM5/ldb3om2XJ5A+WLCOMyyLaR0tHnhWOpeTKITHpfuO9bb+2omN5jS1cx9lVcz/BVXM7hr3Q8PSGDL9YV/uJzOR+erZx4Iqbyea8bF67kjc+TuB5lez4llnlzD/owRl88B1tsmpUzXurkAAAAASUVORK5CYII=",
+  "icon": "https://dashboard.threshold.network/favicon-T.png",
   "platform": "all",
   "apiVersion": "2.0.0",
   "manifestVersion": "1",
