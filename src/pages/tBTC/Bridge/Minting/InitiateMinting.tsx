@@ -88,7 +88,7 @@ const InitiateMintingComponent: FC<{
           "Confirm deposit & mint (Step 2)"
         }
       >
-        Initiate minting
+        Bridge
       </Button>
     </>
   )
