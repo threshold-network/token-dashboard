@@ -62,7 +62,7 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
   return (
     <>
       <Toast
-        title="The system is continously checking for new BTC deposits"
+        title="The system is continuously checking for new BTC deposits"
         status="info"
       />
       <HStack
