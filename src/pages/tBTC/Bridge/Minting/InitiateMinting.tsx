@@ -1,5 +1,5 @@
 import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
-import { BodyLg, Button, H5 } from "@threshold-network/components"
+import { BodyLg, Button, H5, Skeleton } from "@threshold-network/components"
 import { FC, useEffect } from "react"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
@@ -62,17 +62,21 @@ const InitiateMintingComponent: FC<{
       <InfoBox variant="modal" mb="6">
         <H5>
           You deposited&nbsp;
-          <InlineTokenBalance
-            tokenAmount={depositedAmount.toString()}
-            tokenSymbol="BTC"
-            withSymbol
-          />
+          <Skeleton isLoaded={!!depositedAmount} maxW="105px" as="span">
+            <InlineTokenBalance
+              tokenAmount={depositedAmount.toString()}
+              tokenSymbol="BTC"
+              withSymbol
+            />
+          </Skeleton>
           &nbsp;and will receive&nbsp;
-          <InlineTokenBalance
-            tokenAmount={tBTCMintAmount}
-            tokenSymbol="tBTC"
-            withSymbol
-          />
+          <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+            <InlineTokenBalance
+              tokenAmount={tBTCMintAmount}
+              tokenSymbol="tBTC"
+              withSymbol
+            />
+          </Skeleton>
         </H5>
         <BodyLg>
           Receiving tBTC requires a single transaction on Solana and takes
