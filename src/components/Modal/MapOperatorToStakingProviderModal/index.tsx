@@ -77,7 +77,7 @@ const MapOperatorToStakingProviderModal: FC<
   ) => Promise<boolean> = async (operator: string, appName: string) => {
     let stakingProviderMapped
     switch (appName) {
-      case "ecdsa":
+      case "tbtc":
         stakingProviderMapped =
           await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(
             operator
@@ -111,16 +111,13 @@ const MapOperatorToStakingProviderModal: FC<
   const [selectedApps, setSelectedApps] = useState<SelectedApp[]>([])
 
   const submitMapping = async () => {
-    console.log(
-      mappedOperatorTaco,
-      mappedOperatorTbtc,
-      mappedOperatorRandomBeacon
-    )
+    await formRefTbtc?.current?.validateForm()
+    await formRefRandomBeacon?.current?.validateForm()
+    await formRefTaco?.current?.validateForm()
     const operatorTbtc = formRefTbtc.current?.values?.operator
     const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
     const operatorTaco = formRefTaco.current?.values?.operator
     if (operatorTbtc) {
-      console.log("submitting tbtc", operatorTbtc)
       setSelectedApps((apps) => [
         ...apps,
         {
@@ -128,10 +125,8 @@ const MapOperatorToStakingProviderModal: FC<
           operator: operatorTbtc,
         },
       ])
-      await formRefTbtc.current.validateForm()
     }
     if (operatorRandomBeacon) {
-      console.log("submitting rb", operatorRandomBeacon)
       setSelectedApps((apps) => [
         ...apps,
         {
@@ -139,10 +134,8 @@ const MapOperatorToStakingProviderModal: FC<
           operator: operatorRandomBeacon,
         },
       ])
-      await formRefRandomBeacon.current.validateForm()
     }
     if (operatorTaco) {
-      console.log("submitting taco", operatorTaco)
       setSelectedApps((apps) => [
         ...apps,
         {
@@ -150,7 +143,6 @@ const MapOperatorToStakingProviderModal: FC<
           operator: operatorTaco,
         },
       ])
-      await formRefTaco.current.validateForm()
     }
     openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
       applications: selectedApps.map((_) => ({
@@ -196,13 +188,7 @@ const MapOperatorToStakingProviderModal: FC<
           mt={"5"}
           mb={"5"}
         >
-          {isOperatorMappedOnlyInRandomBeacon ? (
-            <LabelSm>tBTC app</LabelSm>
-          ) : isOperatorMappedOnlyInTbtc ? (
-            <LabelSm>random beacon app</LabelSm>
-          ) : (
-            <LabelSm>tBTC + Random Beacon (requires 2txs)</LabelSm>
-          )}
+          <LabelSm>tBTC</LabelSm>
           <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
             innerRef={formRefTbtc}
@@ -213,6 +199,17 @@ const MapOperatorToStakingProviderModal: FC<
             appName={"tbtc"}
             mappedOperatorTbtc={mappedOperatorTbtc}
           />
+        </Box>
+        <Box
+          p={"24px"}
+          border={"1px solid"}
+          borderColor={"gray.100"}
+          borderRadius={"12px"}
+          mt={"5"}
+          mb={"5"}
+        >
+          <LabelSm>Random Beacon</LabelSm>
+          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
           <MapOperatorToStakingProviderForm
             innerRef={formRefRandomBeacon}
             formId="map-operator-to-staking-provider-form-random-beacon"

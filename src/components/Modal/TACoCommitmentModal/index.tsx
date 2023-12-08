@@ -47,9 +47,6 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
   )
 
   const submitCommitment = async (stakingProvider: string, choice: string) => {
-    console.log("submitting commitment")
-    console.log(stakingProvider)
-    console.log(parseInt(choice))
     sendTransaction(stakingProvider, parseInt(choice))
   }
 
