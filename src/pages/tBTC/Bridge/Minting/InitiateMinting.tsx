@@ -60,7 +60,7 @@ const InitiateMintingComponent: FC<{
         subTitle="Initiate minting"
       />
       <InfoBox variant="modal" mb="6">
-        <H5>
+        <H5 mb={4}>
           You deposited&nbsp;
           <Skeleton isLoaded={!!depositedAmount} maxW="105px" as="span">
             <InlineTokenBalance
