@@ -72,20 +72,36 @@ const MapOperatorToStakingProviderModal: FC<
   } = useAppSelector(selectMappedOperators)
 
   const checkIfOperatorIsMappedToAnotherStakingProvider: (
-    operator: string
-  ) => Promise<boolean> = async (operator: string) => {
-    const stakingProviderMappedEcdsa =
-      await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(operator)
-    const stakingProviderMappedRandomBeacon =
-      await threshold.multiAppStaking.randomBeacon.operatorToStakingProvider(
-        operator
-      )
+    operator: string,
+    appName: string
+  ) => Promise<boolean> = async (operator: string, appName: string) => {
+    let stakingProviderMapped
+    switch (appName) {
+      case "ecdsa":
+        stakingProviderMapped =
+          await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(
+            operator
+          )
+        break
+      case "randomBeacon":
+        stakingProviderMapped =
+          await threshold.multiAppStaking.randomBeacon.operatorToStakingProvider(
+            operator
+          )
+        break
+      case "taco":
+        stakingProviderMapped =
+          await threshold.multiAppStaking.taco.operatorToStakingProvider(
+            operator
+          )
+        break
+      default:
+        throw new Error(`Unsupported app name: ${appName}`)
+    }
 
     return (
-      (!isAddressZero(stakingProviderMappedEcdsa) &&
-        !isSameETHAddress(stakingProviderMappedEcdsa, account!)) ||
-      (!isAddressZero(stakingProviderMappedRandomBeacon) &&
-        !isSameETHAddress(stakingProviderMappedRandomBeacon, account!))
+      !isAddressZero(stakingProviderMapped) &&
+      !isSameETHAddress(stakingProviderMapped, account!)
     )
   }
   type SelectedApp = {
@@ -194,6 +210,7 @@ const MapOperatorToStakingProviderModal: FC<
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
+            appName={"tbtc"}
             mappedOperatorTbtc={mappedOperatorTbtc}
           />
           <MapOperatorToStakingProviderForm
@@ -202,6 +219,7 @@ const MapOperatorToStakingProviderModal: FC<
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
+            appName={"randomBeacon"}
             mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
           />
         </Box>
@@ -233,6 +251,7 @@ const MapOperatorToStakingProviderModal: FC<
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
+            appName={"taco"}
             mappedOperatorTaco={mappedOperatorTaco}
           />
         </Box>
