@@ -1,4 +1,4 @@
-import { FC, useRef } from "react"
+import { FC, useRef, RefObject, useState } from "react"
 import {
   AlertBox,
   AlertIcon,
@@ -45,8 +45,20 @@ const MapOperatorToStakingProviderModal: FC<
   const { account } = useWeb3React()
   const formRefTbtc =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
+  const formRefRandomBeacon =
+    useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const formRefTaco =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
+
+  type AppName = "tbtc" | "randomBeacon" | "taco"
+  const appNameToFormRef: Record<
+    AppName,
+    RefObject<FormikProps<MapOperatorToStakingProviderFormValues>>
+  > = {
+    tbtc: formRefTbtc,
+    randomBeacon: formRefRandomBeacon,
+    taco: formRefTaco,
+  }
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
 
@@ -58,24 +70,6 @@ const MapOperatorToStakingProviderModal: FC<
     isOperatorMappedOnlyInTbtc,
     isOperatorMappedOnlyInTaco,
   } = useAppSelector(selectMappedOperators)
-
-  const onSubmit = async ({
-    operator,
-    appName,
-    mappedOperatorTbtc,
-    mappedOperatorRandomBeacon,
-    mappedOperatorTaco,
-  }: MapOperatorToStakingProviderFormValues) => {
-    if (account) {
-      openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
-        operator,
-        appName,
-        mappedOperatorTbtc,
-        mappedOperatorRandomBeacon,
-        mappedOperatorTaco,
-      })
-    }
-  }
 
   const checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
@@ -94,22 +88,60 @@ const MapOperatorToStakingProviderModal: FC<
         !isSameETHAddress(stakingProviderMappedRandomBeacon, account!))
     )
   }
+  type SelectedApp = {
+    appName: string
+    operator: string
+  }
+  const [selectedApps, setSelectedApps] = useState<SelectedApp[]>([])
 
-  const handleSubmit = async () => {
+  const submitMapping = async () => {
     console.log(
       mappedOperatorTaco,
       mappedOperatorTbtc,
       mappedOperatorRandomBeacon
     )
-    if (formRefTbtc.current?.values?.operator) {
-      console.log("submitting tbtc", formRefTbtc.current?.values?.operator)
-      await formRefTbtc.current.handleSubmit()
+    const operatorTbtc = formRefTbtc.current?.values?.operator
+    const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
+    const operatorTaco = formRefTaco.current?.values?.operator
+    if (operatorTbtc) {
+      console.log("submitting tbtc", operatorTbtc)
+      setSelectedApps((apps) => [
+        ...apps,
+        {
+          appName: "tbtc",
+          operator: operatorTbtc,
+        },
+      ])
+      await formRefTbtc.current.validateForm()
     }
-
-    if (formRefTaco.current?.values?.operator) {
-      console.log("submitting taco", formRefTaco.current?.values?.operator)
-      await formRefTaco.current.handleSubmit()
+    if (operatorRandomBeacon) {
+      console.log("submitting rb", operatorRandomBeacon)
+      setSelectedApps((apps) => [
+        ...apps,
+        {
+          appName: "randomBeacon",
+          operator: operatorRandomBeacon,
+        },
+      ])
+      await formRefRandomBeacon.current.validateForm()
     }
+    if (operatorTaco) {
+      console.log("submitting taco", operatorTaco)
+      setSelectedApps((apps) => [
+        ...apps,
+        {
+          appName: "taco",
+          operator: operatorTaco,
+        },
+      ])
+      await formRefTaco.current.validateForm()
+    }
+    openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
+      applications: selectedApps.map((_) => ({
+        appName: _.appName,
+        operator: _.operator,
+      })),
+    })
   }
 
   return (
@@ -159,27 +191,17 @@ const MapOperatorToStakingProviderModal: FC<
           <MapOperatorToStakingProviderForm
             innerRef={formRefTbtc}
             formId="map-operator-to-staking-provider-form-tbtc"
-            initialAddress={
-              isOperatorMappedOnlyInRandomBeacon
-                ? mappedOperatorRandomBeacon
-                : isOperatorMappedOnlyInTbtc
-                ? mappedOperatorTbtc
-                : ""
-            }
-            onSubmitForm={({ operator }) =>
-              onSubmit({
-                operator,
-                appName: "tbtc",
-                mappedOperatorTaco,
-                mappedOperatorTbtc,
-                mappedOperatorRandomBeacon,
-                // innerRef: undefined,
-              })
-            }
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
             mappedOperatorTbtc={mappedOperatorTbtc}
+          />
+          <MapOperatorToStakingProviderForm
+            innerRef={formRefRandomBeacon}
+            formId="map-operator-to-staking-provider-form-random-beacon"
+            checkIfOperatorIsMappedToAnotherStakingProvider={
+              checkIfOperatorIsMappedToAnotherStakingProvider
+            }
             mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
           />
         </Box>
@@ -208,17 +230,6 @@ const MapOperatorToStakingProviderModal: FC<
           <MapOperatorToStakingProviderForm
             innerRef={formRefTaco}
             formId="map-operator-to-staking-provider-form-taco"
-            initialAddress={""}
-            onSubmitForm={({ operator }) =>
-              onSubmit({
-                operator,
-                appName: "taco",
-                mappedOperatorTaco,
-                mappedOperatorTbtc,
-                mappedOperatorRandomBeacon,
-                // innerRef: undefined,
-              })
-            }
             checkIfOperatorIsMappedToAnotherStakingProvider={
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
@@ -230,7 +241,7 @@ const MapOperatorToStakingProviderModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button type="submit" onClick={handleSubmit}>
+        <Button type="submit" onClick={submitMapping}>
           Map Address
         </Button>
       </ModalFooter>
