@@ -7,8 +7,8 @@
   "platform": "all",
   "apiVersion": "2.0.0",
   "manifestVersion": "1",
-  "branch": "main",
-  "categories": ["buy"],
+  "branch": "stable",
+  "categories": ["tbtc", "bitocin", "bridge"],
   "currencies": ["bitcoin", "ethereum", "bitcoin_testnet", "ethereum_goerli"],
   "content": {
     "shortDescription": {
