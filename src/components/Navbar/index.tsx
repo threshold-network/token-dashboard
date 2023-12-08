@@ -16,6 +16,7 @@ const Navbar: FC = () => {
 
   const { account: ledgerLiveAccount, requestAccount } =
     useRequestEthereumAccount()
+  const ledgerLiveAccountAddress = ledgerLiveAccount?.address
 
   const openWalletModal = () => {
     if (isEmbed) {
@@ -26,10 +27,10 @@ const Navbar: FC = () => {
   }
 
   useEffect(() => {
-    if (ledgerLiveAccount) {
-      dispatch(walletConnected(ledgerLiveAccount.address))
+    if (ledgerLiveAccountAddress) {
+      dispatch(walletConnected(ledgerLiveAccountAddress || ""))
     }
-  }, [ledgerLiveAccount])
+  }, [ledgerLiveAccountAddress])
 
   return (
     <NavbarComponent
