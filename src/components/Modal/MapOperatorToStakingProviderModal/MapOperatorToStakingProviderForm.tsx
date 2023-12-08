@@ -42,8 +42,6 @@ const validateInputtedOperatorAddress = async (
   mappedOperatorRandomBeacon?: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
-  mappedOperatorTbtc = mappedOperatorTbtc || ""
-  mappedOperatorRandomBeacon = mappedOperatorRandomBeacon || ""
 
   try {
     const isOperatorMappedToAnotherStakingProvider =
@@ -53,27 +51,34 @@ const validateInputtedOperatorAddress = async (
       validationMsg = "Operator is already mapped to another staking provider."
     }
 
-    const isOperatorMappedOnlyInTbtc =
-      !isAddressZero(mappedOperatorTbtc) &&
-      isAddressZero(mappedOperatorRandomBeacon)
-
-    const isOperatorMappedOnlyInRandomBeacon =
-      isAddressZero(mappedOperatorTbtc) &&
-      !isAddressZero(mappedOperatorRandomBeacon)
-
-    if (
-      isOperatorMappedOnlyInRandomBeacon &&
-      !isSameETHAddress(operator, mappedOperatorRandomBeacon)
-    ) {
-      validationMsg =
-        "The operator address doesn't match the one used in random beacon app"
-    }
-    if (
-      isOperatorMappedOnlyInTbtc &&
-      !isSameETHAddress(operator, mappedOperatorTbtc)
-    ) {
-      validationMsg =
-        "The operator address doesn't match the one used in tbtc app"
+    switch (appName) {
+      case "tbtc":
+        if (mappedOperatorTbtc) {
+          if (
+            !isAddressZero(mappedOperatorTbtc) &&
+            !isSameETHAddress(operator, mappedOperatorTbtc)
+          ) {
+            validationMsg =
+              "The operator address doesn't match the one used in tbtc app"
+          }
+        }
+        break
+      case "randomBeacon":
+        if (mappedOperatorRandomBeacon) {
+          if (
+            !isAddressZero(mappedOperatorRandomBeacon) &&
+            !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+          ) {
+            validationMsg =
+              "The operator address doesn't match the one used in random beacon app"
+          }
+        }
+        break
+      case "taco":
+        console.log("taco")
+        break
+      default:
+        throw new Error(`Unsupported app name: ${appName}`)
     }
   } catch (error) {
     console.error("`MapOperatorToStakingProviderForm` validation error.", error)
