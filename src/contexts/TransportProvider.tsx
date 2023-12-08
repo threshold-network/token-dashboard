@@ -3,13 +3,6 @@ import { WindowMessageTransport } from "@ledgerhq/wallet-api-client"
 import { createContext, FC, useContext } from "react"
 
 const getWalletAPITransport = (): WindowMessageTransport => {
-  // if (typeof window === "undefined") {
-  //   return {
-  //     onMessage: undefined,
-  //     send: () => {},
-  //   }
-  // }
-
   const transport = new WindowMessageTransport()
   return transport
 }
