@@ -1,29 +1,22 @@
 import { FC, useEffect } from "react"
-import { useModal } from "../../hooks/useModal"
 import NavbarComponent from "./NavbarComponent"
-import { ModalType } from "../../enums"
 import { useAppDispatch } from "../../hooks/store"
-import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { walletConnected } from "../../store/account"
 import { useRequestEthereumAccount } from "../../hooks/ledger-live-app"
 import { useIsActive } from "../../hooks/useIsActive"
+import { useConnectWallet } from "../../hooks/useConnectWallet"
 
 const Navbar: FC = () => {
-  const { openModal } = useModal()
   const { isActive, account, chainId, deactivate } = useIsActive()
-  const { isEmbed } = useIsEmbed()
   const dispatch = useAppDispatch()
+  const connectWallet = useConnectWallet()
 
   const { account: ledgerLiveAccount, requestAccount } =
     useRequestEthereumAccount()
   const ledgerLiveAccountAddress = ledgerLiveAccount?.address
 
   const openWalletModal = () => {
-    if (isEmbed) {
-      requestAccount()
-    } else {
-      openModal(ModalType.SelectWallet)
-    }
+    connectWallet()
   }
 
   useEffect(() => {

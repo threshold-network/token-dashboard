@@ -1,11 +1,8 @@
-import React, { FC } from "react"
+import { FC } from "react"
 import { Button, ButtonProps } from "@chakra-ui/react"
-import { ModalType } from "../enums"
-import { useModal } from "../hooks/useModal"
 import { useIsActive } from "../hooks/useIsActive"
-import { useIsEmbed } from "../hooks/useIsEmbed"
-import { useRequestEthereumAccount } from "../hooks/ledger-live-app"
 import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
+import { useConnectWallet } from "../hooks/useConnectWallet"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -18,17 +15,11 @@ const SubmitTxButton: FC<Props> = ({
   ...buttonProps
 }) => {
   const { isActive } = useIsActive()
-  const { isEmbed } = useIsEmbed()
-  const { requestAccount } = useRequestEthereumAccount()
-  const { openModal } = useModal()
   const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
+  const connectWallet = useConnectWallet()
 
-  const connectWallet = () => {
-    if (isEmbed) {
-      requestAccount()
-    } else {
-      openModal(ModalType.SelectWallet)
-    }
+  const onConnectWalletClick = () => {
+    connectWallet()
   }
 
   if (isActive && isSdkInitializedWithSigner) {
@@ -43,7 +34,7 @@ const SubmitTxButton: FC<Props> = ({
     <Button
       mt={6}
       isFullWidth
-      onClick={connectWallet}
+      onClick={onConnectWalletClick}
       {...buttonProps}
       type="button"
       isDisabled={false}
