@@ -192,7 +192,7 @@ export class MockBitcoinClient implements BitcoinClient {
     )
 
     const utxos = new Map<string, BitcoinUtxo[]>()
-    utxos.set(depositAddress, [primaryDepositUtxo, secondaryDepositUtxo])
+    // utxos.set(depositAddress, [primaryDepositUtxo, secondaryDepositUtxo])
 
     this.unspentTransactionOutputs = utxos
     const rawTransactions = new Map<string, BitcoinRawTx>()

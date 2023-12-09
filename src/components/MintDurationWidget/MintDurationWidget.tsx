@@ -7,13 +7,10 @@ import {
   LabelSm,
 } from "@threshold-network/components"
 import { FC } from "react"
+import { useThreshold } from "../../contexts/ThresholdContext"
 import { getRangeSign } from "../../utils/getRangeSign"
-import { getThresholdLib } from "../../utils/getThresholdLib"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
 import { MintDurationWidgetProps } from "./MintDurationWidget.types"
-
-const { minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount } =
-  getThresholdLib().tbtc
 
 const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   label = "Duration",
@@ -22,6 +19,11 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
 }) => {
   const [operator, value, currency] = amount
   const sign = getRangeSign(operator)
+  const {
+    tbtc: {
+      minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
+    },
+  } = useThreshold()
 
   const correctedValue = value + (operator.includes("greater") ? 0.01 : -0.01)
   // The amount is corrected by adding or subtracting 0.01 to the given amount
