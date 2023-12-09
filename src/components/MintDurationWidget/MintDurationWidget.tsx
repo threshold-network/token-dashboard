@@ -10,7 +10,13 @@ import { FC } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { getRangeSign } from "../../utils/getRangeSign"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
-import { MintDurationWidgetProps } from "./MintDurationWidget.types"
+import { BoxProps } from "@threshold-network/components"
+import { RangeOperatorType, CurrencyType } from "../../types"
+
+export interface MintDurationWidgetProps extends BoxProps {
+  label?: string
+  amount: [RangeOperatorType, number, CurrencyType]
+}
 
 const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   label = "Duration",
