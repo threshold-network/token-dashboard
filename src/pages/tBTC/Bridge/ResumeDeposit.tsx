@@ -190,6 +190,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
 })(ResumeDepositForm)
 
 ResumeDepositPage.route = {
+  title: "Resume Deposit",
   path: "continue",
   index: false,
   isPageEnabled: true,
