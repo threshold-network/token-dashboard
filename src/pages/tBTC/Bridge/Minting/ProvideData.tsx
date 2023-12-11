@@ -170,7 +170,14 @@ export const ProvideDataComponent: FC<{
         const fileName = `${values.ethAddress}_${depositAddress}_${date}.json`
 
         const finalData = {
-          ...receipt,
+          depositor: {
+            identifierHex: receipt.depositor.identifierHex.toString(),
+          },
+          refundLocktime: receipt.refundLocktime.toString(),
+          refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
+          blindingFactor: receipt.blindingFactor.toString(),
+          ethAddress: values.ethAddress,
+          walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
         }
         downloadFile(JSON.stringify(finalData), fileName, "text/json")
