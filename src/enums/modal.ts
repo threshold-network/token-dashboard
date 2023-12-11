@@ -17,7 +17,6 @@ export enum ModalType {
   ClaimingRewards = "CLAIMING_REWARDS",
   ClaimingRewardsSuccess = "CLAIMING_REWARDS_SUCCESS",
   NewAppsToAuthorize = "NEW_APPS_TO_AUTHORIZE",
-  TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   SubmitStake = "SUBMIT_STAKE",
   NewStakerAuthorizeStakingApplication = "NEW_STAKER_AUTHORIZE_STAKING_APPLICATION",
