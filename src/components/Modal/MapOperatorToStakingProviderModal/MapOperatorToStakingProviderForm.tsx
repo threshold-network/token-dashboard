@@ -109,6 +109,7 @@ const MapOperatorToStakingProviderForm: FC<
     mappedOperatorRandomBeacon,
     mappedOperatorTaco,
     checkIfOperatorIsMappedToAnotherStakingProvider,
+    formId,
   } = props
 
   return (
