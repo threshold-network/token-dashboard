@@ -50,15 +50,6 @@ const MapOperatorToStakingProviderModal: FC<
   const formRefTaco =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
 
-  type AppName = "tbtc" | "randomBeacon" | "taco"
-  const appNameToFormRef: Record<
-    AppName,
-    RefObject<FormikProps<MapOperatorToStakingProviderFormValues>>
-  > = {
-    tbtc: formRefTbtc,
-    randomBeacon: formRefRandomBeacon,
-    taco: formRefTaco,
-  }
   const { closeModal, openModal } = useModal()
   const threshold = useThreshold()
 
@@ -111,9 +102,11 @@ const MapOperatorToStakingProviderModal: FC<
   const [selectedApps, setSelectedApps] = useState<SelectedApp[]>([])
 
   const submitMapping = async () => {
-    await formRefTbtc?.current?.validateForm()
-    await formRefRandomBeacon?.current?.validateForm()
-    await formRefTaco?.current?.validateForm()
+    await Promise.all([
+      formRefTbtc.current?.validateForm(),
+      formRefRandomBeacon.current?.validateForm(),
+      formRefTaco.current?.validateForm(),
+    ])
     const operatorTbtc = formRefTbtc.current?.values?.operator
     const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
     const operatorTaco = formRefTaco.current?.values?.operator
