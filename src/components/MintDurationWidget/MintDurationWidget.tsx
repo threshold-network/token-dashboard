@@ -8,14 +8,15 @@ import {
 } from "@threshold-network/components"
 import { FC } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
-import { getRangeSign } from "../../utils/getRangeSign"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
 import { BoxProps } from "@threshold-network/components"
 import { RangeOperatorType, CurrencyType } from "../../types"
+import { BigNumber, BigNumberish } from "ethers"
+import { InlineTokenBalance } from "../TokenBalance"
 
 interface MintDurationWidgetProps extends BoxProps {
   label?: string
-  amount: [RangeOperatorType, number, CurrencyType]
+  amount: [RangeOperatorType, BigNumberish, CurrencyType]
 }
 
 const MintDurationWidget: FC<MintDurationWidgetProps> = ({
@@ -23,14 +24,14 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   amount,
   ...restProps
 }) => {
-  const [operator, value, currency] = amount
-  const sign = getRangeSign(operator)
+  const [operator, rawValue, currency] = amount
   const {
     tbtc: {
       minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
     },
   } = useThreshold()
 
+  const value = BigNumber.from(rawValue).toNumber()
   const correctedValue = value + (operator.includes("greater") ? 0.01 : -0.01)
   // The amount is corrected by adding or subtracting 0.01 to the given amount
   // depending on the range operator. This is done to avoid floating-point errors
@@ -62,11 +63,11 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
         >
           ~ {duration} {durationSuffix}
         </BodyXs>
-        <Flex alignItems="end">
-          <BodyLg color="gray.500">
-            {sign} {formattedValue}
+        <Flex alignItems="end" color="gray.500">
+          <BodyLg>
+            <InlineTokenBalance tokenAmount={value} />
           </BodyLg>
-          <BodyXs ml="1.5" mb="0.5" color="gray.500">
+          <BodyXs ml="1.5" mb="0.5">
             {currency}
           </BodyXs>
         </Flex>

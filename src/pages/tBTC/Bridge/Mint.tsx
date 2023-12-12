@@ -18,6 +18,9 @@ import {
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
+import { formatTokenAmount } from "../../../utils/formatAmount"
+import { BigNumber } from "ethers"
+import { fromSatoshiToTokenPrecision } from "../../../threshold-ts/utils"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -84,7 +87,7 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { active } = useWeb3React()
-  const { mintingStep } = useTbtcState()
+  const { mintingStep, utxo } = useTbtcState()
   const shouldRenderDurationWidget = ![
     MintingStep.ProvideData,
     MintingStep.Deposit,
@@ -101,7 +104,7 @@ const MintPageLayout: PageComponent = () => {
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
         {shouldRenderDurationWidget && (
-          <MintDurationWidget amount={["less", 1, "BTC"]} /> // TODO: Read prop values from the store
+          <MintDurationWidget amount={["less", utxo?.value || 0, "BTC"]} />
         )}
         <MintingTimeline />
       </BridgeLayoutAsideSection>
