@@ -1,20 +1,20 @@
-import { FC, Ref, useEffect, useState } from "react"
+import { BodyMd, BodySm } from "@threshold-network/components"
 import { BigNumber } from "ethers"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { BodyMd, BodySm } from "@threshold-network/components"
+import { FC, Ref, useEffect, useState } from "react"
+import { formatTokenAmount } from "../../utils/formatAmount"
 import {
-  TokenAmountFormBase,
-  TokenAmountFormBaseProps,
-  FormValues,
-} from "../Forms"
-import {
-  defaultLessThanMsg,
-  defaultValidationOptions,
+  defaultLessThanMessage,
+  defaultAmountValidationOptions,
   DEFAULT_MIN_VALUE,
   getErrorsObj,
   validateAmountInRange,
 } from "../../utils/forms"
-import { formatTokenAmount } from "../../utils/formatAmount"
+import {
+  FormValues,
+  TokenAmountFormBase,
+  TokenAmountFormBaseProps,
+} from "../Forms"
 
 type ComponentProps = {
   totalStake: string
@@ -148,11 +148,11 @@ const deauthorizationValidation = (
       max.toString(),
       DEFAULT_MIN_VALUE,
       {
-        ...defaultValidationOptions,
-        lessThanValidationMsg(amount) {
-          return `${defaultLessThanMsg(amount)} or equal to ${formatTokenAmount(
-            authorizedAmount.toString()
-          )} T`
+        ...defaultAmountValidationOptions,
+        lessThanValidationMessage(amount) {
+          return `${defaultLessThanMessage(
+            amount
+          )} or equal to ${formatTokenAmount(authorizedAmount.toString())} T`
         },
       }
     )
