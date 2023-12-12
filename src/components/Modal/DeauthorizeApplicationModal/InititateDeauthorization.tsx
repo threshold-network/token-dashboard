@@ -119,20 +119,24 @@ const InitiateDeauthorization: FC<
           </FlowStep>
           <FlowStep
             preTitle="Step 2"
-            title="45 day cooldown"
+            title={
+              stakingAppName === "taco" ? "6 month cooldown" : "45 day cooldown"
+            }
             status={FlowStepStatus.inactive}
             size="sm"
           >
-            You must wait a 45 day cooldown to then confirm the deauthorization.
-            This is 1 transaction.
+            You must wait a {stakingAppName === "taco" ? "6 month" : "45 day"}{" "}
+            cooldown to then confirm the deauthorization. This is 1 transaction.
           </FlowStep>
         </Stack>
         <Alert status="warning">
           <AlertIcon />
-          Take note! In this 45 day cooldown period, you cannot increase or
-          decrease your authorization. As a measure of security for the entire
-          network, in the event of slashing you will be slashed based on your
-          initial amount.
+          Take note! In this {stakingAppName === "taco"
+            ? "6 month"
+            : "45 day"}{" "}
+          cooldown period, you cannot increase or decrease your authorization.
+          As a measure of security for the entire network, in the event of
+          slashing you will be slashed based on your initial amount.
         </Alert>
       </ModalBody>
       <ModalFooter>
