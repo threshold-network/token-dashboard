@@ -107,6 +107,7 @@ const MapOperatorToStakingProviderModal: FC<
       formRefRandomBeacon.current?.validateForm(),
       formRefTaco.current?.validateForm(),
     ])
+    console.log({ formRefTbtc })
     const operatorTbtc = formRefTbtc.current?.values?.operator
     const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
     const operatorTaco = formRefTaco.current?.values?.operator
