@@ -42,7 +42,6 @@ export const ResumeDepositPage: PageComponent = () => {
   const threshold = useThreshold()
 
   const navigateToMintPage = () => {
-    updateState("mintingStep", MintingStep.ProvideData)
     navigate("/tBTC/mint")
   }
 
@@ -54,6 +53,8 @@ export const ResumeDepositPage: PageComponent = () => {
       depositParameters
     )
     const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
+
+    updateState("mintingStep", undefined)
 
     setDepositDataInLocalStorage({
       ethAddress: depositParameters?.depositor.identifierHex!,
