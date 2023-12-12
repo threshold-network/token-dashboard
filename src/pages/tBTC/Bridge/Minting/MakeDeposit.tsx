@@ -173,7 +173,7 @@ const MakeDepositComponent: FC<{
           },
         ]}
       />
-      <Stack spacing={4} mt="5" mb="16">
+      <Stack spacing={4} mt="5">
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow
