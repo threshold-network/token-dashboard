@@ -41,14 +41,6 @@ export const ResumeDepositPage: PageComponent = () => {
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
 
-  useEffect(() => {
-    updateState("mintingStep", MintingStep.InitiateMinting)
-
-    return () => {
-      updateState("mintingStep", MintingStep.ProvideData)
-    }
-  }, [updateState])
-
   const navigateToMintPage = () => {
     updateState("mintingStep", MintingStep.ProvideData)
     navigate("/tBTC/mint")
