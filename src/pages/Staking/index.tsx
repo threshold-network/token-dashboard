@@ -75,14 +75,14 @@ const StakingPage: PageComponent = (props) => {
           <H4 alignSelf={"flex-start"} mb={10}>
             Your Stake
           </H4>
-          {(address &&
+          {address &&
             isStakingProvider &&
             isOperatorMappingInitialFetchDone &&
             (isAddressZero(mappedOperators.tbtc) ||
-              isAddressZero(mappedOperators.randomBeacon))) ||
-            (isAddressZero(mappedOperators.taco) && (
+              isAddressZero(mappedOperators.randomBeacon) ||
+              isAddressZero(mappedOperators.taco)) && (
               <OperatorAddressMappingCard stakingProvider={address} />
-            ))}
+            )}
           {hasStakes ? (
             stakes.map((stake) => (
               <StakeCard key={stake.stakingProvider} stake={stake} />
