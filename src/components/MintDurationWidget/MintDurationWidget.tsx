@@ -5,6 +5,7 @@ import {
   Flex,
   HStack,
   LabelSm,
+  Skeleton,
 } from "@threshold-network/components"
 import { FC } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
@@ -64,9 +65,11 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
           ~ {duration} {durationSuffix}
         </BodyXs>
         <Flex alignItems="end" color="gray.500">
-          <BodyLg>
-            <InlineTokenBalance tokenAmount={value} />
-          </BodyLg>
+          <Skeleton isLoaded={!BigNumber.from(rawValue).isZero()}>
+            <BodyLg>
+              <InlineTokenBalance tokenAmount={value} />
+            </BodyLg>
+          </Skeleton>
           <BodyXs ml="1.5" mb="0.5">
             {currency}
           </BodyXs>
