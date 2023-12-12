@@ -1,4 +1,4 @@
-import { FC, Ref } from "react"
+import { FC, Ref, forwardRef } from "react"
 import { FormikProps, FormikErrors, Formik, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
@@ -15,11 +15,12 @@ export type MapOperatorToStakingProviderFormValues = {
 
 type ComponentProps = {
   formId: string
+  innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
 }
 
 const MapOperatorToStakingProviderFormBase: FC<
   ComponentProps & FormikProps<MapOperatorToStakingProviderFormValues>
-> = ({ formId, values }) => {
+> = ({ formId, values }, ref) => {
   return (
     <Form id={formId}>
       <FormikInput
@@ -105,6 +106,7 @@ const MapOperatorToStakingProviderForm = withFormik<
   MapOperatorToStakingProviderFormValues
 >({
   validate: async (values, props) => {
+    console.log({ values, props })
     const {
       mappedOperatorTbtc,
       mappedOperatorRandomBeacon,
@@ -127,6 +129,8 @@ const MapOperatorToStakingProviderForm = withFormik<
   },
   handleSubmit: () => {},
   displayName: "MapOperatorToStakingProviderFor",
-})(MapOperatorToStakingProviderFormBase)
+})((props) => (
+  <MapOperatorToStakingProviderFormBase {...props} innerRef={props.innerRef} />
+))
 
 export default MapOperatorToStakingProviderForm
