@@ -17,34 +17,22 @@ import { InlineTokenBalance } from "../TokenBalance"
 
 interface MintDurationWidgetProps extends BoxProps {
   label?: string
-  amount: [RangeOperatorType, BigNumberish, CurrencyType]
+  confirmations: number
+  currency: CurrencyType
 }
+
+const amountMap = new Map<number, string>([
+  [1, "< 0.10"],
+  [3, "< 1.00"],
+  [6, ">= 1.00"],
+])
 
 const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   label = "Duration",
-  amount,
+  confirmations,
+  currency,
   ...restProps
 }) => {
-  const [operator, rawValue, currency] = amount
-  const {
-    tbtc: {
-      minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
-    },
-  } = useThreshold()
-
-  const value = BigNumber.from(rawValue).toNumber()
-  const correctedValue = value + (operator.includes("greater") ? 0.01 : -0.01)
-  // The amount is corrected by adding or subtracting 0.01 to the given amount
-  // depending on the range operator. This is done to avoid floating-point
-  // errors  when comparing BigNumber values.
-  const safeAmount = Number.isSafeInteger(correctedValue)
-    ? value
-    : Math.floor(value)
-  // Only safe integers (not floating-point numbers) can be transformed to
-  // BigNumber. Converting the given amount to a safe integer if it is not
-  // already a safe integer. If the amount is already a safe integer, it is
-  // returned as is.
-  const confirmations = getNumberOfConfirmationsByAmount(safeAmount)
   const durationInMinutes = getDurationByNumberOfConfirmations(confirmations)
   // Round up the minutes to the nearest half-hour
   const hours = (Math.round(durationInMinutes / 30) * 30) / 60
@@ -65,11 +53,7 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
           ~ {hours} {hoursSuffix}
         </BodyXs>
         <Flex alignItems="end" color="gray.500">
-          <Skeleton isLoaded={!BigNumber.from(rawValue).isZero()}>
-            <BodyLg>
-              <InlineTokenBalance tokenAmount={value} />
-            </BodyLg>
-          </Skeleton>
+          <BodyLg>{amountMap.get(confirmations)}</BodyLg>
           <BodyXs ml="1.5" mb="0.5">
             {currency}
           </BodyXs>

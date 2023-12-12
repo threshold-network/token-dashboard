@@ -17,7 +17,10 @@ import {
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { MintDurationWidget } from "../../../components/MintDurationWidget"
-import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../../contexts/ThresholdContext"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import { BigNumber } from "ethers"
 import { fromSatoshiToTokenPrecision } from "../../../threshold-ts/utils"
@@ -88,11 +91,18 @@ MintingFormPage.route = {
 const MintPageLayout: PageComponent = () => {
   const { active } = useWeb3React()
   const { mintingStep, utxo } = useTbtcState()
+  const {
+    tbtc: {
+      minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
+    },
+  } = useThreshold()
+
   const shouldRenderDurationWidget = ![
     MintingStep.ProvideData,
     MintingStep.Deposit,
     undefined,
   ].includes(mintingStep)
+  const confirmations = getNumberOfConfirmationsByAmount(utxo?.value || 0)
 
   return (
     <BridgeLayout>
@@ -105,9 +115,7 @@ const MintPageLayout: PageComponent = () => {
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
         {shouldRenderDurationWidget && (
-          <MintDurationWidget
-            amount={["greaterOrEqual", utxo?.value || 0, "BTC"]}
-          />
+          <MintDurationWidget confirmations={confirmations} currency="BTC" />
         )}
         <MintingTimeline />
       </BridgeLayoutAsideSection>
