@@ -4,6 +4,7 @@ import {
   BodyMd,
   Box,
   Button,
+  Card,
   FileUploader,
   FormControl,
 } from "@threshold-network/components"
@@ -27,6 +28,7 @@ import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
 import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
+import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
 type RecoveryJsonFileData = DepositScriptParameters & {
   btcRecoveryAddress: string
@@ -34,7 +36,7 @@ type RecoveryJsonFileData = DepositScriptParameters & {
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
-  const { account } = useWeb3React()
+  const { account, active } = useWeb3React()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
@@ -48,6 +50,7 @@ export const ResumeDepositPage: PageComponent = () => {
   }, [updateState])
 
   const navigateToMintPage = () => {
+    updateState("mintingStep", MintingStep.ProvideData)
     navigate("/tBTC/mint")
   }
 
@@ -73,26 +76,30 @@ export const ResumeDepositPage: PageComponent = () => {
   }
 
   return (
-    <>
-      <BridgeProcessCardTitle
-        previousStep={MintingStep.InitiateMinting}
-        onPreviousStepClick={navigateToMintPage}
-      />
-      <BodyLg>
-        <Box as="span" fontWeight="600" color="brand.500">
-          Resume Minting
-        </Box>{" "}
-        - Upload .JSON file
-      </BodyLg>
-      <BodyMd mt="3" mb="6">
-        To resume your minting you need to upload your .JSON file and sign the
-        Minting Initiation transaction triggered in the dApp.
-      </BodyMd>
-      <ResumeDepositFormik address={account!} onSubmitForm={onSubmit} />
-      <Box as="p" textAlign="center" mt="10">
-        <BridgeContractLink />
-      </Box>
-    </>
+    <Card maxW="640px" m={"0 auto"}>
+      {active ? (
+        <>
+          <BridgeProcessCardTitle />
+          here, to remove back arrow
+          <BodyLg>
+            <Box as="span" fontWeight="600" color="brand.500">
+              Resume Minting
+            </Box>{" "}
+            - Upload .JSON file
+          </BodyLg>
+          <BodyMd mt="3" mb="6">
+            To resume your minting you need to upload your .JSON file and sign
+            the Minting Initiation transaction triggered in the dApp.
+          </BodyMd>
+          <ResumeDepositFormik address={account!} onSubmitForm={onSubmit} />
+          <Box as="p" textAlign="center" mt="10">
+            <BridgeContractLink />
+          </Box>
+        </>
+      ) : (
+        <BridgeProcessEmptyState title="Want to resume deposit?" />
+      )}
+    </Card>
   )
 }
 
@@ -191,7 +198,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
 
 ResumeDepositPage.route = {
   title: "Resume Deposit",
-  path: "continue",
+  path: "resume-deposit",
   index: false,
   isPageEnabled: true,
 }
