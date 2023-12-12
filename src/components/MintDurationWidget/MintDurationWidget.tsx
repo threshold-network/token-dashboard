@@ -5,15 +5,11 @@ import {
   Flex,
   HStack,
   LabelSm,
-  Skeleton,
 } from "@threshold-network/components"
 import { FC } from "react"
-import { useThreshold } from "../../contexts/ThresholdContext"
 import { getDurationByNumberOfConfirmations } from "../../utils/tBTC"
 import { BoxProps } from "@threshold-network/components"
-import { RangeOperatorType, CurrencyType } from "../../types"
-import { BigNumber, BigNumberish } from "ethers"
-import { InlineTokenBalance } from "../TokenBalance"
+import { CurrencyType } from "../../types"
 
 interface MintDurationWidgetProps extends BoxProps {
   label?: string

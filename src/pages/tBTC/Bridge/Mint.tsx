@@ -21,9 +21,6 @@ import {
   useIsTbtcSdkInitializing,
   useThreshold,
 } from "../../../contexts/ThresholdContext"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { BigNumber } from "ethers"
-import { fromSatoshiToTokenPrecision } from "../../../threshold-ts/utils"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
