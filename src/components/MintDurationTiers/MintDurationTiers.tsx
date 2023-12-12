@@ -53,9 +53,10 @@ const MintDurationTiers: FC<MintDurationTiersProps> = ({
         // Converting the given amount to a safe integer if it is not already a safe integer.
         // If the amount is already a safe integer, it is returned as is.
         const confirmations = getNumberOfConfirmationsByAmount(safeAmount)
-        const hours = Math.round(
-          getDurationByNumberOfConfirmations(confirmations) / 60
-        )
+        const durationInMinutes =
+          getDurationByNumberOfConfirmations(confirmations)
+        // Round up the minutes to the nearest half-hour
+        const hours = (Math.round(durationInMinutes / 30) * 30) / 60
         const formattedAmount = amount.toFixed(2)
 
         const hoursSuffix = hours === 1 ? "hour" : "hours"

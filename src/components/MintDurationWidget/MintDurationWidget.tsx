@@ -44,11 +44,10 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   // Converting the given amount to a safe integer if it is not already a safe integer.
   // If the amount is already a safe integer, it is returned as is.
   const confirmations = getNumberOfConfirmationsByAmount(safeAmount)
-  const formattedValue = value.toFixed(2)
-  const duration = Math.round(
-    getDurationByNumberOfConfirmations(confirmations) / 60
-  )
-  const durationSuffix = duration === 1 ? "Hour" : "Hours"
+  const durationInMinutes = getDurationByNumberOfConfirmations(confirmations)
+  // Round up the minutes to the nearest half-hour
+  const hours = (Math.round(durationInMinutes / 30) * 30) / 60
+  const hoursSuffix = durationInMinutes === 60 ? "Hour" : "Hours"
 
   return (
     <Box {...restProps}>
@@ -62,7 +61,7 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
           pr="4"
           py="1"
         >
-          ~ {duration} {durationSuffix}
+          ~ {hours} {hoursSuffix}
         </BodyXs>
         <Flex alignItems="end" color="gray.500">
           <Skeleton isLoaded={!BigNumber.from(rawValue).isZero()}>
