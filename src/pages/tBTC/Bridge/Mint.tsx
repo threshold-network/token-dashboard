@@ -91,6 +91,7 @@ const MintPageLayout: PageComponent = () => {
   const shouldRenderDurationWidget = ![
     MintingStep.ProvideData,
     MintingStep.Deposit,
+    undefined,
   ].includes(mintingStep)
 
   return (
@@ -104,7 +105,9 @@ const MintPageLayout: PageComponent = () => {
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
         {shouldRenderDurationWidget && (
-          <MintDurationWidget amount={["less", utxo?.value || 0, "BTC"]} />
+          <MintDurationWidget
+            amount={["greaterOrEqual", utxo?.value || 0, "BTC"]}
+          />
         )}
         <MintingTimeline />
       </BridgeLayoutAsideSection>

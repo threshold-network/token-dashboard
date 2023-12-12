@@ -39,7 +39,7 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   // errors  when comparing BigNumber values.
   const safeAmount = Number.isSafeInteger(correctedValue)
     ? value
-    : Math.floor(value * 1e8)
+    : Math.floor(value)
   // Only safe integers (not floating-point numbers) can be transformed to
   // BigNumber. Converting the given amount to a safe integer if it is not
   // already a safe integer. If the amount is already a safe integer, it is
@@ -48,7 +48,7 @@ const MintDurationWidget: FC<MintDurationWidgetProps> = ({
   const durationInMinutes = getDurationByNumberOfConfirmations(confirmations)
   // Round up the minutes to the nearest half-hour
   const hours = (Math.round(durationInMinutes / 30) * 30) / 60
-  const hoursSuffix = durationInMinutes === 60 ? "Hour" : "Hours"
+  const hoursSuffix = hours === 1 ? "Hour" : "Hours"
 
   return (
     <Box {...restProps}>
