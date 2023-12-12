@@ -80,7 +80,6 @@ export const ResumeDepositPage: PageComponent = () => {
       {active ? (
         <>
           <BridgeProcessCardTitle />
-          here, to remove back arrow
           <BodyLg>
             <Box as="span" fontWeight="600" color="brand.500">
               Resume Minting
