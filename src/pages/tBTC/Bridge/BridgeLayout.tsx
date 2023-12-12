@@ -6,6 +6,7 @@ import {
   Stack,
   StackDivider,
   StackProps,
+  VStack,
 } from "@threshold-network/components"
 
 export const BridgeLayout: FC<StackProps> = ({ children, ...restProps }) => {
@@ -21,6 +22,7 @@ export const BridgeLayout: FC<StackProps> = ({ children, ...restProps }) => {
       minW="0"
       alignItems="flex-start"
       gap="unset"
+      position="relative"
       {...restProps}
     >
       {children}
@@ -50,16 +52,18 @@ export const BridgeLayoutAsideSection: FC<BoxProps> = ({
   ...restProps
 }) => {
   return (
-    <Box
+    <VStack
       as="aside"
       w={{
         base: "100%",
         xl: "33%",
       }}
       minW={"216px"}
+      spacing="8"
+      alignItems="flex-start"
       {...restProps}
     >
       {children}
-    </Box>
+    </VStack>
   )
 }
