@@ -43,15 +43,16 @@ const MintDurationTiers: FC<MintDurationTiersProps> = ({
       {items.map(({ amount, rangeOperator, currency }, index) => {
         const correctedAmount =
           amount + (rangeOperator.includes("greater") ? 0.01 : -0.01)
-        // The amount is corrected by adding or subtracting 0.01 to the given amount
-        // depending on the range operator. This is done to avoid floating-point errors
-        // when comparing BigNumber values.
+        // The amount is corrected by adding or subtracting 0.01 to the given
+        // amount depending on the range operator. This is done to avoid
+        // floating-point errors when comparing BigNumber values.
         const safeAmount = Number.isSafeInteger(correctedAmount)
           ? correctedAmount
           : Math.floor((correctedAmount as number) * 1e8)
-        // Only safe integers (not floating-point numbers) can be transformed to BigNumber.
-        // Converting the given amount to a safe integer if it is not already a safe integer.
-        // If the amount is already a safe integer, it is returned as is.
+        // Only safe integers (not floating-point numbers) can be transformed to
+        // BigNumber. Converting the given amount to a safe integer if it is not
+        // already a safe integer. If the amount is already a safe integer, it
+        // is returned as is.
         const confirmations = getNumberOfConfirmationsByAmount(safeAmount)
         const durationInMinutes =
           getDurationByNumberOfConfirmations(confirmations)
