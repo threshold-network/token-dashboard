@@ -13,6 +13,7 @@ import { BigNumber } from "ethers"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useRevealDepositTransaction } from "../../../../hooks/tbtc"
 import { Toast } from "../../../../components/Toast"
+import { useModal } from "../../../../hooks/useModal"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -20,9 +21,13 @@ const InitiateMintingComponent: FC<{
 }> = ({ utxo, onPreviousStepClick }) => {
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
+  const { closeModal } = useModal()
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
+    // We don't have success modal for deposit reveal so we just closing the
+    // current TransactionIsPending modal.
+    closeModal()
   }
 
   const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
