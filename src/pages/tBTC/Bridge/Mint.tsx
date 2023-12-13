@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
 import { useIsActive } from "../../../hooks/useIsActive"
-import { PageComponent } from "../../../types"
+import { MintingStep, PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
@@ -16,7 +16,11 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
+import { MintDurationWidget } from "../../../components/MintDurationWidget"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -83,6 +87,19 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { isActive } = useIsActive()
+  const { mintingStep, utxo } = useTbtcState()
+  const {
+    tbtc: {
+      minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
+    },
+  } = useThreshold()
+
+  const shouldRenderDurationWidget = ![
+    MintingStep.ProvideData,
+    MintingStep.Deposit,
+    undefined,
+  ].includes(mintingStep)
+  const confirmations = getNumberOfConfirmationsByAmount(utxo?.value || 0)
 
   return (
     <BridgeLayout>
@@ -94,6 +111,9 @@ const MintPageLayout: PageComponent = () => {
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
+        {shouldRenderDurationWidget && (
+          <MintDurationWidget confirmations={confirmations} currency="BTC" />
+        )}
         <MintingTimeline />
       </BridgeLayoutAsideSection>
     </BridgeLayout>

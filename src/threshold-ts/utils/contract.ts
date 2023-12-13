@@ -8,6 +8,7 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { Contract, ContractInterface, Event, providers, Signer } from "ethers"
 import { AddressZero, getAddress, isAddressZero } from "./address"
+import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
 
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
@@ -18,24 +19,23 @@ import VendingMachineKeepMainnet from "../vending-machine/mainnet-artifacts/Vend
 import VendingMachineNuCypherMainnet from "../vending-machine/mainnet-artifacts/VendingMachineNuCypher.json"
 import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
 
-import BridgeArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/Bridge.json"
-import NuCypherStakingEscrowGoerli from "../staking/goerli-artifacts/NuCypherStakingEscrow.json"
-import NuCypherTokenGoerli from "../tokens/goerli-artifacts/NuCypherToken.json"
-import TbtcTokenArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTC.json"
-import TbtcVaultArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/TBTCVault.json"
-import VendingMachineKeepGoerli from "../vending-machine/goerli-artifacts/VendingMachineKeep.json"
-import VendingMachineNuCypherGoerli from "../vending-machine/goerli-artifacts/VendingMachineNuCypher.json"
-import WalletRegistryArtifactGoerli from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/goerli/WalletRegistry.json"
+import BridgeArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/Bridge.json"
+import NuCypherStakingEscrowSepolia from "../staking/sepolia-artifacts/NuCypherStakingEscrow.json"
+import NuCypherTokenSepolia from "../tokens/sepolia-artifacts/NuCypherToken.json"
+import TbtcTokenArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/TBTC.json"
+import TbtcVaultArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/TBTCVault.json"
+import VendingMachineKeepSepolia from "../vending-machine/sepolia-artifacts/VendingMachineKeep.json"
+import VendingMachineNuCypherSepolia from "../vending-machine/sepolia-artifacts/VendingMachineNuCypher.json"
+import WalletRegistryArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/WalletRegistry.json"
 
-import BridgeArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/Bridge.json"
-import NuCypherStakingEscrowDappDevelopmentGoerli from "../staking/dapp-development-goerli-artifacts/NuCypherStakingEscrow.json"
-import NuCypherTokenDappDevelopmentGoerli from "../tokens/dapp-development-goerli-artifacts/NuCypherToken.json"
-import TbtcTokenArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTC.json"
-import TbtcVaultArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/TBTCVault.json"
-import VendingMachineKeepDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineKeep.json"
-import VendingMachineNuCypherDappDevelopmentGoerli from "../vending-machine/dapp-development-goerli-artifacts/VendingMachineNuCypher.json"
-import WalletRegistryArtifactDappDevelopmentGoerli from "../tbtc/dapp-development-goerli-artifacts/WalletRegistry.json"
-import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
+import BridgeArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/Bridge.json"
+import NuCypherStakingEscrowDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/NuCypherStakingEscrow.json"
+import NuCypherTokenDappDevelopmentSepolia from "../tokens/dapp-development-sepolia-artifacts/NuCypherToken.json"
+import TbtcTokenArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/TBTC.json"
+import TbtcVaultArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/TBTCVault.json"
+import VendingMachineKeepDappDevelopmentSepolia from "../vending-machine/dapp-development-sepolia-artifacts/VendingMachineKeep.json"
+import VendingMachineNuCypherDappDevelopmentSepolia from "../vending-machine/dapp-development-sepolia-artifacts/VendingMachineNuCypher.json"
+import WalletRegistryArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/WalletRegistry.json"
 
 type ArtifactNameType =
   | "Bridge"
@@ -63,24 +63,24 @@ const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["VendingMachineNuCypher", VendingMachineNuCypherMainnet],
 ])
 const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
-  ["Bridge", BridgeArtifactGoerli],
-  ["NuCypherStakingEscrow", NuCypherStakingEscrowGoerli],
-  ["NuCypherToken", NuCypherTokenGoerli],
-  ["TBTCVault", TbtcVaultArtifactGoerli],
-  ["TBTC", TbtcTokenArtifactGoerli],
-  ["WalletRegistry", WalletRegistryArtifactGoerli],
-  ["VendingMachineKeep", VendingMachineKeepGoerli],
-  ["VendingMachineNuCypher", VendingMachineNuCypherGoerli],
+  ["Bridge", BridgeArtifactSepolia],
+  ["NuCypherStakingEscrow", NuCypherStakingEscrowSepolia],
+  ["NuCypherToken", NuCypherTokenSepolia],
+  ["TBTCVault", TbtcVaultArtifactSepolia],
+  ["TBTC", TbtcTokenArtifactSepolia],
+  ["WalletRegistry", WalletRegistryArtifactSepolia],
+  ["VendingMachineKeep", VendingMachineKeepSepolia],
+  ["VendingMachineNuCypher", VendingMachineNuCypherSepolia],
 ])
 const testnetDevelopmentArtifacts = new Map<ArtifactNameType, ArtifactType>([
-  ["Bridge", BridgeArtifactDappDevelopmentGoerli],
-  ["NuCypherStakingEscrow", NuCypherStakingEscrowDappDevelopmentGoerli],
-  ["NuCypherToken", NuCypherTokenDappDevelopmentGoerli],
-  ["TBTCVault", TbtcVaultArtifactDappDevelopmentGoerli],
-  ["TBTC", TbtcTokenArtifactDappDevelopmentGoerli],
-  ["WalletRegistry", WalletRegistryArtifactDappDevelopmentGoerli],
-  ["VendingMachineKeep", VendingMachineKeepDappDevelopmentGoerli],
-  ["VendingMachineNuCypher", VendingMachineNuCypherDappDevelopmentGoerli],
+  ["Bridge", BridgeArtifactDappDevelopmentSepolia],
+  ["NuCypherStakingEscrow", NuCypherStakingEscrowDappDevelopmentSepolia],
+  ["NuCypherToken", NuCypherTokenDappDevelopmentSepolia],
+  ["TBTCVault", TbtcVaultArtifactDappDevelopmentSepolia],
+  ["TBTC", TbtcTokenArtifactDappDevelopmentSepolia],
+  ["WalletRegistry", WalletRegistryArtifactDappDevelopmentSepolia],
+  ["VendingMachineKeep", VendingMachineKeepDappDevelopmentSepolia],
+  ["VendingMachineNuCypher", VendingMachineNuCypherDappDevelopmentSepolia],
 ])
 
 // account is not optional
@@ -157,8 +157,10 @@ export const getArtifact = (
 ): ArtifactType => {
   switch (chainId.toString()) {
     case "1":
+      // Ethereum mainnet.
       return mainnetArtifacts.get(artifactName)!
-    case "5":
+    case "11155111":
+      // Ethereum Sepolia testnet.
       const artifacts = shouldUseTestnetDevelopmentContracts
         ? testnetDevelopmentArtifacts
         : testnetArtifacts
@@ -168,24 +170,24 @@ export const getArtifact = (
   }
 }
 
-export const getGoerliDevelopmentContracts = (
+export const getSepoliaDevelopmentContracts = (
   signerOrProvider: Signer | providers.Provider
 ): TBTCContracts => {
   return {
     bridge: new EthereumBridge({
-      address: BridgeArtifactDappDevelopmentGoerli.address,
+      address: BridgeArtifactDappDevelopmentSepolia.address,
       signerOrProvider,
     }),
     tbtcToken: new EthereumTBTCToken({
-      address: TbtcTokenArtifactDappDevelopmentGoerli.address,
+      address: TbtcTokenArtifactDappDevelopmentSepolia.address,
       signerOrProvider,
     }),
     tbtcVault: new EthereumTBTCVault({
-      address: TbtcVaultArtifactDappDevelopmentGoerli.address,
+      address: TbtcVaultArtifactDappDevelopmentSepolia.address,
       signerOrProvider,
     }),
     walletRegistry: new EthereumWalletRegistry({
-      address: WalletRegistryArtifactDappDevelopmentGoerli.address,
+      address: WalletRegistryArtifactDappDevelopmentSepolia.address,
       signerOrProvider,
     }),
   }

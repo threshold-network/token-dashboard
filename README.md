@@ -6,51 +6,16 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-# Local development
-
-## Prerequisites
-
-- Make sure your local chain is running (e.g. Ganache) and all repos listed below are cloned to the same folder (e.g. `threshold-network`).
-- Clone https://github.com/keep-network/keep-core repo:
-  - Make sure the `local` network config in [`/solidity-v1/truffle-config.js`](https://github.com/keep-network/keep-core/blob/main/solidity-v1/truffle-config.js#L8-L11) is correct for your chain.
-- Clone https://github.com/threshold-network/solidity-contracts repo:
-  - Make sure the `development` network config in [`hardhat.config.ts`](https://github.com/threshold-network/solidity-contracts/blob/main/hardhat.config.ts#L42-L44) is correct for your chain.
-- Clone https://github.com/keep-network/keep-ecdsa repo:
-  - Make sure the `local` network config in [`/solidity/truffle.js`](https://github.com/keep-network/keep-ecdsa/blob/main/solidity/truffle.js#L30-L35) is correct for your chain.
-- Clone https://github.com/keep-network/tbtc repo:
-  - Make sure the `development` network config in [`/solidity/truffle-config.js`](https://github.com/keep-network/tbtc/blob/main/solidity/truffle-config.js#L54-L58) is correct for your chain.
-- Clone https://github.com/keep-network/coverage-pools repo:
-  - Make sure the `development` network config in [`/hardhat.config.ts`](https://github.com/keep-network/coverage-pools/blob/main/hardhat.config.ts#L37-L41) is correct for your chain.
-- Clone https://github.com/threshold-network/components repo
-
-## Setup
-
-`yarn`
-
-## Deploy contracts and run dapp
-
-`yarn start:dev`
-
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-**Note:** if you need re run T dapp and all necessary contracts are deployed use `yarn start:dev -m`
-
-## Recompile `components` repo
-
-To make sure the changes made in local depository of `components` lib are implemented in T dapp you should recompile the lib using:
-
-`yarn add-components-lib`
-
-# Run T dapp against the Görli network
+# Run T dapp against the Sepolia network
 
 ## Update the `.env` file:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=5
+REACT_APP_SUPPORTED_CHAIN_ID=11155111
 REACT_APP_ETH_HOSTNAME_HTTP=<your http ETH hostname- eg. Infura>
 REACT_APP_ETH_HOSTNAME_WS=<your ws ETH hostname- eg. Infura>
 // We can skip this env variable- the dapp uses the correct address
-// of Multicall contract for Görli under the hood.
+// of Multicall contract for Sepolia under the hood.
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ```
 
@@ -58,29 +23,26 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 `yarn`
 
-## Install Görli contracts
+## Install Sepolia contracts
 
 ```
-yarn upgrade @keep-network/coverage-pools@goerli \
-  @keep-network/ecdsa@goerli \
-  @keep-network/keep-core@goerli \
-  @keep-network/keep-ecdsa@goerli \
-  @keep-network/random-beacon@goerli \
-  @keep-network/tbtc@goerli \
-  @keep-network/tbtc-v2@goerli \
-  @keep-network/tbtc-v2.ts@goerli \
-  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@goerli \
-  @threshold-network/solidity-contracts@goerli
+yarn upgrade @keep-network/coverage-pools@sepolia \
+  @keep-network/keep-core@sepolia \
+  @keep-network/keep-ecdsa@sepolia \
+  @keep-network/random-beacon@sepolia \
+  @keep-network/tbtc@sepolia \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
+  @threshold-network/solidity-contracts@sepolia
 ```
 
-**NOTE 1:** We use the same Goerli versions for both
+**NOTE 1:** We use the same Sepolia versions for both
 `@keep-network/coverage-pools` and `@threshold-network/coverage-pools`, because
-we don't have the newest version of the package on Goerli network, only on the
+we don't have the v1 version of the package on Sepolia network, only on the
 Mainnet.
 
 **NOTE 2:** If you encounter an `expected manifest` error while executing this,
 then try providing an explicit version of the `keep-core` package:
-`@keep-network/keep-core@1.8.1-goerli.0`
+`@keep-network/keep-core@1.8.1-sepolia.0`
 The error is probably caused by a bug in Yarn:
 https://github.com/yarnpkg/yarn/issues/4731.
 
@@ -97,6 +59,30 @@ instead of `git://` by executing:
 git config --global url."https://".insteadOf git://
 ```
 
+**Sepolia-dev contracts**
+
+Ref: https://github.com/keep-network/tbtc-v2/pull/403
+
+Instead of the goerli contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to goerli/mainnet and also allow to manually control mint and unmint process of tbtc-v2 (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403) To install sepolia-dev contracts run:
+
+```
+yarn upgrade @keep-network/coverage-pools@sepolia \
+  @keep-network/keep-core@sepolia \
+  @keep-network/keep-ecdsa@sepolia \
+  @keep-network/random-beacon@dapp-development-sepolia \
+  @keep-network/tbtc@sepolia \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
+  @threshold-network/solidity-contracts@dapp-development-sepolia
+```
+
+and set the `REACT_APP_DAPP_DEVELOPMENT_TESTNET_CONTRACTS` variable in `.env` file to true:
+
+```
+(...)
+REACT_APP_DAPP_DEVELOPMENT_TESTNET_CONTRACTS=true
+(...)
+```
+
 ## Run T dapp
 
 `yarn start`
@@ -111,7 +97,7 @@ The following procedure allows to deploy T token dashboard to production:
    `releases/mainnet/<version>`. Release branch should never be merged to `main`
    and creating a PR with a release branch is not required.
    Dependencies and project version needs to be updated on the release branch.
-   All `-dev`, `-goerli` dependencies need to be updated to mainnet versions.
+   All `-dev`, `-sepolia` dependencies need to be updated to mainnet versions.
    See [this commit](https://github.com/threshold-network/token-dashboard/commit/5452b68886ebc514d941a087973dfa9ac3802a7e)
    for `v1.0.0` release as a good example.
 2. Preview of the release branch will be uploaded to `preview.dashboard.threshold.network`

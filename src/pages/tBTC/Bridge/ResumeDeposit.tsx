@@ -4,11 +4,11 @@ import {
   BodyMd,
   Box,
   Button,
+  Card,
   FileUploader,
   FormControl,
 } from "@threshold-network/components"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { RecoveryJsonFileData } from "../../../components/Modal/TbtcRecoveryFileModal"
 import { useNavigate } from "react-router-dom"
 import { PageComponent } from "../../../types"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
@@ -26,22 +26,20 @@ import { getErrorsObj } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
+import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
+import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+
+type RecoveryJsonFileData = DepositScriptParameters & {
+  btcRecoveryAddress: string
+}
 import { useIsActive } from "../../../hooks/useIsActive"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
-  const { account } = useIsActive()
+  const { account, isActive } = useIsActive()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
-
-  useEffect(() => {
-    updateState("mintingStep", MintingStep.InitiateMinting)
-
-    return () => {
-      updateState("mintingStep", MintingStep.ProvideData)
-    }
-  }, [updateState])
 
   const navigateToMintPage = () => {
     navigate("/tBTC/mint")
@@ -56,6 +54,8 @@ export const ResumeDepositPage: PageComponent = () => {
     )
     const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
+    updateState("mintingStep", undefined)
+
     setDepositDataInLocalStorage({
       ethAddress: depositParameters?.depositor.identifierHex!,
       blindingFactor: depositParameters?.blindingFactor!,
@@ -69,26 +69,29 @@ export const ResumeDepositPage: PageComponent = () => {
   }
 
   return (
-    <>
-      <BridgeProcessCardTitle
-        previousStep={MintingStep.InitiateMinting}
-        onPreviousStepClick={navigateToMintPage}
-      />
-      <BodyLg>
-        <Box as="span" fontWeight="600" color="brand.500">
-          Resume Minting
-        </Box>{" "}
-        - Upload .JSON file
-      </BodyLg>
-      <BodyMd mt="3" mb="6">
-        To resume your minting you need to upload your .JSON file and sign the
-        Minting Initiation transaction triggered in the dApp.
-      </BodyMd>
-      <ResumeDepositFormik address={account!} onSubmitForm={onSubmit} />
-      <Box as="p" textAlign="center" mt="10">
-        <BridgeContractLink />
-      </Box>
-    </>
+    <Card maxW="640px" m={"0 auto"}>
+      {isActive ? (
+        <>
+          <BridgeProcessCardTitle />
+          <BodyLg>
+            <Box as="span" fontWeight="600" color="brand.500">
+              Resume Minting
+            </Box>{" "}
+            - Upload .JSON file
+          </BodyLg>
+          <BodyMd mt="3" mb="6">
+            To resume your minting you need to upload your .JSON file and sign
+            the Minting Initiation transaction triggered in the dApp.
+          </BodyMd>
+          <ResumeDepositFormik address={account!} onSubmitForm={onSubmit} />
+          <Box as="p" textAlign="center" mt="10">
+            <BridgeContractLink />
+          </Box>
+        </>
+      ) : (
+        <BridgeProcessEmptyState title="Want to resume deposit?" />
+      )}
+    </Card>
   )
 }
 
@@ -186,7 +189,8 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
 })(ResumeDepositForm)
 
 ResumeDepositPage.route = {
-  path: "continue",
+  title: "Resume Deposit",
+  path: "resume-deposit",
   index: false,
   isPageEnabled: true,
 }

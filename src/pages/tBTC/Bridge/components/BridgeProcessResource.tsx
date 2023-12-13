@@ -15,7 +15,7 @@ export const BridgeProcessResource: FC<BridgeProcessResourceProps> = ({
   link,
 }) => {
   return (
-    <>
+    <Box>
       <Box
         bg="yellow.50"
         p="4"
@@ -37,6 +37,6 @@ export const BridgeProcessResource: FC<BridgeProcessResourceProps> = ({
           Read more
         </Link>
       </BodySm>
-    </>
+    </Box>
   )
 }

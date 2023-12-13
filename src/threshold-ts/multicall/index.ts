@@ -41,6 +41,7 @@ export const MULTICALL_ABI = [
 export const MULTICALL_ADDRESSESS = {
   1: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
   5: "0x77dca2c955b15e9de4dbbcf1246b4b85b651e50e",
+  11155111: "0xcA11bde05977b3631167028862bE2a173976CA11",
   1337: process.env.REACT_APP_MULTICALL_ADDRESS || AddressZero,
 } as Record<number | string, string>
 
