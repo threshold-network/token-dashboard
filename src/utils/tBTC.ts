@@ -5,6 +5,7 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
+import { BigNumberish, BigNumber } from "ethers"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
@@ -174,3 +175,13 @@ export const buildRedemptionDetailsLink = (
     .withBitcoinAddress(btcAddress, bitcoinNetwork)
     .build()
 }
+
+/**
+ * Calculates the duration in seconds based on the number of confirmations.
+ *
+ * @param {number} numberOfConfirmations The number of confirmations.
+ * @return {number} The duration in minutes.
+ */
+export const getDurationByNumberOfConfirmations = (
+  numberOfConfirmations: number
+) => numberOfConfirmations * 10 + 60

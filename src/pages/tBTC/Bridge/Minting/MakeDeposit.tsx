@@ -1,29 +1,29 @@
-import { FC, ComponentProps } from "react"
 import {
+  Badge,
   BodyMd,
   Box,
   BoxLabel,
-  Button,
-  ChecklistGroup,
+  Card,
   HStack,
   Stack,
-  Divider,
   useColorModeValue,
-  Card,
 } from "@threshold-network/components"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
-import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import TooltipIcon from "../../../../components/TooltipIcon"
+import { ComponentProps, FC } from "react"
 import {
   CopyAddressToClipboard,
   CopyToClipboard,
   CopyToClipboardButton,
 } from "../../../../components/CopyToClipboard"
+import { MintDurationTiers } from "../../../../components/MintDurationTiers"
+import { QRCode } from "../../../../components/QRCode"
+import { Toast } from "../../../../components/Toast"
+import TooltipIcon from "../../../../components/TooltipIcon"
+import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
+import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
-import { QRCode } from "../../../../components/QRCode"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
-import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -61,6 +61,10 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
 
   return (
     <>
+      <Toast
+        title="The system is continuously checking for new BTC deposits"
+        status="info"
+      />
       <HStack
         alignItems="center"
         mb="3.5"
@@ -127,10 +131,19 @@ const MakeDepositComponent: FC<{
         previousStep={MintingStep.ProvideData}
         onPreviousStepClick={onPreviousStepClick}
       />
-      <BridgeProcessCardSubTitle
-        stepText="Step 2"
-        subTitle="Make your BTC deposit"
-      />
+      <HStack
+        justifyContent="space-between"
+        alignItems="baseline"
+        mb="4"
+        spacing="0"
+      >
+        <BridgeProcessCardSubTitle
+          stepText="Step 2"
+          subTitle="Make your BTC deposit"
+          mb="0"
+        />
+        <Badge colorScheme="purple">Action on Bitcoin</Badge>
+      </HStack>
       <BodyMd color="gray.500" mb={6}>
         Use this generated address to send minimum 0.01&nbsp;BTC, to mint as
         tBTC.
@@ -140,7 +153,27 @@ const MakeDepositComponent: FC<{
         provided.
       </BodyMd>
       <BTCAddressSection btcDepositAddress={btcDepositAddress} />
-      <Stack spacing={4} mt="5" mb={8}>
+      <MintDurationTiers
+        mt="6"
+        items={[
+          {
+            amount: 0.1,
+            rangeOperator: "less",
+            currency: "BTC",
+          },
+          {
+            amount: 1,
+            rangeOperator: "less",
+            currency: "BTC",
+          },
+          {
+            amount: 1,
+            rangeOperator: "greaterOrEqual",
+            currency: "BTC",
+          },
+        ]}
+      />
+      <Stack spacing={4} mt="5">
         <BodyMd>Provided Addresses Recap</BodyMd>
         <AddressRow text="ETH Address" address={ethAddress} />
         <AddressRow
@@ -149,32 +182,6 @@ const MakeDepositComponent: FC<{
           chain="bitcoin"
         />
       </Stack>
-      <Divider mt={4} mb={6} />
-      <ChecklistGroup
-        mb={6}
-        checklistItems={[
-          {
-            itemId: "staking_deposit__0",
-            itemTitle: "",
-            itemSubTitle: (
-              <BodyMd color={useColorModeValue("gray.500", "gray.300")}>
-                Send the funds and come back to this dApp. You do not need to
-                wait for the BTC transaction to be mined.
-              </BodyMd>
-            ),
-          },
-        ]}
-      />
-      {/* TODO: No need to use button here. We can replace it with just some text */}
-      <Button
-        isLoading={true}
-        loadingText={"Waiting for funds to be sent..."}
-        form="tbtc-minting-data-form"
-        isDisabled={true}
-        isFullWidth
-      >
-        I sent the BTC
-      </Button>
     </>
   )
 }

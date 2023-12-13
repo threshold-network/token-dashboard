@@ -52,7 +52,7 @@ const TBTCBridge: PageComponent = (props) => {
       gridTemplateColumns={{ base: "1fr", xl: "25% 1fr" }}
       gap="5"
     >
-      <Box gridArea="main" minW="0">
+      <Box gridArea="main" minW="0" position="relative">
         <MintUnmintNav w="100%" gridArea="nav" mb="5" pages={props.pages!} />
         <Outlet />
       </Box>
