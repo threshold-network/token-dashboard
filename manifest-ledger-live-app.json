@@ -2,7 +2,7 @@
   "id": "threshold",
   "name": "Threshold",
   "url": "http://localhost:3000?embed=true",
-  "homepageUrl": "http://localhost:3000?embed=true",
+  "homepageUrl": "http://localhost:3000",
   "icon": "https://dashboard.threshold.network/favicon-T.png",
   "platform": "all",
   "apiVersion": "2.0.0",
