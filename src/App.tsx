@@ -61,6 +61,7 @@ import {
 import { useSentry } from "./hooks/sentry"
 import { useIsEmbed } from "./hooks/useIsEmbed"
 import TBTC from "./pages/tBTC"
+import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -132,8 +133,6 @@ const useSubscribeToVendingMachineContractEvents = () => {
 const AppBody = () => {
   const dispatch = useDispatch()
   const { connector, account, deactivate } = useWeb3React()
-  const { enableIsEmbed } = useIsEmbed()
-  enableIsEmbed()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
@@ -175,6 +174,7 @@ const AppBody = () => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
 
+  useDetectIfEmbed()
   usePosthog()
   useCheckBonusEligibility()
   useFetchStakingRewards()
