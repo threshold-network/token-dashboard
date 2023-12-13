@@ -40,8 +40,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   const tbtcv2 = useTBTCv2TokenContract()
   const nuConversion = useVendingMachineRatio(Token.Nu)
   const keepConversion = useVendingMachineRatio(Token.Keep)
-  const { chainId } = useWeb3React()
-  const { account, isActive } = useIsActive()
+  const { account, isActive, chainId } = useIsActive()
   const fetchOwnerStakes = useFetchOwnerStakes()
 
   const {
