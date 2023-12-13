@@ -21,9 +21,9 @@ const Navbar: FC = () => {
 
   useEffect(() => {
     if (ledgerLiveAccountAddress) {
-      dispatch(walletConnected(ledgerLiveAccountAddress || ""))
+      dispatch(walletConnected(ledgerLiveAccountAddress))
     }
-  }, [ledgerLiveAccountAddress])
+  }, [ledgerLiveAccountAddress, dispatch])
 
   return (
     <NavbarComponent
