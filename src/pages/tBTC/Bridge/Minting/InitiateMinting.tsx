@@ -13,6 +13,7 @@ import { BigNumber } from "ethers"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useRevealDepositTransaction } from "../../../../hooks/tbtc"
 import { Toast } from "../../../../components/Toast"
+import { useModal } from "../../../../hooks/useModal"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -20,21 +21,25 @@ const InitiateMintingComponent: FC<{
 }> = ({ utxo, onPreviousStepClick }) => {
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
+  const { closeModal } = useModal()
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
+    // We don't have success modal for deposit reveal so we just closing the
+    // current TransactionIsPending modal.
+    closeModal()
   }
 
   const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
     onSuccessfulDepositReveal
   )
-  const { value: depositedAmount } = utxo
+
+  const depositedAmount = BigNumber.from(utxo.value).toString()
 
   useEffect(() => {
     const getEstimatedDepositFees = async () => {
-      const amount = BigNumber.from(depositedAmount).toString()
       const { treasuryFee, optimisticMintFee, amountToMint } =
-        await threshold.tbtc.getEstimatedDepositFees(amount)
+        await threshold.tbtc.getEstimatedDepositFees(depositedAmount)
 
       updateState("mintingFee", optimisticMintFee)
       updateState("thresholdNetworkFee", treasuryFee)
@@ -62,17 +67,15 @@ const InitiateMintingComponent: FC<{
       <InfoBox variant="modal" mb="6">
         <H5 mb={4}>
           You deposited{" "}
-          <Skeleton isLoaded={!!depositedAmount} maxW="105px" as="span">
-            <InlineTokenBalance
-              tokenSymbol="BTC"
-              tokenDecimals={8}
-              precision={6}
-              higherPrecision={8}
-              tokenAmount={depositedAmount.toString()}
-              displayTildeBelow={0}
-              withSymbol
-            />{" "}
-          </Skeleton>{" "}
+          <InlineTokenBalance
+            tokenSymbol="BTC"
+            tokenDecimals={8}
+            precision={6}
+            higherPrecision={8}
+            tokenAmount={depositedAmount}
+            displayTildeBelow={0}
+            withSymbol
+          />{" "}
           and will receive{" "}
           <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
             <InlineTokenBalance
