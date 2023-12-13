@@ -1,4 +1,3 @@
-import { FC, ComponentProps, useCallback } from "react"
 import {
   Badge,
   BodyMd,
@@ -11,9 +10,7 @@ import {
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
-import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import TooltipIcon from "../../../../components/TooltipIcon"
+import { FC, ComponentProps, useCallback } from "react"
 import {
   CopyAddressToClipboard,
   CopyToClipboard,
@@ -22,10 +19,13 @@ import {
 import { MintDurationTiers } from "../../../../components/MintDurationTiers"
 import { QRCode } from "../../../../components/QRCode"
 import { Toast } from "../../../../components/Toast"
+import TooltipIcon from "../../../../components/TooltipIcon"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
+import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { useIsEmbed } from "../../../../hooks/useIsEmbed"
 import {
   useRequestBitcoinAccount,
