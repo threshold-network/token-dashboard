@@ -61,19 +61,25 @@ const InitiateMintingComponent: FC<{
       />
       <InfoBox variant="modal" mb="6">
         <H5 mb={4}>
-          You deposited&nbsp;
+          You deposited{" "}
           <Skeleton isLoaded={!!depositedAmount} maxW="105px" as="span">
             <InlineTokenBalance
-              tokenAmount={depositedAmount.toString()}
               tokenSymbol="BTC"
+              tokenDecimals={8}
+              precision={6}
+              higherPrecision={8}
+              tokenAmount={depositedAmount.toString()}
+              displayTildeBelow={0}
               withSymbol
-            />
-          </Skeleton>
-          &nbsp;and will receive&nbsp;
+            />{" "}
+          </Skeleton>{" "}
+          and will receive{" "}
           <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
             <InlineTokenBalance
               tokenAmount={tBTCMintAmount}
               tokenSymbol="tBTC"
+              precision={6}
+              higherPrecision={8}
               withSymbol
             />
           </Skeleton>
