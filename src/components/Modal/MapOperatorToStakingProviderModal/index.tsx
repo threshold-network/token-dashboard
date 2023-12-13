@@ -102,47 +102,37 @@ const MapOperatorToStakingProviderModal: FC<
   const [selectedApps, setSelectedApps] = useState<SelectedApp[]>([])
 
   const submitMapping = async () => {
-    await Promise.all([
-      formRefTbtc.current?.validateForm(),
-      formRefRandomBeacon.current?.validateForm(),
-      formRefTaco.current?.validateForm(),
-    ])
-    console.log({ formRefTbtc })
     const operatorTbtc = formRefTbtc.current?.values?.operator
     const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
     const operatorTaco = formRefTaco.current?.values?.operator
+
+    const applications = []
     if (operatorTbtc) {
-      setSelectedApps((apps) => [
-        ...apps,
-        {
-          appName: "tbtc",
-          operator: operatorTbtc,
-        },
-      ])
+      await formRefTbtc.current?.validateForm()
+      formRefTbtc.current?.setTouched({ operator: true }, false)
+      applications.push({
+        appName: "tbtc",
+        operator: operatorTbtc,
+      })
     }
     if (operatorRandomBeacon) {
-      setSelectedApps((apps) => [
-        ...apps,
-        {
-          appName: "randomBeacon",
-          operator: operatorRandomBeacon,
-        },
-      ])
+      await formRefRandomBeacon.current?.validateForm()
+      formRefRandomBeacon.current?.setTouched({ operator: true }, false)
+      applications.push({
+        appName: "randomBeacon",
+        operator: operatorRandomBeacon,
+      })
     }
     if (operatorTaco) {
-      setSelectedApps((apps) => [
-        ...apps,
-        {
-          appName: "taco",
-          operator: operatorTaco,
-        },
-      ])
+      await formRefTaco.current?.validateForm()
+      formRefTaco.current?.setTouched({ operator: true }, false)
+      applications.push({
+        appName: "taco",
+        operator: operatorTaco,
+      })
     }
     openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
-      applications: selectedApps.map((_) => ({
-        appName: _.appName,
-        operator: _.operator,
-      })),
+      applications: applications,
     })
   }
 
