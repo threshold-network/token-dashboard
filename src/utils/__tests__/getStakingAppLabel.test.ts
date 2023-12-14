@@ -38,7 +38,7 @@ describe("Staking app label utils tests", () => {
   it("returns correct app label if app name is given", () => {
     const resultTbtcLabel = getStakingAppLabelFromAppName(tbtcName)
     const resultRbLabel = getStakingAppLabelFromAppName(randomBeaconName)
-    const resultTacoLabel = getStakingAppLabelFromAppName(randomBeaconName)
+    const resultTacoLabel = getStakingAppLabelFromAppName(tacoName)
 
     expect(resultTbtcLabel).toBe(mockLabels[tbtcName])
     expect(resultRbLabel).toBe(mockLabels[randomBeaconName])
