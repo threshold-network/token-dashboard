@@ -87,6 +87,7 @@ const StakeDetailsPage: FC = () => {
   const handleCommitToTaco = () => {
     openModal(ModalType.TACoCommitment, {
       stakingProvider: stakingProviderAddress,
+      authorizedAmount: tacoApp.authorizedStake,
     })
   }
 

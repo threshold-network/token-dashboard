@@ -10,7 +10,6 @@ import {
   Radio,
   RadioGroup,
   Table,
-  TableContainer,
   Tbody,
   Td,
   Th,
@@ -21,6 +20,7 @@ import TransactionSuccessModal from "../TransactionSuccessModal"
 import InfoBox from "../../InfoBox"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
+import { formatTokenAmount } from "../../../utils/formatAmount"
 import {
   OnErrorCallback,
   OnSuccessCallback,
@@ -31,12 +31,14 @@ import { stakingAppNameToThresholdAppService } from "../../../hooks/staking-appl
 
 export type TACoCommitProps = BaseModalProps & {
   stakingProvider: string
+  authorizedAmount: string
 }
 
 // TACo Commitment Modal
 //  has two buttons, one for committing and one for canceling
 const TACoCommitmentModal: FC<TACoCommitProps> = ({
   stakingProvider,
+  authorizedAmount,
   closeModal,
 }) => {
   const [value, setValue] = useState("")
@@ -57,8 +59,10 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
         <InfoBox mt="0" variant="modal">
           <BodyLg>
             You can lock up tokens (authorized to TACo) for longer durations in
-            order to receive a yield bonus of corresponding size.
+            order to receive a yield bonus of corresponding size. You have
+            currently authorized {formatTokenAmount(authorizedAmount)}T to TACo.
             <strong>
+              {" "}
               Once you click Commit below, you cannot go back and edit this
               lock-up duration.
             </strong>
