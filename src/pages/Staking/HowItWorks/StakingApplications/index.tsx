@@ -116,7 +116,7 @@ const StakingApplications: PageComponent = () => {
                   <BodyMd>Change your authorized amount at any time. </BodyMd>
                   <BodyXs>
                     There is a deauthorization cooldown period of 45 days for
-                    tBTC and Random Beacon apps and 180 days for TACo.
+                    tBTC and Random Beacon apps and 6 months for TACo.
                   </BodyXs>
                 </Stack>
               </HStack>
