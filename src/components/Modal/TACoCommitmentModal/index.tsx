@@ -34,6 +34,12 @@ export type TACoCommitProps = BaseModalProps & {
   authorizedAmount: string
 }
 
+const getEndDate = (durationInSeconds: number) => {
+  const endDate = new Date()
+  endDate.setSeconds(endDate.getSeconds() + durationInSeconds)
+  return endDate.toLocaleDateString()
+}
+
 // TACo Commitment Modal
 //  has two buttons, one for committing and one for canceling
 const TACoCommitmentModal: FC<TACoCommitProps> = ({
@@ -79,6 +85,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
               <Tr>
                 <Th></Th>
                 <Th>Lock-up Duration</Th>
+                <Th>Lock-up Release Date</Th>
                 <Th>Yield Bonus</Th>
               </Tr>
             </Thead>
@@ -88,6 +95,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                   <Radio value="7862400" />
                 </Td>
                 <Td>9 months (6 month minimum + 3 month extension)</Td>
+                <Td>{getEndDate(7862400)}</Td>
                 <Td>0.5%</Td>
               </Tr>
               <Tr>
@@ -95,6 +103,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                   <Radio value="15724800" />
                 </Td>
                 <Td>12 months (6 month minimum + 6 month extension)</Td>
+                <Td>{getEndDate(15724800)}</Td>
                 <Td>1%</Td>
               </Tr>
               <Tr>
@@ -102,6 +111,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                   <Radio value="31449600" />
                 </Td>
                 <Td>18 months (6 month minimum + 12 month extension)</Td>
+                <Td>{getEndDate(31449600)}</Td>
                 <Td>2%</Td>
               </Tr>
               <Tr>
@@ -109,6 +119,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                   <Radio value="47174400" />
                 </Td>
                 <Td>24 months (6 month minimum + 18 month extension)</Td>
+                <Td>{getEndDate(47174400)}</Td>
                 <Td>3%</Td>
               </Tr>
             </Tbody>
