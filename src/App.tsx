@@ -5,7 +5,17 @@ import "@fontsource/inter/500.css"
 import "@fontsource/inter/400.css"
 import "@fontsource/ibm-plex-mono/400.css"
 import { FC, useEffect, Fragment } from "react"
-import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Box,
+  ChakraProvider,
+  CloseButton,
+  useColorModeValue,
+  useDisclosure,
+} from "@threshold-network/components"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
 import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
@@ -180,6 +190,8 @@ const AppBody = () => {
 }
 
 const Layout = () => {
+  const { isOpen: isVisible, onClose } = useDisclosure({ defaultIsOpen: true })
+
   return (
     <Box display="flex">
       <Sidebar />
@@ -188,6 +200,23 @@ const Layout = () => {
         w={{ base: "100%", md: "calc(100% - 80px)" }}
         bg={useColorModeValue("transparent", "gray.900")}
       >
+        {isVisible && (
+          <Alert status="warning">
+            <AlertIcon />
+            <AlertTitle>Attention!</AlertTitle>
+            <AlertDescription>
+              Ledger is temporarily not supported due to an active
+              vulnerability. Please take an additional care while interacting
+              with WalletConnect too.
+            </AlertDescription>
+            <CloseButton
+              position="absolute"
+              right="8px"
+              top="8px"
+              onClick={onClose}
+            />
+          </Alert>
+        )}
         <Navbar />
         <Box as="main" data-cy="app-container">
           <Outlet />

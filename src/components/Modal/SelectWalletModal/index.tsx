@@ -16,9 +16,6 @@ import { CoinbaseWallet } from "../../../static/icons/CoinbaseWallet"
 import { useModal } from "../../../hooks/useModal"
 import ModalCloseButton from "../ModalCloseButton"
 import ConnectTaho from "./ConnectTaho"
-import ConnectLedgerLive from "./ConnectLedgerLive"
-import { LedgerLight } from "../../../static/icons/LedgerLight"
-import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { featureFlags } from "../../../constants"
 
 const walletOptions: WalletOption[] = [
@@ -38,18 +35,6 @@ const walletOptions: WalletOption[] = [
       dark: MetaMaskIcon,
     },
   },
-  ...(featureFlags.LEDGER_LIVE
-    ? [
-        {
-          id: WalletType.LedgerLive,
-          title: "Ledger Live",
-          icon: {
-            light: LedgerLight,
-            dark: LedgerDark,
-          },
-        },
-      ]
-    : []),
   {
     id: WalletType.WalletConnect,
     title: "WalletConnect",
@@ -122,8 +107,6 @@ const ConnectWallet: FC<{
       return <ConnectWalletConnect goBack={goBack} closeModal={onClose} />
     case WalletType.Coinbase:
       return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
-    case WalletType.LedgerLive:
-      return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }
