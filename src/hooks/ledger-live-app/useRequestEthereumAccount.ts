@@ -7,6 +7,7 @@ import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { supportedChainId } from "../../utils/getEnvVariable"
 import { useAppDispatch } from "../store/useAppDispatch"
+import { useIsEmbed } from "../useIsEmbed"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -27,6 +28,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { account, requestAccount } = useRequestAccountReturn
   const dispatch = useAppDispatch()
   const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
+  const { isEmbed } = useIsEmbed()
 
   useEffect(() => {
     // Setting the eth account in LedgerLiveAppContext through `setEthAccount`
@@ -34,10 +36,12 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // reinitialize the lib and tBTC SDK. We can set the is initializing flag
     // here to indicate as early as as possible that the sdk is in the
     // initializing process.
-    setIsSdkInitializing(true)
-    setEthAccount(account || undefined)
-    dispatch(walletConnected(account?.address || ""))
-  }, [account])
+    if (isEmbed) {
+      setIsSdkInitializing(true)
+      setEthAccount(account || undefined)
+      dispatch(walletConnected(account?.address || ""))
+    }
+  }, [account, isEmbed])
 
   const requestEthereumAccount = useCallback(async () => {
     const currencyId = supportedChainId === "1" ? "ethereum" : "ethereum_goerli"
