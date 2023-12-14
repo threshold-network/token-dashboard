@@ -1,5 +1,4 @@
 import { FC } from "react"
-import { useWeb3React } from "@web3-react/core"
 import { Outlet } from "react-router-dom"
 import { FormikErrors, useFormikContext, withFormik } from "formik"
 import {
@@ -50,7 +49,10 @@ import { PageComponent } from "../../../types"
 import { useToken } from "../../../hooks/useToken"
 import { ModalType, Token } from "../../../enums"
 import { BitcoinNetwork } from "../../../threshold-ts/types"
-import { useThreshold } from "../../../contexts/ThresholdContext"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../../contexts/ThresholdContext"
 import {
   getBridgeBTCSupportedAddressPrefixesText,
   UNMINT_MIN_AMOUNT,
@@ -60,6 +62,7 @@ import { UnmintDetails } from "./UnmintDetails"
 import { UnmintingCard } from "./UnmintingCard"
 import { featureFlags } from "../../../constants"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -254,12 +257,14 @@ UnmintFormPage.route = {
 }
 
 export const UnmintPageLayout: PageComponent = ({}) => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
+  const { isSdkInitializing, isSdkInitializedWithSigner } =
+    useIsTbtcSdkInitializing()
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {active ? (
+        {isActive && !isSdkInitializing && isSdkInitializedWithSigner ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState

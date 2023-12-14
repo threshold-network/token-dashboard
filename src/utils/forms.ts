@@ -10,7 +10,9 @@ import { isAddress, isAddressZero } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
-type AmountValidationMessage = string | ((amount: string) => string)
+type AmountValidationMessage =
+  | string
+  | ((amount: string, tokenDecimals?: number, precision?: number) => string)
 type AmountValidationOptions = {
   greaterThanValidationMessage: AmountValidationMessage
   lessThanValidationMessage: AmountValidationMessage
@@ -19,19 +21,29 @@ type AmountValidationOptions = {
 }
 export const DEFAULT_MIN_VALUE = WeiPerEther.toString()
 
-export const defaultLessThanMessage: (maxAmount: string) => string = (
-  maxAmount
-) => {
+export const defaultLessThanMessage: (
+  maxAmount: string,
+  tokenDecimals?: number,
+  precision?: number
+) => string = (maxAmount, decimals = 18, precision = 2) => {
   return `The value should be less than or equal ${formatTokenAmount(
-    maxAmount
+    maxAmount,
+    "0,00.[0]0",
+    decimals,
+    precision
   )}`
 }
 
-export const defaultGreaterThanMessage: (minAmount: string) => string = (
-  minAmount
-) => {
+export const defaultGreaterThanMessage: (
+  minAmount: string,
+  tokenDecimals?: number,
+  precision?: number
+) => string = (minAmount, decimals = 18, precision = 2) => {
   return `The value should be greater than or equal ${formatTokenAmount(
-    minAmount
+    minAmount,
+    "0,00.[0]0",
+    decimals,
+    precision
   )}`
 }
 export const defaultAmountValidationOptions: AmountValidationOptions = {
@@ -43,10 +55,12 @@ export const defaultAmountValidationOptions: AmountValidationOptions = {
 
 const getAmountInRangeValidationMessage = (
   validationMessage: AmountValidationMessage,
-  value: string
+  value: string,
+  tokenDecimals: number = 18,
+  precision: number = 2
 ) => {
   return typeof validationMessage === "function"
-    ? validationMessage(value)
+    ? validationMessage(value, tokenDecimals, precision)
     : validationMessage
 }
 
@@ -54,7 +68,9 @@ export const validateAmountInRange = (
   value: string,
   maxValue: string,
   minValue = DEFAULT_MIN_VALUE,
-  options: AmountValidationOptions = defaultAmountValidationOptions
+  options: AmountValidationOptions = defaultAmountValidationOptions,
+  tokenDecimals: number = 18,
+  precision: number = 2
 ) => {
   if (!value) {
     return options.requiredMessage
@@ -71,7 +87,9 @@ export const validateAmountInRange = (
   if (!isMinimumValueFulfilled) {
     return getAmountInRangeValidationMessage(
       options.greaterThanValidationMessage,
-      minValue
+      minValue,
+      tokenDecimals,
+      precision
     )
   }
   if (isBalanceInsufficient) {
@@ -81,7 +99,9 @@ export const validateAmountInRange = (
   if (isMaximumValueExceeded) {
     return getAmountInRangeValidationMessage(
       options.lessThanValidationMessage,
-      maxValue
+      maxValue,
+      tokenDecimals,
+      precision
     )
   }
 }

@@ -1,5 +1,4 @@
 import { FC, createContext, useContext, ReactElement } from "react"
-import { useWeb3React } from "@web3-react/core"
 import {
   Badge,
   BodyMd,
@@ -27,6 +26,7 @@ import { InlineTokenBalance } from "../TokenBalance"
 import Link from "../Link"
 import { OutlineListItem } from "../OutlineListItem"
 import { RedemptionDetailsLinkBuilder } from "../../utils/tBTC"
+import { useIsActive } from "../../hooks/useIsActive"
 
 export type BridgeActivityProps = {
   data: BridgeActivityType[]
@@ -105,7 +105,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
   additionalData,
   txHash,
 }) => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   const link =
     bridgeProcess === "unmint"

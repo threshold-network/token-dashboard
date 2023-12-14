@@ -31,6 +31,7 @@ export interface TokenBalanceInputProps
   hasError?: boolean
   errorMsgText?: string | JSX.Element
   helperText?: string | JSX.Element
+  tokenDecimals?: number
 }
 
 const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
@@ -42,6 +43,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   errorMsgText,
   helperText,
   hasError = false,
+  tokenDecimals = web3Constants.STANDARD_ERC20_DECIMALS,
   ...inputProps
 }) => {
   const inputRef = useRef<HTMLInputElement>()
@@ -64,24 +66,18 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
   const setToMax = () => {
     let remainder = Zero
     const { decimalScale } = inputProps
-    if (
-      decimalScale &&
-      decimalScale > 0 &&
-      decimalScale < web3Constants.STANDARD_ERC20_DECIMALS
-    ) {
+    if (decimalScale && decimalScale > 0 && decimalScale < tokenDecimals) {
       remainder = BigNumber.from(max).mod(
-        BigNumber.from(10).pow(
-          web3Constants.STANDARD_ERC20_DECIMALS - decimalScale
-        )
+        BigNumber.from(10).pow(tokenDecimals - decimalScale)
       )
     }
-    _setAmount(formatUnits(BigNumber.from(max).sub(remainder)))
+    _setAmount(formatUnits(BigNumber.from(max).sub(remainder), tokenDecimals))
     setAmount(valueRef.current)
   }
 
   const _setAmount = (value: string | number) => {
     valueRef.current = value
-      ? parseUnits(value.toString()).toString()
+      ? parseUnits(value.toString(), tokenDecimals).toString()
       : undefined
   }
 
@@ -106,7 +102,7 @@ const TokenBalanceInput: FC<TokenBalanceInputProps> = ({
           onValueChange={(values: NumberFormatInputValues) =>
             _setAmount(values.value)
           }
-          value={amount ? formatUnits(amount) : undefined}
+          value={amount ? formatUnits(amount, tokenDecimals) : undefined}
           onChange={() => {
             setAmount(valueRef.current)
           }}

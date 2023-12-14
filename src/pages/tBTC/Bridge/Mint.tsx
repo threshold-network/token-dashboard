@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
-import { useWeb3React } from "@web3-react/core"
+import { useIsActive } from "../../../hooks/useIsActive"
 import { MintingStep, PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
@@ -29,7 +29,7 @@ export const MintPage: PageComponent = ({}) => {
 export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { isSdkInitializing, isSdkInitializedWithSigner } =
     useIsTbtcSdkInitializing()
 
@@ -86,7 +86,7 @@ MintingFormPage.route = {
 }
 
 const MintPageLayout: PageComponent = () => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
   const { mintingStep, utxo } = useTbtcState()
   const {
     tbtc: {
@@ -104,7 +104,7 @@ const MintPageLayout: PageComponent = () => {
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {active ? (
+        {isActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

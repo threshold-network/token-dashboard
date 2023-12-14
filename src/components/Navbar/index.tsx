@@ -1,18 +1,34 @@
-import { FC } from "react"
-import { useWeb3React } from "@web3-react/core"
-import { useModal } from "../../hooks/useModal"
+import { FC, useEffect } from "react"
 import NavbarComponent from "./NavbarComponent"
-import { ModalType } from "../../enums"
+import { useAppDispatch } from "../../hooks/store"
+import { walletConnected } from "../../store/account"
+import { useRequestEthereumAccount } from "../../hooks/ledger-live-app"
+import { useIsActive } from "../../hooks/useIsActive"
+import { useConnectWallet } from "../../hooks/useConnectWallet"
 
 const Navbar: FC = () => {
-  const { openModal } = useModal()
-  const { account, active, chainId, deactivate } = useWeb3React()
-  const openWalletModal = () => openModal(ModalType.SelectWallet)
+  const { isActive, account, chainId, deactivate } = useIsActive()
+  const dispatch = useAppDispatch()
+  const connectWallet = useConnectWallet()
+
+  const { account: ledgerLiveAccount, requestAccount } =
+    useRequestEthereumAccount()
+  const ledgerLiveAccountAddress = ledgerLiveAccount?.address
+
+  const openWalletModal = () => {
+    connectWallet()
+  }
+
+  useEffect(() => {
+    if (ledgerLiveAccountAddress) {
+      dispatch(walletConnected(ledgerLiveAccountAddress))
+    }
+  }, [ledgerLiveAccountAddress, dispatch])
 
   return (
     <NavbarComponent
       {...{
-        active,
+        active: isActive,
         account,
         chainId,
         openWalletModal,

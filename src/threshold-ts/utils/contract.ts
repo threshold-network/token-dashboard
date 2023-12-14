@@ -8,6 +8,7 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { Contract, ContractInterface, Event, providers, Signer } from "ethers"
 import { AddressZero, getAddress, isAddressZero } from "./address"
+import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
 
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
@@ -107,11 +108,13 @@ export const getContract = (
   if (!getAddress(address) || isAddressZero(address)) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
-  return new Contract(
-    address,
-    abi,
-    getProviderOrSigner(providerOrSigner as any, account) as any
-  )
+  // Sets the correct provider for ledger live app if the instance of
+  // LedgerLiveEthereumSigner is passed as providerOrSigner.
+  const _providerOrSigner =
+    providerOrSigner instanceof LedgerLiveEthereumSigner
+      ? providerOrSigner
+      : (getProviderOrSigner(providerOrSigner as any, account) as any)
+  return new Contract(address, abi, _providerOrSigner)
 }
 
 interface EventFilterOptions {

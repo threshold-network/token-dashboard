@@ -3,12 +3,13 @@ import {
   BodyMd,
   Box,
   BoxLabel,
+  Button,
   Card,
   HStack,
   Stack,
   useColorModeValue,
 } from "@threshold-network/components"
-import { ComponentProps, FC } from "react"
+import { FC, ComponentProps, useCallback } from "react"
 import {
   CopyAddressToClipboard,
   CopyToClipboard,
@@ -22,8 +23,17 @@ import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExpl
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
-import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
+import { useIsEmbed } from "../../../../hooks/useIsEmbed"
+import {
+  useRequestBitcoinAccount,
+  useSendBitcoinTransaction,
+} from "../../../../hooks/ledger-live-app"
+import {
+  SendBitcoinsToDepositAddressForm,
+  SendBitcoinsToDepositAddressFormValues,
+} from "../../../../components/tBTC"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -125,6 +135,29 @@ const MakeDepositComponent: FC<{
   const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
     useTbtcState()
 
+  // ↓ Ledger Live App ↓
+  const { isEmbed } = useIsEmbed()
+  const { requestAccount, account: ledgerBitcoinAccount } =
+    useRequestBitcoinAccount()
+  const { sendBitcoinTransaction } = useSendBitcoinTransaction()
+
+  const chooseBitcoinAccount = useCallback(async () => {
+    await requestAccount()
+  }, [requestAccount])
+
+  const handleSendBitcoinTransaction = useCallback(
+    async (values: SendBitcoinsToDepositAddressFormValues) => {
+      const { amount } = values
+      try {
+        await sendBitcoinTransaction(amount, btcDepositAddress)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    [btcDepositAddress, sendBitcoinTransaction]
+  )
+  // ↑ Ledger Live App ↑
+
   return (
     <>
       <BridgeProcessCardTitle
@@ -182,6 +215,32 @@ const MakeDepositComponent: FC<{
           chain="bitcoin"
         />
       </Stack>
+      {isEmbed && !!ledgerBitcoinAccount?.address && (
+        <AddressRow
+          text="Bitcoin account"
+          address={ledgerBitcoinAccount.address}
+        />
+      )}
+      {isEmbed && (
+        <Button
+          isFullWidth
+          onClick={() => {
+            chooseBitcoinAccount()
+          }}
+          mb="2"
+          variant={ledgerBitcoinAccount?.address ? "brand" : "solid"}
+        >
+          {ledgerBitcoinAccount
+            ? "Change bitcoin account"
+            : "Choose bitcoin account"}
+        </Button>
+      )}
+      {isEmbed && ledgerBitcoinAccount && (
+        <SendBitcoinsToDepositAddressForm
+          maxTokenAmount={ledgerBitcoinAccount.balance.toString()}
+          onSubmitForm={handleSendBitcoinTransaction}
+        />
+      )}
     </>
   )
 }

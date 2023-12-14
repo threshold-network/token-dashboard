@@ -8,7 +8,6 @@ import {
   FileUploader,
   FormControl,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { useNavigate } from "react-router-dom"
 import { PageComponent } from "../../../types"
@@ -33,10 +32,11 @@ import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 type RecoveryJsonFileData = DepositScriptParameters & {
   btcRecoveryAddress: string
 }
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
-  const { account, active } = useWeb3React()
+  const { account, isActive } = useIsActive()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
@@ -70,7 +70,7 @@ export const ResumeDepositPage: PageComponent = () => {
 
   return (
     <Card maxW="640px" m={"0 auto"}>
-      {active ? (
+      {isActive ? (
         <>
           <BridgeProcessCardTitle />
           <BodyLg>

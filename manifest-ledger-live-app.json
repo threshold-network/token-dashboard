@@ -1,0 +1,40 @@
+{
+  "id": "threshold",
+  "name": "Threshold",
+  "url": "http://localhost:3000?embed=true",
+  "homepageUrl": "http://localhost:3000",
+  "icon": "https://dashboard.threshold.network/favicon-T.png",
+  "platform": "all",
+  "apiVersion": "2.0.0",
+  "manifestVersion": "1",
+  "branch": "stable",
+  "categories": ["tbtc", "bitocin", "bridge"],
+  "currencies": ["bitcoin", "ethereum", "bitcoin_testnet", "ethereum_goerli"],
+  "content": {
+    "shortDescription": {
+      "en": "Threshold's tBTC is a truly decentralized bridge between Bitcoin and Ethereum."
+    },
+    "description": {
+      "en": "tBTC is Threshold’s decentralized bridge to bring BTC to the Ethereum network; the only permissionless solution on the market today. Bridge your Bitcoin to Ethereum in a secure and trustless way to participate in DeFi."
+    }
+  },
+  "permissions": [
+    "account.list",
+    "account.receive",
+    "account.request",
+    "currency.list",
+    "device.close",
+    "device.exchange",
+    "device.transport",
+    "message.sign",
+    "transaction.sign",
+    "transaction.signAndBroadcast",
+    "storage.set",
+    "storage.get",
+    "bitcoin.getXPub",
+    "wallet.capabilities",
+    "wallet.userId",
+    "wallet.info"
+  ],
+  "domains": ["https://*", "wss://*"]
+}

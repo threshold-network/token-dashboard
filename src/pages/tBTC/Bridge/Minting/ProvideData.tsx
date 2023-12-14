@@ -4,7 +4,6 @@ import {
   Checkbox,
   useColorModeValue,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { FormikErrors, FormikProps, withFormik } from "formik"
 import { FC, Ref, useCallback, useRef, useState } from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
@@ -25,6 +24,7 @@ import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC
 import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import { useIsActive } from "../../../../hooks/useIsActive"
 
 export interface FormValues {
   ethAddress: string
@@ -111,7 +111,7 @@ export const ProvideDataComponent: FC<{
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const threshold = useThreshold()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 

@@ -205,7 +205,6 @@ export interface ITBTC {
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK>
-
   /**
    * Initiates a Deposit object from bitcoin recovery address.
    * @param btcRecoveryAddress The bitcoin address in which the user will
@@ -497,7 +496,6 @@ export class TBTC implements ITBTC {
     account?: string
   ): Promise<SDK> {
     const signer =
-      // Double bang to convert to boolean
       !!account && providerOrSigner instanceof Web3Provider
         ? getSigner(providerOrSigner as Web3Provider, account)
         : providerOrSigner

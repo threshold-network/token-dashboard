@@ -40,6 +40,7 @@ import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
 import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
+import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
 import {
   useSubscribeToAuthorizationIncreasedEvent,
   useSubscribeToAuthorizationDecreaseApprovedEvent,
@@ -58,6 +59,9 @@ import {
   useSubscribeToRedemptionRequestedEvent,
 } from "./hooks/tbtc"
 import { useSentry } from "./hooks/sentry"
+import { useIsEmbed } from "./hooks/useIsEmbed"
+import TBTC from "./pages/tBTC"
+import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -170,6 +174,7 @@ const AppBody = () => {
     dispatch(fetchETHPriceUSD())
   }, [dispatch])
 
+  useDetectIfEmbed()
   usePosthog()
   useCheckBonusEligibility()
   useFetchStakingRewards()
@@ -180,12 +185,13 @@ const AppBody = () => {
 }
 
 const Layout = () => {
+  const { isEmbed } = useIsEmbed()
   return (
     <Box display="flex">
-      <Sidebar />
+      {!isEmbed && <Sidebar />}
       <Box
         // 100% - 80px is to account for the sidebar
-        w={{ base: "100%", md: "calc(100% - 80px)" }}
+        w={{ base: "100%", md: isEmbed ? "100%" : "calc(100% - 80px)" }}
         bg={useColorModeValue("transparent", "gray.900")}
       >
         <Navbar />
@@ -199,12 +205,15 @@ const Layout = () => {
 }
 
 const Routing = () => {
+  const { isEmbed } = useIsEmbed()
+  const finalPages = isEmbed ? [TBTC] : pages
+  const to = isEmbed ? "tBTC" : "overview"
   return (
     <Routes>
       <Route path="*" element={<Layout />}>
-        <Route index element={<Navigate to="overview" />} />
-        {pages.map(renderPageComponent)}
-        <Route path="*" element={<Navigate to="overview" />} />
+        <Route index element={<Navigate to={to} />} />
+        {finalPages.map(renderPageComponent)}
+        <Route path="*" element={<Navigate to={to} />} />
       </Route>
     </Routes>
   )
@@ -248,17 +257,19 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <ThresholdProvider>
-          <ReduxProvider store={reduxStore}>
-            <ChakraProvider theme={theme}>
-              <TokenContextProvider>
-                <Web3EventHandlerComponent />
-                <ModalRoot />
-                <AppBody />
-              </TokenContextProvider>
-            </ChakraProvider>
-          </ReduxProvider>
-        </ThresholdProvider>
+        <LedgerLiveAppProvider>
+          <ThresholdProvider>
+            <ReduxProvider store={reduxStore}>
+              <ChakraProvider theme={theme}>
+                <TokenContextProvider>
+                  <Web3EventHandlerComponent />
+                  <ModalRoot />
+                  <AppBody />
+                </TokenContextProvider>
+              </ChakraProvider>
+            </ReduxProvider>
+          </ThresholdProvider>
+        </LedgerLiveAppProvider>
       </Web3ReactProvider>
     </Router>
   )

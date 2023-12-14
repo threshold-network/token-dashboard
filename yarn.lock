@@ -3577,7 +3577,14 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.11.0.tgz#0d28e7edcf71548506f4304686cba480ba91bbcf"
   integrity sha512-HHK9y4GGe4X7CXbRUCh7z8Mp+WggpJn1dmUjmuk1rNugESF6o8nAOnXA+BxwtRRNV3CgNJR3Wxdos4J9qV0Zsg==
 
-"@ledgerhq/wallet-api-client@^1.2.1":
+"@ledgerhq/wallet-api-client-react@^1.1.1":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/wallet-api-client-react/-/wallet-api-client-react-1.1.2.tgz#da9ca900aefd671faecf121982de30b15c5c6271"
+  integrity sha512-ZBnp8HBHwtuDE/jqYuJmqx20Dx9dqqcZaOW4YuaY32GRwqEJJslTtcypCCgq2kArl0Y0q0irOYEd/0I7ULxdLQ==
+  dependencies:
+    "@ledgerhq/wallet-api-client" "1.2.1"
+
+"@ledgerhq/wallet-api-client@1.2.1", "@ledgerhq/wallet-api-client@^1.2.0", "@ledgerhq/wallet-api-client@^1.2.1":
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/wallet-api-client/-/wallet-api-client-1.2.1.tgz#b47fe5b4f431282f50ddb64c8abb911545593eba"
   integrity sha512-uTBTZCpbLTM5y5Cd7ioQB0lcq0b3cbrU2bGzCiKuY1IEd0NUyFhr2dKliRrcLoMPDRtQRmRnSxeX0BFKinoo8Q==

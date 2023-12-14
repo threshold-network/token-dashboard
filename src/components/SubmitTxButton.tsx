@@ -1,9 +1,8 @@
-import React, { FC } from "react"
+import { FC } from "react"
 import { Button, ButtonProps } from "@chakra-ui/react"
-import { ModalType } from "../enums"
-import { useWeb3React } from "@web3-react/core"
-import { useModal } from "../hooks/useModal"
+import { useIsActive } from "../hooks/useIsActive"
 import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
+import { useConnectWallet } from "../hooks/useConnectWallet"
 
 interface Props extends ButtonProps {
   onSubmit?: () => void
@@ -15,11 +14,15 @@ const SubmitTxButton: FC<Props> = ({
   submitText = "Upgrade",
   ...buttonProps
 }) => {
-  const { active } = useWeb3React()
-  const { openModal } = useModal()
+  const { isActive } = useIsActive()
   const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
+  const connectWallet = useConnectWallet()
 
-  if (active && isSdkInitializedWithSigner) {
+  const onConnectWalletClick = () => {
+    connectWallet()
+  }
+
+  if (isActive && isSdkInitializedWithSigner) {
     return (
       <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
         {submitText}
@@ -31,7 +34,7 @@ const SubmitTxButton: FC<Props> = ({
     <Button
       mt={6}
       isFullWidth
-      onClick={() => openModal(ModalType.SelectWallet)}
+      onClick={onConnectWalletClick}
       {...buttonProps}
       type="button"
       isDisabled={false}

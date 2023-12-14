@@ -22,11 +22,12 @@ import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
 import ButtonLink from "../../../components/ButtonLink"
 import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
 import { CoveragePoolsTvlCard } from "../../tBTC/CoveragePools"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
   const [deposits, isFetching, error] = useFetchRecentDeposits()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const dispatch = useAppDispatch()
   const bridgeActivity = useAppSelector(selectBridgeActivity)
   const isBridgeActivityFetching = useAppSelector(
