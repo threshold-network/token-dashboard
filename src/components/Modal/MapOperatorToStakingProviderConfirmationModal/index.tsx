@@ -11,7 +11,7 @@ import {
 import { AddressZero } from "@ethersproject/constants"
 import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { FC, useCallback } from "react"
+import { FC, useCallback, useState } from "react"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
 import { useBondOperatorTransaction } from "../../../hooks/staking-applications/useBondOperatorTransaction"
@@ -81,16 +81,27 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
     },
     [openModal, applications]
   )
+  const [errorMessage, setErrorMessage] = useState("")
+  const onError = useCallback((error: Error) => {
+    setErrorMessage(error.message)
+  }, [])
 
   const { sendTransaction: registerOperatorTbtc } =
-    useRegisterOperatorTransaction("tbtc", (receipt) => onSuccess(receipt))
+    useRegisterOperatorTransaction(
+      "tbtc",
+      (receipt) => onSuccess(receipt),
+      onError
+    )
   const { sendTransaction: registerOperatorRandomBeacon } =
-    useRegisterOperatorTransaction("randomBeacon", (receipt) =>
-      onSuccess(receipt)
+    useRegisterOperatorTransaction(
+      "randomBeacon",
+      (receipt) => onSuccess(receipt),
+      onError
     )
   const { sendTransaction: registerOperatorTaco } = useBondOperatorTransaction(
     "taco",
-    (receipt) => onSuccess(receipt)
+    (receipt) => onSuccess(receipt),
+    onError
   )
 
   const submitMappingOperator = async () => {
@@ -116,8 +127,11 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
       if (!transaction) {
         openModal(ModalType.TransactionFailed, {
           error: new Error(
-            `Transaction rejected. You are required to map the Operator Address for ${app.appName}.`
+            errorMessage
+              ? `Transaction rejected with error: ${errorMessage}`
+              : `Transaction rejected. You are required to map the Operator Address for ${app.appName}.`
           ),
+          isExpandableError: true,
           closeModal: () => {
             closeModal()
             dispatch(mapOperatorToStakingProviderModalClosed())

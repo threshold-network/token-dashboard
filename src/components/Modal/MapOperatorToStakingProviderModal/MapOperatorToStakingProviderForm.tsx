@@ -76,7 +76,7 @@ const validateInputtedOperatorAddress = async (
         }
         break
       case "taco":
-        console.log("taco")
+        break
         break
       default:
         throw new Error(`Unsupported app name: ${appName}`)

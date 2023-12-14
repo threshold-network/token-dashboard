@@ -165,7 +165,6 @@ const MapOperatorToStakingProviderModal: FC<
         </InfoBox>
         <BodyLg mt={"10"}>
           Choose an application to map the Operator Address:
-          {/*  JAMES TODO JAMES THEREF do we need another input for tbtc/rb */}
         </BodyLg>
         <Box
           p={"24px"}
