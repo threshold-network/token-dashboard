@@ -113,6 +113,7 @@ const MapOperatorToStakingProviderModal: FC<
       applications.push({
         appName: "tbtc",
         operator: operatorTbtc,
+        stakingProvider: account!,
       })
     }
     if (operatorRandomBeacon) {
@@ -121,6 +122,7 @@ const MapOperatorToStakingProviderModal: FC<
       applications.push({
         appName: "randomBeacon",
         operator: operatorRandomBeacon,
+        stakingProvider: account!,
       })
     }
     if (operatorTaco) {
@@ -129,6 +131,7 @@ const MapOperatorToStakingProviderModal: FC<
       applications.push({
         appName: "taco",
         operator: operatorTaco,
+        stakingProvider: account!,
       })
     }
     openModal(ModalType.MapOperatorToStakingProviderConfirmation, {

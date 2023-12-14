@@ -106,7 +106,6 @@ const MapOperatorToStakingProviderForm = withFormik<
   MapOperatorToStakingProviderFormValues
 >({
   validate: async (values, props) => {
-    console.log({ values, props })
     const {
       mappedOperatorTbtc,
       mappedOperatorRandomBeacon,

@@ -53,7 +53,11 @@ const OperatorMappingConfirmation: FC<
 
 const MapOperatorToStakingProviderConfirmationModal: FC<
   BaseModalProps & {
-    applications: { appName: string; operator: string }[]
+    applications: {
+      appName: string
+      operator: string
+      stakingProvider: string
+    }[]
   }
 > = ({ applications, closeModal }) => {
   const { account } = useWeb3React()
@@ -70,6 +74,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
           application: {
             appName: app.appName,
             operator: app.operator,
+            stakingProvider: app.stakingProvider,
           },
         })),
       })
