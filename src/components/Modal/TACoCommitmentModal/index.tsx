@@ -52,14 +52,21 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
 
   return (
     <>
-      <ModalHeader>TACo App Commitment</ModalHeader>
+      <ModalHeader>TACo Token Lock-up Extension</ModalHeader>
       <ModalBody>
         <InfoBox mt="0" variant="modal">
           <BodyLg>
-            You have the option of locking up your tokens for longer durations
-            in order to receive a yield bonus of corresponding size. There are 4
-            choices, note that these durations include the obligatory and
-            universal 6 month deauthorization delay:
+            You can lock up tokens (authorized to TACo) for longer durations in
+            order to receive a yield bonus of corresponding size.
+            <strong>
+              Once you click Commit below, you cannot go back and edit this
+              lock-up duration.
+            </strong>
+            Please read the{" "}
+            <a href="https://docs.threshold.network/staking-and-running-a-node/taco-node-setup/taco-authorization-and-operator-registration/one-off-commitment-bonus">
+              bonus rules
+            </a>{" "}
+            before deciding.
           </BodyLg>
         </InfoBox>
         <RadioGroup onChange={setValue} value={value}>
@@ -76,28 +83,28 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
                 <Td>
                   <Radio value="7862400" />
                 </Td>
-                <Td>9 months (6 month minimum + 3 month voluntary)</Td>
+                <Td>9 months (6 month minimum + 3 month extension)</Td>
                 <Td>0.5%</Td>
               </Tr>
               <Tr>
                 <Td>
                   <Radio value="15724800" />
                 </Td>
-                <Td>12 months (6 month minimum + 6 month voluntary)</Td>
+                <Td>12 months (6 month minimum + 6 month extension)</Td>
                 <Td>1%</Td>
               </Tr>
               <Tr>
                 <Td>
                   <Radio value="31449600" />
                 </Td>
-                <Td>18 months (6 month minimum + 12 month voluntary)</Td>
+                <Td>18 months (6 month minimum + 12 month extension)</Td>
                 <Td>2%</Td>
               </Tr>
               <Tr>
                 <Td>
                   <Radio value="47174400" />
                 </Td>
-                <Td>24 months (6 month minimum + 18 month voluntary)</Td>
+                <Td>24 months (6 month minimum + 18 month extension)</Td>
                 <Td>3%</Td>
               </Tr>
             </Tbody>
@@ -110,14 +117,18 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
           p={"8px 10px"}
         >
           <BodyXs>
-            Once you choose a lock-up duration and hit Authorize below, your
-            tokens will be irreversibly locked until the unlock date at the
-            earliest. This cannot be undone. You may authorize more tokens to
-            the same unlock horizon before the bonus deadline (12/30/23) , but
+            Once you choose a lock-up duration and hit Commit below, your tokens
+            will be irreversibly locked until the unlock date at the earliest.
+            This cannot be undone. You may authorize more tokens to the same
+            unlock horizon before the bonus deadline (January 15th 2024), but
             you cannot decrease the amount. You must also manually initiate
             deauthorization 6 months before the unlock date stated if you wish
             to withdraw tokens on said date. For more rules and information,
-            head to [link to documentation].
+            head to the{" "}
+            <a href="https://docs.threshold.network/staking-and-running-a-node/taco-node-setup/taco-authorization-and-operator-registration/one-off-commitment-bonus">
+              documentation
+            </a>
+            .
           </BodyXs>
         </AlertBox>
       </ModalBody>
