@@ -26,6 +26,7 @@ import { useWeb3React } from "@web3-react/core"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   isAddressZero,
+  isEmptyOrZeroAddress,
   isSameETHAddress,
   AddressZero,
 } from "../../../web3/utils"
@@ -169,46 +170,54 @@ const MapOperatorToStakingProviderModal: FC<
         <BodyLg mt={"10"}>
           Choose an application to map the Operator Address:
         </BodyLg>
-        <Box
-          p={"24px"}
-          border={"1px solid"}
-          borderColor={"gray.100"}
-          borderRadius={"12px"}
-          mt={"5"}
-          mb={"5"}
-        >
-          <LabelSm>tBTC</LabelSm>
-          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
-          <MapOperatorToStakingProviderForm
-            innerRef={formRefTbtc}
-            formId="map-operator-to-staking-provider-form-tbtc"
-            checkIfOperatorIsMappedToAnotherStakingProvider={
-              checkIfOperatorIsMappedToAnotherStakingProvider
-            }
-            appName={"tbtc"}
-            mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
-          />
-        </Box>
-        <Box
-          p={"24px"}
-          border={"1px solid"}
-          borderColor={"gray.100"}
-          borderRadius={"12px"}
-          mt={"5"}
-          mb={"5"}
-        >
-          <LabelSm>Random Beacon</LabelSm>
-          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
-          <MapOperatorToStakingProviderForm
-            innerRef={formRefRandomBeacon}
-            formId="map-operator-to-staking-provider-form-random-beacon"
-            checkIfOperatorIsMappedToAnotherStakingProvider={
-              checkIfOperatorIsMappedToAnotherStakingProvider
-            }
-            appName={"randomBeacon"}
-            mappedOperatorTbtc={mappedOperatorTbtc}
-          />
-        </Box>
+        {isEmptyOrZeroAddress(mappedOperatorTbtc) && (
+          <Box
+            p={"24px"}
+            border={"1px solid"}
+            borderColor={"gray.100"}
+            borderRadius={"12px"}
+            mt={"5"}
+            mb={"5"}
+          >
+            <LabelSm>tBTC</LabelSm>
+            <StakeAddressInfo
+              stakingProvider={account ? account : AddressZero}
+            />
+            <MapOperatorToStakingProviderForm
+              innerRef={formRefTbtc}
+              formId="map-operator-to-staking-provider-form-tbtc"
+              checkIfOperatorIsMappedToAnotherStakingProvider={
+                checkIfOperatorIsMappedToAnotherStakingProvider
+              }
+              appName={"tbtc"}
+              mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
+            />
+          </Box>
+        )}
+        {isEmptyOrZeroAddress(mappedOperatorRandomBeacon) && (
+          <Box
+            p={"24px"}
+            border={"1px solid"}
+            borderColor={"gray.100"}
+            borderRadius={"12px"}
+            mt={"5"}
+            mb={"5"}
+          >
+            <LabelSm>Random Beacon</LabelSm>
+            <StakeAddressInfo
+              stakingProvider={account ? account : AddressZero}
+            />
+            <MapOperatorToStakingProviderForm
+              innerRef={formRefRandomBeacon}
+              formId="map-operator-to-staking-provider-form-random-beacon"
+              checkIfOperatorIsMappedToAnotherStakingProvider={
+                checkIfOperatorIsMappedToAnotherStakingProvider
+              }
+              appName={"randomBeacon"}
+              mappedOperatorTbtc={mappedOperatorTbtc}
+            />
+          </Box>
+        )}
         <AlertBox
           status="warning"
           withIcon={false}
@@ -221,26 +230,30 @@ const MapOperatorToStakingProviderModal: FC<
             transactions, one transaction per application.
           </BodyXs>
         </AlertBox>
-        <Box
-          p={"24px"}
-          border={"1px solid"}
-          borderColor={"gray.100"}
-          borderRadius={"12px"}
-          mt={"5"}
-          mb={"5"}
-        >
-          <LabelSm>Taco (requires 1tx)</LabelSm>
-          <StakeAddressInfo stakingProvider={account ? account : AddressZero} />
-          <MapOperatorToStakingProviderForm
-            innerRef={formRefTaco}
-            formId="map-operator-to-staking-provider-form-taco"
-            checkIfOperatorIsMappedToAnotherStakingProvider={
-              checkIfOperatorIsMappedToAnotherStakingProvider
-            }
-            appName={"taco"}
-            mappedOperatorTaco={mappedOperatorTaco}
-          />
-        </Box>
+        {isEmptyOrZeroAddress(mappedOperatorTaco) && (
+          <Box
+            p={"24px"}
+            border={"1px solid"}
+            borderColor={"gray.100"}
+            borderRadius={"12px"}
+            mt={"5"}
+            mb={"5"}
+          >
+            <LabelSm>Taco (requires 1tx)</LabelSm>
+            <StakeAddressInfo
+              stakingProvider={account ? account : AddressZero}
+            />
+            <MapOperatorToStakingProviderForm
+              innerRef={formRefTaco}
+              formId="map-operator-to-staking-provider-form-taco"
+              checkIfOperatorIsMappedToAnotherStakingProvider={
+                checkIfOperatorIsMappedToAnotherStakingProvider
+              }
+              appName={"taco"}
+              mappedOperatorTaco={mappedOperatorTaco}
+            />
+          </Box>
+        )}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
