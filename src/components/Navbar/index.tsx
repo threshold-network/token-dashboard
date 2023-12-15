@@ -5,11 +5,13 @@ import { walletConnected } from "../../store/account"
 import { useRequestEthereumAccount } from "../../hooks/ledger-live-app"
 import { useIsActive } from "../../hooks/useIsActive"
 import { useConnectWallet } from "../../hooks/useConnectWallet"
+import { useIsEmbed } from "../../hooks/useIsEmbed"
 
 const Navbar: FC = () => {
   const { isActive, account, chainId, deactivate } = useIsActive()
   const dispatch = useAppDispatch()
   const connectWallet = useConnectWallet()
+  const { isEmbed } = useIsEmbed()
 
   const { account: ledgerLiveAccount, requestAccount } =
     useRequestEthereumAccount()
@@ -20,10 +22,10 @@ const Navbar: FC = () => {
   }
 
   useEffect(() => {
-    if (ledgerLiveAccountAddress) {
+    if (ledgerLiveAccountAddress && isEmbed) {
       dispatch(walletConnected(ledgerLiveAccountAddress))
     }
-  }, [ledgerLiveAccountAddress, dispatch])
+  }, [ledgerLiveAccountAddress, dispatch, isEmbed])
 
   return (
     <NavbarComponent

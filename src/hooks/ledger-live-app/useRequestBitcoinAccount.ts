@@ -4,6 +4,7 @@ import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { supportedChainId } from "../../utils/getEnvVariable"
+import { useIsEmbed } from "../useIsEmbed"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -22,10 +23,11 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
+  const { isEmbed } = useIsEmbed()
 
   useEffect(() => {
-    setBtcAccount(account || undefined)
-  }, [account])
+    if (isEmbed) setBtcAccount(account || undefined)
+  }, [account, isEmbed])
 
   const requestBitcoinAccount = useCallback(async () => {
     const currencyId = supportedChainId === "1" ? "bitcoin" : "bitcoin_testnet"
