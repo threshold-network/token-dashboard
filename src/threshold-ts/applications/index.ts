@@ -379,8 +379,15 @@ export class Application implements IApplication {
     if (isAddress(operator) && isAddressZero(operator)) {
       return false
     }
-
-    const isInPool: boolean = await this._application.isOperatorInPool(operator)
+    let isInPool = undefined
+    try {
+      isInPool = await this._application.isOperatorInPool(operator)
+    } catch (error) {
+      console.warn(
+        "isOperatorInPool method does not exist (eg on TACo app)",
+        error
+      )
+    }
 
     return isInPool
   }
