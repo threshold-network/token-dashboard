@@ -82,7 +82,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
-  [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.NewStakerAuthorizeStakingApplication]:
     NewStakerAuthorizeStakingApplicationModal,
   [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
