@@ -50,7 +50,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           throw new Error("Random beacon app already has mapped operator!")
 
         if (isOperatorMappedOnlyInTbtc)
-          throw new Error("Tbtc app already have mapped operator!")
+          throw new Error("Tbtc app already has mapped operator!")
 
         if (isOperatorMappedOnlyInTaco)
           throw new Error("TACo app already has mapped operator!")
