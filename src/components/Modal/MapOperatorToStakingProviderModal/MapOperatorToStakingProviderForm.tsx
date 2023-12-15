@@ -54,10 +54,10 @@ const validateInputtedOperatorAddress = async (
 
     switch (appName) {
       case "tbtc":
-        if (mappedOperatorTbtc) {
+        if (mappedOperatorRandomBeacon) {
           if (
-            !isAddressZero(mappedOperatorTbtc) &&
-            !isSameETHAddress(operator, mappedOperatorTbtc)
+            !isAddressZero(mappedOperatorRandomBeacon) &&
+            !isSameETHAddress(operator, mappedOperatorRandomBeacon)
           ) {
             validationMsg =
               "The operator address doesn't match the one used in tbtc app"
@@ -65,10 +65,10 @@ const validateInputtedOperatorAddress = async (
         }
         break
       case "randomBeacon":
-        if (mappedOperatorRandomBeacon) {
+        if (mappedOperatorTbtc) {
           if (
-            !isAddressZero(mappedOperatorRandomBeacon) &&
-            !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+            !isAddressZero(mappedOperatorTbtc) &&
+            !isSameETHAddress(operator, mappedOperatorTbtc)
           ) {
             validationMsg =
               "The operator address doesn't match the one used in random beacon app"
