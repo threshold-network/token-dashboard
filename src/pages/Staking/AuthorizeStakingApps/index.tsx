@@ -185,18 +185,14 @@ const AuthorizeStakingAppsPage: FC = () => {
       await tacoAppFormRef.current?.validateForm()
       tacoAppFormRef.current?.setTouched({ tokenAmount: true }, false)
     }
-    if (
-      (isRandomBeaconSelected &&
-        isTbtcSelected &&
-        tbtcAppFormRef.current?.isValid &&
-        randomBeaconAppFormRef.current?.isValid) ||
-      (isTbtcSelected &&
-        !isRandomBeaconSelected &&
-        tbtcAppFormRef.current?.isValid) ||
-      (isRandomBeaconSelected &&
-        !isTbtcSelected &&
-        randomBeaconAppFormRef.current?.isValid)
-    ) {
+    const isTbtcValid =
+      !isTbtcSelected || (isTbtcSelected && tbtcAppFormRef.current?.isValid)
+    const isRandomBeaconValid =
+      !isRandomBeaconSelected ||
+      (isRandomBeaconSelected && randomBeaconAppFormRef.current?.isValid)
+    const isTacoValid =
+      !isTacoSelected || (isTacoSelected && tacoAppFormRef.current?.isValid)
+    if (isTbtcValid && isRandomBeaconValid && isTacoValid) {
       openModal(ModalType.AuthorizeStakingApps, {
         stakingProvider: stakingProviderAddress!,
         totalInTStake: stake.totalInTStake,
