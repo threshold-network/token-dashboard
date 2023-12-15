@@ -44,9 +44,7 @@ const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
 > = () => {
   const { account } = useWeb3React()
-  const formRefTbtc =
-    useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
-  const formRefRandomBeacon =
+  const formRefTbtcRb =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const formRefTaco =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
@@ -69,58 +67,54 @@ const MapOperatorToStakingProviderModal: FC<
   ) => Promise<boolean> = async (operator: string, appName: string) => {
     let stakingProviderMapped
     switch (appName) {
-      case "tbtc":
-        stakingProviderMapped =
+      case "tbtcRb":
+        const stakingProviderMappedEcdsa =
           await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(
             operator
           )
-        break
-      case "randomBeacon":
-        stakingProviderMapped =
+        const stakingProviderMappedRandomBeacon =
           await threshold.multiAppStaking.randomBeacon.operatorToStakingProvider(
             operator
           )
-        break
+        return (
+          (!isAddressZero(stakingProviderMappedEcdsa) &&
+            !isSameETHAddress(stakingProviderMappedEcdsa, account!)) ||
+          (!isAddressZero(stakingProviderMappedRandomBeacon) &&
+            !isSameETHAddress(stakingProviderMappedRandomBeacon, account!))
+        )
       case "taco":
         stakingProviderMapped =
           await threshold.multiAppStaking.taco.operatorToStakingProvider(
             operator
           )
-        break
+        return (
+          !isAddressZero(stakingProviderMapped) &&
+          !isSameETHAddress(stakingProviderMapped, account!)
+        )
       default:
         throw new Error(`Unsupported app name: ${appName}`)
     }
-
-    return (
-      !isAddressZero(stakingProviderMapped) &&
-      !isSameETHAddress(stakingProviderMapped, account!)
-    )
   }
 
   const submitMapping = async () => {
-    const operatorTbtc = formRefTbtc.current?.values?.operator
-    const operatorRandomBeacon = formRefRandomBeacon.current?.values?.operator
+    const operatorTbtcRb = formRefTbtcRb.current?.values?.operator
     const operatorTaco = formRefTaco.current?.values?.operator
 
     const applications = []
-    if (operatorTbtc) {
-      await formRefTbtc.current?.validateForm()
-      formRefTbtc.current?.setTouched({ operator: true }, false)
+    if (operatorTbtcRb) {
+      await formRefTbtcRb.current?.validateForm()
+      formRefTbtcRb.current?.setTouched({ operator: true }, false)
       applications.push({
         appName: "tbtc",
-        operator: operatorTbtc,
+        operator: operatorTbtcRb,
         stakingProvider: account!,
-        formRef: formRefTbtc,
+        formRef: formRefTbtcRb,
       })
-    }
-    if (operatorRandomBeacon) {
-      await formRefRandomBeacon.current?.validateForm()
-      formRefRandomBeacon.current?.setTouched({ operator: true }, false)
       applications.push({
         appName: "randomBeacon",
-        operator: operatorRandomBeacon,
+        operator: operatorTbtcRb,
         stakingProvider: account!,
-        formRef: formRefRandomBeacon,
+        formRef: formRefTbtcRb,
       })
     }
     if (operatorTaco) {
@@ -179,41 +173,24 @@ const MapOperatorToStakingProviderModal: FC<
             mt={"5"}
             mb={"5"}
           >
-            <LabelSm>tBTC</LabelSm>
+            <LabelSm>
+              {isEmptyOrZeroAddress(mappedOperatorTbtc)
+                ? "tBTC"
+                : isEmptyOrZeroAddress(mappedOperatorRandomBeacon)
+                ? "Random Beacon"
+                : "tBTC & Random Beacon"}
+            </LabelSm>
             <StakeAddressInfo
               stakingProvider={account ? account : AddressZero}
             />
             <MapOperatorToStakingProviderForm
-              innerRef={formRefTbtc}
+              innerRef={formRefTbtcRb}
               formId="map-operator-to-staking-provider-form-tbtc"
               checkIfOperatorIsMappedToAnotherStakingProvider={
                 checkIfOperatorIsMappedToAnotherStakingProvider
               }
-              appName={"tbtc"}
+              appName={"tbtcRb"}
               mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
-            />
-          </Box>
-        )}
-        {isEmptyOrZeroAddress(mappedOperatorRandomBeacon) && (
-          <Box
-            p={"24px"}
-            border={"1px solid"}
-            borderColor={"gray.100"}
-            borderRadius={"12px"}
-            mt={"5"}
-            mb={"5"}
-          >
-            <LabelSm>Random Beacon</LabelSm>
-            <StakeAddressInfo
-              stakingProvider={account ? account : AddressZero}
-            />
-            <MapOperatorToStakingProviderForm
-              innerRef={formRefRandomBeacon}
-              formId="map-operator-to-staking-provider-form-random-beacon"
-              checkIfOperatorIsMappedToAnotherStakingProvider={
-                checkIfOperatorIsMappedToAnotherStakingProvider
-              }
-              appName={"randomBeacon"}
               mappedOperatorTbtc={mappedOperatorTbtc}
             />
           </Box>
