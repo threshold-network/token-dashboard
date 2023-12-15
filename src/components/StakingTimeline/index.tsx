@@ -90,7 +90,7 @@ export const LegacyStakesDepositSteps: FC = () => {
         >
           <BodyMd>
             For each stake, there are three applications available. To authorize
-            tBTC, TACo, and Random Beacon, go to the{" "}
+            tBTC, Random Beacon, and TACo, go to the{" "}
             <Link to="/staking">Staking Page</Link> and select “Configure
             Stake”.
           </BodyMd>
