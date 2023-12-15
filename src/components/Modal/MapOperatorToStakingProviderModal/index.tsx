@@ -109,6 +109,7 @@ const MapOperatorToStakingProviderModal: FC<
         appName: "tbtc",
         operator: operatorTbtc,
         stakingProvider: account!,
+        formRef: formRefTbtc,
       })
     }
     if (operatorRandomBeacon) {
@@ -118,6 +119,7 @@ const MapOperatorToStakingProviderModal: FC<
         appName: "randomBeacon",
         operator: operatorRandomBeacon,
         stakingProvider: account!,
+        formRef: formRefRandomBeacon,
       })
     }
     if (operatorTaco) {
@@ -127,11 +129,17 @@ const MapOperatorToStakingProviderModal: FC<
         appName: "taco",
         operator: operatorTaco,
         stakingProvider: account!,
+        formRef: formRefTaco,
       })
     }
-    openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
-      applications: applications,
-    })
+    const isValid =
+      applications.length > 0 &&
+      applications.every((app) => app.formRef.current?.isValid)
+    if (isValid) {
+      openModal(ModalType.MapOperatorToStakingProviderConfirmation, {
+        applications: applications,
+      })
+    }
   }
 
   return (
