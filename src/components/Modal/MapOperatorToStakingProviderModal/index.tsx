@@ -186,7 +186,7 @@ const MapOperatorToStakingProviderModal: FC<
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
             appName={"tbtc"}
-            mappedOperatorTbtc={mappedOperatorTbtc}
+            mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
           />
         </Box>
         <Box
@@ -206,7 +206,7 @@ const MapOperatorToStakingProviderModal: FC<
               checkIfOperatorIsMappedToAnotherStakingProvider
             }
             appName={"randomBeacon"}
-            mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
+            mappedOperatorTbtc={mappedOperatorTbtc}
           />
         </Box>
         <AlertBox
