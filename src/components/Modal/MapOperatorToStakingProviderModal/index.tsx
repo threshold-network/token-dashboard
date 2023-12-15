@@ -95,11 +95,6 @@ const MapOperatorToStakingProviderModal: FC<
       !isSameETHAddress(stakingProviderMapped, account!)
     )
   }
-  type SelectedApp = {
-    appName: string
-    operator: string
-  }
-  const [selectedApps, setSelectedApps] = useState<SelectedApp[]>([])
 
   const submitMapping = async () => {
     const operatorTbtc = formRefTbtc.current?.values?.operator
