@@ -187,9 +187,9 @@ const MapOperatorToStakingProviderModal: FC<
               mt={"5"}
               mb={"5"}
             >
-              {isOperatorMappedOnlyInTbtcForBundledRewards ? (
+              {isOperatorMappedOnlyInRandomBeaconForBundledRewards ? (
                 <LabelSm>tBTC app</LabelSm>
-              ) : isOperatorMappedOnlyInRandomBeaconForBundledRewards ? (
+              ) : isOperatorMappedOnlyInTbtcForBundledRewards ? (
                 <LabelSm>random beacon app</LabelSm>
               ) : (
                 <LabelSm>tBTC + Random Beacon apps (requires 2txs)</LabelSm>
