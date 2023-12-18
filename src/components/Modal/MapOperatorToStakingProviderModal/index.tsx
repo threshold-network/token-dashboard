@@ -201,9 +201,9 @@ const MapOperatorToStakingProviderModal: FC<
                 innerRef={formRefTbtcRb}
                 formId="map-operator-to-staking-provider-form-tbtc"
                 initialAddress={
-                  isOperatorMappedOnlyInTbtcForBundledRewards
+                  isOperatorMappedOnlyInRandomBeaconForBundledRewards
                     ? mappedOperatorRandomBeacon
-                    : isOperatorMappedOnlyInRandomBeaconForBundledRewards
+                    : isOperatorMappedOnlyInTbtcForBundledRewards
                     ? mappedOperatorTbtc
                     : ""
                 }
