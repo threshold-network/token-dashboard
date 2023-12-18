@@ -219,7 +219,7 @@ const MapOperatorToStakingProviderModal: FC<
                     const isOperatorAlreadyMappedRandomBeacon =
                       await checkIfOperatorIsMappedToAnotherStakingProvider(
                         operator,
-                        "tbtc"
+                        "randomBeacon"
                       )
                     return (
                       isOperatorAlreadyMappedTbtc ||
