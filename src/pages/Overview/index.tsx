@@ -7,6 +7,7 @@ import { PageComponent } from "../../types"
 import { featureFlags } from "../../constants"
 import AnnouncementBanner from "../../components/AnnouncementBanner"
 import tbtcAppBannerIllustration from "../../static/images/tBTCAppBanner.svg"
+import { NoBridgeFeesBanner } from "./NoBridgeFeesBanner"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
@@ -15,16 +16,7 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      {featureFlags.TBTC_V2 && (
-        <AnnouncementBanner
-          variant="primary"
-          imgSrc={tbtcAppBannerIllustration}
-          preTitle="get started"
-          title="The NEW tBTC dApp is here!"
-          href="/tBTC"
-          buttonText="Start Minting"
-        />
-      )}
+      {featureFlags.TBTC_V2 && <NoBridgeFeesBanner />}
       <Outlet />
     </Container>
   )

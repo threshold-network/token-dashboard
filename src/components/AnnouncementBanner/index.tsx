@@ -14,7 +14,7 @@ import {
 } from "@threshold-network/components"
 import ButtonLink from "../ButtonLink"
 
-type AnnouncementBannerContainerProps = {
+export type AnnouncementBannerContainerProps = {
   variant?: "primary" | "secondary"
   size?: "sm" | "lg"
   hideCloseBtn?: boolean
