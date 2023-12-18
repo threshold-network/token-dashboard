@@ -166,9 +166,11 @@ const StakeDetailsPage: FC = () => {
           </StakeDetailRow>
         </Stack>
       </SimpleGrid>
-      <Button onClick={handleCommitToTaco} type="submit">
-        Commit to TACo
-      </Button>
+      {tacoApp.isAuthorized && (
+        <Button onClick={handleCommitToTaco} type="submit">
+          Commit to TACo
+        </Button>
+      )}
     </Card>
   ) : (
     <H5>{`Please connect your wallet.`}</H5>
