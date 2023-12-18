@@ -34,8 +34,13 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
     mappedOperatorTaco,
-    isOneOfTheAppsNotMapped,
+    isOperatorMappedOnlyInRandomBeaconForBundledRewards,
+    isOperatorMappedOnlyInTbtcForBundledRewards,
   } = useAppSelector(selectMappedOperators)
+
+  const isOneOfTheBundledAppsNotMapped =
+    isOperatorMappedOnlyInRandomBeaconForBundledRewards ||
+    isOperatorMappedOnlyInTbtcForBundledRewards
 
   const shoudlDisplaySuccessState =
     !isAddressZero(mappedOperatorTbtc) &&
@@ -53,7 +58,7 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
   }
 
   return (
-    <Card borderColor={isOneOfTheAppsNotMapped ? "red.500" : "gray.100"}>
+    <Card borderColor={isOneOfTheBundledAppsNotMapped ? "red.500" : "gray.100"}>
       <HStack justifyContent={"space-between"}>
         <LabelSm>Operator Address Mapping</LabelSm>
         <Badge variant={"solid"} size={"sm"} backgroundColor={"gray.800"}>
@@ -103,14 +108,14 @@ const OperatorAddressMappingCard: FC<{ stakingProvider: string }> = ({
       ) : (
         <>
           <Alert
-            status={isOneOfTheAppsNotMapped ? "error" : "warning"}
+            status={isOneOfTheBundledAppsNotMapped ? "error" : "warning"}
             alignItems={"center"}
             mt={5}
             p={"8px 10px"}
           >
             <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
             <BodyXs>
-              {isOneOfTheAppsNotMapped
+              {isOneOfTheBundledAppsNotMapped
                 ? "One application from the tBTC + Random Beacon Rewards Bundle Suite requires the Operator Address mapped."
                 : "This section is for Staking Providers and self-operating stakers only. Map your Operator Address to your Provider Address for a better support for your hardware wallet in the node setup."}
             </BodyXs>

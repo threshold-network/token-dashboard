@@ -8,16 +8,14 @@ import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToSta
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 import { useAppDispatch, useAppSelector } from "../store"
 import { selectMappedOperators } from "../../store/account"
+import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const {
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
     mappedOperatorTaco,
-    isOperatorMappedOnlyInTaco,
     isOperatorMappedInAllApps,
-    isOperatorMappedOnlyInRandomBeacon,
-    isOperatorMappedOnlyInTbtc,
   } = useAppSelector((state) => selectMappedOperators(state))
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
@@ -46,15 +44,14 @@ export const useRegisterMultipleOperatorsTransaction = () => {
         if (isOperatorMappedInAllApps)
           throw new Error("All apps already have mapped operator!")
 
-        if (isOperatorMappedOnlyInRandomBeacon)
+        if (!isEmptyOrZeroAddress(mappedOperatorRandomBeacon))
           throw new Error("Random beacon app already has mapped operator!")
 
-        if (isOperatorMappedOnlyInTbtc)
+        if (!isEmptyOrZeroAddress(mappedOperatorTbtc))
           throw new Error("Tbtc app already has mapped operator!")
 
-        if (isOperatorMappedOnlyInTaco)
+        if (!isEmptyOrZeroAddress(mappedOperatorTaco))
           throw new Error("TACo app already has mapped operator!")
-        // TODO: might also add a check if the operator is already used by another staking provider
 
         const successfullTxs: OperatorMappedSuccessTx[] = []
         const tbtcReceipt = await sendRegisterOperatorTransactionTbtc(operator)

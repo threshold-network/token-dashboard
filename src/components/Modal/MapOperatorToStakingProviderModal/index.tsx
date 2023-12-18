@@ -62,9 +62,9 @@ const MapOperatorToStakingProviderModal: FC<
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
     mappedOperatorTaco,
-    isOperatorMappedOnlyInRandomBeacon,
-    isOperatorMappedOnlyInTbtc,
-    isOperatorMappedOnlyInTaco,
+    isOperatorMappedOnlyInTbtcForBundledRewards,
+    isOperatorMappedOnlyInRandomBeaconForBundledRewards,
+    isOperatorMappedInAllApps,
   } = useAppSelector(selectMappedOperators)
 
   const checkIfOperatorIsMappedToAnotherStakingProvider: (
@@ -156,11 +156,10 @@ const MapOperatorToStakingProviderModal: FC<
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          {isOperatorMappedOnlyInRandomBeacon ||
-          isOperatorMappedOnlyInTbtc ||
-          isOperatorMappedOnlyInTaco ? (
+          {!isOperatorMappedInAllApps ? (
             <H5>
-              We noticed you've only mapped 1 application's Operator Address.
+              We noticed you've not mapped Operator Address to some
+              applications.
             </H5>
           ) : (
             <H5>
@@ -188,9 +187,9 @@ const MapOperatorToStakingProviderModal: FC<
               mt={"5"}
               mb={"5"}
             >
-              {isOperatorMappedOnlyInRandomBeacon ? (
+              {isOperatorMappedOnlyInTbtcForBundledRewards ? (
                 <LabelSm>tBTC app</LabelSm>
-              ) : isOperatorMappedOnlyInTbtc ? (
+              ) : isOperatorMappedOnlyInRandomBeaconForBundledRewards ? (
                 <LabelSm>random beacon app</LabelSm>
               ) : (
                 <LabelSm>tBTC + Random Beacon apps (requires 2txs)</LabelSm>
@@ -202,9 +201,9 @@ const MapOperatorToStakingProviderModal: FC<
                 innerRef={formRefTbtcRb}
                 formId="map-operator-to-staking-provider-form-tbtc"
                 initialAddress={
-                  isOperatorMappedOnlyInRandomBeacon
+                  isOperatorMappedOnlyInTbtcForBundledRewards
                     ? mappedOperatorRandomBeacon
-                    : isOperatorMappedOnlyInTbtc
+                    : isOperatorMappedOnlyInRandomBeaconForBundledRewards
                     ? mappedOperatorTbtc
                     : ""
                 }
