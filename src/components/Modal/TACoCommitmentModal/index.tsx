@@ -66,11 +66,12 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
           <BodyLg>
             You can lock up tokens (authorized to TACo) for longer durations in
             order to receive a yield bonus of corresponding size. You have
-            currently authorized {formatTokenAmount(authorizedAmount)}T to TACo.
+            currently authorized{" "}
+            <strong>{formatTokenAmount(authorizedAmount)}T</strong> to TACo.
             <strong>
               {" "}
               Once you click Commit below, you cannot go back and edit this
-              lock-up duration.
+              lock-up duration.{" "}
             </strong>
             Please read the{" "}
             <a href="https://docs.threshold.network/staking-and-running-a-node/taco-node-setup/taco-authorization-and-operator-registration/one-off-commitment-bonus">
@@ -85,7 +86,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
               <Tr>
                 <Th></Th>
                 <Th>Lock-up Duration</Th>
-                <Th>Lock-up Release Date</Th>
+                <Th>Earliest Unlock Date</Th>
                 <Th>Yield Bonus</Th>
               </Tr>
             </Thead>
