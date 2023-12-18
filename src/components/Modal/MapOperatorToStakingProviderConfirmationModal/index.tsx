@@ -24,6 +24,7 @@ import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
 import { OnSuccessCallback } from "../../../web3/hooks"
+import { ApplicationForOperatorMapping } from "../MapOperatorToStakingProviderModal"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -53,11 +54,7 @@ const OperatorMappingConfirmation: FC<
 
 const MapOperatorToStakingProviderConfirmationModal: FC<
   BaseModalProps & {
-    applications: {
-      appName: string
-      operator: string
-      stakingProvider: string
-    }[]
+    applications: ApplicationForOperatorMapping[]
   }
 > = ({ applications, closeModal }) => {
   const { account } = useWeb3React()

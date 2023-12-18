@@ -6,11 +6,6 @@ import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
 export type MapOperatorToStakingProviderFormValues = {
   operator: string
-  appName: string
-  mappedOperatorTbtc?: string
-  mappedOperatorRandomBeacon?: string
-  mappedOperatorTaco?: string
-  innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
 }
 
 type ComponentProps = {
@@ -82,22 +77,37 @@ const validateInputtedOperatorAddress = async (
   return validationMsg
 }
 
-type MapOperatorToStakingProviderFormProps = {
-  appName: string
-  mappedOperatorTbtc?: string
-  mappedOperatorRandomBeacon?: string
-  mappedOperatorTaco?: string
+type MapOperatorToStakingProviderFormCommonProps = {
+  initialAddress: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
   checkIfOperatorIsMappedToAnotherStakingProvider: (
-    operator: string,
-    appName: string
+    operator: string
   ) => Promise<boolean>
 } & ComponentProps
+
+type MapOperatorToStakingProviderFormConditionalProps =
+  | {
+      mappedOperatorTbtc: string
+      mappedOperatorRandomBeacon: string
+      mappedOperatorTaco?: never
+    }
+  | {
+      mappedOperatorTbtc?: never
+      mappedOperatorRandomBeacon?: never
+      mappedOperatorTaco: string
+    }
+
+type MapOperatorToStakingProviderFormProps =
+  MapOperatorToStakingProviderFormCommonProps &
+    MapOperatorToStakingProviderFormConditionalProps
 
 const MapOperatorToStakingProviderForm = withFormik<
   MapOperatorToStakingProviderFormProps,
   MapOperatorToStakingProviderFormValues
 >({
+  mapPropsToValues: ({ initialAddress }) => ({
+    operator: initialAddress,
+  }),
   validate: async (values, props) => {
     const {
       mappedOperatorTbtc,
@@ -106,15 +116,16 @@ const MapOperatorToStakingProviderForm = withFormik<
     } = props
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
-    errors.operator = validateETHAddress(values.operator)
-    if (!errors.operator) {
-      errors.operator = await validateInputtedOperatorAddress(
-        values.operator,
-        values.appName,
-        checkIfOperatorIsMappedToAnotherStakingProvider,
-        mappedOperatorTbtc,
-        mappedOperatorRandomBeacon
-      )
+    if (values.operator) {
+      errors.operator = validateETHAddress(values.operator)
+      if (!errors.operator) {
+        errors.operator = await validateInputtedOperatorAddress(
+          values.operator,
+          checkIfOperatorIsMappedToAnotherStakingProvider,
+          mappedOperatorTbtc,
+          mappedOperatorRandomBeacon
+        )
+      }
     }
 
     return getErrorsObj(errors)
