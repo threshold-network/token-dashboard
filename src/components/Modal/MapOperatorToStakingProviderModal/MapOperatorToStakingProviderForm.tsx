@@ -34,10 +34,8 @@ const MapOperatorToStakingProviderFormBase: FC<
 
 const validateInputtedOperatorAddress = async (
   operator: string,
-  appName: string,
   checkIfOperatorIsMappedToAnotherStakingProvider: (
-    operator: string,
-    appName: string
+    operator: string
   ) => Promise<boolean>,
   mappedOperatorTbtc?: string,
   mappedOperatorRandomBeacon?: string
@@ -46,39 +44,35 @@ const validateInputtedOperatorAddress = async (
 
   try {
     const isOperatorMappedToAnotherStakingProvider =
-      await checkIfOperatorIsMappedToAnotherStakingProvider(operator, appName)
+      await checkIfOperatorIsMappedToAnotherStakingProvider(operator)
     validationMsg = undefined
     if (isOperatorMappedToAnotherStakingProvider) {
       validationMsg = "Operator is already mapped to another staking provider."
     }
 
-    switch (appName) {
-      case "tbtc":
-        if (mappedOperatorRandomBeacon) {
-          if (
-            !isAddressZero(mappedOperatorRandomBeacon) &&
-            !isSameETHAddress(operator, mappedOperatorRandomBeacon)
-          ) {
-            validationMsg =
-              "The operator address doesn't match the one used in tbtc app"
-          }
-        }
-        break
-      case "randomBeacon":
-        if (mappedOperatorTbtc) {
-          if (
-            !isAddressZero(mappedOperatorTbtc) &&
-            !isSameETHAddress(operator, mappedOperatorTbtc)
-          ) {
-            validationMsg =
-              "The operator address doesn't match the one used in random beacon app"
-          }
-        }
-        break
-      case "taco":
-        break
-      default:
-        throw new Error(`Unsupported app name: ${appName}`)
+    if (mappedOperatorTbtc && mappedOperatorRandomBeacon) {
+      const isOperatorMappedOnlyInTbtc =
+        !isAddressZero(mappedOperatorTbtc) &&
+        isAddressZero(mappedOperatorRandomBeacon)
+
+      const isOperatorMappedOnlyInRandomBeacon =
+        isAddressZero(mappedOperatorTbtc) &&
+        !isAddressZero(mappedOperatorRandomBeacon)
+
+      if (
+        isOperatorMappedOnlyInRandomBeacon &&
+        !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+      ) {
+        validationMsg =
+          "The operator address doesn't match the one used in random beacon app"
+      }
+      if (
+        isOperatorMappedOnlyInTbtc &&
+        !isSameETHAddress(operator, mappedOperatorTbtc)
+      ) {
+        validationMsg =
+          "The operator address doesn't match the one used in tbtc app"
+      }
     }
   } catch (error) {
     console.error("`MapOperatorToStakingProviderForm` validation error.", error)
