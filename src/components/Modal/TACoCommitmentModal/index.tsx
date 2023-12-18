@@ -1,4 +1,4 @@
-import { FC, useState } from "react"
+import { FC, useState, useCallback } from "react"
 import {
   AlertBox,
   BodyLg,
@@ -18,6 +18,7 @@ import {
 } from "@threshold-network/components"
 import TransactionSuccessModal from "../TransactionSuccessModal"
 import InfoBox from "../../InfoBox"
+import { ModalType } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { formatTokenAmount } from "../../../utils/formatAmount"
@@ -26,6 +27,7 @@ import {
   OnSuccessCallback,
   useSendTransactionFromFn,
 } from "../../../web3/hooks"
+import { useModal } from "../../../hooks/useModal"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { stakingAppNameToThresholdAppService } from "../../../hooks/staking-applications/useStakingAppContract"
 
@@ -40,8 +42,6 @@ const getEndDate = (durationInSeconds: number) => {
   return endDate.toLocaleDateString()
 }
 
-// TACo Commitment Modal
-//  has two buttons, one for committing and one for canceling
 const TACoCommitmentModal: FC<TACoCommitProps> = ({
   stakingProvider,
   authorizedAmount,
@@ -49,9 +49,21 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
 }) => {
   const [value, setValue] = useState("")
   const threshold = useThreshold()
+  const { openModal } = useModal()
+
+  const onSuccess = useCallback<OnSuccessCallback>(
+    (receipt) => {
+      openModal(ModalType.TACoCommitmentSuccess, {
+        transactionHash: receipt.transactionHash,
+        authorizedAmount: authorizedAmount,
+      })
+    },
+    [authorizedAmount]
+  )
   const { sendTransaction } = useSendTransactionFromFn(
     threshold.multiAppStaking[stakingAppNameToThresholdAppService["taco"]]
-      .makeCommitment
+      .makeCommitment,
+    onSuccess
   )
 
   const submitCommitment = async (stakingProvider: string, choice: string) => {
@@ -164,3 +176,4 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
 }
 
 export default withBaseModal(TACoCommitmentModal)
+export * from "./SuccessModal"
