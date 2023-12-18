@@ -222,7 +222,7 @@ const MapOperatorToStakingProviderModal: FC<
                         "tbtc"
                       )
                     return (
-                      isOperatorAlreadyMappedTbtc &&
+                      isOperatorAlreadyMappedTbtc ||
                       isOperatorAlreadyMappedRandomBeacon
                     )
                   }}
