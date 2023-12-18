@@ -164,49 +164,52 @@ const MapOperatorToStakingProviderModal: FC<
         <BodyLg mt={"10"}>
           Choose an application to map the Operator Address:
         </BodyLg>
-        {isEmptyOrZeroAddress(mappedOperatorTbtc) && (
-          <Box
-            p={"24px"}
-            border={"1px solid"}
-            borderColor={"gray.100"}
-            borderRadius={"12px"}
-            mt={"5"}
-            mb={"5"}
-          >
-            <LabelSm>
-              {isEmptyOrZeroAddress(mappedOperatorTbtc)
-                ? "tBTC"
-                : isEmptyOrZeroAddress(mappedOperatorRandomBeacon)
-                ? "Random Beacon"
-                : "tBTC & Random Beacon"}
-            </LabelSm>
-            <StakeAddressInfo
-              stakingProvider={account ? account : AddressZero}
-            />
-            <MapOperatorToStakingProviderForm
-              innerRef={formRefTbtcRb}
-              formId="map-operator-to-staking-provider-form-tbtc"
-              checkIfOperatorIsMappedToAnotherStakingProvider={
-                checkIfOperatorIsMappedToAnotherStakingProvider
-              }
-              appName={"tbtcRb"}
-              mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
-              mappedOperatorTbtc={mappedOperatorTbtc}
-            />
-          </Box>
+        {isEmptyOrZeroAddress(mappedOperatorTbtc) ||
+         isEmptyOrZeroAddress(mappedOperatorRandomBeacon) && (
+          <>
+            <Box
+              p={"24px"}
+              border={"1px solid"}
+              borderColor={"gray.100"}
+              borderRadius={"12px"}
+              mt={"5"}
+              mb={"5"}
+            >
+              <LabelSm>
+                {isEmptyOrZeroAddress(mappedOperatorTbtc)
+                  ? "tBTC"
+                  : isEmptyOrZeroAddress(mappedOperatorRandomBeacon)
+                  ? "Random Beacon"
+                  : "tBTC & Random Beacon"}
+              </LabelSm>
+              <StakeAddressInfo
+                stakingProvider={account ? account : AddressZero}
+              />
+              <MapOperatorToStakingProviderForm
+                innerRef={formRefTbtcRb}
+                formId="map-operator-to-staking-provider-form-tbtc"
+                checkIfOperatorIsMappedToAnotherStakingProvider={
+                  checkIfOperatorIsMappedToAnotherStakingProvider
+                }
+                appName={"tbtcRb"}
+                mappedOperatorRandomBeacon={mappedOperatorRandomBeacon}
+                mappedOperatorTbtc={mappedOperatorTbtc}
+              />
+            </Box>
+            <AlertBox
+              status="warning"
+              withIcon={false}
+              alignItems="center"
+              p={"8px 10px"}
+            >
+              <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
+              <BodyXs>
+                Take note! tBTC + Random Beacon Apps Rewards Bundle will require
+                two transactions, one transaction per application.
+              </BodyXs>
+            </AlertBox>
+          </>
         )}
-        <AlertBox
-          status="warning"
-          withIcon={false}
-          alignItems="center"
-          p={"8px 10px"}
-        >
-          <AlertIcon h={"14px"} as={"div"} alignSelf="auto" />
-          <BodyXs>
-            Take note! tBTC + Random Beacon Apps Rewards Bundle will require two
-            transactions, one transaction per application.
-          </BodyXs>
-        </AlertBox>
         {isEmptyOrZeroAddress(mappedOperatorTaco) && (
           <Box
             p={"24px"}
