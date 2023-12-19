@@ -3337,10 +3337,21 @@
     "@summa-tx/relay-sol" "^2.0.2"
     openzeppelin-solidity "2.3.0"
 
-"@ledgerhq/connect-kit-loader@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.1.2.tgz#d550e3c1f046e4c796f32a75324b03606b7e226a"
-  integrity sha512-mscwGroSJQrCTjtNGBu+18FQbZYA4+q6Tyx6K7CXHl6AwgZKbWfZYdgP2F+fyZcRUdGRsMX8QtvU61VcGGtO1A==
+"@keep-network/tbtc@1.1.2-dev.1", "@keep-network/tbtc@development":
+  version "1.1.2-dev.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc/-/tbtc-1.1.2-dev.1.tgz#dd1e734c0fed50474c74d7170c8749127231d1f9"
+  integrity sha512-IRa0j1D7JBG8UpduaFxkaq2Ii6F61HhNMUBmxr7kAIZwj/yx8sYXWi921mn0L2Z+hAYNcwEUVhCM91VKQH29pQ==
+  dependencies:
+    "@celo/contractkit" "^1.0.2"
+    "@keep-network/keep-ecdsa" ">1.9.0-dev <1.9.0-ropsten"
+    "@summa-tx/bitcoin-spv-sol" "^3.1.0"
+    "@summa-tx/relay-sol" "^2.0.2"
+    openzeppelin-solidity "2.3.0"
+
+"@ledgerhq/connect-kit-loader@1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/connect-kit-loader/-/connect-kit-loader-1.1.8.tgz#6cc32191660dd9d6e8f89047af09b0f201e30190"
+  integrity sha512-mDJsOucVW8m3Lk2fdQst+P74SgiKebvq1iBk4sXLbADQOwhL9bWGaArvO+tW7jPJZwEfSPWBdHcHoYi11XAwZw==
 
 "@ledgerhq/cryptoassets@^5.53.0":
   version "5.53.0"
