@@ -20,7 +20,7 @@
     "@keep-network/random-beacon": "development",
     "@keep-network/tbtc": "development",
     "@keep-network/tbtc-v2.ts": "^2.3.0",
-    "@ledgerhq/connect-kit-loader": "^1.1.2",
+    "@ledgerhq/connect-kit-loader": "1.1.8",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
     "@reduxjs/toolkit": "^1.6.1",
