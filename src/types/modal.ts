@@ -15,6 +15,8 @@ import StakeSuccessOldModal from "../components/Modal/StakingSuccessModal/StakeS
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
+import TACoCommitmentModal from "../components/Modal/TACoCommitmentModal"
+import TACoCommitmentSuccessModal from "../components/Modal/TACoCommitmentModal"
 import {
   UnstakeTStep1 as UnstakeTModalStep1,
   UnstakeTStep2 as UnstakeTModalStep2,
@@ -81,7 +83,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
-  [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.NewStakerAuthorizeStakingApplication]:
     NewStakerAuthorizeStakingApplicationModal,
   [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
@@ -92,6 +93,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.FeedbackSubmission]: FeedbackSubmissionModal,
   [ModalType.GenerateNewDepositAddress]: GenerateNewDepositAddress,
   [ModalType.InitiateUnminting]: InitiateUnminting,
+  [ModalType.TACoCommitment]: TACoCommitmentModal,
+  [ModalType.TACoCommitmentSuccess]: TACoCommitmentSuccessModal,
 }
 
 export interface BaseModalProps {

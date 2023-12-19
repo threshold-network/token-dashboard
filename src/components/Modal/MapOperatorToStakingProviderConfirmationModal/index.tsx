@@ -11,9 +11,10 @@ import {
 import { AddressZero } from "@ethersproject/constants"
 import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
 import { useWeb3React } from "@web3-react/core"
-import { FC, useCallback } from "react"
+import { FC, useCallback, useState } from "react"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
+import { useBondOperatorTransaction } from "../../../hooks/staking-applications/useBondOperatorTransaction"
 import { useRegisterOperatorTransaction } from "../../../hooks/staking-applications/useRegisterOperatorTransaction"
 import { useAppDispatch } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
@@ -23,6 +24,7 @@ import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
 import { OnSuccessCallback } from "../../../web3/hooks"
+import { ApplicationForOperatorMapping } from "../MapOperatorToStakingProviderModal"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -52,16 +54,9 @@ const OperatorMappingConfirmation: FC<
 
 const MapOperatorToStakingProviderConfirmationModal: FC<
   BaseModalProps & {
-    operator: string
-    isOperatorMappedOnlyInTbtc: boolean
-    isOperatorMappedOnlyInRandomBeacon: boolean
+    applications: ApplicationForOperatorMapping[]
   }
-> = ({
-  operator,
-  isOperatorMappedOnlyInTbtc,
-  isOperatorMappedOnlyInRandomBeacon,
-  closeModal,
-}) => {
+> = ({ applications, closeModal }) => {
   const { account } = useWeb3React()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
@@ -71,57 +66,77 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   const onSuccess = useCallback<OnSuccessCallback>(
     (receipt) => {
       openModal(ModalType.MapOperatorToStakingProviderSuccess, {
-        transactions: [
-          {
-            txHash: receipt.transactionHash,
-            application: {
-              appName: isOperatorMappedOnlyInRandomBeacon
-                ? "tbtc"
-                : "randomBeacon",
-              operator,
-              stakingProvider: account,
-            },
+        transactions: applications.map((app) => ({
+          txHash: receipt.transactionHash,
+          application: {
+            appName: app.appName,
+            operator: app.operator,
+            stakingProvider: app.stakingProvider,
           },
-        ],
+        })),
       })
     },
-    [openModal, operator, account]
+    [openModal, applications]
   )
+  const [errorMessage, setErrorMessage] = useState("")
+  const onError = useCallback((error: Error) => {
+    setErrorMessage(error.message)
+  }, [])
 
   const { sendTransaction: registerOperatorTbtc } =
-    useRegisterOperatorTransaction("tbtc", onSuccess)
+    useRegisterOperatorTransaction(
+      "tbtc",
+      (receipt) => onSuccess(receipt),
+      onError
+    )
   const { sendTransaction: registerOperatorRandomBeacon } =
-    useRegisterOperatorTransaction("randomBeacon", onSuccess)
+    useRegisterOperatorTransaction(
+      "randomBeacon",
+      (receipt) => onSuccess(receipt),
+      onError
+    )
+  const { sendTransaction: registerOperatorTaco } = useBondOperatorTransaction(
+    "taco",
+    (receipt) => onSuccess(receipt),
+    onError
+  )
 
   const submitMappingOperator = async () => {
-    if (isOperatorMappedOnlyInRandomBeacon) {
-      const tx = await registerOperatorTbtc(operator)
-      if (!tx) {
+    if (!account) {
+      throw new Error(`Wallet not connected`)
+    }
+    const transactions = []
+    for (const app of applications) {
+      let transaction
+      switch (app.appName) {
+        case "tbtc":
+          transaction = await registerOperatorTbtc(app.operator)
+          break
+        case "randomBeacon":
+          transaction = await registerOperatorRandomBeacon(app.operator)
+          break
+        case "taco":
+          transaction = await registerOperatorTaco(account, app.operator)
+          break
+        default:
+          throw new Error(`Unsupported app name: ${app.appName}`)
+      }
+      if (!transaction) {
         openModal(ModalType.TransactionFailed, {
           error: new Error(
-            "Transaction rejected. You are required to map the Operator Address for both apps."
+            errorMessage
+              ? `Transaction rejected with error: ${errorMessage}`
+              : `Transaction rejected. You are required to map the Operator Address for ${app.appName}.`
           ),
+          isExpandableError: true,
           closeModal: () => {
             closeModal()
             dispatch(mapOperatorToStakingProviderModalClosed())
           },
         })
+        return
       }
-    } else if (isOperatorMappedOnlyInTbtc) {
-      const tx = await registerOperatorRandomBeacon(operator)
-      if (!tx) {
-        openModal(ModalType.TransactionFailed, {
-          error: new Error(
-            "Transaction rejected. You are required to map the Operator Address for both apps."
-          ),
-          closeModal: () => {
-            closeModal()
-            dispatch(mapOperatorToStakingProviderModalClosed())
-          },
-        })
-      }
-    } else {
-      await registerMultipleOperators(operator)
+      transactions.push(transaction)
     }
   }
 
@@ -135,26 +150,19 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
           </H5>
           <BodyLg mt="4">
             This will require{" "}
-            {isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc
-              ? "1 transaction"
-              : "2 transactions"}
+            {applications.filter((app) => app.operator).length +
+              " transaction(s)"}
             . Each mapping is one transaction
           </BodyLg>
         </InfoBox>
-        {!isOperatorMappedOnlyInTbtc && (
+        {applications.map((app, index) => (
           <OperatorMappingConfirmation
-            appName="tbtc"
-            operator={operator}
+            key={index}
+            appName={app.appName}
+            operator={app.operator}
             stakingProvider={account ? account : AddressZero}
           />
-        )}
-        {!isOperatorMappedOnlyInRandomBeacon && (
-          <OperatorMappingConfirmation
-            appName="random beacon"
-            operator={operator}
-            stakingProvider={account ? account : AddressZero}
-          />
-        )}
+        ))}
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>

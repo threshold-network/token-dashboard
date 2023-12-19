@@ -1,4 +1,9 @@
 import RandomBeacon from "@keep-network/random-beacon/artifacts/RandomBeacon.json"
+import WalletRegistry from "@keep-network/ecdsa/artifacts/WalletRegistry.json"
+
+const chainName = process.env.REACT_APP_TACO_DOMAIN || "" // Ensure it's a string
+const TacoRegistryFile: any = require(`@nucypher/nucypher-contracts/deployment/artifacts/${chainName}.json`)
+
 import {
   Application,
   AuthorizationParameters,
@@ -9,14 +14,30 @@ import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { getArtifact } from "../utils"
 
+interface TacoChains {
+  [key: string]: string
+}
+
+const tacoChains: TacoChains = {
+  lynx: "5",
+  mainnet: "1",
+  tapir: "11155111",
+  dashboard: "11155111",
+}
+
+const key = tacoChains[chainName] || ""
+const TacoRegistry = TacoRegistryFile[key]["TACoApplication"]
+
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
   randomBeacon: AuthorizationParameters
+  taco: AuthorizationParameters
 }
 
 export interface MappedOperatorsForStakingProvider {
   tbtc: string
   randomBeacon: string
+  taco: string
 }
 
 export class MultiAppStaking {
@@ -24,6 +45,7 @@ export class MultiAppStaking {
   private _multicall: IMulticall
   public readonly randomBeacon: IApplication
   public readonly ecdsa: IApplication
+  public readonly taco: IApplication
 
   constructor(
     staking: IStaking,
@@ -47,6 +69,11 @@ export class MultiAppStaking {
       abi: walletRegistryArtifacts.abi,
       ...config,
     })
+    this.taco = new Application(this._staking, this._multicall, {
+      address: TacoRegistry.address,
+      abi: TacoRegistry.abi,
+      ...config,
+    })
   }
 
   async getSupportedAppsAuthParameters(): Promise<SupportedAppAuthorizationParameters> {
@@ -63,14 +90,24 @@ export class MultiAppStaking {
         method: "authorizationParameters",
         args: [],
       },
+      {
+        interface: this.taco.contract.interface,
+        address: this.taco.address,
+        method: "authorizationParameters",
+        args: [],
+      },
     ]
 
-    const [tbtcMinAuthorizationParams, randomBeaconMinAuthorizationParams] =
-      await this._multicall.aggregate(calls)
+    const [
+      tbtcMinAuthorizationParams,
+      randomBeaconMinAuthorizationParams,
+      tacoMinAuthorizationParams,
+    ] = await this._multicall.aggregate(calls)
 
     return {
       tbtc: tbtcMinAuthorizationParams,
       randomBeacon: randomBeaconMinAuthorizationParams,
+      taco: tacoMinAuthorizationParams,
     }
   }
 
@@ -90,14 +127,21 @@ export class MultiAppStaking {
         method: "stakingProviderToOperator",
         args: [stakingProvider],
       },
+      {
+        interface: this.taco.contract.interface,
+        address: this.taco.address,
+        method: "stakingProviderToOperator",
+        args: [stakingProvider],
+      },
     ]
 
-    const [mappedOperatorTbtc, mappedOperatorRandomBeacon] =
+    const [mappedOperatorTbtc, mappedOperatorRandomBeacon, mappedOperatorTaco] =
       await this._multicall.aggregate(calls)
 
     return {
       tbtc: mappedOperatorTbtc.toString(),
       randomBeacon: mappedOperatorRandomBeacon.toString(),
+      taco: mappedOperatorTaco.toString(),
     }
   }
 }

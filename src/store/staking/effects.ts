@@ -71,11 +71,6 @@ const fetchStake = async (
         keepInTStake: stake.keepInTStake.toString(),
         nuInTStake: stake.nuInTStake.toString(),
         totalInTStake: stake.totalInTStake.toString(),
-        preConfig: {
-          operator: AddressZero,
-          isOperatorConfirmed: false,
-          operatorStartTimestamp: "0",
-        },
         possibleKeepTopUpInT: "0",
         possibleNuTopUpInT: "0",
       } as StakeData,

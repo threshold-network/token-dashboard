@@ -43,9 +43,6 @@ const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const canTopUpKepp = BigNumber.from(stake.possibleKeepTopUpInT).gt(0)
   const canTopUpNu = BigNumber.from(stake.possibleNuTopUpInT).gt(0)
   const hasLegacyStakes = stake.nuInTStake !== "0" || stake.keepInTStake !== "0"
-  const isPRESet =
-    !isAddressZero(stake.preConfig.operator) &&
-    stake.preConfig.isOperatorConfirmed
 
   return (
     <StakeCardContext.Provider
@@ -54,7 +51,6 @@ const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
         canTopUpKepp,
         canTopUpNu,
         hasLegacyStakes,
-        isPRESet,
       }}
     >
       <StakeCard stake={stake} />
@@ -67,8 +63,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const [isStakeAction, setFlag] = useBoolean(true)
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
-  const { isInactiveStake, canTopUpKepp, canTopUpNu, isPRESet } =
-    useStakeCardContext()
+  const { isInactiveStake, canTopUpKepp, canTopUpNu } = useStakeCardContext()
   const { account } = useWeb3React()
   const availableAmountToUnstake = useAppSelector((state) =>
     selectAvailableAmountToUnstakeByStakingProvider(
@@ -118,7 +113,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const dividerColor = useColorModeValue("gray.300", "gray.700")
 
   return (
-    <Card borderColor={isInactiveStake || !isPRESet ? "red.200" : undefined}>
+    <Card borderColor={isInactiveStake ? "red.200" : undefined}>
       <StakeCardHeader stakeType={stake.stakeType} onTabClick={onTabClick} />
       <StakeRewards stakingProvider={stake.stakingProvider} />
       <LineDivider borderColor={dividerColor} />

@@ -25,6 +25,7 @@
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
+    "@nucypher/nucypher-contracts": "0.13.0",
     "@sentry/react": "^7.33.0",
     "@sentry/tracing": "^7.33.0",
     "@testing-library/jest-dom": "^5.11.4",

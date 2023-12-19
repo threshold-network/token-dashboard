@@ -31,7 +31,7 @@ export const StakingDepositStepsNonMAS: FC = () => {
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
               want to use a Staking Provider check{" "}
-              <Link isExternal href={ExternalHref.preStakingProvidersList}>
+              <Link isExternal href={ExternalHref.tacoStakingProvidersList}>
                 this
               </Link>
             </BodySm>
@@ -89,9 +89,9 @@ export const LegacyStakesDepositSteps: FC = () => {
           size="sm"
         >
           <BodyMd>
-            For each stake, there are three applications available. PRE does not
-            require authorization. To authorize tBTC and Random Beacon, go to
-            the <Link to="/staking">Staking Page</Link> and select “Configure
+            For each stake, there are three applications available. To authorize
+            tBTC, Random Beacon, and TACo, go to the{" "}
+            <Link to="/staking">Staking Page</Link> and select “Configure
             Stake”.
           </BodyMd>
         </FlowStep>
@@ -141,40 +141,40 @@ export const LegacyStakesDepositSteps: FC = () => {
           },
         ]}
       />
-      <PreSetupSteps />
+      <TacoSetupSteps />
     </Box>
   )
 }
 
-export const PreSetupSteps: FC = () => {
+export const TacoSetupSteps: FC = () => {
   return (
     <ChecklistGroup
-      title="Step 2 - PRE Setup"
+      title="Step 2 - TACo Setup"
       checklistItems={[
         {
-          itemId: "run_a_pre_node__0",
-          itemTitle: "Run a PRE Node",
+          itemId: "run_a_taco_node__0",
+          itemTitle: "Run a TACo Node",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-              You will need to run a PRE node to get rewards. If you don’t have
+              You will need to run a TACo node to get rewards. If you don’t have
               one, learn how to do it here{" "}
-              <Link isExternal href={ExternalHref.preNodeSetup}>
+              <Link isExternal href={ExternalHref.tacoNodeSetup}>
                 here
               </Link>
               , or contact{" "}
-              <Link isExternal href={ExternalHref.preStakingProvidersList}>
+              <Link isExternal href={ExternalHref.tacoStakingProvidersList}>
                 a staking provider
               </Link>
             </BodySm>
           ),
         },
         {
-          itemId: "run_a_pre_node__1",
-          itemTitle: "PRE Operator address",
+          itemId: "run_a_taco_node__1",
+          itemTitle: "TACo Operator address",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
-              Make sure you add your PRE Operator address{" "}
-              <Link isExternal href={ExternalHref.preNodeSetup}>
+              Make sure you add your TACo Operator address{" "}
+              <Link isExternal href={ExternalHref.tacoNodeSetup}>
                 here
               </Link>{" "}
               to gain rewards.
@@ -216,12 +216,26 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
           status={statuses[1] ?? FlowStepStatus.inactive}
           isDescriptionArrowHidden
         >
-          <BodySm>
-            For each stake, there are three applications available. PRE does not
-            require authorization. To authorize tBTC and Random Beacon, go to
-            the <Link to="/staking">Staking page</Link> and select “Configure
-            Stake”.
-          </BodySm>
+          For each stake, there are three applications available. To authorize{" "}
+          <Link to={"https://docs.threshold.network/applications/tbtc-v2"}>
+            tBTC
+          </Link>
+          ,{" "}
+          <Link
+            to={"https://docs.threshold.network/app-development/random-beacon"}
+          >
+            Random Beacon
+          </Link>
+          , and{" "}
+          <Link
+            to={
+              "https://docs.threshold.network/applications/threshold-access-control"
+            }
+          >
+            TACo
+          </Link>
+          , go to the <Link to="/staking">Staking page</Link> and select
+          “Configure Stake”.
         </FlowStep>
         <FlowStep
           size="sm"
@@ -247,7 +261,7 @@ const StakingTimeline: FC<{ statuses?: FlowStepStatus[] } & StackProps> = ({
         <StakingDepositStepsNonMAS />
       </Box>
       <Box>
-        <PreSetupSteps />
+        <TacoSetupSteps />
       </Box>
     </Stack>
   )

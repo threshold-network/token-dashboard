@@ -21,7 +21,7 @@ import { AuthorizationStatus } from "../../../../types"
 interface CommonProps {
   label: string
   percentageAuthorized: number
-  stakingAppName: StakingAppName | "pre"
+  stakingAppName: StakingAppName
 }
 
 type ConditionalProps =
@@ -42,7 +42,7 @@ const TooltipLearnMoreLink = () => {
   return <Link to="/staking/how-it-works/applications">here</Link>
 }
 
-const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
+const tooltipText: Record<StakingAppName, JSX.Element> = {
   tbtc: (
     <>
       The tBTC application is the first decentralized bridge from Bitcoin to
@@ -55,9 +55,9 @@ const tooltipText: Record<StakingAppName | "pre", JSX.Element> = {
       selection. Learn more <TooltipLearnMoreLink />.
     </>
   ),
-  pre: (
+  taco: (
     <>
-      The PRE application is cryptographic middleware for developing
+      The TACo application is cryptographic middleware for developing
       privacy-preserving applications. Learn more <TooltipLearnMoreLink />. .
     </>
   ),
