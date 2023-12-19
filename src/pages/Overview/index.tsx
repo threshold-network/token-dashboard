@@ -5,8 +5,6 @@ import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
 import { PageComponent } from "../../types"
 import { featureFlags } from "../../constants"
-import AnnouncementBanner from "../../components/AnnouncementBanner"
-import tbtcAppBannerIllustration from "../../static/images/tBTCAppBanner.svg"
 import { NoBridgeFeesBanner } from "./NoBridgeFeesBanner"
 
 const Overview: PageComponent = () => {
@@ -16,7 +14,7 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      {featureFlags.TBTC_V2 && <NoBridgeFeesBanner />}
+      {featureFlags.TBTC_V2 && <NoBridgeFeesBanner mb={"4"} />}
       <Outlet />
     </Container>
   )

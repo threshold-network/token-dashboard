@@ -13,14 +13,15 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
 }) => {
   return (
     <AnnouncementBannerContainer
-      backgroundImage={santaIsComing}
-      backgroundSize={"cover"}
       hideCloseBtn
-      {...props}
       py={12}
+      backgroundImage={`linear-gradient(to right, rgba(125,0,255,0.5),rgba(125,0,255,0.1)), url('${santaIsComing}')`}
+      backgroundSize={"cover"}
+      backgroundPosition={"center"}
+      {...props}
     >
       <Stack
-        direction={{ base: "column", xl: "row" }}
+        direction={{ base: "column", md: "row" }}
         alignItems={"center"}
         justifyContent={"space-between"}
       >
@@ -29,7 +30,9 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
           <BodyLg color="white">until February 10, 2024!</BodyLg>
         </VStack>
 
-        <ButtonLink to={"/tBTC"}>Start minting</ButtonLink>
+        <ButtonLink to={"/tBTC"} px={"6"}>
+          Start minting
+        </ButtonLink>
       </Stack>
     </AnnouncementBannerContainer>
   )
