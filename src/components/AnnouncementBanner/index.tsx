@@ -45,7 +45,7 @@ export const AnnouncementBannerContainer: FC<
   })
 
   return isOpen ? (
-    <Card sx={styles.container} {...props}>
+    <Card __css={styles.container} {...props}>
       {!hideCloseBtn && (
         <CloseButton sx={styles.closeButton} onClick={onClose} />
       )}

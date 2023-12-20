@@ -15,6 +15,7 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
     <AnnouncementBannerContainer
       hideCloseBtn
       py={{ base: 6, xl: 8 }}
+      px={{ base: 6, xl: 16 }}
       backgroundImage={santaIsComing}
       backgroundSize={"cover"}
       backgroundPosition={{ base: "25%", xl: "center" }}
