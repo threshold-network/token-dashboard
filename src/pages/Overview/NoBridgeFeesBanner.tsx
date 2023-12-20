@@ -4,7 +4,7 @@ import {
   AnnouncementBannerContainerProps,
 } from "../../components/AnnouncementBanner"
 import ButtonLink from "../../components/ButtonLink"
-import santaIsComing from "../../static/images/santa-is-coming.svg"
+import santaIsComing from "../../static/images/santa-is-coming.png"
 import noBridgeFeesText from "../../static/images/no-bridge-fees-text.svg"
 import { FC } from "react"
 
@@ -15,7 +15,7 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
     <AnnouncementBannerContainer
       hideCloseBtn
       py={12}
-      backgroundImage={`linear-gradient(to right, rgba(125,0,255,0.5),rgba(125,0,255,0.1)), url('${santaIsComing}')`}
+      backgroundImage={santaIsComing}
       backgroundSize={"cover"}
       backgroundPosition={"center"}
       {...props}
