@@ -5,8 +5,6 @@ import {
   useKeepBondingContract,
   useMulticall,
   useMulticallContract,
-  useAssetPoolContract,
-  useKeepAssetPoolContract,
   useTStakingContract,
   useKeepTokenStakingContract,
 } from "../web3/hooks"
@@ -19,8 +17,6 @@ import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 interface TvlRawData {
   ecdsaTvl: string
   tbtcv1Tvl: string
-  coveragePoolTvl: string
-  keepCoveragePoolTvl: string
   keepStakingTvl: string
   tStakingTvl: string
   tBTC: string
@@ -29,8 +25,6 @@ interface TvlRawData {
 interface TvlData {
   ecdsa: string
   tbtcv1: string
-  coveragePool: string
-  keepCoveragePool: string
   keepStaking: string
   tStaking: string
   tBTC: string
@@ -40,11 +34,9 @@ interface TvlData {
 const initialState = {
   ecdsaTvl: "0",
   tbtcv1Tvl: "0",
-  tBTC: "0",
-  coveragePoolTvl: "0",
-  keepCoveragePoolTvl: "0",
   keepStakingTvl: "0",
   tStakingTvl: "0",
+  tBTC: "0",
 }
 
 export const useFetchTvl = (): [
@@ -56,8 +48,6 @@ export const useFetchTvl = (): [
   const {
     ecdsaTvl,
     tbtcv1Tvl: tbtcTvl,
-    coveragePoolTvl,
-    keepCoveragePoolTvl,
     keepStakingTvl,
     tStakingTvl,
     tBTC: tBTCTvl,
@@ -69,8 +59,6 @@ export const useFetchTvl = (): [
   const t = useToken(Token.T)
   const keepBonding = useKeepBondingContract()
   const multicall = useMulticallContract()
-  const assetPool = useAssetPoolContract()
-  const keepAssetPool = useKeepAssetPoolContract()
   const tTokenStaking = useTStakingContract()
   const keepTokenStaking = useKeepTokenStakingContract()
   const tBTCToken = useToken(Token.TBTCV2)
@@ -87,16 +75,6 @@ export const useFetchTvl = (): [
       address: tbtcv1.contract?.address!,
       interface: tbtcv1.contract?.interface!,
       method: "totalSupply",
-    },
-    {
-      address: assetPool?.address!,
-      interface: assetPool?.interface!,
-      method: "totalValue",
-    },
-    {
-      address: keepAssetPool?.address!,
-      interface: keepAssetPool?.interface!,
-      method: "totalValue",
     },
     {
       address: keep.contract?.address!,
@@ -125,8 +103,6 @@ export const useFetchTvl = (): [
     const [
       ethInKeepBonding,
       tbtcv1TokenTotalSupply,
-      coveragePoolTvl,
-      keepCoveragePoolTvl,
       keepStaking,
       tStaking,
       tBTCTokenTotalSupply,
@@ -135,8 +111,6 @@ export const useFetchTvl = (): [
     const data: TvlRawData = {
       ecdsaTvl: ethInKeepBonding,
       tbtcv1Tvl: tbtcv1TokenTotalSupply,
-      coveragePoolTvl: coveragePoolTvl,
-      keepCoveragePoolTvl: keepCoveragePoolTvl,
       keepStakingTvl: keepStaking,
       tStakingTvl: tStaking,
       tBTC: tBTCTokenTotalSupply,
@@ -152,16 +126,6 @@ export const useFetchTvl = (): [
     const tbtcv1USD = toUsdBalance(formatUnits(tbtcTvl), tbtcv1.usdConversion)
     const tBTCUSD = toUsdBalance(formatUnits(tBTCTvl), tBTCToken.usdConversion)
 
-    const coveragePool = toUsdBalance(
-      formatUnits(coveragePoolTvl),
-      t.usdConversion
-    )
-
-    const keepCoveragePool = toUsdBalance(
-      formatUnits(keepCoveragePoolTvl),
-      keep.usdConversion
-    )
-
     const keepStaking = toUsdBalance(
       formatUnits(keepStakingTvl),
       keep.usdConversion
@@ -172,15 +136,11 @@ export const useFetchTvl = (): [
     return {
       ecdsa: ecdsa.toString(),
       tbtcv1: tbtcv1USD.toString(),
-      coveragePool: coveragePool.toString(),
-      keepCoveragePool: keepCoveragePool.toString(),
       keepStaking: keepStaking.toString(),
       tStaking: tStaking.toString(),
       tBTC: tBTCUSD.toString(),
       total: ecdsa
         .addUnsafe(tbtcv1USD)
-        .addUnsafe(coveragePool)
-        .addUnsafe(keepCoveragePool)
         .addUnsafe(keepStaking)
         .addUnsafe(tStaking)
         .addUnsafe(tBTCUSD)
@@ -188,7 +148,6 @@ export const useFetchTvl = (): [
     } as TvlData
   }, [
     ecdsaTvl,
-    keepCoveragePoolTvl,
     tbtcTvl,
     keepStakingTvl,
     tStakingTvl,

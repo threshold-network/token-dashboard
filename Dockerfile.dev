@@ -18,14 +18,12 @@ ENV NODE_OPTIONS=--max_old_space_size=3072
 COPY package*.json yarn.lock ./
 RUN npm install -g node-gyp
 RUN yarn install --ignore-scripts
-RUN yarn upgrade @keep-network/coverage-pools@sepolia \
-  @keep-network/ecdsa@sepolia \
+RUN yarn upgrade @keep-network/ecdsa@sepolia \
   @keep-network/keep-core@sepolia \
   @keep-network/keep-ecdsa@sepolia \
   @keep-network/random-beacon@sepolia \
   @keep-network/tbtc@sepolia \
   @keep-network/tbtc-v2@sepolia \
-  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
   @threshold-network/solidity-contracts@sepolia
 RUN yarn run postinstall
 
