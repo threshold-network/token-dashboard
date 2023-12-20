@@ -1,0 +1,33 @@
+# Use the specified image
+FROM node:18-buster-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y python3 make g++ git openssh-client ca-certificates && \
+    git config --global url."https://".insteadOf git:// && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get clean
+
+# Set the environment variables
+ENV PYTHON=/usr/bin/python3
+ENV NODE_OPTIONS=--max_old_space_size=3072
+
+# Copy package files and install node modules
+COPY package*.json yarn.lock ./
+RUN npm install -g node-gyp
+RUN yarn install --ignore-scripts
+RUN yarn upgrade @keep-network/coverage-pools@sepolia \
+  @keep-network/ecdsa@sepolia \
+  @keep-network/keep-core@sepolia \
+  @keep-network/keep-ecdsa@sepolia \
+  @keep-network/random-beacon@sepolia \
+  @keep-network/tbtc@sepolia \
+  @keep-network/tbtc-v2@sepolia \
+  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
+  @threshold-network/solidity-contracts@sepolia
+RUN yarn run postinstall
+
+# Expose port 3000
+EXPOSE 3000

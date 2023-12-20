@@ -1,5 +1,5 @@
 import { BigNumberish } from "@ethersproject/bignumber"
-import { StakeType, TopUpType, UnstakeType } from "../enums"
+import { TopUpType, UnstakeType } from "../enums"
 import { Stake } from "../threshold-ts/staking"
 import { UpdateStateActionPayload } from "./state"
 
@@ -26,19 +26,7 @@ export interface UseStakingState {
   }
 }
 
-export interface PreConfig {
-  operator: string
-  isOperatorConfirmed: boolean
-  operatorStartTimestamp: string
-}
-
-export interface PreConfigData {
-  [stakingProvider: string]: PreConfig
-}
-
-export interface StakeData extends Stake<string> {
-  preConfig: PreConfig
-}
+export interface StakeData extends Stake<string> {}
 
 export interface ProviderStakedEvent {
   stakeType: number
@@ -58,7 +46,6 @@ export type ProviderStakedActionPayload = ProviderStakedEvent &
     | "tStake"
     | "amount"
     | "totalInTStake"
-    | "preConfig"
     | "possibleKeepTopUpInT"
     | "possibleNuTopUpInT"
   >

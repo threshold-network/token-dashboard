@@ -20,6 +20,7 @@ export interface AuthorizationParameters<
    * providing a malicious DKG result or when a relay entry times out.
    */
   minimumAuthorization: NumberType
+  _minimumAuthorization?: NumberType
   /**
    * Delay in seconds that needs to pass between the time authorization decrease
    * is requested and the time that request gets approved. Protects against
@@ -190,6 +191,11 @@ export interface IApplication {
    */
   registerOperator(operator: string): Promise<ContractTransaction>
 
+  bondOperator(
+    stakingProvider: string,
+    operator: string
+  ): Promise<ContractTransaction>
+
   /**
    * Used to get a registered operator mapped to the given staking provider
    * @param stakingProvider Staking provider address
@@ -204,6 +210,11 @@ export interface IApplication {
   operatorToStakingProvider(operator: string): Promise<string>
 
   updateOperatorStatus(operator: string): Promise<ContractTransaction>
+
+  makeCommitment(
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction>
 }
 
 export class Application implements IApplication {
@@ -314,7 +325,14 @@ export class Application implements IApplication {
 
     let isOperatorInPool = undefined
     if (operator && !isAddressZero(operator)) {
-      isOperatorInPool = await this._application.isOperatorInPool(operator)
+      try {
+        isOperatorInPool = await this._application.isOperatorInPool(operator)
+      } catch (error) {
+        console.warn(
+          "isOperatorInPool method does not exist (eg on TACo app)",
+          error
+        )
+      }
     }
 
     const _remainingAuthorizationDecreaseDelay = BigNumber.from(
@@ -361,8 +379,15 @@ export class Application implements IApplication {
     if (isAddress(operator) && isAddressZero(operator)) {
       return false
     }
-
-    const isInPool: boolean = await this._application.isOperatorInPool(operator)
+    let isInPool = undefined
+    try {
+      isInPool = await this._application.isOperatorInPool(operator)
+    } catch (error) {
+      console.warn(
+        "isOperatorInPool method does not exist (eg on TACo app)",
+        error
+      )
+    }
 
     return isInPool
   }
@@ -404,6 +429,23 @@ export class Application implements IApplication {
 
   registerOperator = async (operator: string): Promise<ContractTransaction> => {
     return await this._application.registerOperator(operator)
+  }
+
+  bondOperator = async (
+    stakingProvider: string,
+    operator: string
+  ): Promise<ContractTransaction> => {
+    return await this._application.bondOperator(stakingProvider, operator)
+  }
+
+  makeCommitment = async (
+    stakingProvider: string,
+    commitmentDuration: number
+  ): Promise<ContractTransaction> => {
+    return await this._application.makeCommitment(
+      stakingProvider,
+      commitmentDuration
+    )
   }
 
   stakingProviderToOperator = async (

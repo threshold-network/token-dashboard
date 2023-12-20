@@ -46,27 +46,28 @@ const AuthorizeStakingAppsPage: FC = () => {
   const { openModal } = useModal()
   const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
   const randomBeaconAppFormRef = useRef<FormikProps<FormValues>>(null)
-  const preAppFormRef = useRef<FormikProps<FormValues>>(null)
+  const tacoAppFormRef = useRef<FormikProps<FormValues>>(null)
   const stakinAppNameToFormRef: Record<
     AppAuthDataProps["stakingAppId"],
     RefObject<FormikProps<FormValues>>
   > = {
     tbtc: tbtcAppFormRef,
     randomBeacon: randomBeaconAppFormRef,
-    pre: preAppFormRef,
+    taco: tacoAppFormRef,
   }
 
   const dispatch = useAppDispatch()
 
   const tbtcAppAddress = useStakingApplicationAddress("tbtc")
   const randomBeaconAddress = useStakingApplicationAddress("randomBeacon")
+  const TACoAddress = useStakingApplicationAddress("taco")
   const stakinAppNameToAddress: Record<
     AppAuthDataProps["stakingAppId"],
     string
   > = {
     tbtc: tbtcAppAddress,
     randomBeacon: randomBeaconAddress,
-    pre: AddressZero,
+    taco: TACoAddress,
   }
 
   useEffect(() => {
@@ -91,6 +92,10 @@ const AuthorizeStakingAppsPage: FC = () => {
     "randomBeacon",
     stakingProviderAddress || AddressZero
   )
+  const tacoApp = useStakingAppDataByStakingProvider(
+    "taco",
+    stakingProviderAddress || AddressZero
+  )
 
   const appsAuthData: {
     [appName: string]: AppAuthDataProps & { address?: string }
@@ -107,10 +112,11 @@ const AuthorizeStakingAppsPage: FC = () => {
       address: randomBeaconAddress,
       label: "Random Beacon",
     },
-    pre: {
-      stakingAppId: "pre",
-      label: "PRE",
-      status: "authorization-not-required",
+    taco: {
+      ...tacoApp,
+      stakingAppId: "taco",
+      label: "TACo",
+      address: TACoAddress,
     },
   }
 
@@ -134,11 +140,18 @@ const AuthorizeStakingAppsPage: FC = () => {
         )
       )
     }
-  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized])
+
+    if (tacoApp.isAuthorized) {
+      setSelectedApps((selectedApps) =>
+        selectedApps.filter(({ stakingAppId }) => stakingAppId !== "taco")
+      )
+    }
+  }, [tbtcApp.isAuthorized, randomBeaconApp.isAuthorized, tacoApp.isAuthorized])
 
   const tbtcMinAuthAmount = useStakingAppMinAuthorizationAmount("tbtc")
   const randomBeaconMinAuthAmount =
     useStakingAppMinAuthorizationAmount("randomBeacon")
+  const tacoMinAuthAmount = useStakingAppMinAuthorizationAmount("taco")
 
   const stake = useSelector((state: RootState) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)
@@ -158,6 +171,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   const onAuthorizeApps = async () => {
     const isTbtcSelected = isAppSelected("tbtc")
     const isRandomBeaconSelected = isAppSelected("randomBeacon")
+    const isTacoSelected = isAppSelected("taco")
 
     if (isTbtcSelected) {
       await tbtcAppFormRef.current?.validateForm()
@@ -167,18 +181,18 @@ const AuthorizeStakingAppsPage: FC = () => {
       await randomBeaconAppFormRef.current?.validateForm()
       randomBeaconAppFormRef.current?.setTouched({ tokenAmount: true }, false)
     }
-    if (
-      (isRandomBeaconSelected &&
-        isTbtcSelected &&
-        tbtcAppFormRef.current?.isValid &&
-        randomBeaconAppFormRef.current?.isValid) ||
-      (isTbtcSelected &&
-        !isRandomBeaconSelected &&
-        tbtcAppFormRef.current?.isValid) ||
-      (isRandomBeaconSelected &&
-        !isTbtcSelected &&
-        randomBeaconAppFormRef.current?.isValid)
-    ) {
+    if (isTacoSelected) {
+      await tacoAppFormRef.current?.validateForm()
+      tacoAppFormRef.current?.setTouched({ tokenAmount: true }, false)
+    }
+    const isTbtcValid =
+      !isTbtcSelected || (isTbtcSelected && tbtcAppFormRef.current?.isValid)
+    const isRandomBeaconValid =
+      !isRandomBeaconSelected ||
+      (isRandomBeaconSelected && randomBeaconAppFormRef.current?.isValid)
+    const isTacoValid =
+      !isTacoSelected || (isTacoSelected && tacoAppFormRef.current?.isValid)
+    if (isTbtcValid && isRandomBeaconValid && isTacoValid) {
       openModal(ModalType.AuthorizeStakingApps, {
         stakingProvider: stakingProviderAddress!,
         totalInTStake: stake.totalInTStake,
@@ -294,18 +308,22 @@ const AuthorizeStakingAppsPage: FC = () => {
               canSubmitForm={isLoggedInAsAuthorizer}
             />
             <AuthorizeApplicationsCardCheckbox
+              formRef={tacoAppFormRef}
               mt={5}
-              appAuthData={appsAuthData.pre}
+              appAuthData={appsAuthData.taco}
               totalInTStake={stake.totalInTStake}
               onCheckboxClick={onCheckboxClick}
-              isSelected={isAppSelected("pre")}
+              isSelected={isAppSelected("taco")}
               maxAuthAmount={stake.totalInTStake}
-              minAuthAmount={"0"}
+              minAuthAmount={tacoMinAuthAmount}
               stakingProvider={stakingProviderAddress!}
+              canSubmitForm={isLoggedInAsAuthorizer}
             />
           </>
         )}
-        {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) && (
+        {(!tbtcApp.isAuthorized ||
+          !randomBeaconApp.isAuthorized ||
+          !tacoApp.isAuthorized) && (
           <Button
             disabled={selectedApps.length === 0 || !isLoggedInAsAuthorizer}
             variant="outline"

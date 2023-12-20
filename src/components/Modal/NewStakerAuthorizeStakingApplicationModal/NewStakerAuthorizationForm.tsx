@@ -22,6 +22,8 @@ export type FormValues = {
   isTbtcChecked: boolean
   randomBeaconAmountToAuthorize: string | number
   isRandomBeaconChecked: boolean
+  tacoAmountToAuthorize: string | number
+  isTacoChecked: boolean
 }
 
 export interface AuthInputConstraints {
@@ -33,6 +35,7 @@ interface Props {
   onSubmitForm: (values: FormValues) => void
   tbtcInputConstraints: AuthInputConstraints
   randomBeaconInputConstraints: AuthInputConstraints
+  tacoInputConstraints: AuthInputConstraints
 }
 
 export const formikWrapper = withFormik<Props, FormValues>({
@@ -44,6 +47,8 @@ export const formikWrapper = withFormik<Props, FormValues>({
     isTbtcChecked: true,
     randomBeaconAmountToAuthorize: props.randomBeaconInputConstraints.max,
     isRandomBeaconChecked: true,
+    tacoAmountToAuthorize: props.tacoInputConstraints.max,
+    isTacoChecked: true,
   }),
   validate: (values, props) => {
     const errors: FormikErrors<FormValues> = {}
@@ -59,6 +64,12 @@ export const formikWrapper = withFormik<Props, FormValues>({
       props.randomBeaconInputConstraints.max.toString(),
       props.randomBeaconInputConstraints.min.toString()
     )
+
+    errors.tacoAmountToAuthorize = validateAmountInRange(
+      values?.tacoAmountToAuthorize?.toString(),
+      props.tacoInputConstraints.max.toString(),
+      props.tacoInputConstraints.min.toString()
+    )
     return getErrorsObj(errors)
   },
   displayName: "AuthorizationForm",
@@ -67,11 +78,13 @@ export const formikWrapper = withFormik<Props, FormValues>({
 const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
   tbtcInputConstraints,
   randomBeaconInputConstraints,
+  tacoInputConstraints,
   handleSubmit,
 }) => {
   const { closeModal } = useModal()
   const [, { value: isTbtcChecked }] = useField("isTbtcChecked")
   const [, { value: isRandomBeaconChecked }] = useField("isRandomBeaconChecked")
+  const [, { value: isTacoChecked }] = useField("isTacoChecked")
   const bothAppsChecked = isTbtcChecked && isRandomBeaconChecked
 
   return (
@@ -104,21 +117,26 @@ const NewStakerAuthorizationForm: FC<Props & FormikProps<FormValues>> = ({
             </BodyXs>
           </Alert>
         )}
+        <NewStakerAuthorizationCard
+          stakingAppName="taco"
+          min={tacoInputConstraints.min}
+          max={tacoInputConstraints.max}
+          inputId="tacoAmountToAuthorize"
+          checkBoxId="isTacoChecked"
+          label="TACo"
+          mb={6}
+        />
       </Box>
-      <Card bg="gray.50" boxShadow="none" mb={6}>
-        <HStack justifyContent="space-between">
-          <LabelMd color="gray.500">PRE</LabelMd>
-          <Badge variant={"subtle"} colorScheme="gray" color={"gray.500"}>
-            Authorization not required
-          </Badge>
-        </HStack>
-      </Card>
       <HStack mb={6} justifyContent="flex-end">
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
         <Button
-          disabled={isTbtcChecked === false && isRandomBeaconChecked === false}
+          disabled={
+            isTbtcChecked === false &&
+            isRandomBeaconChecked === false &&
+            isTacoChecked === false
+          }
           type="submit"
         >
           Authorize Selected Apps

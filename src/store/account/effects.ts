@@ -51,6 +51,7 @@ export const getStakingProviderOperatorInfo = async (
       setMappedOperators({
         tbtc: mappedOperators.tbtc,
         randomBeacon: mappedOperators.randomBeacon,
+        taco: mappedOperators.taco,
       })
     )
   } catch (error: any) {
