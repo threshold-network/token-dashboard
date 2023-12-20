@@ -1,4 +1,4 @@
-import { BodyLg, Stack, Image, VStack } from "@threshold-network/components"
+import { BodyMd, Stack, Image, VStack } from "@threshold-network/components"
 import {
   AnnouncementBannerContainer,
   AnnouncementBannerContainerProps,
@@ -14,7 +14,7 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
   return (
     <AnnouncementBannerContainer
       hideCloseBtn
-      py={12}
+      py={{ base: 6, xl: 8 }}
       backgroundImage={santaIsComing}
       backgroundSize={"cover"}
       backgroundPosition={{ base: "25%", xl: "center" }}
@@ -26,8 +26,13 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
         justifyContent={"space-between"}
       >
         <VStack alignItems={"start"}>
-          <Image src={noBridgeFeesText} />
-          <BodyLg color="white">until February 10, 2024!</BodyLg>
+          <Image
+            src={noBridgeFeesText}
+            maxHeight={{ base: "60px", xl: "initial" }}
+          />
+          <BodyMd color="white" fontSize={{ base: 14, xl: 21 }}>
+            until February 10, 2024!
+          </BodyMd>
         </VStack>
 
         <ButtonLink to={"/tBTC"} px={"6"} maxWidth={"150px"}>
