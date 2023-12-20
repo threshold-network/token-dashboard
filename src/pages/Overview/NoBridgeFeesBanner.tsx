@@ -31,7 +31,7 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
         </VStack>
 
         <ButtonLink to={"/tBTC"} px={"6"} maxWidth={"150px"}>
-          Start minting
+          Start Minting
         </ButtonLink>
       </Stack>
     </AnnouncementBannerContainer>
