@@ -17,7 +17,7 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
       p={{ base: 6, xl: 10 }}
       backgroundImage={santaIsComing}
       backgroundSize={"cover"}
-      backgroundPosition={{ base: "10%", xl: "center" }}
+      backgroundPosition={{ base: "25%", xl: "center" }}
       {...props}
     >
       <Stack
@@ -25,11 +25,15 @@ export const NoBridgeFeesBanner: FC<AnnouncementBannerContainerProps> = ({
         alignItems={{ base: "start", xl: "center" }}
         justifyContent={{ base: "left", xl: "space-between" }}
       >
-        <Image
-          src={noBridgeFeesText}
-          maxHeight={{ base: "60px", xl: "initial" }}
-          maxWidth={"400px"}
-        />
+        <VStack alignItems={"start"}>
+          <Image
+            src={noBridgeFeesText}
+            maxHeight={{ base: "60px", xl: "initial" }}
+          />
+          <BodyMd color="white" fontSize={{ base: 14, xl: 21 }}>
+            until February 10, 2024!
+          </BodyMd>
+        </VStack>
         <ButtonLink to={"/tBTC"} px={"6"} maxWidth={"150px"}>
           Start Minting
         </ButtonLink>
