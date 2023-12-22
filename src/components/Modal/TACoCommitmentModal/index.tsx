@@ -38,7 +38,8 @@ export type TACoCommitProps = BaseModalProps & {
 
 const getEndDate = (durationInSeconds: number) => {
   const endDate = new Date()
-  endDate.setSeconds(endDate.getSeconds() + durationInSeconds)
+  // extra 15724800 seconds for the 6-month deauthorization
+  endDate.setSeconds(endDate.getSeconds() + durationInSeconds + 15724800)
   return endDate.toLocaleDateString()
 }
 
