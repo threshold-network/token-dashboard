@@ -1,11 +1,11 @@
 import { Box, BoxProps, Text } from "@threshold-network/components"
 import { FC } from "react"
-import pageTitleBadge from "../../static/images/page-title-badge.png"
+import pageTitleBadgeIcon from "../../static/images/page-title-badge.svg"
 
 export const PageTitleBadge: FC<BoxProps> = ({ children, ...restProps }) => {
   return (
     <Box
-      backgroundImage={pageTitleBadge}
+      backgroundImage={pageTitleBadgeIcon}
       backgroundSize={"cover"}
       maxWidth={"392px"}
       width={"100%"}
