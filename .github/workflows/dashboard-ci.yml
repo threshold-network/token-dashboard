@@ -76,7 +76,6 @@ jobs:
             @keep-network/keep-core \
             @keep-network/keep-ecdsa \
             @keep-network/tbtc \
-            @keep-network/coverage-pools \
             @keep-network/random-beacon --ignore-scripts
 
       - name: Run postinstall script
