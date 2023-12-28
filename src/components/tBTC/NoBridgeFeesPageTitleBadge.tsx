@@ -1,14 +1,20 @@
-import { BodySm, BoxProps, Text } from "@threshold-network/components"
+import {
+  BodySm,
+  BoxProps,
+  Text,
+  useColorModeValue,
+} from "@threshold-network/components"
 import { FC } from "react"
 import { PageTitleBadge } from "../PageTitleBadge"
 
 export const NoBridgeFeesPageTitleBadge: FC<BoxProps> = ({ ...restProps }) => {
+  const textColor = useColorModeValue("brand.500", "brand.300")
   return (
     <PageTitleBadge {...restProps}>
       <BodySm
         ml={12}
         textTransform={"uppercase"}
-        color={"brand.500"}
+        color={textColor}
         letterSpacing={".5px"}
       >
         <Text as="span" fontWeight={"bold"}>

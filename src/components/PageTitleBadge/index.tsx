@@ -1,11 +1,16 @@
-import { Box, BoxProps, Text } from "@threshold-network/components"
+import { Box, BoxProps, useColorModeValue } from "@threshold-network/components"
 import { FC } from "react"
-import pageTitleBadgeIcon from "../../static/images/page-title-badge.svg"
+import pageTitleBadgeIconLight from "../../static/images/page-title-badge-light.svg"
+import pageTitleBadgeIconDark from "../../static/images/page-title-badge-dark.svg"
 
 export const PageTitleBadge: FC<BoxProps> = ({ children, ...restProps }) => {
+  const backgroundImage = useColorModeValue(
+    pageTitleBadgeIconLight,
+    pageTitleBadgeIconDark
+  )
   return (
     <Box
-      backgroundImage={pageTitleBadgeIcon}
+      backgroundImage={backgroundImage}
       backgroundSize={"cover"}
       maxWidth={"392px"}
       width={"100%"}
