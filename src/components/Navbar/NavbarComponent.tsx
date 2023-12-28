@@ -7,6 +7,7 @@ import {
   Stack,
   useColorModeValue,
   H5,
+  HStack,
 } from "@threshold-network/components"
 import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
@@ -19,6 +20,7 @@ import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import { pages } from "../../pages"
 import { PageComponent } from "../../types"
+import { NoBridgeFeesPageTitleBadge } from "../tBTC"
 
 interface NavbarComponentProps {
   account?: string | null
@@ -79,7 +81,15 @@ const renderPageTitle = (PageComponent: PageComponent) => {
       path={`${PageComponent.route.path}/*`}
       element={
         PageComponent.route.title ? (
-          <PageTitle title={PageComponent.route.title} />
+          <HStack display={{ base: "none", md: "flex" }}>
+            <PageTitle title={PageComponent.route.title} />
+            {PageComponent.route.title === "tBTC" && (
+              <NoBridgeFeesPageTitleBadge
+                display={"flex"}
+                alignItems={"center"}
+              />
+            )}
+          </HStack>
         ) : (
           <></>
         )
@@ -89,11 +99,7 @@ const renderPageTitle = (PageComponent: PageComponent) => {
 }
 
 const PageTitle: FC<{ title: string }> = ({ title }) => {
-  return (
-    <H5 ml={12} display={{ base: "none", md: "block" }}>
-      {title}
-    </H5>
-  )
+  return <H5 ml={12}>{title}</H5>
 }
 
 const renderMobileHeader = (PageComponent: PageComponent) => {
@@ -103,7 +109,15 @@ const renderMobileHeader = (PageComponent: PageComponent) => {
       path={`${PageComponent.route.path}/*`}
       element={
         PageComponent.route.title ? (
-          <MobileHeader title={PageComponent.route.title} />
+          <HStack display={{ base: "flex", md: "none" }}>
+            <MobileHeader title={PageComponent.route.title} />
+            {PageComponent.route.title === "tBTC" && (
+              <NoBridgeFeesPageTitleBadge
+                display={"flex"}
+                alignItems={"center"}
+              />
+            )}
+          </HStack>
         ) : (
           <></>
         )
@@ -114,14 +128,7 @@ const renderMobileHeader = (PageComponent: PageComponent) => {
 
 const MobileHeader: FC<{ title: string }> = ({ title }) => {
   return (
-    <Box
-      display={{ base: "flex", md: "none" }}
-      as="header"
-      pl={10}
-      py={6}
-      borderBottom="1px"
-      borderColor="gray.100"
-    >
+    <Box as="header" pl={10} py={6} borderBottom="1px" borderColor="gray.100">
       <H5>{title}</H5>
     </Box>
   )
