@@ -35,6 +35,5 @@ export enum ExternalHref {
   mintersAndGuardiansDocs = "https://blog.threshold.network/minters-guardians-and-a-strong-tbtc/",
   tBTCDuneDashboard = "https://dune.com/threshold/tbtc",
   delight = "https://delightlabs.io",
-  coveragePoolsDocs = "https://docs.threshold.network/applications/tbtc-v2/coverage-pool",
   runningNodeDocs = "https://docs.threshold.network/staking-and-running-a-node/running-a-node",
 }
