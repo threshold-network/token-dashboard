@@ -85,7 +85,7 @@ export const MintingTimelineStep1: FC<MintingTimelineItemProps> = ({
       isActive={isActive}
       isComplete={isComplete}
       stepNumber={1}
-      label="Deposit Address"
+      label="Provide a Deposit Address"
       description={
         <>
           Provide an ETH address and a BTC Return address to generate a unique
