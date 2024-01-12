@@ -287,6 +287,7 @@ export const stakingApplicationsSlice = createSlice({
           deauthorizationCreatedAt: undefined,
           isOperatorInPool: undefined,
           operator: AddressZero,
+          stakingProviderInfo: undefined,
         }
 
         state.randomBeacon.stakingProviders.data[stakingProvider] = {
