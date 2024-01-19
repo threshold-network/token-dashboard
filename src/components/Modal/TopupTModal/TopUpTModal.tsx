@@ -61,6 +61,9 @@ const TopupTModal: FC<
             <BodyLg>
               If you want to put your new topped-up tokens at work, make sure to
               increase the authorization to your applications.
+              <br />
+              If you increase the Authorization to TACo, the new tokens will be
+              subject to the same lock-up period as your current stake.
             </BodyLg>
           </InfoBox>
           <StakingStats
