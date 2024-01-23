@@ -35,6 +35,7 @@ import { formatDate } from "../../../../utils/date"
 import { calculatePercenteage } from "../../../../utils/percentage"
 import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 import { AuthorizationStatus } from "../../../../types"
+import { StakingProviderInfo } from "../../../../threshold-ts/applications"
 
 interface CommonProps {
   stakingAppId: StakingAppName
@@ -58,6 +59,7 @@ type StakingAppAuthDataBaseProps = {
   remainingAuthorizationDecreaseDelay: string
   isOperatorInPool: boolean | undefined
   operator: string
+  stakingProviderInfo?: StakingProviderInfo | undefined
 }
 
 type AppAuthDataConditionalProps =
@@ -255,8 +257,26 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
   }
 
   const onSubmitForm = (tokenAmount: string) => {
-    if (isIncreaseAction) onAuthorizeApp(tokenAmount)
-    else onInitiateDeauthorization(tokenAmount)
+    if (isIncreaseAction) {
+      onAuthorizeApp(tokenAmount)
+    } else {
+      if (appAuthData.stakingAppId === "taco") {
+        // const endCommitment = appAuthData.stakingProviderInfo?.endCommitment
+        const endCommitment = appAuthData.stakingProviderInfo?.endCommitment
+        const currentTime = Math.floor(Date.now() / 1000)
+        const isCommited = (Number(endCommitment) ?? 0) > currentTime
+        const endCommitmentDate = new Date(
+          (Number(endCommitment) ?? 0) * 1000
+        ).toLocaleDateString()
+        if (isCommited) {
+          alert(`You are still committed until ${endCommitmentDate}.`)
+        } else {
+          onInitiateDeauthorization(tokenAmount)
+        }
+      } else {
+        onInitiateDeauthorization(tokenAmount)
+      }
+    }
   }
 
   const onConfirmDeauthorization = () => {
