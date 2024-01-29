@@ -9,7 +9,6 @@ import {
   BodyMd,
   VStack,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import TotalValueLocked from "./TotalValueLocked"
 import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
@@ -21,12 +20,12 @@ import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
 import ButtonLink from "../../../components/ButtonLink"
 import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
-import { CoveragePoolsTvlCard } from "../../tBTC/CoveragePools"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
   const [deposits, isFetching, error] = useFetchRecentDeposits()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const dispatch = useAppDispatch()
   const bridgeActivity = useAppSelector(selectBridgeActivity)
   const isBridgeActivityFetching = useAppSelector(
@@ -59,7 +58,6 @@ const Network: PageComponent = () => {
         isBridgeActivityFetching={isBridgeActivityFetching}
       />
       <VStack spacing="4">
-        <CoveragePoolsTvlCard coveragePoolTvl={tvlInUSD.coveragePool} />
         <TotalValueLocked totalValueLocked={tvlInUSD.total} />
         <Card>
           <HStack spacing="6">

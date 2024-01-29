@@ -119,7 +119,7 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
                   <AlertDescription
                     color={useColorModeValue("gray.700", "gray.300")}
                   >
-                    After you topped-up in the legacy dashboad you will need to
+                    After you topped-up in the legacy dashboard you will need to
                     confirm your top-up in the Threshold Dashboard. This action
                     will require one transaction.
                   </AlertDescription>

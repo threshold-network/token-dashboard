@@ -37,7 +37,7 @@ import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 import { AuthorizationStatus } from "../../../../types"
 
 interface CommonProps {
-  stakingAppId: StakingAppName | "pre"
+  stakingAppId: StakingAppName
   label: string
 }
 

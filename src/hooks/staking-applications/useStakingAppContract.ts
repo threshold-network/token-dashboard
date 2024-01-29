@@ -3,10 +3,11 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 
 export const stakingAppNameToThresholdAppService: Record<
   StakingAppName,
-  "ecdsa" | "randomBeacon"
+  "ecdsa" | "randomBeacon" | "taco"
 > = {
   tbtc: "ecdsa",
   randomBeacon: "randomBeacon",
+  taco: "taco",
 }
 
 export const useStakingAppContract = (appName: StakingAppName) => {

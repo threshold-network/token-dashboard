@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
 import { useCallback } from "react"
 import { useLocalStorage } from "../useLocalStorage"
 import {
@@ -8,9 +7,10 @@ import {
   TBTCDepositData,
   TBTCLocalStorageDepositData,
 } from "../../utils/tbtcLocalStorageData"
+import { useIsActive } from "../useIsActive"
 
 export const useTBTCDepositDataFromLocalStorage = () => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   const [tBTCDepositData] = useLocalStorage<TBTCLocalStorageDepositData>(
     key,

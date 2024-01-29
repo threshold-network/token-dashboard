@@ -13,6 +13,7 @@ import { useWeb3React } from "@web3-react/core"
 import { Outlet } from "react-router"
 import { MintPage } from "./Mint"
 import { UnmintPage } from "./Unmint"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const gridTemplateAreas = {
   base: `
@@ -30,7 +31,7 @@ const TBTCBridge: PageComponent = (props) => {
   const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
@@ -52,7 +53,7 @@ const TBTCBridge: PageComponent = (props) => {
       gridTemplateColumns={{ base: "1fr", xl: "25% 1fr" }}
       gap="5"
     >
-      <Box gridArea="main" minW="0">
+      <Box gridArea="main" minW="0" position="relative">
         <MintUnmintNav w="100%" gridArea="nav" mb="5" pages={props.pages!} />
         <Outlet />
       </Box>

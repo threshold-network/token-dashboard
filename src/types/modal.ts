@@ -15,6 +15,8 @@ import StakeSuccessOldModal from "../components/Modal/StakingSuccessModal/StakeS
 import ConfirmStakingParams from "../components/Modal/ConfirmStakingParams"
 import StakingChecklistModal from "../components/Modal/StakingChecklistModal"
 import UnstakingSuccessModal from "../components/Modal/UnstakeSuccessModal"
+import TACoCommitmentModal from "../components/Modal/TACoCommitmentModal"
+import TACoCommitmentSuccessModal from "../components/Modal/TACoCommitmentModal"
 import {
   UnstakeTStep1 as UnstakeTModalStep1,
   UnstakeTStep2 as UnstakeTModalStep2,
@@ -26,8 +28,6 @@ import {
   ClaimRewardsSuccessModal,
 } from "../components/Modal/ClaimingRewards"
 import NewAppsToAuthorizeModal from "../components/Modal/NewAppsToAuthorizeModal"
-import TbtcRecoveryFileModalModal from "../components/Modal/TbtcRecoveryFileModal"
-import TbtcMintingConfirmationModal from "../components/Modal/TbtcMintingConfirmationModal"
 import DeauthorizeApplicationModal from "../components/Modal/DeauthorizeApplicationModal"
 import {
   AuthorizeStakingApps,
@@ -72,8 +72,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.ClaimingRewards]: ClaimingRewards,
   [ModalType.ClaimingRewardsSuccess]: ClaimRewardsSuccessModal,
   [ModalType.NewAppsToAuthorize]: NewAppsToAuthorizeModal,
-  [ModalType.TbtcRecoveryJson]: TbtcRecoveryFileModalModal,
-  [ModalType.TbtcMintingConfirmation]: TbtcMintingConfirmationModal,
   [ModalType.DeauthorizeApplication]: DeauthorizeApplicationModal,
   [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.MapOperatorToStakingProvider]: MapOperatorToStakingProviderModal,
@@ -85,7 +83,6 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.StakingApplicationsAuthorized]: StakingApplicationsAuthorized,
   [ModalType.IncreaseAuthorization]: IncreaseAuthorization,
   [ModalType.IncreaseAuthorizationSuccess]: IncreaseAuthorizationSuccess,
-  [ModalType.SubmitStake]: SubmitStakeModal,
   [ModalType.NewStakerAuthorizeStakingApplication]:
     NewStakerAuthorizeStakingApplicationModal,
   [ModalType.ConfirmDeauthorization]: ConfirmDeauthorization,
@@ -96,6 +93,8 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.FeedbackSubmission]: FeedbackSubmissionModal,
   [ModalType.GenerateNewDepositAddress]: GenerateNewDepositAddress,
   [ModalType.InitiateUnminting]: InitiateUnminting,
+  [ModalType.TACoCommitment]: TACoCommitmentModal,
+  [ModalType.TACoCommitmentSuccess]: TACoCommitmentSuccessModal,
 }
 
 export interface BaseModalProps {

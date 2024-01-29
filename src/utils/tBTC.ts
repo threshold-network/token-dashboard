@@ -5,6 +5,7 @@ import {
   createOutputScriptFromAddress,
   prependScriptPubKeyByLength,
 } from "../threshold-ts/utils"
+import { BigNumberish, BigNumber } from "ethers"
 
 const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
 const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
@@ -79,7 +80,8 @@ export const getBridgeBTCSupportedAddressPrefixesText = (
   return supportedAddressPrefixesText[bridgeProcess][btcNetwork]
 }
 
-export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01
+export const MINT_BITCOIN_MIN_AMOUNT = "1000000" // 0.01 BTC
+export const UNMINT_MIN_AMOUNT = "10000000000000000" // 0.01 ETH
 
 export class RedemptionDetailsLinkBuilder {
   private walletPublicKeyHash?: string
@@ -174,3 +176,13 @@ export const buildRedemptionDetailsLink = (
     .withBitcoinAddress(btcAddress, bitcoinNetwork)
     .build()
 }
+
+/**
+ * Calculates the duration in seconds based on the number of confirmations.
+ *
+ * @param {number} numberOfConfirmations The number of confirmations.
+ * @return {number} The duration in minutes.
+ */
+export const getDurationByNumberOfConfirmations = (
+  numberOfConfirmations: number
+) => numberOfConfirmations * 10 + 60

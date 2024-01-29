@@ -10,6 +10,7 @@ export const useAuthorizeMultipleAppsTransaction = () => {
   const threshold = useThreshold()
   const tbtcAppAddress = useStakingApplicationAddress("tbtc")
   const randomBeaconAppAddress = useStakingApplicationAddress("randomBeacon")
+  const tacoAppAddress = useStakingApplicationAddress("taco")
   const { openModal } = useModal()
 
   const { sendTransaction, status } = useSendTransactionFromFn(
@@ -31,7 +32,8 @@ export const useAuthorizeMultipleAppsTransaction = () => {
         const includesOnlySupportedApps = applications.every(
           (_) =>
             isSameETHAddress(_.address, tbtcAppAddress) ||
-            isSameETHAddress(_.address, randomBeaconAppAddress)
+            isSameETHAddress(_.address, randomBeaconAppAddress) ||
+            isSameETHAddress(_.address, tacoAppAddress)
         )
 
         if (!includesOnlySupportedApps)
@@ -70,7 +72,13 @@ export const useAuthorizeMultipleAppsTransaction = () => {
         })
       }
     },
-    [sendTransaction, randomBeaconAppAddress, tbtcAppAddress, openModal]
+    [
+      sendTransaction,
+      randomBeaconAppAddress,
+      tbtcAppAddress,
+      tacoAppAddress,
+      openModal,
+    ]
   )
 
   return { authorizeMultipleApps, status }

@@ -41,9 +41,13 @@ export const getSupportedAppsEffect = async (
         appName: "randomBeacon",
       })
     )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.fetchingAppParameters({
+        appName: "taco",
+      })
+    )
     const data =
       await listenerApi.extra.threshold.multiAppStaking.getSupportedAppsAuthParameters()
-    // one-off listener
     const payload = {
       tbtc: {
         minimumAuthorization: data.tbtc.minimumAuthorization.toString(),
@@ -63,6 +67,15 @@ export const getSupportedAppsEffect = async (
         authorizationDecreaseChangePeriod:
           data.randomBeacon.authorizationDecreaseChangePeriod.toString(),
       },
+      taco: {
+        minimumAuthorization: data.taco._minimumAuthorization?.toString() ?? "",
+
+        authorizationDecreaseDelay:
+          data.taco.authorizationDecreaseDelay.toString(),
+
+        authorizationDecreaseChangePeriod:
+          data.taco.authorizationDecreaseChangePeriod.toString(),
+      },
     }
     listenerApi.dispatch(
       stakingApplicationsSlice.actions.setAppParameters({
@@ -76,6 +89,12 @@ export const getSupportedAppsEffect = async (
         parameters: payload.tbtc,
       })
     )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setAppParameters({
+        appName: "taco",
+        parameters: payload.taco,
+      })
+    )
   } catch (error) {
     const errorMessage = (error as Error).toString()
     listenerApi.dispatch(
@@ -87,6 +106,12 @@ export const getSupportedAppsEffect = async (
     listenerApi.dispatch(
       stakingApplicationsSlice.actions.setAppParametersError({
         appName: "tbtc",
+        error: errorMessage,
+      })
+    )
+    listenerApi.dispatch(
+      stakingApplicationsSlice.actions.setAppParametersError({
+        appName: "taco",
         error: errorMessage,
       })
     )
@@ -115,6 +140,12 @@ export const getSupportedAppsStakingProvidersData = async (
       stakingProviders,
       listenerApi.extra.threshold.multiAppStaking.randomBeacon,
       "randomBeacon",
+      listenerApi
+    )
+    await getKeepStakingAppStakingProvidersData(
+      stakingProviders,
+      listenerApi.extra.threshold.multiAppStaking.taco,
+      "taco",
       listenerApi
     )
   } catch (error) {
@@ -196,12 +227,14 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
     const {
       tbtc: mappedOperatorTbtc,
       randomBeacon: mappedOperatorRandomBeacon,
+      taco: mappedOperatorTaco,
     } = action.payload
 
     if (
       isStakingProvider &&
       (isAddressZero(mappedOperatorTbtc) ||
-        isAddressZero(mappedOperatorRandomBeacon))
+        isAddressZero(mappedOperatorRandomBeacon) ||
+        isAddressZero(mappedOperatorTaco))
     ) {
       listenerApi.dispatch(
         openModal({
@@ -210,6 +243,7 @@ export const displayMapOperatorToStakingProviderModalEffect = async (
             address,
             mappedOperatorTbtc: mappedOperatorTbtc,
             mappedOperatorRandomBeacon: mappedOperatorRandomBeacon,
+            mappedOperatorTaco: mappedOperatorTaco,
           },
         })
       )
@@ -240,6 +274,12 @@ export const displayNewAppsToAuthorizeModalEffect = async (
           .stakingProviders.data
       )
     )
+    .concat(
+      Object.values(
+        selectStakingAppStateByAppName(listenerApi.getState(), "taco")
+          .stakingProviders.data
+      )
+    )
     .some(
       (stakingProviderAppInfo) =>
         stakingProviderAppInfo.authorizedStake &&
@@ -264,6 +304,8 @@ export const shouldDisplayNewAppsToAuthorizeModal = (
       currentState.applications.randomBeacon.stakingProviders.data ?? {}
     ).length > 0 &&
     Object.values(currentState.applications.tbtc.stakingProviders.data ?? {})
+      .length > 0 &&
+    Object.values(currentState.applications.taco.stakingProviders.data ?? {})
       .length > 0
   )
 }

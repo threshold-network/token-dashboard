@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Outlet } from "react-router"
-import { useWeb3React } from "@web3-react/core"
-import { PageComponent } from "../../../types"
+import { useIsActive } from "../../../hooks/useIsActive"
+import { MintingStep, PageComponent } from "../../../types"
 import { DepositDetails } from "./DepositDetails"
 import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
@@ -16,7 +16,11 @@ import {
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
-import { useIsTbtcSdkInitializing } from "../../../contexts/ThresholdContext"
+import { MintDurationWidget } from "../../../components/MintDurationWidget"
+import {
+  useIsTbtcSdkInitializing,
+  useThreshold,
+} from "../../../contexts/ThresholdContext"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -25,7 +29,7 @@ export const MintPage: PageComponent = ({}) => {
 export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState } = useTbtcState()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { isSdkInitializing, isSdkInitializedWithSigner } =
     useIsTbtcSdkInitializing()
 
@@ -82,18 +86,34 @@ MintingFormPage.route = {
 }
 
 const MintPageLayout: PageComponent = () => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
+  const { mintingStep, utxo } = useTbtcState()
+  const {
+    tbtc: {
+      minimumNumberOfConfirmationsNeeded: getNumberOfConfirmationsByAmount,
+    },
+  } = useThreshold()
+
+  const shouldRenderDurationWidget = ![
+    MintingStep.ProvideData,
+    MintingStep.Deposit,
+    undefined,
+  ].includes(mintingStep)
+  const confirmations = getNumberOfConfirmationsByAmount(utxo?.value || 0)
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {active ? (
+        {isActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />
         )}
       </BridgeLayoutMainSection>
       <BridgeLayoutAsideSection>
+        {shouldRenderDurationWidget && (
+          <MintDurationWidget confirmations={confirmations} currency="BTC" />
+        )}
         <MintingTimeline />
       </BridgeLayoutAsideSection>
     </BridgeLayout>

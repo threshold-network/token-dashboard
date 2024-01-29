@@ -1,20 +1,21 @@
-import { FC, Ref } from "react"
-import { FormikProps, FormikErrors, withFormik } from "formik"
+import { FC, Ref, forwardRef } from "react"
+import { FormikProps, FormikErrors, Formik, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
 import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
 
-export interface MapOperatorToStakingProviderFormValues {
+export type MapOperatorToStakingProviderFormValues = {
   operator: string
 }
 
 type ComponentProps = {
   formId: string
+  innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
 }
 
 const MapOperatorToStakingProviderFormBase: FC<
   ComponentProps & FormikProps<MapOperatorToStakingProviderFormValues>
-> = ({ formId, values }) => {
+> = ({ formId, values }, ref) => {
   return (
     <Form id={formId}>
       <FormikInput
@@ -31,8 +32,8 @@ const validateInputtedOperatorAddress = async (
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>,
-  mappedOperatorTbtc: string,
-  mappedOperatorRandomBeacon: string
+  mappedOperatorTbtc?: string,
+  mappedOperatorRandomBeacon?: string
 ): Promise<string | undefined> => {
   let validationMsg: string | undefined = ""
 
@@ -44,27 +45,29 @@ const validateInputtedOperatorAddress = async (
       validationMsg = "Operator is already mapped to another staking provider."
     }
 
-    const isOperatorMappedOnlyInTbtc =
-      !isAddressZero(mappedOperatorTbtc) &&
-      isAddressZero(mappedOperatorRandomBeacon)
+    if (mappedOperatorTbtc && mappedOperatorRandomBeacon) {
+      const isOperatorMappedOnlyInTbtc =
+        !isAddressZero(mappedOperatorTbtc) &&
+        isAddressZero(mappedOperatorRandomBeacon)
 
-    const isOperatorMappedOnlyInRandomBeacon =
-      isAddressZero(mappedOperatorTbtc) &&
-      !isAddressZero(mappedOperatorRandomBeacon)
+      const isOperatorMappedOnlyInRandomBeacon =
+        isAddressZero(mappedOperatorTbtc) &&
+        !isAddressZero(mappedOperatorRandomBeacon)
 
-    if (
-      isOperatorMappedOnlyInRandomBeacon &&
-      !isSameETHAddress(operator, mappedOperatorRandomBeacon)
-    ) {
-      validationMsg =
-        "The operator address doesn't match the one used in random beacon app"
-    }
-    if (
-      isOperatorMappedOnlyInTbtc &&
-      !isSameETHAddress(operator, mappedOperatorTbtc)
-    ) {
-      validationMsg =
-        "The operator address doesn't match the one used in tbtc app"
+      if (
+        isOperatorMappedOnlyInRandomBeacon &&
+        !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+      ) {
+        validationMsg =
+          "The operator address doesn't match the one used in random beacon app"
+      }
+      if (
+        isOperatorMappedOnlyInTbtc &&
+        !isSameETHAddress(operator, mappedOperatorTbtc)
+      ) {
+        validationMsg =
+          "The operator address doesn't match the one used in tbtc app"
+      }
     }
   } catch (error) {
     console.error("`MapOperatorToStakingProviderForm` validation error.", error)
@@ -74,16 +77,29 @@ const validateInputtedOperatorAddress = async (
   return validationMsg
 }
 
-type MapOperatorToStakingProviderFormProps = {
+type MapOperatorToStakingProviderFormCommonProps = {
   initialAddress: string
-  mappedOperatorTbtc: string
-  mappedOperatorRandomBeacon: string
   innerRef: Ref<FormikProps<MapOperatorToStakingProviderFormValues>>
   checkIfOperatorIsMappedToAnotherStakingProvider: (
     operator: string
   ) => Promise<boolean>
-  onSubmitForm: (values: MapOperatorToStakingProviderFormValues) => void
 } & ComponentProps
+
+type MapOperatorToStakingProviderFormConditionalProps =
+  | {
+      mappedOperatorTbtc: string
+      mappedOperatorRandomBeacon: string
+      mappedOperatorTaco?: never
+    }
+  | {
+      mappedOperatorTbtc?: never
+      mappedOperatorRandomBeacon?: never
+      mappedOperatorTaco: string
+    }
+
+type MapOperatorToStakingProviderFormProps =
+  MapOperatorToStakingProviderFormCommonProps &
+    MapOperatorToStakingProviderFormConditionalProps
 
 const MapOperatorToStakingProviderForm = withFormik<
   MapOperatorToStakingProviderFormProps,
@@ -100,22 +116,24 @@ const MapOperatorToStakingProviderForm = withFormik<
     } = props
     const errors: FormikErrors<MapOperatorToStakingProviderFormValues> = {}
 
-    errors.operator = validateETHAddress(values.operator)
-    if (!errors.operator) {
-      errors.operator = await validateInputtedOperatorAddress(
-        values.operator,
-        checkIfOperatorIsMappedToAnotherStakingProvider,
-        mappedOperatorTbtc,
-        mappedOperatorRandomBeacon
-      )
+    if (values.operator) {
+      errors.operator = validateETHAddress(values.operator)
+      if (!errors.operator) {
+        errors.operator = await validateInputtedOperatorAddress(
+          values.operator,
+          checkIfOperatorIsMappedToAnotherStakingProvider,
+          mappedOperatorTbtc,
+          mappedOperatorRandomBeacon
+        )
+      }
     }
 
     return getErrorsObj(errors)
   },
-  handleSubmit: (values, { props }) => {
-    props.onSubmitForm(values)
-  },
+  handleSubmit: () => {},
   displayName: "MapOperatorToStakingProviderFor",
-})(MapOperatorToStakingProviderFormBase)
+})((props) => (
+  <MapOperatorToStakingProviderFormBase {...props} innerRef={props.innerRef} />
+))
 
 export default MapOperatorToStakingProviderForm

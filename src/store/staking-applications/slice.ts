@@ -38,9 +38,10 @@ export type StakingApplicationState = {
 export interface StakingApplicationsState {
   tbtc: StakingApplicationState
   randomBeacon: StakingApplicationState
+  taco: StakingApplicationState
 }
 
-export type StakingAppName = "tbtc" | "randomBeacon"
+export type StakingAppName = "tbtc" | "randomBeacon" | "taco"
 
 export const stakingApplicationsSlice = createSlice({
   name: "staking-applications",
@@ -62,6 +63,22 @@ export const stakingApplicationsSlice = createSlice({
       },
     },
     randomBeacon: {
+      parameters: {
+        isFetching: false,
+        error: "",
+        data: {
+          authorizationDecreaseChangePeriod: "0",
+          minimumAuthorization: "0",
+          authorizationDecreaseDelay: "0",
+        },
+      },
+      stakingProviders: {
+        isFetching: false,
+        error: "",
+        data: {},
+      },
+    },
+    taco: {
       parameters: {
         isFetching: false,
         error: "",
@@ -276,6 +293,9 @@ export const stakingApplicationsSlice = createSlice({
           ...defaultAuthData,
         }
         state.tbtc.stakingProviders.data[stakingProvider] = {
+          ...defaultAuthData,
+        }
+        state.taco.stakingProviders.data[stakingProvider] = {
           ...defaultAuthData,
         }
       }

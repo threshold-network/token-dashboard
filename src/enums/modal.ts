@@ -17,8 +17,6 @@ export enum ModalType {
   ClaimingRewards = "CLAIMING_REWARDS",
   ClaimingRewardsSuccess = "CLAIMING_REWARDS_SUCCESS",
   NewAppsToAuthorize = "NEW_APPS_TO_AUTHORIZE",
-  TbtcRecoveryJson = "TBTC_RECOVERY_JSON",
-  TbtcMintingConfirmation = "TBTC_MINTING_CONFIRMATION",
   DeauthorizeApplication = "DEAUTHORIZE_APPLICATION",
   SubmitStake = "SUBMIT_STAKE",
   NewStakerAuthorizeStakingApplication = "NEW_STAKER_AUTHORIZE_STAKING_APPLICATION",
@@ -38,4 +36,6 @@ export enum ModalType {
   FeedbackSubmission = "FEEDBACK_SUBMIT",
   GenerateNewDepositAddress = "TBTC_GENERATE_NEW_DEPOSIT_ADDRESS",
   InitiateUnminting = "INITIATE_UNMINTING",
+  TACoCommitment = "TACO_COMMITMENT",
+  TACoCommitmentSuccess = "TACO_COMMITMENT_SUCCESS",
 }

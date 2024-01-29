@@ -8,21 +8,22 @@ export const selectAccountState = (state: RootState) => state.account
 export const selectMappedOperators = createSelector(
   [selectAccountState],
   (accountState: AccountState) => {
-    const { randomBeacon, tbtc } = accountState.operatorMapping.data
-    const isOperatorMappedOnlyInTbtc =
+    const { randomBeacon, tbtc, taco } = accountState.operatorMapping.data
+    const isOperatorMappedOnlyInTbtcForBundledRewards =
       !isAddressZero(tbtc) && isAddressZero(randomBeacon)
-    const isOperatorMappedOnlyInRandomBeacon =
+    const isOperatorMappedOnlyInRandomBeaconForBundledRewards =
       isAddressZero(tbtc) && !isAddressZero(randomBeacon)
 
     return {
       mappedOperatorTbtc: tbtc,
       mappedOperatorRandomBeacon: randomBeacon,
-      isOperatorMappedOnlyInTbtc,
-      isOperatorMappedOnlyInRandomBeacon,
-      isOneOfTheAppsNotMapped:
-        isOperatorMappedOnlyInRandomBeacon || isOperatorMappedOnlyInTbtc,
-      isOperatorMappedInBothApps:
-        !isAddressZero(randomBeacon) && !isAddressZero(tbtc),
+      mappedOperatorTaco: taco,
+      isOperatorMappedOnlyInTbtcForBundledRewards,
+      isOperatorMappedOnlyInRandomBeaconForBundledRewards,
+      isOperatorMappedInAllApps:
+        !isAddressZero(randomBeacon) &&
+        !isAddressZero(tbtc) &&
+        !isAddressZero(taco),
     }
   }
 )
