@@ -269,7 +269,9 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
           (Number(endCommitment) ?? 0) * 1000
         ).toLocaleDateString()
         if (isCommited) {
-          alert(`You are still committed until ${endCommitmentDate}.`)
+          alert(
+            `Your tokens remain committed until ${endCommitmentDate}, at which point you may initiate deauthorization.`
+          )
         } else {
           onInitiateDeauthorization(tokenAmount)
         }

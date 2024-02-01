@@ -59,11 +59,15 @@ const TopupTModal: FC<
               your initial stake.
             </BodyLg>
             <BodyLg>
-              If you want to put your new topped-up tokens at work, make sure to
-              increase the authorization to your applications.
+              If you want to put newly topped-up tokens to work, make sure to
+              individually increase the total authorization to each Threshold
+              application (tBTC, Random Beacon & TACo).
               <br />
-              If you increase the Authorization to TACo, the new tokens will be
-              subject to the same lock-up period as your current stake.
+              If you increase the total number of tokens authorized to the TACo
+              app, those tokens will automatically be subject to the same unlock
+              horizon as your current TACo stake, including the min.
+              deauthorization delay (6 months), plus any lock-up extension on
+              top of that.
             </BodyLg>
           </InfoBox>
           <StakingStats
