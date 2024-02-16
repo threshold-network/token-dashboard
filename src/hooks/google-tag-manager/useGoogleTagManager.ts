@@ -1,11 +1,14 @@
 import { useEffect } from "react"
+import { featureFlags } from "../../constants"
+import { EnvVariable } from "../../enums"
+import { getEnvVariable } from "../../utils/getEnvVariable"
 
 export const useGoogleTagManager = () => {
   useEffect(() => {
     // TODO: Use proper google tag manager id from env
-    const gtmId = "GTM-XXX"
+    const gtmId = getEnvVariable(EnvVariable.GOOGLE_TAG_MANAGER_ID)
 
-    if (gtmId) {
+    if (featureFlags.GOOGLE_TAG_MANAGER && gtmId) {
       const script = document.createElement("script")
       script.innerHTML = `
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
