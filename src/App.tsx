@@ -62,6 +62,7 @@ import { useSentry } from "./hooks/sentry"
 import { useIsEmbed } from "./hooks/useIsEmbed"
 import TBTC from "./pages/tBTC"
 import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
+import { useGoogleTagManager } from "./hooks/google-tag-manager"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -175,6 +176,7 @@ const AppBody = () => {
   }, [dispatch])
 
   useDetectIfEmbed()
+  useGoogleTagManager()
   usePosthog()
   useCheckBonusEligibility()
   useFetchStakingRewards()

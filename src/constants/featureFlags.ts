@@ -21,3 +21,6 @@ export const TBTC_V2_REDEMPTION =
 
 export const LEDGER_LIVE =
   getEnvVariable(EnvVariable.FEATURE_FLAG_LEDGER_LIVE) === "true"
+
+export const GOOGLE_TAG_MANAGER =
+  getEnvVariable(EnvVariable.FEATURE_FLAG_GOOGLE_TAG_MANAGER) === "true"

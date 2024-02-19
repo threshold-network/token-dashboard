@@ -18,6 +18,8 @@ const envVariables = [
   "SENTRY_DSN",
   "WALLET_CONNECT_PROJECT_ID",
   "DAPP_DEVELOPMENT_TESTNET_CONTRACTS",
+  "FEATURE_FLAG_GOOGLE_TAG_MANAGER",
+  "GOOGLE_TAG_MANAGER_ID",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]
