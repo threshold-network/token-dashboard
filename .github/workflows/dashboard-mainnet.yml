@@ -13,9 +13,9 @@ jobs:
     name: Build for mainnet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
           cache: "yarn"
@@ -78,7 +78,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build
           path: build
@@ -89,9 +89,9 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Deploy PR mainnet preview to GCP
         # Temporarily we run the action in version from `alpine-version-413.0.0`
@@ -115,9 +115,9 @@ jobs:
       name: mainnet
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Deploy mainnet build to GCP
         # Temporarily we run the action in version from `alpine-version-413.0.0`
