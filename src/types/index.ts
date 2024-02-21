@@ -9,6 +9,7 @@ export * from "./rewards"
 export * from "./staking"
 export * from "./staking-applications"
 export * from "./tbtc"
+export * from "./trm"
 
 export type FetchingState<DataType> = {
   isInitialFetchDone?: boolean
