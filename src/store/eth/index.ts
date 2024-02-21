@@ -1,1 +1,1 @@
-export * from "./ethSilce"
+export * from "./ethSlice"
