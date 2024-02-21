@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants"
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { featureFlags } from "../../constants"
-import { FetchingState } from "../../types"
+import { FetchingState, TRMState } from "../../types"
 import { isSameETHAddress } from "../../web3/utils"
 import { startAppListening } from "../listener"
 import {
@@ -10,18 +10,21 @@ import {
   setStakes,
 } from "../staking"
 import { StakingAppName } from "../staking-applications"
-import { getStakingProviderOperatorInfo } from "./effects"
+import { getStakingProviderOperatorInfo, getTRMInfo } from "./effects"
 
 export interface AccountState {
   address: string
+  chainId: number | undefined
   isStakingProvider: boolean
   operatorMapping: FetchingState<Record<StakingAppName, string>>
+  trm: TRMState
 }
 
 export const accountSlice = createSlice({
   name: "account",
   initialState: {
     address: "",
+    chainId: undefined,
     isStakingProvider: false,
     operatorMapping: {
       data: {
@@ -32,10 +35,23 @@ export const accountSlice = createSlice({
       isFetching: false,
       isInitialFetchDone: false,
     },
+    trm: {
+      isBlocked: false,
+      isFetching: false,
+      hasFetched: false,
+    },
   } as AccountState,
   reducers: {
-    walletConnected: (state: AccountState, action: PayloadAction<string>) => {
-      state.address = action.payload
+    walletConnected: (
+      state: AccountState,
+      action: PayloadAction<{
+        address: string
+        chainId: number | undefined
+      }>
+    ) => {
+      const { address, chainId } = action.payload
+      state.address = address
+      state.chainId = chainId
     },
     accountUsedAsStakingProvider: (
       state: AccountState,
@@ -69,6 +85,27 @@ export const accountSlice = createSlice({
       const { error } = action.payload
       state.operatorMapping.isFetching = false
       state.operatorMapping.error = error
+    },
+    setTrm: (
+      state: AccountState,
+      action: PayloadAction<{ isBlocked: boolean }>
+    ) => {
+      const { isBlocked } = action.payload
+      state.trm.isBlocked = isBlocked
+      state.trm.hasFetched = true
+      state.trm.isFetching = false
+      state.trm.error = ""
+    },
+    fetchingTrm: (state: AccountState) => {
+      state.trm.isFetching = true
+    },
+    setTrmError: (
+      state: AccountState,
+      action: PayloadAction<{ error: string }>
+    ) => {
+      const { error } = action.payload
+      state.operatorMapping.isFetching = false
+      state.trm.error = error
     },
     operatorRegistered: (
       state: AccountState,
@@ -105,6 +142,13 @@ export const registerAccountListeners = () => {
       effect: getStakingProviderOperatorInfo,
     })
   }
+
+  if (featureFlags.TRM) {
+    startAppListening({
+      actionCreator: accountSlice.actions.walletConnected,
+      effect: getTRMInfo,
+    })
+  }
 }
 registerAccountListeners()
 
@@ -115,4 +159,6 @@ export const {
   fetchingOperatorMapping,
   setOperatorMappingError,
   operatorRegistered,
+  fetchingTrm,
+  setTrm,
 } = accountSlice.actions

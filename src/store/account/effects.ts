@@ -1,4 +1,4 @@
-import { StakeData } from "../../types"
+import { StakeData, TRMEntity, TRMRiskIndicator } from "../../types"
 import { isAddressZero, isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"
@@ -7,7 +7,10 @@ import {
   accountSlice,
   fetchingOperatorMapping,
   setMappedOperators,
+  fetchingTrm,
+  setTrm,
 } from "./slice"
+import { fetchWalletScreening } from "../../utils/trmAPI"
 
 export const getStakingProviderOperatorInfo = async (
   action: ReturnType<typeof setStakes>,
@@ -61,5 +64,40 @@ export const getStakingProviderOperatorInfo = async (
       })
     )
     throw new Error("Could not load staking provider's operator info: " + error)
+  }
+}
+
+export const getTRMInfo = async (
+  action: ReturnType<typeof accountSlice.actions.walletConnected>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { address, chainId } = action.payload
+  if (!address || !chainId) return
+
+  try {
+    listenerApi.dispatch(fetchingTrm())
+    const data = await fetchWalletScreening({ address, chainId: 1 })
+
+    const riskIndicators: TRMRiskIndicator[] =
+      data[0]?.addressRiskIndicators || []
+    const entities: TRMEntity[] = data[0]?.entities || []
+
+    const hasSevereRisk = riskIndicators.some(
+      (indicator) => indicator.categoryRiskScoreLevelLabel === "Severe"
+    )
+    const hasSevereEntity = entities.some(
+      (entity) => entity.riskScoreLevelLabel === "Severe"
+    )
+
+    const isBlocked = hasSevereEntity || hasSevereRisk
+
+    listenerApi.dispatch(setTrm({ isBlocked }))
+  } catch (error: any) {
+    listenerApi.dispatch(
+      accountSlice.actions.setTrmError({
+        error,
+      })
+    )
+    throw new Error("Could not load TRM Wallet Screening info: " + error)
   }
 }
