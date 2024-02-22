@@ -1,4 +1,4 @@
-import posthog from "posthog-js"
+import posthog, { Properties } from "posthog-js"
 import { EnvVariable } from "../enums"
 import { getEnvVariable } from "../utils/getEnvVariable"
 import { PosthogEvent } from "../types/posthog"
@@ -21,8 +21,12 @@ export const init = () => {
   })
 }
 
-export const identify = (ethAddress: string) => {
-  posthog.identify(ethAddress)
+export const identify = (
+  ethAddress: string,
+  userPropertiesToSet?: Properties,
+  userPropertiesToSetOnce?: Properties
+) => {
+  posthog.identify(ethAddress, userPropertiesToSet, userPropertiesToSetOnce)
 }
 
 // Posthog automatically sends pageview events whenever it gets loaded. For a
