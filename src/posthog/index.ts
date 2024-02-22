@@ -43,7 +43,7 @@ export const reset = () => {
 
 export const capture = (
   event: PosthogEvent,
-  params: { [key: string]: unknown }
+  params?: { [key: string]: unknown }
 ) => {
   posthog.capture(event, params)
 }
