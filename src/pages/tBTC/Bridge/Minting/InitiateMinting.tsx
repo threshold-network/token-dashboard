@@ -14,6 +14,7 @@ import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useRevealDepositTransaction } from "../../../../hooks/tbtc"
 import { Toast } from "../../../../components/Toast"
 import { useModal } from "../../../../hooks/useModal"
+import { PosthogButtonId } from "../../../../types/posthog"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -100,6 +101,9 @@ const InitiateMintingComponent: FC<{
         data-ph-capture-attribute-button-name={
           "Confirm deposit & mint (Step 2)"
         }
+        data-ph-capture-attribute-button-id={PosthogButtonId.InitiateMinting}
+        data-ph-capture-attribute-button-text={"Bridge"}
+        data-ph-capture-attribute-deposited-btc-amount={utxo.value}
       >
         Bridge
       </Button>
