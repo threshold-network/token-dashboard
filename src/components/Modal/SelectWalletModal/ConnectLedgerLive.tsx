@@ -2,7 +2,7 @@ import { FC } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { ledgerLive } from "../../../web3/connectors"
 import { WalletConnectionModalBase } from "./components"
-import { ConnectionError, WalletType } from "../../../enums"
+import { ConnectionError } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
@@ -34,7 +34,6 @@ const ConnectLedgerLive: FC<{ goBack: () => void; closeModal: () => void }> = ({
           : ""
       }
       tryAgain={connectionRejected ? () => activate(ledgerLive) : undefined}
-      walletType={WalletType.LedgerLive}
       shouldForceCloseModal
     />
   )

@@ -22,7 +22,7 @@ export const useSaveConnectedAddressToStore = () => {
         walletType,
         account,
       }
-      // captureWalletConnected(posthogData)
+      captureWalletConnected(posthogData)
     }
   }, [account, connector])
 }
