@@ -44,6 +44,9 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   }, [account, isEmbed])
 
   const requestEthereumAccount = useCallback(async () => {
+    // The Goerli testnet become deprecated. However, we did not test Ledger
+    // Live on Sepolia yet, so we're leaving the Goerli config for now in the
+    // code.
     const currencyId = supportedChainId === "1" ? "ethereum" : "ethereum_goerli"
     walletApiReactTransport.connect()
     await requestAccount({ currencyIds: [currencyId] })
