@@ -134,7 +134,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
             PosthogButtonId.InitiateUnminting
           }
           data-ph-capture-attribute-button-text={"Unmint"}
-          data-ph-capture-attribute-unminted-amount={unmintAmount}
+          data-ph-capture-attribute-unminted-tbtc-amount={unmintAmount}
         >
           Unmint
         </Button>
