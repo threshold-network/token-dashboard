@@ -8,15 +8,13 @@ import { useCapture } from "./useCapture"
 
 export const useCaptureWalletConnected = () => {
   const { account, connector } = useWeb3React()
-  const { balance, loading, isLoadedFromConnectedAccount } = useToken(
-    Token.TBTCV2
-  )
+  const { balance, isLoadedFromConnectedAccount } = useToken(Token.TBTCV2)
   const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
 
   useEffect(() => {
     // Capture posthog wallet connected event only if account is connected AND
     // when TBTCV2 token balance is fetched for this account.
-    if (account && connector && !loading && isLoadedFromConnectedAccount) {
+    if (account && connector && isLoadedFromConnectedAccount) {
       const walletType = getWalletTypeFromConnector(connector)
       const posthogData = {
         walletType,
@@ -25,5 +23,5 @@ export const useCaptureWalletConnected = () => {
       }
       captureWalletConnected(posthogData)
     }
-  }, [account, connector, balance, loading, isLoadedFromConnectedAccount])
+  }, [account, connector, balance, isLoadedFromConnectedAccount])
 }
