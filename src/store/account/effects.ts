@@ -76,7 +76,7 @@ export const getTRMInfo = async (
 
   try {
     listenerApi.dispatch(fetchingTrm())
-    const data = await fetchWalletScreening({ address, chainId: 1 })
+    const data = await fetchWalletScreening({ address, chainId: chainId })
 
     const riskIndicators: TRMRiskIndicator[] =
       data[0]?.addressRiskIndicators || []
