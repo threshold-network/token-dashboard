@@ -23,6 +23,7 @@ export type TokenAmountFormBaseProps = {
   helperText?: string
   icon?: typeof Icon
   isDisabled?: boolean
+  isLoading?: boolean
   shouldValidateForm?: boolean
   shouldDisplayMaxAmountInLabel?: boolean
   token?: { decimals: number; symbol: string }
@@ -41,6 +42,7 @@ export const TokenAmountFormBase: FC<
   token = { decimals: 18, symbol: "T" },
   icon = ThresholdCircleBrand,
   isDisabled = false,
+  isLoading = false,
   shouldValidateForm = true,
   shouldDisplayMaxAmountInLabel = false,
   placeholder,
@@ -79,6 +81,7 @@ export const TokenAmountFormBase: FC<
         mt="6"
         submitText={submitButtonText}
         variant={submitButtonVariant}
+        isLoading={isLoading}
         isDisabled={isDisabled}
       />
     </Form>
