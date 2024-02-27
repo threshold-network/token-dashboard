@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from "react-redux"
 import {
   setTokenBalance as setTokenBalanceAction,
   setTokenLoading as setTokenLoadingAction,
+  setTokenIsLoadedFromConnectedAccount as setTokenIsLoadedFromConnectedAccountAction,
   fetchTokenPriceUSD as fetchTokenPriceAction,
   setTokenConversionRate as setTokenConversionRateAction,
 } from "../store/tokens"
@@ -29,6 +30,17 @@ export const useTokenState: UseTokenState = () => {
   const setTokenLoading = (token: Token, loading: boolean) =>
     dispatch(setTokenLoadingAction({ token, loading }))
 
+  const setTokenIsLoadedFromConnectedAccount = (
+    token: Token,
+    isLoadedFromConnectedAccount: boolean
+  ) =>
+    dispatch(
+      setTokenIsLoadedFromConnectedAccountAction({
+        token,
+        isLoadedFromConnectedAccount,
+      })
+    )
+
   const fetchTokenPriceUSD = (token: Token) =>
     dispatch(fetchTokenPriceAction({ token }))
 
@@ -41,6 +53,7 @@ export const useTokenState: UseTokenState = () => {
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenLoading,
+    setTokenIsLoadedFromConnectedAccount,
     setTokenConversionRate,
   }
 }

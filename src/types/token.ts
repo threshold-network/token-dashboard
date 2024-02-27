@@ -5,6 +5,7 @@ import { TokenIcon } from "../static/icons/tokenIconMap"
 
 export interface TokenState {
   loading: boolean
+  isLoadedFromConnectedAccount: boolean
   conversionRate: number | string
   text: string
   icon: TokenIcon
@@ -29,12 +30,21 @@ export interface SetTokenLoadingActionPayload {
   loading: boolean
 }
 
+export interface SetTokenIsLoadedFromConnectedAccountActionPayload {
+  token: Token
+  isLoadedFromConnectedAccount: boolean
+}
+
 export interface SetTokenBalance {
   payload: SetTokenBalanceActionPayload
 }
 
 export interface SetTokenLoading {
   payload: SetTokenLoadingActionPayload
+}
+
+export interface SetTokenIsLoadedFromConnectedAccount {
+  payload: SetTokenIsLoadedFromConnectedAccountActionPayload
 }
 
 export interface SetTokenConversionRate {
@@ -44,6 +54,7 @@ export interface SetTokenConversionRate {
 export type TokenActionTypes =
   | SetTokenBalance
   | SetTokenLoading
+  | SetTokenIsLoadedFromConnectedAccount
   | SetTokenConversionRate
 
 export interface UseTokenState {
@@ -62,6 +73,10 @@ export interface UseTokenState {
       conversionRate: number | string
     ) => TokenActionTypes
     setTokenLoading: (token: Token, loading: boolean) => TokenActionTypes
+    setTokenIsLoadedFromConnectedAccount: (
+      token: Token,
+      isLoadedFromConnectedAccount: boolean
+    ) => TokenActionTypes
     fetchTokenPriceUSD: (token: Token) => void
   }
 }

@@ -47,6 +47,8 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     fetchTokenPriceUSD,
     setTokenBalance,
     setTokenConversionRate,
+    setTokenLoading,
+    setTokenIsLoadedFromConnectedAccount,
     keep: keepData,
     nu: nuData,
     t: tData,
@@ -88,13 +90,28 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   React.useEffect(() => {
     if (isActive) {
+      setTokenLoading(Token.Keep, true)
+      setTokenLoading(Token.Nu, true)
+      setTokenLoading(Token.T, true)
+      setTokenLoading(Token.TBTCV2, true)
       fetchBalances().then(
         ([keepBalance, nuBalance, tBalance, tbtcv2Balance]) => {
           setTokenBalance(Token.Keep, keepBalance.toString())
+          setTokenLoading(Token.Keep, false)
+          setTokenIsLoadedFromConnectedAccount(Token.Keep, true)
+
           setTokenBalance(Token.Nu, nuBalance.toString())
+          setTokenLoading(Token.Nu, false)
+          setTokenIsLoadedFromConnectedAccount(Token.Nu, true)
+
           setTokenBalance(Token.T, tBalance.toString())
+          setTokenLoading(Token.T, false)
+          setTokenIsLoadedFromConnectedAccount(Token.T, true)
+
           if (featureFlags.TBTC_V2) {
             setTokenBalance(Token.TBTCV2, tbtcv2Balance.toString())
+            setTokenLoading(Token.TBTCV2, false)
+            setTokenIsLoadedFromConnectedAccount(Token.TBTCV2, true)
           }
         }
       )
@@ -102,8 +119,11 @@ export const TokenContextProvider: React.FC = ({ children }) => {
       // set all token balances to 0 if the user disconnects the wallet
       for (const token in Token) {
         if (token) {
-          // @ts-ignore
-          setTokenBalance(Token[token], 0)
+          const key = token as keyof typeof Token
+          setTokenLoading(Token[key], true)
+          setTokenBalance(Token[key], 0)
+          setTokenLoading(Token[key], false)
+          setTokenIsLoadedFromConnectedAccount(Token[key], false)
         }
       }
     }

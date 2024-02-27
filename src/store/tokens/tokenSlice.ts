@@ -7,6 +7,7 @@ import {
   SetTokenBalanceActionPayload,
   SetTokenConversionRateActionPayload,
   SetTokenLoadingActionPayload,
+  SetTokenIsLoadedFromConnectedAccountActionPayload,
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import getUsdBalance from "../../utils/getUsdBalance"
@@ -34,6 +35,7 @@ export const tokenSlice = createSlice({
   initialState: {
     [Token.Keep]: {
       loading: false,
+      isLoadedFromConnectedAccount: false,
       balance: 0,
       conversionRate: 4.87,
       text: Token.Keep,
@@ -43,6 +45,7 @@ export const tokenSlice = createSlice({
     },
     [Token.Nu]: {
       loading: false,
+      isLoadedFromConnectedAccount: false,
       balance: 0,
       conversionRate: 2.66,
       text: Token.Nu,
@@ -52,6 +55,7 @@ export const tokenSlice = createSlice({
     },
     [Token.T]: {
       loading: false,
+      isLoadedFromConnectedAccount: false,
       balance: 0,
       conversionRate: 1,
       text: Token.T,
@@ -61,12 +65,14 @@ export const tokenSlice = createSlice({
     },
     [Token.TBTC]: {
       loading: false,
+      isLoadedFromConnectedAccount: false,
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
     },
     [Token.TBTCV2]: {
       loading: false,
+      isLoadedFromConnectedAccount: false,
       balance: 0,
       usdConversion: 0,
       usdBalance: "0",
@@ -78,6 +84,13 @@ export const tokenSlice = createSlice({
       action: PayloadAction<SetTokenLoadingActionPayload>
     ) => {
       state[action.payload.token].loading = action.payload.loading
+    },
+    setTokenIsLoadedFromConnectedAccount: (
+      state,
+      action: PayloadAction<SetTokenIsLoadedFromConnectedAccountActionPayload>
+    ) => {
+      state[action.payload.token].isLoadedFromConnectedAccount =
+        action.payload.isLoadedFromConnectedAccount
     },
     setTokenBalance: (
       state,
@@ -110,5 +123,9 @@ export const tokenSlice = createSlice({
   },
 })
 
-export const { setTokenBalance, setTokenLoading, setTokenConversionRate } =
-  tokenSlice.actions
+export const {
+  setTokenBalance,
+  setTokenLoading,
+  setTokenIsLoadedFromConnectedAccount,
+  setTokenConversionRate,
+} = tokenSlice.actions
