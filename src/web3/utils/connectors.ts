@@ -9,7 +9,7 @@ import {
 
 export const getWalletTypeFromConnector = (
   connector: AbstractConnector | undefined
-): WalletType | undefined => {
+): WalletType | null => {
   if (connector instanceof MetaMask) {
     const isMetamask = connector.isMetaMask(window.ethereum)
     return isMetamask ? WalletType.Metamask : WalletType.TAHO
@@ -22,5 +22,5 @@ export const getWalletTypeFromConnector = (
 
   if (connector instanceof CoinbaseWalletConnector) return WalletType.Coinbase
 
-  return undefined
+  return null
 }
