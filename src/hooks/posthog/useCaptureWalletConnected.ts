@@ -9,7 +9,7 @@ import { useCapture } from "./useCapture"
 export const useCaptureWalletConnected = () => {
   const { account, connector } = useWeb3React()
   const { balance, isLoadedFromConnectedAccount } = useToken(Token.TBTCV2)
-  const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
+  const captureWalletConnectedEvent = useCapture(PosthogEvent.WalletConnected)
 
   useEffect(() => {
     // Capture posthog wallet connected event only if account is connected AND
@@ -21,7 +21,7 @@ export const useCaptureWalletConnected = () => {
         address: account,
         tbtcBalance: balance,
       }
-      captureWalletConnected(posthogData)
+      captureWalletConnectedEvent(posthogData)
     }
   }, [account, connector, balance, isLoadedFromConnectedAccount])
 }

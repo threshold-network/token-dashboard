@@ -13,10 +13,12 @@ const AccountButton: FC<{
   deactivate: () => void
 }> = ({ openWalletModal, account, deactivate }) => {
   const dispatch = useAppDispatch()
-  const captureWalletDisconnected = useCapture(PosthogEvent.WalletDisconnected)
+  const captureWalletDisconnectedEvent = useCapture(
+    PosthogEvent.WalletDisconnected
+  )
 
   const onDisconnectClick = () => {
-    captureWalletDisconnected()
+    captureWalletDisconnectedEvent()
     dispatch(resetStoreAction())
     deactivate()
   }
