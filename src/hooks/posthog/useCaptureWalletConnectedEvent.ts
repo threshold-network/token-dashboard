@@ -6,7 +6,7 @@ import { getWalletTypeFromConnector } from "../../web3/utils/connectors"
 import { useToken } from "../useToken"
 import { useCapture } from "./useCapture"
 
-export const useCaptureWalletConnected = () => {
+export const useCaptureWalletConnectedEvent = () => {
   const { account, connector } = useWeb3React()
   const { balance, isLoadedFromConnectedAccount } = useToken(Token.TBTCV2)
   const captureWalletConnectedEvent = useCapture(PosthogEvent.WalletConnected)

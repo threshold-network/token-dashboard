@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { featureFlags } from "../../constants"
 import * as posthog from "../../posthog"
 import { useCapturePageview } from "./useCapturePageview"
-import { useCaptureWalletConnected } from "./useCaptureWalletConnected"
+import { useCaptureWalletConnectedEvent } from "./useCaptureWalletConnectedEvent"
 import { useIdentify } from "./useIdentify"
 
 export const usePosthog = () => {
@@ -14,5 +14,5 @@ export const usePosthog = () => {
 
   useCapturePageview()
   useIdentify()
-  useCaptureWalletConnected()
+  useCaptureWalletConnectedEvent()
 }
