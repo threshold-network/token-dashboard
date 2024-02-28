@@ -5,7 +5,8 @@ import useDocumentTitle from "../../hooks/useDocumentTitle"
 import Network from "./Network"
 import { PageComponent } from "../../types"
 import { featureFlags } from "../../constants"
-import { NoBridgeFeesBanner } from "./NoBridgeFeesBanner"
+import AnnouncementBanner from "../../components/AnnouncementBanner"
+import tbtcAppBannerIllustration from "../../static/images/tBTCAppBanner.svg"
 
 const Overview: PageComponent = () => {
   useDocumentTitle("Threshold - Overview")
@@ -14,7 +15,16 @@ const Overview: PageComponent = () => {
     <Container maxW={{ base: "2xl", xl: "6xl" }} my={16}>
       <Image src={thresholdWordMark} mb={4} />
       <H1 mb={12}>Overview</H1>
-      {featureFlags.TBTC_V2 && <NoBridgeFeesBanner mb={"4"} />}
+      {featureFlags.TBTC_V2 && (
+        <AnnouncementBanner
+          variant="primary"
+          imgSrc={tbtcAppBannerIllustration}
+          preTitle="get started"
+          title="Get your Bitcoin to work!"
+          href="/tBTC"
+          buttonText="Mint tBTC"
+        />
+      )}
       <Outlet />
     </Container>
   )
