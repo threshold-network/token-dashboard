@@ -25,6 +25,7 @@ import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useIsActive } from "../../../../hooks/useIsActive"
+import { PosthogButtonId } from "../../../../types/posthog"
 
 export interface FormValues {
   ethAddress: string
@@ -220,6 +221,10 @@ export const ProvideDataComponent: FC<{
         form="tbtc-minting-data-form"
         isFullWidth
         data-ph-capture-attribute-button-name={`Generate Deposit Address (Deposit flow)`}
+        data-ph-capture-attribute-button-id={
+          PosthogButtonId.GenerateDepositAddress
+        }
+        data-ph-capture-attribute-button-text={`Generate Deposit Address`}
       >
         Generate Deposit Address
       </Button>

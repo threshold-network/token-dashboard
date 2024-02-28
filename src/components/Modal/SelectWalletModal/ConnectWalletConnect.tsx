@@ -5,7 +5,7 @@ import {
   WalletConnectionModalBase,
   WalletConnectStatusAlert,
 } from "./components"
-import { ConnectionError, WalletType } from "../../../enums"
+import { ConnectionError } from "../../../enums"
 import doesErrorInclude from "../../../web3/utils/doesErrorInclude"
 import { walletConnect } from "../../../web3/connectors/walletConnect"
 
@@ -35,7 +35,6 @@ const ConnectWalletConnect: FC<{
         walletConnect.provider = undefined
         activate(walletConnect)
       }}
-      walletType={WalletType.WalletConnect}
       shouldForceCloseModal
     >
       <WalletConnectStatusAlert

@@ -5,6 +5,8 @@ import * as posthog from "../../posthog"
 import { getAddress, isSameETHAddress } from "../../web3/utils"
 import { featureFlags } from "../../constants"
 import { hashString } from "../../utils/crypto"
+import { PosthogEvent } from "../../types/posthog"
+import { getWalletTypeFromConnector } from "../../web3/utils/connectors"
 
 export const useIdentify = () => {
   const { connector, account } = useWeb3React()
@@ -12,45 +14,64 @@ export const useIdentify = () => {
   useEffect(() => {
     if (!featureFlags.POSTHOG) return
 
-    const onLogin = async () => {
+    const onAccountChange = async () => {
       const account = await connector?.getAccount()
 
       if (account) {
-        const hashedAccount = await hashString({
-          value: getAddress(account).toUpperCase(),
-        })
+        const walletType = getWalletTypeFromConnector(connector)
 
-        posthog.identify(hashedAccount)
+        posthog.identify(getAddress(account), {
+          address: getAddress(account),
+          walletType,
+        })
+      } else {
+        posthog.reset()
       }
     }
-    onLogin()
+    onAccountChange()
   }, [connector])
 
-  useEffect(() => {
-    if (!featureFlags.POSTHOG) return
+  /**
+   * Commenting out the useEffect below because we currently refresh the page
+   * when the account is changed. Therefore, resetting PostHog after an account
+   * change is unnecessary.
+   */
 
-    const updateHandler = (update: ConnectorUpdate) => {
-      if (!update.account) {
-        posthog.reset()
-      } else if (
-        update.account &&
-        account &&
-        !isSameETHAddress(update.account, account)
-      ) {
-        posthog.reset()
-        posthog.identify(getAddress(update.account))
-      }
-    }
+  // useEffect(() => {
+  //   if (!featureFlags.POSTHOG) return
 
-    const deactivateHandler = () => {
-      posthog.reset()
-    }
+  //   const updateHandler = async (update: ConnectorUpdate) => {
+  //     console.log("update handlerrr!!")
+  //     if (!update.account) {
+  //       posthog.reset()
+  //     } else if (
+  //       update.account &&
+  //       account &&
+  //       !isSameETHAddress(update.account, account)
+  //     ) {
+  //       posthog.reset()
 
-    connector?.on(ConnectorEvent.Update, updateHandler)
-    connector?.on(ConnectorEvent.Deactivate, deactivateHandler)
-    return () => {
-      connector?.removeListener(ConnectorEvent.Update, updateHandler)
-      connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
-    }
-  }, [connector, account])
+  //       const hashedAccount = await hashString({
+  //         value: getAddress(account).toUpperCase(),
+  //       })
+  //       console.log("hashed account2: ", hashedAccount)
+  //       posthog.identify(hashedAccount, {
+  //         address: getAddress(account),
+  //       })
+  //       console.log("posthog identified again!")
+  //     }
+  //   }
+
+  //   const deactivateHandler = () => {
+  //     console.log("deactiateeee!!!")
+  //     posthog.reset()
+  //   }
+
+  //   connector?.on(ConnectorEvent.Update, updateHandler)
+  //   connector?.on(ConnectorEvent.Deactivate, deactivateHandler)
+  //   return () => {
+  //     connector?.removeListener(ConnectorEvent.Update, updateHandler)
+  //     connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
+  //   }
+  // }, [connector, account])
 }

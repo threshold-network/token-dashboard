@@ -12,7 +12,7 @@ interface CoinbaseWalletProvider {
 
 const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
-class CoinbaseWalletConnector extends WalletLinkConnector {
+export class CoinbaseWalletConnector extends WalletLinkConnector {
   activate = async (): Promise<ConnectorUpdate<string | number>> => {
     // Handle the case when MetaMask and Coinbase Wallet are both installed.
     const provider =
