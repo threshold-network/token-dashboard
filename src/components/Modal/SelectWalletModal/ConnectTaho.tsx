@@ -18,7 +18,7 @@ import {
   WalletInitializeAlert,
   WalletRejectedAlert,
 } from "./components"
-import { ExternalHref, WalletType } from "../../../enums"
+import { ExternalHref } from "../../../enums"
 import Link from "../../Link"
 
 const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
@@ -59,7 +59,6 @@ const ConnectTaho: FC<{ goBack: () => void; closeModal: () => void }> = ({
             }
           : undefined
       }
-      walletType={WalletType.TAHO}
     >
       {isTahoNotInstalled && <InstallTaho />}
       {isTahoNotDefaultWallet && <TahoIsNotSetAsDefaultWallet />}
