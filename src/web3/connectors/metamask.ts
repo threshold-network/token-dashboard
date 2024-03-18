@@ -30,8 +30,8 @@ export class InjectedProviderIsNotMetaMaskError extends Error {
   }
 }
 
-class MetaMask extends InjectedConnector {
-  private isMetaMask(provider: unknown): boolean {
+export class MetaMask extends InjectedConnector {
+  isMetaMask(provider: unknown): boolean {
     return (
       typeof provider === "object" &&
       provider !== null &&

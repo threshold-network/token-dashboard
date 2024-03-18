@@ -16,7 +16,11 @@ export const useErc20TokenContract: UseErc20Interface = (
   abi = ERC20_ABI
 ) => {
   const { account } = useWeb3React()
-  const { setTokenLoading, setTokenBalance } = useTokenState()
+  const {
+    setTokenLoading,
+    setTokenIsLoadedFromConnectedAccount,
+    setTokenBalance,
+  } = useTokenState()
   const { setTransactionStatus } = useTransaction()
 
   // TODO: Figure out how to type the ERC20 contract
@@ -59,6 +63,7 @@ export const useErc20TokenContract: UseErc20Interface = (
           const balance = await contract?.balanceOf(account as string)
           setTokenBalance(token, balance.toString())
           setTokenLoading(token, false)
+          setTokenIsLoadedFromConnectedAccount(token, true)
         } catch (error) {
           setTokenLoading(Token.Nu, false)
           console.log(

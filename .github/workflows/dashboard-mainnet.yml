@@ -58,6 +58,8 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+          GOOGLE_TAG_MANAGER_SUPPORT: false
+          GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -77,6 +79,8 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+          GOOGLE_TAG_MANAGER_SUPPORT: true
+          GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
       - uses: actions/upload-artifact@v3
         with:
