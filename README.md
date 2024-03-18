@@ -56,7 +56,7 @@ git config --global url."https://".insteadOf git://
 
 Ref: https://github.com/keep-network/tbtc-v2/pull/403
 
-Instead of the goerli contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to goerli/mainnet and also allow to manually control mint and unmint process of tbtc-v2 (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403) To install sepolia-dev contracts run:
+Instead of the `sepolia` contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to `sepolia`/`mainnet` and also allow to manually control mint and unmint process of `tbtc-v2` (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403). To install sepolia-dev contracts run:
 
 ```
 yarn @keep-network/keep-core@sepolia \
@@ -118,8 +118,14 @@ REACT_APP_FEATURE_FLAG_TBTC_V2=true
 REACT_APP_FEATURE_FLAG_TBTC_V2_REDEMPTION=true
 REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING=true
 REACT_APP_FEATURE_FLAG_FEEDBACK_MODULE=false
+REACT_APP_FEATURE_FLAG_LEDGER_LIVE=true
+
+REACT_APP_FEATURE_FLAG_GOOGLE_TAG_MANAGER=false
+REACT_APP_GOOGLE_TAG_MANAGER_ID=$GOOGLE_TAG_MANAGER_ID
+
 REACT_APP_FEATURE_FLAG_POSTHOG=false
-REACT_APP_FEATURE_FLAG_SENTRY=$SENTRY_SUPPORT
+
+REACT_APP_FEATURE_FLAG_SENTRY=false
 REACT_APP_SENTRY_DSN=$SENTRY_DSN
 
 REACT_APP_ELECTRUM_PROTOCOL=wss

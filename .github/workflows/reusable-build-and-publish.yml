@@ -138,7 +138,7 @@ jobs:
       - name: Resolve contracts
         shell: bash
         run: |
-          yarn upgrade \
+          yarn upgrade --ignore-scripts \
             @threshold-network/solidity-contracts@${{ steps.set-packages-versions.outputs.threshold-contracts-version }} \
             @keep-network/keep-core@${{ inputs.environment }} \
             @keep-network/keep-ecdsa@${{ inputs.environment }} \
