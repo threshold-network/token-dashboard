@@ -1,7 +1,6 @@
 export * from "./BridgeActivity"
 export * from "./BridgeProcessIndicator"
 export * from "./Links"
-export * from "./NoBridgeFeesPageTitleBadge"
 export * from "./SendBitcoinsToDepositAddressForm"
 export * from "./Stats"
 export * from "./TakeNoteList"

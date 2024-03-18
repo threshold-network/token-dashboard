@@ -5,7 +5,7 @@ import * as posthog from "../../posthog"
 
 export const useCapture = (eventName: PosthogEvent) => {
   return useCallback(
-    (params) => {
+    (params?) => {
       if (!featureFlags.POSTHOG) return
       posthog.capture(eventName, params)
     },

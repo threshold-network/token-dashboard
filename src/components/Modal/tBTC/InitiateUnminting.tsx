@@ -31,6 +31,7 @@ import {
 } from "../../TransactionDetails"
 import ModalCloseButton from "../ModalCloseButton"
 import withBaseModal from "../withBaseModal"
+import { PosthogButtonId } from "../../../types/posthog"
 
 type InitiateUnmintingProps = {
   unmintAmount: string
@@ -126,7 +127,17 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button onClick={initiateUnminting}>Unmint</Button>
+        <Button
+          onClick={initiateUnminting}
+          data-ph-capture-attribute-button-name={"Unmint (Modal)"}
+          data-ph-capture-attribute-button-id={
+            PosthogButtonId.InitiateUnminting
+          }
+          data-ph-capture-attribute-button-text={"Unmint"}
+          data-ph-capture-attribute-unminted-tbtc-amount={unmintAmount}
+        >
+          Unmint
+        </Button>
       </ModalFooter>
     </>
   )
