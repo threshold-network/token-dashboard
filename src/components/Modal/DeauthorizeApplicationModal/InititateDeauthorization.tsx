@@ -43,8 +43,13 @@ const InitiateDeauthorization: FC<
   isOperatorInPool,
   operator,
 }) => {
-  const shouldUpdateOperatorStatusAfterInitiation =
-    isOperatorInPool !== undefined && !isOperatorInPool
+  let shouldUpdateOperatorStatusAfterInitiation
+  if (stakingAppName === "taco") {
+    shouldUpdateOperatorStatusAfterInitiation = false
+  } else {
+    shouldUpdateOperatorStatusAfterInitiation =
+      isOperatorInPool !== undefined && !isOperatorInPool
+  }
   const { sendTransaction } = useInitiateDeauthorization(
     stakingAppName,
     shouldUpdateOperatorStatusAfterInitiation
