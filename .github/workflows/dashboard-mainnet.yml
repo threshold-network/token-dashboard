@@ -78,6 +78,8 @@ jobs:
           ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
+          TRM_API_KEY: ${{ secrets.MAINNET_TRM_API_KEY }}
+          TRM_SUPPORT: true
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}

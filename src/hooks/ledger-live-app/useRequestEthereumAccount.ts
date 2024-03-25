@@ -8,6 +8,7 @@ import { walletConnected } from "../../store/account"
 import { supportedChainId } from "../../utils/getEnvVariable"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useIsEmbed } from "../useIsEmbed"
+import { useWeb3React } from "@web3-react/core"
 
 type UseRequestAccountState = {
   pending: boolean
@@ -26,6 +27,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
+  const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
   const { isEmbed } = useIsEmbed()
@@ -39,7 +41,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     if (isEmbed) {
       setIsSdkInitializing(true)
       setEthAccount(account || undefined)
-      dispatch(walletConnected(account?.address || ""))
+      dispatch(walletConnected({ address: account?.address || "", chainId }))
     }
   }, [account, isEmbed])
 

@@ -4,11 +4,11 @@ import { useDispatch } from "react-redux"
 import { walletConnected } from "../store/account"
 
 export const useSaveConnectedAddressToStore = () => {
-  const { account } = useWeb3React()
+  const { account, chainId } = useWeb3React()
   const dispatch = useDispatch()
 
   useEffect(() => {
     const address = account ? account : ""
-    dispatch(walletConnected(address))
+    dispatch(walletConnected({ address, chainId }))
   }, [account])
 }

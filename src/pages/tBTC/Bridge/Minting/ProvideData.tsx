@@ -26,6 +26,8 @@ import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTit
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
+import { useSelector } from "react-redux"
+import { RootState } from "../../../../store"
 
 export interface FormValues {
   ethAddress: string
@@ -108,6 +110,9 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 export const ProvideDataComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ onPreviousStepClick }) => {
+  const { isBlocked, isFetching } = useSelector(
+    (state: RootState) => state.account.trm
+  )
   const { updateState } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -215,8 +220,10 @@ export const ProvideDataComponent: FC<{
         Download Deposit Receipt (recommended)
       </Checkbox>
       <Button
-        isLoading={isSubmitButtonLoading}
-        loadingText={"Generating deposit address..."}
+        isLoading={isSubmitButtonLoading || isFetching}
+        loadingText={
+          isSubmitButtonLoading ? "Generating deposit address..." : undefined
+        }
         type="submit"
         form="tbtc-minting-data-form"
         isFullWidth
@@ -225,6 +232,7 @@ export const ProvideDataComponent: FC<{
           PosthogButtonId.GenerateDepositAddress
         }
         data-ph-capture-attribute-button-text={`Generate Deposit Address`}
+        disabled={isBlocked}
       >
         Generate Deposit Address
       </Button>

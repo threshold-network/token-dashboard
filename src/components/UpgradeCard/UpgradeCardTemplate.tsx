@@ -16,6 +16,8 @@ import { UpgredableToken } from "../../types"
 import { Token } from "../../enums"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "ethers"
+import { RootState } from "../../store"
+import { useSelector } from "react-redux"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
@@ -31,6 +33,9 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   onSubmit,
   max,
 }) => {
+  const { isBlocked, isFetching } = useSelector(
+    (state: RootState) => state.account.trm
+  )
   const { formattedAmount } = useTConvertedAmount(token, amountToConvert)
   const { formattedAmount: exchangeRate } = useTExchangeRate(token)
   const { account } = useWeb3React()
@@ -71,13 +76,15 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
         <SubmitTxButton
+          isLoading={isFetching}
           mt={10}
           onSubmit={onSubmit}
           disabled={
-            !!account &&
-            (amountToConvert == 0 ||
-              amountToConvert == "" ||
-              BigNumber.from(amountToConvert).gt(max))
+            (!!account &&
+              (amountToConvert == 0 ||
+                amountToConvert == "" ||
+                BigNumber.from(amountToConvert).gt(max))) ||
+            isBlocked
           }
         />
       </Box>

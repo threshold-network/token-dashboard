@@ -23,7 +23,7 @@ const Navbar: FC = () => {
 
   useEffect(() => {
     if (ledgerLiveAccountAddress && isEmbed) {
-      dispatch(walletConnected(ledgerLiveAccountAddress))
+      dispatch(walletConnected({ address: ledgerLiveAccountAddress, chainId }))
     }
   }, [ledgerLiveAccountAddress, dispatch, isEmbed])
 

@@ -8,6 +8,7 @@ const envVariables = [
   "FEATURE_FLAG_POSTHOG",
   "FEATURE_FLAG_FEEDBACK_MODULE",
   "FEATURE_FLAG_LEDGER_LIVE",
+  "FEATURE_FLAG_TRM",
   "POSTHOG_HOSTNAME_HTTP",
   "POSTHOG_API_KEY",
   "ELECTRUM_PROTOCOL",
@@ -20,6 +21,7 @@ const envVariables = [
   "DAPP_DEVELOPMENT_TESTNET_CONTRACTS",
   "FEATURE_FLAG_GOOGLE_TAG_MANAGER",
   "GOOGLE_TAG_MANAGER_ID",
+  "TRM_API_KEY",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]
