@@ -25,8 +25,7 @@ export const StakingDepositStepsNonMAS: FC = () => {
       checklistItems={[
         {
           itemId: "staking_deposit__0",
-          itemTitle:
-            "Provider Node address (Operator), Beneficiary, and Authorizer addresses",
+          itemTitle: "Provider, Beneficiary, and Authorizer addresses",
           itemSubTitle: (
             <BodySm color={useColorModeValue("gray.500", "gray.300")}>
               These will be automatically set up to your wallet address. If you
