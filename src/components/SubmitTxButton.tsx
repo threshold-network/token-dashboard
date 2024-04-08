@@ -1,7 +1,6 @@
 import { FC } from "react"
 import { Button, ButtonProps } from "@chakra-ui/react"
 import { useIsActive } from "../hooks/useIsActive"
-import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 import { useConnectWallet } from "../hooks/useConnectWallet"
 import { RootState } from "../store"
 import { useSelector } from "react-redux"
@@ -22,15 +21,14 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   const { isBlocked, isFetching } = useSelector(
     (state: RootState) => state.account.trm
   )
-  const { isActive } = useIsActive()
-  const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
+  const { account } = useIsActive()
   const connectWallet = useConnectWallet()
 
   const onConnectWalletClick = () => {
     connectWallet()
   }
 
-  if (isActive && isSdkInitializedWithSigner) {
+  if (account) {
     return (
       <Button
         isLoading={isFetching || isLoading}
