@@ -63,8 +63,7 @@ import { UnmintingCard } from "./UnmintingCard"
 import { featureFlags } from "../../../constants"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
-import { RootState } from "../../../store"
-import { useSelector } from "react-redux"
+import SubmitTxButton from "../../../components/SubmitTxButton"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -152,9 +151,6 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
   maxTokenAmount,
   bitcoinNetwork,
 }) => {
-  const { isBlocked, isFetching } = useSelector(
-    (state: RootState) => state.account.trm
-  )
   const supportedPrefixesText = getBridgeBTCSupportedAddressPrefixesText(
     "unmint",
     bitcoinNetwork
@@ -198,16 +194,15 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
           {error}
         </BodyMd>
       )}
-      <Button
+      <SubmitTxButton
         size="lg"
-        w="100%"
+        isFullWidth
         mt={error ? "0" : "10"}
         type="submit"
-        isLoading={isSubmitting || isFetching}
-        disabled={isBlocked}
+        isLoading={isSubmitting}
       >
         Unmint
-      </Button>
+      </SubmitTxButton>
     </Form>
   )
 }

@@ -27,6 +27,7 @@ import withBaseModal from "../withBaseModal"
 import { DeauthorizeInfo } from "./DeauthorizeInfo"
 import ModalCloseButton from "../ModalCloseButton"
 import { OnSuccessCallback } from "../../../web3/hooks"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const UnstakeTModal: FC<
   BaseModalProps & {
@@ -117,8 +118,8 @@ const UnstakeTModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button
-          onClick={() => {
+        <SubmitTxButton
+          onSubmit={() => {
             unstake({
               stakingProvider: stake.stakingProvider,
               amount: amountToUnstake,
@@ -126,7 +127,7 @@ const UnstakeTModal: FC<
           }}
         >
           Unstake
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

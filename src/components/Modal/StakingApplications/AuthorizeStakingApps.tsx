@@ -31,6 +31,7 @@ import {
 } from "../../../store/staking-applications"
 import { getStakingAppLabelFromAppName } from "../../../utils/getStakingAppLabel"
 import ModalCloseButton from "../ModalCloseButton"
+import SubmitTxButton from "../../SubmitTxButton"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
@@ -101,9 +102,9 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button mr={2} onClick={onAuthorize}>
+        <SubmitTxButton mr={2} onSubmit={onAuthorize}>
           Authorize
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

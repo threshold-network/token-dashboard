@@ -31,7 +31,9 @@ export const BridgeProcessEmptyState: FC<{
     <>
       <BridgeProcessCardTitle bridgeProcess={bridgeProcess} />
       <H5 align={"center"}>{title}</H5>
-      <SubmitTxButton mb="6" mt="4" />
+      <SubmitTxButton isFullWidth mb="6" mt="4">
+        Upgrade
+      </SubmitTxButton>
       <Tvl tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
       <ProtocolHistoryTitle mt="8" />
       <ProtocolHistoryRecentDeposits

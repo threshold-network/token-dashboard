@@ -33,8 +33,7 @@ type RecoveryJsonFileData = DepositScriptParameters & {
   btcRecoveryAddress: string
 }
 import { useIsActive } from "../../../hooks/useIsActive"
-import { useSelector } from "react-redux"
-import { RootState } from "../../../store"
+import SubmitTxButton from "../../../components/SubmitTxButton"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -98,9 +97,6 @@ export const ResumeDepositPage: PageComponent = () => {
 }
 
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
-  const { isBlocked, isFetching } = useSelector(
-    (state: RootState) => state.account.trm
-  )
   const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
 
@@ -133,18 +129,16 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         <HelperErrorText hasError={isError} errorMsgText={error} />
       </FormControl>
 
-      <Button
+      <SubmitTxButton
         size="lg"
         isFullWidth
         mt="6"
-        disabled={
-          !values.depositParameters || isError || isSubmitting || isBlocked
-        }
+        isDisabled={!values.depositParameters || isError || isSubmitting}
         type="submit"
-        isLoading={isSubmitting || isFetching}
+        isLoading={isSubmitting}
       >
         Upload and Resume
-      </Button>
+      </SubmitTxButton>
     </Form>
   )
 }

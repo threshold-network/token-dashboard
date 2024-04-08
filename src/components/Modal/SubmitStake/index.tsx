@@ -24,6 +24,7 @@ import Link from "../../Link"
 import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
 import ModalCloseButton from "../ModalCloseButton"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
@@ -98,9 +99,12 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
             <Button onClick={closeModal} variant="outline">
               Cancel
             </Button>
-            <Button onClick={submitStake} disabled={!isAcknowledgementChecked}>
+            <SubmitTxButton
+              isDisabled={!isAcknowledgementChecked}
+              onSubmit={submitStake}
+            >
               Stake
-            </Button>
+            </SubmitTxButton>
           </HStack>
         </VStack>
       </ModalFooter>

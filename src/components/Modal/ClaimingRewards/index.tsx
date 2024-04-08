@@ -33,16 +33,13 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import ModalCloseButton from "../ModalCloseButton"
-import { RootState } from "../../../store"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const ClaimingRewardsBase: FC<
   BaseModalProps & {
     totalRewardsAmount: string
   }
 > = ({ closeModal, totalRewardsAmount }) => {
-  const { isBlocked, isFetching } = useSelector(
-    (state: RootState) => state.account.trm
-  )
   const dispatch = useDispatch()
   const { openModal } = useModal()
   const beneficiaryRewards = useSelector(selectAccumulatedRewardsPerBeneficiary)
@@ -101,15 +98,13 @@ const ClaimingRewardsBase: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button
-          isLoading={isFetching}
-          onClick={() => {
+        <SubmitTxButton
+          onSubmit={() => {
             claim(Object.keys(rewards))
           }}
-          disabled={isBlocked}
         >
           Claim All
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

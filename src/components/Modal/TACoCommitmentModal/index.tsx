@@ -30,6 +30,7 @@ import {
 import { useModal } from "../../../hooks/useModal"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { stakingAppNameToThresholdAppService } from "../../../hooks/staking-applications/useStakingAppContract"
+import SubmitTxButton from "../../SubmitTxButton"
 
 export type TACoCommitProps = BaseModalProps & {
   stakingProvider: string
@@ -165,12 +166,12 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button
-          onClick={() => submitCommitment(stakingProvider, value)}
+        <SubmitTxButton
+          onSubmit={() => submitCommitment(stakingProvider, value)}
           type="submit"
         >
           Commit
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )
