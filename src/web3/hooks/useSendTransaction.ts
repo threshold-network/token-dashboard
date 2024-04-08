@@ -8,6 +8,8 @@ import { TransactionReceipt } from "@ethersproject/providers"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { useIsActive } from "../../hooks/useIsActive"
+import { useSelector } from "react-redux"
+import { RootState } from "../../store"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -45,6 +47,9 @@ export const useSendTransactionFromFn = <
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback
 ) => {
+  const { isBlocked, isFetching } = useSelector(
+    (state: RootState) => state.account.trm
+  )
   const { library } = useWeb3React()
   const { account } = useIsActive()
   const { openModal } = useModal()
@@ -56,8 +61,20 @@ export const useSendTransactionFromFn = <
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
-      if (!account) {
-        // Maybe we should do something here?
+      if (!account || isBlocked || isFetching) {
+        const errorMessage = `Transaction attempt failed: ${
+          isFetching
+            ? "We're currently assessing the security details of your wallet."
+            : isBlocked
+            ? "Your wallet has been flagged in our risk assessment screening."
+            : "No connected account detected. Please ensure your wallet is connected."
+        }`
+
+        openModal(ModalType.TransactionFailed, {
+          error: errorMessage,
+          isExpandableError: true,
+        })
+        console.error(errorMessage)
         return
       }
 
