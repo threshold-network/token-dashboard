@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants"
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { featureFlags } from "../../constants"
-import { FetchingState, TRMState } from "../../types"
+import { FetchingState, TrmState } from "../../types"
 import { isSameETHAddress } from "../../web3/utils"
 import { startAppListening } from "../listener"
 import {
@@ -10,14 +10,14 @@ import {
   setStakes,
 } from "../staking"
 import { StakingAppName } from "../staking-applications"
-import { getStakingProviderOperatorInfo, getTRMInfo } from "./effects"
+import { getStakingProviderOperatorInfo, getTrmInfo } from "./effects"
 
 export interface AccountState {
   address: string
   chainId: number | undefined
   isStakingProvider: boolean
   operatorMapping: FetchingState<Record<StakingAppName, string>>
-  trm: TRMState
+  trm: TrmState
 }
 
 export const accountSlice = createSlice({
@@ -146,7 +146,7 @@ export const registerAccountListeners = () => {
   if (featureFlags.TRM) {
     startAppListening({
       actionCreator: accountSlice.actions.walletConnected,
-      effect: getTRMInfo,
+      effect: getTrmInfo,
     })
   }
 }

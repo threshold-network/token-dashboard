@@ -1,4 +1,4 @@
-import { StakeData, TRMEntity, TRMRiskIndicator } from "../../types"
+import { StakeData, TrmEntity, TrmRiskIndicator } from "../../types"
 import { isAddressZero, isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"
@@ -67,7 +67,7 @@ export const getStakingProviderOperatorInfo = async (
   }
 }
 
-export const getTRMInfo = async (
+export const getTrmInfo = async (
   action: ReturnType<typeof accountSlice.actions.walletConnected>,
   listenerApi: AppListenerEffectAPI
 ) => {
@@ -78,9 +78,9 @@ export const getTRMInfo = async (
     listenerApi.dispatch(fetchingTrm())
     const data = await fetchWalletScreening({ address, chainId: chainId })
 
-    const riskIndicators: TRMRiskIndicator[] =
+    const riskIndicators: TrmRiskIndicator[] =
       data[0]?.addressRiskIndicators || []
-    const entities: TRMEntity[] = data[0]?.entities || []
+    const entities: TrmEntity[] = data[0]?.entities || []
 
     const hasSevereRisk = riskIndicators.some(
       (indicator) => indicator.categoryRiskScoreLevelLabel === "Severe"

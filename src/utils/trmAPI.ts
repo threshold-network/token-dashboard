@@ -1,8 +1,8 @@
 import axios from "axios"
 import { getEnvVariable } from "./getEnvVariable"
 import { EnvVariable } from "../enums"
-import chainIdToTRMNetworkName from "./chainIdToTRMNetworkName"
-import { TRMAccountDetails } from "../types"
+import chainIdToTrmNetworkName from "./chainIdToTrmNetworkName"
+import { TrmAccountDetails } from "../types"
 
 interface WalletScreeningRequest {
   address: string
@@ -12,8 +12,8 @@ interface WalletScreeningRequest {
 export async function fetchWalletScreening({
   address,
   chainId,
-}: WalletScreeningRequest): Promise<TRMAccountDetails[]> {
-  const network = chainIdToTRMNetworkName(chainId)
+}: WalletScreeningRequest): Promise<TrmAccountDetails[]> {
+  const network = chainIdToTrmNetworkName(chainId)
   if (!network) return []
 
   const apiKey = getEnvVariable(EnvVariable.TRM_API_KEY)

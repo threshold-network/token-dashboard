@@ -1,21 +1,21 @@
-export type TRMState = {
+export type TrmState = {
   isBlocked: boolean
   isFetching: boolean
   hasFetched: boolean
   error: string
 }
 
-export interface TRMAccountDetails {
+export interface TrmAccountDetails {
   accountExternalId: string | null
   address: string
-  addressRiskIndicators: TRMRiskIndicator[]
+  addressRiskIndicators: TrmRiskIndicator[]
   addressSubmitted: string
   chain: string
-  entities: TRMEntity[]
+  entities: TrmEntity[]
   trmAppUrl: string
 }
 
-export interface TRMRiskIndicator {
+export interface TrmRiskIndicator {
   category: string
   categoryId: string
   categoryRiskScoreLevel: number
@@ -26,7 +26,7 @@ export interface TRMRiskIndicator {
   totalVolumeUsd: string
 }
 
-export interface TRMEntity {
+export interface TrmEntity {
   category: string
   categoryId: string
   entity: string
