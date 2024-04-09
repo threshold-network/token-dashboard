@@ -61,24 +61,18 @@ export const useSendTransactionFromFn = <
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
-      if (!account || isBlocked || isFetching) {
-        const errorMessage = `Transaction attempt failed: ${
-          isFetching
-            ? "We're currently assessing the security details of your wallet."
-            : isBlocked
-            ? "Your wallet has been flagged in our risk assessment screening."
-            : "No connected account detected. Please ensure your wallet is connected."
-        }`
-
-        openModal(ModalType.TransactionFailed, {
-          error: errorMessage,
-          isExpandableError: true,
-        })
-        console.error(errorMessage)
-        return
-      }
-
       try {
+        if (!account || isBlocked || isFetching) {
+          const errorMessage = `Transaction attempt failed: ${
+            isFetching
+              ? "We're currently assessing the security details of your wallet, please try again later."
+              : isBlocked
+              ? "Your wallet has been flagged in our risk assessment screening."
+              : "No connected account detected. Please ensure your wallet is connected."
+          }`
+          throw new Error(errorMessage)
+        }
+
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = await fn(...args)
