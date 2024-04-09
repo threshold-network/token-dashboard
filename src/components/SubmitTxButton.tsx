@@ -19,6 +19,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     (state: RootState) => state.account.trm
   )
   const { isLoading, isDisabled } = buttonProps
+  const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
   const { account } = useIsActive()
   const connectWallet = useConnectWallet()
 
@@ -26,7 +27,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     connectWallet()
   }
 
-  if (account) {
+  if (account && isSdkInitializedWithSigner) {
     return (
       <Button
         isLoading={isFetching || isLoading}
