@@ -4,23 +4,21 @@ import { useIsActive } from "../hooks/useIsActive"
 import { useConnectWallet } from "../hooks/useConnectWallet"
 import { RootState } from "../store"
 import { useSelector } from "react-redux"
+import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 
 interface SubmitTxButtonProps extends ButtonProps {
   onSubmit?: () => void
-  isLoading?: boolean
-  isDisabled?: boolean
 }
 
 const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   onSubmit,
-  isLoading,
-  isDisabled,
   children,
   ...buttonProps
 }) => {
   const { isBlocked, isFetching } = useSelector(
     (state: RootState) => state.account.trm
   )
+  const { isLoading, isDisabled } = buttonProps
   const { account } = useIsActive()
   const connectWallet = useConnectWallet()
 
