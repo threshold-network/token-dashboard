@@ -10,14 +10,11 @@ import isSupportedNetwork from "../../utils/isSupportedNetwork"
 import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
 import { supportedChainId } from "../../utils/getEnvVariable"
 import { useWeb3React } from "@web3-react/core"
-import { RootState } from "../../store"
-import { useSelector } from "react-redux"
 
 const WalletConnectionAlert: FC<{
   account?: string | null
   chainId?: number
 }> = ({ account, chainId }) => {
-  const { isBlocked } = useSelector((state: RootState) => state.account.trm)
   const [hideAlert, setHideAlert] = useState(false)
   const { error, deactivate } = useWeb3React()
   const [alertDescription, setAlertDescription] = useState("")
@@ -32,18 +29,8 @@ const WalletConnectionAlert: FC<{
       return
     }
 
-    if (!account || (account && isSupportedNetwork(chainId)) || !isBlocked) {
+    if (!account || (account && isSupportedNetwork(chainId))) {
       setHideAlert(true)
-      return
-    }
-
-    if (isBlocked) {
-      setAlertDescription(
-        `Your wallet has been flagged in our risk assessment screening. The 
-        Contract interactions are currently disabled.`
-      )
-      setHideAlert(false)
-      setAlertStatus("error")
       return
     }
 
@@ -57,7 +44,7 @@ const WalletConnectionAlert: FC<{
       setHideAlert(false)
       return
     }
-  }, [account, chainId, isBlocked, errorMessage])
+  }, [account, chainId, errorMessage])
 
   const resetAlert = () => {
     setHideAlert(true)
@@ -71,25 +58,10 @@ const WalletConnectionAlert: FC<{
   }
 
   return (
-    <Alert
-      status={alertStatus}
-      variant="solid"
-      position="absolute"
-      w="fit-content"
-      paddingRight="40px"
-      top="94px"
-      right="5.25rem"
-      zIndex="10"
-      ml="4rem"
-    >
+    <Alert status={alertStatus} variant="solid">
       <AlertIcon />
       <AlertDescription>{alertDescription}</AlertDescription>
-      <CloseButton
-        position="absolute"
-        right="8px"
-        top="8px"
-        onClick={resetAlert}
-      />
+      <CloseButton onClick={resetAlert} />
     </Alert>
   )
 }
