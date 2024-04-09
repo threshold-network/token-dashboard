@@ -49,7 +49,7 @@ const useInitializeTbtcSdk = () => {
 
   const initializeSdk = useCallback(
     async (providerOrSigner: providers.Provider | Signer, account?: string) => {
-      if (!isInitializing || account) {
+      if (!isInitializing) {
         setIsInitializing(true)
 
         threshold.tbtc
