@@ -4,6 +4,7 @@ import { ExternalHref } from "../../enums"
 import DetailedLinkListItem from "../DetailedLinkListItem"
 import StakedLogo from "../../static/images/stakingProviders/StakedLogo.png"
 import BoarLogo from "../../static/images/stakingProviders/BoarLogo.png"
+import ColossusLogo from "../../static/images/stakingProviders/ColossusLogo.png"
 import P2PValidatorLogo from "../../static/images/stakingProviders/P2PValidatorLogo.png"
 import InfStonesLogo from "../../static/images/stakingProviders/InfStonesLogo.png"
 import DelightLogo from "../../static/images/stakingProviders/DelightLogo.svg"
@@ -55,6 +56,12 @@ const providers: ProviderItem[] = [
     email: "staked@staked.us",
     link: ExternalHref.stakedUs,
     imgSrc: StakedLogo,
+  },
+  {
+    name: "Colossus",
+    email: "validator@colossus.digital",
+    link: ExternalHref.stakedUs,
+    imgSrc: ColossusLogo,
   },
 ]
 

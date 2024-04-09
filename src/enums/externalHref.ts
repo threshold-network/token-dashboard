@@ -36,4 +36,5 @@ export enum ExternalHref {
   tBTCDuneDashboard = "https://dune.com/threshold/tbtc",
   delight = "https://delightlabs.io",
   runningNodeDocs = "https://docs.threshold.network/staking-and-running-a-node/running-a-node",
+  colossus = "https://colossus.digital",
 }
