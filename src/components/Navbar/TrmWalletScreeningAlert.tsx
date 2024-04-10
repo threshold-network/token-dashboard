@@ -39,8 +39,8 @@ const TrmWalletScreeningAlert: FC = () => {
   }
 
   return (
-    <Alert status="error" variant="solid">
-      <AlertIcon />
+    <Alert status="error" variant="solid" w="fit-content">
+      <AlertIcon alignSelf="center" />
       <AlertDescription>{alertDescription}</AlertDescription>
       <CloseButton onClick={resetAlert} />
     </Alert>

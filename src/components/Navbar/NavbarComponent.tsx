@@ -69,12 +69,13 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         </Stack>
         <VStack
           position="absolute"
-          w="fit-content"
           paddingRight="40px"
           top="94px"
           right="5.25rem"
           zIndex="10"
           ml="4rem"
+          maxWidth={{ base: "38rem", xl: "100%" }}
+          alignItems={"flex-end"}
         >
           <TrmWalletScreeningAlert />
           <WalletConnectionAlert {...{ account, chainId }} />

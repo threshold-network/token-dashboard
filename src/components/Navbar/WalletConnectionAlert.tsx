@@ -58,8 +58,8 @@ const WalletConnectionAlert: FC<{
   }
 
   return (
-    <Alert status={alertStatus} variant="solid">
-      <AlertIcon />
+    <Alert status={alertStatus} variant="solid" w="fit-content">
+      <AlertIcon alignSelf="center" />
       <AlertDescription>{alertDescription}</AlertDescription>
       <CloseButton onClick={resetAlert} />
     </Alert>
