@@ -215,6 +215,8 @@ export const ProvideDataComponent: FC<{
       >
         Download Deposit Receipt (recommended)
       </Checkbox>
+      {/* Although the following button doesn't trigger an on-chain transaction, the 
+      SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
         isLoading={isSubmitButtonLoading}
         loadingText={

@@ -128,7 +128,8 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         <FileUploader onFileUpload={onFileUpload} headerHelperText="Required" />
         <HelperErrorText hasError={isError} errorMsgText={error} />
       </FormControl>
-
+      {/* Although the following button doesn't trigger an on-chain transaction, the 
+      SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
         size="lg"
         isFullWidth
