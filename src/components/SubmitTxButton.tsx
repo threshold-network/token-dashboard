@@ -12,13 +12,14 @@ interface SubmitTxButtonProps extends ButtonProps {
 
 const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   onSubmit,
+  isLoading,
+  isDisabled,
   children,
   ...buttonProps
 }) => {
   const { isBlocked, isFetching } = useSelector(
     (state: RootState) => state.account.trm
   )
-  const { isLoading, isDisabled } = buttonProps
   const { isSdkInitializedWithSigner } = useIsTbtcSdkInitializing()
   const { account } = useIsActive()
   const connectWallet = useConnectWallet()
