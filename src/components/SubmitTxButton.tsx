@@ -8,12 +8,14 @@ import { useIsTbtcSdkInitializing } from "../contexts/ThresholdContext"
 
 interface SubmitTxButtonProps extends ButtonProps {
   onSubmit?: () => void
+  isTbtcTransaction?: boolean
 }
 
 const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   onSubmit,
   isLoading,
   isDisabled,
+  isTbtcTransaction = false,
   children,
   ...buttonProps
 }) => {
@@ -28,7 +30,9 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     connectWallet()
   }
 
-  if (account && isSdkInitializedWithSigner) {
+  // Check for tbtc transactions. This check ensures that the button is
+  // enabled only if the sdk is initialized with a signer for tbtc related actions.
+  if (account && (isTbtcTransaction ? isSdkInitializedWithSigner : true)) {
     return (
       <Button
         isLoading={isFetching || isLoading}

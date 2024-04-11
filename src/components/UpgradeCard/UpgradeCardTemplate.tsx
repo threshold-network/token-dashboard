@@ -74,6 +74,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           isFullWidth
           mt={10}
           onSubmit={onSubmit}
+          isTbtcTransaction
           isDisabled={
             !!account &&
             (amountToConvert == 0 ||
