@@ -199,6 +199,7 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
         isFullWidth
         mt={error ? "0" : "10"}
         type="submit"
+        isTbtcTransaction
         isLoading={isSubmitting}
       >
         Unmint

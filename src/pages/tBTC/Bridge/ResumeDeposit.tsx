@@ -134,6 +134,7 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         size="lg"
         isFullWidth
         mt="6"
+        isTbtcTransaction
         isDisabled={!values.depositParameters || isError || isSubmitting}
         type="submit"
         isLoading={isSubmitting}

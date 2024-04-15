@@ -224,6 +224,7 @@ export const ProvideDataComponent: FC<{
         }
         type="submit"
         form="tbtc-minting-data-form"
+        isTbtcTransaction
         isFullWidth
         data-ph-capture-attribute-button-name={`Generate Deposit Address (Deposit flow)`}
         data-ph-capture-attribute-button-id={

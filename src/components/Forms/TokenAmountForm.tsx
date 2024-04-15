@@ -78,7 +78,6 @@ export const TokenAmountFormBase: FC<
         w="100%"
         mt="6"
         isFullWidth
-        isTbtcTransaction
         variant={submitButtonVariant}
         isDisabled={isDisabled}
       >
