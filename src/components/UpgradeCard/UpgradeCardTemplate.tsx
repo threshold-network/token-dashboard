@@ -71,7 +71,6 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
         <SubmitTxButton
-          isTbtcTransaction
           isFullWidth
           mt={10}
           onSubmit={onSubmit}
