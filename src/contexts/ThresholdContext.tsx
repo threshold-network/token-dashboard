@@ -16,6 +16,9 @@ import {
   getDefaultThresholdLibProvider,
   threshold,
 } from "../utils/getThresholdLib"
+import { useLedgerLiveApp } from "./LedgerLiveAppContext"
+import { useIsActive } from "../hooks/useIsActive"
+import { useIsEmbed } from "../hooks/useIsEmbed"
 
 const ThresholdContext = createContext(threshold)
 
@@ -53,10 +56,10 @@ const useInitializeTbtcSdk = () => {
           account
         )
         setSdk(sdk)
-        setIsInitializing(false)
         setIsInitialized(true)
         const isInitializedWithSigner = account ? true : false
         setIsInitializedWithSigner(isInitializedWithSigner)
+        setIsInitializing(false)
       }
     },
     [
@@ -79,7 +82,7 @@ const useInitializeTbtcSdk = () => {
 }
 
 export const ThresholdProvider: FC = ({ children }) => {
-  const { library, active, account } = useWeb3React()
+  const { library } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
   const {
     sdk,
@@ -89,13 +92,16 @@ export const ThresholdProvider: FC = ({ children }) => {
     isSdkInitializedWithSigner,
     setIsSdkInitializing,
   } = useInitializeTbtcSdk()
+  const { ledgerLiveAppEthereumSigner } = useLedgerLiveApp()
+  const { account, isActive } = useIsActive()
+  const { isEmbed } = useIsEmbed()
 
   useEffect(() => {
-    if (active && library && account) {
+    if (isActive) {
       threshold.updateConfig({
         ethereum: {
           ...threshold.config.ethereum,
-          providerOrSigner: library,
+          providerOrSigner: isEmbed ? ledgerLiveAppEthereumSigner : library,
           account,
         },
         bitcoin: threshold.config.bitcoin,
@@ -104,11 +110,12 @@ export const ThresholdProvider: FC = ({ children }) => {
       initializeSdk(threshold.config.ethereum.providerOrSigner, account)
     }
 
-    if (!active && !account && hasThresholdLibConfigBeenUpdated.current) {
+    if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
       threshold.updateConfig({
         ethereum: {
           ...threshold.config.ethereum,
           providerOrSigner: getDefaultThresholdLibProvider(),
+          account: undefined,
         },
         bitcoin: threshold.config.bitcoin,
       })
@@ -119,7 +126,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     if (!sdk && !isSdkInitializing && !isSdkInitialized) {
       initializeSdk(threshold.config.ethereum.providerOrSigner)
     }
-  }, [library, active, account])
+  }, [library, isActive, account, initializeSdk, isEmbed])
 
   return (
     <ThresholdContext.Provider value={threshold}>

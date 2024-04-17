@@ -1,4 +1,5 @@
 import { useCallback } from "react"
+import { useBondOperatorTransaction } from "./useBondOperatorTransaction"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
@@ -7,14 +8,14 @@ import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToSta
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 import { useAppDispatch, useAppSelector } from "../store"
 import { selectMappedOperators } from "../../store/account"
+import { isEmptyOrZeroAddress } from "../../web3/utils"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const {
     mappedOperatorTbtc,
     mappedOperatorRandomBeacon,
-    isOperatorMappedInBothApps,
-    isOperatorMappedOnlyInRandomBeacon,
-    isOperatorMappedOnlyInTbtc,
+    mappedOperatorTaco,
+    isOperatorMappedInAllApps,
   } = useAppSelector((state) => selectMappedOperators(state))
   const { account } = useWeb3React()
   const { openModal, closeModal } = useModal()
@@ -28,6 +29,10 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     sendTransaction: sendRegisterOperatorTransactionRandomBeacon,
     status: registerOperatorRandomBeaconStatus,
   } = useRegisterOperatorTransaction("randomBeacon")
+  const {
+    sendTransaction: sendRegisterOperatorTransactionTaco,
+    status: registerOperatorTacoStatus,
+  } = useBondOperatorTransaction("taco")
 
   const registerMultipleOperators = useCallback(
     async (operator: string) => {
@@ -36,16 +41,17 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           throw new Error("Connect to the staking provider account first!")
         }
 
-        if (isOperatorMappedInBothApps)
-          throw new Error("Both apps already have mapped operator!")
+        if (isOperatorMappedInAllApps)
+          throw new Error("All apps already have mapped operator!")
 
-        if (isOperatorMappedOnlyInRandomBeacon)
+        if (!isEmptyOrZeroAddress(mappedOperatorRandomBeacon))
           throw new Error("Random beacon app already has mapped operator!")
 
-        if (isOperatorMappedOnlyInTbtc)
-          throw new Error("Tbtc app already have mapped operator!")
+        if (!isEmptyOrZeroAddress(mappedOperatorTbtc))
+          throw new Error("Tbtc app already has mapped operator!")
 
-        // TODO: might also add a check if the operator is already used by another staking provider
+        if (!isEmptyOrZeroAddress(mappedOperatorTaco))
+          throw new Error("TACo app already has mapped operator!")
 
         const successfullTxs: OperatorMappedSuccessTx[] = []
         const tbtcReceipt = await sendRegisterOperatorTransactionTbtc(operator)
@@ -71,11 +77,25 @@ export const useRegisterMultipleOperatorsTransaction = () => {
             txHash: randomBeaconReceipt.transactionHash,
           })
         }
+        const tacoReceipt = await sendRegisterOperatorTransactionTaco(
+          account,
+          operator
+        )
+        if (tacoReceipt) {
+          successfullTxs.push({
+            application: {
+              appName: "taco",
+              operator: operator,
+              stakingProvider: account,
+            },
+            txHash: tacoReceipt.transactionHash,
+          })
+        }
 
-        if (successfullTxs.length < 2) {
+        if (successfullTxs.length < 3) {
           openModal(ModalType.TransactionFailed, {
             error: new Error(
-              "Transaction rejected. You are required to map the Operator Address for both apps."
+              "Transaction rejected. You are required to map the Operator Address for all apps."
             ),
             closeModal: () => {
               closeModal()
@@ -84,7 +104,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
           })
         }
 
-        if (successfullTxs.length === 2) {
+        if (successfullTxs.length === 3) {
           openModal(ModalType.MapOperatorToStakingProviderSuccess, {
             transactions: successfullTxs,
           })
@@ -106,8 +126,10 @@ export const useRegisterMultipleOperatorsTransaction = () => {
       account,
       mappedOperatorRandomBeacon,
       mappedOperatorTbtc,
+      mappedOperatorTaco,
       sendRegisterOperatorTransactionTbtc,
       sendRegisterOperatorTransactionRandomBeacon,
+      sendRegisterOperatorTransactionTaco,
       openModal,
     ]
   )
@@ -116,5 +138,6 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     registerMultipleOperators,
     registerOperatorTbtcStatus,
     registerOperatorRandomBeaconStatus,
+    registerOperatorTacoStatus,
   }
 }

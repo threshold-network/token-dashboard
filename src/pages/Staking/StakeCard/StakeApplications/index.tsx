@@ -15,11 +15,15 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
     "randomBeacon",
     stakingProvider
   )
+  const tacoApp = useStakingAppDataByStakingProvider("taco", stakingProvider)
   const isTbtcFetching = useAppSelector(
     (state) => state.applications.tbtc.stakingProviders.isFetching
   )
   const isRandomBeaconFetching = useAppSelector(
     (state) => state.applications.randomBeacon.stakingProviders.isFetching
+  )
+  const isTacoFetching = useAppSelector(
+    (state) => state.applications.taco.stakingProviders.isFetching
   )
 
   const { isInactiveStake } = useStakeCardContext()
@@ -27,8 +31,11 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
   return (
     <Box>
       <BodyMd mb="4">Applications</BodyMd>
-      {(!tbtcApp.isAuthorized || !randomBeaconApp.isAuthorized) &&
+      {(!tbtcApp.isAuthorized ||
+        !randomBeaconApp.isAuthorized ||
+        !tacoApp.isAuthorized) &&
         !isTbtcFetching &&
+        !isTacoFetching &&
         !isRandomBeaconFetching && <BundledRewardsAlert mb="4" />}
       <List spacing={4}>
         <AuthorizeApplicationRow
@@ -47,9 +54,9 @@ const StakeApplications: FC<{ stakingProvider: string }> = ({
         />
         <AuthorizeApplicationRow
           as="li"
-          label="PRE"
-          isAuthorized={true}
-          percentage={isInactiveStake ? 0 : 100}
+          label="TACo"
+          isAuthorized={tacoApp.isAuthorized}
+          percentage={tacoApp.percentage}
           stakingProvider={stakingProvider}
         />
       </List>

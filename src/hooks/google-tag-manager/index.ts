@@ -1,0 +1,1 @@
+export { useGoogleTagManager } from "./useGoogleTagManager"

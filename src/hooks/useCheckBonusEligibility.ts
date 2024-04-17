@@ -1,9 +1,7 @@
 import { useEffect } from "react"
 import { BigNumber, BigNumberish, Event, constants } from "ethers"
 import {
-  PRE_DEPLOYMENT_BLOCK,
   T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-  usePREContract,
   useTStakingContract,
 } from "../web3/hooks"
 import { getAddress, getContractPastEvents } from "../web3/utils"
@@ -29,7 +27,6 @@ export const useCheckBonusEligibility = () => {
     (state: RootState) => state.rewards.stakingBonus
   )
   const dispatch = useDispatch()
-  const preContract = usePREContract()
   const merkleDropContract = useMerkleDropContract()
   const tStakingContract = useTStakingContract()
 
@@ -38,7 +35,6 @@ export const useCheckBonusEligibility = () => {
       if (
         !stakingProviders ||
         stakingProviders.length === 0 ||
-        !preContract ||
         !tStakingContract ||
         !merkleDropContract ||
         (hasFetched && !isFetching)
@@ -56,11 +52,6 @@ export const useCheckBonusEligibility = () => {
         ).map((_) => getAddress(_.args?.stakingProvider as string))
       )
 
-      const operatorConfirmedEvents = await getContractPastEvents(preContract, {
-        eventName: "OperatorConfirmed",
-        fromBlock: PRE_DEPLOYMENT_BLOCK,
-        filterParams: [stakingProviders],
-      })
       const stakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Staked",
         fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
@@ -79,10 +70,6 @@ export const useCheckBonusEligibility = () => {
         filterParams: [stakingProviders],
       })
 
-      const stakingProviderToPREConfig = getStakingProviderToPREConfig(
-        operatorConfirmedEvents
-      )
-
       const stakingProviderToStakedAmount =
         getStakingProviderToStakedInfo(stakedEvents)
 
@@ -94,11 +81,6 @@ export const useCheckBonusEligibility = () => {
       const stakingProvidersInfo: BonusEligibilityResult = {}
       for (const stakingProvider of stakingProviders) {
         const stakingProviderAddress = getAddress(stakingProvider)
-
-        const hasPREConfigured =
-          stakingProviderToPREConfig[stakingProviderAddress]
-            ?.operatorConfirmedAtBlock <=
-          stakingBonus.BONUS_DEADLINE_BLOCK_NUMBER
 
         const hasActiveStake =
           stakingProviderToStakedAmount[stakingProviderAddress]
@@ -124,15 +106,12 @@ export const useCheckBonusEligibility = () => {
             : "0"
 
         stakingProvidersInfo[stakingProviderAddress] = {
-          hasPREConfigured,
           hasActiveStake,
           hasUnstakeAfterBonusDeadline,
           eligibleStakeAmount,
           reward: calculateStakingBonusReward(eligibleStakeAmount),
           isRewardClaimed: claimedRewards.has(stakingProviderAddress),
-          isEligible: Boolean(
-            hasActiveStake && !hasUnstakeAfterBonusDeadline && hasPREConfigured
-          ),
+          isEligible: Boolean(hasActiveStake && !hasUnstakeAfterBonusDeadline),
         }
       }
       dispatch(setStakingBonus(stakingProvidersInfo))
@@ -171,31 +150,6 @@ const getStakingProviderToStakedInfo = (
     }
   }
   return stakingProviderToStakedAmount
-}
-
-interface StakingProviderToPREConfig {
-  [address: string]: {
-    operator: string
-    operatorConfirmedAtBlock: number
-    transactionHash: string
-  }
-}
-
-const getStakingProviderToPREConfig = (
-  events: Event[]
-): StakingProviderToPREConfig => {
-  const stakingProviderToPREConfig: StakingProviderToPREConfig = {}
-  for (const event of events) {
-    const stakingProvider = getAddress(event.args?.stakingProvider)
-
-    stakingProviderToPREConfig[stakingProvider] = {
-      operator: event.args?.operator,
-      operatorConfirmedAtBlock: event.blockNumber,
-      transactionHash: event.transactionHash,
-    }
-  }
-
-  return stakingProviderToPREConfig
 }
 
 interface StakingProviderToTopUps {

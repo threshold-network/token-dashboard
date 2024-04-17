@@ -20,9 +20,9 @@ const Overview: PageComponent = () => {
           variant="primary"
           imgSrc={tbtcAppBannerIllustration}
           preTitle="get started"
-          title="The NEW tBTC dApp is here!"
+          title="Get your Bitcoin to work!"
           href="/tBTC"
-          buttonText="Start Minting"
+          buttonText="Mint tBTC"
         />
       )}
       <Outlet />

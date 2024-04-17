@@ -15,8 +15,6 @@ import { BaseModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
 import { AbstractConnector } from "../../../../web3/connectors"
 import { WalletType } from "../../../../enums"
-import { useCapture } from "../../../../hooks/posthog"
-import { PosthogEvent } from "../../../../types/posthog"
 
 interface Props extends BaseModalProps {
   WalletIcon: any
@@ -26,7 +24,6 @@ interface Props extends BaseModalProps {
   onContinue?: () => void
   goBack: () => void
   connector?: AbstractConnector
-  walletType: WalletType
   /**
    * This is required for some of the providers (for example WalletConnect v2),
    * because they have their own modal that is being opened. In that case we
@@ -47,25 +44,16 @@ const WalletConnectionModalBase: FC<Props> = ({
   tryAgain,
   onContinue,
   connector,
-  walletType,
   shouldForceCloseModal,
 }) => {
   const { activate, active, account } = useWeb3React()
-  const captureWalletConnected = useCapture(PosthogEvent.WalletConnected)
 
   useEffect(() => {
     if (!connector) return
 
-    captureWalletConnected({ walletType })
     activate(connector)
     if (shouldForceCloseModal) closeModal()
-  }, [
-    activate,
-    connector,
-    captureWalletConnected,
-    walletType,
-    shouldForceCloseModal,
-  ])
+  }, [activate, connector, shouldForceCloseModal])
 
   return (
     <>

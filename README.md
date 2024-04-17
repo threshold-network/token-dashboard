@@ -26,27 +26,20 @@ REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 ## Install Sepolia contracts
 
 ```
-yarn upgrade @keep-network/coverage-pools@sepolia \
-  @keep-network/keep-core@sepolia \
+yarn upgrade @keep-network/keep-core@sepolia \
   @keep-network/keep-ecdsa@sepolia \
   @keep-network/random-beacon@sepolia \
   @keep-network/tbtc@sepolia \
-  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
   @threshold-network/solidity-contracts@sepolia
 ```
 
-**NOTE 1:** We use the same Sepolia versions for both
-`@keep-network/coverage-pools` and `@threshold-network/coverage-pools`, because
-we don't have the v1 version of the package on Sepolia network, only on the
-Mainnet.
-
-**NOTE 2:** If you encounter an `expected manifest` error while executing this,
+**NOTE 1:** If you encounter an `expected manifest` error while executing this,
 then try providing an explicit version of the `keep-core` package:
 `@keep-network/keep-core@1.8.1-sepolia.0`
 The error is probably caused by a bug in Yarn:
 https://github.com/yarnpkg/yarn/issues/4731.
 
-**NOTE 3:** The `token-dashboard` package contains an indirect dependency to
+**NOTE 2:** The `token-dashboard` package contains an indirect dependency to
 `@summa-tx/relay-sol@2.0.2` package, which downloads one of its sub-dependencies
 via unathenticated `git://` protocol. That protocol is no longer supported by
 GitHub. This means that in certain situations installation of the package or
@@ -63,15 +56,13 @@ git config --global url."https://".insteadOf git://
 
 Ref: https://github.com/keep-network/tbtc-v2/pull/403
 
-Instead of the goerli contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to goerli/mainnet and also allow to manually control mint and unmint process of tbtc-v2 (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403) To install sepolia-dev contracts run:
+Instead of the `sepolia` contracts above you can also use `dapp-development-sepolia` contracts. They offer shorter durations for some specific elements in the contracts in comparison to `sepolia`/`mainnet` and also allow to manually control mint and unmint process of `tbtc-v2` (for more information see please see https://github.com/keep-network/tbtc-v2/pull/403). To install sepolia-dev contracts run:
 
 ```
-yarn upgrade @keep-network/coverage-pools@sepolia \
-  @keep-network/keep-core@sepolia \
+yarn @keep-network/keep-core@sepolia \
   @keep-network/keep-ecdsa@sepolia \
   @keep-network/random-beacon@dapp-development-sepolia \
   @keep-network/tbtc@sepolia \
-  @threshold-network/coverage-pools@npm:@keep-network/coverage-pools@sepolia \
   @threshold-network/solidity-contracts@dapp-development-sepolia
 ```
 
@@ -112,3 +103,43 @@ The following procedure allows to deploy T token dashboard to production:
    approval of someone else from the development team.
 5. Once the release action is approved, the new version is automatically
    deployed to `dashboard.threshold.network`.
+
+## Local Development
+
+Update `.env` to contain:
+
+```
+REACT_APP_SUPPORTED_CHAIN_ID=11155111
+REACT_APP_ETH_HOSTNAME_HTTP=https://sepolia.infura.io/v3/<your API key here>
+REACT_APP_ETH_HOSTNAME_WS=wss://sepolia.infura.io/v3/<your API key here>
+REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
+
+REACT_APP_FEATURE_FLAG_TBTC_V2=true
+REACT_APP_FEATURE_FLAG_TBTC_V2_REDEMPTION=true
+REACT_APP_FEATURE_FLAG_MULTI_APP_STAKING=true
+REACT_APP_FEATURE_FLAG_FEEDBACK_MODULE=false
+REACT_APP_FEATURE_FLAG_LEDGER_LIVE=true
+
+REACT_APP_FEATURE_FLAG_GOOGLE_TAG_MANAGER=false
+REACT_APP_GOOGLE_TAG_MANAGER_ID=$GOOGLE_TAG_MANAGER_ID
+
+REACT_APP_FEATURE_FLAG_POSTHOG=false
+
+REACT_APP_FEATURE_FLAG_SENTRY=false
+REACT_APP_SENTRY_DSN=$SENTRY_DSN
+
+REACT_APP_ELECTRUM_PROTOCOL=wss
+REACT_APP_ELECTRUM_HOST=electrumx-server.test.tbtc.network
+REACT_APP_ELECTRUM_PORT=8443
+REACT_APP_MOCK_BITCOIN_CLIENT=false
+
+REACT_APP_WALLET_CONNECT_PROJECT_ID=$WALLET_CONNECT_PROJECT_ID
+
+REACT_APP_TACO_DOMAIN=dashboard
+```
+
+Then build the docker container and run the dashboard:
+
+```bash
+docker-compose up --build
+```

@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  threshold-dashboard:
+    container_name: threshold-dashboard
+    working_dir: /app
+    environment:
+      - PYTHON=/usr/bin/python3
+      - NODE_OPTIONS=--max_old_space_size=3072
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app # Bind mount the current directory to /app in the container
+      - /app/node_modules # This will prevent node_modules from being overwritten by the local volume
+    command: bash -c "yarn format:fix && yarn start"
+    build:
+      context: .
+      dockerfile: Dockerfile.dev

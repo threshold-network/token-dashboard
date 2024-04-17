@@ -47,8 +47,6 @@ KEEP_CORE_SOL_PATH="$KEEP_CORE_PATH/solidity-v1"
 KEEP_ECDSA_PATH="$PWD/../keep-ecdsa"
 KEEP_ECDSA_SOL_PATH="$KEEP_ECDSA_PATH/solidity"
 
-COV_POOLS_PATH="$PWD/../coverage-pools"
-
 TBTC_PATH="$PWD/../tbtc/"
 TBTC_SOL_PATH="$TBTC_PATH/solidity"
 
@@ -67,8 +65,7 @@ function start_dashboard {
     yarn link @threshold-network/solidity-contracts \
         @keep-network/keep-core \
         @keep-network/keep-ecdsa \
-        @keep-network/tbtc \
-        @keep-network/coverage-pools
+        @keep-network/tbtc
 
     printf "${LOG_START}Starting dashboard...${LOG_END}"
     MULTICALL_ADDRESS="${MULTICALL_ADDRESS}" yarn start
@@ -103,14 +100,6 @@ printf "${LOG_START}Migrating contracts for tBTC...${LOG_END}"
 cd "$TBTC_PATH"
 ./scripts/install.sh
 cd "$TBTC_SOL_PATH"
-yarn link
-
-cd $COV_POOLS_PATH
-printf "${LOG_START}Migrating contracts for coverage pools...${LOG_END}"
-yarn
-yarn link @keep-network/keep-core @keep-network/tbtc
-yarn deploy --network development --reset
-./scripts/prepare-artifacts.sh --network development
 yarn link
 
 cd "$THRESHOLD_CONTRACTS_PATH"

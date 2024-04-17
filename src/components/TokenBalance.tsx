@@ -12,9 +12,9 @@ import {
   BoxProps,
   Icon,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { formatTokenAmount } from "../utils/formatAmount"
 import tokenIconMap, { TokenIcon } from "../static/icons/tokenIconMap"
+import { useIsActive } from "../hooks/useIsActive"
 
 export interface TokenBalanceProps {
   tokenAmount: string | number
@@ -95,8 +95,7 @@ const TokenBalance: FC<TokenBalanceProps & TextProps> = ({
   withHigherPrecision = false,
   ...restProps
 }) => {
-  const { active } = useWeb3React()
-  const shouldRenderTokenAmount = active
+  const { isActive: shouldRenderTokenAmount } = useIsActive()
 
   const _tokenAmount = useMemo(() => {
     return formatTokenAmount(tokenAmount || 0, tokenFormat, tokenDecimals)
