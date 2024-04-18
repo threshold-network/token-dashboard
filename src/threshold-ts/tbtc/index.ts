@@ -189,8 +189,6 @@ export interface ITBTC {
 
   readonly tokenContract: Contract
 
-  readonly sdk: SDK | undefined
-
   readonly deposit: Deposit | undefined
 
   /**
@@ -199,12 +197,11 @@ export interface ITBTC {
    * connected) or Signer (if wallet is connected).
    * @param account Connected ethereum address (optional, needed only if user
    * connected his wallet).
-   * @returns Instance of the TBTC class from tbtc-v2.ts lib
    */
   initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
-  ): Promise<SDK>
+  ): Promise<void>
   /**
    * Initiates a Deposit object from bitcoin recovery address.
    * @param btcRecoveryAddress The bitcoin address in which the user will
@@ -424,7 +421,26 @@ export class TBTC implements ITBTC {
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
   private _redemptionTreasuryFeeDivisor: BigNumber | undefined
-  private _sdk: SDK | undefined
+
+  /**
+   * Holds the promise for the asynchronously initialized SDK instance.
+   * This promise is set during the construction of the SDK class and is meant
+   * to be resolved once the SDK is fully initialized. The promise is used to
+   * ensure that the SDK is initialized only once and that all subsequent
+   * retrievals of the SDK instance await this promise, thereby ensuring that
+   * the SDK is ready for use before any operations are performed.
+   *
+   * The promise also facilitates updating the SDK instance dynamically: if a
+   * new initialization is triggered (e.g., when a user logs in and provides a
+   * new signer), it ensures that the new SDK object replaces any previously
+   * pending SDK object, even if the original promise has not yet resolved.
+   *
+   * To retrieve the SDK object, use the `getSdk()` method. This method will
+   * either return the already resolved SDK object or wait until the promise
+   * resolves before returning the SDK.
+   */
+
+  private _sdkPromise: Promise<SDK | undefined>
   private _deposit: Deposit | undefined
 
   constructor(
@@ -489,9 +505,12 @@ export class TBTC implements ITBTC {
     this._multicall = multicall
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
+    this._sdkPromise = new Promise((resolve) => resolve(undefined))
+
+    this.initializeSdk(providerOrSigner, account)
   }
 
-  async initializeSdk(
+  async _initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK> {
@@ -512,12 +531,11 @@ export class TBTC implements ITBTC {
         ? getSepoliaDevelopmentContracts(signer)
         : await loadEthereumContracts(signer, ethereumNetwork)
 
-      this._sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
+      const sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
 
-      depositorAddress &&
-        this._sdk?.deposits.setDefaultDepositor(depositorAddress)
+      depositorAddress && sdk.deposits.setDefaultDepositor(depositorAddress)
 
-      return this._sdk
+      return sdk
     }
 
     const initializeFunction =
@@ -525,13 +543,20 @@ export class TBTC implements ITBTC {
         ? SDK.initializeMainnet
         : SDK.initializeSepolia
 
-    this._sdk = await initializeFunction(signer)
+    const sdk = await initializeFunction(signer)
 
-    return this._sdk
+    return sdk
   }
 
-  get sdk(): SDK | undefined {
-    return this._sdk
+  async initializeSdk(
+    providerOrSigner: providers.Provider | Signer,
+    account?: string | undefined
+  ): Promise<void> {
+    try {
+      this._sdkPromise = this._initializeSdk(providerOrSigner, account)
+    } catch (err) {
+      throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
+    }
   }
 
   get deposit(): Deposit | undefined {
@@ -558,9 +583,16 @@ export class TBTC implements ITBTC {
     return this._tokenContract
   }
 
+  private _getSdk = async (): Promise<SDK> => {
+    const sdk = await this._sdkPromise
+    if (!sdk) throw new EmptySdkObjectError()
+
+    return sdk
+  }
+
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
-    if (!this._sdk) throw new EmptySdkObjectError()
-    this._deposit = await this._sdk.deposits.initiateDeposit(btcRecoveryAddress)
+    const sdk = await this._getSdk()
+    this._deposit = await sdk.deposits.initiateDeposit(btcRecoveryAddress)
     return this._deposit
   }
 
@@ -571,7 +603,7 @@ export class TBTC implements ITBTC {
   initiateDepositFromDepositScriptParameters = async (
     depositScriptParameters: DepositScriptParameters
   ): Promise<Deposit> => {
-    if (!this._sdk) throw new EmptySdkObjectError()
+    const sdk = await this._getSdk()
     const {
       blindingFactor,
       walletPublicKeyHash,
@@ -590,8 +622,8 @@ export class TBTC implements ITBTC {
 
     this._deposit = await Deposit.fromReceipt(
       depositReceipt,
-      this._sdk.tbtcContracts,
-      this._sdk.bitcoinClient
+      sdk.tbtcContracts,
+      sdk.bitcoinClient
     )
     return this._deposit
   }
@@ -695,8 +727,8 @@ export class TBTC implements ITBTC {
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
-    if (!this._sdk) throw new EmptySdkObjectError()
-    const deposit = await this._sdk.tbtcContracts.bridge.deposits(
+    const sdk = await this._getSdk()
+    const deposit = await sdk.tbtcContracts.bridge.deposits(
       utxo.transactionHash,
       utxo.outputIndex
     )
@@ -709,9 +741,8 @@ export class TBTC implements ITBTC {
   getTransactionConfirmations = async (
     transactionHash: string
   ): Promise<number> => {
-    if (!this._sdk) throw new EmptySdkObjectError()
     const bitcoinTransactionHash = BitcoinTxHash.from(transactionHash)
-    return this._sdk.bitcoinClient.getTransactionConfirmations(
+    return this._bitcoinClient.getTransactionConfirmations(
       bitcoinTransactionHash
     )
   }
@@ -1010,7 +1041,7 @@ export class TBTC implements ITBTC {
       walletPublicKey: string
     }
   }> => {
-    if (!this._sdk) throw new EmptySdkObjectError()
+    const sdk = await this._getSdk()
 
     if (this._isValidBitcoinAddressForRedemption(btcAddress)) {
       throw new Error(
@@ -1019,7 +1050,7 @@ export class TBTC implements ITBTC {
     }
 
     const { targetChainTxHash, walletPublicKey } =
-      await this._sdk.redemptions.requestRedemption(
+      await sdk.redemptions.requestRedemption(
         btcAddress,
         BigNumber.from(amount)
       )
