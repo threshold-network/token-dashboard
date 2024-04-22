@@ -18,7 +18,7 @@
     "@keep-network/keep-ecdsa": "development",
     "@keep-network/random-beacon": "development",
     "@keep-network/tbtc": "development",
-    "@keep-network/tbtc-v2.ts": "^2.3.0",
+    "@keep-network/tbtc-v2.ts": "^2.4.1",
     "@ledgerhq/connect-kit-loader": "1.1.8",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",

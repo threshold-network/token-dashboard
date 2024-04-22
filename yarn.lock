@@ -3299,10 +3299,10 @@
   resolved "https://registry.yarnpkg.com/@keep-network/bitcoin-spv-sol/-/bitcoin-spv-sol-3.4.0-solc-0.8.tgz#8b44c246ffab8ea993efe196f6bf385b1a3b84dc"
   integrity sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==
 
-"@keep-network/ecdsa@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.0.0.tgz#96d301cd272e61334bec173b5c4945758fc80853"
-  integrity sha512-KXSUOkZIKHR3I4H99CpgkPtuneI9AxgGo8+DmqGR56QB28kJCEXm7GC/yTInWS1lb7LzDwkjIm9VYAIGdLrsZw==
+"@keep-network/ecdsa@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.0.1.tgz#f9de5e4ae68c48493b8a46d1d956c8bc157b1145"
+  integrity sha512-51Ef0FGak9dzuTF4e80ed1G2+3v+kQYPieYa3hX7eKg3XG0/C/xOtMSpIOxU7IMdYBHeeH+hRIqDiL5AuOidOg==
   dependencies:
     "@keep-network/random-beacon" "2.0.0"
     "@keep-network/sortition-pools" "2.0.0"
@@ -3431,14 +3431,14 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2.ts@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.3.0.tgz#212673e9164f7dd1b0f65e8c9130d9567c10de15"
-  integrity sha512-u9eYC0vNOIOr4doK1fhVkgHpQDVflXtsjwlpHvR9U5IX/gfDHGDHqOIoDQkcKWpvppd6i6NvNCysDaJ9LrmEBQ==
+"@keep-network/tbtc-v2.ts@^2.4.1":
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.4.1.tgz#177046b32859fe5ad429f52c081e3cac994d3700"
+  integrity sha512-8MPrL4dr0HPDVphhxzfT+ApLqmWNTHJWCd16NFMYjT95Xu1nWuK3v3L6AU7mDb98X1XFT2Qc2OKh4JrtVmVVQw==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.0.5"
-    "@keep-network/ecdsa" "2.0.0"
-    "@keep-network/tbtc-v2" "1.5.1"
+    "@keep-network/ecdsa" "2.0.1"
+    "@keep-network/tbtc-v2" "1.6.0"
     "@ledgerhq/wallet-api-client" "^1.2.1"
     bignumber.js "^9.1.2"
     bitcoinjs-lib "^6.1.5"
@@ -3447,15 +3447,16 @@
     electrum-client-js "git+https://github.com/keep-network/electrum-client-js.git#v0.1.1"
     ethers "^5.5.2"
     p-timeout "^4.1.0"
+    url-parse "^1.5.10"
     wif "2.0.6"
 
-"@keep-network/tbtc-v2@1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.5.1.tgz#f1855b30f0c777cd7c612bf25b6c0e4d43356255"
-  integrity sha512-kSzdF2r2O4AZ4rmxSmMCxfZW9UmhE4s2UmKiAnp9aDTrTgIXppOY/5n9vOF9u6jhXQvHesp9VYtG7QDJaZtZ1Q==
+"@keep-network/tbtc-v2@1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.6.0.tgz#06ed337d87bfd6d2d027aca461dbdd985207cc41"
+  integrity sha512-g+bZ1AHQTbNf3Mfze+PpexN7BO2WHHP8emZYo6VKOZi2amqqDjlY3yRKePa42cbNJXIdHcCwLgyLG+2G6WrZiA==
   dependencies:
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
-    "@keep-network/ecdsa" "2.0.0"
+    "@keep-network/ecdsa" "2.0.1"
     "@keep-network/random-beacon" "2.0.0"
     "@keep-network/tbtc" "1.1.0"
     "@openzeppelin/contracts" "^4.8.1"
