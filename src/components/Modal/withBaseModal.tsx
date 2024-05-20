@@ -14,7 +14,7 @@ function withBaseModal<T extends BaseModalProps>(
         closeOnOverlayClick={false}
       >
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent alignSelf="center">
           <WrappedModalContent {...props} />
         </ModalContent>
       </Modal>
