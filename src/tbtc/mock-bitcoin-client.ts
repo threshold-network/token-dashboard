@@ -292,4 +292,8 @@ export class MockBitcoinClient implements BitcoinClient {
       }
     })
   }
+
+  getCoinbaseTxHash(blockHeight: number): Promise<BitcoinTxHash> {
+    throw new Error("Method not implemented")
+  }
 }
