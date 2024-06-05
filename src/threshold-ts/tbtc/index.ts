@@ -11,10 +11,11 @@ import {
   ElectrumClient,
   ethereumAddressFromSigner,
   EthereumBridge,
-  ethereumNetworkFromSigner,
+  chainIdFromSigner,
   Hex,
-  loadEthereumContracts,
+  loadEthereumCoreContracts,
   TBTC as SDK,
+  Chains,
 } from "@keep-network/tbtc-v2.ts"
 import {
   BigNumber,
@@ -525,11 +526,11 @@ export class TBTC implements ITBTC {
     // For both of these cases we will use SDK.initializeCustom() method
     if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
-      const ethereumNetwork = await ethereumNetworkFromSigner(signer)
+      const chainId = await chainIdFromSigner(signer)
 
       const tbtcContracts = shouldUseTestnetDevelopmentContracts
         ? getSepoliaDevelopmentContracts(signer)
-        : await loadEthereumContracts(signer, ethereumNetwork)
+        : await loadEthereumCoreContracts(signer, chainId as Chains.Ethereum)
 
       const sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
 
