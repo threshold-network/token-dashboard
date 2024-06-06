@@ -1,13 +1,5 @@
 import { useWeb3React } from "@web3-react/core"
-import { providers, Signer } from "ethers"
-import {
-  createContext,
-  FC,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react"
+import { createContext, FC, useContext, useEffect, useRef } from "react"
 import {
   getDefaultThresholdLibProvider,
   threshold,
@@ -22,25 +14,9 @@ export const useThreshold = () => {
   return useContext(ThresholdContext)
 }
 
-const useInitializeTbtcSdk = () => {
-  const threshold = useThreshold()
-
-  const initializeSdk = useCallback(
-    async (providerOrSigner: providers.Provider | Signer, account?: string) => {
-      threshold.tbtc.initializeSdk(providerOrSigner, account)
-    },
-    [threshold]
-  )
-
-  return {
-    initializeSdk,
-  }
-}
-
 export const ThresholdProvider: FC = ({ children }) => {
   const { library } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
-  const { initializeSdk } = useInitializeTbtcSdk()
   const { ledgerLiveAppEthereumSigner } = useLedgerLiveApp()
   const { account, isActive } = useIsActive()
   const { isEmbed } = useIsEmbed()
@@ -69,7 +45,7 @@ export const ThresholdProvider: FC = ({ children }) => {
       })
       hasThresholdLibConfigBeenUpdated.current = false
     }
-  }, [library, isActive, account, initializeSdk, isEmbed])
+  }, [library, isActive, account, isEmbed])
 
   return (
     <ThresholdContext.Provider value={threshold}>
