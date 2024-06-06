@@ -98,7 +98,6 @@ const InitiateMintingComponent: FC<{
       <MintingTransactionDetails />
       <SubmitTxButton
         onSubmit={initiateMintTransaction}
-        isTbtcTransaction
         isFullWidth
         data-ph-capture-attribute-button-name={
           "Confirm deposit & mint (Step 2)"
