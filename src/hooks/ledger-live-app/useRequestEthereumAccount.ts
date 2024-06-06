@@ -2,7 +2,6 @@ import { Account, WalletAPIClient } from "@ledgerhq/wallet-api-client"
 import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/wallet-api-client-react"
 import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
-import { useIsTbtcSdkInitializing } from "../../contexts/ThresholdContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { supportedChainId } from "../../utils/getEnvVariable"
@@ -29,7 +28,6 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { account, requestAccount } = useRequestAccountReturn
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
-  const { setIsSdkInitializing } = useIsTbtcSdkInitializing()
   const { isEmbed } = useIsEmbed()
 
   useEffect(() => {
@@ -39,7 +37,6 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // here to indicate as early as as possible that the sdk is in the
     // initializing process.
     if (isEmbed) {
-      setIsSdkInitializing(true)
       setEthAccount(account || undefined)
       dispatch(walletConnected({ address: account?.address || "", chainId }))
     }
