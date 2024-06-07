@@ -14,7 +14,9 @@ import {
 import { fetchWalletScreening } from "../../utils/trmAPI"
 import rawBlocklist from "../../blocked-wallets/blocklist.json"
 
-const blocklist = rawBlocklist.map((address) => address.toLowerCase())
+const blocklist = rawBlocklist.map((address: string | null) =>
+  address?.toLowerCase()
+)
 
 export const getStakingProviderOperatorInfo = async (
   action: ReturnType<typeof setStakes>,
