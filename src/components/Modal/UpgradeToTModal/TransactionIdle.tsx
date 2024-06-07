@@ -20,6 +20,7 @@ import { ExplorerDataType } from "../../../utils/createEtherscanLink"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, UpgredableToken } from "../../../types"
 import InfoBox from "../../InfoBox"
+import SubmitTxButton from "../../SubmitTxButton"
 
 interface TransactionIdleProps extends BaseModalProps {
   upgradedAmount: string
@@ -77,13 +78,13 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
         <Button onClick={closeModal} variant="outline" mr="0.75rem">
           Cancel
         </Button>
-        <Button
-          onClick={async () => {
+        <SubmitTxButton
+          onSubmit={async () => {
             await upgradeToT(upgradedAmount)
           }}
         >
           Upgrade
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

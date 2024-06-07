@@ -24,6 +24,7 @@ import { useModal } from "../../../hooks/useModal"
 import StakingApplicationOperationIcon from "../../StakingApplicationOperationIcon"
 import ModalCloseButton from "../ModalCloseButton"
 import { OnSuccessCallback } from "../../../web3/hooks"
+import SubmitTxButton from "../../SubmitTxButton"
 
 export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
@@ -98,9 +99,9 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button mr={2} onClick={onAuthorizeIncrease}>
+        <SubmitTxButton mr={2} onSubmit={onAuthorizeIncrease}>
           Authorize Increase
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

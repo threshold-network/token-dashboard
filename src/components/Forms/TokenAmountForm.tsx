@@ -77,10 +77,12 @@ export const TokenAmountFormBase: FC<
         type="submit"
         w="100%"
         mt="6"
-        submitText={submitButtonText}
+        isFullWidth
         variant={submitButtonVariant}
         isDisabled={isDisabled}
-      />
+      >
+        {submitButtonText}
+      </SubmitTxButton>
     </Form>
   )
 }

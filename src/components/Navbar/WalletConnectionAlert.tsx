@@ -2,6 +2,7 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  AlertStatus,
   CloseButton,
 } from "@chakra-ui/react"
 import { FC, useEffect, useState } from "react"
@@ -17,6 +18,7 @@ const WalletConnectionAlert: FC<{
   const [hideAlert, setHideAlert] = useState(false)
   const { error, deactivate } = useWeb3React()
   const [alertDescription, setAlertDescription] = useState("")
+  const [alertStatus, setAlertStatus] = useState<AlertStatus>("warning")
 
   const errorMessage = error?.message
 
@@ -38,6 +40,7 @@ const WalletConnectionAlert: FC<{
           supportedChainId
         )} network`
       )
+      setAlertStatus("warning")
       setHideAlert(false)
       return
     }
@@ -46,6 +49,7 @@ const WalletConnectionAlert: FC<{
   const resetAlert = () => {
     setHideAlert(true)
     setAlertDescription("")
+    setAlertStatus("warning")
     deactivate()
   }
 
@@ -54,23 +58,10 @@ const WalletConnectionAlert: FC<{
   }
 
   return (
-    <Alert
-      status="warning"
-      variant="solid"
-      position="absolute"
-      w="fit-content"
-      paddingRight="40px"
-      top="94px"
-      right="5.25rem"
-    >
-      <AlertIcon />
+    <Alert status={alertStatus} variant="solid" w="fit-content">
+      <AlertIcon alignSelf="center" />
       <AlertDescription>{alertDescription}</AlertDescription>
-      <CloseButton
-        position="absolute"
-        right="8px"
-        top="8px"
-        onClick={resetAlert}
-      />
+      <CloseButton onClick={resetAlert} />
     </Alert>
   )
 }

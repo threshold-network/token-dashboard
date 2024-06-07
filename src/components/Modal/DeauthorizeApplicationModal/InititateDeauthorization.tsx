@@ -27,6 +27,7 @@ import { useInitiateDeauthorization } from "../../../hooks/staking-applications"
 import { getStakingAppLabelFromAppName } from "../../../utils/getStakingAppLabel"
 import ModalCloseButton from "../ModalCloseButton"
 import { StakingProviderAppInfo } from "../../../threshold-ts/applications"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const InitiateDeauthorization: FC<
   {
@@ -148,7 +149,7 @@ const InitiateDeauthorization: FC<
         <Button variant="outline" onClick={closeModal} mr={2}>
           Dismiss
         </Button>
-        <Button onClick={handleInitiateClick}>Initiate</Button>
+        <SubmitTxButton onSubmit={handleInitiateClick}>Initiate</SubmitTxButton>
       </ModalFooter>
     </>
   )

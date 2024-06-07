@@ -21,6 +21,7 @@ import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
 import { OnSuccessCallback } from "../../../web3/hooks"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const TopupTModal: FC<
   BaseModalProps & {
@@ -78,8 +79,8 @@ const TopupTModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button
-          onClick={() => {
+        <SubmitTxButton
+          onSubmit={() => {
             topup({
               stakingProvider: stake.stakingProvider,
               amount: amountTopUp,
@@ -87,7 +88,7 @@ const TopupTModal: FC<
           }}
         >
           Top Up
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

@@ -33,6 +33,7 @@ type RecoveryJsonFileData = DepositScriptParameters & {
   btcRecoveryAddress: string
 }
 import { useIsActive } from "../../../hooks/useIsActive"
+import SubmitTxButton from "../../../components/SubmitTxButton"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
@@ -127,17 +128,18 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         <FileUploader onFileUpload={onFileUpload} headerHelperText="Required" />
         <HelperErrorText hasError={isError} errorMsgText={error} />
       </FormControl>
-
-      <Button
+      {/* Although the following button doesn't trigger an on-chain transaction, the 
+      SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
+      <SubmitTxButton
         size="lg"
         isFullWidth
         mt="6"
-        disabled={!values.depositParameters || isError || isSubmitting}
+        isDisabled={!values.depositParameters || isError || isSubmitting}
         type="submit"
         isLoading={isSubmitting}
       >
         Upload and Resume
-      </Button>
+      </SubmitTxButton>
     </Form>
   )
 }

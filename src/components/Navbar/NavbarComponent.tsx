@@ -7,9 +7,11 @@ import {
   Stack,
   useColorModeValue,
   H5,
+  VStack,
 } from "@threshold-network/components"
 import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
+import TrmWalletScreeningAlert from "./TrmWalletScreeningAlert"
 import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
 import AccountButton from "./AccountButton"
@@ -65,7 +67,19 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
           {chainId && <NetworkButton chainId={chainId} />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
-        <WalletConnectionAlert {...{ account, chainId }} />
+        <VStack
+          position="absolute"
+          paddingRight="40px"
+          top="94px"
+          right="5.25rem"
+          zIndex="10"
+          ml="4rem"
+          maxWidth={{ base: "38rem", xl: "100%" }}
+          alignItems={"flex-end"}
+        >
+          <TrmWalletScreeningAlert />
+          <WalletConnectionAlert {...{ account, chainId }} />
+        </VStack>
       </Box>
       <Routes>{pages.map(renderMobileHeader)}</Routes>
     </>

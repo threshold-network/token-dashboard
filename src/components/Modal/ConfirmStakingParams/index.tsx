@@ -29,6 +29,7 @@ import { featureFlags } from "../../../constants"
 import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -128,9 +129,9 @@ const ConfirmStakingParamsModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button type="submit" form="advanced-staking-params-form">
+        <SubmitTxButton type="submit" form="advanced-staking-params-form">
           {featureFlags.MULTI_APP_STAKING ? "Continue" : "Stake"}
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

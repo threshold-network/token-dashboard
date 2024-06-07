@@ -25,6 +25,7 @@ import InfoBox from "../../InfoBox"
 import withBaseModal from "../withBaseModal"
 import { OnSuccessCallback } from "../../../web3/hooks"
 import { ApplicationForOperatorMapping } from "../MapOperatorToStakingProviderModal"
+import SubmitTxButton from "../../SubmitTxButton"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -168,7 +169,9 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <Button onClick={submitMappingOperator}>Map Address</Button>
+        <SubmitTxButton onSubmit={submitMappingOperator}>
+          Map Address
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

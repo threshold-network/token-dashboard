@@ -21,6 +21,7 @@ import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
 import { useConfirmDeatuhorizationTransaction } from "../../../hooks/staking-applications"
 import ModalCloseButton from "../ModalCloseButton"
+import SubmitTxButton from "../../SubmitTxButton"
 
 export type ConfirmDeauthorizationProps = BaseModalProps & {
   stakingProvider: string
@@ -78,9 +79,9 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <Button mr={2} onClick={onDeauthorize}>
+        <SubmitTxButton mr={2} onSubmit={onDeauthorize}>
           Confirm Deauthorization
-        </Button>
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )

@@ -2,17 +2,25 @@ import { FC } from "react"
 import { Button, ButtonProps } from "@chakra-ui/react"
 import { useIsActive } from "../hooks/useIsActive"
 import { useConnectWallet } from "../hooks/useConnectWallet"
+import { RootState } from "../store"
+import { useSelector } from "react-redux"
 
-interface Props extends ButtonProps {
+interface SubmitTxButtonProps extends ButtonProps {
   onSubmit?: () => void
-  submitText?: string
 }
 
-const SubmitTxButton: FC<Props> = ({
+const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   onSubmit,
-  submitText = "Upgrade",
+  isLoading,
+  isDisabled,
+  children,
   ...buttonProps
 }) => {
+  const {
+    isBlocked,
+    trm: { isFetching },
+  } = useSelector((state: RootState) => state.account)
+
   const { isActive } = useIsActive()
   const connectWallet = useConnectWallet()
 
@@ -22,16 +30,19 @@ const SubmitTxButton: FC<Props> = ({
 
   if (isActive) {
     return (
-      <Button mt={6} isFullWidth onClick={onSubmit} {...buttonProps}>
-        {submitText}
+      <Button
+        isLoading={isFetching || isLoading}
+        isDisabled={isBlocked || isDisabled}
+        onClick={onSubmit}
+        {...buttonProps}
+      >
+        {children}
       </Button>
     )
   }
 
   return (
     <Button
-      mt={6}
-      isFullWidth
       onClick={onConnectWalletClick}
       {...buttonProps}
       type="button"

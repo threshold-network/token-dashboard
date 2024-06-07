@@ -35,6 +35,7 @@ import { formatDate } from "../../../../utils/date"
 import { calculatePercenteage } from "../../../../utils/percentage"
 import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 import { AuthorizationStatus } from "../../../../types"
+import SubmitTxButton from "../../../../components/SubmitTxButton"
 
 interface CommonProps {
   stakingAppId: StakingAppName
@@ -465,9 +466,9 @@ const Deauthorization: FC<{
           </Button>
         )}
         {status === "deauthorization-initiation-needed" && (
-          <Button onClick={onActivateDeauthorizationRequest}>
+          <SubmitTxButton onSubmit={onActivateDeauthorizationRequest}>
             Activate Deauthorization Request
-          </Button>
+          </SubmitTxButton>
         )}
       </InfoBox>
       <HStack mt="4" spacing="2">

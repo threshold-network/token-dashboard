@@ -71,15 +71,18 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
         </HStack>
         <Text mt={2}>{amountToConvert === "" ? "--" : formattedAmount}</Text>
         <SubmitTxButton
+          isFullWidth
           mt={10}
           onSubmit={onSubmit}
-          disabled={
+          isDisabled={
             !!account &&
             (amountToConvert == 0 ||
               amountToConvert == "" ||
               BigNumber.from(amountToConvert).gt(max))
           }
-        />
+        >
+          Upgrade
+        </SubmitTxButton>
       </Box>
     </Card>
   )

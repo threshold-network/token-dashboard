@@ -11,6 +11,8 @@ export const POSTHOG =
   getEnvVariable(EnvVariable.FEATURE_FLAG_POSTHOG) === "true" &&
   !window.location.href.includes("dashboard.test")
 
+export const TRM = getEnvVariable(EnvVariable.FEATURE_FLAG_TRM) === "true"
+
 export const FEEDBACK_MODULE =
   getEnvVariable(EnvVariable.FEATURE_FLAG_FEEDBACK_MODULE) === "true"
 

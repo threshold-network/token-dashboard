@@ -26,6 +26,7 @@ import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTit
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
+import SubmitTxButton from "../../../../components/SubmitTxButton"
 
 export interface FormValues {
   ethAddress: string
@@ -214,9 +215,13 @@ export const ProvideDataComponent: FC<{
       >
         Download Deposit Receipt (recommended)
       </Checkbox>
-      <Button
+      {/* Although the following button doesn't trigger an on-chain transaction, the 
+      SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
+      <SubmitTxButton
         isLoading={isSubmitButtonLoading}
-        loadingText={"Generating deposit address..."}
+        loadingText={
+          isSubmitButtonLoading ? "Generating deposit address..." : undefined
+        }
         type="submit"
         form="tbtc-minting-data-form"
         isFullWidth
@@ -227,7 +232,7 @@ export const ProvideDataComponent: FC<{
         data-ph-capture-attribute-button-text={`Generate Deposit Address`}
       >
         Generate Deposit Address
-      </Button>
+      </SubmitTxButton>
     </>
   )
 }

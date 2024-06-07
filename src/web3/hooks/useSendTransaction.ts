@@ -8,6 +8,8 @@ import { TransactionReceipt } from "@ethersproject/providers"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { useIsActive } from "../../hooks/useIsActive"
+import { useSelector } from "react-redux"
+import { RootState } from "../../store"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -45,6 +47,10 @@ export const useSendTransactionFromFn = <
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback
 ) => {
+  const {
+    isBlocked,
+    trm: { isFetching },
+  } = useSelector((state: RootState) => state.account)
   const { library } = useWeb3React()
   const { account } = useIsActive()
   const { openModal } = useModal()
@@ -56,12 +62,18 @@ export const useSendTransactionFromFn = <
 
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
-      if (!account) {
-        // Maybe we should do something here?
-        return
-      }
-
       try {
+        if (!account || isBlocked || isFetching) {
+          const errorMessage = `Transaction attempt failed: ${
+            isFetching
+              ? "We're currently assessing the security details of your wallet, please try again later."
+              : isBlocked
+              ? "Your wallet has been flagged in our risk assessment screening."
+              : "No connected account detected. Please ensure your wallet is connected."
+          }`
+          throw new Error(errorMessage)
+        }
+
         setTransactionStatus(TransactionStatus.PendingWallet)
         openModal(ModalType.TransactionIsWaitingForConfirmation)
         const tx = await fn(...args)
