@@ -16,9 +16,10 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   children,
   ...buttonProps
 }) => {
-  const { isBlocked, isFetching } = useSelector(
-    (state: RootState) => state.account.trm
-  )
+  const {
+    isBlocked,
+    trm: { isFetching },
+  } = useSelector((state: RootState) => state.account)
 
   const { isActive } = useIsActive()
   const connectWallet = useConnectWallet()

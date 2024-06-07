@@ -10,12 +10,17 @@ import {
   setStakes,
 } from "../staking"
 import { StakingAppName } from "../staking-applications"
-import { getStakingProviderOperatorInfo, getTrmInfo } from "./effects"
+import {
+  getBlocklistInfo,
+  getStakingProviderOperatorInfo,
+  getTrmInfo,
+} from "./effects"
 
 export interface AccountState {
   address: string
   chainId: number | undefined
   isStakingProvider: boolean
+  isBlocked: boolean
   operatorMapping: FetchingState<Record<StakingAppName, string>>
   trm: TrmState
 }
@@ -26,6 +31,7 @@ export const accountSlice = createSlice({
     address: "",
     chainId: undefined,
     isStakingProvider: false,
+    isBlocked: false,
     operatorMapping: {
       data: {
         tbtc: AddressZero,
@@ -36,7 +42,6 @@ export const accountSlice = createSlice({
       isInitialFetchDone: false,
     },
     trm: {
-      isBlocked: false,
       isFetching: false,
       hasFetched: false,
     },
@@ -58,6 +63,13 @@ export const accountSlice = createSlice({
       action: PayloadAction
     ) => {
       state.isStakingProvider = true
+    },
+    setAccountBlockedStatus: (
+      state: AccountState,
+      action: PayloadAction<{ isBlocked: boolean }>
+    ) => {
+      const { isBlocked } = action.payload
+      state.isBlocked = isBlocked
     },
     setMappedOperators: (
       state: AccountState,
@@ -86,12 +98,7 @@ export const accountSlice = createSlice({
       state.operatorMapping.isFetching = false
       state.operatorMapping.error = error
     },
-    setTrm: (
-      state: AccountState,
-      action: PayloadAction<{ isBlocked: boolean }>
-    ) => {
-      const { isBlocked } = action.payload
-      state.trm.isBlocked = isBlocked
+    hasFetchedTrm: (state: AccountState) => {
       state.trm.hasFetched = true
       state.trm.isFetching = false
       state.trm.error = ""
@@ -104,7 +111,7 @@ export const accountSlice = createSlice({
       action: PayloadAction<{ error: string }>
     ) => {
       const { error } = action.payload
-      state.operatorMapping.isFetching = false
+      state.trm.isFetching = false
       state.trm.error = error
     },
     operatorRegistered: (
@@ -136,6 +143,11 @@ export const accountSlice = createSlice({
 })
 
 export const registerAccountListeners = () => {
+  startAppListening({
+    actionCreator: accountSlice.actions.walletConnected,
+    effect: getBlocklistInfo,
+  })
+
   if (featureFlags.MULTI_APP_STAKING) {
     startAppListening({
       actionCreator: setStakes,
@@ -155,10 +167,11 @@ registerAccountListeners()
 export const {
   walletConnected,
   accountUsedAsStakingProvider,
+  setAccountBlockedStatus,
   setMappedOperators,
   fetchingOperatorMapping,
   setOperatorMappingError,
   operatorRegistered,
   fetchingTrm,
-  setTrm,
+  hasFetchedTrm,
 } = accountSlice.actions

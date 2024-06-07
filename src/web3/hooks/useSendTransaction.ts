@@ -47,9 +47,10 @@ export const useSendTransactionFromFn = <
   onSuccess?: OnSuccessCallback,
   onError?: OnErrorCallback
 ) => {
-  const { isBlocked, isFetching } = useSelector(
-    (state: RootState) => state.account.trm
-  )
+  const {
+    isBlocked,
+    trm: { isFetching },
+  } = useSelector((state: RootState) => state.account)
   const { library } = useWeb3React()
   const { account } = useIsActive()
   const { openModal } = useModal()

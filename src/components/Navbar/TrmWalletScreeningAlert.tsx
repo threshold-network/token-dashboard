@@ -9,7 +9,7 @@ import { RootState } from "../../store"
 import { useSelector } from "react-redux"
 
 const TrmWalletScreeningAlert: FC = () => {
-  const { isBlocked } = useSelector((state: RootState) => state.account.trm)
+  const { isBlocked } = useSelector((state: RootState) => state.account)
   const [hideAlert, setHideAlert] = useState(false)
   const [alertDescription, setAlertDescription] = useState("")
 

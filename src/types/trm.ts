@@ -1,5 +1,4 @@
 export type TrmState = {
-  isBlocked: boolean
   isFetching: boolean
   hasFetched: boolean
   error: string

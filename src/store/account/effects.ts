@@ -8,9 +8,13 @@ import {
   fetchingOperatorMapping,
   setMappedOperators,
   fetchingTrm,
-  setTrm,
+  hasFetchedTrm,
+  setAccountBlockedStatus,
 } from "./slice"
 import { fetchWalletScreening } from "../../utils/trmAPI"
+import rawBlocklist from "../../blocked-wallets/blocklist.json"
+
+const blocklist = rawBlocklist.map((address) => address.toLowerCase())
 
 export const getStakingProviderOperatorInfo = async (
   action: ReturnType<typeof setStakes>,
@@ -91,7 +95,11 @@ export const getTrmInfo = async (
 
     const isBlocked = hasSevereEntity || hasSevereRisk
 
-    listenerApi.dispatch(setTrm({ isBlocked }))
+    if (isBlocked) {
+      listenerApi.dispatch(setAccountBlockedStatus({ isBlocked }))
+    }
+
+    listenerApi.dispatch(hasFetchedTrm())
   } catch (error: any) {
     listenerApi.dispatch(
       accountSlice.actions.setTrmError({
@@ -99,5 +107,18 @@ export const getTrmInfo = async (
       })
     )
     throw new Error("Could not load TRM Wallet Screening info: " + error)
+  }
+}
+
+export const getBlocklistInfo = async (
+  action: ReturnType<typeof accountSlice.actions.walletConnected>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { address, chainId } = action.payload
+  if (!address || !chainId) return
+
+  if (blocklist.includes(address.toLowerCase())) {
+    listenerApi.dispatch(setAccountBlockedStatus({ isBlocked: true }))
+    return
   }
 }
