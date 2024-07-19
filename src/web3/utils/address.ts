@@ -17,6 +17,15 @@ export const isSameETHAddress = (
   return getAddress(address1) === getAddress(address2)
 }
 
+export const isSameChainId = (
+  chainId1: number | string,
+  chainId2: number
+): boolean => {
+  const chainId1Str = chainId1.toString()
+  const chainId2Str = chainId2.toString()
+  return chainId1Str === chainId2Str || chainId1Str === `0x${chainId2Str}`
+}
+
 export const isAddressZero = (address: string): boolean =>
   isSameETHAddress(address, AddressZero)
 
