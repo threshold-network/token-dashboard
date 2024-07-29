@@ -4,6 +4,7 @@ import {
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 export { unprefixedAndUncheckedAddress } from "../../threshold-ts/utils"
+import { ethers } from "ethers"
 
 export const getAddress = (address: string) => ethersGetAddress(address)
 
@@ -15,15 +16,6 @@ export const isSameETHAddress = (
 ): boolean => {
   // TODO: this has the potential to cause an app crash if the addresses passed are not valid ETH addresses
   return getAddress(address1) === getAddress(address2)
-}
-
-export const isSameChainId = (
-  chainId1: number | string,
-  chainId2: number
-): boolean => {
-  const chainId1Str = chainId1.toString()
-  const chainId2Str = chainId2.toString()
-  return chainId1Str === chainId2Str || chainId1Str === `0x${chainId2Str}`
 }
 
 export const isAddressZero = (address: string): boolean =>
