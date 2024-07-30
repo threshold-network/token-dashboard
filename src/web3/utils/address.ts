@@ -4,6 +4,7 @@ import {
 } from "@ethersproject/address"
 import { AddressZero } from "@ethersproject/constants"
 export { unprefixedAndUncheckedAddress } from "../../threshold-ts/utils"
+import { ethers } from "ethers"
 
 export const getAddress = (address: string) => ethersGetAddress(address)
 
