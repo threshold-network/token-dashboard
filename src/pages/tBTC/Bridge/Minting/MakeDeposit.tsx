@@ -182,8 +182,8 @@ const MakeDepositComponent: FC<{
         tBTC.
       </BodyMd>
       <BodyMd color="gray.500" mb={6}>
-        This address is a uniquely generated address based on the data you
-        provided.
+        This address is single use only. To make a second deposit, please
+        generate a new address.
       </BodyMd>
       <BTCAddressSection btcDepositAddress={btcDepositAddress} />
       <MintDurationTiers
