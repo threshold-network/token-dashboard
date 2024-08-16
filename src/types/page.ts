@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { LinkProps } from "@threshold-network/components"
 
 export type RouteProps = {
   path: string
@@ -14,4 +15,8 @@ export type RouteProps = {
 
 export type PageComponent = FC<RouteProps> & {
   route: RouteProps
+}
+
+export type ExternalLinkProps = LinkProps & {
+  title: string
 }

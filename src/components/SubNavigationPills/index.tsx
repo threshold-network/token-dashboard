@@ -6,6 +6,7 @@ import {
   HStack,
   Stack,
   useColorModeValue,
+  LinkProps,
 } from "@threshold-network/components"
 import { matchPath, resolvePath, useLocation } from "react-router-dom"
 import { RouteProps } from "../../types"
@@ -13,6 +14,7 @@ import Link from "../Link"
 
 interface SubNavigationPillsProps {
   links: RouteProps[]
+  externalLinks?: LinkProps[]
 }
 
 interface PathMatchResult {
@@ -26,7 +28,10 @@ interface NavPill extends RouteProps {
   isActive?: boolean
 }
 
-const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
+const SubNavigationPills: FC<SubNavigationPillsProps> = ({
+  links,
+  externalLinks,
+}) => {
   const { pathname } = useLocation()
   const linksWithTitle = links.filter((link) => !!link.title)
   const activePillIndex = getActivePillIndex(linksWithTitle, pathname)
@@ -55,6 +60,19 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({ links }) => {
             const isActive = index === activePillIndex
             return renderPill(linkWithTitle, isActive)
           })}
+          {externalLinks &&
+            externalLinks.map(({ title, href }, index) => (
+              <Link
+                key={index}
+                color="gray.700"
+                isExternal
+                href={href!}
+                textDecoration="none"
+                _hover={{ textDecoration: "none" }}
+              >
+                {title}
+              </Link>
+            ))}
         </HStack>
       </Box>
     </>

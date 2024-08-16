@@ -245,4 +245,5 @@ ExplorerPage.route = {
   path: "explorer",
   index: false,
   isPageEnabled: true,
+  hideFromMenu: true,
 }

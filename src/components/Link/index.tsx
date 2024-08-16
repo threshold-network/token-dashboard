@@ -23,6 +23,7 @@ const Link: FC<LinkProps> = forwardRef(
   ({ isExternal, href, to, icon, children, ...props }, ref) => {
     const defaultColor = useColorModeValue("brand.500", "white")
     const finalColor = props.color ? props.color : defaultColor
+    const finalTextDecoration = props.textDecoration ?? "underline"
 
     return (
       <ChakraLink
@@ -33,7 +34,7 @@ const Link: FC<LinkProps> = forwardRef(
         target={isExternal ? "_blank" : undefined}
         rel={isExternal ? "noopener noreferrer" : undefined}
         color={finalColor}
-        textDecoration="underline"
+        textDecoration={finalTextDecoration}
         {...props}
       >
         {children}
