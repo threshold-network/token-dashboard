@@ -36,6 +36,7 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({
   const linksWithTitle = links.filter((link) => !!link.title)
   const activePillIndex = getActivePillIndex(linksWithTitle, pathname)
   const wrapperBorderColor = useColorModeValue("gray.100", "gray.700")
+  const externalLinkColor = useColorModeValue("gray.500", "gray.300")
 
   return (
     <>
@@ -64,7 +65,7 @@ const SubNavigationPills: FC<SubNavigationPillsProps> = ({
             externalLinks.map(({ title, href }, index) => (
               <Link
                 key={index}
-                color="gray.700"
+                color={externalLinkColor}
                 isExternal
                 href={href!}
                 textDecoration="none"
