@@ -197,8 +197,9 @@ export const ProvideDataComponent: FC<{
         subTitle="Generate a Deposit Address"
       />
       <BodyMd color={textColor} mb={12}>
-        Based on these two addresses, the system will generate for you a unique
-        BTC deposit address. There is no minting limit.
+        Based on these two addresses, the system will generate a unique BTC
+        deposit address for you. There is no limit to the amount you can
+        deposit.
       </BodyMd>
       <MintingProcessForm
         innerRef={formRef}
