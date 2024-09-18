@@ -35,6 +35,14 @@ export const useFetchStakingRewards = () => {
         return
       }
 
+      // TODO:
+      // - Integration of new Merkle contract + TACo automated rewards here.
+      //   TLDR: stakingRewards = merkle_rewards + taco_rewards
+      //   See https://github.com/threshold-network/token-dashboard/issues/756
+      // - There's a more efficient way to check Merkle's claimed rewards.
+      //   See https://github.com/threshold-network/token-dashboard/issues/765
+      // - Note also that TACo rewards now accrue on each block. They can be
+      //   calculated via TACoApp.availableRewards(address _stakingProvider)
       const claimedEvents = await getContractPastEvents(merkleDropContract, {
         eventName: "Claimed",
         fromBlock: DEPLOYMENT_BLOCK,
@@ -71,10 +79,14 @@ export const useFetchStakingRewards = () => {
           claimedRewardsInCurrentMerkleRoot.has(stakingProvider)
         ) {
           // If the JSON file doesn't contain proofs for a given staking
-          // provider it means this staking provider has no rewards- we can skip
-          // this iteration. If the `Claimed` event exists with a current merkle
+          // provider it means this staking provider has no Merkle rewards - 
+          // we can skip this iteration.
+          // TODO: ^ But there's going to be TACo rewards
+
+          // If the `Claimed` event exists with a current merkle
           // root for a given staking provider it means that rewards have
-          // already been claimed- we can skip this iteration.
+          // already been claimed - we can skip this iteration.
+          // TODO: ^ Same, there can be TACo rewards
           continue
         }
 
