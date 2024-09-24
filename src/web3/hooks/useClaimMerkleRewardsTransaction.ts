@@ -36,7 +36,7 @@ export const useClaimMerkleRewardsTransaction = (
 
       // TODO:
       // - This only signals no Merkle rewards, but there may be TACo rewards
-      // - We can still call the new Merkle contract with a claim with an empty 
+      // - We can still call the new Merkle contract with a claim with an empty
       //   merkle proof, signalling to not try to claim Merkle rewards. This
       //   will still try to claim TACo rewards automatically.
       if (availableRewardsToClaim.length === 0) {
