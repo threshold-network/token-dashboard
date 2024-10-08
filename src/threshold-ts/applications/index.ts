@@ -38,6 +38,20 @@ export interface AuthorizationParameters<
   authorizationDecreaseChangePeriod: NumberType
 }
 
+export interface StakingProviderInfo<
+  NumberType extends BigNumberish = BigNumber
+> {
+  operator: string
+  operatorConfirmed: boolean
+  operatorStartTimestamp: NumberType
+  authorized: NumberType
+  deauthorizing: NumberType
+  endDeauthorization: NumberType
+  tReward: NumberType
+  rewardPerTokenPaid: NumberType
+  endCommitment: NumberType
+}
+
 export interface StakingProviderAppInfo<
   NumberType extends BigNumberish = BigNumber
 > {
@@ -75,6 +89,8 @@ export interface StakingProviderAppInfo<
    * it means that the operator for a given staking provider is not set.
    */
   isOperatorInPool: boolean | undefined
+
+  stakingProviderInfo?: StakingProviderInfo | undefined
 }
 
 /**
@@ -202,6 +218,8 @@ export interface IApplication {
    */
   stakingProviderToOperator(stakingProvider: string): Promise<string>
 
+  stakingProviderInfo(stakingProvider: string): Promise<StakingProviderInfo>
+
   /**
    * Used to get staking provider address mapped to the given registered
    * operator address
@@ -314,6 +332,15 @@ export class Application implements IApplication {
       },
     ]
 
+    const tacoCalls: ContractCall[] = [
+      {
+        interface: this.contract.interface,
+        address: this.contract.address,
+        method: "stakingProviderInfo",
+        args: [stakingProvider],
+      },
+    ]
+
     const [
       authorizedStake,
       pendingAuthorizationDecrease,
@@ -322,6 +349,14 @@ export class Application implements IApplication {
       { authorizationDecreaseDelay },
       [operator],
     ] = await this._multicall.aggregate(calls)
+
+    let stakingProviderInfo
+    try {
+      ;[stakingProviderInfo] = await this._multicall.aggregate(tacoCalls)
+    } catch (error) {
+      console.warn("Failed to aggregate tacoCalls", error)
+      stakingProviderInfo = undefined
+    }
 
     let isOperatorInPool = undefined
     if (operator && !isAddressZero(operator)) {
@@ -368,6 +403,7 @@ export class Application implements IApplication {
       deauthorizationCreatedAt,
       isOperatorInPool,
       operator,
+      stakingProviderInfo,
     }
   }
 
@@ -446,6 +482,12 @@ export class Application implements IApplication {
       stakingProvider,
       commitmentDuration
     )
+  }
+
+  stakingProviderInfo = async (
+    stakingProvider: string
+  ): Promise<StakingProviderInfo> => {
+    return await this._application.stakingProviderInfo(stakingProvider)
   }
 
   stakingProviderToOperator = async (
