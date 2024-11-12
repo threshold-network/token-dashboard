@@ -62,7 +62,7 @@ export const getSupportedAppsEffect = async (
       })
     )
     const data =
-      await listenerApi.extra.threshold.multiAppStaking.getSupportedAppsAuthParameters()
+      await listenerApi.extra.threshold.multiAppStaking!.getSupportedAppsAuthParameters()
     const payload = {
       tbtc: {
         minimumAuthorization: data.tbtc!.minimumAuthorization.toString(),

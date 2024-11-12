@@ -15,7 +15,6 @@ import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
 import { featureFlags } from "../constants"
 import { useIsActive } from "../hooks/useIsActive"
 import { isL1Network, isL2Network } from "../networks/utils/connectedNetwork"
-
 interface TokenContextState extends TokenState {
   contract: Contract | null
 }

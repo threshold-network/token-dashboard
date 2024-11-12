@@ -12,12 +12,14 @@ import { setInterimRewards } from "../store/rewards"
 import { selectStakingProviders } from "../store/staking"
 import { BigNumber } from "ethers"
 import { Zero } from "@ethersproject/constants"
+import { useIsActive } from "./useIsActive"
 
 interface StakingRewards {
   [stakingProvider: string]: string
 }
 
 export const useFetchStakingRewards = () => {
+  const { chainId } = useIsActive()
   const merkleDropContract = useMerkleDropContract()
   const stakingProviders = useSelector(selectStakingProviders)
   const { hasFetched, isFetching } = useSelector(

@@ -127,6 +127,7 @@ export const useFetchTvl = (): [
   const fetchOnChainData = useMulticall(calls)
 
   const fetchTvlData = useCallback(async () => {
+    if (chainId && !isL1Network(chainId)) return initialState
     const chainData = await fetchOnChainData()
     if (chainData.length === 0) return initialState
 

@@ -57,7 +57,7 @@ const fetchStake = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const stake =
-    await listenerApi.extra.threshold.staking.getStakeByStakingProvider(
+    await listenerApi.extra.threshold.staking!.getStakeByStakingProvider(
       stakingProvider
     )
 
