@@ -16,7 +16,7 @@ import { useTConvertedAmount } from "../../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../../hooks/useTExchangeRate"
 import { useVendingMachineContract } from "../../../web3/hooks/useVendingMachineContract"
 import { useUpgradeToT } from "../../../web3/hooks/useUpgradeToT"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps, UpgredableToken } from "../../../types"
 import InfoBox from "../../InfoBox"
@@ -65,11 +65,15 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           mt="2rem"
         >
           This action is reversible via the{" "}
-          <ViewInBlockExplorer
-            id={contract!.address}
-            type={ExplorerDataType.ADDRESS}
-            text="vending machine contract."
-          />
+          {contract ? (
+            <ViewInBlockExplorer
+              id={contract.address}
+              type={ExplorerDataType.ADDRESS}
+              text="vending machine contract."
+            />
+          ) : (
+            "vending machine contract."
+          )}
         </BodySm>
         <LineDivider />
       </ModalBody>
