@@ -48,9 +48,8 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.ref_name }}
-          CHAIN_ID: 1
-          ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          DEFAULT_PROVIDER_CHAIN_ID: 1
+          ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
@@ -59,6 +58,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           TRM_SUPPORT: ${{ secrets.TRM_SUPPORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+          TBTC_SUBGRAPH_API: ${{ secrets.TBTC_SUBGRAPH_API }}
           GOOGLE_TAG_MANAGER_SUPPORT: false
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
@@ -67,9 +67,8 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          CHAIN_ID: 1
-          ETH_HOSTNAME_HTTP: ${{ secrets.MAINNET_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.MAINNET_ETH_HOSTNAME_WS }}
+          DEFAULT_PROVIDER_CHAIN_ID: 1
+          ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true
           POSTHOG_API_KEY: ${{ secrets.MAINNET_POSTHOG_API_KEY }}
@@ -81,6 +80,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           TRM_SUPPORT: ${{ secrets.TRM_SUPPORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+          TBTC_SUBGRAPH_API: ${{ secrets.TBTC_SUBGRAPH_API }}
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
