@@ -6,6 +6,7 @@ import {
   BitcoinTxHash,
   BitcoinUtxo,
   ChainIdentifier,
+  CrossChainDepositor,
   Deposit,
   DepositRequest,
   ElectrumClient,
@@ -16,6 +17,7 @@ import {
   loadEthereumCoreContracts,
   TBTC as SDK,
   Chains,
+  L2Chain,
 } from "@keep-network/tbtc-v2.ts"
 import {
   BigNumber,
@@ -26,7 +28,7 @@ import {
   utils,
 } from "ethers"
 import { LogDescription } from "ethers/lib/utils"
-import { ContractCall, IMulticall } from "../multicall"
+import { ContractCall, IMulticall, Multicall } from "../multicall"
 import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
 import {
   AddressZero,
@@ -42,6 +44,15 @@ import {
   isValidBtcAddress,
   ZERO,
 } from "../utils"
+import {
+  isL1Network,
+  isL2Network,
+  getChainIdToNetworkName,
+  getMainnetOrTestnetChainId,
+} from "../../networks/utils"
+import { SupportedChainIds } from "../../networks/enums/networks"
+import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -156,6 +167,7 @@ export type DepositScriptParameters = {
   walletPublicKeyHash: string
   refundPublicKeyHash: string
   refundLocktime: string
+  extraData?: string
 }
 
 class EmptySdkObjectError extends Error {
@@ -184,13 +196,15 @@ export interface ITBTC {
    */
   readonly bitcoinNetwork: BitcoinNetwork
 
-  readonly bridgeContract: Contract
+  readonly bridgeContract: Contract | null
 
-  readonly vaultContract: Contract
+  readonly vaultContract: Contract | null
 
-  readonly tokenContract: Contract
+  readonly tokenContract: Contract | null
 
   readonly deposit: Deposit | undefined
+
+  readonly isCrossChain: boolean
 
   /**
    * Initializes tbtc-v2 SDK
@@ -212,6 +226,17 @@ export interface ITBTC {
   initiateDeposit(btcRecoveryAddress: string): Promise<Deposit>
 
   /**
+   * Initiates a Deposit object from bitcoin recovery address.
+   * @param btcRecoveryAddress The bitcoin address in which the user will
+   * receive the bitcoin back in case something goes wrong.
+   * @returns Deposit object
+   */
+  initiateCrossChainDeposit(
+    btcRecoveryAddress: string,
+    chainId: number
+  ): Promise<Deposit>
+
+  /**
    * Removes the deposit data assigned to `this._deposit` property.
    */
   removeDepositData(): void
@@ -226,6 +251,19 @@ export interface ITBTC {
    */
   initiateDepositFromDepositScriptParameters(
     depositScriptParameters: DepositScriptParameters
+  ): Promise<Deposit>
+
+  /**
+   * Initiates a deposit object from DepositScriptParameters object. Most of the
+   * parameters are passed as strings and converted to hexes inside the
+   * function.
+   * @param depositScriptParameters DepositScriptParameters object that contains
+   * all the data related to the deposit we want to re-initiate.
+   * @returns Deposit object
+   */
+  initiateCrossChainDepositFromScriptParameters(
+    depositScriptParameters: DepositScriptParameters,
+    chainId: number
   ): Promise<Deposit>
 
   /**
@@ -416,8 +454,8 @@ export class TBTC implements ITBTC {
   private _bridgeContract: Contract
   private _tbtcVaultContract: Contract
   private _tokenContract: Contract
-  private _bitcoinClient: BitcoinClient
   private _multicall: IMulticall
+  private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
   private _bitcoinConfig: BitcoinConfig
   private readonly _satoshiMultiplier = BigNumber.from(10).pow(10)
@@ -443,12 +481,9 @@ export class TBTC implements ITBTC {
 
   private _sdkPromise: Promise<SDK | undefined>
   private _deposit: Deposit | undefined
+  private _isCrossChain: boolean = false
 
-  constructor(
-    ethereumConfig: EthereumConfig,
-    bitcoinConfig: BitcoinConfig,
-    multicall: IMulticall
-  ) {
+  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -460,41 +495,55 @@ export class TBTC implements ITBTC {
       providerOrSigner,
       account,
     } = ethereumConfig
+    this._isCrossChain = isL2Network(chainId)
+
+    const defaultOrConnectedChainId = this._isCrossChain
+      ? getDefaultProviderChainId()
+      : chainId
+    const defaultOrConnectedProvider = this._isCrossChain
+      ? getThresholdLibProvider(defaultOrConnectedChainId)
+      : providerOrSigner
 
     const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
-      chainId,
+      defaultOrConnectedChainId,
       shouldUseTestnetDevelopmentContracts
     )
     const bridgeArtifact = getArtifact(
       "Bridge",
-      chainId,
+      defaultOrConnectedChainId,
       shouldUseTestnetDevelopmentContracts
     )
     const tbtcTokenArtifact = getArtifact(
       "TBTC",
-      chainId,
+      defaultOrConnectedChainId,
       shouldUseTestnetDevelopmentContracts
     )
 
     this._bridgeContract = getContract(
       bridgeArtifact.address,
       bridgeArtifact.abi,
-      providerOrSigner,
+      defaultOrConnectedProvider,
       account
     )
     this._tbtcVaultContract = getContract(
       tbtcVaultArtifact.address,
       tbtcVaultArtifact.abi,
-      providerOrSigner,
+      defaultOrConnectedProvider,
       account
     )
     this._tokenContract = getContract(
       tbtcTokenArtifact.address,
       tbtcTokenArtifact.abi,
-      providerOrSigner,
+      defaultOrConnectedProvider,
       account
     )
+    this._multicall = new Multicall({
+      ...ethereumConfig,
+      providerOrSigner: defaultOrConnectedProvider,
+      chainId: defaultOrConnectedChainId,
+    })
+
     // @ts-ignore
     this._bitcoinClient =
       bitcoinConfig.client ??
@@ -503,7 +552,6 @@ export class TBTC implements ITBTC {
         bitcoinConfig.clientOptions
       )
 
-    this._multicall = multicall
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
     this._sdkPromise = new Promise((resolve) => resolve(undefined))
@@ -515,10 +563,21 @@ export class TBTC implements ITBTC {
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK> {
+    const isMainnet = this.bitcoinNetwork === BitcoinNetwork.Mainnet
+    const defaultProvider = isMainnet
+      ? getThresholdLibProvider(SupportedChainIds.Ethereum)
+      : getThresholdLibProvider(SupportedChainIds.Sepolia)
+
     const signer =
       !!account && providerOrSigner instanceof Web3Provider
         ? getSigner(providerOrSigner as Web3Provider, account)
         : providerOrSigner
+
+    const connectedChainId = await chainIdFromSigner(signer)
+
+    const initializerProviderOrSigner = isL1Network(connectedChainId)
+      ? signer
+      : defaultProvider
 
     const { shouldUseTestnetDevelopmentContracts } = this._ethereumConfig
     const { client: clientFromConfig } = this._bitcoinConfig
@@ -526,11 +585,12 @@ export class TBTC implements ITBTC {
     // For both of these cases we will use SDK.initializeCustom() method
     if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
       const depositorAddress = await ethereumAddressFromSigner(signer)
-      const chainId = await chainIdFromSigner(signer)
-
       const tbtcContracts = shouldUseTestnetDevelopmentContracts
         ? getSepoliaDevelopmentContracts(signer)
-        : await loadEthereumCoreContracts(signer, chainId as Chains.Ethereum)
+        : await loadEthereumCoreContracts(
+            defaultProvider,
+            SupportedChainIds.Ethereum.valueOf().toString() as Chains.Ethereum
+          )
 
       const sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
 
@@ -539,12 +599,15 @@ export class TBTC implements ITBTC {
       return sdk
     }
 
-    const initializeFunction =
-      this.bitcoinNetwork === BitcoinNetwork.Mainnet
-        ? SDK.initializeMainnet
-        : SDK.initializeSepolia
+    const initializeFunction = isMainnet
+      ? SDK.initializeMainnet
+      : SDK.initializeSepolia
 
-    const sdk = await initializeFunction(signer)
+    // We need to use a mainnet default provider to initialize the SDK
+    const sdk = await initializeFunction(
+      initializerProviderOrSigner,
+      isL2Network(connectedChainId)
+    )
 
     return sdk
   }
@@ -555,6 +618,13 @@ export class TBTC implements ITBTC {
   ): Promise<void> {
     try {
       this._sdkPromise = this._initializeSdk(providerOrSigner, account)
+
+      if (this.isCrossChain) {
+        await this._initiateCrossChain(
+          providerOrSigner as Web3Provider,
+          account as string
+        )
+      }
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
     }
@@ -584,6 +654,10 @@ export class TBTC implements ITBTC {
     return this._tokenContract
   }
 
+  get isCrossChain(): boolean {
+    return this._isCrossChain
+  }
+
   private _getSdk = async (): Promise<SDK> => {
     const sdk = await this._sdkPromise
     if (!sdk) throw new EmptySdkObjectError()
@@ -591,9 +665,39 @@ export class TBTC implements ITBTC {
     return sdk
   }
 
+  private _initiateCrossChain = async (
+    providerOrSigner: Web3Provider,
+    account: string
+  ): Promise<void> => {
+    const sdk = await this._getSdk()
+    const signer = getSigner(providerOrSigner as Web3Provider, account)
+
+    const connectedChainId = await chainIdFromSigner(signer)
+    const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+
+    await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
+  }
+
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
     const sdk = await this._getSdk()
     this._deposit = await sdk.deposits.initiateDeposit(btcRecoveryAddress)
+    return this._deposit
+  }
+
+  initiateCrossChainDeposit = async (
+    btcRecoveryAddress: string,
+    chainId: number
+  ): Promise<Deposit> => {
+    if (!this._isCrossChain) {
+      throw new Error("Unsupported chain ID")
+    }
+
+    const sdk = await this._getSdk()
+    const l2NetworkName = getChainIdToNetworkName(chainId)
+    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+      btcRecoveryAddress,
+      l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    )
     return this._deposit
   }
 
@@ -606,19 +710,19 @@ export class TBTC implements ITBTC {
   ): Promise<Deposit> => {
     const sdk = await this._getSdk()
     const {
+      depositor,
       blindingFactor,
       walletPublicKeyHash,
       refundPublicKeyHash,
       refundLocktime,
-      ...restDepositScriptParameters
     } = depositScriptParameters
 
     const depositReceipt = {
+      depositor,
       blindingFactor: Hex.from(blindingFactor),
       walletPublicKeyHash: Hex.from(walletPublicKeyHash),
       refundLocktime: Hex.from(refundLocktime),
       refundPublicKeyHash: Hex.from(refundPublicKeyHash),
-      ...restDepositScriptParameters,
     }
 
     this._deposit = await Deposit.fromReceipt(
@@ -626,6 +730,67 @@ export class TBTC implements ITBTC {
       sdk.tbtcContracts,
       sdk.bitcoinClient
     )
+    return this._deposit
+  }
+
+  initiateCrossChainDepositFromScriptParameters = async (
+    depositScriptParameters: DepositScriptParameters,
+    chainId: number
+  ): Promise<Deposit> => {
+    if (!this._isCrossChain) {
+      throw new Error("Unsupported chain ID")
+    }
+    const l2NetworkName = getChainIdToNetworkName(chainId)
+    const sdk = await this._getSdk()
+
+    const {
+      depositor,
+      blindingFactor,
+      walletPublicKeyHash,
+      refundPublicKeyHash,
+      refundLocktime,
+      extraData,
+    } = depositScriptParameters
+
+    if (!extraData) {
+      throw new Error("Extra data is required for cross-chain deposit")
+    }
+
+    const depositReceipt = {
+      depositor: {
+        identifierHex: depositor.identifierHex,
+        equals: (identifier: ChainIdentifier) => {
+          return depositor.identifierHex === identifier.identifierHex
+        },
+      },
+      blindingFactor: Hex.from(blindingFactor),
+      walletPublicKeyHash: Hex.from(walletPublicKeyHash),
+      refundLocktime: Hex.from(refundLocktime),
+      refundPublicKeyHash: Hex.from(refundPublicKeyHash),
+      extraData: Hex.from(extraData),
+    }
+
+    await this._initiateCrossChain(
+      this._ethereumConfig.providerOrSigner as Web3Provider,
+      this._ethereumConfig.account as string
+    )
+
+    const crossChainContracts = sdk.crossChainContracts(
+      l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    )
+
+    if (!crossChainContracts) {
+      throw new Error("Cross-chain contracts are not initialized")
+    }
+    const depositorProxy = new CrossChainDepositor(crossChainContracts)
+
+    this._deposit = await Deposit.fromReceipt(
+      depositReceipt,
+      sdk.tbtcContracts,
+      sdk.bitcoinClient,
+      depositorProxy
+    )
+
     return this._deposit
   }
 
@@ -669,21 +834,21 @@ export class TBTC implements ITBTC {
   }> => {
     const calls: ContractCall[] = [
       {
-        interface: this._bridgeContract.interface,
-        address: this._bridgeContract.address,
+        interface: this._bridgeContract!.interface,
+        address: this._bridgeContract!.address,
         method: "depositParameters",
         args: [],
       },
       {
-        interface: this._tbtcVaultContract.interface,
-        address: this._tbtcVaultContract.address,
+        interface: this._tbtcVaultContract!.interface,
+        address: this._tbtcVaultContract!.address,
         method: "optimisticMintingFeeDivisor",
         args: [],
       },
     ]
 
     const [depositParams, _optimisticMintingFeeDivisor] =
-      await this._multicall.aggregate(calls)
+      await this._multicall!.aggregate(calls)
 
     const depositTreasuryFeeDivisor = BigNumber.from(
       depositParams.depositTreasuryFeeDivisor
@@ -834,12 +999,14 @@ export class TBTC implements ITBTC {
   findAllRevealedDeposits = async (
     depositor: string
   ): Promise<RevealedDepositEvent[]> => {
+    const chainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+
     const bridgeArtifact = getArtifact(
       "Bridge",
-      this.ethereumChainId,
+      chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    const deposits = await getContractPastEvents(this._bridgeContract, {
+    const deposits = await getContractPastEvents(this._bridgeContract!, {
       fromBlock: bridgeArtifact.receipt.blockNumber,
       filterParams: [null, null, depositor],
       eventName: "DepositRevealed",
@@ -874,10 +1041,10 @@ export class TBTC implements ITBTC {
     const { optimisticMintingFeeDivisor } = await this._getDepositFees()
 
     const deposits = (
-      await this._multicall.aggregate(
+      await this._multicall!.aggregate(
         depositKeys.map((depositKey) => ({
-          interface: this.bridgeContract.interface,
-          address: this.bridgeContract.address,
+          interface: this.bridgeContract!.interface,
+          address: this.bridgeContract!.address,
           method: "deposits",
           args: [depositKey],
         }))
@@ -906,16 +1073,16 @@ export class TBTC implements ITBTC {
     optimisticMintingFinalizedTxHash: string,
     depositor: string
   ): Promise<[string, BigNumber]> => {
-    const receipt = await this.tokenContract.provider.getTransactionReceipt(
+    const receipt = await this.tokenContract!.provider.getTransactionReceipt(
       optimisticMintingFinalizedTxHash
     )
 
     // There is only one transfer to depositor account.
     const transferEvent = receipt.logs
       .filter((log) =>
-        isSameETHAddress(log.address, this._tokenContract.address)
+        isSameETHAddress(log.address, this._tokenContract!.address)
       )
-      .map((log) => this._tokenContract.interface.parseLog(log))
+      .map((log) => this._tokenContract!.interface.parseLog(log))
       .filter((log) => log.name === "Transfer")
       .find((log) => isSameETHAddress(log.args.to, depositor))
 
@@ -929,12 +1096,14 @@ export class TBTC implements ITBTC {
     depositor: string,
     depositKeys: string[] = []
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    const chainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+
     const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
-      this.ethereumChainId,
+      chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    return await getContractPastEvents(this._tbtcVaultContract, {
+    return await getContractPastEvents(this._tbtcVaultContract!, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys, depositor],
       eventName: "OptimisticMintingFinalized",
@@ -944,12 +1113,14 @@ export class TBTC implements ITBTC {
   private _findAllCancelledDeposits = async (
     depositKeys: string[]
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    const chainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+
     const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
-      this.ethereumChainId,
+      chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    return getContractPastEvents(this._tbtcVaultContract, {
+    return getContractPastEvents(this._tbtcVaultContract!, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",
@@ -967,7 +1138,7 @@ export class TBTC implements ITBTC {
 
     for (const event of requestedRedemptions) {
       const { timestamp: eventTimestamp } =
-        await this._bridgeContract.provider.getBlock(event.blockNumber)
+        await this._bridgeContract!.provider.getBlock(event.blockNumber)
       const redemptionKey = this.buildRedemptionKey(
         event.walletPublicKeyHash,
         event.redeemerOutputScript
@@ -1162,9 +1333,9 @@ export class TBTC implements ITBTC {
         : encodeAddress(redeemer ?? AddressZero),
     ]
 
-    const logs = await this.bridgeContract.queryFilter(
+    const logs = await this.bridgeContract!.queryFilter(
       {
-        address: this.bridgeContract.address,
+        address: this.bridgeContract!.address,
         // @ts-ignore
         topics: filterTopics,
       },
@@ -1174,7 +1345,7 @@ export class TBTC implements ITBTC {
 
     return logs
       .map((log) => ({
-        ...this.bridgeContract.interface.parseLog(log),
+        ...this.bridgeContract!.interface.parseLog(log),
         blockNumber: log.blockNumber,
         transactionHash: log.transactionHash,
       }))
@@ -1215,16 +1386,16 @@ export class TBTC implements ITBTC {
   getRedemptionRequest = async (
     redemptionKey: string
   ): Promise<RedemptionRequest> => {
-    const [[pending], [timedOut]] = await this._multicall.aggregate([
+    const [[pending], [timedOut]] = await this._multicall!.aggregate([
       {
-        interface: this._bridgeContract.interface,
-        address: this._bridgeContract.address,
+        interface: this._bridgeContract!.interface,
+        address: this._bridgeContract!.address,
         method: "pendingRedemptions",
         args: [redemptionKey],
       },
       {
-        interface: this._bridgeContract.interface,
-        address: this._bridgeContract.address,
+        interface: this._bridgeContract!.interface,
+        address: this._bridgeContract!.address,
         method: "timedOutRedemptions",
         args: [redemptionKey],
       },
@@ -1271,9 +1442,9 @@ export class TBTC implements ITBTC {
       this._encodeWalletPublicKeyHash(walletPublicKeyHash),
     ]
 
-    const logs = await this.bridgeContract.queryFilter(
+    const logs = await this.bridgeContract!.queryFilter(
       {
-        address: this.bridgeContract.address,
+        address: this.bridgeContract!.address,
         // @ts-ignore
         topics: filterTopics,
       },
@@ -1303,9 +1474,9 @@ export class TBTC implements ITBTC {
       this._encodeWalletPublicKeyHash(walletPublicKeyHash),
     ]
 
-    const logs = await this.bridgeContract.queryFilter(
+    const logs = await this.bridgeContract!.queryFilter(
       {
-        address: this.bridgeContract.address,
+        address: this.bridgeContract!.address,
         // @ts-ignore
         topics: filterTopics,
       },
@@ -1359,7 +1530,7 @@ export class TBTC implements ITBTC {
   private getRedemptionTreasuryFeeDivisor = async () => {
     if (!this._redemptionTreasuryFeeDivisor) {
       const { redemptionTreasuryFeeDivisor } =
-        await this.bridgeContract.redemptionParameters()
+        await this.bridgeContract!.redemptionParameters()
       this._redemptionTreasuryFeeDivisor = redemptionTreasuryFeeDivisor
     }
 
