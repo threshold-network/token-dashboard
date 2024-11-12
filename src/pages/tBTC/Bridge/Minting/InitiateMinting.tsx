@@ -16,6 +16,7 @@ import { Toast } from "../../../../components/Toast"
 import { useModal } from "../../../../hooks/useModal"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { AllowedL2TransactionTypes } from "../../../../networks/enums/networks"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -97,6 +98,7 @@ const InitiateMintingComponent: FC<{
       </InfoBox>
       <MintingTransactionDetails />
       <SubmitTxButton
+        l2TransactionType={AllowedL2TransactionTypes.mint}
         onSubmit={initiateMintTransaction}
         isFullWidth
         data-ph-capture-attribute-button-name={

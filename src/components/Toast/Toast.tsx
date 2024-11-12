@@ -7,6 +7,7 @@ import {
   AlertDescription,
   AlertProps as AlertPropsBase,
   CloseButton,
+  useColorModeValue,
 } from "@threshold-network/components"
 import { useEffect, useState } from "react"
 import { setTimeout, clearTimeout } from "../../utils/setTimeout"
@@ -34,6 +35,7 @@ const Toast = (props: AlertProps) => {
   } = props
 
   const [isMounted, setIsMounted] = useState(true)
+  const backgroundColor = useColorModeValue("white", "gray.600")
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -54,6 +56,7 @@ const Toast = (props: AlertProps) => {
       alignItems="baseline"
       border="none"
       whiteSpace="nowrap"
+      backgroundColor={backgroundColor}
       {...restProps}
     >
       <AlertIcon minH="8" />

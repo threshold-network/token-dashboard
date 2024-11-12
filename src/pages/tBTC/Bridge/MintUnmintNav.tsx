@@ -8,8 +8,15 @@ import {
 import { Box, Card, FilterTabs, FilterTab } from "@threshold-network/components"
 import Link from "../../../components/Link"
 import { PageComponent } from "../../../types"
+import { isL2Network } from "../../../networks/utils"
+import { isValidL2Transaction } from "../../../networks/utils/validateL2TransactionType"
+import { useIsActive } from "../../../hooks/useIsActive"
 
-const renderNavItem = (page: PageComponent, index: number) => (
+const renderNavItem = (
+  page: PageComponent,
+  index: number,
+  chainId?: number | string
+) => (
   <FilterTab
     key={page.route.path}
     as={Link}
@@ -25,6 +32,7 @@ const renderNavItem = (page: PageComponent, index: number) => (
 export const MintUnmintNav: FC<
   ComponentProps<typeof Card> & { pages: PageComponent[] }
 > = ({ pages, ...props }) => {
+  const { chainId } = useIsActive()
   const resolved = useResolvedPath("")
   const location = useLocation()
 
@@ -41,7 +49,19 @@ export const MintUnmintNav: FC<
   return (
     <Box as="nav" {...props}>
       <FilterTabs selectedTabId={activeTabId}>
-        {pages.filter((page) => !!page.route.title).map(renderNavItem)}
+        {isL2Network(chainId)
+          ? pages
+              .filter(
+                (page) =>
+                  !!page.route.title &&
+                  isValidL2Transaction(page.route.title?.toUpperCase())
+              )
+              .map((filteredPage, index) =>
+                renderNavItem(filteredPage, index, chainId)
+              )
+          : pages
+              .filter((page) => !!page.route.title)
+              .map((filteredPage, index) => renderNavItem(filteredPage, index))}
       </FilterTabs>
     </Box>
   )
