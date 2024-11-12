@@ -41,7 +41,7 @@ import { InlineTokenBalance } from "../../../components/TokenBalance"
 import shortenAddress from "../../../utils/shortenAddress"
 import { getRelativeTime } from "../../../utils/date"
 import { createLinkToBlockExplorerForChain } from "../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import {
   RecentDeposit,
   useFetchRecentDeposits,

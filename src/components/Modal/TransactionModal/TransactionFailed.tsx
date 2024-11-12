@@ -18,10 +18,11 @@ import { BodySm } from "@threshold-network/components"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import withBaseModal from "../withBaseModal"
 import Link from "../../Link"
 import ModalCloseButton from "../ModalCloseButton"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 interface TransactionFailedProps extends BaseModalProps {
   transactionHash?: string
@@ -36,6 +37,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
   transactionHash,
 }) => {
   const { isOpen, onToggle } = useDisclosure()
+  const { chainId } = useIsActive()
 
   const errorTitle = "Error"
 
@@ -113,6 +115,7 @@ const TransactionFailed: FC<TransactionFailedProps> = ({
             <ViewInBlockExplorer
               id={transactionHash}
               type={ExplorerDataType.TRANSACTION}
+              ethereumNetworkChainId={chainId}
               text="View"
             />
             transaction on Etherscan

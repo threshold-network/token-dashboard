@@ -16,7 +16,7 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import withBaseModal from "../withBaseModal"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { BaseModalProps } from "../../../types"
 import ModalCloseButton from "../ModalCloseButton"
 

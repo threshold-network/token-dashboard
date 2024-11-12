@@ -5,7 +5,7 @@ import { BaseModalProps } from "../../../types"
 import { StakingAppName } from "../../../store/staking-applications"
 import TransactionSuccessModal from "../TransactionSuccessModal"
 import shortenAddress from "../../../utils/shortenAddress"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 
 export type OperatorMappedSuccessTx = {
