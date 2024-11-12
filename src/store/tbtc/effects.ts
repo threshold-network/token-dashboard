@@ -14,6 +14,7 @@ import {
 import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
+import { getChainIdToNetworkName, isL1Network } from "../../networks/utils"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -46,7 +47,7 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress, depositor } = action.payload
+  const { btcDepositAddress, depositor, chainId } = action.payload
 
   const {
     tbtc: {
@@ -55,6 +56,8 @@ export const findUtxoEffect = async (
       walletPublicKeyHash,
       refundLocktime,
       btcRecoveryAddress,
+      chainName,
+      extraData,
     },
   } = listenerApi.getState()
 
@@ -70,6 +73,9 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
+        if (getChainIdToNetworkName(chainId) !== chainName) {
+          throw new Error("Chain ID and deposit chain name mismatch")
+        }
         // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
           const bitcoinNetwork = listenerApi.extra.threshold.tbtc.bitcoinNetwork
@@ -83,17 +89,31 @@ export const findUtxoEffect = async (
               btcRecoveryAddress,
               bitcoinNetwork
             ).toString()
-          await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
-              {
-                depositor: getChainIdentifier(ethAddress),
-                blindingFactor,
-                walletPublicKeyHash,
-                refundPublicKeyHash,
-                refundLocktime,
-              }
+          const depositParams = {
+            depositor: getChainIdentifier(ethAddress),
+            blindingFactor,
+            walletPublicKeyHash,
+            refundPublicKeyHash,
+            refundLocktime,
+          }
+
+          if (isL1Network(chainId)) {
+            await forkApi.pause(
+              listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+                depositParams
+              )
             )
-          )
+          } else {
+            await forkApi.pause(
+              listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+                {
+                  ...depositParams,
+                  extraData,
+                },
+                chainId
+              )
+            )
+          }
         }
 
         // Looking for utxo.
@@ -148,7 +168,8 @@ export const findUtxoEffect = async (
             depositor,
             JSON.parse(
               localStorage.getItem(key) || "{}"
-            ) as TBTCLocalStorageDepositData
+            ) as TBTCLocalStorageDepositData,
+            chainId as number
           )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({

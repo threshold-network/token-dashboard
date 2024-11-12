@@ -30,6 +30,8 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("depositRevealedTxHash", undefined)
     updateState("optimisticMintingRequestedTxHash", undefined)
     updateState("optimisticMintingFinalizedTxHash", undefined)
+    updateState("extraData", undefined)
+    updateState("chainName", undefined)
   }, [updateState])
 
   return {
