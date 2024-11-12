@@ -38,7 +38,7 @@ import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent
 import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
-import { isSameChainId, isSameETHAddress } from "./web3/utils"
+import { isSameETHAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
 import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
 import {
@@ -133,16 +133,11 @@ const useSubscribeToVendingMachineContractEvents = () => {
 
 const AppBody = () => {
   const dispatch = useDispatch()
-  const { connector, account, chainId, deactivate } = useWeb3React()
+  const { connector, account } = useWeb3React()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
-      // if chain is changed then just deactivate the current provider and reset
-      // store
-      if (update.chainId && !isSameChainId(update.chainId, chainId as number)) {
-        dispatch(resetStoreAction())
-        deactivate()
-      } else if (
+      if (
         update.account &&
         !isSameETHAddress(update.account, account as string)
       ) {
