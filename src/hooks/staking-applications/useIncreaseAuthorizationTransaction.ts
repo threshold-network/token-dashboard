@@ -15,7 +15,7 @@ export const useIncreaseAuthorizationTransaction = (
   const threshold = useThreshold()
 
   return useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService[appName]]
+    threshold.multiAppStaking![stakingAppNameToThresholdAppService[appName]]
       .increaseAuthorization,
     onSuccess,
     onError

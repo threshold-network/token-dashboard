@@ -1,4 +1,4 @@
-import { threshold } from "./getThresholdLib"
+import { useThreshold } from "../contexts/ThresholdContext"
 import { StakingAppName } from "../store/staking-applications"
 
 const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
@@ -7,19 +7,28 @@ const stakingAppNameToAppLabel: Record<StakingAppName, string> = {
   taco: "TACo",
 }
 
-const stakingAppAddressToAppName: Record<string, StakingAppName> = {
-  [threshold.multiAppStaking.ecdsa.address]: "tbtc",
-  [threshold.multiAppStaking.randomBeacon.address]: "randomBeacon",
-  [threshold.multiAppStaking.taco.address]: "taco",
-}
-
 export const getStakingAppNameFromAppAddress = (stakingAppAddress: string) => {
+  const { multiAppStaking } = useThreshold()
+
+  if (!multiAppStaking) {
+    return null
+  }
+
+  const stakingAppAddressToAppName: Record<string, StakingAppName> = {
+    [multiAppStaking.ecdsa.address]: "tbtc",
+    [multiAppStaking.randomBeacon.address]: "randomBeacon",
+    [multiAppStaking.taco.address]: "taco",
+  }
+
   return stakingAppAddressToAppName[stakingAppAddress]
 }
 
 export const getStakingAppLabelFromAppName = (
-  stakingAppName: StakingAppName
+  stakingAppName: StakingAppName | null
 ) => {
+  if (!stakingAppName) {
+    return null
+  }
   return stakingAppNameToAppLabel[stakingAppName]
 }
 

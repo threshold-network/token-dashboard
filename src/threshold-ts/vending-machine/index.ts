@@ -106,7 +106,7 @@ export class VendingMachine implements IVendingMachine {
 
     return {
       tAmount: convertibleAmount
-        .mul(BigNumber.from(await this.ratio()))
+        .mul(await this.ratio())
         .div(this.FLOATING_POINT_DIVISOR),
       wrappedRemainder,
     }

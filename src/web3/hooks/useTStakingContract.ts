@@ -1,10 +1,32 @@
-import TStakingContract from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
-import { supportedChainId } from "../../utils/getEnvVariable"
+import TokenStakingABI from "../abi/TokenStaking.json"
 import { useContract } from "./useContract"
+import { SupportedChainIds } from "../../networks/enums/networks"
+import { AddressZero } from "@ethersproject/constants"
+import { useDefaultOrConnectedChainId } from "../../networks/hooks/useDefaultOrConnectedChainId"
 
-export const T_STAKING_CONTRACT_DEPLOYMENT_BLOCK =
-  supportedChainId === "1" ? 14113768 : 0
+const DEPLOYMENT_BLOCKS: { [key: number]: number } = {
+  [SupportedChainIds.Ethereum]: 14113768,
+  [SupportedChainIds.Sepolia]: 4653467,
+}
+
+const T_STAKING_ADDRESSES = {
+  // https://etherscan.io/address/0x01B67b1194C75264d06F808A921228a95C765dd7
+  [SupportedChainIds.Ethereum]: "0x01B67b1194C75264d06F808A921228a95C765dd7",
+  // https://sepolia.etherscan.io/address/0x3d4cb85c0e3c5bd1667B7E30f3E86B3FAB878Ff8
+  [SupportedChainIds.Sepolia]: "0x3d4cb85c0e3c5bd1667B7E30f3E86B3FAB878Ff8",
+  // TODO: Set local address- how to resolve it in local network?
+  [SupportedChainIds.Localhost]: AddressZero,
+} as Record<number, string>
+
+export const getTStakingDeploymentBlock = () => {
+  const defaultOrConnectedChainId = useDefaultOrConnectedChainId()
+  return DEPLOYMENT_BLOCKS[Number(defaultOrConnectedChainId)] || 0
+}
 
 export const useTStakingContract = () => {
-  return useContract(TStakingContract.address, TStakingContract.abi)
+  const defaultOrConnectedChainId = useDefaultOrConnectedChainId()
+  return useContract(
+    T_STAKING_ADDRESSES[Number(defaultOrConnectedChainId)],
+    TokenStakingABI
+  )
 }

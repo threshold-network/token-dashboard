@@ -1,7 +1,7 @@
 import axios from "axios"
 import { getEnvVariable } from "./getEnvVariable"
 import { EnvVariable } from "../enums"
-import chainIdToTrmNetworkName from "./chainIdToTrmNetworkName"
+import { chainIdToTrmNetworkName } from "../networks/utils"
 import { TrmAccountDetails } from "../types"
 
 interface WalletScreeningRequest {

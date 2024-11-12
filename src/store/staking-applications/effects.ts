@@ -47,7 +47,7 @@ export const getSupportedAppsEffect = async (
       })
     )
     const data =
-      await listenerApi.extra.threshold.multiAppStaking.getSupportedAppsAuthParameters()
+      await listenerApi.extra.threshold.multiAppStaking!.getSupportedAppsAuthParameters()
     const payload = {
       tbtc: {
         minimumAuthorization: data.tbtc.minimumAuthorization.toString(),
@@ -126,7 +126,11 @@ export const getSupportedAppsStakingProvidersData = async (
 ) => {
   try {
     const stakingProviders = selectStakingProviders(listenerApi.getState())
-    if (stakingProviders.length === 0) return
+    if (
+      stakingProviders.length === 0 ||
+      !listenerApi.extra.threshold.multiAppStaking
+    )
+      return
     // one-off listener
     listenerApi.unsubscribe()
 
@@ -392,6 +396,7 @@ export const displayDeauthrizationInitiatedModalEffect = (
         stakingProvider,
         txHash,
         decreaseAmount,
+        stakingAppName: appName,
       },
     })
   )

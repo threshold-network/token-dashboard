@@ -5,7 +5,8 @@ import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
 
 export const useStakingApplicationAddress = (appName: StakingAppName) => {
   return (
-    useThreshold().multiAppStaking[stakingAppNameToThresholdAppService[appName]]
-      ?.address ?? AddressZero
+    useThreshold().multiAppStaking![
+      stakingAppNameToThresholdAppService[appName]
+    ]?.address ?? AddressZero
   )
 }

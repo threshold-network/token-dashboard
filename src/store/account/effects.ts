@@ -26,6 +26,9 @@ export const getStakingProviderOperatorInfo = async (
     const { account } = listenerApi.getState()
     const { address } = account
     const stakes = action.payload
+    const threshold = listenerApi.extra.threshold
+
+    if (!account || !threshold.staking || !threshold.multiAppStaking) return
 
     const stake = stakes.find((_: StakeData) =>
       isSameETHAddress(_.stakingProvider, address)
@@ -37,7 +40,7 @@ export const getStakingProviderOperatorInfo = async (
       isStakingProvider = true
     } else {
       const { owner, authorizer, beneficiary } =
-        await listenerApi.extra.threshold.staking.rolesOf(address)
+        await threshold.staking.rolesOf(address)
 
       isStakingProvider =
         !isAddressZero(owner) &&
@@ -52,7 +55,7 @@ export const getStakingProviderOperatorInfo = async (
     listenerApi.dispatch(accountUsedAsStakingProvider())
 
     const mappedOperators =
-      await listenerApi.extra.threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
+      await threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
         address
       )
 

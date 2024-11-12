@@ -1,7 +1,8 @@
 import { Contract } from "ethers"
 import { Interface } from "@ethersproject/abi"
 import { EthereumConfig } from "../types"
-import { AddressZero, getContract } from "../utils"
+import { getContract } from "../utils"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 export interface ContractCall {
   address: string
@@ -38,17 +39,18 @@ export const MULTICALL_ABI = [
   "function getEthBalance(address addr) view returns (uint256 balance)",
   "function getCurrentBlockTimestamp() view returns (uint256 timestamp)",
 ]
-export const MULTICALL_ADDRESSESS = {
-  1: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
-  11155111: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  1337: process.env.REACT_APP_MULTICALL_ADDRESS || AddressZero,
+
+export const MULTICALL_ADDRESSES = {
+  [SupportedChainIds.Ethereum]: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
+  [SupportedChainIds.Sepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.Localhost]: process.env.REACT_APP_MULTICALL_ADDRESS,
 } as Record<number | string, string>
 
 export class Multicall implements IMulticall {
   private _multicall: Contract
 
   constructor(config: EthereumConfig) {
-    const address = MULTICALL_ADDRESSESS[config.chainId]
+    const address = MULTICALL_ADDRESSES[config.chainId]
     if (!address) {
       throw new Error("Unsupported chain id")
     }

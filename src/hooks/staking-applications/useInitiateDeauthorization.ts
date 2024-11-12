@@ -42,7 +42,7 @@ export const useInitiateDeauthorization = (
     sendTransaction: requestAuthorizationDecrease,
     status: deauthorizationTxStatus,
   } = useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService[appName]]
+    threshold.multiAppStaking![stakingAppNameToThresholdAppService[appName]]
       .requestAuthorizationDecrease,
     onSuccess,
     onErrorRequestAuthorizationDecrease

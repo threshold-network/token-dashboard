@@ -1,7 +1,6 @@
 import React, { createContext } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { AddressZero } from "@ethersproject/constants"
-import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
 import { useNu } from "../web3/hooks/useNu"
 import { useT } from "../web3/hooks/useT"
@@ -15,6 +14,7 @@ import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
 import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
 import { featureFlags } from "../constants"
 import { useIsActive } from "../hooks/useIsActive"
+import { isL1Network } from "../networks/utils/connectedNetwork"
 
 interface TokenContextState extends TokenState {
   contract: Contract | null
@@ -56,9 +56,12 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     tbtcv2: tbtcv2Data,
   } = useTokenState()
 
-  const tokenContracts = [keep.contract!, nu.contract!, t.contract!]
-
-  if (featureFlags.TBTC_V2) tokenContracts.push(tbtcv2)
+  const tokenContracts = [
+    keep.contract!,
+    nu.contract!,
+    t.contract!,
+    tbtcv2.contract!,
+  ]
 
   const fetchBalances = useTokensBalanceCall(
     tokenContracts,
@@ -89,13 +92,13 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   // FETCH BALANCES ON WALLET LOAD OR NETWORK SWITCH
   //
   React.useEffect(() => {
-    if (isActive) {
+    if (isActive && isL1Network(chainId)) {
       setTokenLoading(Token.Keep, true)
       setTokenLoading(Token.Nu, true)
       setTokenLoading(Token.T, true)
       setTokenLoading(Token.TBTCV2, true)
       fetchBalances().then(
-        ([keepBalance, nuBalance, tBalance, tbtcv2Balance]) => {
+        ([keepBalance = 0, nuBalance = 0, tBalance = 0, tbtcv2Balance = 0]) => {
           setTokenBalance(Token.Keep, keepBalance.toString())
           setTokenLoading(Token.Keep, false)
           setTokenIsLoadedFromConnectedAccount(Token.Keep, true)
@@ -154,7 +157,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
           ...tbtcData,
         },
         [Token.TBTCV2]: {
-          contract: tbtcv2,
+          ...tbtcv2,
           ...tbtcv2Data,
         },
       }}

@@ -8,7 +8,8 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { Contract, ContractInterface, Event, providers, Signer } from "ethers"
 import { AddressZero, getAddress, isAddressZero } from "./address"
-import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
+import { LedgerLiveSigner } from "../../utils/ledger"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
@@ -18,6 +19,10 @@ import TbtcVaultArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/
 import VendingMachineKeepMainnet from "../vending-machine/mainnet-artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypherMainnet from "../vending-machine/mainnet-artifacts/VendingMachineNuCypher.json"
 import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/WalletRegistry.json"
+import StakingArtifactMainnet from "../staking/mainnet-artifacts/TokenStaking.json"
+import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.json"
+import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
+import TacoRegistryArtifactMainnet from "../mas/mainnet-artifacts/TacoRegistry.json"
 
 import BridgeArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/Bridge.json"
 import NuCypherStakingEscrowSepolia from "../staking/sepolia-artifacts/NuCypherStakingEscrow.json"
@@ -27,6 +32,10 @@ import TbtcVaultArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/
 import VendingMachineKeepSepolia from "../vending-machine/sepolia-artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypherSepolia from "../vending-machine/sepolia-artifacts/VendingMachineNuCypher.json"
 import WalletRegistryArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/WalletRegistry.json"
+import StakingArtifactSepolia from "../staking/sepolia-artifacts/TokenStaking.json"
+import RandomBeaconArtifactSepolia from "../tbtc/sepolia-artifacts/RandomBeacon.json"
+import LegacyKeepStakingArtifactSepolia from "../staking/sepolia-artifacts/LegacyKeepStaking.json"
+import TacoRegistryArtifactSepolia from "../mas/sepolia-artifacts/TacoRegistry.json"
 
 import BridgeArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/Bridge.json"
 import NuCypherStakingEscrowDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/NuCypherStakingEscrow.json"
@@ -36,8 +45,16 @@ import TbtcVaultArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-se
 import VendingMachineKeepDappDevelopmentSepolia from "../vending-machine/dapp-development-sepolia-artifacts/VendingMachineKeep.json"
 import VendingMachineNuCypherDappDevelopmentSepolia from "../vending-machine/dapp-development-sepolia-artifacts/VendingMachineNuCypher.json"
 import WalletRegistryArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/WalletRegistry.json"
+import StakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/TokenStaking.json"
+import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/RandomBeacon.json"
+import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
+import TacoRegistryArtifactDappDevelopmentSepolia from "../mas/dapp-development-sepolia-artifacts/TacoRegistry.json"
 
 type ArtifactNameType =
+  | "TacoRegistry"
+  | "LegacyKeepStaking"
+  | "RandomBeacon"
+  | "TokenStaking"
   | "Bridge"
   | "NuCypherStakingEscrow"
   | "NuCypherToken"
@@ -53,6 +70,10 @@ type ArtifactType = {
 }
 
 const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
+  ["TacoRegistry", TacoRegistryArtifactMainnet],
+  ["LegacyKeepStaking", LegacyKeepStakingArtifactMainnet],
+  ["RandomBeacon", RandomBeaconArtifactMainnet],
+  ["TokenStaking", StakingArtifactMainnet],
   ["Bridge", BridgeArtifactMainnet],
   ["NuCypherStakingEscrow", NuCypherStakingEscrowMainnet],
   ["NuCypherToken", NuCypherTokenMainnet],
@@ -63,6 +84,10 @@ const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["VendingMachineNuCypher", VendingMachineNuCypherMainnet],
 ])
 const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
+  ["TacoRegistry", TacoRegistryArtifactSepolia],
+  ["LegacyKeepStaking", LegacyKeepStakingArtifactSepolia],
+  ["RandomBeacon", RandomBeaconArtifactSepolia],
+  ["TokenStaking", StakingArtifactSepolia],
   ["Bridge", BridgeArtifactSepolia],
   ["NuCypherStakingEscrow", NuCypherStakingEscrowSepolia],
   ["NuCypherToken", NuCypherTokenSepolia],
@@ -73,6 +98,10 @@ const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["VendingMachineNuCypher", VendingMachineNuCypherSepolia],
 ])
 const testnetDevelopmentArtifacts = new Map<ArtifactNameType, ArtifactType>([
+  ["TacoRegistry", TacoRegistryArtifactDappDevelopmentSepolia],
+  ["LegacyKeepStaking", LegacyKeepStakingArtifactDappDevelopmentSepolia],
+  ["RandomBeacon", RandomBeaconArtifactDappDevelopmentSepolia],
+  ["TokenStaking", StakingArtifactDappDevelopmentSepolia],
   ["Bridge", BridgeArtifactDappDevelopmentSepolia],
   ["NuCypherStakingEscrow", NuCypherStakingEscrowDappDevelopmentSepolia],
   ["NuCypherToken", NuCypherTokenDappDevelopmentSepolia],
@@ -111,7 +140,7 @@ export const getContract = (
   // Sets the correct provider for ledger live app if the instance of
   // LedgerLiveEthereumSigner is passed as providerOrSigner.
   const _providerOrSigner =
-    providerOrSigner instanceof LedgerLiveEthereumSigner
+    providerOrSigner instanceof LedgerLiveSigner
       ? providerOrSigner
       : (getProviderOrSigner(providerOrSigner as any, account) as any)
   return new Contract(address, abi, _providerOrSigner)
@@ -155,12 +184,10 @@ export const getArtifact = (
   chainId: string | number,
   shouldUseTestnetDevelopmentContracts = false
 ): ArtifactType => {
-  switch (chainId.toString()) {
-    case "1":
-      // Ethereum mainnet.
+  switch (Number(chainId)) {
+    case SupportedChainIds.Ethereum:
       return mainnetArtifacts.get(artifactName)!
-    case "11155111":
-      // Ethereum Sepolia testnet.
+    case SupportedChainIds.Sepolia:
       const artifacts = shouldUseTestnetDevelopmentContracts
         ? testnetDevelopmentArtifacts
         : testnetArtifacts

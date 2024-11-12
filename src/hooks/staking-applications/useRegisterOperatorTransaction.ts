@@ -15,7 +15,7 @@ export const useRegisterOperatorTransaction = (
   const threshold = useThreshold()
 
   return useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService[appName]]
+    threshold.multiAppStaking![stakingAppNameToThresholdAppService[appName]]
       .registerOperator,
     onSuccess,
     onError

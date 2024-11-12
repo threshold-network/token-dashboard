@@ -17,13 +17,15 @@ const useCheckDuplicateProviderAddress = (): ((
 
   const checkIfProviderUsed = useCallback(
     async (stakingProvider) => {
-      if (!tStakingContract || !keepStakingContract) {
-        throw new Error(
-          "The request cannot be executed because the contract instances do not exist."
-        )
+      const multicall = threshold.multicall
+      if (!tStakingContract || !keepStakingContract || !multicall) {
+        return {
+          isProviderUsedForKeep: false,
+          isProviderUsedForT: false,
+        }
       }
 
-      const [{ owner }, [, createdAt]] = await threshold.multicall.aggregate([
+      const [{ owner }, [, createdAt]] = await multicall.aggregate([
         {
           interface: tStakingContract.interface,
           address: tStakingContract.address,

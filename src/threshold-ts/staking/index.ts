@@ -1,12 +1,9 @@
-import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
-import KeepTokenStaking from "@keep-network/keep-core/artifacts/TokenStaking.json"
 import { BigNumber, BigNumberish, Contract, ContractTransaction } from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
 import {
   getArtifact,
   getContract,
-  getContractAddressFromTruffleArtifact,
   getContractPastEvents,
   isAddress,
   isSameETHAddress,
@@ -132,27 +129,39 @@ export class Staking implements IStaking {
     multicall: IMulticall,
     vendingMachines: IVendingMachines
   ) {
-    this.STAKING_CONTRACT_DEPLOYMENT_BLOCK = config.chainId === 1 ? 14113768 : 0
+    this.STAKING_CONTRACT_DEPLOYMENT_BLOCK =
+      config.chainId === 1 ? 14113768 : 4320502
+
+    const stakingArtifact = getArtifact(
+      "TokenStaking",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
     this._staking = getContract(
-      TokenStaking.address,
-      TokenStaking.abi,
+      stakingArtifact.address,
+      stakingArtifact.abi,
       config.providerOrSigner,
       config.account
+    )
+    const legacyKeepStakingArtifact = getArtifact(
+      "LegacyKeepStaking",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
     )
     this._legacyKeepStaking = getContract(
-      getContractAddressFromTruffleArtifact(KeepTokenStaking),
-      KeepTokenStaking.abi,
+      legacyKeepStakingArtifact.address,
+      legacyKeepStakingArtifact.abi,
       config.providerOrSigner,
       config.account
     )
-    const NuCypherStakingEscrowArtifact = getArtifact(
+    const nuCypherStakingEscrowArtifact = getArtifact(
       "NuCypherStakingEscrow",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
     this._legacyNuStaking = getContract(
-      NuCypherStakingEscrowArtifact.address,
-      NuCypherStakingEscrowArtifact.abi,
+      nuCypherStakingEscrowArtifact.address,
+      nuCypherStakingEscrowArtifact.abi,
       config.providerOrSigner,
       config.account
     )
