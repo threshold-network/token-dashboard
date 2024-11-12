@@ -1,16 +1,14 @@
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { ConnectorUpdate } from "@web3-react/types"
-import { supportedChainId, getEnvVariable } from "../../utils/getEnvVariable"
-import { EnvVariable } from "../../enums"
+import { getRpcUrl, supportedNetworksMap } from "../../networks/utils"
 
 interface CoinbaseWalletProvider {
   isCoinbaseWallet: boolean
   overrideIsMetaMask: boolean
   updateProviderInfo(rpcUrl: string, chainId: number, fromRelay: boolean): void
   providers: CoinbaseWalletProvider[]
+  chainId?: number
 }
-
-const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
 
 export class CoinbaseWalletConnector extends WalletLinkConnector {
   activate = async (): Promise<ConnectorUpdate<string | number>> => {
@@ -19,6 +17,8 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
       (window.ethereum as CoinbaseWalletProvider)?.providers?.find(
         (p) => p.isCoinbaseWallet
       ) ?? (window.ethereum as CoinbaseWalletProvider)
+
+    const chainId = provider.chainId || (await this.getChainId())
 
     if (provider.isCoinbaseWallet) {
       // Force the Coinbase Wallet provider to use our RPC url. We can't fetch
@@ -30,7 +30,7 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
       // only enforced during type checking. This means that JavaScript runtime
       // constructs like `in` or simple property lookup can still access a
       // `private` or `protected` member.
-      provider.updateProviderInfo(rpcUrl, +supportedChainId, true)
+      provider.updateProviderInfo(getRpcUrl(chainId), chainId, true)
     }
 
     return await super.activate()
@@ -38,7 +38,7 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
 }
 
 export const coinbaseConnector = new CoinbaseWalletConnector({
-  url: rpcUrl,
+  url: getRpcUrl(),
   appName: "threshold-token-dashboard",
-  supportedChainIds: [+supportedChainId],
+  supportedChainIds: Object.keys(supportedNetworksMap).map(Number),
 })
