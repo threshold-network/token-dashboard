@@ -72,6 +72,11 @@ const MapOperatorToStakingProviderModal: FC<
     appName: string
   ) => Promise<boolean> = async (operator: string, appName: string) => {
     let stakingProviderMapped
+    if (!threshold.multiAppStaking) {
+      console.warn("MultiAppStaking contract is not available")
+      return false
+    }
+
     switch (appName) {
       case "tbtc":
         const stakingProviderMappedEcdsa =

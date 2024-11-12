@@ -1,21 +1,19 @@
 import { useEffect } from "react"
 import { BigNumber, BigNumberish, Event, constants } from "ethers"
-import {
-  T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-  useTStakingContract,
-} from "../web3/hooks"
+import { getTStakingDeploymentBlock, useTStakingContract } from "../web3/hooks"
 import { getAddress, getContractPastEvents } from "../web3/utils"
 import { BonusEligibility } from "../types"
 import { calculateStakingBonusReward } from "../utils/stakingBonus"
 import { stakingBonus } from "../constants"
 import {
   useMerkleDropContract,
-  DEPLOYMENT_BLOCK,
+  getMerkleDropDeploymentBlock,
 } from "../web3/hooks/useMerkleDropContract"
 import { selectStakingProviders } from "../store/staking"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "../store"
 import { setStakingBonus } from "../store/rewards"
+import { useIsActive } from "./useIsActive"
 
 interface BonusEligibilityResult {
   [address: string]: BonusEligibility
@@ -26,6 +24,7 @@ export const useCheckBonusEligibility = () => {
   const { hasFetched, isFetching } = useSelector(
     (state: RootState) => state.rewards.stakingBonus
   )
+  const { chainId } = useIsActive()
   const dispatch = useDispatch()
   const merkleDropContract = useMerkleDropContract()
   const tStakingContract = useTStakingContract()
@@ -46,7 +45,7 @@ export const useCheckBonusEligibility = () => {
         (
           await getContractPastEvents(merkleDropContract, {
             eventName: "Claimed",
-            fromBlock: DEPLOYMENT_BLOCK,
+            fromBlock: getMerkleDropDeploymentBlock(),
             filterParams: [stakingProviders],
           })
         ).map((_) => getAddress(_.args?.stakingProvider as string))
@@ -54,19 +53,19 @@ export const useCheckBonusEligibility = () => {
 
       const stakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Staked",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        fromBlock: getTStakingDeploymentBlock(),
         filterParams: [null, null, stakingProviders],
       })
 
       const toppedUpEvents = await getContractPastEvents(tStakingContract, {
         eventName: "ToppedUp",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        fromBlock: getTStakingDeploymentBlock(),
         filterParams: [stakingProviders],
       })
 
       const unstakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Unstaked",
-        fromBlock: T_STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+        fromBlock: getTStakingDeploymentBlock(),
         filterParams: [stakingProviders],
       })
 

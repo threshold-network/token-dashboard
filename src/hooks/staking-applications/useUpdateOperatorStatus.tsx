@@ -7,7 +7,7 @@ export const useUpdateOperatorStatus = (appName: StakingAppName) => {
   const threshold = useThreshold()
 
   return useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService[appName]]
+    threshold.multiAppStaking![stakingAppNameToThresholdAppService[appName]]
       .updateOperatorStatus
   )
 }

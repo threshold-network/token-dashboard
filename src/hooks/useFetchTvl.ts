@@ -12,6 +12,9 @@ import { useETHData } from "./useETHData"
 import { useToken } from "./useToken"
 import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
+import { useIsActive } from "./useIsActive"
+import { isL1Network } from "../networks/utils"
+import { ContractCall } from "../threshold-ts/multicall"
 
 interface TvlRawData {
   ecdsaTvl: string
@@ -30,7 +33,7 @@ interface TvlData {
   total: string
 }
 
-const initialState = {
+const initialState: TvlRawData = {
   ecdsaTvl: "0",
   tbtcv1Tvl: "0",
   keepStakingTvl: "0",
@@ -43,6 +46,7 @@ export const useFetchTvl = (): [
   () => Promise<TvlRawData>,
   TvlRawData
 ] => {
+  const { chainId } = useIsActive()
   const [rawData, setRawData] = useState<TvlRawData>(initialState)
   const {
     ecdsaTvl,
@@ -51,7 +55,6 @@ export const useFetchTvl = (): [
     tStakingTvl,
     tBTC: tBTCTvl,
   } = rawData
-
   const eth = useETHData()
   const keep = useToken(Token.Keep)
   const tbtcv1 = useToken(Token.TBTC)
@@ -62,60 +65,75 @@ export const useFetchTvl = (): [
   const keepTokenStaking = useKeepTokenStakingContract()
   const tBTCToken = useToken(Token.TBTCV2)
 
-  const fetchOnChainData = useMulticall([
-    {
-      address: multicall?.address!,
-      interface: multicall?.interface!,
+  const calls: Array<ContractCall & { key: string }> = []
+
+  if (keepBonding && multicall) {
+    calls.push({
+      address: multicall.address,
+      interface: multicall.interface,
       method: "getEthBalance",
-      args: [keepBonding?.address],
-    },
-    {
-      address: tbtcv1.contract?.address!,
-      interface: tbtcv1.contract?.interface!,
+      args: [keepBonding.address],
+      key: "ecdsaTvl",
+    })
+  }
+
+  if (tbtcv1.contract) {
+    calls.push({
+      address: tbtcv1.contract.address,
+      interface: tbtcv1.contract.interface,
       method: "totalSupply",
-    },
-    {
-      address: keep.contract?.address!,
-      interface: keep.contract?.interface!,
+      args: [],
+      key: "tbtcv1Tvl",
+    })
+  }
+
+  if (keep.contract && keepTokenStaking) {
+    calls.push({
+      address: keep.contract.address,
+      interface: keep.contract.interface,
       method: "balanceOf",
-      args: [keepTokenStaking?.address],
-    },
-    {
-      address: t.contract?.address!,
-      interface: t.contract?.interface!,
+      args: [keepTokenStaking.address],
+      key: "keepStakingTvl",
+    })
+  }
+
+  if (t.contract && tTokenStaking) {
+    calls.push({
+      address: t.contract.address,
+      interface: t.contract.interface,
       method: "balanceOf",
-      args: [tTokenStaking?.address],
-    },
-    {
-      address: tBTCToken.contract?.address!,
-      interface: tBTCToken.contract?.interface!,
+      args: [tTokenStaking.address],
+      key: "tStakingTvl",
+    })
+  }
+
+  if (tBTCToken.contract) {
+    calls.push({
+      address: tBTCToken.contract.address,
+      interface: tBTCToken.contract.interface,
       method: "totalSupply",
-    },
-  ])
+      args: [],
+      key: "tBTC",
+    })
+  }
+
+  const fetchOnChainData = useMulticall(calls)
 
   const fetchTvlData = useCallback(async () => {
+    if (chainId && !isL1Network(chainId)) return initialState
     const chainData = await fetchOnChainData()
     if (chainData.length === 0) return initialState
 
-    const [
-      ethInKeepBonding,
-      tbtcv1TokenTotalSupply,
-      keepStaking,
-      tStaking,
-      tBTCTokenTotalSupply,
-    ] = chainData.map((amount: BigNumberish) => amount.toString())
+    const data: TvlRawData = { ...initialState }
 
-    const data: TvlRawData = {
-      ecdsaTvl: ethInKeepBonding,
-      tbtcv1Tvl: tbtcv1TokenTotalSupply,
-      keepStakingTvl: keepStaking,
-      tStakingTvl: tStaking,
-      tBTC: tBTCTokenTotalSupply,
-    }
+    chainData.forEach((result: BigNumberish, index: number) => {
+      const key = calls[index].key as keyof TvlRawData
+      data[key] = result ? result.toString() : "0"
+    })
+
     setRawData(data)
-
     return data
-  }, [fetchOnChainData])
+  }, [fetchOnChainData, chainId])
 
   const data = useMemo(() => {
     const ecdsa = toUsdBalance(formatUnits(ecdsaTvl), eth.usdPrice)
@@ -123,25 +141,27 @@ export const useFetchTvl = (): [
     const tbtcv1USD = toUsdBalance(formatUnits(tbtcTvl), tbtcv1.usdConversion)
     const tBTCUSD = toUsdBalance(formatUnits(tBTCTvl), tBTCToken.usdConversion)
 
-    const keepStaking = toUsdBalance(
+    const keepStakingUSD = toUsdBalance(
       formatUnits(keepStakingTvl),
       keep.usdConversion
     )
 
-    const tStaking = toUsdBalance(formatUnits(tStakingTvl), t.usdConversion)
+    const tStakingUSD = toUsdBalance(formatUnits(tStakingTvl), t.usdConversion)
+
+    const total = ecdsa
+      .addUnsafe(tbtcv1USD)
+      .addUnsafe(keepStakingUSD)
+      .addUnsafe(tStakingUSD)
+      .addUnsafe(tBTCUSD)
+      .toString()
 
     return {
       ecdsa: ecdsa.toString(),
       tbtcv1: tbtcv1USD.toString(),
-      keepStaking: keepStaking.toString(),
-      tStaking: tStaking.toString(),
+      keepStaking: keepStakingUSD.toString(),
+      tStaking: tStakingUSD.toString(),
       tBTC: tBTCUSD.toString(),
-      total: ecdsa
-        .addUnsafe(tbtcv1USD)
-        .addUnsafe(keepStaking)
-        .addUnsafe(tStaking)
-        .addUnsafe(tBTCUSD)
-        .toString(),
+      total,
     } as TvlData
   }, [
     ecdsaTvl,

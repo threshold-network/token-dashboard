@@ -10,7 +10,7 @@ export const useFetchOwnerStakes = () => {
 
   return useCallback(
     async (address?: string): Promise<StakeData[]> => {
-      if (!address) {
+      if (!address || !threshold.staking) {
         return []
       }
 

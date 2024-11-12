@@ -11,6 +11,7 @@ export const fetchStakeByStakingProviderEffect = async (
   const { stakingProvider } = actionCreator.payload
 
   if (
+    !listenerApi.extra.threshold.staking ||
     !stakingProvider ||
     !isAddress(stakingProvider) ||
     isAddressZero(stakingProvider)
@@ -51,7 +52,7 @@ const fetchStake = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const stake =
-    await listenerApi.extra.threshold.staking.getStakeByStakingProvider(
+    await listenerApi.extra.threshold.staking!.getStakeByStakingProvider(
       stakingProvider
     )
 

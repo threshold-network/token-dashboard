@@ -25,7 +25,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
     const fetch = async () => {
       setIsFetching(true)
       try {
-        const { depositor } = (await threshold.tbtc.bridgeContract.deposits(
+        const { depositor } = (await threshold.tbtc.bridgeContract!.deposits(
           depositKey
         )) as {
           depositor: string
@@ -49,7 +49,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         }
 
         const optimisticMintingRequestedEvents = await getContractPastEvents(
-          threshold.tbtc.vaultContract,
+          threshold.tbtc.vaultContract!,
           {
             eventName: "OptimisticMintingRequested",
             fromBlock: deposit.blockNumber,
@@ -58,7 +58,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         )
 
         const optimisticMintingFinalizedEvents = await getContractPastEvents(
-          threshold.tbtc.vaultContract,
+          threshold.tbtc.vaultContract!,
           {
             eventName: "OptimisticMintingFinalized",
             fromBlock: deposit.blockNumber,
@@ -95,7 +95,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
       setIsFetching(false)
     }
 
-    if (depositKey) {
+    if (depositKey && !threshold.tbtc.isCrossChain) {
       fetch()
     }
   }, [depositKey, threshold, reverseTxHash])

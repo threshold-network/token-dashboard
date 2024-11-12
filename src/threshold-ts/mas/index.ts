@@ -1,9 +1,3 @@
-import RandomBeacon from "@keep-network/random-beacon/artifacts/RandomBeacon.json"
-import WalletRegistry from "@keep-network/ecdsa/artifacts/WalletRegistry.json"
-
-const chainName = process.env.REACT_APP_TACO_DOMAIN || "" // Ensure it's a string
-const TacoRegistryFile: any = require(`@nucypher/nucypher-contracts/deployment/artifacts/${chainName}.json`)
-
 import {
   Application,
   AuthorizationParameters,
@@ -13,20 +7,6 @@ import { IMulticall, ContractCall } from "../multicall"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { getArtifact } from "../utils"
-
-interface TacoChains {
-  [key: string]: string
-}
-
-const tacoChains: TacoChains = {
-  lynx: "5",
-  mainnet: "1",
-  tapir: "11155111",
-  dashboard: "11155111",
-}
-
-const key = tacoChains[chainName] || ""
-const TacoRegistry = TacoRegistryFile[key]["TACoApplication"]
 
 export interface SupportedAppAuthorizationParameters {
   tbtc: AuthorizationParameters
@@ -54,9 +34,14 @@ export class MultiAppStaking {
   ) {
     this._staking = staking
     this._multicall = multicall
+    const randomBeaconArtifact = getArtifact(
+      "RandomBeacon",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
     this.randomBeacon = new Application(this._staking, this._multicall, {
-      address: RandomBeacon.address,
-      abi: RandomBeacon.abi,
+      address: randomBeaconArtifact.address,
+      abi: randomBeaconArtifact.abi,
       ...config,
     })
     const walletRegistryArtifacts = getArtifact(
@@ -69,9 +54,14 @@ export class MultiAppStaking {
       abi: walletRegistryArtifacts.abi,
       ...config,
     })
+    const tacoRegistryArtifacts = getArtifact(
+      "TacoRegistry",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
+    )
     this.taco = new Application(this._staking, this._multicall, {
-      address: TacoRegistry.address,
-      abi: TacoRegistry.abi,
+      address: tacoRegistryArtifacts.address,
+      abi: tacoRegistryArtifacts.abi,
       ...config,
     })
   }
