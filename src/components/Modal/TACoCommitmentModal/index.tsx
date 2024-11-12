@@ -63,7 +63,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
     [authorizedAmount]
   )
   const { sendTransaction } = useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService["taco"]]
+    threshold.multiAppStaking![stakingAppNameToThresholdAppService["taco"]]
       .makeCommitment,
     onSuccess
   )
