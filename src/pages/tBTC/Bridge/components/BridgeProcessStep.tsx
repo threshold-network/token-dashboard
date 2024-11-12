@@ -10,8 +10,9 @@ import {
 import ViewInBlockExplorer, {
   Chain as ViewInBlockExplorerChain,
 } from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../../networks/enums/networks"
 import { ONE_SEC_IN_MILISECONDS } from "../../../../utils/date"
+import { useIsActive } from "../../../../hooks/useIsActive"
 
 export type BridgeProcessStepProps = {
   title: string
@@ -40,6 +41,7 @@ export const BridgeProcessStep: FC<BridgeProcessStepProps> = ({
   children,
 }) => {
   const titleTextColor = useColorModeValue("gray.700", "gray.300")
+  const { chainId } = useIsActive()
 
   useEffect(() => {
     if (!isCompleted) return
@@ -85,9 +87,10 @@ export const BridgeProcessStep: FC<BridgeProcessStepProps> = ({
         <BodySm mt="auto" mb="8" color="gray.500" textAlign="center">
           See transaction on{" "}
           <ViewInBlockExplorer
-            text={chain === "bitcoin" ? "blockstream" : "etherscan"}
+            text={chain === "bitcoin" ? "blockstream" : "network explorer"}
             chain={chain}
             id={txHash}
+            ethereumNetworkChainId={chainId}
             type={ExplorerDataType.TRANSACTION}
           />
         </BodySm>

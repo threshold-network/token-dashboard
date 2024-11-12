@@ -29,7 +29,7 @@ import {
 } from "../../../utils/percentage"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { ExternalHref } from "../../../enums"
 import { BaseModalProps } from "../../../types"
 import { getStakingAppNameFromAppAddress } from "../../../utils/getStakingAppLabel"

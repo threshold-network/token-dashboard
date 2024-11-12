@@ -45,7 +45,7 @@ import {
   BridgeLayoutAsideSection,
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { PageComponent } from "../../../types"
 import { dateToUnixTimestamp, dateAs } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"

@@ -63,13 +63,14 @@ import {
   useSubscribeToOptimisticMintingFinalizedEventBase,
 } from "../../../hooks/tbtc"
 import { tbtcSlice } from "../../../store/tbtc"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { PageComponent } from "../../../types"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -82,6 +83,7 @@ export const DepositDetails: PageComponent = () => {
     "curve",
     CurveFactoryPoolId.TBTC_WBTC_SBTC
   )
+  const { chainId } = useIsActive()
 
   const [mintingProgressStep, setMintingProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
@@ -271,6 +273,7 @@ export const DepositDetails: PageComponent = () => {
                             id={item.txHash!}
                             type={ExplorerDataType.TRANSACTION}
                             chain={item.chain}
+                            ethereumNetworkChainId={chainId}
                             text="transaction"
                           />
                           .
