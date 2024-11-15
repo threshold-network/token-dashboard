@@ -1,6 +1,11 @@
 import { writeStorage } from "@rehooks/local-storage"
 
+export type Depositor = {
+  identifierHex: string
+}
+
 export type TBTCDepositData = {
+  depositor: Depositor
   chainName: string
   ethAddress: string
   blindingFactor: string

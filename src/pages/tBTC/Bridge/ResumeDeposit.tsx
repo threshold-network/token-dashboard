@@ -32,6 +32,7 @@ type RecoveryJsonFileData = DepositScriptParameters & {
     chainId: string
     chainName: string
   }
+  ethAddress: string
   btcRecoveryAddress: string
 }
 import { useIsActive } from "../../../hooks/useIsActive"
@@ -88,8 +89,11 @@ export const ResumeDepositPage: PageComponent = () => {
       updateState("mintingStep", undefined)
       setDepositDataInLocalStorage(
         {
+          depositor: {
+            identifierHex: depositParameters.depositor.identifierHex,
+          },
           chainName: depositParameters.networkInfo.chainName,
-          ethAddress: depositParameters.depositor.identifierHex,
+          ethAddress: depositParameters.ethAddress,
           blindingFactor: depositParameters.blindingFactor,
           btcRecoveryAddress: depositParameters.btcRecoveryAddress,
           walletPublicKeyHash: depositParameters.walletPublicKeyHash,
@@ -238,7 +242,10 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
         const { isExpired } = await checkDepositExpiration(dp.refundLocktime)
         if (isExpired) {
           errors.depositParameters = "Deposit reveal time is expired."
-        } else if (!isSameETHAddress(dp.depositor.identifierHex, address)) {
+        } else if (
+          isL1Network(chainId) &&
+          !isSameETHAddress(dp.depositor.identifierHex, address)
+        ) {
           errors.depositParameters = "You are not a depositor."
         }
       }

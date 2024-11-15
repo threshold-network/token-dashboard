@@ -42,7 +42,6 @@ const MintingFlowRouterBase = () => {
     dispatch(
       tbtcSlice.actions.findUtxo({
         btcDepositAddress,
-        depositor: account,
         chainId,
       })
     )

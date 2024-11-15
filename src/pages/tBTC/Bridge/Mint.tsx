@@ -43,6 +43,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
       ) {
         const {
+          depositor: { identifierHex: depositorAddress },
           btcDepositAddress,
           ethAddress,
           blindingFactor,
@@ -64,6 +65,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         updateState("btcRecoveryAddress", btcRecoveryAddress)
         updateState("walletPublicKeyHash", walletPublicKeyHash)
         updateState("refundLocktime", refundLocktime)
+        updateState("depositor", depositorAddress)
         updateState("extraData", extraData)
         updateState("chainName", chainName)
         // We reset the minting step to undefined to show skeleton and the

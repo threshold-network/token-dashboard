@@ -757,12 +757,7 @@ export class TBTC implements ITBTC {
     }
 
     const depositReceipt = {
-      depositor: {
-        identifierHex: depositor.identifierHex,
-        equals: (identifier: ChainIdentifier) => {
-          return depositor.identifierHex === identifier.identifierHex
-        },
-      },
+      depositor,
       blindingFactor: Hex.from(blindingFactor),
       walletPublicKeyHash: Hex.from(walletPublicKeyHash),
       refundLocktime: Hex.from(refundLocktime),

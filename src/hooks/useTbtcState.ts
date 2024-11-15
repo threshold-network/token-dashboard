@@ -20,6 +20,7 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("btcRecoveryAddress", undefined)
     updateState("walletPublicKeyHash", undefined)
     updateState("refundLocktime", undefined)
+    updateState("depositor", undefined)
     updateState("btcDepositAddress", undefined)
     updateState("mintingStep", MintingStep.ProvideData)
     updateState("tBTCMintAmount", undefined)

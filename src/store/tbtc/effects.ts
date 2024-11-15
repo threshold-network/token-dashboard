@@ -47,11 +47,11 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress, depositor, chainId } = action.payload
+  const { btcDepositAddress, chainId } = action.payload
 
   const {
     tbtc: {
-      ethAddress,
+      depositor,
       blindingFactor,
       walletPublicKeyHash,
       refundLocktime,
@@ -90,7 +90,7 @@ export const findUtxoEffect = async (
               bitcoinNetwork
             ).toString()
           const depositParams = {
-            depositor: getChainIdentifier(ethAddress),
+            depositor: getChainIdentifier(depositor),
             blindingFactor,
             walletPublicKeyHash,
             refundPublicKeyHash,
