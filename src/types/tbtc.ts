@@ -7,6 +7,7 @@ import { NetworkName } from "../networks/types/networks"
 export interface TbtcState {
   mintingStep: MintingStep
   // deposit data
+  depositor: string
   btcRecoveryAddress: string
   btcDepositAddress: string
   ethAddress: string

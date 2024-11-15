@@ -108,7 +108,6 @@ export const tbtcSlice = createSlice({
       state,
       action: PayloadAction<{
         btcDepositAddress: string
-        depositor: string
         chainId: number
       }>
     ) => {},

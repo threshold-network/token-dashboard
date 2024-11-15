@@ -176,6 +176,7 @@ export const ProvideDataComponent: FC<{
 
       // update state,
       updateState("ethAddress", values.ethAddress)
+      updateState("depositor", receipt.depositor.identifierHex.toString())
       updateState("blindingFactor", receipt.blindingFactor.toString())
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
       updateState("walletPublicKeyHash", receipt.walletPublicKeyHash.toString())
@@ -188,6 +189,9 @@ export const ProvideDataComponent: FC<{
 
       setDepositDataInLocalStorage(
         {
+          depositor: {
+            identifierHex: receipt.depositor.identifierHex.toString(),
+          },
           chainName: chainName,
           ethAddress: values.ethAddress,
           blindingFactor: receipt.blindingFactor.toString(),
