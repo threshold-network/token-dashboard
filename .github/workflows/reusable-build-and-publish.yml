@@ -72,6 +72,9 @@ on:
           Project Id gathered from WalletConnect cloud. Required for
           WalletConnect v2.
         required: true
+      tbtcSubgraphApi:
+        description: The API endpoint for the tBTC subgraph.
+        required: true
 
 jobs:
   build-and-publish:
