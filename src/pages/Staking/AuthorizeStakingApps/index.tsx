@@ -38,10 +38,12 @@ import { FormValues } from "../../../components/Forms"
 import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account, active } = useWeb3React()
+  const { account, active, chainId } = useWeb3React()
+  const threshold = useThreshold()
   const navigate = useNavigate()
   const { openModal } = useModal()
   const tbtcAppFormRef = useRef<FormikProps<FormValues>>(null)
@@ -75,10 +77,15 @@ const AuthorizeStakingAppsPage: FC = () => {
   }, [stakingProviderAddress, navigate])
 
   useEffect(() => {
+    if (!chainId) return
+
     dispatch(
-      requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
+      requestStakeByStakingProvider({
+        stakingProvider: stakingProviderAddress,
+        chainId,
+      })
     )
-  }, [stakingProviderAddress, account, dispatch])
+  }, [stakingProviderAddress, account, threshold.staking, dispatch])
 
   useEffect(() => {
     dispatch(stakingApplicationsSlice.actions.getSupportedApps({}))

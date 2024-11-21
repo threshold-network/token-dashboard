@@ -35,7 +35,7 @@ export const tbtcSlice = createSlice({
     },
     requestBridgeActivity: (
       state,
-      action: PayloadAction<{ depositor: string }>
+      action: PayloadAction<{ depositor: string; chainId: string | number }>
     ) => {},
     fetchingBridgeActivity: (state) => {
       state.bridgeActivity.isFetching = true

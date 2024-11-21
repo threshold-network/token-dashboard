@@ -21,26 +21,29 @@ import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
 import ButtonLink from "../../../components/ButtonLink"
 import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
   const [deposits, isFetching, error] = useFetchRecentDeposits()
-  const { account } = useIsActive()
+  const { account, chainId } = useIsActive()
   const dispatch = useAppDispatch()
   const bridgeActivity = useAppSelector(selectBridgeActivity)
   const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
+  const threshold = useThreshold()
 
   useEffect(() => {
-    if (!account) return
+    if (!account || !chainId) return
 
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account,
+        chainId: chainId,
       })
     )
-  }, [dispatch, account])
+  }, [dispatch, account, threshold.tbtc])
 
   useEffect(() => {
     fetchtTvlData()
