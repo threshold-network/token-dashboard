@@ -43,6 +43,11 @@ export const MULTICALL_ABI = [
 export const MULTICALL_ADDRESSES = {
   [SupportedChainIds.Ethereum]: "0xeefba1e63905ef1d7acba5a8513c70307c1ce441",
   [SupportedChainIds.Sepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.ArbitrumSepolia]:
+    "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.Arbitrum]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.Base]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.BaseSepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [SupportedChainIds.Localhost]: process.env.REACT_APP_MULTICALL_ADDRESS,
 } as Record<number | string, string>
 
