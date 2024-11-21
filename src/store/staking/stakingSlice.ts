@@ -168,6 +168,7 @@ export const stakingSlice = createSlice({
 
 export const requestStakeByStakingProvider = createAction<{
   stakingProvider: string | undefined
+  chainId: string | number
 }>("staking/request-stake-by-staking-provider")
 
 export const {

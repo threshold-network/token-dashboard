@@ -20,8 +20,17 @@ export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { depositor } = action.payload
-  if (!isAddress(depositor) || isAddressZero(depositor)) return
+  const { depositor, chainId } = action.payload
+  const {
+    tbtc: { ethereumChainId },
+  } = listenerApi.extra.threshold
+
+  if (
+    !isAddress(depositor) ||
+    isAddressZero(depositor) ||
+    chainId !== ethereumChainId
+  )
+    return
 
   listenerApi.unsubscribe()
 
@@ -161,37 +170,30 @@ export const findUtxoEffect = async (
           }
         }
 
+        listenerApi.dispatch(
+          tbtcSlice.actions.updateState({
+            key: "utxo",
+            value: {
+              ...utxo,
+              transactionHash: utxo.transactionHash.toString(),
+              value: utxo.value.toString(),
+            },
+          })
+        )
+
         if (areAllDepositRevealed) {
           // All deposits are already revealed. Force start from step 1 and
           // remove deposit data.
-          removeDataForAccount(
-            depositor,
-            JSON.parse(
-              localStorage.getItem(key) || "{}"
-            ) as TBTCLocalStorageDepositData,
-            chainId as number
-          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
-              value: MintingStep.ProvideData,
+              value: MintingStep.MintingSuccess,
             })
           )
         } else {
           // UTXO exists for a given Bitcoin deposit address and deposit is not
           // yet revealed. Redirect to step 3 to reveal the deposit and set
           // utxo.
-
-          listenerApi.dispatch(
-            tbtcSlice.actions.updateState({
-              key: "utxo",
-              value: {
-                ...utxo,
-                transactionHash: utxo.transactionHash.toString(),
-                value: utxo.value.toString(),
-              },
-            })
-          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
