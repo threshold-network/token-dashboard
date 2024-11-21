@@ -2,11 +2,12 @@ import { FC } from "react"
 import { LinkProps } from "@chakra-ui/react"
 import Link from "./Link"
 import { ExplorerDataType } from "../networks/enums/networks"
-import { isTestnetNetwork } from "../networks/utils"
+import { getMainnetOrTestnetChainId, isTestnetNetwork } from "../networks/utils"
 import {
   createBlockExplorerLink,
   createExplorerLink,
 } from "../networks/utils/createExplorerLink"
+import { useIsActive } from "../hooks/useIsActive"
 
 export type Chain = "bitcoin" | "ethereum"
 
@@ -18,14 +19,14 @@ export const createLinkToBlockExplorerForChain: Record<
     ethereumNetworkChainId?: string | number
   ) => string
 > = {
-  bitcoin: (id, type, ethereumNetworkChainId = 1) => {
+  bitcoin: (id, type, ethereumNetworkChainId) => {
     const prefix = `https://blockstream.info${
       isTestnetNetwork(Number(ethereumNetworkChainId)) ? "/testnet" : ""
     }`
 
     return createBlockExplorerLink(prefix, id, type)
   },
-  ethereum: (id, type, ethereumNetworkChainId = 1) =>
+  ethereum: (id, type, ethereumNetworkChainId) =>
     createExplorerLink(Number(ethereumNetworkChainId), id, type),
 }
 
@@ -58,10 +59,18 @@ const ViewInBlockExplorer: FC<ViewInBlockExplorerProps> = ({
   ethereumNetworkChainId,
   ...restProps
 }) => {
+  // Some networks, such as Arbitrum and Base, are only available
+  // for specific actions, e.g., signing the L1BitcoinDepositor
+  // contract. For those cases in particular, the connected chainId
+  // should be passed as a prop as ethereumNetworkChainId.
+  const { chainId } = useIsActive()
+  const explorerChainId =
+    ethereumNetworkChainId ?? getMainnetOrTestnetChainId(chainId)
+
   const link = createLinkToBlockExplorerForChain[chain](
     id,
     type,
-    ethereumNetworkChainId
+    explorerChainId
   )
 
   return (

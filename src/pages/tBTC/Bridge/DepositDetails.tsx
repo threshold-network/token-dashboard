@@ -273,7 +273,6 @@ export const DepositDetails: PageComponent = () => {
                             id={item.txHash!}
                             type={ExplorerDataType.TRANSACTION}
                             chain={item.chain}
-                            ethereumNetworkChainId={chainId}
                             text="transaction"
                           />
                           .
