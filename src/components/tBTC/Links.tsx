@@ -3,7 +3,6 @@ import { useTBTCBridgeContractAddress } from "../../hooks/useTBTCBridgeContractA
 import { ExplorerDataType } from "../../networks/enums/networks"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTBTCTokenAddress } from "../../hooks/useTBTCTokenAddress"
-import { useIsActive } from "../../hooks/useIsActive"
 
 type Props = Omit<
   ComponentProps<typeof ViewInBlockExplorer>,
@@ -34,14 +33,12 @@ export const TBTCTokenContractLink: FC<Props> = ({
   text = "token address",
   ...props
 }) => {
-  const { chainId } = useIsActive()
   const address = useTBTCTokenAddress()
   return address ? (
     <ViewInBlockExplorer
       id={address}
       type={ExplorerDataType.ADDRESS}
       text={text}
-      ethereumNetworkChainId={chainId}
       {...props}
     />
   ) : (

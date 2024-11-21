@@ -41,7 +41,6 @@ export const BridgeProcessStep: FC<BridgeProcessStepProps> = ({
   children,
 }) => {
   const titleTextColor = useColorModeValue("gray.700", "gray.300")
-  const { chainId } = useIsActive()
 
   useEffect(() => {
     if (!isCompleted) return
@@ -90,7 +89,6 @@ export const BridgeProcessStep: FC<BridgeProcessStepProps> = ({
             text={chain === "bitcoin" ? "blockstream" : "network explorer"}
             chain={chain}
             id={txHash}
-            ethereumNetworkChainId={chainId}
             type={ExplorerDataType.TRANSACTION}
           />
         </BodySm>
