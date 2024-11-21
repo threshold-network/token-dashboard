@@ -7,6 +7,7 @@ import { isTestnetNetwork } from "../networks/utils/connectedNetwork"
 import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { getDefaultProviderChainId } from "../utils/getEnvVariable"
 import { useWeb3React } from "@web3-react/core"
+import { getBitcoinCredentials } from "../utils/getBitcoinCredentials"
 
 const ThresholdContext = createContext(threshold)
 
@@ -23,6 +24,10 @@ export const ThresholdProvider: FC = ({ children }) => {
 
   useEffect(() => {
     if (isActive && chainId) {
+      const bitcoinNetwork = isTestnetNetwork(chainId)
+        ? BitcoinNetwork.Testnet
+        : BitcoinNetwork.Mainnet
+
       threshold.updateConfig({
         ethereum: {
           ...threshold.config.ethereum,
@@ -32,9 +37,8 @@ export const ThresholdProvider: FC = ({ children }) => {
         },
         bitcoin: {
           ...threshold.config.bitcoin,
-          network: isTestnetNetwork(chainId)
-            ? BitcoinNetwork.Testnet
-            : BitcoinNetwork.Mainnet,
+          network: bitcoinNetwork,
+          credentials: getBitcoinCredentials(bitcoinNetwork),
         },
       })
       hasThresholdLibConfigBeenUpdated.current = true

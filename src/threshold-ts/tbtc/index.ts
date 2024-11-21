@@ -51,7 +51,6 @@ import {
   getMainnetOrTestnetChainId,
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
-import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 
 export enum BridgeActivityStatus {
@@ -498,7 +497,7 @@ export class TBTC implements ITBTC {
     this._isCrossChain = isL2Network(chainId)
 
     const defaultOrConnectedChainId = this._isCrossChain
-      ? getDefaultProviderChainId()
+      ? getMainnetOrTestnetChainId(chainId)
       : chainId
     const defaultOrConnectedProvider = this._isCrossChain
       ? getThresholdLibProvider(defaultOrConnectedChainId)

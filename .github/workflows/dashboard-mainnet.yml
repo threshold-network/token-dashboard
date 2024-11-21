@@ -51,9 +51,12 @@ jobs:
           DEFAULT_PROVIDER_CHAIN_ID: 1
           ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
-          ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
-          ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
-          ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+          MAINNET_ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+          MAINNET_ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+          TESTNET_ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+          TESTNET_ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           TRM_SUPPORT: ${{ secrets.TRM_SUPPORT }}

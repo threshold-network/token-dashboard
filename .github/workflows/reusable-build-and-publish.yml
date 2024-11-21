@@ -164,9 +164,12 @@ jobs:
           DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
-          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
-          ELECTRUM_HOST: ${{ secrets.electrumHost }}
-          ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
+          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
+          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
+          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
+          TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
+          TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
@@ -182,9 +185,12 @@ jobs:
           DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
-          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
-          ELECTRUM_HOST: ${{ secrets.electrumHost }}
-          ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
+          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
+          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
+          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
+          TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
+          TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
