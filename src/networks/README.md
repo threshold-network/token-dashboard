@@ -2,6 +2,7 @@ Networks Configuration
 This folder contains utilities, enumerations, and types that define and manage network configurations used throughout the application. The primary purpose of this module is to expand or remove supported networks within the dApp. Changes to the network setup are managed through the enums and networks.ts files.
 
 Files Overview
+
 - enums/networks.ts: Contains the enumerations (enums) to categorize and label the supported networks.
 - utils/networks.ts: Defines and exports the list of supported networks with their properties.
 - types/networks.ts: Contains type definitions for network configurations.
