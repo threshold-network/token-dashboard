@@ -22,7 +22,10 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
   const [depositData, setDepositData] = useState<DepositData | undefined>()
 
   useEffect(() => {
+    let isMounted = true
     const fetch = async () => {
+      if (!isMounted) return
+
       setIsFetching(true)
       try {
         const { depositor } = (await threshold.tbtc.bridgeContract!.deposits(
@@ -31,7 +34,17 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
           depositor: string
         }
         if (isEmptyOrZeroAddress(depositor)) {
-          throw new Error("Deposit not found...")
+          console.warn("Deposit not found, retrying in 10 seconds...")
+          setIsFetching(false)
+
+          // Retry fetching after 5 seconds because there can be
+          // some time delay due to relayer bot for L2 transactions
+          setTimeout(() => {
+            if (isMounted) {
+              fetch()
+            }
+          }, 5000)
+          return
         }
 
         const revealedDeposits = await threshold.tbtc.findAllRevealedDeposits(
@@ -44,7 +57,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
 
         if (!deposit) {
           throw new Error(
-            "Could not find `DepositRevealed` event by given deposit key."
+            "Could not find DepositRevealed event by given deposit key."
           )
         }
 
@@ -91,14 +104,17 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         })
       } catch (error) {
         setError((error as Error).toString())
+      } finally {
+        setIsFetching(false)
       }
-      setIsFetching(false)
     }
 
-    if (depositKey && !threshold.tbtc.isCrossChain) {
-      fetch()
+    fetch()
+
+    return () => {
+      isMounted = false
     }
-  }, [depositKey, threshold, reverseTxHash])
+  }, [depositKey])
 
   return { isFetching, data: depositData, error }
 }
