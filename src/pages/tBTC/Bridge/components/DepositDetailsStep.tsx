@@ -14,6 +14,7 @@ import {
   MintingInitializedIcon,
 } from "./DepositDetailsStepIcons"
 import { BridgeProcessStepProps, BridgeProcessStep } from "./BridgeProcessStep"
+import { DepositState } from "@keep-network/tbtc-v2.ts"
 
 const BitcoinConfirmationsSummary: FC<{
   minConfirmationsNeeded?: number
@@ -50,6 +51,11 @@ const BitcoinConfirmationsSummary: FC<{
 
 type CommonStepProps = Pick<BridgeProcessStepProps, "onComplete"> & {
   txHash?: string
+}
+
+type CrossChainStepProps = CommonStepProps & {
+  l1BitcoinDepositorDepositStatus?: DepositState
+  isCrossChainDeposit: boolean
 }
 
 export const Step1: FC<
@@ -140,7 +146,16 @@ export const Step3: FC<CommonStepProps> = ({ txHash, onComplete }) => {
   )
 }
 
-export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
+export const Step4: FC<CrossChainStepProps> = ({
+  txHash,
+  l1BitcoinDepositorDepositStatus,
+  isCrossChainDeposit,
+  onComplete,
+}) => {
+  const isComplete = isCrossChainDeposit
+    ? l1BitcoinDepositorDepositStatus === DepositState.FINALIZED
+    : true
+
   return (
     <BridgeProcessStep
       title="Minting in progress"
@@ -148,7 +163,7 @@ export const Step4: FC<CommonStepProps> = ({ txHash, onComplete }) => {
       chain="ethereum"
       txHash={txHash}
       progressBarColor="teal.500"
-      isCompleted={true}
+      isCompleted={isComplete}
       onComplete={onComplete}
       isIndeterminate
     >

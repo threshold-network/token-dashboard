@@ -43,6 +43,8 @@ import {
   isSameETHAddress,
   isValidBtcAddress,
   ZERO,
+  ArtifactNameType,
+  L2_RELAYER_BOT_WALLET,
 } from "../utils"
 import {
   isL1Network,
@@ -86,6 +88,16 @@ export interface RevealedDepositEvent {
   fundingTxHash: string
   fundingOutputIndex: string
   depositKey: string
+  txHash: string
+  blockNumber: number
+}
+
+export interface RevealedL2DepositEvent {
+  depositKey: string
+  l2DepositOwner: string
+  l1Sender: string
+  initialAmount: string
+  tbtcAmount: string
   txHash: string
   blockNumber: number
 }
@@ -195,11 +207,13 @@ export interface ITBTC {
    */
   readonly bitcoinNetwork: BitcoinNetwork
 
-  readonly bridgeContract: Contract | null
+  readonly bridgeContract: Contract
 
-  readonly vaultContract: Contract | null
+  readonly vaultContract: Contract
 
-  readonly tokenContract: Contract | null
+  readonly tokenContract: Contract
+
+  readonly l1BitcoinDepositorContract: Contract | undefined
 
   readonly deposit: Deposit | undefined
 
@@ -333,7 +347,7 @@ export interface ITBTC {
    * @param account Ethereum address.
    * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
-  bridgeActivity(account: string): Promise<BridgeActivity[]>
+  getBridgeActivity(account: string): Promise<BridgeActivity[]>
 
   /**
    * Builds the deposit key required to refer a revealed deposit.
@@ -453,6 +467,7 @@ export class TBTC implements ITBTC {
   private _bridgeContract: Contract
   private _tbtcVaultContract: Contract
   private _tokenContract: Contract
+  private _l1BitcoinDepositorContract: Contract | undefined
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -496,26 +511,27 @@ export class TBTC implements ITBTC {
     } = ethereumConfig
     this._isCrossChain = isL2Network(chainId)
 
-    const defaultOrConnectedChainId = this._isCrossChain
-      ? getMainnetOrTestnetChainId(chainId)
-      : chainId
-    const defaultOrConnectedProvider = this._isCrossChain
-      ? getThresholdLibProvider(defaultOrConnectedChainId)
-      : providerOrSigner
+    // This ensures that, if the user is connected to an L2 network, the TBTC
+    // contracts are connected to the corresponding Ethereum mainnet or testnet
+    // based on which type of network the user is connected to.
+    const mainnetOrTestnetEthereumChainId = getMainnetOrTestnetChainId(chainId)
+    const defaultOrConnectedProvider = getThresholdLibProvider(
+      mainnetOrTestnetEthereumChainId
+    )
 
     const tbtcVaultArtifact = getArtifact(
       "TBTCVault",
-      defaultOrConnectedChainId,
+      mainnetOrTestnetEthereumChainId,
       shouldUseTestnetDevelopmentContracts
     )
     const bridgeArtifact = getArtifact(
       "Bridge",
-      defaultOrConnectedChainId,
+      mainnetOrTestnetEthereumChainId,
       shouldUseTestnetDevelopmentContracts
     )
     const tbtcTokenArtifact = getArtifact(
       "TBTC",
-      defaultOrConnectedChainId,
+      mainnetOrTestnetEthereumChainId,
       shouldUseTestnetDevelopmentContracts
     )
 
@@ -540,8 +556,23 @@ export class TBTC implements ITBTC {
     this._multicall = new Multicall({
       ...ethereumConfig,
       providerOrSigner: defaultOrConnectedProvider,
-      chainId: defaultOrConnectedChainId,
+      chainId: mainnetOrTestnetEthereumChainId,
     })
+
+    if (this._isCrossChain) {
+      const networkName = getChainIdToNetworkName(chainId)
+      const l1BitcoinDepositorArtifact = getArtifact(
+        `${networkName}L1BitcoinDepositor` as ArtifactNameType,
+        mainnetOrTestnetEthereumChainId
+      )
+
+      this._l1BitcoinDepositorContract = getContract(
+        l1BitcoinDepositorArtifact.address,
+        l1BitcoinDepositorArtifact.abi,
+        defaultOrConnectedProvider,
+        account
+      )
+    }
 
     // @ts-ignore
     this._bitcoinClient =
@@ -651,6 +682,10 @@ export class TBTC implements ITBTC {
 
   get tokenContract() {
     return this._tokenContract
+  }
+
+  get l1BitcoinDepositorContract() {
+    return this._l1BitcoinDepositorContract
   }
 
   get isCrossChain(): boolean {
@@ -800,8 +835,15 @@ export class TBTC implements ITBTC {
   }
 
   getEstimatedDepositFees = async (depositAmount: string) => {
-    const { depositTreasuryFeeDivisor, optimisticMintingFeeDivisor } =
-      await this._getDepositFees()
+    const {
+      depositTreasuryFeeDivisor,
+      optimisticMintingFeeDivisor,
+      depositTxMaxFee,
+    } = await this._getDepositFees()
+
+    const crossChainTxFee = this.isCrossChain
+      ? BigNumber.from(depositTxMaxFee)
+      : ZERO
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/bridge/Deposit.sol#L258-L260
     const treasuryFee = BigNumber.from(depositTreasuryFeeDivisor).gt(0)
@@ -819,12 +861,14 @@ export class TBTC implements ITBTC {
       treasuryFee: treasuryFee.mul(this._satoshiMultiplier).toString(),
       optimisticMintFee: optimisticMintFee.toString(),
       amountToMint: amountToMint.toString(),
+      crossChainFee: crossChainTxFee.mul(this._satoshiMultiplier).toString(),
     }
   }
 
   private _getDepositFees = async (): Promise<{
     depositTreasuryFeeDivisor: BigNumber
     optimisticMintingFeeDivisor: BigNumber
+    depositTxMaxFee: BigNumber
   }> => {
     const calls: ContractCall[] = [
       {
@@ -847,6 +891,7 @@ export class TBTC implements ITBTC {
     const depositTreasuryFeeDivisor = BigNumber.from(
       depositParams.depositTreasuryFeeDivisor
     )
+    const depositTxMaxFee = BigNumber.from(depositParams.depositTxMaxFee)
     const optimisticMintingFeeDivisor = BigNumber.from(
       _optimisticMintingFeeDivisor[0]
     )
@@ -854,6 +899,7 @@ export class TBTC implements ITBTC {
     return {
       depositTreasuryFeeDivisor,
       optimisticMintingFeeDivisor,
+      depositTxMaxFee,
     }
   }
 
@@ -917,8 +963,8 @@ export class TBTC implements ITBTC {
     return 6
   }
 
-  bridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
-    const depositActivities = await this._findDepositActivities(account)
+  getBridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
+    const depositActivities = await this._findAllDepositActivities(account)
 
     const redemptionActivities: BridgeActivity[] =
       await this._findRedemptionActivities(account)
@@ -928,66 +974,20 @@ export class TBTC implements ITBTC {
       .sort((a, b) => b.blockNumber - a.blockNumber)
   }
 
-  private _findDepositActivities = async (
+  private _findAllDepositActivities = async (
     depositor: string
   ): Promise<BridgeActivity[]> => {
-    // We can assume that all revealed deposits have `PENDING` status.
-    const revealedDeposits = await this.findAllRevealedDeposits(depositor)
-    const depositKeys = revealedDeposits.map((_) => _.depositKey)
+    const l1DepositActivities = await this._findL1DepositActivities(depositor)
 
-    const mintedDepositEvents = await this._findAllMintedDeposits(
-      depositor,
-      depositKeys
-    )
+    let l2DepositActivities: BridgeActivity[] = []
+    if (this.isCrossChain) {
+      l2DepositActivities = await this._findL2DepositActivities(depositor)
+    }
 
-    const estimatedAmountToMintByDepositKey =
-      await this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys)
+    const depositActivities = [...l1DepositActivities, ...l2DepositActivities]
+    depositActivities.sort((a, b) => a.blockNumber - b.blockNumber)
 
-    const mintedDeposits = new Map(
-      mintedDepositEvents.map((event) => [
-        (event.args?.depositKey as BigNumber).toHexString(),
-        event.transactionHash,
-      ])
-    )
-
-    const cancelledDeposits = new Map(
-      (await this._findAllCancelledDeposits(depositKeys)).map((event) => [
-        (event.args?.depositKey as BigNumber).toHexString(),
-        event.transactionHash,
-      ])
-    )
-    const mintedAmountByTxHash = new Map(
-      await Promise.all(
-        Array.from(mintedDeposits.values()).map((txHash) =>
-          this._getMintedAmountFromTxHash(txHash, depositor)
-        )
-      )
-    )
-
-    return revealedDeposits.map((deposit) => {
-      const { depositKey, txHash: depositTxHash, blockNumber } = deposit
-      let status = BridgeActivityStatus.PENDING
-      let txHash = depositTxHash
-      let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
-
-      if (mintedDeposits.has(depositKey)) {
-        status = BridgeActivityStatus.MINTED
-        txHash = mintedDeposits.get(depositKey)!
-        amount = mintedAmountByTxHash.get(txHash)!
-      } else if (cancelledDeposits.has(depositKey)) {
-        status = BridgeActivityStatus.ERROR
-        txHash = cancelledDeposits.get(depositKey)!
-      }
-
-      return {
-        amount: amount.toString(),
-        txHash,
-        status,
-        activityKey: depositKey,
-        bridgeProcess: "mint",
-        blockNumber,
-      }
-    })
+    return depositActivities
   }
 
   findAllRevealedDeposits = async (
@@ -1027,6 +1027,177 @@ export class TBTC implements ITBTC {
         }
       })
       .reverse()
+  }
+
+  private _findL1DepositActivities = async (
+    depositor: string
+  ): Promise<BridgeActivity[]> => {
+    const revealedDeposits = await this.findAllRevealedDeposits(depositor)
+    const depositKeys = revealedDeposits.map((_) => _.depositKey)
+
+    const estimatedAmountToMintByDepositKey =
+      await this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys)
+
+    const mintedDepositEvents = await this._findAllMintedDeposits(
+      depositor,
+      depositKeys
+    )
+
+    const mintedDeposits = new Map(
+      mintedDepositEvents.map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
+      ])
+    )
+
+    const cancelledDeposits = new Map(
+      (await this._findAllCancelledDeposits(depositKeys)).map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
+      ])
+    )
+
+    const mintedAmountByTxHash = new Map(
+      await Promise.all(
+        Array.from(mintedDeposits.values()).map((txHash) =>
+          this._getMintedAmountFromTxHash(txHash, depositor)
+        )
+      )
+    )
+
+    return revealedDeposits.map((deposit) => {
+      const { depositKey, txHash: depositTxHash, blockNumber } = deposit
+      let status = BridgeActivityStatus.PENDING
+      let txHash = depositTxHash
+      let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
+
+      if (mintedDeposits.has(depositKey)) {
+        status = BridgeActivityStatus.MINTED
+        txHash = mintedDeposits.get(depositKey)!
+        amount = mintedAmountByTxHash.get(txHash)!
+      } else if (cancelledDeposits.has(depositKey)) {
+        status = BridgeActivityStatus.ERROR
+        txHash = cancelledDeposits.get(depositKey)!
+      }
+
+      return {
+        amount: amount.toString(),
+        txHash,
+        status,
+        activityKey: depositKey,
+        bridgeProcess: "mint",
+        blockNumber,
+      } as BridgeActivity
+    })
+  }
+
+  private _findL2DepositActivities = async (
+    depositor: string
+  ): Promise<BridgeActivity[]> => {
+    const l2DepositActivities: BridgeActivity[] = []
+
+    const l2AllRevealedDeposits = await this.findAllRevealedDeposits(
+      this.l1BitcoinDepositorContract?.address as string
+    )
+    const l2DepositKeys = l2AllRevealedDeposits.map((_) => _.depositKey)
+
+    const estimatedAmountToMintByDepositKey =
+      await this._calculateEstimatedAmountToMintForRevealedDeposits(
+        l2DepositKeys
+      )
+
+    const l2InitializedDepositsEvents =
+      await this._findAllInitializedL2Deposits(depositor)
+    const l2FinalizedDepositsEvents = await this._findAllFinalizedL2Deposits(
+      depositor
+    )
+
+    const l2InitializedDeposits = new Map(
+      l2InitializedDepositsEvents.map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
+      ])
+    )
+
+    const l2FinalizedDeposits = new Map(
+      l2FinalizedDepositsEvents.map((event) => [
+        (event.args?.depositKey as BigNumber).toHexString(),
+        event.transactionHash,
+      ])
+    )
+
+    const l2FinalizedDepositAmountByTxHash = new Map<string, BigNumber>(
+      l2FinalizedDepositsEvents.map((event) => [
+        event.transactionHash,
+        event.args?.tbtcAmount as BigNumber,
+      ])
+    )
+
+    for (const l2Deposit of l2AllRevealedDeposits) {
+      const { depositKey, txHash: depositTxHash, blockNumber } = l2Deposit
+
+      if (!l2InitializedDeposits.has(depositKey)) continue
+
+      let status = BridgeActivityStatus.PENDING
+      let txHash = depositTxHash
+      let amount = estimatedAmountToMintByDepositKey.get(depositKey) ?? ZERO
+
+      if (l2FinalizedDeposits.has(depositKey)) {
+        status = BridgeActivityStatus.MINTED
+        txHash = l2FinalizedDeposits.get(depositKey)!
+        amount = l2FinalizedDepositAmountByTxHash.get(txHash)!
+      }
+
+      l2DepositActivities.push({
+        amount: amount.toString(),
+        txHash,
+        status,
+        activityKey: depositKey,
+        bridgeProcess: "mint",
+        blockNumber,
+      } as BridgeActivity)
+    }
+
+    return l2DepositActivities
+  }
+
+  private _findAllFinalizedL2Deposits = async (
+    depositor: string
+  ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    const l2DepositOwner = depositor
+    const l1Sender = L2_RELAYER_BOT_WALLET
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      `${getChainIdToNetworkName(
+        this.ethereumChainId
+      )}L1BitcoinDepositor` as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId)
+    )
+    return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
+      fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
+      filterParams: [null, l2DepositOwner, l1Sender],
+      eventName: "DepositFinalized",
+    })
+  }
+
+  private _findAllInitializedL2Deposits = async (
+    depositor: string
+  ): Promise<ReturnType<typeof getContractPastEvents>> => {
+    const l2DepositOwner = depositor
+    const l1Sender = L2_RELAYER_BOT_WALLET
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      `${getChainIdToNetworkName(
+        this.ethereumChainId
+      )}L1BitcoinDepositor` as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId)
+    )
+
+    return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
+      fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
+      filterParams: [null, l2DepositOwner, l1Sender],
+      eventName: "DepositInitialized",
+    })
   }
 
   private _calculateEstimatedAmountToMintForRevealedDeposits = async (

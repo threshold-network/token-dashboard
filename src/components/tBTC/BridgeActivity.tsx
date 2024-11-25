@@ -59,7 +59,8 @@ export const BridgeActivity: FC<BridgeActivityProps> = ({
   emptyState,
   children,
 }) => {
-  const isBridgeHistoryEmpty = data.length === 0
+  const { account } = useIsActive()
+  const isBridgeHistoryEmpty = data.length === 0 || !account
 
   return (
     <BridgeActivityContext.Provider
