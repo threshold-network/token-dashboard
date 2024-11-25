@@ -9,7 +9,6 @@ import {
   ToppedUpActionPayload,
 } from "../../types/staking"
 import { StakeType, TopUpType, UnstakeType } from "../../enums"
-import { AddressZero } from "../../web3/utils"
 import { UpdateStateActionPayload } from "../../types/state"
 import { startAppListening } from "../listener"
 import { fetchStakeByStakingProviderEffect } from "./effects"
@@ -168,7 +167,6 @@ export const stakingSlice = createSlice({
 
 export const requestStakeByStakingProvider = createAction<{
   stakingProvider: string | undefined
-  chainId: string | number
 }>("staking/request-stake-by-staking-provider")
 
 export const {

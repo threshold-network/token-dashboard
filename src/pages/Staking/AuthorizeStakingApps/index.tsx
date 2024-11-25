@@ -82,7 +82,6 @@ const AuthorizeStakingAppsPage: FC = () => {
     dispatch(
       requestStakeByStakingProvider({
         stakingProvider: stakingProviderAddress,
-        chainId,
       })
     )
   }, [stakingProviderAddress, account, threshold.staking, dispatch])

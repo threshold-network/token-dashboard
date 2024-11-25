@@ -63,6 +63,9 @@ import { useIsEmbed } from "./hooks/useIsEmbed"
 import TBTC from "./pages/tBTC"
 import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
 import { useGoogleTagManager } from "./hooks/google-tag-manager"
+import { hexToNumber, isSameChainId } from "./networks/utils"
+import { walletConnected } from "./store/account"
+import { useIsActive } from "./hooks/useIsActive"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -133,11 +136,20 @@ const useSubscribeToVendingMachineContractEvents = () => {
 
 const AppBody = () => {
   const dispatch = useDispatch()
-  const { connector, account } = useWeb3React()
+  const { connector, account, chainId } = useIsActive()
 
   useEffect(() => {
     const updateHandler = (update: ConnectorUpdate) => {
-      if (
+      // if chain is changed then just update the redux store for the wallet
+      // connection
+      if (update.chainId && !isSameChainId(update.chainId, chainId as number)) {
+        dispatch(
+          walletConnected({
+            address: account || "",
+            chainId: hexToNumber(update.chainId),
+          })
+        )
+      } else if (
         update.account &&
         !isSameETHAddress(update.account, account as string)
       ) {
@@ -164,7 +176,7 @@ const AppBody = () => {
       connector?.removeListener(ConnectorEvent.Update, updateHandler)
       connector?.removeListener(ConnectorEvent.Deactivate, deactivateHandler)
     }
-  }, [connector, dispatch, account])
+  }, [connector, dispatch, account, chainId])
 
   useEffect(() => {
     dispatch(fetchETHPriceUSD())

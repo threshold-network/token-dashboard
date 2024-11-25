@@ -1,3 +1,4 @@
+import { isSameChainId } from "../../networks/utils"
 import { StakeData } from "../../types"
 import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
@@ -8,19 +9,17 @@ export const fetchStakeByStakingProviderEffect = async (
   actionCreator: ReturnType<typeof requestStakeByStakingProvider>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { stakingProvider, chainId } = actionCreator.payload
-  const {
-    config: {
-      ethereum: { chainId: ethereumChainId },
-    },
-  } = listenerApi.extra.threshold
+  const { account } = listenerApi.getState()
+  const { stakingProvider } = actionCreator.payload
+  const { config } = listenerApi.extra.threshold
 
   if (
     !listenerApi.extra.threshold.staking ||
     !stakingProvider ||
     !isAddress(stakingProvider) ||
     isAddressZero(stakingProvider) ||
-    chainId !== ethereumChainId
+    !account.chainId ||
+    !isSameChainId(account.chainId, config.ethereum.chainId)
   )
     return
 

@@ -38,7 +38,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account, active, chainId } = useWeb3React()
+  const { account, active } = useWeb3React()
   const threshold = useThreshold()
   const { openModal } = useModal()
   const navigate = useNavigate()
@@ -53,12 +53,9 @@ const StakeDetailsPage: FC = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (!chainId) return
-
     dispatch(
       requestStakeByStakingProvider({
         stakingProvider: stakingProviderAddress,
-        chainId,
       })
     )
   }, [stakingProviderAddress, account, threshold.staking, dispatch])

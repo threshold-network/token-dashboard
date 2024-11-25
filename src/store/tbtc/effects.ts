@@ -6,29 +6,28 @@ import {
 } from "../../threshold-ts/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
-import {
-  key,
-  removeDataForAccount,
-  TBTCLocalStorageDepositData,
-} from "../../utils/tbtcLocalStorageData"
 import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
-import { getChainIdToNetworkName, isL1Network } from "../../networks/utils"
+import {
+  getChainIdToNetworkName,
+  isL1Network,
+  isSameChainId,
+} from "../../networks/utils"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { depositor, chainId } = action.payload
-  const {
-    tbtc: { ethereumChainId },
-  } = listenerApi.extra.threshold
+  const { account } = listenerApi.getState()
+  const { depositor } = action.payload
+  const { config } = listenerApi.extra.threshold
 
   if (
     !isAddress(depositor) ||
     isAddressZero(depositor) ||
-    chainId !== ethereumChainId
+    !account.chainId ||
+    !isSameChainId(account.chainId, config.ethereum.chainId)
   )
     return
 
@@ -37,7 +36,7 @@ export const fetchBridgeactivityEffect = async (
   listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
 
   try {
-    const data = await listenerApi.extra.threshold.tbtc.bridgeActivity(
+    const data = await listenerApi.extra.threshold.tbtc.getBridgeActivity(
       depositor
     )
     listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
@@ -49,6 +48,8 @@ export const fetchBridgeactivityEffect = async (
         error: "Could not fetch bridge activity.",
       })
     )
+  } finally {
+    listenerApi.subscribe()
   }
 }
 
