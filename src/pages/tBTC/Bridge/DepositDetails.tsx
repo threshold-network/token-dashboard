@@ -70,6 +70,8 @@ import { ExternalPool } from "../../../components/tBTC/ExternalPool"
 import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolData"
 import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
+import { DepositState } from "@keep-network/tbtc-v2.ts"
+import { chainIdToChainParameterName } from "../../../networks/utils"
 import { useIsActive } from "../../../hooks/useIsActive"
 
 export const DepositDetails: PageComponent = () => {
@@ -83,7 +85,6 @@ export const DepositDetails: PageComponent = () => {
     "curve",
     CurveFactoryPoolId.TBTC_WBTC_SBTC
   )
-  const { chainId } = useIsActive()
 
   const [mintingProgressStep, setMintingProgressStep] =
     useState<DepositDetailsTimelineStep>("bitcoin-confirmations")
@@ -115,6 +116,8 @@ export const DepositDetails: PageComponent = () => {
     data?.optimisticMintingRequestedTxHash
   const optimisticMintingFinalizedTxHash =
     data?.optimisticMintingFinalizedTxHash
+  const l1BitcoinDepositorDepositStatus = data?.l1BitcoinDepositorDepositStatus
+  const isCrossChainDeposit = !!data?.isCrossChainDeposit
   const thresholdNetworkFee = data?.treasuryFee
   const mintingFee = data?.optimisticMintFee
 
@@ -143,6 +146,8 @@ export const DepositDetails: PageComponent = () => {
         requiredConfirmations,
         optimisticMintingFinalizedTxHash,
         optimisticMintingRequestedTxHash,
+        l1BitcoinDepositorDepositStatus,
+        isCrossChainDeposit,
       })
     )
   }, [
@@ -150,6 +155,8 @@ export const DepositDetails: PageComponent = () => {
     requiredConfirmations,
     optimisticMintingFinalizedTxHash,
     optimisticMintingRequestedTxHash,
+    l1BitcoinDepositorDepositStatus,
+    isCrossChainDeposit,
     shouldStartFromFirstStep,
   ])
 
@@ -182,11 +189,13 @@ export const DepositDetails: PageComponent = () => {
           optimisticMintingRequestedTxHash ?? mintingRequestedTxHash,
         optimisticMintingFinalizedTxHash:
           optimisticMintingFinalizedTxHash ?? mintingFinalizedTxHash,
+        l1BitcoinDepositorDepositStatus,
         confirmations: confirmations || txConfirmations,
         requiredConfirmations: requiredConfirmations!,
         amount: amount,
         thresholdNetworkFee,
         mintingFee,
+        isCrossChainDeposit: !!data?.isCrossChainDeposit,
       }}
     >
       <BridgeProcessDetailsCard
@@ -331,13 +340,16 @@ DepositDetails.route = {
 const DepositDetailsPageContext = createContext<
   | (Pick<
       DepositData,
-      "optimisticMintingRequestedTxHash" | "optimisticMintingFinalizedTxHash"
+      | "optimisticMintingRequestedTxHash"
+      | "optimisticMintingFinalizedTxHash"
+      | "l1BitcoinDepositorDepositStatus"
     > & {
       btcTxHash?: string
       confirmations?: number
       requiredConfirmations?: number
       updateStep: (step: DepositDetailsTimelineStep) => void
       step: DepositDetailsTimelineStep
+      isCrossChainDeposit: boolean
       amount?: string
       mintingFee?: string
       thresholdNetworkFee?: string
@@ -464,9 +476,15 @@ const getMintingProgressStep = (
     requiredConfirmations,
     optimisticMintingRequestedTxHash,
     optimisticMintingFinalizedTxHash,
+    l1BitcoinDepositorDepositStatus,
+    isCrossChainDeposit,
   } = depositDetails
 
-  if (optimisticMintingFinalizedTxHash) return "completed"
+  if (
+    (!isCrossChainDeposit && optimisticMintingFinalizedTxHash) ||
+    l1BitcoinDepositorDepositStatus === DepositState.FINALIZED
+  )
+    return "completed"
 
   if (optimisticMintingRequestedTxHash) return "guardian-check"
 
@@ -492,12 +510,15 @@ const StepSwitcher: FC = () => {
     requiredConfirmations,
     optimisticMintingRequestedTxHash,
     optimisticMintingFinalizedTxHash,
+    l1BitcoinDepositorDepositStatus,
     btcTxHash,
     updateStep,
     amount,
     thresholdNetworkFee,
     mintingFee,
+    isCrossChainDeposit,
   } = useDepositDetailsPageContext()
+  const { chainId } = useIsActive()
 
   const onComplete = useCallback(() => {
     if (step === "completed") return
@@ -534,6 +555,8 @@ const StepSwitcher: FC = () => {
       return (
         <Step4
           txHash={optimisticMintingFinalizedTxHash}
+          l1BitcoinDepositorDepositStatus={l1BitcoinDepositorDepositStatus}
+          isCrossChainDeposit={isCrossChainDeposit}
           onComplete={onComplete}
         />
       )
@@ -543,9 +566,18 @@ const StepSwitcher: FC = () => {
           <BodyLg mt="4" fontSize="20px" lineHeight="24px">
             Success!
           </BodyLg>
-          <BodyMd mt="2">
-            Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
-          </BodyMd>
+
+          {isCrossChainDeposit ? (
+            <BodyMd mt="2">
+              Your tokens have been minted and bridged to the depositor wallet
+              on the {chainIdToChainParameterName(chainId)} network - This
+              action usually takes a few minutes to complete this process.
+            </BodyMd>
+          ) : (
+            <BodyMd mt="2">
+              Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
+            </BodyMd>
+          )}
           <Divider my="4" />
           <List spacing="2">
             <TransactionDetailsAmountItem

@@ -11,6 +11,7 @@ import { AddressZero, getAddress, isAddressZero } from "./address"
 import { LedgerLiveSigner } from "../../utils/ledger"
 import { SupportedChainIds } from "../../networks/enums/networks"
 
+import ArbitrumL1BitcoinDepositorArtifactMainnet from "../tbtc/mainnet-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenMainnet from "../tokens/mainnet-artifacts/NuCypherToken.json"
@@ -24,6 +25,8 @@ import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
 import TacoRegistryArtifactMainnet from "../mas/mainnet-artifacts/TacoRegistry.json"
 
+import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
+import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
 import BridgeArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/Bridge.json"
 import NuCypherStakingEscrowSepolia from "../staking/sepolia-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenSepolia from "../tokens/sepolia-artifacts/NuCypherToken.json"
@@ -50,7 +53,7 @@ import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
 import TacoRegistryArtifactDappDevelopmentSepolia from "../mas/dapp-development-sepolia-artifacts/TacoRegistry.json"
 
-type ArtifactNameType =
+export type ArtifactNameType =
   | "TacoRegistry"
   | "LegacyKeepStaking"
   | "RandomBeacon"
@@ -63,6 +66,8 @@ type ArtifactNameType =
   | "VendingMachineKeep"
   | "VendingMachineNuCypher"
   | "WalletRegistry"
+  | "ArbitrumL1BitcoinDepositor"
+  | "BaseL1BitcoinDepositor"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -70,6 +75,7 @@ type ArtifactType = {
 }
 
 const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
+  ["ArbitrumL1BitcoinDepositor", ArbitrumL1BitcoinDepositorArtifactMainnet],
   ["TacoRegistry", TacoRegistryArtifactMainnet],
   ["LegacyKeepStaking", LegacyKeepStakingArtifactMainnet],
   ["RandomBeacon", RandomBeaconArtifactMainnet],
@@ -83,7 +89,9 @@ const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
   ["VendingMachineKeep", VendingMachineKeepMainnet],
   ["VendingMachineNuCypher", VendingMachineNuCypherMainnet],
 ])
-const testnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
+const sepoliaArtifacts = new Map<ArtifactNameType, ArtifactType>([
+  ["ArbitrumL1BitcoinDepositor", ArbitrumL1BitcoinDepositorArtifactSepolia],
+  ["BaseL1BitcoinDepositor", BaseL1BitcoinDepositorArtifactSepolia],
   ["TacoRegistry", TacoRegistryArtifactSepolia],
   ["LegacyKeepStaking", LegacyKeepStakingArtifactSepolia],
   ["RandomBeacon", RandomBeaconArtifactSepolia],
@@ -190,10 +198,10 @@ export const getArtifact = (
     case SupportedChainIds.Sepolia:
       const artifacts = shouldUseTestnetDevelopmentContracts
         ? testnetDevelopmentArtifacts
-        : testnetArtifacts
+        : sepoliaArtifacts
       return artifacts.get(artifactName)!
     default:
-      throw new Error("Can't get tbtc-v2 artifacts!")
+      throw new Error("Can't get the contract artifact!")
   }
 }
 
