@@ -24,11 +24,21 @@ import {
 import { isAddressZero } from "../../web3/utils"
 import { BigNumber } from "ethers"
 import { MAX_UINT64 } from "../../threshold-ts/utils"
+import { isSameChainId } from "../../networks/utils"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
   listenerApi: AppListenerEffectAPI
 ) => {
+  const { account } = listenerApi.getState()
+  const { config } = listenerApi.extra.threshold
+
+  if (
+    !account.chainId ||
+    !isSameChainId(account.chainId, config.ethereum.chainId)
+  )
+    return
+
   try {
     listenerApi.unsubscribe()
     listenerApi.dispatch(
@@ -124,6 +134,15 @@ export const getSupportedAppsStakingProvidersData = async (
   action: ReturnType<typeof setStakes>,
   listenerApi: AppListenerEffectAPI
 ) => {
+  const { account } = listenerApi.getState()
+  const { config } = listenerApi.extra.threshold
+
+  if (
+    !account.chainId ||
+    !isSameChainId(account.chainId, config.ethereum.chainId)
+  )
+    return
+
   try {
     const stakingProviders = selectStakingProviders(listenerApi.getState())
     if (

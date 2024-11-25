@@ -31,7 +31,8 @@ const TBTCBridge: PageComponent = (props) => {
   const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
-  const { account, chainId } = useIsActive()
+  const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
+  const { account } = useIsActive()
   const threshold = useThreshold()
 
   useEffect(() => {
@@ -39,14 +40,13 @@ const TBTCBridge: PageComponent = (props) => {
   }, [hasUserResponded])
 
   useEffect(() => {
-    if (!account || !chainId) return
+    if (!account) return
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account,
-        chainId: chainId,
       })
     )
-  }, [dispatch, account, chainId, threshold.tbtc])
+  }, [dispatch, account, mintingStep, threshold.tbtc.ethereumChainId])
 
   return (
     <Grid

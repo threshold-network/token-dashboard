@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react"
+import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import { BigNumberish } from "ethers"
 import { formatUnits } from "@ethersproject/units"
 import {
@@ -13,7 +13,6 @@ import { useToken } from "./useToken"
 import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
 import { useIsActive } from "./useIsActive"
-import { isL1Network } from "../networks/utils"
 import { ContractCall } from "../threshold-ts/multicall"
 
 interface TvlRawData {
@@ -48,6 +47,14 @@ export const useFetchTvl = (): [
 ] => {
   const { chainId } = useIsActive()
   const [rawData, setRawData] = useState<TvlRawData>(initialState)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   const {
     ecdsaTvl,
     tbtcv1Tvl: tbtcTvl,
@@ -120,7 +127,6 @@ export const useFetchTvl = (): [
   const fetchOnChainData = useMulticall(calls)
 
   const fetchTvlData = useCallback(async () => {
-    if (chainId && !isL1Network(chainId)) return initialState
     const chainData = await fetchOnChainData()
     if (chainData.length === 0) return initialState
 
@@ -131,7 +137,9 @@ export const useFetchTvl = (): [
       data[key] = result ? result.toString() : "0"
     })
 
-    setRawData(data)
+    if (isMountedRef.current) {
+      setRawData(data)
+    }
     return data
   }, [fetchOnChainData, chainId])
 
