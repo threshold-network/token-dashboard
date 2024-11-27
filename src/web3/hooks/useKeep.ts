@@ -5,7 +5,7 @@ import { TransactionType } from "../../enums/transactionType"
 import { Contract } from "@ethersproject/contracts"
 import { AddressZero } from "@ethersproject/constants"
 import { SupportedChainIds } from "../../networks/enums/networks"
-import { useDefaultOrConnectedChainId } from "../../networks/hooks/useDefaultOrConnectedChainId"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 
 export const KEEP_ADDRESSES = {
   // https://etherscan.io/address/0x85Eee30c52B0b379b046Fb0F85F4f3Dc3009aFEC
@@ -24,7 +24,7 @@ export interface UseKeep {
 }
 
 export const useKeep: UseKeep = () => {
-  const defaultOrConnectedChainId = useDefaultOrConnectedChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
 
   const { balanceOf, approve, contract } = useErc20TokenContract(
     KEEP_ADDRESSES[Number(defaultOrConnectedChainId)],

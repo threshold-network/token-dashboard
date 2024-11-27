@@ -99,7 +99,6 @@ const contractArtifacts: ContractArtifacts = {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
     TacoRegistry: TacoRegistryArtifactSepolia,
-    LegacyKeepStaking: LegacyKeepStakingArtifactSepolia,
     RandomBeacon: RandomBeaconArtifactSepolia,
     TokenStaking: StakingArtifactSepolia,
     Bridge: BridgeArtifactSepolia,

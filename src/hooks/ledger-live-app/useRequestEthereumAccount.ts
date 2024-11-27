@@ -5,7 +5,7 @@ import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { isTestnetNetwork } from "../../networks/utils"
-import { useDefaultOrConnectedChainId } from "../../networks/hooks/useDefaultOrConnectedChainId"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useIsEmbed } from "../useIsEmbed"
 import { useWeb3React } from "@web3-react/core"
@@ -30,6 +30,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { isEmbed } = useIsEmbed()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
 
   useEffect(() => {
     // Setting the eth account in LedgerLiveAppContext through `setEthAccount`
@@ -46,7 +47,6 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   }, [ledgerLiveAccount, chainId, isEmbed])
 
   const requestEthereumAccount = useCallback(async () => {
-    const defaultOrConnectedChainId = useDefaultOrConnectedChainId()
     // The Goerli testnet become deprecated. However, we did not test Ledger
     // Live on Sepolia yet, so we're leaving the Goerli config for now in the
     // code.
@@ -56,7 +56,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     walletApiReactTransport.connect()
     await requestAccount({ currencyIds: [currencyId] })
     walletApiReactTransport.disconnect()
-  }, [requestAccount, walletApiReactTransport, chainId])
+  }, [requestAccount, walletApiReactTransport, defaultOrConnectedChainId])
 
   return { ...useRequestAccountReturn, requestAccount: requestEthereumAccount }
 }

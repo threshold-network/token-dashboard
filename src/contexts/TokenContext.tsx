@@ -124,6 +124,8 @@ export const TokenContextProvider: React.FC = ({ children }) => {
         )
       })
     } else if (isActive && isL2Network(chainId)) {
+      tokens.forEach((token) => updateTokenState(token, 0))
+
       fetchtBTCBalance().then(([tbtcv2]) => {
         if (featureFlags.TBTC_V2) {
           updateTokenState(Token.TBTCV2, tbtcv2, true)
@@ -136,8 +138,8 @@ export const TokenContextProvider: React.FC = ({ children }) => {
 
   // fetch user stakes when they connect their wallet
   useEffect(() => {
-    fetchOwnerStakes(account!)
-  }, [fetchOwnerStakes, account])
+    fetchOwnerStakes(account!, chainId)
+  }, [fetchOwnerStakes, account, chainId])
 
   return (
     <TokenContext.Provider
