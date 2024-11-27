@@ -1,7 +1,7 @@
 import { useIsActive } from "../../hooks/useIsActive"
 import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 
-export const useDefaultOrConnectedChainId = () => {
+export const useConnectedOrDefaultChainId = () => {
   const { chainId } = useIsActive()
   const defaultOrConnectedChainId = chainId ?? getDefaultProviderChainId()
 

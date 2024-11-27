@@ -45,7 +45,7 @@ export const useCheckBonusEligibility = () => {
         (
           await getContractPastEvents(merkleDropContract, {
             eventName: "Claimed",
-            fromBlock: getMerkleDropDeploymentBlock(),
+            fromBlock: getMerkleDropDeploymentBlock(chainId),
             filterParams: [stakingProviders],
           })
         ).map((_) => getAddress(_.args?.stakingProvider as string))
@@ -53,19 +53,19 @@ export const useCheckBonusEligibility = () => {
 
       const stakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Staked",
-        fromBlock: getTStakingDeploymentBlock(),
+        fromBlock: getTStakingDeploymentBlock(chainId),
         filterParams: [null, null, stakingProviders],
       })
 
       const toppedUpEvents = await getContractPastEvents(tStakingContract, {
         eventName: "ToppedUp",
-        fromBlock: getTStakingDeploymentBlock(),
+        fromBlock: getTStakingDeploymentBlock(chainId),
         filterParams: [stakingProviders],
       })
 
       const unstakedEvents = await getContractPastEvents(tStakingContract, {
         eventName: "Unstaked",
-        fromBlock: getTStakingDeploymentBlock(),
+        fromBlock: getTStakingDeploymentBlock(chainId),
         filterParams: [stakingProviders],
       })
 
@@ -117,6 +117,7 @@ export const useCheckBonusEligibility = () => {
     }
     fetch()
   }, [
+    chainId,
     stakingProviders,
     tStakingContract,
     merkleDropContract,

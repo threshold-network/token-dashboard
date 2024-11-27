@@ -1,7 +1,7 @@
 import { useErc20TokenContract } from "./useERC20"
 import { AddressZero } from "@ethersproject/constants"
 import { SupportedChainIds } from "../../networks/enums/networks"
-import { useDefaultOrConnectedChainId } from "../../networks/hooks/useDefaultOrConnectedChainId"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 
 export const TBTCV2_ADDRESSES = {
   // https://etherscan.io/address/0x18084fbA666a33d37592fA2633fD49a74DD93a88
@@ -20,7 +20,7 @@ export const TBTCV2_ADDRESSES = {
 // Threshold class instance. A separate, independent instance for the TBTC v2 token is needed to
 // handle network changes smoothly within the app's lifecycle.
 export const useTBTCv2TokenContract = () => {
-  const defaultOrConnectedChainId = useDefaultOrConnectedChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
   return useErc20TokenContract(
     TBTCV2_ADDRESSES[Number(defaultOrConnectedChainId)]
   )
