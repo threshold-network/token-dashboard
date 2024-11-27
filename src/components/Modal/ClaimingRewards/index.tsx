@@ -34,6 +34,7 @@ import { useModal } from "../../../hooks/useModal"
 import { ModalType } from "../../../enums"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useMerkleDropContract } from "../../../web3/hooks/useMerkleDropContract"
 
 const ClaimingRewardsBase: FC<
   BaseModalProps & {
@@ -44,6 +45,7 @@ const ClaimingRewardsBase: FC<
   const { openModal } = useModal()
   const beneficiaryRewards = useSelector(selectAccumulatedRewardsPerBeneficiary)
   const rewards = useSelector(selectInterimRewards)
+  const merkleDropContract = useMerkleDropContract()
 
   const onClaimSuccess = useCallback<OnSuccessCallback>(
     (receipt) => {
@@ -99,6 +101,7 @@ const ClaimingRewardsBase: FC<
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!merkleDropContract}
           onSubmit={() => {
             claim(Object.keys(rewards))
           }}

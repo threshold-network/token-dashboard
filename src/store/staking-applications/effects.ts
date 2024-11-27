@@ -31,11 +31,16 @@ export const getSupportedAppsEffect = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const { account } = listenerApi.getState()
-  const { config } = listenerApi.extra.threshold
 
   if (
     !account.chainId ||
-    !isSameChainId(account.chainId, config.ethereum.chainId)
+    !isSameChainId(
+      account.chainId,
+      listenerApi.extra.threshold.config.ethereum.chainId
+    ) ||
+    !listenerApi.extra.threshold.multiAppStaking.ecdsa ||
+    !listenerApi.extra.threshold.multiAppStaking.randomBeacon ||
+    !listenerApi.extra.threshold.multiAppStaking.taco
   )
     return
 
@@ -57,34 +62,36 @@ export const getSupportedAppsEffect = async (
       })
     )
     const data =
-      await listenerApi.extra.threshold.multiAppStaking!.getSupportedAppsAuthParameters()
+      await listenerApi.extra.threshold.multiAppStaking.getSupportedAppsAuthParameters()
     const payload = {
       tbtc: {
-        minimumAuthorization: data.tbtc.minimumAuthorization.toString(),
+        minimumAuthorization: data.tbtc!.minimumAuthorization.toString(),
 
         authorizationDecreaseDelay:
-          data.tbtc.authorizationDecreaseDelay.toString(),
+          data.tbtc!.authorizationDecreaseDelay.toString(),
 
         authorizationDecreaseChangePeriod:
-          data.tbtc.authorizationDecreaseChangePeriod.toString(),
+          data.tbtc!.authorizationDecreaseChangePeriod.toString(),
       },
       randomBeacon: {
-        minimumAuthorization: data.randomBeacon.minimumAuthorization.toString(),
+        minimumAuthorization:
+          data.randomBeacon!.minimumAuthorization.toString(),
 
         authorizationDecreaseDelay:
-          data.randomBeacon.authorizationDecreaseDelay.toString(),
+          data.randomBeacon!.authorizationDecreaseDelay.toString(),
 
         authorizationDecreaseChangePeriod:
-          data.randomBeacon.authorizationDecreaseChangePeriod.toString(),
+          data.randomBeacon!.authorizationDecreaseChangePeriod.toString(),
       },
       taco: {
-        minimumAuthorization: data.taco._minimumAuthorization?.toString() ?? "",
+        minimumAuthorization:
+          data.taco!._minimumAuthorization?.toString() ?? "",
 
         authorizationDecreaseDelay:
-          data.taco.authorizationDecreaseDelay.toString(),
+          data.taco!.authorizationDecreaseDelay.toString(),
 
         authorizationDecreaseChangePeriod:
-          data.taco.authorizationDecreaseChangePeriod.toString(),
+          data.taco!.authorizationDecreaseChangePeriod.toString(),
       },
     }
     listenerApi.dispatch(
@@ -135,11 +142,14 @@ export const getSupportedAppsStakingProvidersData = async (
   listenerApi: AppListenerEffectAPI
 ) => {
   const { account } = listenerApi.getState()
-  const { config } = listenerApi.extra.threshold
+  const threshold = listenerApi.extra.threshold
 
   if (
     !account.chainId ||
-    !isSameChainId(account.chainId, config.ethereum.chainId)
+    !isSameChainId(account.chainId, threshold.config.ethereum.chainId) ||
+    !threshold.multiAppStaking.ecdsa ||
+    !threshold.multiAppStaking.randomBeacon ||
+    !threshold.multiAppStaking.taco
   )
     return
 
@@ -155,19 +165,19 @@ export const getSupportedAppsStakingProvidersData = async (
 
     await getKeepStakingAppStakingProvidersData(
       stakingProviders,
-      listenerApi.extra.threshold.multiAppStaking.ecdsa,
+      listenerApi.extra.threshold.multiAppStaking.ecdsa!,
       "tbtc",
       listenerApi
     )
     await getKeepStakingAppStakingProvidersData(
       stakingProviders,
-      listenerApi.extra.threshold.multiAppStaking.randomBeacon,
+      listenerApi.extra.threshold.multiAppStaking.randomBeacon!,
       "randomBeacon",
       listenerApi
     )
     await getKeepStakingAppStakingProvidersData(
       stakingProviders,
-      listenerApi.extra.threshold.multiAppStaking.taco,
+      listenerApi.extra.threshold.multiAppStaking.taco!,
       "taco",
       listenerApi
     )

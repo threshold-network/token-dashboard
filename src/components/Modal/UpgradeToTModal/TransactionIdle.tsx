@@ -34,7 +34,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
 }) => {
   const { amount: receivedAmount } = useTConvertedAmount(token, upgradedAmount)
   const { formattedAmount: exchangeRate } = useTExchangeRate(token)
-  const contract = useVendingMachineContract(token)
+  const vendingMachineContract = useVendingMachineContract(token)
   const { upgradeToT } = useUpgradeToT(token)
 
   return (
@@ -65,9 +65,9 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           mt="2rem"
         >
           This action is reversible via the{" "}
-          {contract ? (
+          {vendingMachineContract ? (
             <ViewInBlockExplorer
-              id={contract.address}
+              id={vendingMachineContract.address}
               type={ExplorerDataType.ADDRESS}
               text="vending machine contract."
             />
@@ -83,6 +83,7 @@ const TransactionIdle: FC<TransactionIdleProps> = ({
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!vendingMachineContract}
           onSubmit={async () => {
             await upgradeToT(upgradedAmount)
           }}

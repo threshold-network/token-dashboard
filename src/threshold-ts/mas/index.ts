@@ -23,9 +23,9 @@ export interface MappedOperatorsForStakingProvider {
 export class MultiAppStaking {
   private _staking: IStaking
   private _multicall: IMulticall
-  public readonly randomBeacon: IApplication
-  public readonly ecdsa: IApplication
-  public readonly taco: IApplication
+  public readonly randomBeacon: IApplication | null
+  public readonly ecdsa: IApplication | null
+  public readonly taco: IApplication | null
 
   constructor(
     staking: IStaking,
@@ -39,99 +39,140 @@ export class MultiAppStaking {
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
-    this.randomBeacon = new Application(this._staking, this._multicall, {
-      address: randomBeaconArtifact.address,
-      abi: randomBeaconArtifact.abi,
-      ...config,
-    })
+    this.randomBeacon = randomBeaconArtifact
+      ? new Application(this._staking, this._multicall, {
+          address: randomBeaconArtifact.address,
+          abi: randomBeaconArtifact.abi,
+          ...config,
+        })
+      : null
     const walletRegistryArtifacts = getArtifact(
       "WalletRegistry",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
-    this.ecdsa = new Application(this._staking, this._multicall, {
-      address: walletRegistryArtifacts.address,
-      abi: walletRegistryArtifacts.abi,
-      ...config,
-    })
+    this.ecdsa = walletRegistryArtifacts
+      ? new Application(this._staking, this._multicall, {
+          address: walletRegistryArtifacts.address,
+          abi: walletRegistryArtifacts.abi,
+          ...config,
+        })
+      : null
     const tacoRegistryArtifacts = getArtifact(
       "TacoRegistry",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
-    this.taco = new Application(this._staking, this._multicall, {
-      address: tacoRegistryArtifacts.address,
-      abi: tacoRegistryArtifacts.abi,
-      ...config,
-    })
+    this.taco = tacoRegistryArtifacts
+      ? new Application(this._staking, this._multicall, {
+          address: tacoRegistryArtifacts.address,
+          abi: tacoRegistryArtifacts.abi,
+          ...config,
+        })
+      : null
   }
 
-  async getSupportedAppsAuthParameters(): Promise<SupportedAppAuthorizationParameters> {
-    const calls: ContractCall[] = [
-      {
+  async getSupportedAppsAuthParameters(): Promise<
+    Partial<SupportedAppAuthorizationParameters>
+  > {
+    const calls: ContractCall[] = []
+    const results: Partial<SupportedAppAuthorizationParameters> = {}
+
+    let index = 0
+
+    if (this.ecdsa) {
+      calls.push({
         interface: this.ecdsa.contract.interface,
         address: this.ecdsa.address,
         method: "authorizationParameters",
         args: [],
-      },
-      {
+      })
+    }
+
+    if (this.randomBeacon) {
+      calls.push({
         interface: this.randomBeacon.contract.interface,
         address: this.randomBeacon.address,
         method: "authorizationParameters",
         args: [],
-      },
-      {
+      })
+    }
+
+    if (this.taco) {
+      calls.push({
         interface: this.taco.contract.interface,
         address: this.taco.address,
         method: "authorizationParameters",
         args: [],
-      },
-    ]
-
-    const [
-      tbtcMinAuthorizationParams,
-      randomBeaconMinAuthorizationParams,
-      tacoMinAuthorizationParams,
-    ] = await this._multicall.aggregate(calls)
-
-    return {
-      tbtc: tbtcMinAuthorizationParams,
-      randomBeacon: randomBeaconMinAuthorizationParams,
-      taco: tacoMinAuthorizationParams,
+      })
     }
+
+    const callResults = await this._multicall.aggregate(calls)
+
+    if (this.ecdsa) {
+      results.tbtc = callResults[index++]
+    }
+
+    if (this.randomBeacon) {
+      results.randomBeacon = callResults[index++]
+    }
+
+    if (this.taco) {
+      results.taco = callResults[index++]
+    }
+
+    return results
   }
 
   async getMappedOperatorsForStakingProvider(
     stakingProvider: string
-  ): Promise<MappedOperatorsForStakingProvider> {
-    const calls: ContractCall[] = [
-      {
+  ): Promise<Partial<MappedOperatorsForStakingProvider>> {
+    const calls: ContractCall[] = []
+    const results: Partial<MappedOperatorsForStakingProvider> = {}
+
+    let index = 0
+
+    if (this.ecdsa) {
+      calls.push({
         interface: this.ecdsa.contract.interface,
         address: this.ecdsa.address,
         method: "stakingProviderToOperator",
         args: [stakingProvider],
-      },
-      {
+      })
+    }
+
+    if (this.randomBeacon) {
+      calls.push({
         interface: this.randomBeacon.contract.interface,
         address: this.randomBeacon.address,
         method: "stakingProviderToOperator",
         args: [stakingProvider],
-      },
-      {
+      })
+    }
+
+    if (this.taco) {
+      calls.push({
         interface: this.taco.contract.interface,
         address: this.taco.address,
         method: "stakingProviderToOperator",
         args: [stakingProvider],
-      },
-    ]
-
-    const [mappedOperatorTbtc, mappedOperatorRandomBeacon, mappedOperatorTaco] =
-      await this._multicall.aggregate(calls)
-
-    return {
-      tbtc: mappedOperatorTbtc.toString(),
-      randomBeacon: mappedOperatorRandomBeacon.toString(),
-      taco: mappedOperatorTaco.toString(),
+      })
     }
+
+    const callResults = await this._multicall.aggregate(calls)
+
+    if (this.ecdsa) {
+      results.tbtc = callResults[index++].toString()
+    }
+
+    if (this.randomBeacon) {
+      results.randomBeacon = callResults[index++].toString()
+    }
+
+    if (this.taco) {
+      results.taco = callResults[index++].toString()
+    }
+
+    return results
   }
 }

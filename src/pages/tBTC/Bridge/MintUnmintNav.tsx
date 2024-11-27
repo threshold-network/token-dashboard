@@ -9,14 +9,9 @@ import { Box, Card, FilterTabs, FilterTab } from "@threshold-network/components"
 import Link from "../../../components/Link"
 import { PageComponent } from "../../../types"
 import { isL2Network } from "../../../networks/utils"
-import { isValidL2Transaction } from "../../../networks/utils/validateL2TransactionType"
 import { useIsActive } from "../../../hooks/useIsActive"
 
-const renderNavItem = (
-  page: PageComponent,
-  index: number,
-  chainId?: number | string
-) => (
+const renderNavItem = (page: PageComponent, index: number) => (
   <FilterTab
     key={page.route.path}
     as={Link}
@@ -54,11 +49,9 @@ export const MintUnmintNav: FC<
               .filter(
                 (page) =>
                   !!page.route.title &&
-                  isValidL2Transaction(page.route.title?.toUpperCase())
+                  page.route.title.toLowerCase() === "mint"
               )
-              .map((filteredPage, index) =>
-                renderNavItem(filteredPage, index, chainId)
-              )
+              .map((filteredPage, index) => renderNavItem(filteredPage, index))
           : pages
               .filter((page) => !!page.route.title)
               .map((filteredPage, index) => renderNavItem(filteredPage, index))}

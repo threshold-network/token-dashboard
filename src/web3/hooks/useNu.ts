@@ -5,7 +5,7 @@ import { TransactionType } from "../../enums/transactionType"
 import { getArtifact } from "../../threshold-ts/utils"
 import { shouldUseTestnetDevelopmentContracts } from "../../utils/getEnvVariable"
 import { useIsActive } from "../../hooks/useIsActive"
-import { isL1Network } from "../../networks/utils"
+import { getMainnetOrTestnetChainId } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 export interface UseNu {
   (): {
@@ -17,9 +17,7 @@ export interface UseNu {
 
 export const useNu: UseNu = () => {
   const { chainId } = useIsActive()
-  const supportedChainId = isL1Network(chainId)
-    ? (chainId as number)
-    : SupportedChainIds.Ethereum
+  const supportedChainId = getMainnetOrTestnetChainId(chainId)
 
   const nuCupherTokenArtifact = getArtifact(
     "NuCypherToken",
@@ -28,9 +26,9 @@ export const useNu: UseNu = () => {
   )
 
   const { balanceOf, approve, contract } = useErc20TokenContract(
-    nuCupherTokenArtifact.address,
+    nuCupherTokenArtifact?.address!,
     undefined,
-    nuCupherTokenArtifact.abi
+    nuCupherTokenArtifact?.abi!
   )
 
   const approveNu = () => {

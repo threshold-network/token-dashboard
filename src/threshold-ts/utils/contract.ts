@@ -73,52 +73,59 @@ type ArtifactType = {
   abi: ContractInterface
   [key: string]: any
 }
+type ContractArtifacts = {
+  [chainId in SupportedChainIds]?: {
+    [artifactName in ArtifactNameType]?: ArtifactType
+  }
+}
 
-const mainnetArtifacts = new Map<ArtifactNameType, ArtifactType>([
-  ["ArbitrumL1BitcoinDepositor", ArbitrumL1BitcoinDepositorArtifactMainnet],
-  ["TacoRegistry", TacoRegistryArtifactMainnet],
-  ["LegacyKeepStaking", LegacyKeepStakingArtifactMainnet],
-  ["RandomBeacon", RandomBeaconArtifactMainnet],
-  ["TokenStaking", StakingArtifactMainnet],
-  ["Bridge", BridgeArtifactMainnet],
-  ["NuCypherStakingEscrow", NuCypherStakingEscrowMainnet],
-  ["NuCypherToken", NuCypherTokenMainnet],
-  ["TBTCVault", TbtcVaultArtifactMainnet],
-  ["TBTC", TbtcTokenArtifactMainnet],
-  ["WalletRegistry", WalletRegistryArtifactMainnet],
-  ["VendingMachineKeep", VendingMachineKeepMainnet],
-  ["VendingMachineNuCypher", VendingMachineNuCypherMainnet],
-])
-const sepoliaArtifacts = new Map<ArtifactNameType, ArtifactType>([
-  ["ArbitrumL1BitcoinDepositor", ArbitrumL1BitcoinDepositorArtifactSepolia],
-  ["BaseL1BitcoinDepositor", BaseL1BitcoinDepositorArtifactSepolia],
-  ["TacoRegistry", TacoRegistryArtifactSepolia],
-  ["LegacyKeepStaking", LegacyKeepStakingArtifactSepolia],
-  ["RandomBeacon", RandomBeaconArtifactSepolia],
-  ["TokenStaking", StakingArtifactSepolia],
-  ["Bridge", BridgeArtifactSepolia],
-  ["NuCypherStakingEscrow", NuCypherStakingEscrowSepolia],
-  ["NuCypherToken", NuCypherTokenSepolia],
-  ["TBTCVault", TbtcVaultArtifactSepolia],
-  ["TBTC", TbtcTokenArtifactSepolia],
-  ["WalletRegistry", WalletRegistryArtifactSepolia],
-  ["VendingMachineKeep", VendingMachineKeepSepolia],
-  ["VendingMachineNuCypher", VendingMachineNuCypherSepolia],
-])
-const testnetDevelopmentArtifacts = new Map<ArtifactNameType, ArtifactType>([
-  ["TacoRegistry", TacoRegistryArtifactDappDevelopmentSepolia],
-  ["LegacyKeepStaking", LegacyKeepStakingArtifactDappDevelopmentSepolia],
-  ["RandomBeacon", RandomBeaconArtifactDappDevelopmentSepolia],
-  ["TokenStaking", StakingArtifactDappDevelopmentSepolia],
-  ["Bridge", BridgeArtifactDappDevelopmentSepolia],
-  ["NuCypherStakingEscrow", NuCypherStakingEscrowDappDevelopmentSepolia],
-  ["NuCypherToken", NuCypherTokenDappDevelopmentSepolia],
-  ["TBTCVault", TbtcVaultArtifactDappDevelopmentSepolia],
-  ["TBTC", TbtcTokenArtifactDappDevelopmentSepolia],
-  ["WalletRegistry", WalletRegistryArtifactDappDevelopmentSepolia],
-  ["VendingMachineKeep", VendingMachineKeepDappDevelopmentSepolia],
-  ["VendingMachineNuCypher", VendingMachineNuCypherDappDevelopmentSepolia],
-])
+const contractArtifacts: ContractArtifacts = {
+  [SupportedChainIds.Ethereum]: {
+    ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
+    TacoRegistry: TacoRegistryArtifactMainnet,
+    LegacyKeepStaking: LegacyKeepStakingArtifactMainnet,
+    RandomBeacon: RandomBeaconArtifactMainnet,
+    TokenStaking: StakingArtifactMainnet,
+    Bridge: BridgeArtifactMainnet,
+    NuCypherStakingEscrow: NuCypherStakingEscrowMainnet,
+    NuCypherToken: NuCypherTokenMainnet,
+    TBTCVault: TbtcVaultArtifactMainnet,
+    TBTC: TbtcTokenArtifactMainnet,
+    WalletRegistry: WalletRegistryArtifactMainnet,
+    VendingMachineKeep: VendingMachineKeepMainnet,
+    VendingMachineNuCypher: VendingMachineNuCypherMainnet,
+  },
+  [SupportedChainIds.Sepolia]: {
+    ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
+    BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
+    TacoRegistry: TacoRegistryArtifactSepolia,
+    LegacyKeepStaking: LegacyKeepStakingArtifactSepolia,
+    RandomBeacon: RandomBeaconArtifactSepolia,
+    TokenStaking: StakingArtifactSepolia,
+    Bridge: BridgeArtifactSepolia,
+    NuCypherStakingEscrow: NuCypherStakingEscrowSepolia,
+    NuCypherToken: NuCypherTokenSepolia,
+    TBTCVault: TbtcVaultArtifactSepolia,
+    TBTC: TbtcTokenArtifactSepolia,
+    WalletRegistry: WalletRegistryArtifactSepolia,
+    VendingMachineKeep: VendingMachineKeepSepolia,
+    VendingMachineNuCypher: VendingMachineNuCypherSepolia,
+  },
+  [SupportedChainIds.Localhost]: {
+    TacoRegistry: TacoRegistryArtifactDappDevelopmentSepolia,
+    LegacyKeepStaking: LegacyKeepStakingArtifactDappDevelopmentSepolia,
+    RandomBeacon: RandomBeaconArtifactDappDevelopmentSepolia,
+    TokenStaking: StakingArtifactDappDevelopmentSepolia,
+    Bridge: BridgeArtifactDappDevelopmentSepolia,
+    NuCypherStakingEscrow: NuCypherStakingEscrowDappDevelopmentSepolia,
+    NuCypherToken: NuCypherTokenDappDevelopmentSepolia,
+    TBTCVault: TbtcVaultArtifactDappDevelopmentSepolia,
+    TBTC: TbtcTokenArtifactDappDevelopmentSepolia,
+    WalletRegistry: WalletRegistryArtifactDappDevelopmentSepolia,
+    VendingMachineKeep: VendingMachineKeepDappDevelopmentSepolia,
+    VendingMachineNuCypher: VendingMachineNuCypherDappDevelopmentSepolia,
+  },
+}
 
 // account is not optional
 export function getSigner(
@@ -189,20 +196,18 @@ export function getContractAddressFromTruffleArtifact(
 
 export const getArtifact = (
   artifactName: ArtifactNameType,
-  chainId: string | number,
-  shouldUseTestnetDevelopmentContracts = false
-): ArtifactType => {
-  switch (Number(chainId)) {
-    case SupportedChainIds.Ethereum:
-      return mainnetArtifacts.get(artifactName)!
-    case SupportedChainIds.Sepolia:
-      const artifacts = shouldUseTestnetDevelopmentContracts
-        ? testnetDevelopmentArtifacts
-        : sepoliaArtifacts
-      return artifacts.get(artifactName)!
-    default:
-      throw new Error("Can't get the contract artifact!")
+  chainId: number | string,
+  shouldUseTestnetDevelopmentContracts?: boolean
+): ArtifactType | null => {
+  if (shouldUseTestnetDevelopmentContracts) {
+    return (
+      contractArtifacts[SupportedChainIds.Localhost]?.[artifactName] ?? null
+    )
   }
+  return (
+    contractArtifacts[Number(chainId) as SupportedChainIds]?.[artifactName] ??
+    null
+  )
 }
 
 export const getSepoliaDevelopmentContracts = (

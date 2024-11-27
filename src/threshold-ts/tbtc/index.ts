@@ -207,13 +207,13 @@ export interface ITBTC {
    */
   readonly bitcoinNetwork: BitcoinNetwork
 
-  readonly bridgeContract: Contract
+  readonly bridgeContract: Contract | null
 
-  readonly vaultContract: Contract
+  readonly vaultContract: Contract | null
 
-  readonly tokenContract: Contract
+  readonly tokenContract: Contract | null
 
-  readonly l1BitcoinDepositorContract: Contract | undefined
+  readonly l1BitcoinDepositorContract: Contract | null
 
   readonly deposit: Deposit | undefined
 
@@ -464,10 +464,10 @@ export interface ITBTC {
 }
 
 export class TBTC implements ITBTC {
-  private _bridgeContract: Contract
-  private _tbtcVaultContract: Contract
-  private _tokenContract: Contract
-  private _l1BitcoinDepositorContract: Contract | undefined
+  private _bridgeContract: Contract | null
+  private _tbtcVaultContract: Contract | null
+  private _tokenContract: Contract | null
+  private _l1BitcoinDepositorContract: Contract | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -519,13 +519,13 @@ export class TBTC implements ITBTC {
       mainnetOrTestnetEthereumChainId
     )
 
-    const tbtcVaultArtifact = getArtifact(
-      "TBTCVault",
+    const bridgeArtifact = getArtifact(
+      "Bridge",
       mainnetOrTestnetEthereumChainId,
       shouldUseTestnetDevelopmentContracts
     )
-    const bridgeArtifact = getArtifact(
-      "Bridge",
+    const tbtcVaultArtifact = getArtifact(
+      "TBTCVault",
       mainnetOrTestnetEthereumChainId,
       shouldUseTestnetDevelopmentContracts
     )
@@ -535,24 +535,30 @@ export class TBTC implements ITBTC {
       shouldUseTestnetDevelopmentContracts
     )
 
-    this._bridgeContract = getContract(
-      bridgeArtifact.address,
-      bridgeArtifact.abi,
-      defaultOrConnectedProvider,
-      account
-    )
-    this._tbtcVaultContract = getContract(
-      tbtcVaultArtifact.address,
-      tbtcVaultArtifact.abi,
-      defaultOrConnectedProvider,
-      account
-    )
-    this._tokenContract = getContract(
-      tbtcTokenArtifact.address,
-      tbtcTokenArtifact.abi,
-      defaultOrConnectedProvider,
-      account
-    )
+    this._bridgeContract = bridgeArtifact
+      ? getContract(
+          bridgeArtifact.address,
+          bridgeArtifact.abi,
+          defaultOrConnectedProvider,
+          account
+        )
+      : null
+    this._tbtcVaultContract = tbtcVaultArtifact
+      ? getContract(
+          tbtcVaultArtifact.address,
+          tbtcVaultArtifact.abi,
+          defaultOrConnectedProvider,
+          account
+        )
+      : null
+    this._tokenContract = tbtcTokenArtifact
+      ? getContract(
+          tbtcTokenArtifact.address,
+          tbtcTokenArtifact.abi,
+          defaultOrConnectedProvider,
+          account
+        )
+      : null
     this._multicall = new Multicall({
       ...ethereumConfig,
       providerOrSigner: defaultOrConnectedProvider,
@@ -563,15 +569,18 @@ export class TBTC implements ITBTC {
       const networkName = getChainIdToNetworkName(chainId)
       const l1BitcoinDepositorArtifact = getArtifact(
         `${networkName}L1BitcoinDepositor` as ArtifactNameType,
-        mainnetOrTestnetEthereumChainId
+        mainnetOrTestnetEthereumChainId,
+        shouldUseTestnetDevelopmentContracts
       )
 
-      this._l1BitcoinDepositorContract = getContract(
-        l1BitcoinDepositorArtifact.address,
-        l1BitcoinDepositorArtifact.abi,
-        defaultOrConnectedProvider,
-        account
-      )
+      this._l1BitcoinDepositorContract = l1BitcoinDepositorArtifact
+        ? getContract(
+            l1BitcoinDepositorArtifact.address,
+            l1BitcoinDepositorArtifact.abi,
+            defaultOrConnectedProvider,
+            account
+          )
+        : null
     }
 
     // @ts-ignore
@@ -1000,7 +1009,13 @@ export class TBTC implements ITBTC {
       chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    const deposits = await getContractPastEvents(this._bridgeContract!, {
+
+    if (!bridgeArtifact || !this._bridgeContract) {
+      console.warn("Bridge contract is not initialized.")
+      return []
+    }
+
+    const deposits = await getContractPastEvents(this._bridgeContract, {
       fromBlock: bridgeArtifact.receipt.blockNumber,
       filterParams: [null, null, depositor],
       eventName: "DepositRevealed",
@@ -1173,7 +1188,13 @@ export class TBTC implements ITBTC {
       )}L1BitcoinDepositor` as ArtifactNameType,
       getMainnetOrTestnetChainId(this.ethereumChainId)
     )
-    return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
+
+    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+      console.warn("L1 Bitcoin Depositor contract is not initialized.")
+      return []
+    }
+
+    return await getContractPastEvents(this._l1BitcoinDepositorContract, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
       eventName: "DepositFinalized",
@@ -1193,6 +1214,11 @@ export class TBTC implements ITBTC {
       getMainnetOrTestnetChainId(this.ethereumChainId)
     )
 
+    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+      console.warn("L1 Bitcoin Depositor contract is not initialized.")
+      return []
+    }
+
     return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
@@ -1206,7 +1232,7 @@ export class TBTC implements ITBTC {
     const { optimisticMintingFeeDivisor } = await this._getDepositFees()
 
     const deposits = (
-      await this._multicall!.aggregate(
+      await this._multicall.aggregate(
         depositKeys.map((depositKey) => ({
           interface: this.bridgeContract!.interface,
           address: this.bridgeContract!.address,
@@ -1268,7 +1294,13 @@ export class TBTC implements ITBTC {
       chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    return await getContractPastEvents(this._tbtcVaultContract!, {
+
+    if (!tbtcVaultArtifact || !this._tbtcVaultContract) {
+      console.warn("TBTC vault contract is not initialized.")
+      return []
+    }
+
+    return await getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys, depositor],
       eventName: "OptimisticMintingFinalized",
@@ -1285,7 +1317,13 @@ export class TBTC implements ITBTC {
       chainId,
       this._ethereumConfig.shouldUseTestnetDevelopmentContracts
     )
-    return getContractPastEvents(this._tbtcVaultContract!, {
+
+    if (!tbtcVaultArtifact || !this._tbtcVaultContract) {
+      console.warn("TBTC vault contract is not initialized.")
+      return []
+    }
+
+    return getContractPastEvents(this._tbtcVaultContract, {
       fromBlock: tbtcVaultArtifact.receipt.blockNumber,
       filterParams: [null, depositKeys],
       eventName: "OptimisticMintingCancelled",

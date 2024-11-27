@@ -1,12 +1,13 @@
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { StakingAppName } from "../../store/staking-applications"
 import { AddressZero } from "../../web3/utils"
-import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
+import { appNameToThresholdApp } from "./useStakingAppContract"
 
 export const useStakingApplicationAddress = (appName: StakingAppName) => {
+  const threshold = useThreshold()
+
   return (
-    useThreshold().multiAppStaking![
-      stakingAppNameToThresholdAppService[appName]
-    ]?.address ?? AddressZero
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.address ??
+    AddressZero
   )
 }

@@ -39,7 +39,7 @@ export interface IVendingMachine {
   /**
    * Ethers contract instance of the `VendingMachine` contract.
    */
-  contract: Contract
+  contract: Contract | null
 
   /**
    * Returns the T token amount that's obtained from `amount` wrapped tokens,
@@ -68,7 +68,7 @@ export interface IVendingMachines {
 }
 
 export class VendingMachine implements IVendingMachine {
-  private _vendingMachine: Contract
+  private _vendingMachine: Contract | null
   private _ratio?: BigNumber
   public readonly WRAPPED_TOKEN_CONVERSION_PRECISION = 3
   public readonly FLOATING_POINT_DIVISOR = BigNumber.from(10).pow(
@@ -77,13 +77,18 @@ export class VendingMachine implements IVendingMachine {
     )
   )
 
-  constructor(config: EthereumConfig, artifact: { abi: any; address: string }) {
-    this._vendingMachine = getContract(
-      artifact.address,
-      artifact.abi,
-      config.providerOrSigner,
-      config.account
-    )
+  constructor(
+    config: EthereumConfig,
+    artifact: { abi: any; address: string } | null
+  ) {
+    this._vendingMachine = artifact
+      ? getContract(
+          artifact.address,
+          artifact.abi,
+          config.providerOrSigner,
+          config.account
+        )
+      : null
   }
 
   get contract() {
@@ -92,7 +97,7 @@ export class VendingMachine implements IVendingMachine {
 
   ratio = async (): Promise<BigNumber> => {
     if (!this._ratio) {
-      this._ratio = await this._vendingMachine.ratio()
+      this._ratio = await this._vendingMachine!.ratio()
     }
 
     return this._ratio!

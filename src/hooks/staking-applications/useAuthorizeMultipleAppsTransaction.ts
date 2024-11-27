@@ -14,7 +14,7 @@ export const useAuthorizeMultipleAppsTransaction = () => {
   const { openModal } = useModal()
 
   const { sendTransaction, status } = useSendTransactionFromFn(
-    threshold.staking!.increaseAuthorization
+    threshold.staking.increaseAuthorization
   )
 
   const authorizeMultipleApps = useCallback(

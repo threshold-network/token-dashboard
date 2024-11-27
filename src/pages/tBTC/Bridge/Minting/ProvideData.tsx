@@ -18,10 +18,7 @@ import {
   validateBTCAddress,
   validateETHAddress,
 } from "../../../../utils/forms"
-import {
-  AllowedL2TransactionTypes,
-  SupportedChainIds,
-} from "../../../../networks/enums/networks"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
 import {
   getChainIdToNetworkName,
   isL1Network,
@@ -265,7 +262,7 @@ export const ProvideDataComponent: FC<{
       {/* Although the following button doesn't trigger an on-chain transaction, the 
       SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
-        l2TransactionType={AllowedL2TransactionTypes.mint}
+        isDisabled={!threshold.tbtc.bridgeContract}
         isLoading={isSubmitButtonLoading}
         loadingText={
           isSubmitButtonLoading ? "Generating deposit address..." : undefined

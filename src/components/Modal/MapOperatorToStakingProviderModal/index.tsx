@@ -80,27 +80,27 @@ const MapOperatorToStakingProviderModal: FC<
     switch (appName) {
       case "tbtc":
         const stakingProviderMappedEcdsa =
-          await threshold.multiAppStaking.ecdsa.operatorToStakingProvider(
+          await threshold.multiAppStaking.ecdsa?.operatorToStakingProvider(
             operator
-          )
+          )!
         return (
           !isAddressZero(stakingProviderMappedEcdsa) &&
           !isSameETHAddress(stakingProviderMappedEcdsa, account!)
         )
       case "randomBeacon":
         const stakingProviderMappedRandomBeacon =
-          await threshold.multiAppStaking.randomBeacon.operatorToStakingProvider(
+          await threshold.multiAppStaking.randomBeacon?.operatorToStakingProvider(
             operator
-          )
+          )!
         return (
           !isAddressZero(stakingProviderMappedRandomBeacon) &&
           !isSameETHAddress(stakingProviderMappedRandomBeacon, account!)
         )
       case "taco":
         stakingProviderMapped =
-          await threshold.multiAppStaking.taco.operatorToStakingProvider(
+          await threshold.multiAppStaking.taco?.operatorToStakingProvider(
             operator
-          )
+          )!
         return (
           !isAddressZero(stakingProviderMapped) &&
           !isSameETHAddress(stakingProviderMapped, account!)

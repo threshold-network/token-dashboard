@@ -28,7 +28,14 @@ export const getStakingProviderOperatorInfo = async (
     const stakes = action.payload
     const threshold = listenerApi.extra.threshold
 
-    if (!account || !threshold.staking || !threshold.multiAppStaking) return
+    if (
+      !account ||
+      !threshold.staking ||
+      !threshold.multiAppStaking.ecdsa ||
+      !threshold.multiAppStaking.randomBeacon ||
+      !threshold.multiAppStaking.taco
+    )
+      return
 
     const stake = stakes.find((_: StakeData) =>
       isSameETHAddress(_.stakingProvider, address)
@@ -61,9 +68,9 @@ export const getStakingProviderOperatorInfo = async (
 
     listenerApi.dispatch(
       setMappedOperators({
-        tbtc: mappedOperators.tbtc,
-        randomBeacon: mappedOperators.randomBeacon,
-        taco: mappedOperators.taco,
+        tbtc: mappedOperators.tbtc ?? "",
+        randomBeacon: mappedOperators.randomBeacon ?? "",
+        taco: mappedOperators.taco ?? "",
       })
     )
   } catch (error: any) {

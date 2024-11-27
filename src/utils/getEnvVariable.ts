@@ -1,4 +1,5 @@
 import { EnvVariable, EnvVariableKey } from "../enums"
+import { SupportedChainIds } from "../networks/enums/networks"
 
 type EnvMap = { [key in EnvVariableKey]: string }
 
@@ -14,8 +15,10 @@ export const getEnvVariable = (envVar: EnvVariableKey) => {
 }
 
 export const getDefaultProviderChainId = () => {
-  const chainIdInString = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
-  return Number(chainIdInString)
+  const chainId =
+    getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID) ||
+    SupportedChainIds.Ethereum
+  return Number(chainId)
 }
 
 export const shouldUseTestnetDevelopmentContracts =
