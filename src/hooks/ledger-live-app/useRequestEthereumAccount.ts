@@ -26,7 +26,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { setEthAccount } = useLedgerLiveApp()
   const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
-  const { account, requestAccount } = useRequestAccountReturn
+  const { account: ledgerLiveAccount, requestAccount } = useRequestAccountReturn
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { isEmbed } = useIsEmbed()
@@ -38,10 +38,12 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // here to indicate as early as as possible that the sdk is in the
     // initializing process.
     if (isEmbed) {
-      setEthAccount(account || undefined)
-      dispatch(walletConnected({ address: account?.address || "", chainId }))
+      setEthAccount(ledgerLiveAccount || undefined)
+      dispatch(
+        walletConnected({ address: ledgerLiveAccount?.address || "", chainId })
+      )
     }
-  }, [account, isEmbed])
+  }, [ledgerLiveAccount, chainId, isEmbed])
 
   const requestEthereumAccount = useCallback(async () => {
     const defaultOrConnectedChainId = useDefaultOrConnectedChainId()

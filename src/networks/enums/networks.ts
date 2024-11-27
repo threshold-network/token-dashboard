@@ -1,7 +1,3 @@
-export enum AllowedL2TransactionTypes {
-  mint = "MINT",
-}
-
 export enum TrmNetworksChainId {
   ethereum = 1,
   arbitrum = 42161,

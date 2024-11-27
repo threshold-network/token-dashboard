@@ -5,7 +5,7 @@ import {
   OnSuccessCallback,
   useSendTransactionFromFn,
 } from "../../web3/hooks"
-import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
+import { appNameToThresholdApp } from "./useStakingAppContract"
 
 export const useBondOperatorTransaction = (
   appName: StakingAppName,
@@ -15,8 +15,7 @@ export const useBondOperatorTransaction = (
   const threshold = useThreshold()
 
   return useSendTransactionFromFn(
-    threshold.multiAppStaking![stakingAppNameToThresholdAppService[appName]]
-      .bondOperator,
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.bondOperator!,
     onSuccess,
     onError
   )

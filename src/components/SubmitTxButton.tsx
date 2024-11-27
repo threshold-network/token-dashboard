@@ -4,16 +4,12 @@ import { useIsActive } from "../hooks/useIsActive"
 import { useConnectWallet } from "../hooks/useConnectWallet"
 import { RootState } from "../store"
 import { useSelector } from "react-redux"
-import { isL2Network, isValidL2Transaction } from "../networks/utils/"
-import { AllowedL2TransactionTypes } from "../networks/enums/networks"
 
 interface SubmitTxButtonProps extends ButtonProps {
-  l2TransactionType?: AllowedL2TransactionTypes
   onSubmit?: () => void
 }
 
 const SubmitTxButton: FC<SubmitTxButtonProps> = ({
-  l2TransactionType,
   onSubmit,
   isLoading,
   isDisabled,
@@ -25,12 +21,9 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     trm: { isFetching },
   } = useSelector((state: RootState) => state.account)
 
-  const { isActive, chainId } = useIsActive()
+  const { isActive } = useIsActive()
   const connectWallet = useConnectWallet()
-  const isButtonDisabled =
-    isBlocked ||
-    isDisabled ||
-    (isL2Network(chainId) && !isValidL2Transaction(l2TransactionType))
+  const isButtonDisabled = isBlocked || isDisabled
 
   const onConnectWalletClick = () => {
     connectWallet()

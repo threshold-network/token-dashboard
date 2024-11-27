@@ -30,6 +30,7 @@ import { useStakeTransaction } from "../../../web3/hooks/useStakeTransaction"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useTStakingContract } from "../../../web3/hooks"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -40,6 +41,7 @@ const ConfirmStakingParamsModal: FC<
   const { account } = useWeb3React()
   const { updateState } = useStakingState()
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
+  const stakingContract = useTStakingContract()
 
   // stake transaction, opens success modal on success callback
   // not needed once MAS is launched
@@ -129,7 +131,11 @@ const ConfirmStakingParamsModal: FC<
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <SubmitTxButton type="submit" form="advanced-staking-params-form">
+        <SubmitTxButton
+          isDisabled={!stakingContract}
+          type="submit"
+          form="advanced-staking-params-form"
+        >
           {featureFlags.MULTI_APP_STAKING ? "Continue" : "Stake"}
         </SubmitTxButton>
       </ModalFooter>

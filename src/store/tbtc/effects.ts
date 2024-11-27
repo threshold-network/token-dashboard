@@ -21,13 +21,15 @@ export const fetchBridgeactivityEffect = async (
 ) => {
   const { account } = listenerApi.getState()
   const { depositor } = action.payload
-  const { config } = listenerApi.extra.threshold
 
   if (
     !isAddress(depositor) ||
     isAddressZero(depositor) ||
     !account.chainId ||
-    !isSameChainId(account.chainId, config.ethereum.chainId)
+    !isSameChainId(
+      account.chainId,
+      listenerApi.extra.threshold.config.ethereum.chainId
+    )
   )
     return
 

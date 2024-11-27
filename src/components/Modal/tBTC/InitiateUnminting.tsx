@@ -129,6 +129,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!threshold.tbtc.bridgeContract}
           onSubmit={initiateUnminting}
           data-ph-capture-attribute-button-name={"Unmint (Modal)"}
           data-ph-capture-attribute-button-id={

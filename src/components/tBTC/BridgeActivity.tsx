@@ -219,7 +219,7 @@ const EmptyActivity: FC = () => {
 
 const BridgeActivityLoadingState = () => {
   return (
-    <Stack>
+    <Stack mt="1rem">
       <Skeleton height="20px" />
       <Skeleton height="20px" />
       <Skeleton height="20px" />

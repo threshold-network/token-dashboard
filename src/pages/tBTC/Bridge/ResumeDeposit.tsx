@@ -39,10 +39,7 @@ import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
 import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepositExpirationTime"
 import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
-import {
-  AllowedL2TransactionTypes,
-  SupportedChainIds,
-} from "../../../networks/enums/networks"
+import { SupportedChainIds } from "../../../networks/enums/networks"
 import {
   isL1Network,
   isL2Network,
@@ -141,6 +138,7 @@ export const ResumeDepositPage: PageComponent = () => {
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
   const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
+  const threshold = useThreshold()
 
   const isError = Boolean(error)
 
@@ -173,11 +171,15 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
       {/* Although the following button doesn't trigger an on-chain transaction, the 
       SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
-        l2TransactionType={AllowedL2TransactionTypes.mint}
         size="lg"
         isFullWidth
         mt="6"
-        isDisabled={!values.depositParameters || isError || isSubmitting}
+        isDisabled={
+          !values.depositParameters ||
+          isError ||
+          isSubmitting ||
+          !threshold.tbtc.bridgeContract
+        }
         type="submit"
         isLoading={isSubmitting}
       >
