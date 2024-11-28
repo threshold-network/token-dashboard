@@ -22,20 +22,20 @@ const MintingTransactionDetails = () => {
     <List spacing="2" mb="6">
       <TransactionDetailsAmountItem
         label="Amount To Be Minted"
-        tokenAmount={tBTCMintAmount}
-        tokenSymbol="tBTC"
+        amount={tBTCMintAmount}
+        suffixItem="tBTC"
       />
       <TransactionDetailsAmountItem
         label="Minting Fee"
-        tokenAmount={mintingFee}
-        tokenSymbol="tBTC"
+        amount={mintingFee}
+        suffixItem="tBTC"
         precision={6}
         higherPrecision={8}
       />
       <TransactionDetailsAmountItem
         label="Threshold Network Fee"
-        tokenAmount={thresholdNetworkFee}
-        tokenSymbol="tBTC"
+        amount={thresholdNetworkFee}
+        suffixItem="tBTC"
         precision={6}
         higherPrecision={8}
       />
@@ -43,8 +43,8 @@ const MintingTransactionDetails = () => {
         chainId === SupportedChainIds.ArbitrumSepolia) && (
         <TransactionDetailsAmountItem
           label="Cross Chain Fee"
-          tokenAmount={crossChainFee}
-          tokenSymbol="tBTC"
+          amount={crossChainFee}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
         />

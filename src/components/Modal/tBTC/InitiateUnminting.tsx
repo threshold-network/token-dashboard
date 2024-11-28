@@ -101,17 +101,17 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
         <List mt="6" spacing="2">
           <TransactionDetailsAmountItem
             label="Unminted Amount"
-            tokenAmount={unmintAmount}
-            tokenSymbol="tBTC"
+            amount={unmintAmount}
+            suffixItem="tBTC"
             precision={6}
             higherPrecision={8}
           />
           <TransactionDetailsAmountItem
             label="Threshold Network Fee"
-            tokenSymbol="tBTC"
+            amount={thresholdNetworkFee}
+            suffixItem="tBTC"
             precision={6}
             higherPrecision={8}
-            tokenAmount={thresholdNetworkFee}
           />
           <TransactionDetailsItem
             label="BTC address"
