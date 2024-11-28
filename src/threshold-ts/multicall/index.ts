@@ -52,23 +52,27 @@ export const MULTICALL_ADDRESSES = {
 } as Record<number | string, string>
 
 export class Multicall implements IMulticall {
-  private _multicall: Contract
+  private _multicall: Contract | null
 
   constructor(config: EthereumConfig) {
     const address = MULTICALL_ADDRESSES[config.chainId]
-    if (!address) {
-      throw new Error("Unsupported chain id")
-    }
 
-    this._multicall = getContract(
-      address,
-      MULTICALL_ABI,
-      config.providerOrSigner,
-      config.account
-    )
+    this._multicall = address
+      ? getContract(
+          address,
+          MULTICALL_ABI,
+          config.providerOrSigner,
+          config.account
+        )
+      : null
   }
 
   async aggregate(calls: ContractCall[]): Promise<any[]> {
+    if (!this._multicall) {
+      console.warn("Multicall contract is not available on this network.")
+      return []
+    }
+
     const callRequests = calls.map((_) => [
       _.address,
       _.interface.encodeFunctionData(_.method, _.args),
@@ -83,6 +87,10 @@ export class Multicall implements IMulticall {
   }
 
   getCurrentBlockTimestampCallObj = () => {
+    if (!this._multicall) {
+      throw new Error("Multicall contract is not available on this network.")
+    }
+
     return {
       interface: this._multicall.interface,
       address: this._multicall.address,
