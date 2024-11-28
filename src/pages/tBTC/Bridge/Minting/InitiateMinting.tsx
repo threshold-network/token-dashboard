@@ -40,12 +40,13 @@ const InitiateMintingComponent: FC<{
 
   useEffect(() => {
     const getEstimatedDepositFees = async () => {
-      const { treasuryFee, optimisticMintFee, amountToMint } =
+      const { treasuryFee, optimisticMintFee, amountToMint, crossChainFee } =
         await threshold.tbtc.getEstimatedDepositFees(depositedAmount)
 
       updateState("mintingFee", optimisticMintFee)
       updateState("thresholdNetworkFee", treasuryFee)
       updateState("tBTCMintAmount", amountToMint)
+      updateState("crossChainFee", crossChainFee)
     }
 
     getEstimatedDepositFees()

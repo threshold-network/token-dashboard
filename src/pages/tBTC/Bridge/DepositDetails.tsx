@@ -63,7 +63,10 @@ import {
   useSubscribeToOptimisticMintingFinalizedEventBase,
 } from "../../../hooks/tbtc"
 import { tbtcSlice } from "../../../store/tbtc"
-import { ExplorerDataType } from "../../../networks/enums/networks"
+import {
+  ExplorerDataType,
+  SupportedChainIds,
+} from "../../../networks/enums/networks"
 import { PageComponent } from "../../../types"
 import { CurveFactoryPoolId, ExternalHref } from "../../../enums"
 import { ExternalPool } from "../../../components/tBTC/ExternalPool"
@@ -118,6 +121,7 @@ export const DepositDetails: PageComponent = () => {
     data?.optimisticMintingFinalizedTxHash
   const l1BitcoinDepositorDepositStatus = data?.l1BitcoinDepositorDepositStatus
   const isCrossChainDeposit = !!data?.isCrossChainDeposit
+  const crossChainFee = data?.crossChainFee
   const thresholdNetworkFee = data?.treasuryFee
   const mintingFee = data?.optimisticMintFee
 
@@ -196,6 +200,7 @@ export const DepositDetails: PageComponent = () => {
         thresholdNetworkFee,
         mintingFee,
         isCrossChainDeposit: !!data?.isCrossChainDeposit,
+        crossChainFee,
       }}
     >
       <BridgeProcessDetailsCard
@@ -353,6 +358,7 @@ const DepositDetailsPageContext = createContext<
       amount?: string
       mintingFee?: string
       thresholdNetworkFee?: string
+      crossChainFee?: string
     })
   | undefined
 >(undefined)
@@ -467,6 +473,7 @@ const getMintingProgressStep = (
     | "amount"
     | "optimisticMintFee"
     | "treasuryFee"
+    | "crossChainFee"
   >
 ): DepositDetailsTimelineStep => {
   if (!depositDetails) return "bitcoin-confirmations"
@@ -515,6 +522,7 @@ const StepSwitcher: FC = () => {
     updateStep,
     amount,
     thresholdNetworkFee,
+    crossChainFee,
     mintingFee,
     isCrossChainDeposit,
   } = useDepositDetailsPageContext()
@@ -599,6 +607,16 @@ const StepSwitcher: FC = () => {
               precision={6}
               higherPrecision={8}
             />
+            {(chainId === SupportedChainIds.Arbitrum ||
+              chainId === SupportedChainIds.ArbitrumSepolia) && (
+              <TransactionDetailsAmountItem
+                label="Cross Chain Fee"
+                tokenAmount={crossChainFee}
+                tokenSymbol="tBTC"
+                precision={6}
+                higherPrecision={8}
+              />
+            )}
           </List>
           <ButtonLink size="lg" mt="8" mb="8" to="/tBTC" isFullWidth>
             New mint

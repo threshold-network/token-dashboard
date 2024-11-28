@@ -15,6 +15,7 @@ export type DepositData = {
   treasuryFee: string
   optimisticMintFee: string
   isCrossChainDeposit: boolean
+  crossChainFee: string
   l1BitcoinDepositorDepositStatus?: DepositState
 }
 
@@ -97,7 +98,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         const requiredConfirmations =
           threshold.tbtc.minimumNumberOfConfirmationsNeeded(deposit.amount)
 
-        const { treasuryFee, optimisticMintFee, amountToMint } =
+        const { treasuryFee, optimisticMintFee, amountToMint, crossChainFee } =
           await threshold.tbtc.getEstimatedDepositFees(deposit.amount)
 
         if (isMounted.current) {
@@ -114,6 +115,7 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
             requiredConfirmations,
             confirmations,
             isCrossChainDeposit,
+            crossChainFee,
             l1BitcoinDepositorDepositStatus,
           })
         }
