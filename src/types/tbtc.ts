@@ -22,6 +22,7 @@ export interface TbtcState {
   optimisticMintingFinalizedTxHash?: string
   tBTCMintAmount: string
   thresholdNetworkFee: string
+  crossChainFee: string
   mintingFee: string
   chainName: NetworkName
   extraData?: string

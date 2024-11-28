@@ -32,6 +32,7 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("optimisticMintingRequestedTxHash", undefined)
     updateState("optimisticMintingFinalizedTxHash", undefined)
     updateState("extraData", undefined)
+    updateState("crossChainFee", undefined)
     updateState("chainName", undefined)
   }, [updateState])
 

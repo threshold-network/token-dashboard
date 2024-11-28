@@ -304,6 +304,19 @@ export interface ITBTC {
     treasuryFee: string
     optimisticMintFee: string
     amountToMint: string
+    crossChainFee: string
+  }>
+
+  /**
+   * Gets the deposit fees divisors and deposit max fee from the tBTC bridge
+   * contract.
+   * @returns depositTreasuryFeeDivisor, optimisticMintingFeeDivisor and
+   * depositTxMaxFee of the tBTC bridge contract
+   */
+  getDepositFees(): Promise<{
+    depositTreasuryFeeDivisor: BigNumber
+    optimisticMintingFeeDivisor: BigNumber
+    depositTxMaxFee: BigNumber
   }>
 
   /**
@@ -848,7 +861,7 @@ export class TBTC implements ITBTC {
       depositTreasuryFeeDivisor,
       optimisticMintingFeeDivisor,
       depositTxMaxFee,
-    } = await this._getDepositFees()
+    } = await this.getDepositFees()
 
     const crossChainTxFee = this.isCrossChain
       ? BigNumber.from(depositTxMaxFee)
@@ -863,7 +876,8 @@ export class TBTC implements ITBTC {
       this._calculateOptimisticMintingAmountAndFee(
         BigNumber.from(depositAmount),
         treasuryFee,
-        optimisticMintingFeeDivisor
+        optimisticMintingFeeDivisor,
+        depositTxMaxFee
       )
 
     return {
@@ -874,7 +888,7 @@ export class TBTC implements ITBTC {
     }
   }
 
-  private _getDepositFees = async (): Promise<{
+  getDepositFees = async (): Promise<{
     depositTreasuryFeeDivisor: BigNumber
     optimisticMintingFeeDivisor: BigNumber
     depositTxMaxFee: BigNumber
@@ -915,9 +929,15 @@ export class TBTC implements ITBTC {
   private _calculateOptimisticMintingAmountAndFee = (
     depositAmount: BigNumber,
     treasuryFee: BigNumber,
-    optimisticMintingFeeDivisor: BigNumber
+    optimisticMintingFeeDivisor: BigNumber,
+    depositTxMaxFee: BigNumber
   ) => {
+    const isArbitrumNetworkConnected =
+      this.ethereumChainId === SupportedChainIds.Arbitrum ||
+      this.ethereumChainId === SupportedChainIds.ArbitrumSepolia
+
     const amountToMint = depositAmount
+      .sub(isArbitrumNetworkConnected ? depositTxMaxFee : ZERO)
       .sub(treasuryFee)
       .mul(this._satoshiMultiplier)
 
@@ -1229,7 +1249,8 @@ export class TBTC implements ITBTC {
   private _calculateEstimatedAmountToMintForRevealedDeposits = async (
     depositKeys: string[]
   ): Promise<Map<string, BigNumber>> => {
-    const { optimisticMintingFeeDivisor } = await this._getDepositFees()
+    const { optimisticMintingFeeDivisor, depositTxMaxFee } =
+      await this.getDepositFees()
 
     const deposits = (
       await this._multicall.aggregate(
@@ -1253,7 +1274,8 @@ export class TBTC implements ITBTC {
           this._calculateOptimisticMintingAmountAndFee(
             deposit.amount,
             deposit.treasuryFee,
-            optimisticMintingFeeDivisor
+            optimisticMintingFeeDivisor,
+            depositTxMaxFee
           ).amountToMint,
         ]
       })

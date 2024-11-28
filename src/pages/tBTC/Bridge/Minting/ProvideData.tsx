@@ -29,6 +29,7 @@ import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC
 import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import TbtcFees from "../components/TbtcFees"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
@@ -259,6 +260,7 @@ export const ProvideDataComponent: FC<{
       >
         Download Deposit Receipt (recommended)
       </Checkbox>
+      <TbtcFees />
       {/* Although the following button doesn't trigger an on-chain transaction, the 
       SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
