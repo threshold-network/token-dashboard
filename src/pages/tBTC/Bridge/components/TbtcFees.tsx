@@ -7,7 +7,8 @@ import { SupportedChainIds } from "../../../../networks/enums/networks"
 
 const TbtcFees = () => {
   const {
-    data: { depositTreasuryFeeDivisor, depositRevealedTxHash, depositTxMaxFee },
+    data: { depositTreasuryFee, optimisticMintingFee, depositTxMaxFee },
+    isFetching,
   } = useFetchTBTCFees()
 
   const { chainId } = useIsActive()
@@ -16,24 +17,25 @@ const TbtcFees = () => {
     <List spacing="2" mb="6">
       <TransactionDetailsAmountItem
         label="Treasury Fee"
-        tokenAmount={depositTreasuryFeeDivisor}
-        tokenSymbol="tBTC"
+        amount={depositTreasuryFee}
+        suffixItem="%"
+        isFetching={isFetching}
       />
       <TransactionDetailsAmountItem
-        label="Revealed Tx Hash"
-        tokenAmount={depositRevealedTxHash}
-        tokenSymbol="tBTC"
-        precision={6}
-        higherPrecision={8}
+        label="Optimistic Minting Fee"
+        amount={optimisticMintingFee}
+        suffixItem="%"
+        isFetching={isFetching}
       />
       {(chainId === SupportedChainIds.Arbitrum ||
         chainId === SupportedChainIds.ArbitrumSepolia) && (
         <TransactionDetailsAmountItem
           label="Cross Chain Fee"
-          tokenAmount={depositTxMaxFee}
-          tokenSymbol="tBTC"
+          amount={depositTxMaxFee}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
+          isFetching={isFetching}
         />
       )}
     </List>

@@ -380,15 +380,15 @@ const SuccessStep: FC<{
       <List spacing="4">
         <TransactionDetailsAmountItem
           label="Unminted Amount"
-          tokenAmount={requestedAmount}
-          tokenSymbol="tBTC"
+          amount={requestedAmount}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
         />
         <TransactionDetailsAmountItem
           label="Received Amount"
-          tokenAmount={receivedAmount}
-          tokenSymbol="BTC"
+          amount={receivedAmount}
+          suffixItem="BTC"
           tokenDecimals={8}
           precision={6}
           higherPrecision={8}
@@ -396,8 +396,8 @@ const SuccessStep: FC<{
         />
         <TransactionDetailsAmountItem
           label="Threshold Network Fee"
-          tokenAmount={thresholdNetworkFee}
-          tokenSymbol="tBTC"
+          amount={thresholdNetworkFee}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
         />

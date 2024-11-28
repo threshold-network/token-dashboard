@@ -590,20 +590,20 @@ const StepSwitcher: FC = () => {
           <List spacing="2">
             <TransactionDetailsAmountItem
               label="Minted Amount"
-              tokenAmount={amount}
-              tokenSymbol="tBTC"
+              amount={amount}
+              suffixItem="tBTC"
             />
             <TransactionDetailsAmountItem
               label="Minting Fee"
-              tokenAmount={mintingFee}
-              tokenSymbol="tBTC"
+              amount={mintingFee}
+              suffixItem="tBTC"
               precision={6}
               higherPrecision={8}
             />
             <TransactionDetailsAmountItem
               label="Threshold Network Fee"
-              tokenAmount={thresholdNetworkFee}
-              tokenSymbol="tBTC"
+              amount={thresholdNetworkFee}
+              suffixItem="tBTC"
               precision={6}
               higherPrecision={8}
             />
@@ -611,8 +611,8 @@ const StepSwitcher: FC = () => {
               chainId === SupportedChainIds.ArbitrumSepolia) && (
               <TransactionDetailsAmountItem
                 label="Cross Chain Fee"
-                tokenAmount={crossChainFee}
-                tokenSymbol="tBTC"
+                amount={crossChainFee}
+                suffixItem="tBTC"
                 precision={6}
                 higherPrecision={8}
               />
