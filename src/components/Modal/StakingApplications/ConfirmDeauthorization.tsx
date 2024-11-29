@@ -29,22 +29,21 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export type ConfirmDeauthorizationProps = BaseModalProps & {
   stakingProvider: string
-  stakingAppName: StakingAppName
+  appName: StakingAppName
   decreaseAmount: string
 }
 
 const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
   stakingProvider,
-  stakingAppName,
+  appName,
   decreaseAmount,
   closeModal,
 }) => {
   const threshold = useThreshold()
   const stakingAppContract =
-    threshold.multiAppStaking[appNameToThresholdApp[stakingAppName]]?.contract
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.contract
 
-  const { sendTransaction } =
-    useConfirmDeauthorizationTransaction(stakingAppName)
+  const { sendTransaction } = useConfirmDeauthorizationTransaction(appName)
 
   const onDeauthorize = async () => {
     await sendTransaction(stakingProvider)
@@ -60,7 +59,7 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
           <BodyLg mt="4">Confirm your deauthorization.</BodyLg>
         </InfoBox>
         <StakingApplicationOperationIcon
-          stakingApplication={stakingAppName}
+          stakingApplication={appName}
           operation="decrease"
           w="88px"
           h="88px"
