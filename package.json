@@ -99,12 +99,12 @@
   },
   "resolutions": {
     "eslint-plugin-prettier": "^4.0.0",
-    "babel-loader": "8.1.0",
     "react-error-overlay": "6.0.9",
     "@types/react": "17.0.30",
     "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
   },
   "devDependencies": {
+    "babel-loader": "8.1.0",
     "@babel/plugin-transform-class-properties": "^7.22.5",
     "@chakra-ui/cli": "2",
     "@craco/craco": "6.4.5",
