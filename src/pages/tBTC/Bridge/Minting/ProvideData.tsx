@@ -150,7 +150,7 @@ export const ProvideDataComponent: FC<{
 
       if (!isSupportedNetwork(chainId)) {
         throw new Error(
-          "Your wallet is on an unsupported network. Switch to a supported network"
+          "You are currently connected to an unsupported network. Switch to a supported network"
         )
       }
 
