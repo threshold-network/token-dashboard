@@ -62,7 +62,7 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
           size="sm"
         >
           There is a deauthorization cooldown period of 45 days for tBTC and
-          Random Beacon apps and 6 months for TACo.
+          Random Beacon, and 6 months for TACo.
         </FlowStep>
       </Stack>
     </Card>
