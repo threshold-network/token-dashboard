@@ -1,16 +1,14 @@
-import { Chains } from "@keep-network/tbtc-v2.ts"
 import {
   Layer,
   NetworkType,
   SupportedChainIds,
-  AlchemyName,
+  AlchemyNetworkId,
+  InfuraNetworkId,
+  NetworksName,
 } from "../enums/networks"
-
-export interface NetworksAlchemyConfig {
-  [chainId: number]: {
-    name: AlchemyName
-    type: NetworkType
-  }
+export interface RpcServiceConfig {
+  networkId?: AlchemyNetworkId | InfuraNetworkId
+  networkType: NetworkType
 }
 
 export interface EthereumRpcMap {
@@ -20,7 +18,7 @@ export interface EthereumRpcMap {
 export type NetworkName = keyof typeof SupportedChainIds
 export interface Network {
   chainId: SupportedChainIds
-  name: keyof typeof Chains
+  name: NetworksName
   layer: Layer
   networkType: NetworkType
   chainParameters: {
@@ -31,10 +29,9 @@ export interface Network {
       symbol: string
       decimals: number
     }
-    rpcUrls: string[]
     blockExplorerUrls: string[]
   }
-  alchemyName?: AlchemyName
+  rpcNetworkId?: AlchemyNetworkId | InfuraNetworkId
 }
 
 export type TrmNetworksMap = {

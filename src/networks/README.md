@@ -33,12 +33,21 @@ export enum SupportedChainIds {
 }
 ```
 
-AlchemyName: Identifies the API identifiers (Alchemy) associated with each network.
+AlchemyNetworkId: Identifies the API identifiers (Alchemy) associated with each network.
 
 ```
-export enum AlchemyName {
+export enum AlchemyNetworkId {
   Ethereum = "eth",
   Arbitrum = "arb",
+  Base = "base",
+}
+```
+
+InfuraNetworkId: Identifies the API identifiers (Infura) associated with each network.
+
+```
+export enum InfuraNetworkId {
+  Arbitrum = "arbitrum",
   Base = "base",
 }
 ```
@@ -63,7 +72,7 @@ export enum Layer {
 
 Network List Definition
 
-The networks.ts file in utils defines an array of Network objects, where each network is described by its chain ID, name, layer, network type, and Alchemy identifier. This array serves as the central configuration point for supported networks.
+The networks.ts file in utils defines an array of Network objects, where each network is described by its chain ID, name, layer, network type, and RPC service identifier (Alchemy or Infura). This array serves as the central configuration point for supported networks.
 
 Example Network Configuration
 
@@ -73,53 +82,22 @@ Below is an example network configuration, which includes key properties for eac
 export const networks: Network[] = [
   {
     chainId: SupportedChainIds.Ethereum,
-    name: "Ethereum",
+    name: SupportedNetworksName.Ethereum,
     layer: Layer.L1,
     networkType: NetworkType.Mainnet,
-    alchemyName: AlchemyName.Ethereum,
-  },
-  {
-    chainId: SupportedChainIds.Sepolia,
-    name: "Sepolia",
-    layer: Layer.L1,
-    networkType: NetworkType.Testnet,
-    alchemyName: AlchemyName.Ethereum,
-  },
-  {
-    chainId: SupportedChainIds.Localhost,
-    name: "Localhost",
-    layer: Layer.L1,
-    networkType: NetworkType.Testnet,
-    alchemyName: "",
-  },
-  {
-    chainId: SupportedChainIds.Arbitrum,
-    name: "Arbitrum",
-    layer: Layer.L2,
-    networkType: NetworkType.Mainnet,
-    alchemyName: AlchemyName.Arbitrum,
-  },
-  {
-    chainId: SupportedChainIds.ArbitrumSepolia,
-    name: "ArbitrumSepolia",
-    layer: Layer.L2,
-    networkType: NetworkType.Testnet,
-    alchemyName: AlchemyName.Arbitrum,
-  },
-  {
-    chainId: SupportedChainIds.Base,
-    name: "Base",
-    layer: Layer.L2,
-    networkType: NetworkType.Mainnet,
-    alchemyName: AlchemyName.Base,
-  },
-  {
-    chainId: SupportedChainIds.BaseSepolia,
-    name: "BaseSepolia",
-    layer: Layer.L2,
-    networkType: NetworkType.Testnet,
-    alchemyName: AlchemyName.Base,
-  },
+    chainParameters: {
+      chainId: toHex(SupportedChainIds.Ethereum),
+      chainName: "Ethereum Mainnet",
+      nativeCurrency: {
+        name: NativeCurrency.Ether,
+        symbol: ETH_SYMBOL,
+        decimals: DECIMALS,
+      },
+      rpcUrls: [PublicRpcUrls.Ethereum],
+      blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.Ethereum)],
+    },
+  }
+  // ...
 ]
 ```
 
@@ -127,13 +105,13 @@ Adding a New Network
 
 - Update the SupportedChainIds enum: Add the new chain ID with a unique identifier.
 - Add a corresponding entry in networks.ts: Create a new network object with the required properties such as name, layer, networkType, and alchemyName (if applicable).
-- Define the Alchemy name (if needed): If the new network is supported by Alchemy, add its API identifier to the AlchemyName enum.
+- Define the RPC network Id (if needed): If the new network is supported by Alchemy or Infura, add its API identifier to the AlchemyNetworkId or InfuraNetworkId.
 
 Removing a Network
 
 - Remove the chain ID from SupportedChainIds.
 - Delete the network entry from networks.ts.
-- Remove its corresponding entry from the AlchemyName enum if no longer needed.
+- Remove its corresponding entry from the AlchemyNetworkId or InfuraNetworkId enum if no longer needed.
 
 Conclusion
 

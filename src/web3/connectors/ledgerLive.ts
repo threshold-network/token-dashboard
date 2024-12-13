@@ -8,13 +8,10 @@ import {
   EthereumProvider,
 } from "@ledgerhq/connect-kit-loader"
 import { EnvVariable } from "../../enums"
-import {
-  getRpcUrl,
-  networks,
-  supportedNetworksMap,
-  getChainIdToNetworkName,
-} from "../../networks/utils"
+import { networks, supportedNetworksMap } from "../../networks/utils"
 import { EthereumRpcMap } from "../../networks/types/networks"
+import { getNetworkNameFromChainId } from "../../networks/utils/getNetworkNameFromChainId"
+import { getRpcEndpointUrl } from "../../networks/utils/getRpcEndpointUrl"
 
 const supportedNetworks = Object.keys(supportedNetworksMap).map(Number)
 
@@ -92,7 +89,7 @@ export class LedgerLiveConnector extends AbstractConnector {
 
     if (!checkSupportResult.isChainIdSupported) {
       throw new Error(
-        `The ${getChainIdToNetworkName(
+        `The ${getNetworkNameFromChainId(
           chainId
         )} network is not supported by LedgerLive.`
       )
@@ -145,7 +142,7 @@ export class LedgerLiveConnector extends AbstractConnector {
 export const ledgerLive = new LedgerLiveConnector({
   supportedChainIds: supportedNetworks,
   rpc: networks.reduce((acc, network) => {
-    acc[network.chainId] = getRpcUrl(network.chainId)
+    acc[network.chainId] = getRpcEndpointUrl(network.chainId)
     return acc
   }, {} as EthereumRpcMap),
   walletConnectProjectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),

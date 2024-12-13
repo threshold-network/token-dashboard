@@ -1,3 +1,9 @@
+export enum NetworksName {
+  Ethereum = "Ethereum",
+  Arbitrum = "Arbitrum",
+  Base = "Base",
+}
+
 export enum TrmNetworksChainId {
   ethereum = 1,
   arbitrum = 42161,
@@ -14,9 +20,19 @@ export enum SupportedChainIds {
   BaseSepolia = 84532,
 }
 
-export enum AlchemyName {
+export enum RpcServices {
+  Alchemy = "alchemy",
+  Infura = "infura",
+}
+
+export enum AlchemyNetworkId {
   Ethereum = "eth",
   Arbitrum = "arb",
+  Base = "base",
+}
+
+export enum InfuraNetworkId {
+  Arbitrum = "arbitrum",
   Base = "base",
 }
 

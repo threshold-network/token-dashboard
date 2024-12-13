@@ -87,7 +87,8 @@ jobs:
         env:
           PUBLIC_URL: /${{ github.head_ref }}
           DEFAULT_PROVIDER_CHAIN_ID: 11155111
-          ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
+          RPC_SERVICE_API: ${{ secrets.RPC_SERVICE_API }}
+          RPC_SERVICE_NAME: ${{ secrets.RPC_SERVICE_NAME }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           MAINNET_ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
@@ -124,7 +125,8 @@ jobs:
       gcpBucketPath: ${{ github.head_ref }}
       preview: true
     secrets:
-      alchemyApi: ${{ secrets.ALCHEMY_API }}
+      rpcServiceApi: ${{ secrets.RPC_SERVICE_API }}
+      rpcServiceName: ${{ secrets.RPC_SERVICE_NAME }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -155,7 +157,8 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      alchemyApi: ${{ secrets.ALCHEMY_API }}
+      rpcServiceApi: ${{ secrets.RPC_SERVICE_API }}
+      rpcServiceName: ${{ secrets.RPC_SERVICE_NAME }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
@@ -181,7 +184,8 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      alchemyApi: ${{ secrets.ALCHEMY_API }}
+      rpcServiceApi: ${{ secrets.RPC_SERVICE_API }}
+      rpcServiceName: ${{ secrets.RPC_SERVICE_NAME }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}

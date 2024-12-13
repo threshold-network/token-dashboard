@@ -49,7 +49,7 @@ import {
 import {
   isL1Network,
   isL2Network,
-  getChainIdToNetworkName,
+  getNetworkNameFromChainId,
   getMainnetOrTestnetChainId,
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
@@ -579,7 +579,7 @@ export class TBTC implements ITBTC {
     })
 
     if (this._isCrossChain) {
-      const networkName = getChainIdToNetworkName(chainId)
+      const networkName = getNetworkNameFromChainId(chainId)
       const l1BitcoinDepositorArtifact = getArtifact(
         `${networkName}L1BitcoinDepositor` as ArtifactNameType,
         mainnetOrTestnetEthereumChainId,
@@ -729,7 +729,7 @@ export class TBTC implements ITBTC {
     const signer = getSigner(providerOrSigner as Web3Provider, account)
 
     const connectedChainId = await chainIdFromSigner(signer)
-    const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+    const l2NetworkName = getNetworkNameFromChainId(connectedChainId)
 
     await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
   }
@@ -749,7 +749,7 @@ export class TBTC implements ITBTC {
     }
 
     const sdk = await this._getSdk()
-    const l2NetworkName = getChainIdToNetworkName(chainId)
+    const l2NetworkName = getNetworkNameFromChainId(chainId)
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
@@ -796,7 +796,7 @@ export class TBTC implements ITBTC {
     if (!this._isCrossChain) {
       throw new Error("Unsupported chain ID")
     }
-    const l2NetworkName = getChainIdToNetworkName(chainId)
+    const l2NetworkName = getNetworkNameFromChainId(chainId)
     const sdk = await this._getSdk()
 
     const {
@@ -1213,7 +1213,7 @@ export class TBTC implements ITBTC {
     const l1Sender = L2_RELAYER_BOT_WALLET
 
     const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
+      `${getNetworkNameFromChainId(
         this.ethereumChainId
       )}L1BitcoinDepositor` as ArtifactNameType,
       getMainnetOrTestnetChainId(this.ethereumChainId)
@@ -1238,7 +1238,7 @@ export class TBTC implements ITBTC {
     const l1Sender = L2_RELAYER_BOT_WALLET
 
     const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
+      `${getNetworkNameFromChainId(
         this.ethereumChainId
       )}L1BitcoinDepositor` as ArtifactNameType,
       getMainnetOrTestnetChainId(this.ethereumChainId)
