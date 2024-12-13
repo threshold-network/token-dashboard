@@ -1,6 +1,9 @@
+import { NetworksName } from "../enums/networks"
 import { networks } from "./networks"
 
-export function getChainIdToNetworkName(chainId?: number | string): string {
+export function getNetworkNameFromChainId(
+  chainId?: number | string
+): NetworksName | "Unsupported" {
   const network = networks.find(
     (network) => network.chainId === Number(chainId)
   )

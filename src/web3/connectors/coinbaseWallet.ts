@@ -1,6 +1,6 @@
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { ConnectorUpdate } from "@web3-react/types"
-import { getRpcUrl, supportedNetworksMap } from "../../networks/utils"
+import { getRpcEndpointUrl, supportedNetworksMap } from "../../networks/utils"
 
 interface CoinbaseWalletProvider {
   isCoinbaseWallet: boolean
@@ -30,7 +30,7 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
       // only enforced during type checking. This means that JavaScript runtime
       // constructs like `in` or simple property lookup can still access a
       // `private` or `protected` member.
-      provider.updateProviderInfo(getRpcUrl(chainId), chainId, true)
+      provider.updateProviderInfo(getRpcEndpointUrl(chainId), chainId, true)
     }
 
     return await super.activate()
@@ -38,7 +38,7 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
 }
 
 export const coinbaseConnector = new CoinbaseWalletConnector({
-  url: getRpcUrl(),
+  url: getRpcEndpointUrl(),
   appName: "threshold-token-dashboard",
   supportedChainIds: Object.keys(supportedNetworksMap).map(Number),
 })

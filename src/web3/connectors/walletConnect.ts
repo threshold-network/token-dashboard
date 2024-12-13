@@ -4,7 +4,11 @@ import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
 import { ArrayOneOrMore } from "../../types"
 import { getEnvVariable } from "../../utils/getEnvVariable"
-import { getRpcUrl, networks, supportedNetworksMap } from "../../networks/utils"
+import {
+  getRpcEndpointUrl,
+  networks,
+  supportedNetworksMap,
+} from "../../networks/utils"
 import { toHex } from "../../networks/utils/chainId"
 import { EthereumRpcMap } from "../../networks/types/networks"
 
@@ -182,7 +186,7 @@ const walletConnectProjectId = getEnvVariable(
 export const walletConnect = new WalletConnectConnector({
   chains: supportedNetworks,
   rpc: networks.reduce((acc, network) => {
-    acc[network.chainId] = getRpcUrl(network.chainId)
+    acc[network.chainId] = getRpcEndpointUrl(network.chainId)
     return acc
   }, {} as EthereumRpcMap),
   projectId: walletConnectProjectId,

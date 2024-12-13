@@ -49,8 +49,11 @@ on:
         default: false
         type: boolean
     secrets:
-      alchemyApi:
-        description: The Alchemy API Key.
+      rpcServiceApi:
+        description: The RPC service API Key.
+        required: true
+      rpcServiceName:
+        description: The RPC service name.
         required: true
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
@@ -162,7 +165,8 @@ jobs:
         env:
           PUBLIC_URL: /
           DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
-          ALCHEMY_API: ${{ secrets.alchemyApi }}
+          RPC_SERVICE_API: ${{ secrets.rpcServiceApi }}
+          RPC_SERVICE_NAME: ${{ secrets.rpcServiceName }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
           MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
@@ -183,7 +187,8 @@ jobs:
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
           DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
-          ALCHEMY_API: ${{ secrets.alchemyApi }}
+          RPC_SERVICE_API: ${{ secrets.rpcServiceApi }}
+          RPC_SERVICE_NAME: ${{ secrets.rpcServiceName }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
           MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}

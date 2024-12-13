@@ -1,4 +1,4 @@
-import { getChainIdToNetworkName } from "./getChainIdToNetworkName"
+import { getNetworkNameFromChainId } from "./getNetworkNameFromChainId"
 import {
   l1MainnetNetworksMap,
   l1TestNetworksMap,
@@ -8,7 +8,7 @@ import {
 } from "./mappings"
 
 export const isSupportedNetwork = (chainId?: string | number): boolean => {
-  return getChainIdToNetworkName(chainId) !== "Unsupported"
+  return getNetworkNameFromChainId(chainId) !== "Unsupported"
 }
 
 export const isTestnetNetwork = (networkChainId: string | number): boolean => {

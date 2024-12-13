@@ -20,7 +20,7 @@ import {
 } from "../../../../utils/forms"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
 import {
-  getChainIdToNetworkName,
+  getNetworkNameFromChainId,
   isL1Network,
   isSupportedNetwork,
   isTestnetNetwork,
@@ -154,7 +154,7 @@ export const ProvideDataComponent: FC<{
         )
       }
 
-      const chainName = getChainIdToNetworkName(chainId)
+      const chainName = getNetworkNameFromChainId(chainId)
 
       setSubmitButtonLoading(true)
 
