@@ -19,4 +19,5 @@ export type PageComponent = FC<RouteProps> & {
 
 export type ExternalLinkProps = LinkProps & {
   title: string
+  hideFromMenu?: boolean
 }
