@@ -23,7 +23,7 @@ import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethe
 import StakingArtifactMainnet from "../staking/mainnet-artifacts/TokenStaking.json"
 import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
-import TacoRegistryArtifactMainnet from "../mas/mainnet-artifacts/TacoRegistry.json"
+import TacoRegistryArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
 
 import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
@@ -82,7 +82,8 @@ type ContractArtifacts = {
 const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Ethereum]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
-    TacoRegistry: TacoRegistryArtifactMainnet,
+    TacoRegistry:
+      TacoRegistryArtifactMainnet[SupportedChainIds.Ethereum].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactMainnet,
     RandomBeacon: RandomBeaconArtifactMainnet,
     TokenStaking: StakingArtifactMainnet,
