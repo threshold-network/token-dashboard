@@ -93,7 +93,6 @@ export const networks: Network[] = [
         symbol: ETH_SYMBOL,
         decimals: DECIMALS,
       },
-      rpcUrls: [PublicRpcUrls.Ethereum],
       blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.Ethereum)],
     },
   }
