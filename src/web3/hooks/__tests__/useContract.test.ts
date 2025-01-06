@@ -4,7 +4,7 @@ import { JsonRpcProvider } from "@ethersproject/providers"
 import { useContract } from "../useContract"
 import { getContract } from "../../../utils/getContract"
 import { getEnvVariable } from "../../../utils/getEnvVariable"
-import { EnvVariable } from "../../../enums"
+import { getRpcEndpointUrl } from "../../../networks/utils"
 
 jest.mock("../../../utils/getContract", () => ({
   ...(jest.requireActual("../../../utils/getContract") as {}),
@@ -62,7 +62,7 @@ describe("Test the `useContract` hook", () => {
 
       const { result } = renderHook(() => useContract(address, abi))
 
-      expect(getEnvVariable).toHaveBeenCalledWith(EnvVariable.ETH_HOSTNAME_HTTP)
+      expect(getEnvVariable).toHaveBeenCalledWith(getRpcEndpointUrl())
       expect(JsonRpcProvider).toHaveBeenCalledWith(mockedEthNodeUrl)
       expect(result.current).toEqual(mockedContract)
     })

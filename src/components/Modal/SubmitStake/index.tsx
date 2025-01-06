@@ -25,11 +25,13 @@ import { StakingContractLearnMore } from "../../Link"
 import StakingStats from "../../StakingStats"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useTStakingContract } from "../../../web3/hooks"
 
 const SubmitStakeModal: FC<BaseModalProps> = () => {
   const { closeModal, openModal } = useModal()
   const [isAcknowledgementChecked, setIsAcknowledgementChecked] =
     useState(false)
+  const stakingContract = useTStakingContract()
 
   // stake transaction, opens success modal on success callback
   const { stake } = useStakeTransaction((receipt) => {
@@ -100,7 +102,7 @@ const SubmitStakeModal: FC<BaseModalProps> = () => {
               Cancel
             </Button>
             <SubmitTxButton
-              isDisabled={!isAcknowledgementChecked}
+              isDisabled={!isAcknowledgementChecked || !stakingContract}
               onSubmit={submitStake}
             >
               Stake

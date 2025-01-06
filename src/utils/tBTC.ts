@@ -7,11 +7,15 @@ import {
 } from "../threshold-ts/utils"
 import { BigNumberish, BigNumber } from "ethers"
 
-const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1"] as const
-const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["m", "n", "tb1"] as const
+const MINTING_MAINNET_BTC_RECOVERY_ADDRESS_PREFIXES = ["1", "bc1q"] as const
+const MINTING_TESTNET_BTC_RECOVERY_ADDRESS_PREFIXES = [
+  "m",
+  "n",
+  "tb1q",
+] as const
 
-const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1", "3"] as const
-const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1", "2"] as const
+const UNMINTING_MAINNET_BTC_ADDRESS_PREFIXES = ["1", "bc1q", "3"] as const
+const UNMINTING_TESTNET_BTC_ADDRESS_PREFIXES = ["m", "n", "tb1q", "2"] as const
 
 type SupportedBitcoinNetworks = Exclude<BitcoinNetwork, "unknown">
 

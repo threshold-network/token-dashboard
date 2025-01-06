@@ -26,6 +26,7 @@ import withBaseModal from "../withBaseModal"
 import { OnSuccessCallback } from "../../../web3/hooks"
 import { ApplicationForOperatorMapping } from "../MapOperatorToStakingProviderModal"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -59,6 +60,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
   }
 > = ({ applications, closeModal }) => {
   const { account } = useWeb3React()
+  const threshold = useThreshold()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()
   const dispatch = useAppDispatch()
@@ -167,9 +169,18 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
       </ModalBody>
       <ModalFooter>
         <Button onClick={closeModal} variant="outline" mr={2}>
-          Dismiss
+          Dismis
         </Button>
-        <SubmitTxButton onSubmit={submitMappingOperator}>
+        <SubmitTxButton
+          isDisabled={
+            !(
+              threshold.multiAppStaking.ecdsa?.contract ??
+              threshold.multiAppStaking.randomBeacon?.contract ??
+              threshold.multiAppStaking.taco?.contract
+            )
+          }
+          onSubmit={submitMappingOperator}
+        >
           Map Address
         </SubmitTxButton>
       </ModalFooter>

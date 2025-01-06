@@ -26,6 +26,7 @@ import { ModalType } from "../../../../enums"
 import { StakingAppName } from "../../../../store/staking-applications"
 import { FormikProps } from "formik"
 import {
+  appNameToThresholdApp,
   useStakingApplicationAddress,
   useStakingApplicationDecreaseDelay,
   useUpdateOperatorStatus,
@@ -36,6 +37,7 @@ import { calculatePercenteage } from "../../../../utils/percentage"
 import { StakingAppForm } from "../../../../components/StakingApplicationForms"
 import { AuthorizationStatus } from "../../../../types"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useThreshold } from "../../../../contexts/ThresholdContext"
 
 interface CommonProps {
   stakingAppId: StakingAppName
@@ -240,7 +242,7 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
       openModal(ModalType.IncreaseAuthorization, {
         stakingProvider,
         increaseAmount: tokenAmount,
-        stakingAppName: appAuthData.stakingAppId,
+        appName: appAuthData.stakingAppId,
       })
     }
   }
@@ -249,7 +251,7 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
     openModal(ModalType.DeauthorizeApplication, {
       stakingProvider: stakingProvider,
       decreaseAmount: tokenAmount,
-      stakingAppName: appAuthData.stakingAppId,
+      appName: appAuthData.stakingAppId,
       operator: appAuthData.operator,
       isOperatorInPool: appAuthData.isOperatorInPool,
     })
@@ -263,7 +265,7 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
   const onConfirmDeauthorization = () => {
     openModal(ModalType.ConfirmDeauthorization, {
       stakingProvider,
-      stakingAppName: appAuthData.stakingAppId,
+      appName: appAuthData.stakingAppId,
       decreaseAmount: appAuthData.pendingAuthorizationDecrease,
     })
   }
@@ -372,6 +374,7 @@ export const AuthorizeApplicationsCardCheckboxBase: FC<
           onConfirmDeauthorization={onConfirmDeauthorization}
           onActivateDeauthorizationRequest={updateOperatorStatus}
           status={status}
+          appName={appAuthData.stakingAppId}
         />
       )}
     </Card>
@@ -386,6 +389,7 @@ const Deauthorization: FC<{
   onConfirmDeauthorization: () => void
   onActivateDeauthorizationRequest: () => void
   status: AuthorizationStatus
+  appName: StakingAppName
 }> = ({
   pendingAuthorizationDecrease,
   remainingAuthorizationDecreaseDelay,
@@ -394,7 +398,11 @@ const Deauthorization: FC<{
   onConfirmDeauthorization,
   onActivateDeauthorizationRequest,
   status,
+  appName,
 }) => {
+  const threshold = useThreshold()
+  const appContract =
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.contract
   const progressBarValue =
     remainingAuthorizationDecreaseDelay === "0"
       ? 100
@@ -466,7 +474,10 @@ const Deauthorization: FC<{
           </Button>
         )}
         {status === "deauthorization-initiation-needed" && (
-          <SubmitTxButton onSubmit={onActivateDeauthorizationRequest}>
+          <SubmitTxButton
+            isDisabled={!appContract}
+            onSubmit={onActivateDeauthorizationRequest}
+          >
             Activate Deauthorization Request
           </SubmitTxButton>
         )}

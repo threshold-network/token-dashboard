@@ -12,7 +12,7 @@ import shortenAddress from "../../utils/shortenAddress"
 import ViewInBlockExplorer, {
   ViewInBlockExplorerProps,
 } from "../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../networks/enums/networks"
 
 type CopyToClipboardProps = {
   textToCopy: string

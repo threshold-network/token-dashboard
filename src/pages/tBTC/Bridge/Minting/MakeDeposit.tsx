@@ -1,6 +1,9 @@
 import {
+  Alert,
+  AlertIcon,
   Badge,
   BodyMd,
+  BodySm,
   Box,
   BoxLabel,
   Button,
@@ -74,6 +77,8 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
       <Toast
         title="The system is continuously checking for new BTC deposits"
         status="info"
+        top={3}
+        zIndex={1}
       />
       <HStack
         alignItems="center"
@@ -186,6 +191,13 @@ const MakeDepositComponent: FC<{
         generate a new address.
       </BodyMd>
       <BTCAddressSection btcDepositAddress={btcDepositAddress} />
+      <Alert status="info" mt={6}>
+        <AlertIcon />
+        <BodySm>
+          Please ensure your deposit is at least 0.01 BTC to proceed with
+          minting tBTC.
+        </BodySm>
+      </Alert>
       <MintDurationTiers
         mt="6"
         items={[

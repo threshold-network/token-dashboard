@@ -23,6 +23,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
 
   const { isActive } = useIsActive()
   const connectWallet = useConnectWallet()
+  const isButtonDisabled = isBlocked || isDisabled
 
   const onConnectWalletClick = () => {
     connectWallet()
@@ -32,7 +33,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     return (
       <Button
         isLoading={isFetching || isLoading}
-        isDisabled={isBlocked || isDisabled}
+        isDisabled={isButtonDisabled}
         onClick={onSubmit}
         {...buttonProps}
       >

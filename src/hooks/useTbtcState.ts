@@ -20,6 +20,7 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("btcRecoveryAddress", undefined)
     updateState("walletPublicKeyHash", undefined)
     updateState("refundLocktime", undefined)
+    updateState("depositor", undefined)
     updateState("btcDepositAddress", undefined)
     updateState("mintingStep", MintingStep.ProvideData)
     updateState("tBTCMintAmount", undefined)
@@ -30,6 +31,9 @@ export const useTbtcState: UseTbtcState = () => {
     updateState("depositRevealedTxHash", undefined)
     updateState("optimisticMintingRequestedTxHash", undefined)
     updateState("optimisticMintingFinalizedTxHash", undefined)
+    updateState("extraData", undefined)
+    updateState("crossChainFee", undefined)
+    updateState("chainName", undefined)
   }, [updateState])
 
   return {
