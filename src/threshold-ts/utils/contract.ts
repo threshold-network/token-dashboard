@@ -99,7 +99,8 @@ const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Sepolia]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
-    TacoRegistry: TacoRegistryArtifactSepolia,
+    TacoRegistry:
+      TacoRegistryArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     RandomBeacon: RandomBeaconArtifactSepolia,
     TokenStaking: StakingArtifactSepolia,
     Bridge: BridgeArtifactSepolia,
@@ -112,7 +113,8 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
   },
   [SupportedChainIds.Localhost]: {
-    TacoRegistry: TacoRegistryArtifactDappDevelopmentSepolia,
+    TacoRegistry:
+      TacoRegistryArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactDappDevelopmentSepolia,
     RandomBeacon: RandomBeaconArtifactDappDevelopmentSepolia,
     TokenStaking: StakingArtifactDappDevelopmentSepolia,
