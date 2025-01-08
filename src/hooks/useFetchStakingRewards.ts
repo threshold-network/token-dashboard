@@ -12,6 +12,8 @@ import { setInterimRewards } from "../store/rewards"
 import { selectStakingProviders } from "../store/staking"
 import { BigNumber } from "ethers"
 import { Zero } from "@ethersproject/constants"
+import { useMulticall } from "../web3/hooks/useMulticall"
+import { ContractCall } from "../threshold-ts/multicall"
 
 interface StakingRewards {
   [stakingProvider: string]: string
@@ -25,6 +27,16 @@ export const useFetchStakingRewards = () => {
   )
   const dispatch = useDispatch()
 
+  const cumulativeClaimedCalls: ContractCall[] = stakingProviders.map(
+    (stakingProvider) => ({
+      address: merkleDropContract!.address,
+      interface: merkleDropContract!.interface!,
+      method: "cumulativeClaimed",
+      args: [stakingProvider],
+    })
+  )
+  const fetchCumulativeClaims = useMulticall(cumulativeClaimedCalls)
+
   useEffect(() => {
     const fetch = async () => {
       if (
@@ -35,52 +47,56 @@ export const useFetchStakingRewards = () => {
         return
       }
 
-      const claimedEvents = await getContractPastEvents(merkleDropContract, {
-        eventName: "Claimed",
-        fromBlock: DEPLOYMENT_BLOCK,
-        filterParams: [stakingProviders],
-      })
+      // TODO:
+      // - Integration of new Merkle contract + TACo automated rewards here.
+      //   TLDR: stakingRewards = merkle_rewards + taco_rewards
+      //   See https://github.com/threshold-network/token-dashboard/issues/756
+      // - There's a more efficient way to check Merkle's claimed rewards.
+      //   See https://github.com/threshold-network/token-dashboard/issues/765
+      // - Note also that TACo rewards now accrue on each block. They can be
+      //   calculated via TACoApp.availableRewards(address _stakingProvider)
 
-      const claimedAmountToStakingProvider = claimedEvents.reduce(
-        (
-          reducer: { [stakingProvider: string]: string },
-          event
-        ): { [stakingProvider: string]: string } => {
-          const stakingProvider = getAddress(
-            event.args?.stakingProvider as string
-          )
-          const prevAmount = BigNumber.from(reducer[stakingProvider] || Zero)
-          reducer[stakingProvider] = prevAmount
-            .add(event.args?.amount as string)
-            .toString()
-          return reducer
+      const cumulativeClaimedResults = await fetchCumulativeClaims()
+      console.log(cumulativeClaimedResults)
+
+      const claimedAmountToStakingProvider = stakingProviders.reduce(
+        (acc, stakingProvider, index) => {
+          acc[getAddress(stakingProvider)] =
+            cumulativeClaimedResults[index].toString()
+          return acc
         },
-        {}
+        {} as { [stakingProvider: string]: string }
       )
+      console.log(claimedAmountToStakingProvider)
 
-      const claimedRewardsInCurrentMerkleRoot = new Set(
-        claimedEvents
-          .filter((_) => _.args?.merkleRoot === rewardsData.merkleRoot)
-          .map((_) => getAddress(_.args?.stakingProvider as string))
-      )
+      // const claimedRewardsInCurrentMerkleRoot = new Set(
+      //   claimedEvents
+      //     .filter((_) => _.args?.merkleRoot === rewardsData.merkleRoot)
+      //     .map((_) => getAddress(_.args?.stakingProvider as string))
+      // )
 
       const stakingRewards: StakingRewards = {}
       for (const stakingProvider of stakingProviders) {
-        if (
-          !rewardsData.claims.hasOwnProperty(stakingProvider) ||
-          claimedRewardsInCurrentMerkleRoot.has(stakingProvider)
-        ) {
+        if (!(stakingProvider in (rewardsData as RewardsJSONData).claims)) {
           // If the JSON file doesn't contain proofs for a given staking
-          // provider it means this staking provider has no rewards- we can skip
-          // this iteration. If the `Claimed` event exists with a current merkle
-          // root for a given staking provider it means that rewards have
-          // already been claimed- we can skip this iteration.
+          // provider it means this staking provider has no Merkle rewards
           continue
         }
-
         const { amount } = (rewardsData as RewardsJSONData).claims[
           stakingProvider
         ]
+        const claimedAmount =
+          claimedAmountToStakingProvider[stakingProvider] || "0"
+        if (BigNumber.from(amount).eq(BigNumber.from(claimedAmount))) {
+          // if the claimed amount is equal to the amount of rewards available, then skip
+          continue
+        }
+        // TODO: ^ But there's going to be TACo rewards
+
+        // If the `Claimed` event exists with a current merkle
+        // root for a given staking provider it means that rewards have
+        // already been claimed - we can skip this iteration.
+        // TODO: ^ Same, there can be TACo rewards
         const claimableAmount = BigNumber.from(amount).sub(
           claimedAmountToStakingProvider[stakingProvider] || Zero
         )
@@ -96,5 +112,12 @@ export const useFetchStakingRewards = () => {
     }
 
     fetch()
-  }, [stakingProviders, merkleDropContract, hasFetched, isFetching, dispatch])
+  }, [
+    stakingProviders,
+    merkleDropContract,
+    hasFetched,
+    isFetching,
+    dispatch,
+    fetchCumulativeClaims,
+  ])
 }
