@@ -4,6 +4,18 @@ export type TrmState = {
   error: string
 }
 
+export interface TrmPayload {
+  error: boolean
+  message: string
+  data: TrmAccountData
+}
+
+export interface TrmAccountData {
+  isBlocked: boolean
+  reason: string
+  rawData: TrmAccountDetails[]
+}
+
 export interface TrmAccountDetails {
   accountExternalId: string | null
   address: string

@@ -1,8 +1,6 @@
 import axios from "axios"
-import { getEnvVariable } from "./getEnvVariable"
-import { EnvVariable } from "../enums"
-import chainIdToTrmNetworkName from "./chainIdToTrmNetworkName"
-import { TrmAccountDetails } from "../types"
+import { TrmPayload } from "../types"
+import { ApiUrl, endpointUrl } from "../enums"
 
 interface WalletScreeningRequest {
   address: string
@@ -12,29 +10,16 @@ interface WalletScreeningRequest {
 export async function fetchWalletScreening({
   address,
   chainId,
-}: WalletScreeningRequest): Promise<TrmAccountDetails[]> {
-  const network = chainIdToTrmNetworkName(chainId)
-  if (!network) return []
-
-  const apiKey = getEnvVariable(EnvVariable.TRM_API_KEY)
-  const auth = Buffer.from(`${apiKey}:${apiKey}`).toString("base64")
-  const headers = {
-    "Content-Type": "application/json",
-    Authorization: `Basic ${auth}`,
+}: WalletScreeningRequest): Promise<TrmPayload> {
+  const requestBody = {
+    address,
+    chainId,
   }
-
-  const requestBody = [
-    {
-      address,
-      chain: network,
-    },
-  ]
 
   try {
     const response = await axios.post(
-      "https://api.trmlabs.com/public/v2/screening/addresses",
-      requestBody,
-      { headers: headers }
+      `${ApiUrl.TBTC_EXPLORER}${endpointUrl.TRM_WALLET_SCREENING}`,
+      requestBody
     )
     return response.data
   } catch (error) {
