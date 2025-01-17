@@ -23,7 +23,7 @@ import WalletRegistryArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethe
 import StakingArtifactMainnet from "../staking/mainnet-artifacts/TokenStaking.json"
 import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
-import TacoRegistryArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
+import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
 
 import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
@@ -38,7 +38,7 @@ import WalletRegistryArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethe
 import StakingArtifactSepolia from "../staking/sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactSepolia from "../tbtc/sepolia-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactSepolia from "../staking/sepolia-artifacts/LegacyKeepStaking.json"
-import TacoRegistryArtifactSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/tapir.json"
+import TacoArtifactSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/tapir.json"
 
 import BridgeArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/Bridge.json"
 import NuCypherStakingEscrowDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/NuCypherStakingEscrow.json"
@@ -51,7 +51,7 @@ import WalletRegistryArtifactDappDevelopmentSepolia from "../tbtc/dapp-developme
 import StakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
-import TacoRegistryArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
+import TacoArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"
@@ -83,7 +83,7 @@ const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Ethereum]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
     TacoRegistry:
-      TacoRegistryArtifactMainnet[SupportedChainIds.Ethereum].TACoApplication,
+      TacoArtifactMainnet[SupportedChainIds.Ethereum].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactMainnet,
     RandomBeacon: RandomBeaconArtifactMainnet,
     TokenStaking: StakingArtifactMainnet,
@@ -100,7 +100,7 @@ const contractArtifacts: ContractArtifacts = {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
     TacoRegistry:
-      TacoRegistryArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
+      TacoArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     RandomBeacon: RandomBeaconArtifactSepolia,
     TokenStaking: StakingArtifactSepolia,
     Bridge: BridgeArtifactSepolia,
@@ -114,7 +114,7 @@ const contractArtifacts: ContractArtifacts = {
   },
   [SupportedChainIds.Localhost]: {
     TacoRegistry:
-      TacoRegistryArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
+      TacoArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactDappDevelopmentSepolia,
     RandomBeacon: RandomBeaconArtifactDappDevelopmentSepolia,
     TokenStaking: StakingArtifactDappDevelopmentSepolia,
