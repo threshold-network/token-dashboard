@@ -1,6 +1,10 @@
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { ConnectorUpdate } from "@web3-react/types"
-import { getRpcUrl, supportedNetworksMap } from "../../networks/utils"
+import {
+  getRpcUrl,
+  hexToNumber,
+  supportedNetworksMap,
+} from "../../networks/utils"
 
 interface CoinbaseWalletProvider {
   isCoinbaseWallet: boolean
@@ -18,7 +22,8 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
         (p) => p.isCoinbaseWallet
       ) ?? (window.ethereum as CoinbaseWalletProvider)
 
-    const chainId = provider.chainId || (await this.getChainId())
+    const chainIdHex = provider.chainId || (await this.getChainId())
+    const chainId = hexToNumber(chainIdHex)
 
     if (provider.isCoinbaseWallet) {
       // Force the Coinbase Wallet provider to use our RPC url. We can't fetch
