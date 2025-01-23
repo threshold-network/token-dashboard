@@ -936,19 +936,26 @@ export class TBTC implements ITBTC {
       this.ethereumChainId === SupportedChainIds.Arbitrum ||
       this.ethereumChainId === SupportedChainIds.ArbitrumSepolia
 
-    const amountToMint = depositAmount
-      .sub(isArbitrumNetworkConnected ? depositTxMaxFee : ZERO)
+    const amountToMintAfterTreasuryFee = depositAmount
       .sub(treasuryFee)
       .mul(this._satoshiMultiplier)
 
     // https://github.com/keep-network/tbtc-v2/blob/main/solidity/contracts/vault/TBTCOptimisticMinting.sol#L328-L336
     const optimisticMintFee = BigNumber.from(optimisticMintingFeeDivisor).gt(0)
-      ? amountToMint.div(optimisticMintingFeeDivisor)
+      ? amountToMintAfterTreasuryFee.div(optimisticMintingFeeDivisor)
       : ZERO
+
+    const finalAmountToMint = amountToMintAfterTreasuryFee
+      .sub(optimisticMintFee)
+      .sub(
+        isArbitrumNetworkConnected
+          ? depositTxMaxFee.mul(this._satoshiMultiplier)
+          : ZERO
+      )
 
     return {
       optimisticMintFee: optimisticMintFee,
-      amountToMint: amountToMint.sub(optimisticMintFee),
+      amountToMint: finalAmountToMint,
     }
   }
 
