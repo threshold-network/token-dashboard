@@ -926,12 +926,15 @@ export class TBTC implements ITBTC {
     }
   }
 
-  private _calculateOptimisticMintingAmountAndFee = (
+  private _calculateOptimisticMintingAmountAndFee(
     depositAmount: BigNumber,
     treasuryFee: BigNumber,
     optimisticMintingFeeDivisor: BigNumber,
     depositTxMaxFee: BigNumber
-  ) => {
+  ): {
+    optimisticMintFee: BigNumber
+    amountToMint: BigNumber
+  } {
     const isArbitrumNetworkConnected =
       this.ethereumChainId === SupportedChainIds.Arbitrum ||
       this.ethereumChainId === SupportedChainIds.ArbitrumSepolia
@@ -945,13 +948,13 @@ export class TBTC implements ITBTC {
       ? amountToMintAfterTreasuryFee.div(optimisticMintingFeeDivisor)
       : ZERO
 
+    const networkSpecificFee = isArbitrumNetworkConnected
+      ? depositTxMaxFee.mul(this._satoshiMultiplier)
+      : ZERO
+
     const finalAmountToMint = amountToMintAfterTreasuryFee
       .sub(optimisticMintFee)
-      .sub(
-        isArbitrumNetworkConnected
-          ? depositTxMaxFee.mul(this._satoshiMultiplier)
-          : ZERO
-      )
+      .sub(networkSpecificFee)
 
     return {
       optimisticMintFee: optimisticMintFee,
