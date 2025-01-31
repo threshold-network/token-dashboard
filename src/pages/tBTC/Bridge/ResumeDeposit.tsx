@@ -1,9 +1,8 @@
-import { FC, useEffect } from "react"
+import { FC } from "react"
 import {
   BodyLg,
   BodyMd,
   Box,
-  Button,
   Card,
   FileUploader,
   FormControl,
@@ -14,7 +13,6 @@ import { PageComponent } from "../../../types"
 import { BridgeProcessCardTitle } from "./components/BridgeProcessCardTitle"
 import { BridgeContractLink } from "../../../components/tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { MintingStep } from "../../../types/tbtc"
 import { Form } from "../../../components/Forms"
 import {
   isSameETHAddress,
@@ -22,7 +20,7 @@ import {
   parseJSONFile,
   InvalidJSONFileError,
 } from "../../../web3/utils"
-import { getErrorsObj } from "../../../utils/forms"
+import { getErrorsObj, validateBTCAddress } from "../../../utils/forms"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
@@ -30,17 +28,40 @@ import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 
 type RecoveryJsonFileData = DepositScriptParameters & {
+  networkInfo: {
+    chainId: string
+    chainName: string
+  }
+  ethAddress: string
   btcRecoveryAddress: string
 }
 import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
+import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepositExpirationTime"
+import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
+import { SupportedChainIds } from "../../../networks/enums/networks"
+import {
+  isL1Network,
+  isL2Network,
+  isSameChainId,
+  isSupportedNetwork,
+} from "../../../networks/utils"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
-  const { account, isActive } = useIsActive()
+  const { account, chainId, isActive } = useIsActive()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
+  const checkDepositExpiration = useCheckDepositExpirationTime()
   const threshold = useThreshold()
+
+  if (!isActive || !isSupportedNetwork(chainId)) {
+    return (
+      <Card position="relative" maxW="640px" m={"0 auto"}>
+        <BridgeProcessEmptyState title="Want to resume deposit?" />
+      </Card>
+    )
+  }
 
   const navigateToMintPage = () => {
     navigate("/tBTC/mint")
@@ -48,50 +69,68 @@ export const ResumeDepositPage: PageComponent = () => {
 
   const onSubmit = async (values: FormValues) => {
     if (!values.depositParameters) return
-
     const { depositParameters } = values
-    await threshold.tbtc.initiateDepositFromDepositScriptParameters(
-      depositParameters
-    )
-    const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
 
-    updateState("mintingStep", undefined)
-
-    setDepositDataInLocalStorage({
-      ethAddress: depositParameters?.depositor.identifierHex!,
-      blindingFactor: depositParameters?.blindingFactor!,
-      btcRecoveryAddress: depositParameters?.btcRecoveryAddress!,
-      walletPublicKeyHash: depositParameters?.walletPublicKeyHash!,
-      refundLocktime: depositParameters?.refundLocktime!,
-      btcDepositAddress,
-    })
-
-    navigateToMintPage()
+    try {
+      if (isL1Network(chainId)) {
+        await threshold.tbtc.initiateDepositFromDepositScriptParameters(
+          depositParameters
+        )
+      } else {
+        await threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+          depositParameters,
+          chainId!
+        )
+      }
+      const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
+      updateState("mintingStep", undefined)
+      setDepositDataInLocalStorage(
+        {
+          depositor: {
+            identifierHex: depositParameters.depositor.identifierHex,
+          },
+          chainName: depositParameters.networkInfo.chainName,
+          ethAddress: depositParameters.ethAddress,
+          blindingFactor: depositParameters.blindingFactor,
+          btcRecoveryAddress: depositParameters.btcRecoveryAddress,
+          walletPublicKeyHash: depositParameters.walletPublicKeyHash,
+          refundLocktime: depositParameters.refundLocktime,
+          extraData: depositParameters.extraData || "",
+          btcDepositAddress,
+        },
+        chainId
+      )
+      navigateToMintPage()
+    } catch (error) {
+      console.error("Error during deposit initiation:", error)
+    }
   }
 
   return (
-    <Card maxW="640px" m={"0 auto"}>
-      {isActive ? (
-        <>
-          <BridgeProcessCardTitle />
-          <BodyLg>
-            <Box as="span" fontWeight="600" color="brand.500">
-              Resume Minting
-            </Box>{" "}
-            - Upload .JSON file
-          </BodyLg>
-          <BodyMd mt="3" mb="6">
-            To resume your minting you need to upload your .JSON file and sign
-            the Minting Initiation transaction triggered in the dApp.
-          </BodyMd>
-          <ResumeDepositFormik address={account!} onSubmitForm={onSubmit} />
-          <Box as="p" textAlign="center" mt="10">
-            <BridgeContractLink />
-          </Box>
-        </>
-      ) : (
-        <BridgeProcessEmptyState title="Want to resume deposit?" />
-      )}
+    <Card position="relative" maxW="640px" m={"0 auto"}>
+      <>
+        <BridgeProcessCardTitle />
+        <BodyLg>
+          <Box as="span" fontWeight="600" color="brand.500">
+            Resume Minting
+          </Box>{" "}
+          - Upload .JSON file
+        </BodyLg>
+        <BodyMd mt="3" mb="6">
+          To resume your minting you need to upload your .JSON file and sign the
+          Minting Initiation transaction triggered in the dApp.
+        </BodyMd>
+        <ResumeDepositFormik
+          address={account!}
+          chainId={chainId!}
+          onSubmitForm={onSubmit}
+          checkDepositExpiration={checkDepositExpiration}
+          bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        />
+        <Box as="p" textAlign="center" mt="10">
+          <BridgeContractLink />
+        </Box>
+      </>
     </Card>
   )
 }
@@ -99,6 +138,7 @@ export const ResumeDepositPage: PageComponent = () => {
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
   const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
+  const threshold = useThreshold()
 
   const isError = Boolean(error)
 
@@ -134,7 +174,12 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         size="lg"
         isFullWidth
         mt="6"
-        isDisabled={!values.depositParameters || isError || isSubmitting}
+        isDisabled={
+          !values.depositParameters ||
+          isError ||
+          isSubmitting ||
+          !threshold.tbtc.bridgeContract
+        }
         type="submit"
         isLoading={isSubmitting}
       >
@@ -153,37 +198,64 @@ type FormValues = {
 type ResumeDepositFormikProps = {
   onSubmitForm: (values: FormValues) => void
   address: string
+  checkDepositExpiration: ReturnType<typeof useCheckDepositExpirationTime>
+  bitcoinNetwork: BitcoinNetwork
+  chainId: SupportedChainIds
 }
 
 const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
   mapPropsToValues: () => ({ depositParameters: null }),
-  validate: (values, { address }) => {
+  validate: async (
+    values,
+    { address, checkDepositExpiration, bitcoinNetwork, chainId }
+  ) => {
     const errors: FormikErrors<FormValues> = {}
 
-    if (!values.depositParameters) {
+    const dp = values.depositParameters
+
+    if (!dp) {
       errors.depositParameters = "Required."
     } else if (
-      !values.depositParameters?.depositor ||
-      !values.depositParameters?.depositor?.identifierHex ||
-      !isAddress(values.depositParameters?.depositor?.identifierHex) ||
-      !values.depositParameters?.refundLocktime ||
-      !values.depositParameters?.refundPublicKeyHash ||
-      !values.depositParameters?.blindingFactor ||
-      !values.depositParameters?.walletPublicKeyHash ||
-      !values.depositParameters?.btcRecoveryAddress
+      !dp.depositor ||
+      !dp.depositor.identifierHex ||
+      !dp.networkInfo?.chainName ||
+      !dp.networkInfo?.chainId ||
+      !isAddress(dp.depositor.identifierHex) ||
+      !dp.refundLocktime ||
+      !dp.refundPublicKeyHash ||
+      !dp.blindingFactor ||
+      !dp.walletPublicKeyHash ||
+      !dp.btcRecoveryAddress
     ) {
       errors.depositParameters = "Invalid .JSON file."
-    } else if (
-      !isSameETHAddress(
-        values.depositParameters?.depositor?.identifierHex,
-        address
+    } else if (!isSameChainId(dp.networkInfo.chainId, chainId)) {
+      errors.depositParameters = "Chain Id mismatch."
+    } else if (isL2Network(chainId) && !dp.extraData) {
+      errors.depositParameters = "Extra data is required for L2 networks."
+    } else {
+      const btcAddressError = validateBTCAddress(
+        dp.btcRecoveryAddress as string,
+        bitcoinNetwork
       )
-    ) {
-      errors.depositParameters = "You are not a depositor."
+      if (btcAddressError) {
+        errors.depositParameters = btcAddressError
+      } else {
+        // Check deposit expiration
+        const { isExpired } = await checkDepositExpiration(dp.refundLocktime)
+        if (isExpired) {
+          errors.depositParameters = "Deposit reveal time is expired."
+        } else if (
+          isL1Network(chainId) &&
+          !isSameETHAddress(dp.depositor.identifierHex, address)
+        ) {
+          errors.depositParameters = "You are not a depositor."
+        }
+      }
     }
 
     return getErrorsObj(errors)
   },
+
   handleSubmit: (values, { props }) => {
     props.onSubmitForm(values)
   },

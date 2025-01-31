@@ -13,7 +13,10 @@ import {
   BodySm,
 } from "@threshold-network/components"
 import InfoBox from "../../InfoBox"
-import { useIncreaseAuthorizationTransaction } from "../../../hooks/staking-applications"
+import {
+  appNameToThresholdApp,
+  useIncreaseAuthorizationTransaction,
+} from "../../../hooks/staking-applications"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
@@ -25,19 +28,23 @@ import StakingApplicationOperationIcon from "../../StakingApplicationOperationIc
 import ModalCloseButton from "../ModalCloseButton"
 import { OnSuccessCallback } from "../../../web3/hooks"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export type IncreaseAuthorizationProps = BaseModalProps & {
   stakingProvider: string
-  stakingAppName: StakingAppName
+  appName: StakingAppName
   increaseAmount: string
 }
 
 const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
   stakingProvider,
-  stakingAppName,
+  appName,
   increaseAmount,
   closeModal,
 }) => {
+  const threshold = useThreshold()
+  const appContract =
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.contract
   const { openModal } = useModal()
   const onSuccess = useCallback<OnSuccessCallback>(
     (receipt) => {
@@ -50,7 +57,7 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
     [openModal, stakingProvider, increaseAmount]
   )
   const { sendTransaction } = useIncreaseAuthorizationTransaction(
-    stakingAppName,
+    appName,
     onSuccess
   )
 
@@ -71,7 +78,7 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
           </BodyLg>
         </InfoBox>
         <StakingApplicationOperationIcon
-          stakingApplication={stakingAppName}
+          stakingApplication={appName}
           operation="increase"
           w="88px"
           h="88px"
@@ -99,7 +106,11 @@ const IncreaseAuthorizationBase: FC<IncreaseAuthorizationProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <SubmitTxButton mr={2} onSubmit={onAuthorizeIncrease}>
+        <SubmitTxButton
+          isDisabled={!appContract}
+          mr={2}
+          onSubmit={onAuthorizeIncrease}
+        >
           Authorize Increase
         </SubmitTxButton>
       </ModalFooter>

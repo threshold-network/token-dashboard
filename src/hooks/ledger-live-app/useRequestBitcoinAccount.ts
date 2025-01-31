@@ -3,7 +3,9 @@ import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/walle
 import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
-import { supportedChainId } from "../../utils/getEnvVariable"
+import { useWeb3React } from "@web3-react/core"
+import { isTestnetNetwork } from "../../networks/utils"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 import { useIsEmbed } from "../useIsEmbed"
 
 type UseRequestAccountState = {
@@ -24,17 +26,21 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
   const { isEmbed } = useIsEmbed()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
 
   useEffect(() => {
     if (isEmbed) setBtcAccount(account || undefined)
   }, [account, isEmbed])
 
   const requestBitcoinAccount = useCallback(async () => {
-    const currencyId = supportedChainId === "1" ? "bitcoin" : "bitcoin_testnet"
+    const currencyId = isTestnetNetwork(defaultOrConnectedChainId)
+      ? "bitcoin_testnet"
+      : "bitcoin"
+
     walletApiReactTransport.connect()
     await requestAccount({ currencyIds: [currencyId] })
     walletApiReactTransport.disconnect()
-  }, [requestAccount, walletApiReactTransport, supportedChainId])
+  }, [requestAccount, walletApiReactTransport, defaultOrConnectedChainId])
 
   return { ...useRequestAccountReturn, requestAccount: requestBitcoinAccount }
 }

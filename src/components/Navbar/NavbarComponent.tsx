@@ -64,7 +64,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         </Flex>
         <Stack spacing={4} direction="row" ml="auto">
           <DarkModeSwitcher />
-          {chainId && <NetworkButton chainId={chainId} />}
+          {chainId && <NetworkButton />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <VStack

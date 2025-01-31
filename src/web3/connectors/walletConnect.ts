@@ -3,11 +3,12 @@ import { AbstractConnector } from "@web3-react/abstract-connector"
 import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
 import { ArrayOneOrMore } from "../../types"
-import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
+import { getEnvVariable } from "../../utils/getEnvVariable"
+import { getRpcUrl, networks, supportedNetworksMap } from "../../networks/utils"
+import { toHex } from "../../networks/utils/chainId"
+import { EthereumRpcMap } from "../../networks/types/networks"
 
-export interface EthereumRpcMap {
-  [chainId: string]: string
-}
+const supportedNetworks = Object.keys(supportedNetworksMap).map(Number)
 
 export type WalletConnectOptions = Omit<
   Parameters<typeof WalletConnectProvider.init>[0],
@@ -24,14 +25,6 @@ export class UserRejectedRequestError extends Error {
   }
 }
 
-function getSupportedChains({ chains, rpc }: WalletConnectOptions): number[] {
-  if (chains) {
-    return chains
-  }
-
-  return rpc ? Object.keys(rpc).map((k) => Number(k)) : []
-}
-
 /**
  * Connector for WalletConnect V2
  */
@@ -41,7 +34,7 @@ export class WalletConnectConnector extends AbstractConnector {
   private rpcMap: EthereumRpcMap
 
   constructor(config: WalletConnectOptions) {
-    super({ supportedChainIds: getSupportedChains(config) })
+    super({ supportedChainIds: config.chains })
     this.config = config
     this.rpcMap = config.rpc
 
@@ -59,7 +52,9 @@ export class WalletConnectConnector extends AbstractConnector {
 
   private handleChainChanged(newChainId: number | string): void {
     this.emitUpdate({ chainId: newChainId })
-    if (newChainId !== `0x${chainId}`) this.deactivate()
+    const newChainIdInHex = toHex(newChainId)
+    if (!supportedNetworks.map(toHex).includes(newChainIdInHex))
+      this.deactivate()
   }
 
   private handleAccountsChanged(accounts: string[]): void {
@@ -89,8 +84,8 @@ export class WalletConnectConnector extends AbstractConnector {
       .filter((x) => x.startsWith("wc@2"))
       .forEach((x) => localStorage.removeItem(x))
     if (!this.provider) {
-      const chains = getSupportedChains(this.config)
-      if (chains.length === 0) throw new Error("Chains not specified!")
+      const chains = this.config.chains
+      if (chains?.length === 0) throw new Error("Chains not specified!")
       this.provider = await WalletConnectProvider.init({
         projectId: this.config.projectId,
         chains: chains as ArrayOneOrMore<number>,
@@ -99,7 +94,8 @@ export class WalletConnectConnector extends AbstractConnector {
       })
     }
 
-    if (chainId !== this.provider.chainId) {
+    const providerChainIdInHex = toHex(this.provider.chainId)
+    if (!supportedNetworks.map(toHex).includes(providerChainIdInHex)) {
       this.deactivate()
     }
 
@@ -179,17 +175,16 @@ export class WalletConnectConnector extends AbstractConnector {
   }
 }
 
-const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
-const chainId = +supportedChainId
 const walletConnectProjectId = getEnvVariable(
   EnvVariable.WALLET_CONNECT_PROJECT_ID
 )
 
 export const walletConnect = new WalletConnectConnector({
-  chains: [chainId],
-  rpc: {
-    [Number(supportedChainId)]: rpcUrl as string,
-  },
+  chains: supportedNetworks,
+  rpc: networks.reduce((acc, network) => {
+    acc[network.chainId] = getRpcUrl(network.chainId)
+    return acc
+  }, {} as EthereumRpcMap),
   projectId: walletConnectProjectId,
   showQrModal: true,
 })

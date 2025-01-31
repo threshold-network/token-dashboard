@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import {
   useMerkleDropContract,
-  DEPLOYMENT_BLOCK,
+  getMerkleDropDeploymentBlock,
 } from "../web3/hooks/useMerkleDropContract"
 import rewardsData from "../merkle-drop/rewards.json"
 import { getContractPastEvents, getAddress } from "../web3/utils"
@@ -37,7 +37,7 @@ export const useFetchStakingRewards = () => {
 
       const claimedEvents = await getContractPastEvents(merkleDropContract, {
         eventName: "Claimed",
-        fromBlock: DEPLOYMENT_BLOCK,
+        fromBlock: getMerkleDropDeploymentBlock(),
         filterParams: [stakingProviders],
       })
 

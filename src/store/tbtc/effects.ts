@@ -6,28 +6,39 @@ import {
 } from "../../threshold-ts/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
-import {
-  key,
-  removeDataForAccount,
-  TBTCLocalStorageDepositData,
-} from "../../utils/tbtcLocalStorageData"
 import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
+import {
+  getChainIdToNetworkName,
+  isL1Network,
+  isSameChainId,
+} from "../../networks/utils"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
+  const { account } = listenerApi.getState()
   const { depositor } = action.payload
-  if (!isAddress(depositor) || isAddressZero(depositor)) return
+
+  if (
+    !isAddress(depositor) ||
+    isAddressZero(depositor) ||
+    !account.chainId ||
+    !isSameChainId(
+      account.chainId,
+      listenerApi.extra.threshold.config.ethereum.chainId
+    )
+  )
+    return
 
   listenerApi.unsubscribe()
 
   listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
 
   try {
-    const data = await listenerApi.extra.threshold.tbtc.bridgeActivity(
+    const data = await listenerApi.extra.threshold.tbtc.getBridgeActivity(
       depositor
     )
     listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
@@ -39,6 +50,8 @@ export const fetchBridgeactivityEffect = async (
         error: "Could not fetch bridge activity.",
       })
     )
+  } finally {
+    listenerApi.subscribe()
   }
 }
 
@@ -46,15 +59,17 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress, depositor } = action.payload
+  const { btcDepositAddress, chainId } = action.payload
 
   const {
     tbtc: {
-      ethAddress,
+      depositor,
       blindingFactor,
       walletPublicKeyHash,
       refundLocktime,
       btcRecoveryAddress,
+      chainName,
+      extraData,
     },
   } = listenerApi.getState()
 
@@ -70,6 +85,9 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
+        if (getChainIdToNetworkName(chainId) !== chainName) {
+          throw new Error("Chain ID and deposit chain name mismatch")
+        }
         // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
           const bitcoinNetwork = listenerApi.extra.threshold.tbtc.bitcoinNetwork
@@ -83,17 +101,31 @@ export const findUtxoEffect = async (
               btcRecoveryAddress,
               bitcoinNetwork
             ).toString()
-          await forkApi.pause(
-            listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
-              {
-                depositor: getChainIdentifier(ethAddress),
-                blindingFactor,
-                walletPublicKeyHash,
-                refundPublicKeyHash,
-                refundLocktime,
-              }
+          const depositParams = {
+            depositor: getChainIdentifier(depositor),
+            blindingFactor,
+            walletPublicKeyHash,
+            refundPublicKeyHash,
+            refundLocktime,
+          }
+
+          if (isL1Network(chainId)) {
+            await forkApi.pause(
+              listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+                depositParams
+              )
             )
-          )
+          } else {
+            await forkApi.pause(
+              listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+                {
+                  ...depositParams,
+                  extraData,
+                },
+                chainId
+              )
+            )
+          }
         }
 
         // Looking for utxo.
@@ -141,36 +173,30 @@ export const findUtxoEffect = async (
           }
         }
 
+        listenerApi.dispatch(
+          tbtcSlice.actions.updateState({
+            key: "utxo",
+            value: {
+              ...utxo,
+              transactionHash: utxo.transactionHash.toString(),
+              value: utxo.value.toString(),
+            },
+          })
+        )
+
         if (areAllDepositRevealed) {
           // All deposits are already revealed. Force start from step 1 and
           // remove deposit data.
-          removeDataForAccount(
-            depositor,
-            JSON.parse(
-              localStorage.getItem(key) || "{}"
-            ) as TBTCLocalStorageDepositData
-          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",
-              value: MintingStep.ProvideData,
+              value: MintingStep.MintingSuccess,
             })
           )
         } else {
           // UTXO exists for a given Bitcoin deposit address and deposit is not
           // yet revealed. Redirect to step 3 to reveal the deposit and set
           // utxo.
-
-          listenerApi.dispatch(
-            tbtcSlice.actions.updateState({
-              key: "utxo",
-              value: {
-                ...utxo,
-                transactionHash: utxo.transactionHash.toString(),
-                value: utxo.value.toString(),
-              },
-            })
-          )
           listenerApi.dispatch(
             tbtcSlice.actions.updateState({
               key: "mintingStep",

@@ -4,27 +4,38 @@ import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWal
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { Navigate } from "react-router"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
+import { useFetchDepositDetails } from "../../../../hooks/tbtc"
+import { BridgeProcessDetailsPageSkeleton } from "../components/BridgeProcessDetailsPageSkeleton"
 
 const MintingSuccessComponent: FC = () => {
   const threshold = useThreshold()
   const { utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
 
-  const btcDepositTxHash = utxo.transactionHash.toString()
+  const btcDepositTxHash = utxo?.transactionHash?.toString()
   const depositKey = threshold.tbtc.buildDepositKey(
     btcDepositTxHash,
     utxo.outputIndex,
     "big-endian"
   )
+  const { isFetching, data, error } = useFetchDepositDetails(depositKey)
 
   useEffect(() => {
-    removeDepositData()
-  }, [removeDepositData])
+    if (!isFetching && data && !error) {
+      removeDepositData()
+    }
+  }, [isFetching, data, error, removeDepositData])
+
+  if ((isFetching || !data) && !error) {
+    return <BridgeProcessDetailsPageSkeleton />
+  }
 
   return (
     <Navigate
       to={`/tBTC/mint/deposit/${depositKey}`}
-      state={{ shouldStartFromFirstStep: true }}
+      state={{
+        shouldStartFromFirstStep: !data?.optimisticMintingFinalizedTxHash,
+      }}
       replace={true}
     />
   )
