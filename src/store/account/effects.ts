@@ -82,20 +82,12 @@ export const getTrmInfo = async (
 
   try {
     listenerApi.dispatch(fetchingTrm())
-    const data = await fetchWalletScreening({ address, chainId: chainId })
-
-    const riskIndicators: TrmRiskIndicator[] =
-      data[0]?.addressRiskIndicators || []
-    const entities: TrmEntity[] = data[0]?.entities || []
-
-    const hasSevereRisk = riskIndicators.some(
-      (indicator) => indicator.categoryRiskScoreLevelLabel === "Severe"
-    )
-    const hasSevereEntity = entities.some(
-      (entity) => entity.riskScoreLevelLabel === "Severe"
-    )
-
-    const isBlocked = hasSevereEntity || hasSevereRisk
+    const {
+      data: { isBlocked },
+    } = await fetchWalletScreening({
+      address,
+      chainId: chainId,
+    })
 
     if (isBlocked) {
       listenerApi.dispatch(setAccountBlockedStatus({ isBlocked }))

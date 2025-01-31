@@ -1,9 +1,9 @@
 import axios from "axios"
-import { CoingeckoID } from "../enums"
+import { CoingeckoID, ApiUrl, endpointUrl } from "../enums"
 
 const fetchCryptoCurrencyPriceUSD = async (id: CoingeckoID) => {
   const response = await axios.get(
-    `https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`
+    `${ApiUrl.COINGECKO}${endpointUrl.COINGECKO_SIMPLE_PRICE}?ids=${id}&${endpointUrl.COINGECKO_VS_CURRENCY}=usd`
   )
   return response.data[id].usd
 }

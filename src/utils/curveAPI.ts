@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CurveFactoryPoolId } from "../enums"
+import { CurveFactoryPoolId, ApiUrl, endpointUrl } from "../enums"
 
 export type FactoryPool = {
   id: CurveFactoryPoolId
@@ -19,7 +19,7 @@ export type FactoryPool = {
 
 const fetchFactoryPool = async (factoryPoolId: CurveFactoryPoolId) => {
   const response = await axios.get(
-    "https://api.curve.fi/api/getPools/ethereum/factory"
+    `${ApiUrl.CURVE}${endpointUrl.CURVE_ETHEREUM_POOL}`
   )
   const factoryPool: FactoryPool | undefined = response.data.data.poolData.find(
     (factoryPool: FactoryPool) => factoryPool.id === factoryPoolId
