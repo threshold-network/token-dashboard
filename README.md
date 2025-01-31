@@ -2,7 +2,7 @@
 
 [![Token Dashboard / CI](https://github.com/threshold-network/token-dashboard/actions/workflows/dashboard-ci.yml/badge.svg?branch=main&event=push)](https://github.com/threshold-network/token-dashboard/actions/workflows/dashboard-ci.yml)
 [![Docs](https://img.shields.io/badge/docs-website-green)](https://docs.threshold.network)
-[![Chat with us on Discord](https://img.shields.io/badge/chat-Discord-5865f2.svg)](https://discord.gg/threshold)
+[![Chat with us on Discord](https://img.shields.io/badge/chat-Discord-5865f2.svg)](https://discord.threshold.network/)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

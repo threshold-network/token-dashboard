@@ -1,6 +1,6 @@
 export enum ExternalHref {
   thresholdGithub = "https://github.com/threshold-network/token-dashboard",
-  thresholdDiscord = "https://discord.gg/WXK9PC6SRF",
+  thresholdDiscord = "https://discord.threshold.network/",
   metamaskHomePage = "https://metamask.io/",
   stakingContractLeanMore = "https://github.com/threshold-network/solidity-contracts/issues/53",
   tacoNodeSetup = "https://docs.threshold.network/staking-and-running-a-node/running-a-node/self-managed/taco-node-setup",
