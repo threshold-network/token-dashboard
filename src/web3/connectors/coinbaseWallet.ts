@@ -1,7 +1,7 @@
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { ConnectorUpdate } from "@web3-react/types"
 import {
-  getRpcUrl,
+  getRpcEndpointUrl,
   hexToNumber,
   supportedNetworksMap,
 } from "../../networks/utils"
