@@ -24,9 +24,9 @@ export const useTBTCDepositDataFromLocalStorage = () => {
 
   const setDepositDataInLocalStorage = useCallback(
     (depositData: TBTCDepositData, chainId?: number | string) => {
-      if (!account) return
+      if (!account || !chainId) return
 
-      const storageKey = `${key}-${chainId?.toString()}`
+      const storageKey = `${key}-${chainId.toString()}`
       write(account, depositData, tBTCDepositData, chainId)
 
       const updatedData = {
