@@ -22,7 +22,7 @@ export const useCheckDepositExpirationTime = () => {
 
         const currentTimestampInSeconds = Math.floor(Date.now() / 1000)
         const expirationTimestamp =
-          currentTimestampInSeconds + depositRevealAheadPeriod
+          refundLockTimestamp - depositRevealAheadPeriod
 
         return {
           expirationTimestamp,
