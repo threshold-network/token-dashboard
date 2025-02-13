@@ -61,10 +61,7 @@ const useCheckDuplicateProviderAddress = (): ((
         return { isProviderUsedForKeep, isProviderUsedForT }
       } catch (error) {
         console.error("Multicall failed:", error)
-        return {
-          isProviderUsedForKeep: false,
-          isProviderUsedForT: false,
-        }
+        throw error
       }
     },
     [tStakingContract, keepStakingContract, threshold]
