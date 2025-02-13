@@ -8,6 +8,8 @@ import {
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
 import {
+  ADRESS_ZERO,
+  EMPTY_STAKE,
   getArtifact,
   getContract,
   getContractPastEvents,
@@ -224,27 +226,27 @@ export class Staking implements IStaking {
   ): Promise<Stake> => {
     const multicalls: ContractCall[] = []
 
-    if (this._staking) {
-      multicalls.push(
-        ...[
-          {
-            interface: this._staking.interface,
-            address: this._staking.address,
-            method: "rolesOf",
-            args: [stakingProvider],
-          },
-          {
-            interface: this._staking.interface,
-            address: this._staking.address,
-            method: "stakes",
-            args: [stakingProvider],
-          },
-        ]
-      )
-    }
+    if (!this._staking) return EMPTY_STAKE
+
+    multicalls.push(
+      ...[
+        {
+          interface: this._staking.interface,
+          address: this._staking.address,
+          method: "rolesOf",
+          args: [stakingProvider],
+        },
+        {
+          interface: this._staking.interface,
+          address: this._staking.address,
+          method: "stakes",
+          args: [stakingProvider],
+        },
+      ]
+    )
 
     // Only add the eligibleStake call if _legacyKeepStaking is available
-    if (this._staking && this._legacyKeepStaking) {
+    if (this._legacyKeepStaking) {
       multicalls.push({
         interface: this._legacyKeepStaking.interface,
         address: this._legacyKeepStaking.address,
@@ -267,7 +269,7 @@ export class Staking implements IStaking {
 
     const eligibleKeepStake = eligibleKeepStakeResult.balance || ZERO
 
-    let nuStakingProvider = constants.AddressZero
+    let nuStakingProvider = ADRESS_ZERO
     let nuStake = ZERO
 
     if (this._legacyNuStaking) {
@@ -330,9 +332,9 @@ export class Staking implements IStaking {
   rolesOf = async (stakingProvider: string): Promise<RolesOf> => {
     if (!this._staking) {
       return {
-        owner: constants.AddressZero,
-        beneficiary: constants.AddressZero,
-        authorizer: constants.AddressZero,
+        owner: ADRESS_ZERO,
+        beneficiary: ADRESS_ZERO,
+        authorizer: ADRESS_ZERO,
       }
     }
     const rolesOf = await this._staking.rolesOf(stakingProvider)
