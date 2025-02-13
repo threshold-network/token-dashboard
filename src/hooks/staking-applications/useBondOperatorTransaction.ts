@@ -1,5 +1,6 @@
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { StakingAppName } from "../../store/staking-applications"
+import { Application } from "../../threshold-ts/applications"
 import {
   OnErrorCallback,
   OnSuccessCallback,
@@ -15,7 +16,8 @@ export const useBondOperatorTransaction = (
   const threshold = useThreshold()
 
   return useSendTransactionFromFn(
-    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.bondOperator!,
+    (threshold.multiAppStaking[appNameToThresholdApp[appName]] as Application)
+      ?.bondOperator,
     onSuccess,
     onError
   )
