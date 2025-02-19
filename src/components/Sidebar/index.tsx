@@ -31,10 +31,10 @@ const Sidebar = () => {
         href: "/overview",
       },
       {
-        text: "Upgrade",
-        activeIcon: IoSwapHorizontalSharp,
-        passiveIcon: IoSwapHorizontalSharp,
-        href: upgradeHref,
+        text: "tBTC",
+        activeIcon: tBTCFill,
+        passiveIcon: tBTCOutline,
+        href: "/tBTC/how-it-works",
       },
       {
         text: "Staking",
@@ -42,16 +42,13 @@ const Sidebar = () => {
         passiveIcon: IoLockClosedOutline,
         href: "/staking/how-it-works",
       },
+      {
+        text: "Upgrade",
+        activeIcon: IoSwapHorizontalSharp,
+        passiveIcon: IoSwapHorizontalSharp,
+        href: upgradeHref,
+      },
     ]
-
-    if (featureFlags.TBTC_V2) {
-      navItems.push({
-        text: "tBTC",
-        activeIcon: tBTCFill,
-        passiveIcon: tBTCOutline,
-        href: "/tBTC/how-it-works",
-      } as NavItemDetail)
-    }
 
     if (featureFlags.FEEDBACK_MODULE) {
       navItems.push({
