@@ -77,19 +77,21 @@ export const ExternalPool: FC<ExternalPoolProps> = ({
                     </HStack>
                   </Td>
                   <Td {...commonCellProps}>
-                    {!!apy && apy.length == 2 && (
-                      <BodyXs>{`${formatPercentage(
-                        apy[0],
-                        2,
-                        false,
-                        true
-                      )} -> ${formatPercentage(
-                        apy[1],
-                        2,
-                        false,
-                        true
-                      )} CRV`}</BodyXs>
-                    )}
+                    {!!apy &&
+                      apy.length === 2 &&
+                      apy.every((value) => value != null) && (
+                        <BodyXs>{`${formatPercentage(
+                          apy[0],
+                          2,
+                          false,
+                          true
+                        )} -> ${formatPercentage(
+                          apy[1],
+                          2,
+                          false,
+                          true
+                        )} CRV`}</BodyXs>
+                      )}
                   </Td>
                   <Td {...commonCellProps}>
                     {!!tvl && <BodyXs>${formatNumeral(tvl)}</BodyXs>}

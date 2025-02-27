@@ -1,7 +1,7 @@
 import { ComponentProps, FC } from "react"
 import { BodyMd, BoxLabel, Card, LabelSm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../../networks/enums/networks"
 import { LegacyStakesDepositSteps } from "../../../../components/StakingTimeline"
 
 export const LegacyStakesCard: FC<

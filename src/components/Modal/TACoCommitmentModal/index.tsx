@@ -29,7 +29,6 @@ import {
 } from "../../../web3/hooks"
 import { useModal } from "../../../hooks/useModal"
 import { useThreshold } from "../../../contexts/ThresholdContext"
-import { stakingAppNameToThresholdAppService } from "../../../hooks/staking-applications/useStakingAppContract"
 import SubmitTxButton from "../../SubmitTxButton"
 
 export type TACoCommitProps = BaseModalProps & {
@@ -63,8 +62,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
     [authorizedAmount]
   )
   const { sendTransaction } = useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService["taco"]]
-      .makeCommitment,
+    threshold.multiAppStaking.taco?.makeCommitment!,
     onSuccess
   )
 
@@ -167,6 +165,7 @@ const TACoCommitmentModal: FC<TACoCommitProps> = ({
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!threshold.multiAppStaking.taco?.contract}
           onSubmit={() => submitCommitment(stakingProvider, value)}
           type="submit"
         >

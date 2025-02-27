@@ -21,6 +21,7 @@ import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
 import ButtonLink from "../../../components/ButtonLink"
 import upgradeToTIcon from "../../../static/images/upgrade-to-t.svg"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
@@ -31,6 +32,7 @@ const Network: PageComponent = () => {
   const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
+  const threshold = useThreshold()
 
   useEffect(() => {
     if (!account) return
@@ -40,7 +42,7 @@ const Network: PageComponent = () => {
         depositor: account,
       })
     )
-  }, [dispatch, account])
+  }, [dispatch, account, threshold.tbtc.ethereumChainId])
 
   useEffect(() => {
     fetchtTvlData()

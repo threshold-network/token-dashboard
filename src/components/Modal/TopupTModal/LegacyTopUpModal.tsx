@@ -36,6 +36,7 @@ import { StakingContractLearnMore } from "../../Link"
 import { useModal } from "../../../hooks/useModal"
 import { StakeData } from "../../../types/staking"
 import ModalCloseButton from "../ModalCloseButton"
+import { useTStakingContract } from "../../../web3/hooks"
 
 const stakeTypeToDappHref: Record<StakeType.KEEP | StakeType.NU, ExternalHref> =
   {
@@ -52,6 +53,7 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
   // TODO find a solution to style bullets with chakra theme.
   const bulletColor = useColorModeValue("gray.700", "gray.300")
   const bulletColorStyle = { "::marker": { color: bulletColor } }
+  const stakingContract = useTStakingContract()
 
   const onSubmitForm = (tokenAmount: string | number) => {
     openModal(ModalType.TopupT, {
@@ -101,6 +103,7 @@ const LegacyTopUpModal: FC<BaseModalProps & { stake: StakeData }> = ({
                 submitButtonText="Top-up"
                 maxTokenAmount={tBalance}
                 shouldDisplayMaxAmountInLabel
+                isDisabled={!stakingContract}
               />
             </TabPanel>
             {stake.stakeType !== StakeType.T && (

@@ -1,7 +1,10 @@
 import axios from "axios"
+import { EnvVariable } from "../enums"
+import { getEnvVariable } from "./getEnvVariable"
 
-const TBTC_SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/suntzu93/threshold-tbtc"
+const tbtcSubgraphApi = getEnvVariable(EnvVariable.TBTC_SUBGRAPH_API)
+export const TBTC_SUBGRAPH_ID = "DETCX5Xm6tJfctRcZAxhQB9q3aK8P4BXLbujHmzEBXYV"
+export const TBTC_SUBGRAPH_URL = `https://gateway.thegraph.com/api/${tbtcSubgraphApi}/subgraphs/id/${TBTC_SUBGRAPH_ID}`
 
 const LIMIT_FOR_ONE_QUERY = 1000
 
