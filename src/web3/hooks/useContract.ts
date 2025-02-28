@@ -1,10 +1,8 @@
 import { useMemo } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Contract } from "@ethersproject/contracts"
-import { JsonRpcProvider } from "@ethersproject/providers"
-import { getEnvVariable } from "../../utils/getEnvVariable"
+import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 import { getContract } from "../../utils/getContract"
-import { EnvVariable } from "../../enums"
 
 export function useContract<T extends Contract = Contract>(
   address: string,
@@ -21,9 +19,7 @@ export function useContract<T extends Contract = Contract>(
     return getContract(
       address,
       ABI,
-      active
-        ? library
-        : new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)),
+      active ? library : getThresholdLibProvider(),
       withSignerIfPossible && account ? account : undefined
     )
   }, [address, ABI, library, chainId, withSignerIfPossible, account]) as T

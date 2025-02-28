@@ -16,6 +16,7 @@ import { UpgredableToken } from "../../types"
 import { Token } from "../../enums"
 import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "ethers"
+import { useVendingMachineContract } from "../../web3/hooks"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
@@ -34,6 +35,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
   const { formattedAmount } = useTConvertedAmount(token, amountToConvert)
   const { formattedAmount: exchangeRate } = useTExchangeRate(token)
   const { account } = useWeb3React()
+  const vendingMachineContract = useVendingMachineContract(token)
 
   const titleText = useMemo(() => {
     switch (token) {
@@ -75,10 +77,11 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
           mt={10}
           onSubmit={onSubmit}
           isDisabled={
-            !!account &&
-            (amountToConvert == 0 ||
-              amountToConvert == "" ||
-              BigNumber.from(amountToConvert).gt(max))
+            !vendingMachineContract ||
+            (!!account &&
+              (amountToConvert == 0 ||
+                amountToConvert == "" ||
+                BigNumber.from(amountToConvert).gt(max)))
           }
         >
           Upgrade

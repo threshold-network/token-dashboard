@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import {
   useMerkleDropContract,
-  DEPLOYMENT_BLOCK,
+  getMerkleDropDeploymentBlock,
 } from "../web3/hooks/useMerkleDropContract"
 import rewardsData from "../merkle-drop/rewards.json"
 import { getContractPastEvents, getAddress } from "../web3/utils"
@@ -12,12 +12,14 @@ import { setInterimRewards } from "../store/rewards"
 import { selectStakingProviders } from "../store/staking"
 import { BigNumber } from "ethers"
 import { Zero } from "@ethersproject/constants"
+import { useIsActive } from "./useIsActive"
 
 interface StakingRewards {
   [stakingProvider: string]: string
 }
 
 export const useFetchStakingRewards = () => {
+  const { chainId } = useIsActive()
   const merkleDropContract = useMerkleDropContract()
   const stakingProviders = useSelector(selectStakingProviders)
   const { hasFetched, isFetching } = useSelector(
@@ -37,7 +39,7 @@ export const useFetchStakingRewards = () => {
 
       const claimedEvents = await getContractPastEvents(merkleDropContract, {
         eventName: "Claimed",
-        fromBlock: DEPLOYMENT_BLOCK,
+        fromBlock: getMerkleDropDeploymentBlock(),
         filterParams: [stakingProviders],
       })
 

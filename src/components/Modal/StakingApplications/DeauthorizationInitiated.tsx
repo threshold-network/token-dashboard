@@ -20,14 +20,16 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import withBaseModal from "../withBaseModal"
 import shortenAddress from "../../../utils/shortenAddress"
 import { formatTokenAmount } from "../../../utils/formatAmount"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { BaseModalProps } from "../../../types"
 import ModalCloseButton from "../ModalCloseButton"
+import { StakingAppName } from "../../../store/staking-applications"
 
 export type DeauthorizationInitiatedProps = BaseModalProps & {
   stakingProvider: string
   txHash: string
   decreaseAmount: string
+  stakingAppName: StakingAppName
 }
 
 // TODO: revisit because we have the same layout for `AuthorizationIncreased`
@@ -36,6 +38,7 @@ const DeauthorizationInitiatedBase: FC<DeauthorizationInitiatedProps> = ({
   stakingProvider,
   txHash,
   decreaseAmount,
+  stakingAppName,
   closeModal,
 }) => {
   return (
@@ -45,8 +48,10 @@ const DeauthorizationInitiatedBase: FC<DeauthorizationInitiatedProps> = ({
       <ModalBody>
         <Alert status="success" mb={4}>
           <AlertIcon />
-          Your deauthorization was initiated. Your 45 day cooldown period has
-          started.
+          {`Your deauthorization was initiated. Your ${
+            stakingAppName === "taco" ? "6 month" : "45 day"
+          } cooldown period has
+          started.`}
         </Alert>
         <List spacing="2.5" my="6">
           <ListItem>
@@ -76,12 +81,14 @@ const DeauthorizationInitiatedBase: FC<DeauthorizationInitiatedProps> = ({
           </FlowStep>
           <FlowStep
             preTitle="Step 2"
-            title="45 day cooldown"
+            title={`${
+              stakingAppName === "taco" ? "6 month" : "45 day"
+            } cooldown`}
             status={FlowStepStatus.active}
             size="sm"
           >
-            You must wait a 45 day cooldown to then confirm the deauthorization.
-            This is 1 transaction.
+            You must wait a {stakingAppName === "taco" ? "6 month" : "45 day"}{" "}
+            cooldown to then confirm the deauthorization. This is 1 transaction.
           </FlowStep>
         </Stack>
         <Alert status="warning" mb="12">

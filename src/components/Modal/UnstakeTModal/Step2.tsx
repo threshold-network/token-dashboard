@@ -26,7 +26,7 @@ import { ModalType, UnstakeType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import { DeauthorizeInfo } from "./DeauthorizeInfo"
 import ModalCloseButton from "../ModalCloseButton"
-import { OnSuccessCallback } from "../../../web3/hooks"
+import { OnSuccessCallback, useTStakingContract } from "../../../web3/hooks"
 import SubmitTxButton from "../../SubmitTxButton"
 
 const UnstakeTModal: FC<
@@ -36,6 +36,7 @@ const UnstakeTModal: FC<
     unstakeType: UnstakeType
   }
 > = ({ stake, amountToUnstake, unstakeType, closeModal }) => {
+  const stakingContract = useTStakingContract()
   const { openModal } = useModal()
   const _amountToUnstake =
     unstakeType === UnstakeType.ALL
@@ -119,6 +120,7 @@ const UnstakeTModal: FC<
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!stakingContract}
           onSubmit={() => {
             unstake({
               stakingProvider: stake.stakingProvider,

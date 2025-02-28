@@ -3,16 +3,10 @@ import { useErc20TokenContract } from "./useERC20"
 import { Token } from "../../enums"
 import { TransactionType } from "../../enums/transactionType"
 import { getArtifact } from "../../threshold-ts/utils"
-import {
-  shouldUseTestnetDevelopmentContracts,
-  supportedChainId,
-} from "../../utils/getEnvVariable"
-
-const nuCupherTokenArtifact = getArtifact(
-  "NuCypherToken",
-  supportedChainId,
-  shouldUseTestnetDevelopmentContracts
-)
+import { shouldUseTestnetDevelopmentContracts } from "../../utils/getEnvVariable"
+import { useIsActive } from "../../hooks/useIsActive"
+import { getMainnetOrTestnetChainId } from "../../networks/utils"
+import { SupportedChainIds } from "../../networks/enums/networks"
 export interface UseNu {
   (): {
     approveNu: () => void
@@ -22,10 +16,19 @@ export interface UseNu {
 }
 
 export const useNu: UseNu = () => {
+  const { chainId } = useIsActive()
+  const supportedChainId = getMainnetOrTestnetChainId(chainId)
+
+  const nuCupherTokenArtifact = getArtifact(
+    "NuCypherToken",
+    supportedChainId,
+    shouldUseTestnetDevelopmentContracts
+  )
+
   const { balanceOf, approve, contract } = useErc20TokenContract(
-    nuCupherTokenArtifact.address,
+    nuCupherTokenArtifact?.address!,
     undefined,
-    nuCupherTokenArtifact.abi
+    nuCupherTokenArtifact?.abi!
   )
 
   const approveNu = () => {

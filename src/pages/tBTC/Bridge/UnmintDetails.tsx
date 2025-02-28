@@ -45,7 +45,7 @@ import {
   BridgeLayoutAsideSection,
   BridgeLayoutMainSection,
 } from "./BridgeLayout"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import { PageComponent } from "../../../types"
 import { dateToUnixTimestamp, dateAs } from "../../../utils/date"
 import { CopyAddressToClipboard } from "../../../components/CopyToClipboard"
@@ -114,8 +114,8 @@ export const UnmintDetails: PageComponent = () => {
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
     useState(false)
 
-  const _isFetching = (isFetching || !data) && !error
-  const wasDataFetched = !isFetching && !!data && !error
+  const _isFetching = isFetching || !data
+  const wasDataFetched = !isFetching && !!data
 
   const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
   const shouldForceIsProcessCompleted =
@@ -192,78 +192,54 @@ export const UnmintDetails: PageComponent = () => {
         shouldDisplaySuccessStep || shouldForceIsProcessCompleted
       }
     >
-      <BridgeLayoutMainSection>
-        {_isFetching && <BridgeProcessDetailsPageSkeleton />}
-        {error && <>{error}</>}
-        {wasDataFetched && (
-          <>
-            <BridgeProcessCardTitle bridgeProcess="unmint" />
-            <BridgeProcessCardSubTitle
-              display="flex"
-              stepText={
-                shouldDisplaySuccessStep || shouldForceIsProcessCompleted
-                  ? "Unminted"
-                  : "Unminting"
-              }
-            >
-              {!(shouldDisplaySuccessStep || shouldForceIsProcessCompleted) && (
-                <Box as="span" ml="2">
-                  {" "}
-                  - In progress...
-                </Box>
-              )}
-              <InlineTokenBalance
-                tokenAmount={requestedAmount}
-                withSymbol
-                tokenSymbol="tBTC"
-                ml="auto"
-                precision={6}
-                higherPrecision={8}
-              />
-            </BridgeProcessCardSubTitle>
-            <Timeline>
-              <Badge
-                variant="subtle"
-                size="sm"
-                bg={timelineBadgeBgColor}
-                position="absolute"
-                bottom="10px"
-                left="50%"
-                transform="translateX(-50%)"
-              >
-                usual duration - 3-5 hours
-              </Badge>
-              <TimelineItem status="active">
-                <TimelineBreakpoint>
-                  <TimelineDot position="relative">
-                    <Icon
-                      as={IoCheckmarkSharp}
-                      position="absolute"
-                      color="white"
-                      w="22px"
-                      h="22px"
-                      m="auto"
-                      left="0"
-                      right="0"
-                      textAlign="center"
-                    />
-                  </TimelineDot>
-                  <TimelineConnector />
-                </TimelineBreakpoint>
-                <TimelineContent>
-                  <BodyXs whiteSpace="pre-line">tBTC unwrapped</BodyXs>
-                </TimelineContent>
-              </TimelineItem>
-              <TimelineItem
-                status={
-                  isProcessCompleted || shouldForceIsProcessCompleted
-                    ? "active"
-                    : "semi-active"
+      {error ? (
+        <Box w="full">{error}</Box>
+      ) : (
+        <BridgeLayoutMainSection>
+          {_isFetching && <BridgeProcessDetailsPageSkeleton />}
+          {wasDataFetched && (
+            <>
+              <BridgeProcessCardTitle bridgeProcess="unmint" />
+              <BridgeProcessCardSubTitle
+                display="flex"
+                stepText={
+                  shouldDisplaySuccessStep || shouldForceIsProcessCompleted
+                    ? "Unminted"
+                    : "Unminting"
                 }
               >
-                <TimelineBreakpoint>
-                  <TimelineDot position="relative">
-                    {(isProcessCompleted || shouldForceIsProcessCompleted) && (
+                {!(
+                  shouldDisplaySuccessStep || shouldForceIsProcessCompleted
+                ) && (
+                  <Box as="span" ml="2">
+                    {" "}
+                    - In progress...
+                  </Box>
+                )}
+                <InlineTokenBalance
+                  tokenAmount={requestedAmount}
+                  withSymbol
+                  tokenSymbol="tBTC"
+                  ml="auto"
+                  precision={6}
+                  higherPrecision={8}
+                />
+              </BridgeProcessCardSubTitle>
+              <Timeline>
+                <Badge
+                  variant="subtle"
+                  size="sm"
+                  bg={timelineBadgeBgColor}
+                  position="absolute"
+                  bottom="10px"
+                  left="50%"
+                  transform="translateX(-50%)"
+                >
+                  usual duration - 3-5 hours
+                </Badge>
+                <TimelineItem status="active">
+                  <TimelineBreakpoint>
+                    <TimelineDot position="relative">
                       <Icon
                         as={IoCheckmarkSharp}
                         position="absolute"
@@ -275,42 +251,72 @@ export const UnmintDetails: PageComponent = () => {
                         right="0"
                         textAlign="center"
                       />
-                    )}
-                  </TimelineDot>
-                  <TimelineConnector />
-                </TimelineBreakpoint>
-                <TimelineContent>
-                  <BodyXs whiteSpace="pre-line">BTC sent</BodyXs>
-                </TimelineContent>
-              </TimelineItem>
-            </Timeline>
-            {shouldDisplaySuccessStep || shouldForceIsProcessCompleted ? (
-              <SuccessStep
-                requestedAmount={requestedAmount}
-                receivedAmount={receivedAmount}
-                thresholdNetworkFee={thresholdNetworkFee}
-                btcAddress={btcAddress!}
-              />
-            ) : (
-              <BridgeProcessStep
-                title="Unminting in progress"
-                chain="ethereum"
-                txHash={redemptionRequestedTxHash}
-                progressBarColor="brand.500"
-                isCompleted={isProcessCompleted}
-                icon={<ProcessCompletedBrandGradientIcon />}
-                onComplete={() => setShouldDisplaySuccessStep(true)}
-                isIndeterminate
-              >
-                <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
-                  Your redemption request is being processed. This will take
-                  around 3-5 hours.
-                </BodyMd>
-              </BridgeProcessStep>
-            )}
-          </>
-        )}
-      </BridgeLayoutMainSection>
+                    </TimelineDot>
+                    <TimelineConnector />
+                  </TimelineBreakpoint>
+                  <TimelineContent>
+                    <BodyXs whiteSpace="pre-line">tBTC unwrapped</BodyXs>
+                  </TimelineContent>
+                </TimelineItem>
+                <TimelineItem
+                  status={
+                    isProcessCompleted || shouldForceIsProcessCompleted
+                      ? "active"
+                      : "semi-active"
+                  }
+                >
+                  <TimelineBreakpoint>
+                    <TimelineDot position="relative">
+                      {(isProcessCompleted ||
+                        shouldForceIsProcessCompleted) && (
+                        <Icon
+                          as={IoCheckmarkSharp}
+                          position="absolute"
+                          color="white"
+                          w="22px"
+                          h="22px"
+                          m="auto"
+                          left="0"
+                          right="0"
+                          textAlign="center"
+                        />
+                      )}
+                    </TimelineDot>
+                    <TimelineConnector />
+                  </TimelineBreakpoint>
+                  <TimelineContent>
+                    <BodyXs whiteSpace="pre-line">BTC sent</BodyXs>
+                  </TimelineContent>
+                </TimelineItem>
+              </Timeline>
+              {shouldDisplaySuccessStep || shouldForceIsProcessCompleted ? (
+                <SuccessStep
+                  requestedAmount={requestedAmount}
+                  receivedAmount={receivedAmount}
+                  thresholdNetworkFee={thresholdNetworkFee}
+                  btcAddress={btcAddress!}
+                />
+              ) : (
+                <BridgeProcessStep
+                  title="Unminting in progress"
+                  chain="ethereum"
+                  txHash={redemptionRequestedTxHash}
+                  progressBarColor="brand.500"
+                  isCompleted={isProcessCompleted}
+                  icon={<ProcessCompletedBrandGradientIcon />}
+                  onComplete={() => setShouldDisplaySuccessStep(true)}
+                  isIndeterminate
+                >
+                  <BodyMd mt="6" px="3.5" mb="10" alignSelf="flex-start">
+                    Your redemption request is being processed. This will take
+                    around 3-5 hours.
+                  </BodyMd>
+                </BridgeProcessStep>
+              )}
+            </>
+          )}
+        </BridgeLayoutMainSection>
+      )}
       <BridgeLayoutAsideSection
         alignSelf="stretch"
         display="flex"
@@ -374,15 +380,15 @@ const SuccessStep: FC<{
       <List spacing="4">
         <TransactionDetailsAmountItem
           label="Unminted Amount"
-          tokenAmount={requestedAmount}
-          tokenSymbol="tBTC"
+          amount={requestedAmount}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
         />
         <TransactionDetailsAmountItem
           label="Received Amount"
-          tokenAmount={receivedAmount}
-          tokenSymbol="BTC"
+          amount={receivedAmount}
+          suffixItem="BTC"
           tokenDecimals={8}
           precision={6}
           higherPrecision={8}
@@ -390,8 +396,8 @@ const SuccessStep: FC<{
         />
         <TransactionDetailsAmountItem
           label="Threshold Network Fee"
-          tokenAmount={thresholdNetworkFee}
-          tokenSymbol="tBTC"
+          amount={thresholdNetworkFee}
+          suffixItem="tBTC"
           precision={6}
           higherPrecision={8}
         />

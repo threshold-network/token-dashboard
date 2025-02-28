@@ -49,11 +49,11 @@ on:
         default: false
         type: boolean
     secrets:
-      ethUrlHttp:
-        description: The HTTP ETH API URL.
+      rpcServiceApi:
+        description: The RPC service API Key.
         required: true
-      ethUrlWS:
-        description: The WebSocket ETH API URL.
+      rpcServiceName:
+        description: The RPC service name.
         required: true
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
@@ -74,6 +74,9 @@ on:
         description: >
           Project Id gathered from WalletConnect cloud. Required for
           WalletConnect v2.
+        required: true
+      tbtcSubgraphApi:
+        description: The API endpoint for the tBTC subgraph.
         required: true
 
 jobs:
@@ -161,16 +164,20 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          CHAIN_ID: ${{ env.NETWORK_ID }}
-          ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
-          ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
+          RPC_SERVICE_API: ${{ secrets.rpcServiceApi }}
+          RPC_SERVICE_NAME: ${{ secrets.rpcServiceName }}
           NODE_OPTIONS: --max_old_space_size=4096
-          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
-          ELECTRUM_HOST: ${{ secrets.electrumHost }}
-          ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
+          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
+          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
+          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
+          TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
+          TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          TBTC_SUBGRAPH_API: ${{ secrets.tbtcSubgraphApi }}
           DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Build
@@ -179,16 +186,20 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
-          CHAIN_ID: ${{ env.NETWORK_ID }}
-          ETH_HOSTNAME_HTTP: ${{ secrets.ethUrlHttp }}
-          ETH_HOSTNAME_WS: ${{ secrets.ethUrlWS }}
+          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
+          RPC_SERVICE_API: ${{ secrets.rpcServiceApi }}
+          RPC_SERVICE_NAME: ${{ secrets.rpcServiceName }}
           NODE_OPTIONS: --max_old_space_size=4096
-          ELECTRUM_PROTOCOL: ${{ secrets.electrumProtocol }}
-          ELECTRUM_HOST: ${{ secrets.electrumHost }}
-          ELECTRUM_PORT: ${{ secrets.electrumPort }}
+          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
+          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
+          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
+          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
+          TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
+          TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
+          TBTC_SUBGRAPH_API: ${{ secrets.tbtcSubgraphApi }}
           DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Deploy to GCP

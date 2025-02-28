@@ -23,10 +23,17 @@ const PageLayout: FC<PageLayoutProps> = ({
     ? pages.filter((_) => !_.route.hideFromMenu).map((_) => _.route)
     : []
 
+  const visibleExternalLinks = externalLinks
+    ? externalLinks?.filter((_) => !_.hideFromMenu)
+    : []
+
   return (
     <>
       {links.length > 0 && (
-        <SubNavigationPills links={links} externalLinks={externalLinks} />
+        <SubNavigationPills
+          links={links}
+          externalLinks={visibleExternalLinks}
+        />
       )}
       <Container
         maxW={{ base: "2xl", xl: "6xl" }}

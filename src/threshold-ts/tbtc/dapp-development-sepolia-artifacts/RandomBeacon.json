@@ -1,0 +1,3269 @@
+{
+  "address": "0x02CBA6D77CF9fB019e322c55b34c9d42f2eF4D74",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "contract SortitionPool",
+          "name": "_sortitionPool",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20",
+          "name": "_tToken",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IStaking",
+          "name": "_staking",
+          "type": "address"
+        },
+        {
+          "internalType": "contract BeaconDkgValidator",
+          "name": "_dkgValidator",
+          "type": "address"
+        },
+        {
+          "internalType": "contract ReimbursementPool",
+          "name": "_reimbursementPool",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "AuthorizationDecreaseApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "decreasingAt",
+          "type": "uint64"
+        }
+      ],
+      "name": "AuthorizationDecreaseRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "AuthorizationIncreased",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "minimumAuthorization",
+          "type": "uint96"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "authorizationDecreaseDelay",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "authorizationDecreaseChangePeriod",
+          "type": "uint64"
+        }
+      ],
+      "name": "AuthorizationParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "entry",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "entrySubmittedBlock",
+          "type": "uint256"
+        }
+      ],
+      "name": "CallbackFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "resultHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "maliciousSubmitter",
+          "type": "address"
+        }
+      ],
+      "name": "DkgMaliciousResultSlashed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "resultHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "maliciousSubmitter",
+          "type": "address"
+        }
+      ],
+      "name": "DkgMaliciousResultSlashingFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "resultHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "approver",
+          "type": "address"
+        }
+      ],
+      "name": "DkgResultApproved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "resultHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "challenger",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "reason",
+          "type": "string"
+        }
+      ],
+      "name": "DkgResultChallenged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "bytes32",
+          "name": "resultHash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "seed",
+          "type": "uint256"
+        },
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "submitterMemberIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "misbehavedMembersIndices",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signatures",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "signingMembersIndices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint32[]",
+              "name": "members",
+              "type": "uint32[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            }
+          ],
+          "indexed": false,
+          "internalType": "struct BeaconDkg.Result",
+          "name": "result",
+          "type": "tuple"
+        }
+      ],
+      "name": "DkgResultSubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "DkgSeedTimedOut",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "seed",
+          "type": "uint256"
+        }
+      ],
+      "name": "DkgStarted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "DkgStateLocked",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "DkgTimedOut",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionGas",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultApprovalGasOffset",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "notifyOperatorInactivityGasOffset",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "relayEntrySubmissionGasOffset",
+          "type": "uint256"
+        }
+      ],
+      "name": "GasParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "oldGovernance",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newGovernance",
+          "type": "address"
+        }
+      ],
+      "name": "GovernanceTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "groupCreationFrequency",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "groupLifetime",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultChallengePeriodLength",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultChallengeExtraGas",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionTimeout",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgResultSubmitterPrecedencePeriodLength",
+          "type": "uint256"
+        }
+      ],
+      "name": "GroupCreationParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "indexed": true,
+          "internalType": "bytes",
+          "name": "groupPubKey",
+          "type": "bytes"
+        }
+      ],
+      "name": "GroupRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "nonce",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "notifier",
+          "type": "address"
+        }
+      ],
+      "name": "InactivityClaimed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "InvoluntaryAuthorizationDecreaseFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "OperatorJoinedSortitionPool",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "OperatorRegistered",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "OperatorStatusUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newReimbursementPool",
+          "type": "address"
+        }
+      ],
+      "name": "ReimbursementPoolUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "RelayEntryDelaySlashed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "RelayEntryDelaySlashingFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "relayEntrySoftTimeout",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "relayEntryHardTimeout",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "callbackGasLimit",
+          "type": "uint256"
+        }
+      ],
+      "name": "RelayEntryParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "previousEntry",
+          "type": "bytes"
+        }
+      ],
+      "name": "RelayEntryRequested",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "submitter",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bytes",
+          "name": "entry",
+          "type": "bytes"
+        }
+      ],
+      "name": "RelayEntrySubmitted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint64",
+          "name": "terminatedGroupId",
+          "type": "uint64"
+        }
+      ],
+      "name": "RelayEntryTimedOut",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "RelayEntryTimeoutSlashed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "requestId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "slashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "RelayEntryTimeoutSlashingFailed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "requester",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "isAuthorized",
+          "type": "bool"
+        }
+      ],
+      "name": "RequesterAuthorizationUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "sortitionPoolRewardsBanDuration",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "relayEntryTimeoutNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unauthorizedSigningNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "dkgMaliciousResultNotificationRewardMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "name": "RewardParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint96",
+          "name": "amount",
+          "type": "uint96"
+        }
+      ],
+      "name": "RewardsWithdrawn",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "relayEntrySubmissionFailureSlashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maliciousDkgResultSlashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unauthorizedSigningSlashingAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "SlashingParametersUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unauthorizedSigningSlashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "UnauthorizedSigningSlashed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "unauthorizedSigningSlashingAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "address[]",
+          "name": "groupMembers",
+          "type": "address[]"
+        }
+      ],
+      "name": "UnauthorizedSigningSlashingFailed",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "approveAuthorizationDecrease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "submitterMemberIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "misbehavedMembersIndices",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signatures",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "signingMembersIndices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint32[]",
+              "name": "members",
+              "type": "uint32[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct BeaconDkg.Result",
+          "name": "dkgResult",
+          "type": "tuple"
+        }
+      ],
+      "name": "approveDkgResult",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "authorizationDecreaseRequested",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "authorizationIncreased",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "authorizationParameters",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "minimumAuthorization",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint64",
+          "name": "authorizationDecreaseDelay",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "authorizationDecreaseChangePeriod",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "authorizedRequesters",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "availableRewards",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "",
+          "type": "uint96"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "submitterMemberIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "misbehavedMembersIndices",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signatures",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "signingMembersIndices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint32[]",
+              "name": "members",
+              "type": "uint32[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct BeaconDkg.Result",
+          "name": "dkgResult",
+          "type": "tuple"
+        }
+      ],
+      "name": "challengeDkgResult",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "eligibleStake",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "",
+          "type": "uint96"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "gasParameters",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionGas",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultApprovalGasOffset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "notifyOperatorInactivityGasOffset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntrySubmissionGasOffset",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "genesis",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        }
+      ],
+      "name": "getGroup",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "registrationBlockNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bool",
+              "name": "terminated",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct Groups.Group",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "groupPubKey",
+          "type": "bytes"
+        }
+      ],
+      "name": "getGroup",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256",
+              "name": "registrationBlockNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bool",
+              "name": "terminated",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct Groups.Group",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getGroupCreationState",
+      "outputs": [
+        {
+          "internalType": "enum BeaconDkg.State",
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getGroupsRegistry",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "governance",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "groupCreationParameters",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "groupCreationFrequency",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "groupLifetime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultChallengePeriodLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultChallengeExtraGas",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgSubmitterPrecedencePeriodLength",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "hasDkgTimedOut",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "name": "inactivityClaimNonce",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        },
+        {
+          "internalType": "uint96",
+          "name": "fromAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "toAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "involuntaryAuthorizationDecrease",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isOperatorInPool",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "isOperatorUpToDate",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isRelayRequestInProgress",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "joinSortitionPool",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "minimumAuthorization",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "",
+          "type": "uint96"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "notifyDkgTimeout",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint64",
+              "name": "groupId",
+              "type": "uint64"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "inactiveMembersIndices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signatures",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "signingMembersIndices",
+              "type": "uint256[]"
+            }
+          ],
+          "internalType": "struct BeaconInactivity.Claim",
+          "name": "claim",
+          "type": "tuple"
+        },
+        {
+          "internalType": "uint256",
+          "name": "nonce",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint32[]",
+          "name": "groupMembers",
+          "type": "uint32[]"
+        }
+      ],
+      "name": "notifyOperatorInactivity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "operatorToStakingProvider",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "pendingAuthorizationDecrease",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "",
+          "type": "uint96"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "registerOperator",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "reimbursementPool",
+      "outputs": [
+        {
+          "internalType": "contract ReimbursementPool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "relayEntryParameters",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "relayEntrySoftTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntryHardTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "callbackGasLimit",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "remainingAuthorizationDecreaseDelay",
+      "outputs": [
+        {
+          "internalType": "uint64",
+          "name": "",
+          "type": "uint64"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint32[]",
+          "name": "groupMembers",
+          "type": "uint32[]"
+        }
+      ],
+      "name": "reportRelayEntryTimeout",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "signedMsgSender",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint64",
+          "name": "groupId",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint32[]",
+          "name": "groupMembers",
+          "type": "uint32[]"
+        }
+      ],
+      "name": "reportUnauthorizedSigning",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IRandomBeaconConsumer",
+          "name": "callbackContract",
+          "type": "address"
+        }
+      ],
+      "name": "requestRelayEntry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "rewardParameters",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "sortitionPoolRewardsBanDuration",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntryTimeoutNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "unauthorizedSigningNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgMaliciousResultNotificationRewardMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "selectGroup",
+      "outputs": [
+        {
+          "internalType": "uint32[]",
+          "name": "",
+          "type": "uint32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "requester",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "isAuthorized",
+          "type": "bool"
+        }
+      ],
+      "name": "setRequesterAuthorization",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "slashingParameters",
+      "outputs": [
+        {
+          "internalType": "uint96",
+          "name": "relayEntrySubmissionFailureSlashingAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "maliciousDkgResultSlashingAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "unauthorizedSigningSlashingAmount",
+          "type": "uint96"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "sortitionPool",
+      "outputs": [
+        {
+          "internalType": "contract SortitionPool",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "staking",
+      "outputs": [
+        {
+          "internalType": "contract IStaking",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "stakingProviderToOperator",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "submitterMemberIndex",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bytes",
+              "name": "groupPubKey",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint8[]",
+              "name": "misbehavedMembersIndices",
+              "type": "uint8[]"
+            },
+            {
+              "internalType": "bytes",
+              "name": "signatures",
+              "type": "bytes"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "signingMembersIndices",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint32[]",
+              "name": "members",
+              "type": "uint32[]"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "membersHash",
+              "type": "bytes32"
+            }
+          ],
+          "internalType": "struct BeaconDkg.Result",
+          "name": "dkgResult",
+          "type": "tuple"
+        }
+      ],
+      "name": "submitDkgResult",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "entry",
+          "type": "bytes"
+        },
+        {
+          "internalType": "uint32[]",
+          "name": "groupMembers",
+          "type": "uint32[]"
+        }
+      ],
+      "name": "submitRelayEntry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "entry",
+          "type": "bytes"
+        }
+      ],
+      "name": "submitRelayEntry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tToken",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newGovernance",
+          "type": "address"
+        }
+      ],
+      "name": "transferGovernance",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint96",
+          "name": "_minimumAuthorization",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_authorizationDecreaseDelay",
+          "type": "uint64"
+        },
+        {
+          "internalType": "uint64",
+          "name": "_authorizationDecreaseChangePeriod",
+          "type": "uint64"
+        }
+      ],
+      "name": "updateAuthorizationParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionGas",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultApprovalGasOffset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "notifyOperatorInactivityGasOffset",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntrySubmissionGasOffset",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateGasParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "groupCreationFrequency",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "groupLifetime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultChallengePeriodLength",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultChallengeExtraGas",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgResultSubmissionTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgSubmitterPrecedencePeriodLength",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateGroupCreationParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "operator",
+          "type": "address"
+        }
+      ],
+      "name": "updateOperatorStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract ReimbursementPool",
+          "name": "_reimbursementPool",
+          "type": "address"
+        }
+      ],
+      "name": "updateReimbursementPool",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "relayEntrySoftTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntryHardTimeout",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "callbackGasLimit",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateRelayEntryParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "sortitionPoolRewardsBanDuration",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "relayEntryTimeoutNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "unauthorizedSigningNotificationRewardMultiplier",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "dkgMaliciousResultNotificationRewardMultiplier",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateRewardParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint96",
+          "name": "relayEntrySubmissionFailureSlashingAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "maliciousDkgResultSlashingAmount",
+          "type": "uint96"
+        },
+        {
+          "internalType": "uint96",
+          "name": "unauthorizedSigningSlashingAmount",
+          "type": "uint96"
+        }
+      ],
+      "name": "updateSlashingParameters",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawIneligibleRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "stakingProvider",
+          "type": "address"
+        }
+      ],
+      "name": "withdrawRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x0b9ff095d08d6428936ff1aa63cf69c05bfc09756c986288c9c5b1e48fc9e80f",
+  "receipt": {
+    "to": null,
+    "from": "0x123694886DBf5Ac94DDA07135349534536D14cAf",
+    "contractAddress": "0x5499f54b4A1CB4816eefCf78962040461be3D80b",
+    "transactionIndex": 134,
+    "gasUsed": "5967896",
+    "logsBloom": "0x00000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000800000000000000000000000000002000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000",
+    "blockHash": "0x2a91baafb0d14ee461a2d80f4a45bd592d15716538c3509c470ae00676be2213",
+    "transactionHash": "0x0b9ff095d08d6428936ff1aa63cf69c05bfc09756c986288c9c5b1e48fc9e80f",
+    "logs": [
+      {
+        "transactionIndex": 134,
+        "blockNumber": 15638933,
+        "transactionHash": "0x0b9ff095d08d6428936ff1aa63cf69c05bfc09756c986288c9c5b1e48fc9e80f",
+        "address": "0x5499f54b4A1CB4816eefCf78962040461be3D80b",
+        "topics": [
+          "0x5f56bee8cffbe9a78652a74a60705edede02af10b0bbb888ca44b79a0d42ce80"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000123694886dbf5ac94dda07135349534536d14caf",
+        "logIndex": 219,
+        "blockHash": "0x2a91baafb0d14ee461a2d80f4a45bd592d15716538c3509c470ae00676be2213"
+      }
+    ],
+    "blockNumber": 15638933,
+    "cumulativeGasUsed": "18819477",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x4e4cBA3779d56386ED43631b4dCD6d8EacEcBCF6",
+    "0xCdF7028ceAB81fA0C6971208e83fa7872994beE5",
+    "0x01B67b1194C75264d06F808A921228a95C765dd7",
+    "0x4EDC83c5C5B0C41A594371485554B95280653f94",
+    "0x8adF3f35dBE4026112bCFc078872bcb967732Ea8"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "315dd8aa56418c14cbdc8d65adaa494b",
+  "libraries": {
+    "BLS": "0x6552059B6eFc6aA4AE3ea45f28ED4D92acE020cD",
+    "BeaconAuthorization": "0x632c2d58Ad870fbd4569da0A4E82dDf4B56E83E8",
+    "BeaconDkg": "0x024a697788918007592572f7CD020df2bC2ABD84",
+    "BeaconInactivity": "0x67A26f2ebDB2448605936Fe9a5f496cDA7941Ec0"
+  },
+  "devdoc": {
+    "details": "Should be owned by the governance contract controlling Random Beacon      parameters.",
+    "kind": "dev",
+    "methods": {
+      "approveDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "params": {
+          "dkgResult": "Result to approve. Must match the submitted result        stored during `submitDkgResult`."
+        }
+      },
+      "authorizationDecreaseRequested(address,uint96,uint96)": {
+        "details": "Can only be called by T staking contract."
+      },
+      "authorizationIncreased(address,uint96,uint96)": {
+        "details": "Can only be called by T staking contract."
+      },
+      "authorizationParameters()": {
+        "details": "The minimum authorization is also returned by `minimumAuthorization()`      function, as a requirement of `IApplication` interface.",
+        "returns": {
+          "authorizationDecreaseChangePeriod": "Authorization decrease change        period in seconds. It is the time, before authorization decrease        delay end, during which the pending authorization decrease        request can be overwritten.        If set to 0, pending authorization decrease request can not be        overwritten until the entire `authorizationDecreaseDelay` ends.        If set to value equal `authorizationDecreaseDelay`, request can        always be overwritten.",
+          "authorizationDecreaseDelay": "Delay in seconds that needs to pass         between the time authorization decrease is requested and the         time that request gets approved. Protects against free-riders         earning rewards and not being active in the network.",
+          "minimumAuthorization": "The minimum authorization amount required         so that operator can participate in the random beacon. This         amount is required to execute slashing for providing a malicious         DKG result or when a relay entry times out."
+        }
+      },
+      "challengeDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "details": "Due to EIP-150 1/64 of the gas is not forwarded to the call, and      will be kept to execute the remaining operations in the function      after the call inside the try-catch. To eliminate a class of      attacks related to the gas limit manipulation, this function      requires an extra amount of gas to be left at the end of the      execution.",
+        "params": {
+          "dkgResult": "Result to challenge. Must match the submitted result        stored during `submitDkgResult`."
+        }
+      },
+      "constructor": {
+        "details": "Assigns initial values to parameters to make the beacon work      safely. These parameters are just proposed defaults and they might      be updated with `update*` functions after the contract deployment      and before transferring the ownership to the governance contract."
+      },
+      "gasParameters()": {
+        "returns": {
+          "dkgResultApprovalGasOffset": "Gas that is meant to balance the DKG         result approval's overall cost.",
+          "dkgResultSubmissionGas": "Calculated gas cost for submitting a DKG         result. This will be refunded as part of the DKG approval         process.",
+          "notifyOperatorInactivityGasOffset": "Gas that is meant to balance         the operator inactivity notification cost.",
+          "relayEntrySubmissionGasOffset": "Gas that is meant to balance the         relay entry submission cost."
+        }
+      },
+      "groupCreationParameters()": {
+        "returns": {
+          "dkgResultChallengeExtraGas": "The extra gas required to be left at         the end of the challenge DKG result transaction.",
+          "dkgResultChallengePeriodLength": "The number of blocks for which         a DKG result can be challenged. Anyone can challenge DKG result         for a certain number of blocks before the result is fully         accepted and the group registered in the pool of active groups.         If the challenge gets accepted, all operators who signed the         malicious result get slashed for and the notifier gets rewarded.",
+          "dkgResultSubmissionTimeout": "Timeout in blocks for a group to         submit the DKG result. All members are eligible to submit the         DKG result. If `dkgResultSubmissionTimeout` passes without the         DKG result submitted, DKG is considered as timed out and no DKG         result for this group creation can be submitted anymore.",
+          "dkgSubmitterPrecedencePeriodLength": "Time during the DKG result         approval stage when the submitter of the DKG result takes the         precedence to approve the DKG result. After this time passes         anyone can approve the DKG result.",
+          "groupCreationFrequency": "The frequency of a new group creation.         Groups are created with a fixed frequency of relay requests.",
+          "groupLifetime": "Group lifetime in blocks. When a group reached its         lifetime, it is no longer selected for new relay requests but         may still be responsible for submitting relay entry if relay         request assigned to that group is still pending."
+        }
+      },
+      "hasDkgTimedOut()": {
+        "returns": {
+          "_0": "True if DKG timed out, false otherwise."
+        }
+      },
+      "isRelayRequestInProgress()": {
+        "returns": {
+          "_0": "Flag indicating whether a relay entry request is currently         in progress."
+        }
+      },
+      "notifyOperatorInactivity((uint64,uint256[],bytes,uint256[]),uint256,uint32[])": {
+        "params": {
+          "claim": "Operator inactivity claim.",
+          "groupMembers": "Identifiers of group members.",
+          "nonce": "Current inactivity claim nonce for the given group. Must        be the same as the stored one."
+        }
+      },
+      "relayEntryParameters()": {
+        "returns": {
+          "callbackGasLimit": "Relay entry callback gas limit. This is the gas         limit with which callback function provided in the relay request         transaction is executed. The callback is executed with a new         relay entry value in the same transaction the relay entry is         submitted.",
+          "relayEntryHardTimeout": "Hard timeout in blocks for a group to         submit the relay entry. After the soft timeout passes without         relay entry submitted, all group members start getting slashed.         The slashing amount increases linearly until the group submits         the relay entry or until `relayEntryHardTimeout` is reached.         When the hard timeout is reached, each group member will get         slashed for `_relayEntrySubmissionFailureSlashingAmount`.",
+          "relayEntrySoftTimeout": "Soft timeout in blocks for a group to         submit the relay entry. If the soft timeout is reached for         submitting the relay entry, the slashing starts."
+        }
+      },
+      "reportRelayEntryTimeout(uint32[])": {
+        "params": {
+          "groupMembers": "Identifiers of group members."
+        }
+      },
+      "reportUnauthorizedSigning(bytes,uint64,uint32[])": {
+        "params": {
+          "groupId": "Group that is being reported for leaking a private key.",
+          "groupMembers": "Identifiers of group members.",
+          "signedMsgSender": "Signature of the sender's address as a message."
+        }
+      },
+      "requestRelayEntry(address)": {
+        "params": {
+          "callbackContract": "Beacon consumer callback contract."
+        }
+      },
+      "rewardParameters()": {
+        "returns": {
+          "dkgMaliciousResultNotificationRewardMultiplier": "Percentage of the         staking contract malicious behavior notification reward which         will be transferred to the notifier reporting about a malicious         DKG result. Notifiers are rewarded from a notifiers treasury         pool. For example, if notification reward is 1000 and the value         of the multiplier is 5, the notifier will receive:         5% of 1000 = 50 per each operator affected.",
+          "relayEntryTimeoutNotificationRewardMultiplier": "Percentage of the         staking contract malicious behavior notification reward which         will be transferred to the notifier reporting about relay entry         timeout. Notifiers are rewarded from a notifiers treasury pool.         For example, if notification reward is 1000 and the value of the         multiplier is 5, the notifier will receive: 5% of 1000 = 50 per         each operator affected.",
+          "sortitionPoolRewardsBanDuration": "Duration of the sortition pool         rewards ban imposed on operators who misbehaved during DKG by         being inactive or disqualified and for operators that were         identified by the rest of group members as inactive via         `notifyOperatorInactivity`.",
+          "unauthorizedSigningNotificationRewardMultiplier": "Percentage of the         staking contract malicious behavior notification reward which         will be transferred to the notifier reporting about unauthorized         signing. Notifiers are rewarded from a notifiers treasury pool.         For example, if a notification reward is 1000 and the value of         the multiplier is 5, the notifier will receive: 5% of 1000 = 50         per each operator affected."
+        }
+      },
+      "selectGroup()": {
+        "returns": {
+          "_0": "IDs of selected group members."
+        }
+      },
+      "setRequesterAuthorization(address,bool)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract.",
+        "params": {
+          "isAuthorized": "True or false",
+          "requester": "Requester, can be a contract or EOA"
+        }
+      },
+      "slashingParameters()": {
+        "returns": {
+          "maliciousDkgResultSlashingAmount": "Slashing amount for submitting         a malicious DKG result. Every DKG result submitted can be         challenged for the time of `dkg.ResultChallengePeriodLength`.         If the DKG result submitted is challenged and proven to be         malicious, the operator who submitted the malicious result is         slashed for `maliciousDkgResultSlashingAmount`.",
+          "relayEntrySubmissionFailureSlashingAmount": "Slashing amount for         not submitting relay entry. When relay entry hard timeout is         reached without the relay entry submitted, each group member         gets slashed for `relayEntrySubmissionFailureSlashingAmount`.         If the relay entry gets submitted after the soft timeout, but         before the hard timeout, each group member gets slashed         proportionally to `relayEntrySubmissionFailureSlashingAmount`         and the time passed since the soft deadline.",
+          "unauthorizedSigningSlashingAmount": "Slashing amount when an         unauthorized signing has been proved, which means the private         key leaked and all the group members should be punished."
+        }
+      },
+      "submitDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "params": {
+          "dkgResult": "DKG result."
+        }
+      },
+      "submitRelayEntry(bytes)": {
+        "params": {
+          "entry": "Group BLS signature over the previous entry."
+        }
+      },
+      "submitRelayEntry(bytes,uint32[])": {
+        "params": {
+          "entry": "Group BLS signature over the previous entry.",
+          "groupMembers": "Identifiers of group members."
+        }
+      },
+      "updateAuthorizationParameters(uint96,uint64,uint64)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "_authorizationDecreaseChangePeriod": "New authorization decrease        change period in seconds",
+          "_authorizationDecreaseDelay": "New authorization decrease delay in        seconds",
+          "_minimumAuthorization": "New minimum authorization amount"
+        }
+      },
+      "updateGasParameters(uint256,uint256,uint256,uint256)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "dkgResultApprovalGasOffset": "New DKG result approval gas offset",
+          "dkgResultSubmissionGas": "New DKG result submission gas",
+          "notifyOperatorInactivityGasOffset": "New operator inactivity        notification gas offset",
+          "relayEntrySubmissionGasOffset": "New relay entry submission gas        offset"
+        }
+      },
+      "updateGroupCreationParameters(uint256,uint256,uint256,uint256,uint256,uint256)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "dkgResultChallengeExtraGas": "New DKG result challenge extra gas",
+          "dkgResultChallengePeriodLength": "New DKG result challenge period        length",
+          "dkgResultSubmissionTimeout": "New DKG result submission timeout",
+          "dkgSubmitterPrecedencePeriodLength": "New DKG result submitter        precedence period length",
+          "groupCreationFrequency": "New group creation frequency",
+          "groupLifetime": "New group lifetime in blocks"
+        }
+      },
+      "updateRelayEntryParameters(uint256,uint256,uint256)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "callbackGasLimit": "New callback gas limit",
+          "relayEntryHardTimeout": "New relay entry hard timeout",
+          "relayEntrySoftTimeout": "New relay entry submission soft timeout"
+        }
+      },
+      "updateRewardParameters(uint256,uint256,uint256,uint256)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "dkgMaliciousResultNotificationRewardMultiplier": "New value of the        DKG malicious result notification reward multiplier",
+          "relayEntryTimeoutNotificationRewardMultiplier": "New value of the        relay entry timeout notification reward multiplier",
+          "sortitionPoolRewardsBanDuration": "New sortition pool rewards        ban duration in seconds.",
+          "unauthorizedSigningNotificationRewardMultiplier": "New value of the        unauthorized signing notification reward multiplier"
+        }
+      },
+      "updateSlashingParameters(uint96,uint96,uint96)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract. The caller is responsible for      validating parameters.",
+        "params": {
+          "maliciousDkgResultSlashingAmount": "New malicious DKG result        slashing amount",
+          "relayEntrySubmissionFailureSlashingAmount": "New relay entry        submission failure amount",
+          "unauthorizedSigningSlashingAmount": "New unauthorized signing        slashing amount"
+        }
+      },
+      "withdrawIneligibleRewards(address)": {
+        "details": "Can be called only by the contract guvnor, which should be the      random beacon governance contract.",
+        "params": {
+          "recipient": "Recipient of withdrawn rewards."
+        }
+      },
+      "withdrawRewards(address)": {
+        "details": "Emits `RewardsWithdrawn` event."
+      }
+    },
+    "title": "Keep Random Beacon",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "approveAuthorizationDecrease(address)": {
+        "notice": "Approves the previously registered authorization decrease         request. Reverts if authorization decrease delay has not passed         yet or if the authorization decrease was not requested for the         given staking provider."
+      },
+      "approveDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "notice": "Approves DKG result. Can be called when the challenge period for         the submitted result is finished. Considers the submitted result         as valid, bans misbehaved group members from the sortition pool         rewards, and completes the group creation by activating the         candidate group. For the first `submitterPrecedencePeriodLength`         blocks after the end of the challenge period can be called only         by the DKG result submitter. After that time, can be called by         anyone."
+      },
+      "authorizationDecreaseRequested(address,uint96,uint96)": {
+        "notice": "Used by T staking contract to inform the beacon that the         authorization decrease for the given staking provider has been         requested.         Reverts if the amount after deauthorization would be non-zero         and lower than the minimum authorization.         Reverts if another authorization decrease request is pending for         the staking provider and not enough time passed since the         original request (see `authorizationDecreaseChangePeriod`).         If the operator is not known (`registerOperator` was not called)         it lets to `approveAuthorizationDecrease` immediately. If the         operator is known (`registerOperator` was called), the operator         needs to update state of the sortition pool with a call to         `joinSortitionPool` or `updateOperatorStatus`. After the         sortition pool state is in sync, authorization decrease delay         starts.         After authorization decrease delay passes, authorization         decrease request needs to be approved with a call to         `approveAuthorizationDecrease` function.         If there is a pending authorization decrease request, it is         overwritten, but only if enough time passed since the original         request. Otherwise, the function reverts."
+      },
+      "authorizationIncreased(address,uint96,uint96)": {
+        "notice": "Used by T staking contract to inform the beacon that the         authorized stake amount for the given staking provider increased.         Reverts if the authorization amount is below the minimum.         The function is not updating the sortition pool. Sortition pool         state needs to be updated by the operator with a call to         `joinSortitionPool` or `updateOperatorStatus`."
+      },
+      "authorizationParameters()": {
+        "notice": "Returns authorization-related parameters of the beacon."
+      },
+      "authorizedRequesters(address)": {
+        "notice": "Authorized addresses that can request a relay entry."
+      },
+      "availableRewards(address)": {
+        "notice": "Returns the amount of rewards available for withdrawal for the         given staking provider. Reverts if staking provider has not         registered the operator address."
+      },
+      "challengeDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "notice": "Challenges DKG result. If the submitted result is proved to be         invalid it reverts the DKG back to the result submission phase.         It removes a candidate group that was previously registered with         the DKG result submission."
+      },
+      "eligibleStake(address)": {
+        "notice": "Returns the current value of the staking provider's eligible         stake. Eligible stake is defined as the currently authorized         stake minus the pending authorization decrease. Eligible stake         is what is used for operator's weight in the sortition pool.         If the authorized stake minus the pending authorization decrease         is below the minimum authorization, eligible stake is 0."
+      },
+      "gasParameters()": {
+        "notice": "Returns gas-related parameters of the beacon."
+      },
+      "genesis()": {
+        "notice": "Triggers group selection if there are no active groups."
+      },
+      "getGroupCreationState()": {
+        "notice": "Check current group creation state."
+      },
+      "groupCreationParameters()": {
+        "notice": "Returns group-creation-related parameters of the beacon."
+      },
+      "hasDkgTimedOut()": {
+        "notice": "Checks if DKG timed out. The DKG timeout period includes time required         for off-chain protocol execution and time for the result publication         for all group members. After this time result cannot be submitted         and DKG can be notified about the timeout."
+      },
+      "inactivityClaimNonce(uint64)": {
+        "notice": "Stores current operator inactivity claim nonce for given group.         Each claim is made with an unique nonce which protects         against claim replay."
+      },
+      "involuntaryAuthorizationDecrease(address,uint96,uint96)": {
+        "notice": "Used by T staking contract to inform the beacon the         authorization has been decreased for the given staking provider         involuntarily, as a result of slashing.         If the operator is not known (`registerOperator` was not called)         the function does nothing. The operator was never in a sortition         pool so there is nothing to update.         If the operator is known, sortition pool is unlocked, and the         operator is in the sortition pool, the sortition pool state is         updated. If the sortition pool is locked, update needs to be         postponed. Every other staker is incentivized to call         `updateOperatorStatus` for the problematic operator to increase         their own rewards in the pool."
+      },
+      "isOperatorInPool(address)": {
+        "notice": "Returns true if the given operator is in the sortition pool.         Otherwise, returns false."
+      },
+      "isOperatorUpToDate(address)": {
+        "notice": "Checks if the operator's authorized stake is in sync with         operator's weight in the sortition pool.         If the operator is not in the sortition pool and their         authorized stake is non-zero, function returns false."
+      },
+      "joinSortitionPool()": {
+        "notice": "Lets the operator join the sortition pool. The operator address         must be known - before calling this function, it has to be         appointed by the staking provider by calling `registerOperator`.         Also, the operator must have the minimum authorization required         by the beacon. Function reverts if there is no minimum stake         authorized or if the operator is not known. If there was an         authorization decrease requested, it is activated by starting         the authorization decrease delay."
+      },
+      "minimumAuthorization()": {
+        "notice": "The minimum authorization amount required so that operator can         participate in the random beacon. This amount is required to         execute slashing for providing a malicious DKG result or when         a relay entry times out."
+      },
+      "notifyDkgTimeout()": {
+        "notice": "Notifies about DKG timeout."
+      },
+      "notifyOperatorInactivity((uint64,uint256[],bytes,uint256[]),uint256,uint32[])": {
+        "notice": "Notifies about operators who are inactive. Using this function,         a majority of the group can decide about punishing specific         group members who constantly fail doing their job. If the provided         claim is proved to be valid and signed by sufficient number         of group members, operators of members deemed as inactive are         banned for sortition pool rewards for duration specified by         `_sortitionPoolRewardsBanDuration` parameter. The sender of         the claim must be one of the claim signers. This function can be         called only for active and non-terminated groups."
+      },
+      "operatorToStakingProvider(address)": {
+        "notice": "Returns staking provider of the given operator."
+      },
+      "pendingAuthorizationDecrease(address)": {
+        "notice": "Returns the amount of stake that is pending authorization         decrease for the given staking provider. If no authorization         decrease has been requested, returns zero."
+      },
+      "registerOperator(address)": {
+        "notice": "Used by staking provider to set operator address that will         operate a node. The given staking provider can set operator         address only one time. The operator address can not be changed         and must be unique. Reverts if the operator is already set for         the staking provider or if the operator address is already in         use. Reverts if there is a pending authorization decrease for         the staking provider."
+      },
+      "relayEntryParameters()": {
+        "notice": "Returns relay-entry-related parameters of the beacon."
+      },
+      "remainingAuthorizationDecreaseDelay(address)": {
+        "notice": "Returns the remaining time in seconds that needs to pass before         the requested authorization decrease can be approved.         If the sortition pool state was not updated yet by the operator         after requesting the authorization decrease, returns         `type(uint64).max`."
+      },
+      "reportRelayEntryTimeout(uint32[])": {
+        "notice": "Reports a relay entry timeout."
+      },
+      "reportUnauthorizedSigning(bytes,uint64,uint32[])": {
+        "notice": "Reports unauthorized groups signing. Must provide a valid signature         of the sender's address as a message. Successful signature         verification means the private key has been leaked and all group         members should be punished by slashing their tokens. Group has         to be active or expired. Unauthorized signing cannot be reported         for a terminated group. In case of reporting unauthorized         signing for a terminated group, or when the signature is invalid,         function reverts."
+      },
+      "requestRelayEntry(address)": {
+        "notice": "Creates a request to generate a new relay entry, which will         include a random number (by signing the previous entry's         random number). Requester must be previously authorized by the         governance."
+      },
+      "rewardParameters()": {
+        "notice": "Returns reward-related parameters of the beacon."
+      },
+      "selectGroup()": {
+        "notice": "Selects a new group of operators. Can only be called when DKG         is in progress and the pool is locked.         At least one operator has to be registered in the pool,         otherwise the function fails reverting the transaction."
+      },
+      "setRequesterAuthorization(address,bool)": {
+        "notice": "Set authorization for requesters that can request a relay         entry."
+      },
+      "slashingParameters()": {
+        "notice": "Returns slashing-related parameters of the beacon."
+      },
+      "stakingProviderToOperator(address)": {
+        "notice": "Returns operator registered for the given staking provider."
+      },
+      "submitDkgResult((uint256,bytes,uint8[],bytes,uint256[],uint32[],bytes32))": {
+        "notice": "`\\x19Ethereum signed message:\\n` before signing, so the message to      sign is:      `\\x19Ethereum signed message:\\n${keccak256(chainID,groupPubKey,misbehaved,startBlock)}`"
+      },
+      "submitRelayEntry(bytes)": {
+        "notice": "Creates a new relay entry. Gas-optimized version that can be         called only before the soft timeout. This should be the majority         of cases."
+      },
+      "submitRelayEntry(bytes,uint32[])": {
+        "notice": "Creates a new relay entry."
+      },
+      "transferGovernance(address)": {
+        "notice": "Transfers governance of the contract to `newGovernance`."
+      },
+      "updateAuthorizationParameters(uint96,uint64,uint64)": {
+        "notice": "Updates the values of authorization parameters."
+      },
+      "updateGasParameters(uint256,uint256,uint256,uint256)": {
+        "notice": "Updates the values of gas parameters."
+      },
+      "updateGroupCreationParameters(uint256,uint256,uint256,uint256,uint256,uint256)": {
+        "notice": "Updates the values of group creation parameters."
+      },
+      "updateOperatorStatus(address)": {
+        "notice": "Updates status of the operator in the sortition pool. If there         was an authorization decrease requested, it is activated by         starting the authorization decrease delay.         Function reverts if the operator is not known."
+      },
+      "updateRelayEntryParameters(uint256,uint256,uint256)": {
+        "notice": "Updates the values of relay entry parameters."
+      },
+      "updateRewardParameters(uint256,uint256,uint256,uint256)": {
+        "notice": "Updates the values of reward parameters."
+      },
+      "updateSlashingParameters(uint96,uint96,uint96)": {
+        "notice": "Updates the values of slashing parameters."
+      },
+      "withdrawIneligibleRewards(address)": {
+        "notice": "Withdraws rewards belonging to operators marked as ineligible         for sortition pool rewards."
+      },
+      "withdrawRewards(address)": {
+        "notice": "Withdraws application rewards for the given staking provider.         Rewards are withdrawn to the staking provider's beneficiary         address set in the staking contract. Reverts if staking provider         has not registered the operator address."
+      }
+    },
+    "notice": "Keep Random Beacon contract. It lets to request a new         relay entry and validates the new relay entry provided by the         network. This contract is in charge of all other Random Beacon         activities such as group lifecycle or slashing.",
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 9746,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "governance",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 9750,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "__gap",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_array(t_uint256)49_storage"
+      },
+      {
+        "astId": 14627,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "reimbursementPool",
+        "offset": 0,
+        "slot": "50",
+        "type": "t_contract(ReimbursementPool)14957"
+      },
+      {
+        "astId": 14631,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "__gap",
+        "offset": 0,
+        "slot": "51",
+        "type": "t_array(t_uint256)49_storage"
+      },
+      {
+        "astId": 9874,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_callbackGasLimit",
+        "offset": 0,
+        "slot": "100",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9877,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_groupCreationFrequency",
+        "offset": 0,
+        "slot": "101",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9880,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_maliciousDkgResultSlashingAmount",
+        "offset": 0,
+        "slot": "102",
+        "type": "t_uint96"
+      },
+      {
+        "astId": 9883,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_unauthorizedSigningSlashingAmount",
+        "offset": 12,
+        "slot": "102",
+        "type": "t_uint96"
+      },
+      {
+        "astId": 9886,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_sortitionPoolRewardsBanDuration",
+        "offset": 0,
+        "slot": "103",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9889,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_relayEntryTimeoutNotificationRewardMultiplier",
+        "offset": 0,
+        "slot": "104",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9892,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_unauthorizedSigningNotificationRewardMultiplier",
+        "offset": 0,
+        "slot": "105",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9895,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_dkgMaliciousResultNotificationRewardMultiplier",
+        "offset": 0,
+        "slot": "106",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9898,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_dkgResultSubmissionGas",
+        "offset": 0,
+        "slot": "107",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9901,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_dkgResultApprovalGasOffset",
+        "offset": 0,
+        "slot": "108",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9904,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_notifyOperatorInactivityGasOffset",
+        "offset": 0,
+        "slot": "109",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9907,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "_relayEntrySubmissionGasOffset",
+        "offset": 0,
+        "slot": "110",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 9912,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "inactivityClaimNonce",
+        "offset": 0,
+        "slot": "111",
+        "type": "t_mapping(t_uint64,t_uint256)"
+      },
+      {
+        "astId": 9917,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "authorizedRequesters",
+        "offset": 0,
+        "slot": "112",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 9920,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "sortitionPool",
+        "offset": 0,
+        "slot": "113",
+        "type": "t_contract(SortitionPool)1980"
+      },
+      {
+        "astId": 9923,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "tToken",
+        "offset": 0,
+        "slot": "114",
+        "type": "t_contract(IERC20)4111"
+      },
+      {
+        "astId": 9926,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "staking",
+        "offset": 0,
+        "slot": "115",
+        "type": "t_contract(IStaking)9081"
+      },
+      {
+        "astId": 9929,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "authorization",
+        "offset": 0,
+        "slot": "116",
+        "type": "t_struct(Data)16552_storage"
+      },
+      {
+        "astId": 9932,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "dkg",
+        "offset": 0,
+        "slot": "120",
+        "type": "t_struct(Data)17482_storage"
+      },
+      {
+        "astId": 9935,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "groups",
+        "offset": 0,
+        "slot": "131",
+        "type": "t_struct(Data)18985_storage"
+      },
+      {
+        "astId": 9938,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "relay",
+        "offset": 0,
+        "slot": "136",
+        "type": "t_struct(Data)19879_storage"
+      },
+      {
+        "astId": 9941,
+        "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+        "label": "callback",
+        "offset": 0,
+        "slot": "140",
+        "type": "t_struct(Data)18889_storage"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_bytes32)dyn_storage": {
+        "base": "t_bytes32",
+        "encoding": "dynamic_array",
+        "label": "bytes32[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_uint256)49_storage": {
+        "base": "t_uint256",
+        "encoding": "inplace",
+        "label": "uint256[49]",
+        "numberOfBytes": "1568"
+      },
+      "t_array(t_uint64)dyn_storage": {
+        "base": "t_uint64",
+        "encoding": "dynamic_array",
+        "label": "uint64[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_bytes32": {
+        "encoding": "inplace",
+        "label": "bytes32",
+        "numberOfBytes": "32"
+      },
+      "t_bytes_storage": {
+        "encoding": "bytes",
+        "label": "bytes",
+        "numberOfBytes": "32"
+      },
+      "t_contract(BeaconDkgValidator)9741": {
+        "encoding": "inplace",
+        "label": "contract BeaconDkgValidator",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IERC20)4111": {
+        "encoding": "inplace",
+        "label": "contract IERC20",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IRandomBeaconConsumer)14980": {
+        "encoding": "inplace",
+        "label": "contract IRandomBeaconConsumer",
+        "numberOfBytes": "20"
+      },
+      "t_contract(IStaking)9081": {
+        "encoding": "inplace",
+        "label": "contract IStaking",
+        "numberOfBytes": "20"
+      },
+      "t_contract(ReimbursementPool)14957": {
+        "encoding": "inplace",
+        "label": "contract ReimbursementPool",
+        "numberOfBytes": "20"
+      },
+      "t_contract(SortitionPool)1980": {
+        "encoding": "inplace",
+        "label": "contract SortitionPool",
+        "numberOfBytes": "20"
+      },
+      "t_mapping(t_address,t_address)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => address)",
+        "numberOfBytes": "32",
+        "value": "t_address"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_address,t_struct(AuthorizationDecrease)16535_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => struct BeaconAuthorization.AuthorizationDecrease)",
+        "numberOfBytes": "32",
+        "value": "t_struct(AuthorizationDecrease)16535_storage"
+      },
+      "t_mapping(t_bytes32,t_struct(Group)18969_storage)": {
+        "encoding": "mapping",
+        "key": "t_bytes32",
+        "label": "mapping(bytes32 => struct Groups.Group)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Group)18969_storage"
+      },
+      "t_mapping(t_uint64,t_uint256)": {
+        "encoding": "mapping",
+        "key": "t_uint64",
+        "label": "mapping(uint64 => uint256)",
+        "numberOfBytes": "32",
+        "value": "t_uint256"
+      },
+      "t_struct(AuthorizationDecrease)16535_storage": {
+        "encoding": "inplace",
+        "label": "struct BeaconAuthorization.AuthorizationDecrease",
+        "members": [
+          {
+            "astId": 16532,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "decreasingBy",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint96"
+          },
+          {
+            "astId": 16534,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "decreasingAt",
+            "offset": 12,
+            "slot": "0",
+            "type": "t_uint64"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(Data)16552_storage": {
+        "encoding": "inplace",
+        "label": "struct BeaconAuthorization.Data",
+        "members": [
+          {
+            "astId": 16538,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "parameters",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_struct(Parameters)16530_storage"
+          },
+          {
+            "astId": 16542,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "stakingProviderToOperator",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_mapping(t_address,t_address)"
+          },
+          {
+            "astId": 16546,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "operatorToStakingProvider",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_mapping(t_address,t_address)"
+          },
+          {
+            "astId": 16551,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "pendingDecreases",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_mapping(t_address,t_struct(AuthorizationDecrease)16535_storage)"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_struct(Data)17482_storage": {
+        "encoding": "inplace",
+        "label": "struct BeaconDkg.Data",
+        "members": [
+          {
+            "astId": 17465,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "sortitionPool",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(SortitionPool)1980"
+          },
+          {
+            "astId": 17468,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "dkgValidator",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(BeaconDkgValidator)9741"
+          },
+          {
+            "astId": 17471,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "parameters",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_struct(Parameters)17462_storage"
+          },
+          {
+            "astId": 17473,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "startBlock",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17475,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "seed",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17477,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "resultSubmissionStartBlockOffset",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17479,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "submittedResultHash",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 17481,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "submittedResultBlock",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "352"
+      },
+      "t_struct(Data)18889_storage": {
+        "encoding": "inplace",
+        "label": "struct Callback.Data",
+        "members": [
+          {
+            "astId": 18888,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "callbackContract",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IRandomBeaconConsumer)14980"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(Data)18985_storage": {
+        "encoding": "inplace",
+        "label": "struct Groups.Data",
+        "members": [
+          {
+            "astId": 18974,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "groupsData",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_mapping(t_bytes32,t_struct(Group)18969_storage)"
+          },
+          {
+            "astId": 18977,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "groupsRegistry",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_bytes32)dyn_storage"
+          },
+          {
+            "astId": 18980,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "activeTerminatedGroups",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_array(t_uint64)dyn_storage"
+          },
+          {
+            "astId": 18982,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "expiredGroupOffset",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 18984,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "groupLifetime",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "160"
+      },
+      "t_struct(Data)19879_storage": {
+        "encoding": "inplace",
+        "label": "struct Relay.Data",
+        "members": [
+          {
+            "astId": 19863,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "requestCount",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 19865,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "currentRequestID",
+            "offset": 8,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 19867,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "currentRequestGroupID",
+            "offset": 16,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 19869,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "currentRequestStartBlock",
+            "offset": 24,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 19872,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "previousEntry",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_struct(G1Point)14992_storage"
+          },
+          {
+            "astId": 19874,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "relayEntrySoftTimeout",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 19876,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "relayEntryHardTimeout",
+            "offset": 4,
+            "slot": "3",
+            "type": "t_uint32"
+          },
+          {
+            "astId": 19878,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "relayEntrySubmissionFailureSlashingAmount",
+            "offset": 8,
+            "slot": "3",
+            "type": "t_uint96"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_struct(G1Point)14992_storage": {
+        "encoding": "inplace",
+        "label": "struct AltBn128.G1Point",
+        "members": [
+          {
+            "astId": 14989,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "x",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 14991,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "y",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "64"
+      },
+      "t_struct(Group)18969_storage": {
+        "encoding": "inplace",
+        "label": "struct Groups.Group",
+        "members": [
+          {
+            "astId": 18962,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "groupPubKey",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bytes_storage"
+          },
+          {
+            "astId": 18964,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "registrationBlockNumber",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 18966,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "membersHash",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_bytes32"
+          },
+          {
+            "astId": 18968,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "terminated",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_bool"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_struct(Parameters)16530_storage": {
+        "encoding": "inplace",
+        "label": "struct BeaconAuthorization.Parameters",
+        "members": [
+          {
+            "astId": 16525,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "minimumAuthorization",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint96"
+          },
+          {
+            "astId": 16527,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "authorizationDecreaseDelay",
+            "offset": 12,
+            "slot": "0",
+            "type": "t_uint64"
+          },
+          {
+            "astId": 16529,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "authorizationDecreaseChangePeriod",
+            "offset": 20,
+            "slot": "0",
+            "type": "t_uint64"
+          }
+        ],
+        "numberOfBytes": "32"
+      },
+      "t_struct(Parameters)17462_storage": {
+        "encoding": "inplace",
+        "label": "struct BeaconDkg.Parameters",
+        "members": [
+          {
+            "astId": 17455,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "resultChallengePeriodLength",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17457,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "resultChallengeExtraGas",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17459,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "resultSubmissionTimeout",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 17461,
+            "contract": "contracts/RandomBeacon.sol:RandomBeacon",
+            "label": "submitterPrecedencePeriodLength",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "128"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      },
+      "t_uint32": {
+        "encoding": "inplace",
+        "label": "uint32",
+        "numberOfBytes": "4"
+      },
+      "t_uint64": {
+        "encoding": "inplace",
+        "label": "uint64",
+        "numberOfBytes": "8"
+      },
+      "t_uint96": {
+        "encoding": "inplace",
+        "label": "uint96",
+        "numberOfBytes": "12"
+      }
+    }
+  }
+}

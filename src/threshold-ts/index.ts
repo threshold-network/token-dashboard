@@ -19,19 +19,17 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.config = config
-    this.multicall = new Multicall(config.ethereum)
-    this.vendingMachines = new VendingMachines(config.ethereum)
-    this.staking = new Staking(
-      config.ethereum,
-      this.multicall,
-      this.vendingMachines
-    )
+    const { ethereum, bitcoin } = config
+
+    this.multicall = new Multicall(ethereum)
+    this.vendingMachines = new VendingMachines(ethereum)
+    this.staking = new Staking(ethereum, this.multicall, this.vendingMachines)
     this.multiAppStaking = new MultiAppStaking(
       this.staking,
       this.multicall,
-      config.ethereum
+      ethereum
     )
-    this.tbtc = new TBTC(config.ethereum, config.bitcoin, this.multicall)
+    this.tbtc = new TBTC(ethereum, bitcoin)
   }
 
   updateConfig = (config: ThresholdConfig) => {

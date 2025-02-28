@@ -9,7 +9,7 @@ import {
 } from "../../web3/hooks"
 import { isAddressZero } from "../../web3/utils"
 import { useModal } from "../useModal"
-import { stakingAppNameToThresholdAppService } from "./useStakingAppContract"
+import { appNameToThresholdApp } from "./useStakingAppContract"
 import { useUpdateOperatorStatus } from "./useUpdateOperatorStatus"
 
 export const useInitiateDeauthorization = (
@@ -42,8 +42,8 @@ export const useInitiateDeauthorization = (
     sendTransaction: requestAuthorizationDecrease,
     status: deauthorizationTxStatus,
   } = useSendTransactionFromFn(
-    threshold.multiAppStaking[stakingAppNameToThresholdAppService[appName]]
-      .requestAuthorizationDecrease,
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]
+      ?.requestAuthorizationDecrease!,
     onSuccess,
     onErrorRequestAuthorizationDecrease
   )

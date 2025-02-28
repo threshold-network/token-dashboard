@@ -42,6 +42,7 @@ export const useFetchRedemptionDetails = (
   >()
 
   useEffect(() => {
+    setError("")
     if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
       setError("Invalid redeemer value.")
       return
@@ -111,7 +112,7 @@ export const useFetchRedemptionDetails = (
           )
         })
         if (!redemptionRequestedEvent) {
-          throw new Error("Redemption not found...")
+          throw new Error("Redemption not found in this network...")
         }
 
         const { timestamp: redemptionRequestedEventTimestamp } = await getBlock(
