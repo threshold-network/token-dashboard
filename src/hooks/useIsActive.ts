@@ -53,7 +53,9 @@ export const useIsActive = (): UseIsActiveResult => {
           if (errorCode === 4902 || errorCode === 4901) {
             if (!provider) throw new Error("No provider available")
 
-            const network = networks.find((net) => net.chainId === chainId)
+            const network = networks.find(
+              (network) => network.chainId === chainId
+            )
             if (!network || !network.chainParameters) {
               throw new Error("Network parameters not found")
             }

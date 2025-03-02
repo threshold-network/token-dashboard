@@ -4,7 +4,11 @@ import { ConnectorUpdate } from "@web3-react/types"
 import { EnvVariable } from "../../enums"
 import { ArrayOneOrMore } from "../../types"
 import { getEnvVariable } from "../../utils/getEnvVariable"
-import { getRpcUrl, networks, supportedNetworksMap } from "../../networks/utils"
+import {
+  getRpcUrl,
+  networks,
+  supportedNetworks as supportedNetworksMap,
+} from "../../networks/utils"
 import { toHex } from "../../networks/utils/chainId"
 import { EthereumRpcMap } from "../../networks/types/networks"
 

@@ -11,7 +11,6 @@ import { AddressZero, getAddress, isAddressZero } from "./address"
 import { LedgerLiveSigner } from "../../utils/ledger"
 import { SupportedChainIds } from "../../networks/enums/networks"
 
-import ArbitrumL1BitcoinDepositorArtifactMainnet from "../tbtc/mainnet-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenMainnet from "../tokens/mainnet-artifacts/NuCypherToken.json"
@@ -25,8 +24,6 @@ import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
 import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
 
-import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
-import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
 import BridgeArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/Bridge.json"
 import NuCypherStakingEscrowSepolia from "../staking/sepolia-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenSepolia from "../tokens/sepolia-artifacts/NuCypherToken.json"
@@ -66,8 +63,6 @@ export type ArtifactNameType =
   | "VendingMachineKeep"
   | "VendingMachineNuCypher"
   | "WalletRegistry"
-  | "ArbitrumL1BitcoinDepositor"
-  | "BaseL1BitcoinDepositor"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -81,7 +76,6 @@ type ContractArtifacts = {
 
 const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Ethereum]: {
-    ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
     TacoRegistry:
       TacoArtifactMainnet[SupportedChainIds.Ethereum].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactMainnet,
@@ -97,8 +91,6 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
   },
   [SupportedChainIds.Sepolia]: {
-    ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
-    BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
     TacoRegistry:
       TacoArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     RandomBeacon: RandomBeaconArtifactSepolia,

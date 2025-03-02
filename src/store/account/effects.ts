@@ -1,4 +1,4 @@
-import { StakeData, TrmEntity, TrmRiskIndicator } from "../../types"
+import { StakeData } from "../../types"
 import { isAddressZero, isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"

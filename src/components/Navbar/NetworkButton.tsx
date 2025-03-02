@@ -18,7 +18,8 @@ import { Arbitrum } from "../../static/icons/Arbitrum"
 import { Base } from "../../static/icons/Base"
 import { chainIdToChainParameterName, networks } from "../../networks/utils"
 import { useIsActive } from "../../hooks/useIsActive"
-import { SupportedChainIds } from "../../networks/enums/networks"
+import { NetworkType, SupportedChainIds } from "../../networks/enums/networks"
+import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 interface NetworkIconMap {
   icon: ReactElement
@@ -70,6 +71,7 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
 const NetworkButton: FC = () => {
   const { colorMode } = useColorMode()
   const { chainId, switchNetwork } = useIsActive()
+  const defaultChainId = getDefaultProviderChainId()
 
   const networkIcon = useMemo(
     () => getNetworkIcon(chainId || 0, colorMode),
@@ -77,23 +79,36 @@ const NetworkButton: FC = () => {
   )
 
   const renderMenuItems = () =>
-    networks
-      .filter((network) => network.chainParameters.chainName !== "Localhost")
-      .map((network) => {
-        const { icon } = getNetworkIcon(network.chainId, colorMode)
-        return (
-          <MenuItem
-            key={network.chainId}
-            onClick={() => switchNetwork(network.chainId)}
-            iconSpacing="4"
-            display="flex"
-            gap="3"
-          >
-            {icon}
-            {network.chainParameters?.chainName}
-          </MenuItem>
-        )
-      })
+    defaultChainId === SupportedChainIds.Ethereum ? (
+      networks
+        .filter((network) => network.networkType === NetworkType.Mainnet)
+        .map((network) => {
+          const { icon } = getNetworkIcon(network.chainId, colorMode)
+          return (
+            <MenuItem
+              key={network.chainId}
+              onClick={() => switchNetwork(network.chainId)}
+              iconSpacing="4"
+              display="flex"
+              gap="3"
+            >
+              {icon}
+              {network.chainParameters?.chainName}
+            </MenuItem>
+          )
+        })
+    ) : (
+      <MenuItem
+        key={SupportedChainIds.Sepolia}
+        onClick={() => switchNetwork(SupportedChainIds.Sepolia)}
+        iconSpacing="4"
+        display="flex"
+        gap="3"
+      >
+        {getNetworkIcon(SupportedChainIds.Sepolia, colorMode)}
+        Sepolia Testnet
+      </MenuItem>
+    )
 
   return (
     <>

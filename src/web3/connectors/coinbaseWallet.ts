@@ -1,10 +1,6 @@
 import { WalletLinkConnector } from "@web3-react/walletlink-connector"
 import { ConnectorUpdate } from "@web3-react/types"
-import {
-  getRpcUrl,
-  hexToNumber,
-  supportedNetworksMap,
-} from "../../networks/utils"
+import { getRpcUrl, hexToNumber, supportedNetworks } from "../../networks/utils"
 
 interface CoinbaseWalletProvider {
   isCoinbaseWallet: boolean
@@ -45,5 +41,5 @@ export class CoinbaseWalletConnector extends WalletLinkConnector {
 export const coinbaseConnector = new CoinbaseWalletConnector({
   url: getRpcUrl(),
   appName: "threshold-token-dashboard",
-  supportedChainIds: Object.keys(supportedNetworksMap).map(Number),
+  supportedChainIds: Object.keys(supportedNetworks).map(Number),
 })

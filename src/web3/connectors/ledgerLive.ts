@@ -11,7 +11,7 @@ import { EnvVariable } from "../../enums"
 import {
   getRpcUrl,
   networks,
-  supportedNetworksMap,
+  supportedNetworks as supportedNetworksMap,
   getChainIdToNetworkName,
 } from "../../networks/utils"
 import { EthereumRpcMap } from "../../networks/types/networks"

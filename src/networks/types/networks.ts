@@ -37,8 +37,4 @@ export interface Network {
   alchemyName?: AlchemyName
 }
 
-export type TrmNetworksMap = {
-  [chainId: number]: string
-}
-
 export type NetworkMapping = Record<number, NetworkName>
