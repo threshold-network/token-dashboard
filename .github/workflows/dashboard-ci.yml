@@ -86,7 +86,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          DEFAULT_CHAIN_ID: 11155111
+          CHAIN_ID: 11155111
           ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}

@@ -48,7 +48,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.ref_name }}
-          DEFAULT_CHAIN_ID: 1
+          CHAIN_ID: 1
           ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
@@ -70,7 +70,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          DEFAULT_CHAIN_ID: 1
+          CHAIN_ID: 1
           ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true

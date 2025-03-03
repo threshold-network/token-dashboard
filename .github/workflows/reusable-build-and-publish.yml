@@ -161,7 +161,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          DEFAULT_CHAIN_ID: 11155111
+          CHAIN_ID: ${{ env.NETWORK_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
@@ -179,7 +179,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
-          DEFAULT_CHAIN_ID: 11155111
+          CHAIN_ID: ${{ env.NETWORK_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}

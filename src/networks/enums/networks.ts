@@ -14,6 +14,15 @@ export enum SupportedChainIds {
   BaseSepolia = 84532,
 }
 
+export enum TestnetChainIds {
+  Sepolia = 11155111,
+  ArbitrumSepolia = 421614,
+  BaseSepolia = 84532,
+  Localhost = 1337,
+  Goerli = 5,
+  Ropsten = 3,
+}
+
 export enum AlchemyName {
   Ethereum = "eth",
   Arbitrum = "arb",
