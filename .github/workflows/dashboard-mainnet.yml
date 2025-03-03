@@ -90,7 +90,7 @@ jobs:
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build
           path: build
@@ -103,7 +103,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Deploy PR mainnet preview to GCP
         # Temporarily we run the action in version from `alpine-version-413.0.0`
@@ -129,7 +129,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Deploy mainnet build to GCP
         # Temporarily we run the action in version from `alpine-version-413.0.0`
