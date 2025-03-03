@@ -1,15 +1,27 @@
+import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { SupportedChainIds } from "../enums/networks"
+import { isTestnetNetwork } from "./connectedNetwork"
 import { networks } from "./networks"
 
-export function getChainIdToNetworkName(chainId?: number | string): string {
-  const network = networks.find(
-    (network) => network.chainId === Number(chainId)
+function findSupportedNetwork(chainId?: number | string) {
+  if (!chainId) return null
+
+  const chainIdNumber = Number(chainId)
+  const defaultChainId = getDefaultProviderChainId()
+
+  return networks.find((network) =>
+    defaultChainId === SupportedChainIds.Ethereum
+      ? network.chainId === chainIdNumber && !isTestnetNetwork(network.chainId)
+      : network.chainId === chainIdNumber && isTestnetNetwork(network.chainId)
   )
-  return network ? network.name : "Unsupported"
 }
 
-export const chainIdToChainParameterName = (chainId?: string | number) => {
-  const network = networks.find(
-    (network) => network.chainId === Number(chainId)
+export function getChainIdToNetworkName(chainId?: number | string): string {
+  return findSupportedNetwork(chainId)?.name ?? "Unsupported"
+}
+
+export function chainIdToChainParameterName(chainId?: number | string): string {
+  return (
+    findSupportedNetwork(chainId)?.chainParameters?.chainName ?? "Unsupported"
   )
-  return network?.chainParameters?.chainName || "Unsupported"
 }

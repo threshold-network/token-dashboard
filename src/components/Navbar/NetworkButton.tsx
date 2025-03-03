@@ -27,31 +27,40 @@ interface NetworkIconMap {
 }
 
 const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
+  const defaultChainId = getDefaultProviderChainId()
   const ethereumLogo = colorMode === "light" ? EthereumDark : EthereumLight
   const grayBackground = "gray.700"
 
   const iconMap: Record<number, NetworkIconMap> = {
-    [SupportedChainIds.Ethereum]: {
-      icon: <Icon as={ethereumLogo} boxSize="5" />,
-      bg: grayBackground,
-    },
-    [SupportedChainIds.Sepolia]: {
-      icon: <Icon as={ethereumLogo} boxSize="5" />,
-      bg: grayBackground,
-    },
-    [SupportedChainIds.Arbitrum]: {
-      icon: <Icon as={Arbitrum} boxSize="5" />,
-      bg: grayBackground,
-    },
-    [SupportedChainIds.ArbitrumSepolia]: {
-      icon: <Icon as={Arbitrum} boxSize="5" />,
-      bg: grayBackground,
-    },
-    [SupportedChainIds.Base]: { icon: <Icon as={Base} />, bg: grayBackground },
-    [SupportedChainIds.BaseSepolia]: {
-      icon: <Icon as={Base} boxSize="5" />,
-      bg: "blue.500",
-    },
+    ...(defaultChainId === SupportedChainIds.Sepolia
+      ? {
+          [SupportedChainIds.Sepolia]: {
+            icon: <Icon as={ethereumLogo} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.ArbitrumSepolia]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.BaseSepolia]: {
+            icon: <Icon as={Base} boxSize="5" />,
+            bg: "blue.500",
+          },
+        }
+      : {
+          [SupportedChainIds.Ethereum]: {
+            icon: <Icon as={ethereumLogo} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.Base]: {
+            icon: <Icon as={Base} />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.Arbitrum]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
+        }),
   }
 
   return (
@@ -59,7 +68,7 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
       icon: (
         <Icon
           as={BsQuestionCircleFill}
-          color={useColorModeValue("red.500", "white")}
+          color={colorMode === "light" ? "red.500" : "white"}
           boxSize="5"
         />
       ),
@@ -79,36 +88,28 @@ const NetworkButton: FC = () => {
   )
 
   const renderMenuItems = () =>
-    defaultChainId === SupportedChainIds.Ethereum ? (
-      networks
-        .filter((network) => network.networkType === NetworkType.Mainnet)
-        .map((network) => {
-          const { icon } = getNetworkIcon(network.chainId, colorMode)
-          return (
-            <MenuItem
-              key={network.chainId}
-              onClick={() => switchNetwork(network.chainId)}
-              iconSpacing="4"
-              display="flex"
-              gap="3"
-            >
-              {icon}
-              {network.chainParameters?.chainName}
-            </MenuItem>
-          )
-        })
-    ) : (
-      <MenuItem
-        key={SupportedChainIds.Sepolia}
-        onClick={() => switchNetwork(SupportedChainIds.Sepolia)}
-        iconSpacing="4"
-        display="flex"
-        gap="3"
-      >
-        {getNetworkIcon(SupportedChainIds.Sepolia, colorMode)}
-        Sepolia Testnet
-      </MenuItem>
-    )
+    networks
+      .filter((network) =>
+        defaultChainId === SupportedChainIds.Ethereum
+          ? network.networkType === NetworkType.Mainnet
+          : network.networkType === NetworkType.Testnet &&
+            network.chainParameters.chainName !== "Localhost"
+      )
+      .map((network) => {
+        const { icon } = getNetworkIcon(network.chainId, colorMode)
+        return (
+          <MenuItem
+            key={network.chainId}
+            onClick={() => switchNetwork(network.chainId)}
+            iconSpacing="4"
+            display="flex"
+            gap="3"
+          >
+            {icon}
+            {network.chainParameters?.chainName}
+          </MenuItem>
+        )
+      })
 
   return (
     <>
@@ -133,7 +134,7 @@ const NetworkButton: FC = () => {
               }
               aria-label="network"
             />
-            <MenuList>{renderMenuItems()}</MenuList>
+            <MenuList zIndex={20}>{renderMenuItems()}</MenuList>
           </>
         )}
       </Menu>
@@ -153,7 +154,7 @@ const NetworkButton: FC = () => {
             >
               {chainIdToChainParameterName(chainId)}
             </MenuButton>
-            <MenuList>{renderMenuItems()}</MenuList>
+            <MenuList zIndex={20}>{renderMenuItems()}</MenuList>
           </>
         )}
       </Menu>

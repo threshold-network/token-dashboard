@@ -86,12 +86,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ github.head_ref }}
-          DEFAULT_PROVIDER_CHAIN_ID: 11155111
+          DEFAULT_CHAIN_ID: 11155111
           ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
           NODE_OPTIONS: --max_old_space_size=4096
-          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
-          MAINNET_ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
-          MAINNET_ELECTRUM_PORT: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
           TESTNET_ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
           TESTNET_ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
@@ -126,9 +123,6 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
-      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
-      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
       testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
@@ -160,9 +154,6 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
-      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
-      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
       testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
@@ -189,9 +180,6 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
-      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
-      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
       testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}

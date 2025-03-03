@@ -55,15 +55,6 @@ on:
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
         required: true
-      mainnetElectrumProtocol:
-        description: Protocol used by the Mainnet Electrum server.
-        required: true
-      mainnetElectrumHost:
-        description: Host pointing to the Mainnet Electrum server.
-        required: true
-      mainnetElectrumPort:
-        description: Port the Mainnet Electrum server listens on.
-        required: true
       testnetElectrumProtocol:
         description: Protocol used by the Testnet Electrum server.
         required: true
@@ -170,12 +161,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.DEFAULT_PROVIDER_CHAIN_ID }}
+          DEFAULT_CHAIN_ID: 11155111
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
-          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
-          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
-          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
           TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
           TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
@@ -191,12 +179,9 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
-          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.DEFAULT_PROVIDER_CHAIN_ID }}
+          DEFAULT_CHAIN_ID: 11155111
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
-          MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
-          MAINNET_ELECTRUM_HOST: ${{ secrets.mainnetElectrumHost }}
-          MAINNET_ELECTRUM_PORT: ${{ secrets.mainnetElectrumPort }}
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
           TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
           TESTNET_ELECTRUM_PORT: ${{ secrets.testnetElectrumPort }}
