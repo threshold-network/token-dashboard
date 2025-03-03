@@ -3397,14 +3397,14 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2.ts@^2.5.0-dev.8":
-  version "2.5.0-dev.8"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.5.0-dev.8.tgz#6ff1f222652891beb125087412df12d05b74eecd"
-  integrity sha512-P/a1TlljPhJUYXuaV75Ck0EINpT96N1cyOMUQc3Bu8mGnUy6CKzRtvDTmYJFRV1W6bHBVgBaI0O09mZADulm8A==
+"@keep-network/tbtc-v2.ts@2.4.5":
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.4.5.tgz#cc524e96c93782113ae299344f69db2aa2b127ea"
+  integrity sha512-C0fXWSfYVdWR86HiqzWK0e41qlCh7DqsT+bjqvBJigLliTGumDVmC7bIF7tUkclW7Xc5SjZb067SLAB87B7rcw==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.0.5"
     "@keep-network/ecdsa" "2.1.0-dev.19"
-    "@keep-network/tbtc-v2" "1.7.0-dev.4"
+    "@keep-network/tbtc-v2" "1.7.2"
     bignumber.js "^9.1.2"
     bitcoinjs-lib "^6.1.5"
     bufio "^1.0.6"
@@ -3415,10 +3415,10 @@
     url-parse "^1.5.10"
     wif "2.0.6"
 
-"@keep-network/tbtc-v2@1.7.0-dev.4":
-  version "1.7.0-dev.4"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.7.0-dev.4.tgz#fafbd3c7ccc8c68dbdb3e9c684b7f106b42a5a78"
-  integrity sha512-+DxR5XebK0DB5WIrQyCQG2osixBYpJhOuwQtLu3EDMsi4tFAPEh5MFjWG5LYeuEtX65p19mSC4Vj69/Z3jMgrA==
+"@keep-network/tbtc-v2@1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.7.2.tgz#2d48bf57974ecf0be4f09808a057932c260a7686"
+  integrity sha512-s5SFp1LW9TYqvXz7aR5FW1z8zRZ0+htaN5VXqrkcAC4c0R3FkcIpQsHLuH2cYGBZGp/o6nMhcolh3hmi8LLo5g==
   dependencies:
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
     "@keep-network/ecdsa" "2.1.0-dev.19"
