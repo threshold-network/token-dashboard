@@ -126,9 +126,12 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}
@@ -157,9 +160,12 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}
@@ -183,9 +189,12 @@ jobs:
     secrets:
       alchemyApi: ${{ secrets.ALCHEMY_API }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      mainnetElectrumProtocol: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
+      mainnetElectrumHost: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
+      mainnetElectrumPort: ${{ secrets.MAINNET_ELECTRUMX_PORT }}
+      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}

@@ -55,14 +55,23 @@ on:
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
         required: true
-      electrumProtocol:
-        description: Protocol used by the Electrum server.
+      mainnetElectrumProtocol:
+        description: Protocol used by the Mainnet Electrum server.
         required: true
-      electrumHost:
-        description: Host pointing to the Electrum server.
+      mainnetElectrumHost:
+        description: Host pointing to the Mainnet Electrum server.
         required: true
-      electrumPort:
-        description: Port the Electrum server listens on.
+      mainnetElectrumPort:
+        description: Port the Mainnet Electrum server listens on.
+        required: true
+      testnetElectrumProtocol:
+        description: Protocol used by the Testnet Electrum server.
+        required: true
+      testnetElectrumHost:
+        description: Host pointing to the Testnet Electrum server.
+        required: true
+      testnetElectrumPort:
+        description: Port the Testnet Electrum server listens on.
         required: true
       sentryDsn:
         description: Sentry DSN endpoint
@@ -161,7 +170,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /
-          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
+          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.DEFAULT_PROVIDER_CHAIN_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
@@ -182,7 +191,7 @@ jobs:
         run: yarn build
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
-          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.NETWORK_ID }}
+          DEFAULT_PROVIDER_CHAIN_ID: ${{ env.DEFAULT_PROVIDER_CHAIN_ID }}
           ALCHEMY_API: ${{ secrets.alchemyApi }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.mainnetElectrumProtocol }}
