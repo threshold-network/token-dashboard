@@ -1,6 +1,5 @@
 import {
   BodyMd,
-  Button,
   Checkbox,
   useColorModeValue,
 } from "@threshold-network/components"
@@ -19,14 +18,22 @@ import {
   validateBTCAddress,
   validateETHAddress,
 } from "../../../../utils/forms"
-import { supportedChainId } from "../../../../utils/getEnvVariable"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
+import {
+  getNetworkNameFromChainId,
+  isL1Network,
+  isSupportedNetwork,
+  isTestnetNetwork,
+} from "../../../../networks/utils"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
+import TbtcFees from "../components/TbtcFees"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { Deposit } from "@keep-network/tbtc-v2.ts"
 
 export interface FormValues {
   ethAddress: string
@@ -38,11 +45,6 @@ type ComponentProps = {
   formId: string
 }
 
-const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
-  "mint",
-  supportedChainId === "1" ? BitcoinNetwork.Mainnet : BitcoinNetwork.Testnet
-)
-
 /**
  * Renders the form for the minting process.
  * @param {string} formId - The ID of the form.
@@ -51,6 +53,14 @@ const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
 }) => {
+  const { chainId } = useIsActive()
+  const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
+    "mint",
+    isTestnetNetwork(chainId as number)
+      ? BitcoinNetwork.Testnet
+      : BitcoinNetwork.Mainnet
+  )
+
   return (
     <Form id={formId}>
       <FormikInput
@@ -113,7 +123,7 @@ export const ProvideDataComponent: FC<{
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const threshold = useThreshold()
-  const { account } = useIsActive()
+  const { account, chainId } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
 
@@ -137,31 +147,60 @@ export const ProvideDataComponent: FC<{
           "The account used to generate the deposit address must be the same as the connected wallet."
         )
       }
+
+      if (!isSupportedNetwork(chainId)) {
+        throw new Error(
+          "You are currently connected to an unsupported network. Switch to a supported network"
+        )
+      }
+
+      const chainName = getNetworkNameFromChainId(chainId)
+
       setSubmitButtonLoading(true)
-      const deposit = await threshold.tbtc.initiateDeposit(
-        values.btcRecoveryAddress
-      )
+
+      let deposit: Deposit
+      if (isL1Network(chainId)) {
+        deposit = await threshold.tbtc.initiateDeposit(
+          values.btcRecoveryAddress
+        )
+      } else {
+        deposit = await threshold.tbtc.initiateCrossChainDeposit(
+          values.btcRecoveryAddress,
+          chainId as SupportedChainIds
+        )
+      }
       const depositAddress = await threshold.tbtc.calculateDepositAddress()
       const receipt = deposit.getReceipt()
 
       // update state,
       updateState("ethAddress", values.ethAddress)
+      updateState("depositor", receipt.depositor.identifierHex.toString())
       updateState("blindingFactor", receipt.blindingFactor.toString())
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
       updateState("walletPublicKeyHash", receipt.walletPublicKeyHash.toString())
       updateState("refundLocktime", receipt.refundLocktime.toString())
+      updateState("extraData", receipt.extraData?.toString())
+      updateState("chainName", chainName)
 
       // create a new deposit address,
       updateState("btcDepositAddress", depositAddress)
 
-      setDepositDataInLocalStorage({
-        ethAddress: values.ethAddress,
-        blindingFactor: receipt.blindingFactor.toString(),
-        btcRecoveryAddress: values.btcRecoveryAddress,
-        walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
-        refundLocktime: receipt.refundLocktime.toString(),
-        btcDepositAddress: depositAddress,
-      })
+      setDepositDataInLocalStorage(
+        {
+          depositor: {
+            identifierHex: receipt.depositor.identifierHex.toString(),
+          },
+          chainName: chainName,
+          ethAddress: values.ethAddress,
+          blindingFactor: receipt.blindingFactor.toString(),
+          btcRecoveryAddress: values.btcRecoveryAddress,
+          walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+          refundLocktime: receipt.refundLocktime.toString(),
+          btcDepositAddress: depositAddress,
+          extraData: receipt.extraData?.toString() || "",
+        },
+        chainId
+      )
 
       depositTelemetry(receipt, depositAddress)
 
@@ -175,18 +214,23 @@ export const ProvideDataComponent: FC<{
           depositor: {
             identifierHex: receipt.depositor.identifierHex.toString(),
           },
+          networkInfo: {
+            chainName: chainName,
+            chainId: chainId!.toString(),
+          },
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
           blindingFactor: receipt.blindingFactor.toString(),
           ethAddress: values.ethAddress,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
+          extraData: receipt.extraData?.toString() ?? "",
         }
         downloadFile(JSON.stringify(finalData), fileName, "text/json")
       }
       updateState("mintingStep", MintingStep.Deposit)
     },
-    [shouldDownloadDepositReceipt]
+    [shouldDownloadDepositReceipt, chainId]
   )
 
   return (
@@ -216,9 +260,11 @@ export const ProvideDataComponent: FC<{
       >
         Download Deposit Receipt (recommended)
       </Checkbox>
+      <TbtcFees />
       {/* Although the following button doesn't trigger an on-chain transaction, the 
       SubmitTxButton is used here for its built-in TRM Wallet screening validation logic. */}
       <SubmitTxButton
+        isDisabled={!threshold.tbtc.bridgeContract}
         isLoading={isSubmitButtonLoading}
         loadingText={
           isSubmitButtonLoading ? "Generating deposit address..." : undefined

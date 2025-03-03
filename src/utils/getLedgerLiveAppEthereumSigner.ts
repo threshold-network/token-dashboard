@@ -1,12 +1,9 @@
-import { JsonRpcProvider, Provider } from "@ethersproject/providers"
-import { EnvVariable } from "../enums"
-import { LedgerLiveEthereumSigner } from "@keep-network/tbtc-v2.ts"
-import { getEnvVariable } from "./getEnvVariable"
+import { LedgerLiveSigner } from "./ledger"
+import { getThresholdLibProvider } from "./getThresholdLib"
+import { getDefaultProviderChainId } from "./getEnvVariable"
 
-export const getLedgerLiveAppEthereumSigner = (provider: Provider) => {
-  return new LedgerLiveEthereumSigner(provider)
+export const getLedgerLiveAppEthereumSigner = (chainId?: number | string) => {
+  const providerChainId = chainId || getDefaultProviderChainId()
+  const provider = getThresholdLibProvider(providerChainId)
+  return new LedgerLiveSigner(provider)
 }
-
-export const ledgerLiveAppEthereumSigner = getLedgerLiveAppEthereumSigner(
-  new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
-)

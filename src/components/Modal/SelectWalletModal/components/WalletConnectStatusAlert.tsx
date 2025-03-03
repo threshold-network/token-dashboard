@@ -1,7 +1,7 @@
 import { FC } from "react"
 import { AccountSuccessAlert, WalletInitializeAlert } from "./index"
 import WalletRejectedAlert from "./WalletRejectedAlert"
-import isSupportedNetwork from "../../../../utils/isSupportedNetwork"
+import { isSupportedNetwork } from "../../../../networks/utils"
 import { useWeb3React } from "@web3-react/core"
 import IncorrectNetwork from "./IncorrectNetwork"
 

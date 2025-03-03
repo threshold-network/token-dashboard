@@ -16,7 +16,7 @@ import { InlineTokenBalance } from "../TokenBalance"
 import { getRelativeTime } from "../../utils/date"
 import { RecentDeposit } from "../../hooks/tbtc/useFetchRecentDeposits"
 import { createLinkToBlockExplorerForChain } from "../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../networks/enums/networks"
 
 export type RecentDepositsProps = {
   deposits: RecentDeposit[]

@@ -5,7 +5,7 @@ import {
   IMulticall,
   Multicall,
   MULTICALL_ABI,
-  MULTICALL_ADDRESSESS,
+  MULTICALL_ADDRESSES,
 } from ".."
 import { getContract } from "../../utils"
 
@@ -35,7 +35,7 @@ describe("Multicall test", () => {
 
   test("should create the instance correctly", () => {
     expect(getContract).toHaveBeenCalledWith(
-      MULTICALL_ADDRESSESS[config.chainId],
+      MULTICALL_ADDRESSES[config.chainId],
       MULTICALL_ABI,
       config.providerOrSigner,
       config.account

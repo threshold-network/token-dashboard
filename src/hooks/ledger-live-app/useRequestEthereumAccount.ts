@@ -4,7 +4,8 @@ import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
-import { supportedChainId } from "../../utils/getEnvVariable"
+import { isTestnetNetwork } from "../../networks/utils"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useIsEmbed } from "../useIsEmbed"
 import { useWeb3React } from "@web3-react/core"
@@ -25,10 +26,11 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { setEthAccount } = useLedgerLiveApp()
   const { walletApiReactTransport } = useWalletApiReactTransport()
   const useRequestAccountReturn = useWalletApiRequestAccount()
-  const { account, requestAccount } = useRequestAccountReturn
+  const { account: ledgerLiveAccount, requestAccount } = useRequestAccountReturn
   const { chainId } = useWeb3React()
   const dispatch = useAppDispatch()
   const { isEmbed } = useIsEmbed()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
 
   useEffect(() => {
     // Setting the eth account in LedgerLiveAppContext through `setEthAccount`
@@ -37,20 +39,24 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
     // here to indicate as early as as possible that the sdk is in the
     // initializing process.
     if (isEmbed) {
-      setEthAccount(account || undefined)
-      dispatch(walletConnected({ address: account?.address || "", chainId }))
+      setEthAccount(ledgerLiveAccount || undefined)
+      dispatch(
+        walletConnected({ address: ledgerLiveAccount?.address || "", chainId })
+      )
     }
-  }, [account, isEmbed])
+  }, [ledgerLiveAccount, chainId, isEmbed])
 
   const requestEthereumAccount = useCallback(async () => {
     // The Goerli testnet become deprecated. However, we did not test Ledger
     // Live on Sepolia yet, so we're leaving the Goerli config for now in the
     // code.
-    const currencyId = supportedChainId === "1" ? "ethereum" : "ethereum_goerli"
+    const currencyId = isTestnetNetwork(defaultOrConnectedChainId)
+      ? "ethereum_goerli"
+      : "ethereum"
     walletApiReactTransport.connect()
     await requestAccount({ currencyIds: [currencyId] })
     walletApiReactTransport.disconnect()
-  }, [requestAccount, walletApiReactTransport, supportedChainId])
+  }, [requestAccount, walletApiReactTransport, defaultOrConnectedChainId])
 
   return { ...useRequestAccountReturn, requestAccount: requestEthereumAccount }
 }

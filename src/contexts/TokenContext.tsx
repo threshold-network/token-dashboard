@@ -1,7 +1,6 @@
-import React, { createContext } from "react"
+import React, { createContext, useEffect } from "react"
 import { Contract } from "@ethersproject/contracts"
 import { AddressZero } from "@ethersproject/constants"
-import { useWeb3React } from "@web3-react/core"
 import { useKeep } from "../web3/hooks/useKeep"
 import { useNu } from "../web3/hooks/useNu"
 import { useT } from "../web3/hooks/useT"
@@ -15,7 +14,7 @@ import { useFetchOwnerStakes } from "../hooks/useFetchOwnerStakes"
 import { useTBTCv2TokenContract } from "../web3/hooks/useTBTCv2TokenContract"
 import { featureFlags } from "../constants"
 import { useIsActive } from "../hooks/useIsActive"
-
+import { isL1Network, isL2Network } from "../networks/utils/connectedNetwork"
 interface TokenContextState extends TokenState {
   contract: Contract | null
 }
@@ -56,19 +55,27 @@ export const TokenContextProvider: React.FC = ({ children }) => {
     tbtcv2: tbtcv2Data,
   } = useTokenState()
 
-  const tokenContracts = [keep.contract!, nu.contract!, t.contract!]
-
-  if (featureFlags.TBTC_V2) tokenContracts.push(tbtcv2)
+  const tokenContracts = {
+    [Token.Keep]: keep.contract!,
+    [Token.Nu]: nu.contract!,
+    [Token.T]: t.contract!,
+    [Token.TBTCV2]: tbtcv2.contract!,
+  }
 
   const fetchBalances = useTokensBalanceCall(
-    tokenContracts,
+    Object.values(tokenContracts),
+    isActive ? account! : AddressZero
+  )
+
+  const fetchtBTCBalance = useTokensBalanceCall(
+    [tbtcv2.contract!],
     isActive ? account! : AddressZero
   )
 
   //
   // SET T CONVERSION RATE FOR KEEP, NU
   //
-  React.useEffect(() => {
+  useEffect(() => {
     setTokenConversionRate(Token.Nu, nuConversion)
     setTokenConversionRate(Token.Keep, keepConversion)
   }, [nuConversion, keepConversion])
@@ -76,7 +83,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   // SET USD PRICE
   //
-  React.useEffect(() => {
+  useEffect(() => {
     for (const token in Token) {
       if (token) {
         // @ts-ignore
@@ -88,51 +95,50 @@ export const TokenContextProvider: React.FC = ({ children }) => {
   //
   // FETCH BALANCES ON WALLET LOAD OR NETWORK SWITCH
   //
-  React.useEffect(() => {
-    if (isActive) {
-      setTokenLoading(Token.Keep, true)
-      setTokenLoading(Token.Nu, true)
-      setTokenLoading(Token.T, true)
-      setTokenLoading(Token.TBTCV2, true)
-      fetchBalances().then(
-        ([keepBalance, nuBalance, tBalance, tbtcv2Balance]) => {
-          setTokenBalance(Token.Keep, keepBalance.toString())
-          setTokenLoading(Token.Keep, false)
-          setTokenIsLoadedFromConnectedAccount(Token.Keep, true)
+  useEffect(() => {
+    const tokens = Object.keys(tokenContracts) as Token[]
 
-          setTokenBalance(Token.Nu, nuBalance.toString())
-          setTokenLoading(Token.Nu, false)
-          setTokenIsLoadedFromConnectedAccount(Token.Nu, true)
-
-          setTokenBalance(Token.T, tBalance.toString())
-          setTokenLoading(Token.T, false)
-          setTokenIsLoadedFromConnectedAccount(Token.T, true)
-
-          if (featureFlags.TBTC_V2) {
-            setTokenBalance(Token.TBTCV2, tbtcv2Balance.toString())
-            setTokenLoading(Token.TBTCV2, false)
-            setTokenIsLoadedFromConnectedAccount(Token.TBTCV2, true)
-          }
-        }
-      )
-    } else {
-      // set all token balances to 0 if the user disconnects the wallet
-      for (const token in Token) {
-        if (token) {
-          const key = token as keyof typeof Token
-          setTokenLoading(Token[key], true)
-          setTokenBalance(Token[key], 0)
-          setTokenLoading(Token[key], false)
-          setTokenIsLoadedFromConnectedAccount(Token[key], false)
-        }
+    const updateTokenState = (
+      token: Token,
+      balance: number | string = 0,
+      isLoaded: boolean = false,
+      isLoading: boolean = false
+    ) => {
+      if (token === Token.TBTCV2 && !featureFlags.TBTC_V2) {
+        setTokenBalance(token, "0")
+      } else {
+        setTokenBalance(token, balance.toString())
       }
+      setTokenLoading(token, isLoading)
+      setTokenIsLoadedFromConnectedAccount(token, isLoaded)
+    }
+
+    if (isActive && isL1Network(chainId)) {
+      tokens.forEach((token) => setTokenLoading(token, true))
+      fetchBalances().then(([keep, nu, t, tbtcv2]) => {
+        const balances = [keep, nu, t, tbtcv2]
+
+        balances.forEach((balance, index) =>
+          updateTokenState(tokens[index], balance, true)
+        )
+      })
+    } else if (isActive && isL2Network(chainId)) {
+      tokens.forEach((token) => updateTokenState(token, 0))
+
+      fetchtBTCBalance().then(([tbtcv2]) => {
+        if (featureFlags.TBTC_V2) {
+          updateTokenState(Token.TBTCV2, tbtcv2, true)
+        }
+      })
+    } else {
+      tokens.forEach((token) => updateTokenState(token, 0))
     }
   }, [isActive, chainId, account])
 
   // fetch user stakes when they connect their wallet
-  React.useEffect(() => {
-    fetchOwnerStakes(account!)
-  }, [fetchOwnerStakes, account])
+  useEffect(() => {
+    fetchOwnerStakes(account!, chainId)
+  }, [fetchOwnerStakes, account, chainId])
 
   return (
     <TokenContext.Provider
@@ -154,7 +160,7 @@ export const TokenContextProvider: React.FC = ({ children }) => {
           ...tbtcData,
         },
         [Token.TBTCV2]: {
-          contract: tbtcv2,
+          ...tbtcv2,
           ...tbtcv2Data,
         },
       }}
