@@ -2,7 +2,7 @@ import { FC, ComponentProps } from "react"
 import { UnorderedList, ListItem, useColorModeValue } from "@chakra-ui/react"
 import { BodyMd, LabelSm, Card } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../../../components/ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../../networks/enums/networks"
 
 export const ThresholdStakesCard: FC<
   ComponentProps<typeof Card> & { tStakingContractAddress: string }

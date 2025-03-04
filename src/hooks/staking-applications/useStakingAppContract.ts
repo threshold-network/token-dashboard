@@ -1,7 +1,8 @@
 import { StakingAppName } from "../../store/staking-applications"
 import { useThreshold } from "../../contexts/ThresholdContext"
+import { Contract } from "ethers"
 
-export const stakingAppNameToThresholdAppService: Record<
+export const appNameToThresholdApp: Record<
   StakingAppName,
   "ecdsa" | "randomBeacon" | "taco"
 > = {
@@ -10,8 +11,8 @@ export const stakingAppNameToThresholdAppService: Record<
   taco: "taco",
 }
 
-export const useStakingAppContract = (appName: StakingAppName) => {
-  return useThreshold().multiAppStaking[
-    stakingAppNameToThresholdAppService[appName]
-  ].contract
+export const useStakingAppContract = (appName: StakingAppName): Contract => {
+  const threshold = useThreshold()
+
+  return threshold.multiAppStaking[appNameToThresholdApp[appName]]?.contract!
 }

@@ -19,24 +19,31 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import withBaseModal from "../withBaseModal"
 import { StakingAppName } from "../../../store/staking-applications"
 import { BaseModalProps } from "../../../types"
-import { useConfirmDeatuhorizationTransaction } from "../../../hooks/staking-applications"
+import {
+  appNameToThresholdApp,
+  useConfirmDeauthorizationTransaction,
+} from "../../../hooks/staking-applications"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export type ConfirmDeauthorizationProps = BaseModalProps & {
   stakingProvider: string
-  stakingAppName: StakingAppName
+  appName: StakingAppName
   decreaseAmount: string
 }
 
 const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
   stakingProvider,
-  stakingAppName,
+  appName,
   decreaseAmount,
   closeModal,
 }) => {
-  const { sendTransaction } =
-    useConfirmDeatuhorizationTransaction(stakingAppName)
+  const threshold = useThreshold()
+  const stakingAppContract =
+    threshold.multiAppStaking[appNameToThresholdApp[appName]]?.contract
+
+  const { sendTransaction } = useConfirmDeauthorizationTransaction(appName)
 
   const onDeauthorize = async () => {
     await sendTransaction(stakingProvider)
@@ -52,7 +59,7 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
           <BodyLg mt="4">Confirm your deauthorization.</BodyLg>
         </InfoBox>
         <StakingApplicationOperationIcon
-          stakingApplication={stakingAppName}
+          stakingApplication={appName}
           operation="decrease"
           w="88px"
           h="88px"
@@ -79,7 +86,11 @@ const ConfirmDeauthorizationBase: FC<ConfirmDeauthorizationProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <SubmitTxButton mr={2} onSubmit={onDeauthorize}>
+        <SubmitTxButton
+          isDisabled={!stakingAppContract}
+          mr={2}
+          onSubmit={onDeauthorize}
+        >
           Confirm Deauthorization
         </SubmitTxButton>
       </ModalFooter>

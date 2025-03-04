@@ -17,6 +17,13 @@ export const useSubscribeToAuthorizationIncreasedEvent = () => {
     async (stakingProvider, application, fromAmount, toAmount) => {
       const appName = getStakingAppNameFromAppAddress(application)
 
+      if (!appName) {
+        console.warn(
+          `Could not determine staking app name for address: ${application}`
+        )
+        return
+      }
+
       dispatch(
         stakingApplicationsSlice.actions.authorizationIncreased({
           stakingProvider,

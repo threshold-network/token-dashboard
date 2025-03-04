@@ -9,11 +9,11 @@ import { ModalType } from "../../../enums"
 import { useTBTCTerms } from "../../../hooks/useTBTCTerms"
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { selectBridgeActivity, tbtcSlice } from "../../../store/tbtc"
-import { useWeb3React } from "@web3-react/core"
 import { Outlet } from "react-router"
 import { MintPage } from "./Mint"
 import { UnmintPage } from "./Unmint"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const gridTemplateAreas = {
   base: `
@@ -31,7 +31,9 @@ const TBTCBridge: PageComponent = (props) => {
   const isBridgeActivityFetching = useAppSelector(
     (state) => state.tbtc.bridgeActivity.isFetching
   )
+  const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
   const { account } = useIsActive()
+  const threshold = useThreshold()
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
@@ -39,13 +41,12 @@ const TBTCBridge: PageComponent = (props) => {
 
   useEffect(() => {
     if (!account) return
-
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account,
       })
     )
-  }, [dispatch, account])
+  }, [dispatch, account, mintingStep, threshold.tbtc.ethereumChainId])
 
   return (
     <Grid

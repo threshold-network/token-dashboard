@@ -2,10 +2,12 @@ import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { FetchingState } from "."
 import { BridgeActivity, BridgeProcess } from "../threshold-ts/tbtc"
 import { UpdateStateActionPayload } from "./state"
+import { NetworkName } from "../networks/types/networks"
 
 export interface TbtcState {
   mintingStep: MintingStep
   // deposit data
+  depositor: string
   btcRecoveryAddress: string
   btcDepositAddress: string
   ethAddress: string
@@ -20,7 +22,10 @@ export interface TbtcState {
   optimisticMintingFinalizedTxHash?: string
   tBTCMintAmount: string
   thresholdNetworkFee: string
+  crossChainFee: string
   mintingFee: string
+  chainName: NetworkName
+  extraData?: string
 
   bridgeActivity: FetchingState<BridgeActivity[]>
 }

@@ -148,6 +148,7 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
   maxTokenAmount,
   bitcoinNetwork,
 }) => {
+  const threshold = useThreshold()
   const supportedPrefixesText = getBridgeBTCSupportedAddressPrefixesText(
     "unmint",
     bitcoinNetwork
@@ -195,6 +196,7 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
         size="lg"
         isFullWidth
         mt={error ? "0" : "10"}
+        isDisabled={!threshold.tbtc.bridgeContract}
         type="submit"
         isLoading={isSubmitting}
       >

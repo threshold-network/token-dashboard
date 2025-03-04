@@ -2,12 +2,13 @@ import { FC } from "react"
 import { Box, ModalBody, ModalHeader, ModalFooter } from "@chakra-ui/react"
 import { BodyLg, BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
-import { ExplorerDataType } from "../../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../../networks/enums/networks"
 import withBaseModal from "../withBaseModal"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import { ThresholdSpinner } from "../../ThresholdSpinner/ThresholdSpinner"
 import ModalCloseButton from "../ModalCloseButton"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 interface TransactionIsPendingProps extends BaseModalProps {
   pendingText?: string
@@ -18,6 +19,8 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
   transactionHash,
   pendingText = "Pending...",
 }) => {
+  const { chainId } = useIsActive()
+
   return (
     <>
       <ModalHeader>Confirm (pending)</ModalHeader>
@@ -36,6 +39,7 @@ const TransactionIsPending: FC<TransactionIsPendingProps> = ({
             text="View"
             id={transactionHash}
             type={ExplorerDataType.TRANSACTION}
+            ethereumNetworkChainId={chainId}
           />{" "}
           transaction on Etherscan
         </BodySm>

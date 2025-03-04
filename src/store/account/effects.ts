@@ -1,4 +1,4 @@
-import { StakeData, TrmEntity, TrmRiskIndicator } from "../../types"
+import { StakeData } from "../../types"
 import { isAddressZero, isSameETHAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"
@@ -26,6 +26,16 @@ export const getStakingProviderOperatorInfo = async (
     const { account } = listenerApi.getState()
     const { address } = account
     const stakes = action.payload
+    const threshold = listenerApi.extra.threshold
+
+    if (
+      !account ||
+      !threshold.staking ||
+      !threshold.multiAppStaking.ecdsa ||
+      !threshold.multiAppStaking.randomBeacon ||
+      !threshold.multiAppStaking.taco
+    )
+      return
 
     const stake = stakes.find((_: StakeData) =>
       isSameETHAddress(_.stakingProvider, address)
@@ -37,7 +47,7 @@ export const getStakingProviderOperatorInfo = async (
       isStakingProvider = true
     } else {
       const { owner, authorizer, beneficiary } =
-        await listenerApi.extra.threshold.staking.rolesOf(address)
+        await threshold.staking.rolesOf(address)
 
       isStakingProvider =
         !isAddressZero(owner) &&
@@ -52,15 +62,15 @@ export const getStakingProviderOperatorInfo = async (
     listenerApi.dispatch(accountUsedAsStakingProvider())
 
     const mappedOperators =
-      await listenerApi.extra.threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
+      await threshold.multiAppStaking.getMappedOperatorsForStakingProvider(
         address
       )
 
     listenerApi.dispatch(
       setMappedOperators({
-        tbtc: mappedOperators.tbtc,
-        randomBeacon: mappedOperators.randomBeacon,
-        taco: mappedOperators.taco,
+        tbtc: mappedOperators.tbtc ?? "",
+        randomBeacon: mappedOperators.randomBeacon ?? "",
+        taco: mappedOperators.taco ?? "",
       })
     )
   } catch (error: any) {
