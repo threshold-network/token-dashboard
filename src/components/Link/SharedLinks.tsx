@@ -3,7 +3,7 @@ import { useColorModeValue } from "@chakra-ui/react"
 import { BodySm } from "@threshold-network/components"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTStakingContract } from "../../web3/hooks"
-import { ExplorerDataType } from "../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../networks/enums/networks"
 
 type StakingContractLearnMoreProps = ComponentProps<typeof BodySm>
 

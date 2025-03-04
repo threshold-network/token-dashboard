@@ -18,6 +18,8 @@ import {
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepositExpirationTime"
+import { useRemoveDepositData } from "../../../hooks/tbtc/useRemoveDepositData"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -25,40 +27,62 @@ export const MintPage: PageComponent = ({}) => {
 
 export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
-  const { btcDepositAddress, updateState } = useTbtcState()
-  const { account } = useIsActive()
+  const { btcDepositAddress, updateState, resetDepositData } = useTbtcState()
+  const { account, chainId } = useIsActive()
+  const checkDepositExpiration = useCheckDepositExpirationTime()
+  const removeDepositData = useRemoveDepositData()
 
   useEffect(() => {
+    const updateDepositData = async () => {
+      if (
+        tBTCDepositData &&
+        account &&
+        chainId &&
+        tBTCDepositData[account] &&
+        isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
+        tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
+      ) {
+        const {
+          depositor: { identifierHex: depositorAddress },
+          btcDepositAddress,
+          ethAddress,
+          blindingFactor,
+          btcRecoveryAddress,
+          walletPublicKeyHash,
+          refundLocktime,
+          extraData,
+          chainName,
+        } = tBTCDepositData[account]
+        const { isExpired } = await checkDepositExpiration(refundLocktime)
+        if (isExpired) {
+          resetDepositData()
+          removeDepositData()
+          return
+        }
+
+        updateState("ethAddress", ethAddress)
+        updateState("blindingFactor", blindingFactor)
+        updateState("btcRecoveryAddress", btcRecoveryAddress)
+        updateState("walletPublicKeyHash", walletPublicKeyHash)
+        updateState("refundLocktime", refundLocktime)
+        updateState("depositor", depositorAddress)
+        updateState("extraData", extraData)
+        updateState("chainName", chainName)
+        // We reset the minting step to undefined to show skeleton and the
+        // useEffect in MintingFlowRouter will update and set the proper minting
+        // step when it recognizes the "btcDepositAddress" change.
+        updateState("mintingStep", undefined)
+        updateState("btcDepositAddress", btcDepositAddress)
+      } else {
+        resetDepositData()
+      }
+    }
+
     // Update the store with the deposit data if the account is placed in tbtc
     // local storage.
-    if (
-      tBTCDepositData &&
-      account &&
-      tBTCDepositData[account] &&
-      isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
-      tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
-    ) {
-      const {
-        btcDepositAddress,
-        ethAddress,
-        blindingFactor,
-        btcRecoveryAddress,
-        walletPublicKeyHash,
-        refundLocktime,
-      } = tBTCDepositData[account]
 
-      updateState("ethAddress", ethAddress)
-      updateState("blindingFactor", blindingFactor)
-      updateState("btcRecoveryAddress", btcRecoveryAddress)
-      updateState("walletPublicKeyHash", walletPublicKeyHash)
-      updateState("refundLocktime", refundLocktime)
-      // We reset the minting step to undefined to show skeleton and the
-      // useEffect in MintingFlowRouter will update and set the proper minting
-      // step when it recognizes the "btcDepositAddress" change.
-      updateState("mintingStep", undefined)
-      updateState("btcDepositAddress", btcDepositAddress)
-    }
-  }, [account])
+    updateDepositData()
+  }, [account, tBTCDepositData])
 
   return <MintingFlowRouter />
 }

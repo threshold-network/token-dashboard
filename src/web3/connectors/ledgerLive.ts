@@ -1,6 +1,6 @@
 import { AbstractConnector } from "@web3-react/abstract-connector"
 import { AbstractConnectorArguments, ConnectorUpdate } from "@web3-react/types"
-import { getEnvVariable, supportedChainId } from "../../utils/getEnvVariable"
+import { getEnvVariable } from "../../utils/getEnvVariable"
 import {
   LedgerConnectKit,
   SupportedProviders,
@@ -8,7 +8,15 @@ import {
   EthereumProvider,
 } from "@ledgerhq/connect-kit-loader"
 import { EnvVariable } from "../../enums"
-import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
+import {
+  getRpcUrl,
+  networks,
+  supportedNetworks as supportedNetworksMap,
+  getChainIdToNetworkName,
+} from "../../networks/utils"
+import { EthereumRpcMap } from "../../networks/types/networks"
+
+const supportedNetworks = Object.keys(supportedNetworksMap).map(Number)
 
 interface LedgerLiveConnectorArguments extends AbstractConnectorArguments {
   rpc: {
@@ -23,15 +31,15 @@ export class LedgerLiveConnector extends AbstractConnector {
   private connectKitPromise: Promise<LedgerConnectKit>
   private walletConnectProjectId: string
 
-  constructor(args: Required<LedgerLiveConnectorArguments>) {
-    super({
-      supportedChainIds: Object.keys(args.rpc).map((chainId) =>
-        Number(chainId)
-      ),
-    })
+  constructor({
+    supportedChainIds,
+    rpc,
+    walletConnectProjectId,
+  }: Required<LedgerLiveConnectorArguments>) {
+    super({ supportedChainIds })
 
-    this.rpc = args.rpc
-    this.walletConnectProjectId = args.walletConnectProjectId
+    this.rpc = rpc
+    this.walletConnectProjectId = walletConnectProjectId
 
     this.handleNetworkChanged = this.handleNetworkChanged.bind(this)
     this.handleChainChanged = this.handleChainChanged.bind(this)
@@ -57,6 +65,10 @@ export class LedgerLiveConnector extends AbstractConnector {
     this.emitDeactivate()
   }
 
+  public async switchNetwork(chainId: string | number): Promise<void> {
+    this.handleChainChanged(chainId.toString())
+  }
+
   public async activate(): Promise<ConnectorUpdate> {
     if (!this.supportedChainIds) {
       throw new Error("Supported chain ids are not defined.")
@@ -80,7 +92,7 @@ export class LedgerLiveConnector extends AbstractConnector {
 
     if (!checkSupportResult.isChainIdSupported) {
       throw new Error(
-        `The ${chainIdToNetworkName(
+        `The ${getChainIdToNetworkName(
           chainId
         )} network is not supported by LedgerLive.`
       )
@@ -130,14 +142,12 @@ export class LedgerLiveConnector extends AbstractConnector {
   }
 }
 
-const rpcUrl = getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP)
-const chainId = +supportedChainId
-
 export const ledgerLive = new LedgerLiveConnector({
-  supportedChainIds: [chainId],
-  rpc: {
-    [Number(supportedChainId)]: rpcUrl as string,
-  },
+  supportedChainIds: supportedNetworks,
+  rpc: networks.reduce((acc, network) => {
+    acc[network.chainId] = getRpcUrl(network.chainId)
+    return acc
+  }, {} as EthereumRpcMap),
   walletConnectProjectId: getEnvVariable(EnvVariable.WALLET_CONNECT_PROJECT_ID),
 })
 

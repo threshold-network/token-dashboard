@@ -31,20 +31,25 @@ type TransactionDetailsAmountItemProps = Omit<
   ComponentProps<typeof InlineTokenBalance>,
   "tokenAmount"
 > &
-  Pick<TransactionDetailsItemProps, "label"> & { tokenAmount?: string }
+  Pick<TransactionDetailsItemProps, "label"> & {
+    amount?: string
+    suffixItem?: string
+    isFetching?: boolean
+  }
 
 export const TransactionDetailsAmountItem: FC<
   TransactionDetailsAmountItemProps
-> = ({ label, tokenAmount, ...restProps }) => {
-  const tokenBalanceTextColor = useColorModeValue("gray.700", "gray.300")
+> = ({ label, amount, suffixItem, isFetching = false, ...restProps }) => {
+  const textColor = useColorModeValue("gray.700", "gray.300")
 
   return (
     <TransactionDetailsItem label={label}>
-      <Skeleton isLoaded={!!tokenAmount}>
-        <BodySm color={tokenBalanceTextColor}>
+      <Skeleton isLoaded={!isFetching && !!amount}>
+        <BodySm color={textColor}>
           <InlineTokenBalance
             withSymbol
-            tokenAmount={tokenAmount || "0"}
+            tokenAmount={amount || "0"}
+            tokenSymbol={suffixItem || ""}
             {...restProps}
           />
         </BodySm>

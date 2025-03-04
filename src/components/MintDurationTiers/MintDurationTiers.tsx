@@ -55,9 +55,9 @@ const MintDurationTiers: FC<MintDurationTiersProps> = ({
         // is returned as is.
         const confirmations = getNumberOfConfirmationsByAmount(safeAmount)
         const durationInMinutes =
-          getDurationByNumberOfConfirmations(confirmations)
-        // Round up the minutes to the nearest half-hour
-        const hours = (Math.round(durationInMinutes / 30) * 30) / 60
+          getDurationByNumberOfConfirmations(confirmations) * 1.5
+        // Round down the minutes to the nearest half-hour
+        const hours = (Math.floor(durationInMinutes / 30) * 30) / 60
         const formattedAmount = amount.toFixed(2)
 
         const hoursSuffix = hours === 1 ? "hour" : "hours"

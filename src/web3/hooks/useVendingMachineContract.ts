@@ -5,6 +5,10 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 export const useVendingMachineContract = (token: UpgredableToken) => {
   const threshold = useThreshold()
 
+  if (!threshold.vendingMachines) {
+    return null
+  }
+
   const TOKEN_TO_VENDING_MACHINE_CONTRACT = {
     [Token.Keep]: threshold.vendingMachines.keep.contract,
     [Token.Nu]: threshold.vendingMachines.nu.contract,

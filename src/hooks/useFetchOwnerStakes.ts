@@ -3,14 +3,23 @@ import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useThreshold } from "../contexts/ThresholdContext"
 import { useAppDispatch } from "./store"
+import { isSameChainId } from "../networks/utils"
 
 export const useFetchOwnerStakes = () => {
   const threshold = useThreshold()
   const dispatch = useAppDispatch()
 
   return useCallback(
-    async (address?: string): Promise<StakeData[]> => {
-      if (!address) {
+    async (
+      address?: string,
+      chainId?: string | number
+    ): Promise<StakeData[]> => {
+      if (
+        !address ||
+        !threshold.staking ||
+        !chainId ||
+        !isSameChainId(threshold.config.ethereum.chainId, chainId)
+      ) {
         return []
       }
 
@@ -32,6 +41,6 @@ export const useFetchOwnerStakes = () => {
 
       return _stakes
     },
-    [threshold, dispatch]
+    [threshold.config.ethereum, dispatch]
   )
 }

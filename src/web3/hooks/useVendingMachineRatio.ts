@@ -32,16 +32,21 @@ const TOKEN_TO_MUTEX = {
   [Token.Nu]: nuMutex,
 }
 
+const initialRatioValues = {
+  value: "0",
+  contractAddress: AddressZero,
+}
+
 // The `VendingMachine` ratio is constant and set at construction time so we can
 // cache this value in local storage.
 export const useVendingMachineRatio = (token: UpgredableToken) => {
   const vendingMachine = useVendingMachineContract(token)
   const contractAddress = vendingMachine?.address
 
-  const [ratio, setRatio] = useLocalStorage(`${token}-to-T-ratio`, {
-    value: "0",
-    contractAddress: AddressZero,
-  })
+  const [ratio, setRatio] = useLocalStorage(
+    `${token}-to-T-ratio`,
+    initialRatioValues
+  )
 
   const { value: ratioValue, contractAddress: localStorageContractAddress } =
     ratio
@@ -58,7 +63,11 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
         const unlock = await mutex.lock()
         try {
           const ratio = await vendingMachine?.ratio()
-          setRatio({ value: ratio.toString(), contractAddress })
+          if (!ratio) {
+            setRatio(initialRatioValues)
+          } else {
+            setRatio({ value: ratio.toString(), contractAddress })
+          }
         } catch (error) {
           unlock()
           console.error(`error fetching ${token} VendingMachine ratio`, error)

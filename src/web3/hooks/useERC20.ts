@@ -57,7 +57,7 @@ export const useErc20TokenContract: UseErc20Interface = (
 
   const balanceOf = useCallback(
     async (token: Token) => {
-      if (account) {
+      if (account && contract) {
         try {
           setTokenLoading(token, true)
           const balance = await contract?.balanceOf(account as string)

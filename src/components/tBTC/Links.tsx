@@ -1,8 +1,9 @@
 import { FC, ComponentProps } from "react"
 import { useTBTCBridgeContractAddress } from "../../hooks/useTBTCBridgeContractAddress"
-import { ExplorerDataType } from "../../utils/createEtherscanLink"
+import { ExplorerDataType } from "../../networks/enums/networks"
 import ViewInBlockExplorer from "../ViewInBlockExplorer"
 import { useTBTCTokenAddress } from "../../hooks/useTBTCTokenAddress"
+import { useIsActive } from "../../hooks/useIsActive"
 
 type Props = Omit<
   ComponentProps<typeof ViewInBlockExplorer>,
@@ -16,7 +17,7 @@ export const BridgeContractLink: FC<Props> = ({
   ...props
 }) => {
   const address = useTBTCBridgeContractAddress()
-  return (
+  return address ? (
     <ViewInBlockExplorer
       id={address}
       type={ExplorerDataType.ADDRESS}
@@ -24,6 +25,8 @@ export const BridgeContractLink: FC<Props> = ({
       {...props}
       data-ph-capture-attribute-button-name={`Bridge contract link (Deposit flow)`}
     />
+  ) : (
+    <></>
   )
 }
 
@@ -32,12 +35,17 @@ export const TBTCTokenContractLink: FC<Props> = ({
   ...props
 }) => {
   const address = useTBTCTokenAddress()
-  return (
+  const { chainId } = useIsActive()
+
+  return address ? (
     <ViewInBlockExplorer
       id={address}
       type={ExplorerDataType.ADDRESS}
       text={text}
+      ethereumNetworkChainId={chainId}
       {...props}
     />
+  ) : (
+    <></>
   )
 }

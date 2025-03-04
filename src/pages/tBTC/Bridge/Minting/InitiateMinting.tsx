@@ -40,16 +40,17 @@ const InitiateMintingComponent: FC<{
 
   useEffect(() => {
     const getEstimatedDepositFees = async () => {
-      const { treasuryFee, optimisticMintFee, amountToMint } =
+      const { treasuryFee, optimisticMintFee, amountToMint, crossChainFee } =
         await threshold.tbtc.getEstimatedDepositFees(depositedAmount)
 
       updateState("mintingFee", optimisticMintFee)
       updateState("thresholdNetworkFee", treasuryFee)
       updateState("tBTCMintAmount", amountToMint)
+      updateState("crossChainFee", crossChainFee)
     }
 
     getEstimatedDepositFees()
-  }, [depositedAmount, updateState, threshold])
+  }, [depositedAmount, updateState, threshold.tbtc])
 
   const initiateMintTransaction = async () => {
     await revealDeposit(utxo)
@@ -97,6 +98,7 @@ const InitiateMintingComponent: FC<{
       </InfoBox>
       <MintingTransactionDetails />
       <SubmitTxButton
+        isDisabled={!threshold.tbtc.bridgeContract}
         onSubmit={initiateMintTransaction}
         isFullWidth
         data-ph-capture-attribute-button-name={

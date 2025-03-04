@@ -58,11 +58,11 @@ export const AuthorizingApplicationsCard: FC<ComponentProps<typeof Card>> = (
         <FlowStep
           status={FlowStepStatus.active}
           preTitle="Step 2"
-          title="45 day cooldown"
+          title="period of cooldown"
           size="sm"
         >
-          You must wait a 45 day cooldown to then confirm the deauthorization.
-          This is 1 transaction.
+          There is a deauthorization cooldown period of 45 days for tBTC and
+          Random Beacon, and 6 months for TACo.
         </FlowStep>
       </Stack>
     </Card>

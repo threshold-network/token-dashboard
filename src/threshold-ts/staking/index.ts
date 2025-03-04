@@ -1,12 +1,17 @@
-import TokenStaking from "@threshold-network/solidity-contracts/artifacts/TokenStaking.json"
-import KeepTokenStaking from "@keep-network/keep-core/artifacts/TokenStaking.json"
-import { BigNumber, BigNumberish, Contract, ContractTransaction } from "ethers"
+import {
+  BigNumber,
+  BigNumberish,
+  Contract,
+  ContractTransaction,
+  constants,
+} from "ethers"
 import { ContractCall, IMulticall } from "../multicall"
 import { EthereumConfig } from "../types"
 import {
+  ADRESS_ZERO,
+  EMPTY_STAKE,
   getArtifact,
   getContract,
-  getContractAddressFromTruffleArtifact,
   getContractPastEvents,
   isAddress,
   isSameETHAddress,
@@ -49,8 +54,8 @@ interface OwnerRefreshedResult {
 }
 
 export interface IStaking {
-  stakingContract: Contract
-  legacyNuStakingContract: Contract
+  stakingContract: Contract | null
+  legacyNuStakingContract: Contract | null
   STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
   /**
    * Returns the authorized stake amount of the staking provider for the application.
@@ -68,7 +73,7 @@ export interface IStaking {
    * provider’s authorizer.
    * @param stakingProvider Staking provider address.
    * @param application Application address.
-   * @param amount Amount to authrozie.
+   * @param amount Amount to authorize.
    * @returns Ethers `ContractTransaction` instance.
    */
   increaseAuthorization(
@@ -107,7 +112,7 @@ export interface IStaking {
   getOwnerStakes(owner: string): Promise<Array<Stake>>
 
   /**
-   * Returns the current and outdated staking providers for a givne owner
+   * Returns the current and outdated staking providers for a given owner
    * address. The outdated array is necessary while fetching all owner stakes.
    * We need to filter out outdated staking providers eg. the `Staked` event was
    * emitted with the owner address that we are looking for but then the owner
@@ -120,10 +125,10 @@ export interface IStaking {
 }
 
 export class Staking implements IStaking {
-  private _staking: Contract
+  private _staking: Contract | null
   private _multicall: IMulticall
-  private _legacyKeepStaking: Contract
-  private _legacyNuStaking: Contract
+  private _legacyKeepStaking: Contract | null
+  private _legacyNuStaking: Contract | null
   private _vendingMachines: IVendingMachines
   public readonly STAKING_CONTRACT_DEPLOYMENT_BLOCK: number
 
@@ -132,30 +137,48 @@ export class Staking implements IStaking {
     multicall: IMulticall,
     vendingMachines: IVendingMachines
   ) {
-    this.STAKING_CONTRACT_DEPLOYMENT_BLOCK = config.chainId === 1 ? 14113768 : 0
-    this._staking = getContract(
-      TokenStaking.address,
-      TokenStaking.abi,
-      config.providerOrSigner,
-      config.account
+    this.STAKING_CONTRACT_DEPLOYMENT_BLOCK =
+      config.chainId === 1 ? 14113768 : 4320502
+
+    const stakingArtifact = getArtifact(
+      "TokenStaking",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
     )
-    this._legacyKeepStaking = getContract(
-      getContractAddressFromTruffleArtifact(KeepTokenStaking),
-      KeepTokenStaking.abi,
-      config.providerOrSigner,
-      config.account
+    this._staking = stakingArtifact
+      ? getContract(
+          stakingArtifact.address,
+          stakingArtifact.abi,
+          config.providerOrSigner,
+          config.account
+        )
+      : null
+    const legacyKeepStakingArtifact = getArtifact(
+      "LegacyKeepStaking",
+      config.chainId,
+      config.shouldUseTestnetDevelopmentContracts
     )
-    const NuCypherStakingEscrowArtifact = getArtifact(
+    this._legacyKeepStaking = legacyKeepStakingArtifact
+      ? getContract(
+          legacyKeepStakingArtifact.address,
+          legacyKeepStakingArtifact.abi,
+          config.providerOrSigner,
+          config.account
+        )
+      : null
+    const nuCypherStakingEscrowArtifact = getArtifact(
       "NuCypherStakingEscrow",
       config.chainId,
       config.shouldUseTestnetDevelopmentContracts
     )
-    this._legacyNuStaking = getContract(
-      NuCypherStakingEscrowArtifact.address,
-      NuCypherStakingEscrowArtifact.abi,
-      config.providerOrSigner,
-      config.account
-    )
+    this._legacyNuStaking = nuCypherStakingEscrowArtifact
+      ? getContract(
+          nuCypherStakingEscrowArtifact.address,
+          nuCypherStakingEscrowArtifact.abi,
+          config.providerOrSigner,
+          config.account
+        )
+      : null
     this._multicall = multicall
     this._vendingMachines = vendingMachines
   }
@@ -164,6 +187,11 @@ export class Staking implements IStaking {
     stakingProvider: string,
     application: string
   ): Promise<BigNumber> {
+    if (!this._staking) {
+      throw new Error(
+        "Staking contract is not available on the current network"
+      )
+    }
     return this._staking.authorizedStake(stakingProvider, application)
   }
 
@@ -180,6 +208,11 @@ export class Staking implements IStaking {
     application: string,
     amount: BigNumberish
   ): Promise<ContractTransaction> => {
+    if (!this._staking) {
+      throw new Error(
+        "Staking contract is not available on the current network"
+      )
+    }
     return await this._staking.increaseAuthorization(
       stakingProvider,
       application,
@@ -191,51 +224,76 @@ export class Staking implements IStaking {
     stakingProvider: string,
     stakeType?: StakeType
   ): Promise<Stake> => {
-    const multicalls: ContractCall[] = [
-      {
-        interface: this._staking.interface,
-        address: this._staking.address,
-        method: "rolesOf",
-        args: [stakingProvider],
-      },
-      {
-        interface: this._staking.interface,
-        address: this._staking.address,
-        method: "stakes",
-        args: [stakingProvider],
-      },
-      {
+    const multicalls: ContractCall[] = []
+
+    if (!this._staking) return EMPTY_STAKE
+
+    multicalls.push(
+      ...[
+        {
+          interface: this._staking.interface,
+          address: this._staking.address,
+          method: "rolesOf",
+          args: [stakingProvider],
+        },
+        {
+          interface: this._staking.interface,
+          address: this._staking.address,
+          method: "stakes",
+          args: [stakingProvider],
+        },
+      ]
+    )
+
+    // Only add the eligibleStake call if _legacyKeepStaking is available
+    if (this._legacyKeepStaking) {
+      multicalls.push({
         interface: this._legacyKeepStaking.interface,
         address: this._legacyKeepStaking.address,
         method: "eligibleStake",
         args: [stakingProvider, this._staking.address],
-      },
-    ]
+      })
+    }
 
-    const [rolesOf, stakes, { balance: eligibleKeepStake }] =
-      await this._multicall.aggregate(multicalls)
+    const results = await this._multicall.aggregate(multicalls)
+
+    const rolesOf = results[0]
+    const stakes = results[1]
+    const eligibleKeepStakeResult = this._legacyKeepStaking
+      ? results[2]
+      : { balance: ZERO }
 
     const { owner, authorizer, beneficiary } = rolesOf
 
     const { tStake, keepInTStake, nuInTStake } = stakes
 
-    // The NU staker can have only one stake.
-    const { stakingProvider: nuStakingProvider, value: nuStake } =
-      await this._legacyNuStaking.stakerInfo(owner)
+    const eligibleKeepStake = eligibleKeepStakeResult.balance || ZERO
 
-    const possibleNuTopUpInT =
+    let nuStakingProvider = ADRESS_ZERO
+    let nuStake = ZERO
+
+    if (this._legacyNuStaking) {
+      const { stakingProvider: nuProvider, value: nuValue } =
+        await this._legacyNuStaking.stakerInfo(owner)
+      nuStakingProvider = nuProvider
+      nuStake = nuValue
+    }
+
+    const isNuStakingProviderValid =
       isAddress(nuStakingProvider) &&
       isSameETHAddress(stakingProvider, nuStakingProvider)
-        ? BigNumber.from(
-            (await this._vendingMachines.nu.convertToT(nuStake.toString()))
-              .tAmount
-          ).sub(BigNumber.from(nuInTStake.toString()))
-        : ZERO
 
-    const keepEligableStakeInT = (
+    const possibleNuTopUpInT = isNuStakingProviderValid
+      ? BigNumber.from(
+          (await this._vendingMachines.nu.convertToT(nuStake.toString()))
+            .tAmount
+        ).sub(BigNumber.from(nuInTStake.toString()))
+      : ZERO
+
+    const keepEligibleStakeInT = (
       await this._vendingMachines.keep.convertToT(eligibleKeepStake.toString())
     ).tAmount
-    const possibleKeepTopUpInT = BigNumber.from(keepEligableStakeInT).sub(
+    const possibleKeepTopUpInT = BigNumber.from(keepEligibleStakeInT).sub(
       BigNumber.from(keepInTStake)
     )
 
@@ -261,12 +319,24 @@ export class Staking implements IStaking {
     application: string,
     amount: BigNumberish
   ): Promise<ContractTransaction> => {
+    if (!this._staking) {
+      throw new Error(
+        "Staking contract is not available on the current network"
+      )
+    }
     return await this._staking[
       "requestAuthorizationDecrease(address,address,uint96)"
     ](stakingProvider, application, amount)
   }
 
   rolesOf = async (stakingProvider: string): Promise<RolesOf> => {
+    if (!this._staking) {
+      return {
+        owner: ADRESS_ZERO,
+        beneficiary: ADRESS_ZERO,
+        authorizer: ADRESS_ZERO,
+      }
+    }
     const rolesOf = await this._staking.rolesOf(stakingProvider)
     return {
       owner: rolesOf.owner,
@@ -276,13 +346,17 @@ export class Staking implements IStaking {
   }
 
   getOwnerStakes = async (owner: string): Promise<Array<Stake>> => {
-    const stakes = (
-      await getContractPastEvents(this._staking, {
-        eventName: "Staked",
-        fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
-        filterParams: [undefined, owner],
-      })
-    )
+    if (!this._staking) {
+      return []
+    }
+
+    const stakesEvents = await getContractPastEvents(this._staking, {
+      eventName: "Staked",
+      fromBlock: this.STAKING_CONTRACT_DEPLOYMENT_BLOCK,
+      filterParams: [undefined, owner],
+    })
+
+    const stakes = stakesEvents
       .map((event) => ({
         stakingProvider: event.args?.stakingProvider,
         stakeType: event.args?.stakeType,
@@ -310,6 +384,10 @@ export class Staking implements IStaking {
   findRefreshedKeepStakes = async (
     owner: string
   ): Promise<OwnerRefreshedResult> => {
+    if (!this._staking) {
+      return { current: [], outdated: [] }
+    }
+
     // Find all events where the `owner` was set as a new owner or old owner of
     // the stake.
     const ownerRefreshedEventsFilteredByNewOwner = await getContractPastEvents(
@@ -342,10 +420,14 @@ export class Staking implements IStaking {
       new Set(ownerRefreshedEvents.map((event) => event?.args?.stakingProvider))
     )
 
+    if (possibleStakingProviders.length === 0) {
+      return { current: [], outdated: [] }
+    }
+
     const multicalls: ContractCall[] = possibleStakingProviders.map(
       (stakingProvider) => ({
-        address: this._staking.address,
-        interface: this._staking.interface,
+        address: this._staking!.address,
+        interface: this._staking!.interface,
         method: "rolesOf",
         args: [stakingProvider],
       })
@@ -357,12 +439,14 @@ export class Staking implements IStaking {
     // iterating through the `OwnerRefreshed` events and comparing the
     // `oldOwner` and `newOwner` params from that event, we can just check the
     // current owner for a given staking provider by calling `rolesOf`.
-    const rolesOf: RolesOf[] = await this._multicall.aggregate(multicalls)
+    const rolesOfResults: RolesOf[] = await this._multicall.aggregate(
+      multicalls
+    )
 
     // The current staking providers for a given `owner` address.
-    const stakingProviders: string[] = rolesOf
-      .map((_, index) => ({
-        ..._,
+    const stakingProviders: string[] = rolesOfResults
+      .map((rolesOf, index) => ({
+        ...rolesOf,
         stakingProvider: possibleStakingProviders[index],
       }))
       .filter((rolesOf) => isSameETHAddress(rolesOf.owner, owner))

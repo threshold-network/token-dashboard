@@ -5,87 +5,159 @@ import {
   IconButton,
   useColorMode,
   useColorModeValue,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
 } from "@chakra-ui/react"
-import { BsQuestionCircleFill, MdOutlineTrain } from "react-icons/all"
-import { ChainID } from "../../enums"
+import { BsQuestionCircleFill } from "react-icons/all"
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 import { EthereumLight } from "../../static/icons/EthereumLight"
 import { EthereumDark } from "../../static/icons/EthereumDark"
-import chainIdToNetworkName from "../../utils/chainIdToNetworkName"
+import { Arbitrum } from "../../static/icons/Arbitrum"
+import { Base } from "../../static/icons/Base"
+import { chainIdToChainParameterName, networks } from "../../networks/utils"
+import { useIsActive } from "../../hooks/useIsActive"
+import { NetworkType, SupportedChainIds } from "../../networks/enums/networks"
+import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 interface NetworkIconMap {
-  [chainId: number]: { icon: ReactElement; bg: string }
+  icon: ReactElement
+  bg: string
 }
 
-const NetworkButton: FC<{ chainId?: number }> = ({ chainId }) => {
-  const { colorMode } = useColorMode()
-  const ethereumLogo = useMemo(
-    () => (colorMode === "light" ? EthereumDark : EthereumLight),
-    [colorMode]
-  )
+const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
+  const defaultChainId = getDefaultProviderChainId()
+  const ethereumLogo = colorMode === "light" ? EthereumDark : EthereumLight
+  const grayBackground = "gray.700"
 
-  const networkIconMap: NetworkIconMap = {
-    [ChainID.Ethereum]: {
-      icon: <Icon as={ethereumLogo} />,
-      bg: "gray.700",
-    },
-    [ChainID.Sepolia]: {
+  const iconMap: Record<number, NetworkIconMap> = {
+    ...(defaultChainId === SupportedChainIds.Sepolia
+      ? {
+          [SupportedChainIds.Sepolia]: {
+            icon: <Icon as={ethereumLogo} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.ArbitrumSepolia]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.BaseSepolia]: {
+            icon: <Icon as={Base} boxSize="5" />,
+            bg: "blue.500",
+          },
+        }
+      : {
+          [SupportedChainIds.Ethereum]: {
+            icon: <Icon as={ethereumLogo} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.Base]: {
+            icon: <Icon as={Base} />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.Arbitrum]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
+        }),
+  }
+
+  return (
+    iconMap[chainId] || {
       icon: (
         <Icon
-          as={MdOutlineTrain}
-          color={useColorModeValue("yellow.500", "white")}
+          as={BsQuestionCircleFill}
+          color={colorMode === "light" ? "red.500" : "white"}
+          boxSize="5"
         />
       ),
-      bg: "yellow.500",
-    },
-  }
+      bg: "red.500",
+    }
+  )
+}
 
-  const networkIcon = networkIconMap[chainId || 0] || {
-    icon: (
-      <Icon
-        as={BsQuestionCircleFill}
-        color={useColorModeValue("red.500", "white")}
-      />
-    ),
-    bg: "red.500",
-  }
+const NetworkButton: FC = () => {
+  const { colorMode } = useColorMode()
+  const { chainId, switchNetwork } = useIsActive()
+  const defaultChainId = getDefaultProviderChainId()
+
+  const networkIcon = useMemo(
+    () => getNetworkIcon(chainId || 0, colorMode),
+    [chainId, colorMode]
+  )
+
+  const renderMenuItems = () =>
+    networks
+      .filter((network) =>
+        defaultChainId === SupportedChainIds.Ethereum
+          ? network.networkType === NetworkType.Mainnet
+          : network.networkType === NetworkType.Testnet &&
+            network.chainParameters.chainName !== "Localhost"
+      )
+      .map((network) => {
+        const { icon } = getNetworkIcon(network.chainId, colorMode)
+        return (
+          <MenuItem
+            key={network.chainId}
+            onClick={() => switchNetwork(network.chainId)}
+            iconSpacing="4"
+            display="flex"
+            gap="3"
+          >
+            {icon}
+            {network.chainParameters?.chainName}
+          </MenuItem>
+        )
+      })
 
   return (
     <>
       {/* Mobile */}
-      <IconButton
-        variant="unstyled"
-        as={Button}
-        display={{
-          base: "inherit",
-          md: "none",
-        }}
-        _hover={{
-          bg: useColorModeValue("transparent", networkIcon.bg),
-        }}
-        _active={{
-          bg: useColorModeValue("transparent", networkIcon.bg),
-        }}
-        bg={useColorModeValue("transparent", networkIcon.bg)}
-        border="1px solid"
-        borderColor={useColorModeValue("gray.300", "transparent")}
-        icon={networkIcon.icon}
-        aria-label="network"
-      />
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton
+              as={IconButton}
+              variant="unstyled"
+              display={{ base: "inherit", md: "none" }}
+              _hover={{ bg: useColorModeValue("transparent", networkIcon.bg) }}
+              _active={{ bg: useColorModeValue("transparent", networkIcon.bg) }}
+              bg={useColorModeValue("transparent", networkIcon.bg)}
+              border="1px solid"
+              borderColor={useColorModeValue("gray.300", "transparent")}
+              icon={
+                <>
+                  {networkIcon.icon}
+                  {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                </>
+              }
+              aria-label="network"
+            />
+            <MenuList zIndex={20}>{renderMenuItems()}</MenuList>
+          </>
+        )}
+      </Menu>
 
       {/* Desktop */}
-      <Button
-        variant="outline"
-        _hover={{
-          bg: "transparent",
-        }}
-        _active={{
-          bg: "transparent",
-        }}
-        leftIcon={networkIcon.icon}
-        display={{ base: "none", md: "inherit" }}
-      >
-        {chainIdToNetworkName(chainId)}
-      </Button>
+      <Menu>
+        {({ isOpen }) => (
+          <>
+            <MenuButton
+              as={Button}
+              variant="outline"
+              _hover={{ bg: "transparent" }}
+              _active={{ bg: "transparent" }}
+              leftIcon={networkIcon.icon}
+              rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              display={{ base: "none", md: "inherit" }}
+            >
+              {chainIdToChainParameterName(chainId)}
+            </MenuButton>
+            <MenuList zIndex={20}>{renderMenuItems()}</MenuList>
+          </>
+        )}
+      </Menu>
     </>
   )
 }

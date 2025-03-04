@@ -1,11 +1,23 @@
 import { useCallback } from "react"
-import { useThreshold } from "../../contexts/ThresholdContext"
+import { useMulticallContract } from "./useMulticallContract"
 import { ContractCall } from "../../threshold-ts/multicall"
 
 export const useMulticall = (calls: ContractCall[]) => {
-  const threshold = useThreshold()
+  const multicall = useMulticallContract()
 
   return useCallback(async () => {
-    return await threshold.multicall.aggregate(calls)
-  }, [JSON.stringify(calls), threshold])
+    if (!multicall) return []
+
+    const callRequests = calls.map((_) => [
+      _.address,
+      _.interface.encodeFunctionData(_.method, _.args),
+    ])
+
+    const [, result] = await multicall.aggregate(callRequests)
+
+    return result.map((data: string, index: number) => {
+      const call = calls[index]
+      return call.interface.decodeFunctionResult(call.method, data)
+    })
+  }, [JSON.stringify(calls), multicall])
 }
