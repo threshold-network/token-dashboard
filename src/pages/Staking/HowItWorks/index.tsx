@@ -6,8 +6,6 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import StakingOverview from "./StakingOverview"
-import StakingApplications from "./StakingApplications"
-import StakingProviders from "./StakingProviders"
 import AnnouncementBanner from "../../../components/AnnouncementBanner"
 import stakingHowItWorksIllustrationLight from "../../../static/images/StakingHowItWorksIllustrationLight.png"
 import stakingHowItWorksIllustrationDark from "../../../static/images/StakingHowItWorksIllustrationDark.png"
@@ -65,12 +63,6 @@ const HowItWorksPage: PageComponent = () => {
           <FilterTab tabId={"1"} as={RouterLink} to="overview">
             Overview
           </FilterTab>
-          <FilterTab tabId={"2"} as={RouterLink} to="applications">
-            Applications
-          </FilterTab>
-          <FilterTab tabId={"3"} as={RouterLink} to="providers">
-            Providers
-          </FilterTab>
         </FilterTabs>
       )}
       <Outlet />
@@ -82,7 +74,7 @@ HowItWorksPage.route = {
   path: "how-it-works",
   pathOverride: "how-it-works/*",
   index: false,
-  pages: [StakingOverview, StakingApplications, StakingProviders],
+  pages: [StakingOverview],
   title: "How it works",
   isPageEnabled: true,
 }
