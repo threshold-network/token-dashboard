@@ -32,6 +32,7 @@ import {
 import { getStakingAppLabelFromAppName } from "../../../utils/getStakingAppLabel"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export type AuthorizeAppsProps = BaseModalProps & {
   stakingProvider: string
@@ -49,6 +50,7 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
   applications,
   closeModal,
 }) => {
+  const threshold = useThreshold()
   const tbtcAppAuthData = useAppSelector((state) =>
     selectStakingAppByStakingProvider(state, "tbtc", stakingProvider)
   )
@@ -102,7 +104,11 @@ const AuthorizeStakingAppsBase: FC<AuthorizeAppsProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Dismiss
         </Button>
-        <SubmitTxButton mr={2} onSubmit={onAuthorize}>
+        <SubmitTxButton
+          isDisabled={!threshold.staking.stakingContract}
+          mr={2}
+          onSubmit={onAuthorize}
+        >
           Authorize
         </SubmitTxButton>
       </ModalFooter>

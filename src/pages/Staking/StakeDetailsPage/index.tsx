@@ -34,10 +34,12 @@ import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { isAddress } from "../../../web3/utils"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
   const { account, active } = useWeb3React()
+  const threshold = useThreshold()
   const { openModal } = useModal()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -52,9 +54,11 @@ const StakeDetailsPage: FC = () => {
 
   useEffect(() => {
     dispatch(
-      requestStakeByStakingProvider({ stakingProvider: stakingProviderAddress })
+      requestStakeByStakingProvider({
+        stakingProvider: stakingProviderAddress,
+      })
     )
-  }, [stakingProviderAddress, account, dispatch])
+  }, [stakingProviderAddress, account, threshold.staking, dispatch])
 
   const stake = useAppSelector((state) =>
     selectStakeByStakingProvider(state, stakingProviderAddress!)

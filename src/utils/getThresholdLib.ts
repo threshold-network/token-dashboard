@@ -1,12 +1,17 @@
 import { JsonRpcProvider, Provider } from "@ethersproject/providers"
 import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
-import { ChainID, EnvVariable } from "../enums"
+import { EnvVariable } from "../enums"
 import {
+  getDefaultProviderChainId,
   getEnvVariable,
   shouldUseTestnetDevelopmentContracts,
-  supportedChainId,
 } from "../utils/getEnvVariable"
+import {
+  isSupportedNetwork,
+  isTestnetNetwork,
+} from "../networks/utils/connectedNetwork"
+import { getRpcUrl } from "../networks/utils/getRpcUrl"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
 import {
   BitcoinConfig,
@@ -14,47 +19,50 @@ import {
   BitcoinClientCredentials,
   EthereumConfig,
 } from "../threshold-ts/types"
+import { SupportedChainIds } from "../networks/enums/networks"
+import { getBitcoinCredentials } from "./getBitcoinCredentials"
+
+const defaultProviderChainId = getDefaultProviderChainId()
 
 function getInitialEthereumConfig(
   providerOrSigner?: Provider | Signer
 ): EthereumConfig {
   return {
-    chainId: supportedChainId,
-    providerOrSigner: providerOrSigner || getDefaultThresholdLibProvider(),
+    chainId: getDefaultProviderChainId(),
+    providerOrSigner:
+      providerOrSigner || getThresholdLibProvider(defaultProviderChainId),
     shouldUseTestnetDevelopmentContracts:
-      supportedChainId === ChainID.Sepolia.toString() &&
+      defaultProviderChainId === SupportedChainIds.Sepolia &&
       shouldUseTestnetDevelopmentContracts,
   }
 }
 
 function getInitialBitcoinConfig(): BitcoinConfig {
-  const network =
-    supportedChainId === ChainID.Ethereum.toString()
-      ? BitcoinNetwork.Mainnet
-      : BitcoinNetwork.Testnet
+  const bitcoinNetwork = isTestnetNetwork(defaultProviderChainId)
+    ? BitcoinNetwork.Testnet
+    : BitcoinNetwork.Mainnet
 
   const shouldMockBitcoinClient =
     getEnvVariable(EnvVariable.MOCK_BITCOIN_CLIENT) === "true"
 
-  const credentials: BitcoinClientCredentials[] = [
-    {
-      host: getEnvVariable(EnvVariable.ELECTRUM_HOST),
-      port: +getEnvVariable(EnvVariable.ELECTRUM_PORT),
-      protocol: getEnvVariable(
-        EnvVariable.ELECTRUM_PROTOCOL
-      ) as BitcoinClientCredentials["protocol"],
-    },
-  ]
+  const credentials: BitcoinClientCredentials[] =
+    getBitcoinCredentials(bitcoinNetwork)
 
   return {
     client: shouldMockBitcoinClient ? new MockBitcoinClient() : undefined,
-    network,
+    network: bitcoinNetwork,
     credentials: !shouldMockBitcoinClient ? credentials : undefined,
   }
 }
 
-export const getDefaultThresholdLibProvider = () => {
-  return new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
+export const getThresholdLibProvider = (chainId?: number | string) => {
+  const supportedChainId = isSupportedNetwork(chainId)
+    ? Number(chainId)
+    : getDefaultProviderChainId()
+
+  const rpcUrl = getRpcUrl(supportedChainId)
+
+  return new JsonRpcProvider(rpcUrl, supportedChainId)
 }
 
 export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
@@ -64,6 +72,4 @@ export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
   })
 }
 
-export const threshold = getThresholdLib(
-  new JsonRpcProvider(getEnvVariable(EnvVariable.ETH_HOSTNAME_HTTP))
-)
+export const threshold = getThresholdLib(getThresholdLibProvider())

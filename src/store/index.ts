@@ -78,7 +78,9 @@ const store = configureStore({
         ignoredActions: [
           "modal/openModal",
           "staking/unstaked",
-          "staking/toppepUp",
+          "staking/toppedUp",
+          "account/setOperatorMappingError",
+          "account/setTrmError",
         ],
         // Ignore these field paths in all actions
         ignoredPaths: [
@@ -89,6 +91,8 @@ const store = configureStore({
           "modal.props.onSubmit",
           "modal.props.setAmountToStake",
           "payload.props.setAmountToStake",
+          "account.trm",
+          "account.operatorMapping",
         ],
       },
     }).prepend(listenerMiddleware.middleware),

@@ -24,6 +24,7 @@ export const formatPercentage = (
   displayLessThanGreaterThanSigns = false,
   displaySign = true
 ): string => {
+  if (!(typeof percentage === "number")) return ""
   if (percentage < 1 && percentage > 0 && displayLessThanGreaterThanSigns) {
     return `<1${displaySign ? "%" : ""}`
   } else if (

@@ -283,8 +283,8 @@ export class Application implements IApplication {
   ): Promise<StakingProviderAppInfo> => {
     const calls: ContractCall[] = [
       {
-        interface: this._staking.stakingContract.interface,
-        address: this._staking.stakingContract.address,
+        interface: this._staking.stakingContract!.interface,
+        address: this._staking.stakingContract!.address,
         method: "authorizedStake",
         args: [stakingProvider, this.address],
       },

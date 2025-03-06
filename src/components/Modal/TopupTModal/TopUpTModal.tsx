@@ -20,7 +20,7 @@ import { StakeData } from "../../../types/staking"
 import { ModalType, TopUpType } from "../../../enums"
 import withBaseModal from "../withBaseModal"
 import ModalCloseButton from "../ModalCloseButton"
-import { OnSuccessCallback } from "../../../web3/hooks"
+import { OnSuccessCallback, useTStakingContract } from "../../../web3/hooks"
 import SubmitTxButton from "../../SubmitTxButton"
 
 const TopupTModal: FC<
@@ -30,6 +30,7 @@ const TopupTModal: FC<
     topUpType: TopUpType
   }
 > = ({ stake, amountTopUp, topUpType }) => {
+  const stakingContract = useTStakingContract()
   const { closeModal, openModal } = useModal()
 
   const onSuccess = useCallback<OnSuccessCallback>(
@@ -80,6 +81,7 @@ const TopupTModal: FC<
           Cancel
         </Button>
         <SubmitTxButton
+          isDisabled={!stakingContract}
           onSubmit={() => {
             topup({
               stakingProvider: stake.stakingProvider,

@@ -11,9 +11,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Update the `.env` file:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=11155111
-REACT_APP_ETH_HOSTNAME_HTTP=<your http ETH hostname- eg. Infura>
-REACT_APP_ETH_HOSTNAME_WS=<your ws ETH hostname- eg. Infura>
+REACT_APP_DEFAULT_PROVIDER_CHAIN_ID=11155111
+REACT_APP_ALCHEMY_API_KEY=<your Alchemy API key>
 // We can skip this env variable- the dapp uses the correct address
 // of Multicall contract for Sepolia under the hood.
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
@@ -109,9 +108,8 @@ The following procedure allows to deploy T token dashboard to production:
 Update `.env` to contain:
 
 ```
-REACT_APP_SUPPORTED_CHAIN_ID=11155111
-REACT_APP_ETH_HOSTNAME_HTTP=https://sepolia.infura.io/v3/<your API key here>
-REACT_APP_ETH_HOSTNAME_WS=wss://sepolia.infura.io/v3/<your API key here>
+REACT_APP_DEFAULT_PROVIDER_CHAIN_ID=11155111
+REACT_APP_ALCHEMY_API_KEY=<your Alchemy API key here>
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 REACT_APP_FEATURE_FLAG_TBTC_V2=true
@@ -135,6 +133,8 @@ REACT_APP_ELECTRUM_PORT=8443
 REACT_APP_MOCK_BITCOIN_CLIENT=false
 
 REACT_APP_WALLET_CONNECT_PROJECT_ID=$WALLET_CONNECT_PROJECT_ID
+
+REACT_APP_TBTC_SUBGRAPH_API=$TBTC_SUBGRAPH_API
 
 REACT_APP_TACO_DOMAIN=dashboard
 ```
