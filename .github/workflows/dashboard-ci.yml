@@ -89,9 +89,9 @@ jobs:
           CHAIN_ID: 11155111
           ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           NODE_OPTIONS: --max_old_space_size=4096
-          TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-          TESTNET_ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-          TESTNET_ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+          ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+          ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+          ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
           TBTC_SUBGRAPH_API: ${{ secrets.TBTC_SUBGRAPH_API }}
 
@@ -123,9 +123,9 @@ jobs:
     secrets:
       alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}
@@ -154,9 +154,9 @@ jobs:
     secrets:
       alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}
@@ -180,9 +180,9 @@ jobs:
     secrets:
       alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
-      testnetElectrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
-      testnetElectrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
-      testnetElectrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
       tbtcSubgraphApi: ${{ secrets.TBTC_SUBGRAPH_API }}
