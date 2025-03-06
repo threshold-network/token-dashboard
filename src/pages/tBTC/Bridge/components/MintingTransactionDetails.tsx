@@ -39,8 +39,7 @@ const MintingTransactionDetails = () => {
         precision={6}
         higherPrecision={8}
       />
-      {(chainId === SupportedChainIds.Arbitrum ||
-        chainId === SupportedChainIds.ArbitrumSepolia) && (
+      {chainId === SupportedChainIds.Arbitrum && (
         <TransactionDetailsAmountItem
           label="Cross Chain Fee"
           amount={crossChainFee}
