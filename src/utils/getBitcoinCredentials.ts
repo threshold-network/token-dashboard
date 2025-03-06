@@ -4,26 +4,15 @@ import { EnvVariable } from "../enums"
 import { getEnvVariable } from "./getEnvVariable"
 
 export const getBitcoinCredentials = (bitcoinNetwork: BitcoinNetwork) => {
-  const credentials: BitcoinClientCredentials[] =
-    bitcoinNetwork === BitcoinNetwork.Mainnet
-      ? [
-          {
-            host: getEnvVariable(EnvVariable.MAINNET_ELECTRUM_HOST),
-            port: +getEnvVariable(EnvVariable.MAINNET_ELECTRUM_PORT),
-            protocol: getEnvVariable(
-              EnvVariable.MAINNET_ELECTRUM_PROTOCOL
-            ) as BitcoinClientCredentials["protocol"],
-          },
-        ]
-      : [
-          {
-            host: getEnvVariable(EnvVariable.TESTNET_ELECTRUM_HOST),
-            port: +getEnvVariable(EnvVariable.TESTNET_ELECTRUM_PORT),
-            protocol: getEnvVariable(
-              EnvVariable.TESTNET_ELECTRUM_PROTOCOL
-            ) as BitcoinClientCredentials["protocol"],
-          },
-        ]
+  const credentials: BitcoinClientCredentials[] = [
+    {
+      host: getEnvVariable(EnvVariable.ELECTRUM_HOST),
+      port: +getEnvVariable(EnvVariable.ELECTRUM_PORT),
+      protocol: getEnvVariable(
+        EnvVariable.ELECTRUM_PROTOCOL
+      ) as BitcoinClientCredentials["protocol"],
+    },
+  ]
 
   return credentials
 }
