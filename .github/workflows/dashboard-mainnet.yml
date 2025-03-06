@@ -49,7 +49,7 @@ jobs:
         env:
           PUBLIC_URL: /${{ github.ref_name }}
           CHAIN_ID: 1
-          ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           NODE_OPTIONS: --max_old_space_size=4096
           MAINNET_ELECTRUM_PROTOCOL: ${{ secrets.MAINNET_ELECTRUMX_PROTOCOL }}
           MAINNET_ELECTRUM_HOST: ${{ secrets.MAINNET_ELECTRUMX_HOST }}
@@ -71,7 +71,7 @@ jobs:
         env:
           PUBLIC_URL: /
           CHAIN_ID: 1
-          ALCHEMY_API: ${{ secrets.ALCHEMY_API }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           NODE_OPTIONS: --max_old_space_size=4096
           POSTHOG_SUPPORT: true
           POSTHOG_API_KEY: ${{ secrets.MAINNET_POSTHOG_API_KEY }}

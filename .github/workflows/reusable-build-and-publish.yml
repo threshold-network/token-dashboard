@@ -162,7 +162,7 @@ jobs:
         env:
           PUBLIC_URL: /
           CHAIN_ID: ${{ env.NETWORK_ID }}
-          ALCHEMY_API: ${{ secrets.alchemyApi }}
+          ALCHEMY_API_KEY: ${{ secrets.alchemyApiKey }}
           NODE_OPTIONS: --max_old_space_size=4096
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
           TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
@@ -180,7 +180,7 @@ jobs:
         env:
           PUBLIC_URL: /${{ inputs.gcpBucketPath }}
           CHAIN_ID: ${{ env.NETWORK_ID }}
-          ALCHEMY_API: ${{ secrets.alchemyApi }}
+          ALCHEMY_API_KEY: ${{ secrets.alchemyApiKey }}
           NODE_OPTIONS: --max_old_space_size=4096
           TESTNET_ELECTRUM_PROTOCOL: ${{ secrets.testnetElectrumProtocol }}
           TESTNET_ELECTRUM_HOST: ${{ secrets.testnetElectrumHost }}
