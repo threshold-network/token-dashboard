@@ -49,7 +49,7 @@ on:
         default: false
         type: boolean
     secrets:
-      alchemyApi:
+      alchemyApiKey:
         description: The Alchemy API Key.
         required: true
       gcpServiceKey:
