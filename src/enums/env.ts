@@ -1,6 +1,6 @@
 const envVariables = [
   "DEFAULT_PROVIDER_CHAIN_ID",
-  "ALCHEMY_API",
+  "ALCHEMY_API_KEY",
   "TBTC_SUBGRAPH_API",
   "FEATURE_FLAG_TBTC_V2",
   "FEATURE_FLAG_TBTC_V2_REDEMPTION",
@@ -29,7 +29,7 @@ const envVariables = [
 export type EnvVariableKey = typeof envVariables[number]
 
 // In order not to break the previous enum API, so using eg.
-// `EnvVariable.ALCHEMY_API` is still valid.
+// `EnvVariable.ALCHEMY_API_KEY` is still valid.
 export const EnvVariable: Record<EnvVariableKey, EnvVariableKey> =
   envVariables.reduce((reducer, envKey) => {
     reducer[envKey] = envKey

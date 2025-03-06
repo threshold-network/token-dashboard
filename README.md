@@ -12,7 +12,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ```
 REACT_APP_DEFAULT_PROVIDER_CHAIN_ID=11155111
-REACT_APP_ALCHEMY_API=<your Alchemy API key>
+REACT_APP_ALCHEMY_API_KEY=<your Alchemy API key>
 // We can skip this env variable- the dapp uses the correct address
 // of Multicall contract for Sepolia under the hood.
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
@@ -109,7 +109,7 @@ Update `.env` to contain:
 
 ```
 REACT_APP_DEFAULT_PROVIDER_CHAIN_ID=11155111
-REACT_APP_ALCHEMY_API=<your Alchemy API key here>
+REACT_APP_ALCHEMY_API_KEY=<your Alchemy API key here>
 REACT_APP_MULTICALL_ADDRESS=$MULTICALL_ADDRESS
 
 REACT_APP_FEATURE_FLAG_TBTC_V2=true
