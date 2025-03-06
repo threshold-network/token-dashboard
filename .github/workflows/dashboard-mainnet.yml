@@ -58,7 +58,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           TRM_SUPPORT: ${{ secrets.TRM_SUPPORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
-          TBTC_SUBGRAPH_API: ${{ secrets.TBTC_SUBGRAPH_API }}
+          TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: false
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 
@@ -80,7 +80,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.MAINNET_SENTRY_DSN }}
           TRM_SUPPORT: ${{ secrets.TRM_SUPPORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
-          TBTC_SUBGRAPH_API: ${{ secrets.TBTC_SUBGRAPH_API }}
+          TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
 

@@ -72,8 +72,8 @@ on:
           Project Id gathered from WalletConnect cloud. Required for
           WalletConnect v2.
         required: true
-      tbtcSubgraphApi:
-        description: The API endpoint for the tBTC subgraph.
+      tbtcSubgraphApiKey:
+        description: The API key for the tBTC subgraph.
         required: true
 
 jobs:
@@ -170,7 +170,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
-          TBTC_SUBGRAPH_API: ${{ secrets.tbtcSubgraphApi }}
+          TBTC_SUBGRAPH_API_KEY: ${{ secrets.tbtcSubgraphApiKey }}
           DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Build
@@ -188,7 +188,7 @@ jobs:
           SENTRY_SUPPORT: true
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
-          TBTC_SUBGRAPH_API: ${{ secrets.tbtcSubgraphApi }}
+          TBTC_SUBGRAPH_API_KEY: ${{ secrets.tbtcSubgraphApiKey }}
           DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
 
       - name: Deploy to GCP
