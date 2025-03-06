@@ -27,8 +27,7 @@ const TbtcFees = () => {
         suffixItem="%"
         isFetching={isFetching}
       />
-      {(chainId === SupportedChainIds.Arbitrum ||
-        chainId === SupportedChainIds.ArbitrumSepolia) && (
+      {chainId === SupportedChainIds.Arbitrum && (
         <TransactionDetailsAmountItem
           label="Cross Chain Fee"
           amount={depositTxMaxFee}

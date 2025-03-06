@@ -936,8 +936,7 @@ export class TBTC implements ITBTC {
     amountToMint: BigNumber
   } {
     const isArbitrumNetworkConnected =
-      this.ethereumChainId === SupportedChainIds.Arbitrum ||
-      this.ethereumChainId === SupportedChainIds.ArbitrumSepolia
+      this.ethereumChainId === SupportedChainIds.Arbitrum
 
     const amountToMintAfterTreasuryFee = depositAmount
       .sub(treasuryFee)
