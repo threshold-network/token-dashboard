@@ -15,26 +15,14 @@ export const getEnvVariable = (envVar: EnvVariableKey) => {
 }
 
 export const getDefaultProviderChainId = () => {
-  const chainIdFromEnv = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
+  const chainId = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
+  console.log("chainId", chainId)
 
-  if (!chainIdFromEnv) {
+  if (!chainId || isNaN(Number(chainId))) {
     return SupportedChainIds.Ethereum
   }
 
-  const chainId = Number(chainIdFromEnv)
-
-  // If chainIdFromEnv is not a valid number, also default to Ethereum
-  if (isNaN(chainId)) {
-    return SupportedChainIds.Ethereum
-  }
-
-  // If it's one of the known testnet chain IDs, return Sepolia
-  if (Object.values(TestnetChainIds).includes(chainId)) {
-    return SupportedChainIds.Sepolia
-  }
-
-  // Otherwise, return the chain ID from the environment
-  return chainId
+  return Number(chainId)
 }
 
 export const shouldUseTestnetDevelopmentContracts =
