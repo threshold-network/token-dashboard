@@ -55,13 +55,13 @@ on:
       gcpServiceKey:
         description: JSON key for Google Cloud Platform service account.
         required: true
-      testnetElectrumProtocol:
+      electrumProtocol:
         description: Protocol used by the Testnet Electrum server.
         required: true
-      testnetElectrumHost:
+      electrumHost:
         description: Host pointing to the Testnet Electrum server.
         required: true
-      testnetElectrumPort:
+      electrumPort:
         description: Port the Testnet Electrum server listens on.
         required: true
       sentryDsn:
