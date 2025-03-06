@@ -28,9 +28,9 @@ export const createExplorerPrefix = (
   const prefixMap: { [key: number]: string } = {
     [SupportedChainIds.Sepolia]: "https://sepolia.etherscan.io",
     [SupportedChainIds.Arbitrum]: "https://arbiscan.io",
-    [SupportedChainIds.ArbitrumSepolia]: "https://sepolia.arbiscan.io",
     [SupportedChainIds.Base]: "https://basescan.org",
-    [SupportedChainIds.BaseSepolia]: "https://sepolia.basescan.org",
+    // [SupportedChainIds.BaseSepolia]: "https://sepolia.basescan.org",
+    // [SupportedChainIds.ArbitrumSepolia]: "https://sepolia.arbiscan.io",
   }
 
   return prefixMap[Number(chainId)] || "https://etherscan.io"
