@@ -23,7 +23,7 @@ import {
   getChainIdToNetworkName,
   isL1Network,
   isSupportedNetwork,
-  isTestnetNetwork,
+  isTestnetChainId,
 } from "../../../../networks/utils"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
@@ -56,7 +56,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   const { chainId } = useIsActive()
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
-    isTestnetNetwork(chainId as number)
+    isTestnetChainId(chainId as number)
       ? BitcoinNetwork.Testnet
       : BitcoinNetwork.Mainnet
   )

@@ -2,7 +2,7 @@ import { FC } from "react"
 import { LinkProps } from "@chakra-ui/react"
 import Link from "./Link"
 import { ExplorerDataType } from "../networks/enums/networks"
-import { getMainnetOrTestnetChainId, isTestnetNetwork } from "../networks/utils"
+import { getMainnetOrTestnetChainId, isTestnetChainId } from "../networks/utils"
 import {
   createBlockExplorerLink,
   createExplorerLink,
@@ -21,7 +21,7 @@ export const createLinkToBlockExplorerForChain: Record<
 > = {
   bitcoin: (id, type, ethereumNetworkChainId) => {
     const prefix = `https://blockstream.info${
-      isTestnetNetwork(Number(ethereumNetworkChainId)) ? "/testnet" : ""
+      isTestnetChainId(Number(ethereumNetworkChainId)) ? "/testnet" : ""
     }`
 
     return createBlockExplorerLink(prefix, id, type)

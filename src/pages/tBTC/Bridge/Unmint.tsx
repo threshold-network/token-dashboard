@@ -61,9 +61,11 @@ import { featureFlags } from "../../../constants"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
+import { isSupportedNetwork } from "../../../networks/utils"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
+  const { chainId } = useIsActive()
   const { openModal } = useModal()
   const threshold = useThreshold()
 
@@ -74,7 +76,7 @@ const UnmintFormPage: PageComponent = ({}) => {
     })
   }
 
-  return !featureFlags.TBTC_V2_REDEMPTION ? (
+  return !featureFlags.TBTC_V2_REDEMPTION || !isSupportedNetwork(chainId) ? (
     <UnmintingCard />
   ) : (
     <>
