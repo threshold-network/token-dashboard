@@ -19,7 +19,7 @@ export const UnmintingCard: FC<ComponentProps<typeof Card>> = ({
     <Card {...props}>
       <Image src={illustration} m="auto" />
       <BodyMd textAlign="center" mt="6">
-        Unminting feature is under construction.
+        Unminting feature is not enabled or your network is not supported.
       </BodyMd>
     </Card>
   )
