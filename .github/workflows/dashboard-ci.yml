@@ -87,13 +87,13 @@ jobs:
         env:
           PUBLIC_URL: /${{ github.head_ref }}
           CHAIN_ID: 11155111
-          ETH_HOSTNAME_HTTP: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
-          ETH_HOSTNAME_WS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
+          ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
           NODE_OPTIONS: --max_old_space_size=4096
           ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
           ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
           ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+          TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
 
       # FIXME: Tests are missing, will this step be needed?
       # - name: Test
@@ -121,14 +121,14 @@ jobs:
       gcpBucketPath: ${{ github.head_ref }}
       preview: true
     secrets:
-      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
+      alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+      tbtcSubgraphApiKey: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
 
   # This job will be triggered via the `workflow_dispatch` event, as part of the
   # CI flow, which gets triggered manually after changes in the contracts,
@@ -152,14 +152,14 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
+      alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+      tbtcSubgraphApiKey: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
 
   # This job will be triggered after merges of PRs to the `main` branch. As the
   # triggering is not related to the changes in the contracts / client code, we
@@ -178,11 +178,11 @@ jobs:
       gcpBucketName: dashboard.test.threshold.network
       preview: false
     secrets:
-      ethUrlHttp: ${{ secrets.SEPOLIA_ETH_HOSTNAME_HTTP }}
-      ethUrlWS: ${{ secrets.SEPOLIA_ETH_HOSTNAME_WS }}
+      alchemyApiKey: ${{ secrets.ALCHEMY_API_KEY }}
       gcpServiceKey: ${{ secrets.KEEP_TEST_CI_UPLOAD_DAPP_JSON_KEY_BASE64 }}
       electrumProtocol: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
       electrumHost: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
       electrumPort: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
       sentryDsn: ${{ secrets.TESTNET_SENTRY_DSN }}
       walletConnectProjectId: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+      tbtcSubgraphApiKey: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}

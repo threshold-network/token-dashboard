@@ -16,7 +16,11 @@ import { EthereumLight } from "../../static/icons/EthereumLight"
 import { EthereumDark } from "../../static/icons/EthereumDark"
 import { Arbitrum } from "../../static/icons/Arbitrum"
 import { Base } from "../../static/icons/Base"
-import { chainIdToChainParameterName, networks } from "../../networks/utils"
+import {
+  chainIdToChainParameterName,
+  isMainnetChainId,
+  networks,
+} from "../../networks/utils"
 import { useIsActive } from "../../hooks/useIsActive"
 import { NetworkType, SupportedChainIds } from "../../networks/enums/networks"
 import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
@@ -32,22 +36,8 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
   const grayBackground = "gray.700"
 
   const iconMap: Record<number, NetworkIconMap> = {
-    ...(defaultChainId === SupportedChainIds.Sepolia
+    ...(isMainnetChainId(defaultChainId)
       ? {
-          [SupportedChainIds.Sepolia]: {
-            icon: <Icon as={ethereumLogo} boxSize="5" />,
-            bg: grayBackground,
-          },
-          [SupportedChainIds.ArbitrumSepolia]: {
-            icon: <Icon as={Arbitrum} boxSize="5" />,
-            bg: grayBackground,
-          },
-          [SupportedChainIds.BaseSepolia]: {
-            icon: <Icon as={Base} boxSize="5" />,
-            bg: "blue.500",
-          },
-        }
-      : {
           [SupportedChainIds.Ethereum]: {
             icon: <Icon as={ethereumLogo} boxSize="5" />,
             bg: grayBackground,
@@ -60,6 +50,20 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
             icon: <Icon as={Arbitrum} boxSize="5" />,
             bg: grayBackground,
           },
+        }
+      : {
+          [SupportedChainIds.Sepolia]: {
+            icon: <Icon as={ethereumLogo} boxSize="5" />,
+            bg: grayBackground,
+          },
+          // [SupportedChainIds.ArbitrumSepolia]: {
+          //   icon: <Icon as={Arbitrum} boxSize="5" />,
+          //   bg: grayBackground,
+          // },
+          // [SupportedChainIds.BaseSepolia]: {
+          //   icon: <Icon as={Base} boxSize="5" />,
+          //   bg: "blue.500",
+          // },
         }),
   }
 
@@ -90,7 +94,7 @@ const NetworkButton: FC = () => {
   const renderMenuItems = () =>
     networks
       .filter((network) =>
-        defaultChainId === SupportedChainIds.Ethereum
+        isMainnetChainId(defaultChainId)
           ? network.networkType === NetworkType.Mainnet
           : network.networkType === NetworkType.Testnet &&
             network.chainParameters.chainName !== "Localhost"

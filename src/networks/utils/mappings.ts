@@ -8,6 +8,7 @@ export const l1MainnetNetworks: NetworkMapping = {}
 export const l2TestNetworks: NetworkMapping = {}
 export const l2MainnetNetworks: NetworkMapping = {}
 export const testNetworks: NetworkMapping = {}
+export const mainNetworks: NetworkMapping = {}
 
 networks.forEach((network) => {
   const { chainId, name, layer, networkType } = network
@@ -31,5 +32,9 @@ networks.forEach((network) => {
 
   if (networkType === NetworkType.Testnet) {
     testNetworks[chainId] = name
+  }
+
+  if (networkType === NetworkType.Mainnet) {
+    mainNetworks[chainId] = name
   }
 })

@@ -54,6 +54,7 @@ import {
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
+import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -641,7 +642,7 @@ export class TBTC implements ITBTC {
         ? getSepoliaDevelopmentContracts(signer)
         : await loadEthereumCoreContracts(
             defaultProvider,
-            SupportedChainIds.Ethereum.valueOf().toString() as Chains.Ethereum
+            getDefaultProviderChainId().valueOf().toString() as Chains.Ethereum
           )
 
       const sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
@@ -936,8 +937,7 @@ export class TBTC implements ITBTC {
     amountToMint: BigNumber
   } {
     const isArbitrumNetworkConnected =
-      this.ethereumChainId === SupportedChainIds.Arbitrum ||
-      this.ethereumChainId === SupportedChainIds.ArbitrumSepolia
+      this.ethereumChainId === SupportedChainIds.Arbitrum
 
     const amountToMintAfterTreasuryFee = depositAmount
       .sub(treasuryFee)

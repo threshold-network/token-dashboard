@@ -3,6 +3,7 @@ import { useContract } from "./useContract"
 import { AddressZero } from "../utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { useWeb3React } from "@web3-react/core"
+import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 
 const DEPLOYMENT_BLOCKS: { [key: number]: number } = {
   [SupportedChainIds.Ethereum]: 15146501,
@@ -23,9 +24,10 @@ export const getMerkleDropDeploymentBlock = (chainId?: string | number) => {
 }
 
 export const useMerkleDropContract = () => {
-  const { chainId } = useWeb3React()
+  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+
   return useContract(
-    MERKLE_DROP_ADDRESSES[Number(chainId)],
+    MERKLE_DROP_ADDRESSES[Number(defaultOrConnectedChainId)],
     CumulativeMerkleDropABI
   )
 }

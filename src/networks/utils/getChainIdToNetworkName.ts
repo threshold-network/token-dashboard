@@ -1,6 +1,5 @@
 import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
-import { SupportedChainIds } from "../enums/networks"
-import { isTestnetNetwork } from "./connectedNetwork"
+import { isMainnetChainId, isTestnetChainId } from "./connectedNetwork"
 import { networks } from "./networks"
 
 function findSupportedNetwork(chainId?: number | string) {
@@ -10,9 +9,9 @@ function findSupportedNetwork(chainId?: number | string) {
   const defaultChainId = getDefaultProviderChainId()
 
   return networks.find((network) =>
-    defaultChainId === SupportedChainIds.Ethereum
-      ? network.chainId === chainIdNumber && !isTestnetNetwork(network.chainId)
-      : network.chainId === chainIdNumber && isTestnetNetwork(network.chainId)
+    isMainnetChainId(defaultChainId)
+      ? network.chainId === chainIdNumber && isMainnetChainId(network.chainId)
+      : network.chainId === chainIdNumber && isTestnetChainId(network.chainId)
   )
 }
 

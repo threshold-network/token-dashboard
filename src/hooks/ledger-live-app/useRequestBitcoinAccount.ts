@@ -3,8 +3,7 @@ import { useRequestAccount as useWalletApiRequestAccount } from "@ledgerhq/walle
 import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
-import { useWeb3React } from "@web3-react/core"
-import { isTestnetNetwork } from "../../networks/utils"
+import { isTestnetChainId } from "../../networks/utils"
 import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 import { useIsEmbed } from "../useIsEmbed"
 
@@ -33,7 +32,7 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   }, [account, isEmbed])
 
   const requestBitcoinAccount = useCallback(async () => {
-    const currencyId = isTestnetNetwork(defaultOrConnectedChainId)
+    const currencyId = isTestnetChainId(defaultOrConnectedChainId)
       ? "bitcoin_testnet"
       : "bitcoin"
 
