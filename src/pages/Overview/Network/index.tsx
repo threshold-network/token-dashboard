@@ -9,7 +9,6 @@ import {
   BodyMd,
   VStack,
 } from "@threshold-network/components"
-import TotalValueLocked from "./TotalValueLocked"
 import StakingOverview from "./StakingOverview"
 import { useFetchTvl } from "../../../hooks/useFetchTvl"
 import { PageComponent } from "../../../types"
@@ -60,7 +59,6 @@ const Network: PageComponent = () => {
         isBridgeActivityFetching={isBridgeActivityFetching}
       />
       <VStack spacing="4">
-        <TotalValueLocked totalValueLocked={tvlInUSD.total} />
         <Card>
           <HStack spacing="6">
             <Image src={upgradeToTIcon} />
