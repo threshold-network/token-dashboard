@@ -1,9 +1,8 @@
-import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { BitcoinClientCredentials } from "../threshold-ts/types"
 import { EnvVariable } from "../enums"
 import { getEnvVariable } from "./getEnvVariable"
 
-export const getBitcoinCredentials = (bitcoinNetwork: BitcoinNetwork) => {
+export const getDefaultBitcoinCredentials = () => {
   const credentials: BitcoinClientCredentials[] = [
     {
       host: getEnvVariable(EnvVariable.ELECTRUM_HOST),

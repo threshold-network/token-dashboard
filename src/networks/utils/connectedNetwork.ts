@@ -4,6 +4,7 @@ import {
   l1TestNetworks,
   l2MainnetNetworks,
   l2TestNetworks,
+  mainNetworks,
   testNetworks,
 } from "./mappings"
 
@@ -11,8 +12,12 @@ export const isSupportedNetwork = (chainId?: string | number): boolean => {
   return getChainIdToNetworkName(chainId) !== "Unsupported"
 }
 
-export const isTestnetNetwork = (networkChainId: string | number): boolean => {
+export const isTestnetChainId = (networkChainId: string | number): boolean => {
   return !!testNetworks[Number(networkChainId)]
+}
+
+export const isMainnetChainId = (networkChainId: string | number): boolean => {
+  return !!mainNetworks[Number(networkChainId)]
 }
 
 export const isL2Network = (networkChainId?: string | number): boolean => {

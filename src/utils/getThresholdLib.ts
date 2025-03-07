@@ -9,7 +9,7 @@ import {
 } from "../utils/getEnvVariable"
 import {
   isSupportedNetwork,
-  isTestnetNetwork,
+  isTestnetChainId,
 } from "../networks/utils/connectedNetwork"
 import { getRpcUrl } from "../networks/utils/getRpcUrl"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
@@ -20,7 +20,7 @@ import {
   EthereumConfig,
 } from "../threshold-ts/types"
 import { SupportedChainIds } from "../networks/enums/networks"
-import { getBitcoinCredentials } from "./getBitcoinCredentials"
+import { getDefaultBitcoinCredentials } from "./getDefaultBitcoinCredentials"
 
 const defaultProviderChainId = getDefaultProviderChainId()
 
@@ -38,15 +38,14 @@ function getInitialEthereumConfig(
 }
 
 function getInitialBitcoinConfig(): BitcoinConfig {
-  const bitcoinNetwork = isTestnetNetwork(defaultProviderChainId)
+  const bitcoinNetwork = isTestnetChainId(defaultProviderChainId)
     ? BitcoinNetwork.Testnet
     : BitcoinNetwork.Mainnet
 
   const shouldMockBitcoinClient =
     getEnvVariable(EnvVariable.MOCK_BITCOIN_CLIENT) === "true"
 
-  const credentials: BitcoinClientCredentials[] =
-    getBitcoinCredentials(bitcoinNetwork)
+  const credentials: BitcoinClientCredentials[] = getDefaultBitcoinCredentials()
 
   return {
     client: shouldMockBitcoinClient ? new MockBitcoinClient() : undefined,

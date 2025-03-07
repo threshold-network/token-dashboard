@@ -1,5 +1,5 @@
 import { EnvVariable, EnvVariableKey } from "../enums"
-import { SupportedChainIds, TestnetChainIds } from "../networks/enums/networks"
+import { SupportedChainIds } from "../networks/enums/networks"
 
 type EnvMap = { [key in EnvVariableKey]: string }
 
@@ -15,26 +15,13 @@ export const getEnvVariable = (envVar: EnvVariableKey) => {
 }
 
 export const getDefaultProviderChainId = () => {
-  const chainIdFromEnv = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
+  const chainId = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
 
-  if (!chainIdFromEnv) {
-    return SupportedChainIds.Ethereum
-  }
-
-  const chainId = Number(chainIdFromEnv)
-
-  // If chainIdFromEnv is not a valid number, also default to Ethereum
-  if (isNaN(chainId)) {
-    return SupportedChainIds.Ethereum
-  }
-
-  // If it's one of the known testnet chain IDs, return Sepolia
-  if (Object.values(TestnetChainIds).includes(chainId)) {
+  if (!chainId || isNaN(+chainId)) {
     return SupportedChainIds.Sepolia
   }
 
-  // Otherwise, return the chain ID from the environment
-  return chainId
+  return +chainId
 }
 
 export const shouldUseTestnetDevelopmentContracts =
