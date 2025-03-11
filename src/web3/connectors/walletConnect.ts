@@ -11,6 +11,7 @@ import {
 } from "../../networks/utils"
 import { toHex } from "../../networks/utils/chainId"
 import { EthereumRpcMap } from "../../networks/types/networks"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 const supportedNetworks = Object.keys(supportedNetworksMap).map(Number)
 
@@ -95,6 +96,7 @@ export class WalletConnectConnector extends AbstractConnector {
         chains: chains as ArrayOneOrMore<number>,
         rpcMap: this.rpcMap,
         showQrModal: this.config.showQrModal,
+        optionalChains: this.config.optionalChains,
       })
     }
 
@@ -184,11 +186,14 @@ const walletConnectProjectId = getEnvVariable(
 )
 
 export const walletConnect = new WalletConnectConnector({
-  chains: supportedNetworks,
+  chains: [SupportedChainIds.Ethereum],
   rpc: networks.reduce((acc, network) => {
     acc[network.chainId] = getRpcUrl(network.chainId)
     return acc
   }, {} as EthereumRpcMap),
   projectId: walletConnectProjectId,
   showQrModal: true,
+  optionalChains: supportedNetworks.filter(
+    (chainId) => chainId !== SupportedChainIds.Ethereum
+  ),
 })
