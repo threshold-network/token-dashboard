@@ -12,27 +12,33 @@ export const verifyDepositAddress = async (
   depositAddress: string,
   network: BitcoinNetwork
 ): Promise<VerificationOutcome> => {
-  const endpoint = `https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address`
-
+  const endpointURL = `https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address`
   const { depositor, blindingFactor, refundPublicKeyHash, refundLocktime } =
     deposit
 
+  const hasExtraData = deposit.extraData !== undefined
+
+  const url = hasExtraData
+    ? `${endpointURL}/json-extradata/${network}/latest/${depositor.identifierHex}/${blindingFactor}/${refundPublicKeyHash}/${refundLocktime}/${deposit.extraData}`
+    : `${endpointURL}/json/${network}/latest/${depositor.identifierHex}/${blindingFactor}/${refundPublicKeyHash}/${refundLocktime}`
+
   try {
-    const response = await axios.get(
-      `${endpoint}/json/${network}/latest/${depositor.identifierHex}/${blindingFactor}/${refundPublicKeyHash}/${refundLocktime}`,
-      { timeout: 10000 } // 10s
-    )
+    const response = await axios.get(url, { timeout: 10000 }) // 10s timeout
 
     const match = response.data.address === depositAddress
 
-    return {
+    const result: VerificationOutcome = {
       status: match ? "valid" : "invalid",
       response: response.data,
     }
+
+    return result
   } catch (err) {
-    return {
+    const errorResult: VerificationOutcome = {
       status: "error",
       response: err,
     }
+
+    return errorResult
   }
 }
