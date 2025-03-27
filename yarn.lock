@@ -3299,6 +3299,17 @@
   resolved "https://registry.yarnpkg.com/@keep-network/bitcoin-spv-sol/-/bitcoin-spv-sol-3.4.0-solc-0.8.tgz#8b44c246ffab8ea993efe196f6bf385b1a3b84dc"
   integrity sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==
 
+"@keep-network/ecdsa@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.0.1.tgz#f9de5e4ae68c48493b8a46d1d956c8bc157b1145"
+  integrity sha512-51Ef0FGak9dzuTF4e80ed1G2+3v+kQYPieYa3hX7eKg3XG0/C/xOtMSpIOxU7IMdYBHeeH+hRIqDiL5AuOidOg==
+  dependencies:
+    "@keep-network/random-beacon" "2.0.0"
+    "@keep-network/sortition-pools" "2.0.0"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@threshold-network/solidity-contracts" "1.2.1"
+
 "@keep-network/ecdsa@2.1.0-dev.19":
   version "2.1.0-dev.19"
   resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.19.tgz#749af8bd65f70135d1734f7c5f9bff82ae308fdb"
@@ -3438,13 +3449,13 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2.ts@2.4.5":
-  version "2.4.5"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.4.5.tgz#cc524e96c93782113ae299344f69db2aa2b127ea"
-  integrity sha512-C0fXWSfYVdWR86HiqzWK0e41qlCh7DqsT+bjqvBJigLliTGumDVmC7bIF7tUkclW7Xc5SjZb067SLAB87B7rcw==
+"@keep-network/tbtc-v2.ts@2.5.0":
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.5.0.tgz#20ec4c965209f4a5212f6726ec150358160578c1"
+  integrity sha512-22+sRFgjlzRqFa7kF8Z+kqG3QKvF8KldS6kvhIQ07UcT+t+74gjyHwcKZB077DvR8Co8m5bD4ow3gOITJvbZuw==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.0.5"
-    "@keep-network/ecdsa" "2.1.0-dev.19"
+    "@keep-network/ecdsa" "2.0.1"
     "@keep-network/tbtc-v2" "1.7.2"
     bignumber.js "^9.1.2"
     bitcoinjs-lib "^6.1.5"

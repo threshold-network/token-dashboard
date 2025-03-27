@@ -936,9 +936,6 @@ export class TBTC implements ITBTC {
     optimisticMintFee: BigNumber
     amountToMint: BigNumber
   } {
-    const isArbitrumNetworkConnected =
-      this.ethereumChainId === SupportedChainIds.Arbitrum
-
     const amountToMintAfterTreasuryFee = depositAmount
       .sub(treasuryFee)
       .mul(this._satoshiMultiplier)
@@ -948,13 +945,8 @@ export class TBTC implements ITBTC {
       ? amountToMintAfterTreasuryFee.div(optimisticMintingFeeDivisor)
       : ZERO
 
-    const networkSpecificFee = isArbitrumNetworkConnected
-      ? depositTxMaxFee.mul(this._satoshiMultiplier)
-      : ZERO
-
-    const finalAmountToMint = amountToMintAfterTreasuryFee
-      .sub(optimisticMintFee)
-      .sub(networkSpecificFee)
+    const finalAmountToMint =
+      amountToMintAfterTreasuryFee.sub(optimisticMintFee)
 
     return {
       optimisticMintFee: optimisticMintFee,

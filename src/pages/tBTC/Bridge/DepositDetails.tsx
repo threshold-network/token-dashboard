@@ -607,15 +607,6 @@ const StepSwitcher: FC = () => {
               precision={6}
               higherPrecision={8}
             />
-            {chainId === SupportedChainIds.Arbitrum && (
-              <TransactionDetailsAmountItem
-                label="Cross Chain Fee"
-                amount={crossChainFee}
-                suffixItem="tBTC"
-                precision={6}
-                higherPrecision={8}
-              />
-            )}
           </List>
           <ButtonLink size="lg" mt="8" mb="8" to="/tBTC" isFullWidth>
             New mint
