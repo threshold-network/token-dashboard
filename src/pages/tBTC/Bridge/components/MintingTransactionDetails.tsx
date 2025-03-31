@@ -16,8 +16,6 @@ const MintingTransactionDetails = () => {
     ethAddress,
     crossChainFee,
   } = useTbtcState()
-  const { chainId } = useIsActive()
-
   return (
     <List spacing="2" mb="6">
       <TransactionDetailsAmountItem
@@ -39,15 +37,6 @@ const MintingTransactionDetails = () => {
         precision={6}
         higherPrecision={8}
       />
-      {chainId === SupportedChainIds.Arbitrum && (
-        <TransactionDetailsAmountItem
-          label="Cross Chain Fee"
-          amount={crossChainFee}
-          suffixItem="tBTC"
-          precision={6}
-          higherPrecision={8}
-        />
-      )}
       <TransactionDetailsItem
         label="ETH address"
         value={shortenAddress(ethAddress)}

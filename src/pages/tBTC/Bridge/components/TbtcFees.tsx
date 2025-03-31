@@ -11,8 +11,6 @@ const TbtcFees = () => {
     isFetching,
   } = useFetchTBTCFees()
 
-  const { chainId } = useIsActive()
-
   return (
     <List spacing="2" mb="6">
       <TransactionDetailsAmountItem
@@ -27,16 +25,6 @@ const TbtcFees = () => {
         suffixItem="%"
         isFetching={isFetching}
       />
-      {chainId === SupportedChainIds.Arbitrum && (
-        <TransactionDetailsAmountItem
-          label="Cross Chain Fee"
-          amount={depositTxMaxFee}
-          suffixItem="tBTC"
-          precision={6}
-          higherPrecision={8}
-          isFetching={isFetching}
-        />
-      )}
     </List>
   )
 }
