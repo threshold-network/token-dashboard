@@ -1,5 +1,4 @@
 import { BigNumber, Event } from "ethers"
-import { useWeb3React } from "@web3-react/core"
 import { tbtcSlice } from "../../store/tbtc"
 import { useAppDispatch } from "../store"
 import { useTBTCVaultContract } from "./useTBTCVaultContract"
@@ -7,6 +6,7 @@ import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { useTbtcState } from "../useTbtcState"
 import { MintingStep } from "../../types/tbtc"
 import { useThreshold } from "../../contexts/ThresholdContext"
+import { useIsActive } from "../useIsActive"
 
 type OptimisticMintingFinalizedEventCallback = (
   minter: string,
@@ -37,7 +37,7 @@ export const useSubscribeToOptimisticMintingFinalizedEvent = () => {
   const threshold = useThreshold()
   const { updateState, utxo, mintingStep } = useTbtcState()
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   useSubscribeToOptimisticMintingFinalizedEventBase(
     (...args) => {

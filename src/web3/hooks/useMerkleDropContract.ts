@@ -2,7 +2,6 @@ import CumulativeMerkleDropABI from "../abi/CumulativeMerkleDrop.json"
 import { useContract } from "./useContract"
 import { AddressZero } from "../utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
-import { useWeb3React } from "@web3-react/core"
 import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
 
 const DEPLOYMENT_BLOCKS: { [key: number]: number } = {

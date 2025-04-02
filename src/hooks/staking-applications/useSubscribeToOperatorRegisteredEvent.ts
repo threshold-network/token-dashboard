@@ -1,9 +1,9 @@
-import { useWeb3React } from "@web3-react/core"
 import { operatorRegistered } from "../../store/account"
 import { StakingAppName } from "../../store/staking-applications"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
+import { useIsActive } from "../useIsActive"
 import { useStakingAppContract } from "./useStakingAppContract"
 
 export const useSubscribeToOperatorRegisteredEvent = (
@@ -11,7 +11,7 @@ export const useSubscribeToOperatorRegisteredEvent = (
 ) => {
   const contract = useStakingAppContract(appName)
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   useSubscribeToContractEvent(
     contract,

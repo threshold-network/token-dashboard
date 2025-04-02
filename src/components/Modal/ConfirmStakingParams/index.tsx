@@ -1,5 +1,4 @@
 import { FC, useEffect, useRef, useState } from "react"
-import { useWeb3React } from "@web3-react/core"
 import {
   BodyLg,
   BodySm,
@@ -31,6 +30,7 @@ import { formatTokenAmount } from "../../../utils/formatAmount"
 import ModalCloseButton from "../ModalCloseButton"
 import SubmitTxButton from "../../SubmitTxButton"
 import { useTStakingContract } from "../../../web3/hooks"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const ConfirmStakingParamsModal: FC<
   BaseModalProps & { stakeAmount: string }
@@ -38,7 +38,7 @@ const ConfirmStakingParamsModal: FC<
   const formRef = useRef<FormikProps<FormValues>>(null)
   const { closeModal, openModal } = useModal()
   const [hasBeenValidatedOnMount, setHasBeenValidatedOnMount] = useState(false)
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { updateState } = useStakingState()
   const checkIfProviderUsed = useCheckDuplicateProviderAddress()
   const stakingContract = useTStakingContract()

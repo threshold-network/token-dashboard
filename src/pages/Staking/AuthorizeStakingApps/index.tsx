@@ -25,7 +25,6 @@ import {
   requestStakeByStakingProvider,
   selectStakeByStakingProvider,
 } from "../../../store/staking"
-import { useWeb3React } from "@web3-react/core"
 import {
   useStakingAppDataByStakingProvider,
   useStakingApplicationAddress,
@@ -39,10 +38,11 @@ import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account, active, chainId } = useWeb3React()
+  const { account, isActive, chainId } = useIsActive()
   const threshold = useThreshold()
   const navigate = useNavigate()
   const { openModal } = useModal()
@@ -240,12 +240,12 @@ const AuthorizeStakingAppsPage: FC = () => {
 
   const alertTextColor = useColorModeValue("gray.900", "white")
 
-  if (active && !stake)
+  if (isActive && !stake)
     return (
       <BodyLg>No stake found for address: {stakingProviderAddress} </BodyLg>
     )
 
-  return active ? (
+  return isActive ? (
     <>
       <Card>
         <HStack justify={"space-between"}>

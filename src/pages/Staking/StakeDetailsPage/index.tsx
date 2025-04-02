@@ -30,15 +30,15 @@ import NodeStatusLabel from "./NodeStatusLabel"
 import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-applications"
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
-import { useWeb3React } from "@web3-react/core"
 import { AddressZero } from "@ethersproject/constants"
 import { isAddress } from "../../../web3/utils"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const StakeDetailsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account, active } = useWeb3React()
+  const { account, isActive } = useIsActive()
   const threshold = useThreshold()
   const { openModal } = useModal()
   const navigate = useNavigate()
@@ -85,7 +85,7 @@ const StakeDetailsPage: FC = () => {
     selectRewardsByStakingProvider(state, stakingProviderAddress!)
   )
 
-  if (active && !stake)
+  if (isActive && !stake)
     return <BodyLg>No Stake found for address: {stakingProviderAddress}</BodyLg>
 
   const handleCommitToTaco = () => {
@@ -95,7 +95,7 @@ const StakeDetailsPage: FC = () => {
     })
   }
 
-  return active ? (
+  return isActive ? (
     <Card>
       <HStack justify="space-between">
         <H5>Stake Details</H5>

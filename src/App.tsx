@@ -7,7 +7,7 @@ import "@fontsource/ibm-plex-mono/400.css"
 import { FC, useEffect, Fragment } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
-import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
+import { Web3ReactProvider } from "@web3-react/core"
 import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
 import {
   BrowserRouter as Router,
@@ -95,7 +95,7 @@ const Web3EventHandlerComponent = () => {
 
 // TODO: Let's move this to its own hook like useKeep, useT, etc
 const useSubscribeToVendingMachineContractEvents = () => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { openModal } = useModal()
   const keepVendingMachine = useVendingMachineContract(Token.Keep)
   const nuVendingMachine = useVendingMachineContract(Token.Nu)

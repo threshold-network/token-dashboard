@@ -3,12 +3,12 @@ import { useBondOperatorTransaction } from "./useBondOperatorTransaction"
 import { useRegisterOperatorTransaction } from "./useRegisterOperatorTransaction"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
-import { useWeb3React } from "@web3-react/core"
 import { OperatorMappedSuccessTx } from "../../components/Modal/MapOperatorToStakingProviderSuccessModal"
 import { mapOperatorToStakingProviderModalClosed } from "../../store/modal"
 import { useAppDispatch, useAppSelector } from "../store"
 import { selectMappedOperators } from "../../store/account"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
+import { useIsActive } from "../useIsActive"
 
 export const useRegisterMultipleOperatorsTransaction = () => {
   const {
@@ -17,7 +17,7 @@ export const useRegisterMultipleOperatorsTransaction = () => {
     mappedOperatorTaco,
     isOperatorMappedInAllApps,
   } = useAppSelector((state) => selectMappedOperators(state))
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { openModal, closeModal } = useModal()
   const dispatch = useAppDispatch()
 

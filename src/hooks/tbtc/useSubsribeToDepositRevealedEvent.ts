@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
@@ -7,12 +6,13 @@ import { tbtcSlice } from "../../store/tbtc"
 import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useTbtcState } from "../useTbtcState"
+import { useIsActive } from "../useIsActive"
 
 export const useSubscribeToDepositRevealedEvent = () => {
   const contract = useBridgeContract()
   const { utxo, updateState } = useTbtcState()
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const threshold = useThreshold()
 
   useSubscribeToContractEvent(

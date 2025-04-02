@@ -1,13 +1,13 @@
-import { useWeb3React } from "@web3-react/core"
 import { useEffect } from "react"
 import { Token } from "../../enums"
 import { PosthogEvent } from "../../types/posthog"
 import { getWalletTypeFromConnector } from "../../web3/utils/connectors"
 import { useToken } from "../useToken"
 import { useCapture } from "./useCapture"
+import { useIsActive } from "../useIsActive"
 
 export const useCaptureWalletConnectedEvent = () => {
-  const { account, connector } = useWeb3React()
+  const { account, connector } = useIsActive()
   const { balance, isLoadedFromConnectedAccount } = useToken(Token.TBTCV2)
   const captureWalletConnectedEvent = useCapture(PosthogEvent.WalletConnected)
 

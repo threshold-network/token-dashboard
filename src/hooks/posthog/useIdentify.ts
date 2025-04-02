@@ -1,15 +1,12 @@
 import { useEffect } from "react"
-import { useWeb3React } from "@web3-react/core"
-import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
 import * as posthog from "../../posthog"
-import { getAddress, isSameETHAddress } from "../../web3/utils"
+import { getAddress } from "../../web3/utils"
 import { featureFlags } from "../../constants"
-import { hashString } from "../../utils/crypto"
-import { PosthogEvent } from "../../types/posthog"
 import { getWalletTypeFromConnector } from "../../web3/utils/connectors"
+import { useIsActive } from "../useIsActive"
 
 export const useIdentify = () => {
-  const { connector, account } = useWeb3React()
+  const { connector } = useIsActive()
 
   useEffect(() => {
     if (!featureFlags.POSTHOG) return

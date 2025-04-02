@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
 import { isSameETHAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
@@ -7,11 +6,12 @@ import { tbtcSlice } from "../../store/tbtc"
 import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { fromSatoshiToTokenPrecision } from "../../threshold-ts/utils"
+import { useIsActive } from "../useIsActive"
 
 export const useSubscribeToRedemptionRequestedEvent = () => {
   const contract = useBridgeContract()
   const dispatch = useAppDispatch()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const threshold = useThreshold()
 
   useSubscribeToContractEvent(

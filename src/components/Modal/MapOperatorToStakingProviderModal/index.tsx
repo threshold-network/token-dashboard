@@ -22,7 +22,6 @@ import { FormikProps } from "formik"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
-import { useWeb3React } from "@web3-react/core"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   isAddressZero,
@@ -33,6 +32,7 @@ import {
 import { selectMappedOperators } from "../../../store/account/selectors"
 import { useAppSelector } from "../../../hooks/store"
 import ModalCloseButton from "../ModalCloseButton"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
@@ -49,7 +49,7 @@ export interface ApplicationForOperatorMapping {
 const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
 > = () => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const formRefTbtcRb =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const formRefTaco =

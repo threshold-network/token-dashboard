@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Contract, EventFilter } from "@ethersproject/contracts"
-import { useWeb3React } from "@web3-react/core"
+import { useIsActive } from "../../hooks/useIsActive"
 
 // TODO: types
 export const useSubscribeToContractEvent = (
@@ -14,7 +14,7 @@ export const useSubscribeToContractEvent = (
   indexedFilterParams: string[] = [],
   shouldSubscribeIfUserNotConnected: boolean = false
 ) => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
   const callbackRef = useRef<(args: any[]) => void>()
   const indexedFilterParamsLength = indexedFilterParams.length
   // An event can have up to 3 indexed params. We want to extract these values
@@ -32,7 +32,7 @@ export const useSubscribeToContractEvent = (
   }, [callback])
 
   useEffect(() => {
-    if (!contract || (!active && !shouldSubscribeIfUserNotConnected)) {
+    if (!contract || (!isActive && !shouldSubscribeIfUserNotConnected)) {
       return
     }
 

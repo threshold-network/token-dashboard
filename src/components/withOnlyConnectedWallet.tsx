@@ -1,6 +1,5 @@
 import { ComponentType } from "react"
 import { H5 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { useIsActive } from "../hooks/useIsActive"
 
 function withOnlyConnectedWallet<T>(
