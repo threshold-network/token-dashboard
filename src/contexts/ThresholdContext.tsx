@@ -3,7 +3,7 @@ import { getThresholdLibProvider, threshold } from "../utils/getThresholdLib"
 import { useLedgerLiveApp } from "./LedgerLiveAppContext"
 import { useIsActive } from "../hooks/useIsActive"
 import { useIsEmbed } from "../hooks/useIsEmbed"
-import { getDefaultProviderChainId } from "../utils/getEnvVariable"
+import { getEthereumDefaultProviderChainId } from "../utils/getEnvVariable"
 import { useWeb3React } from "@web3-react/core"
 
 const ThresholdContext = createContext(threshold)
@@ -39,7 +39,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           ...threshold.config.ethereum,
           providerOrSigner: getThresholdLibProvider(),
           account: undefined,
-          chainId: getDefaultProviderChainId(),
+          chainId: getEthereumDefaultProviderChainId(),
         },
         bitcoin: threshold.config.bitcoin,
       })

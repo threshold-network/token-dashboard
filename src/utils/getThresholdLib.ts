@@ -3,7 +3,7 @@ import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { EnvVariable } from "../enums"
 import {
-  getDefaultProviderChainId,
+  getEthereumDefaultProviderChainId,
   getEnvVariable,
   shouldUseTestnetDevelopmentContracts,
 } from "../utils/getEnvVariable"
@@ -22,13 +22,13 @@ import {
 import { SupportedChainIds } from "../networks/enums/networks"
 import { getDefaultBitcoinCredentials } from "./getDefaultBitcoinCredentials"
 
-const defaultProviderChainId = getDefaultProviderChainId()
+const defaultProviderChainId = getEthereumDefaultProviderChainId()
 
 function getInitialEthereumConfig(
   providerOrSigner?: Provider | Signer
 ): EthereumConfig {
   return {
-    chainId: getDefaultProviderChainId(),
+    chainId: getEthereumDefaultProviderChainId(),
     providerOrSigner:
       providerOrSigner || getThresholdLibProvider(defaultProviderChainId),
     shouldUseTestnetDevelopmentContracts:
@@ -57,7 +57,7 @@ function getInitialBitcoinConfig(): BitcoinConfig {
 export const getThresholdLibProvider = (chainId?: number | string) => {
   const supportedChainId = isSupportedNetwork(chainId)
     ? Number(chainId)
-    : getDefaultProviderChainId()
+    : getEthereumDefaultProviderChainId()
 
   const rpcUrl = getRpcUrl(supportedChainId)
 

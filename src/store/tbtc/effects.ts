@@ -10,7 +10,7 @@ import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
 import {
-  getChainIdToNetworkName,
+  getEthereumNetworkNameFromChainId,
   isL1Network,
   isSameChainId,
 } from "../../networks/utils"
@@ -85,7 +85,7 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
-        if (getChainIdToNetworkName(chainId) !== chainName) {
+        if (getEthereumNetworkNameFromChainId(chainId) !== chainName) {
           throw new Error("Chain ID and deposit chain name mismatch")
         }
         // Initiating deposit from redux store (if deposit object is empty)

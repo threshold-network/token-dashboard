@@ -74,7 +74,7 @@ import { useFetchExternalPoolData } from "../../../hooks/useFetchExternalPoolDat
 import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
 import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDetailsPageSkeleton"
 import { DepositState } from "@keep-network/tbtc-v2.ts"
-import { chainIdToChainParameterName } from "../../../networks/utils"
+import { getParameterNameFromChainId } from "../../../networks/utils"
 import { useIsActive } from "../../../hooks/useIsActive"
 
 export const DepositDetails: PageComponent = () => {
@@ -578,7 +578,7 @@ const StepSwitcher: FC = () => {
           {isCrossChainDeposit ? (
             <BodyMd mt="2">
               Your tokens have been minted and bridged to the depositor wallet
-              on the {chainIdToChainParameterName(chainId)} network - This
+              on the {getParameterNameFromChainId(chainId)} network - This
               action usually takes a few minutes to complete this process.
             </BodyMd>
           ) : (

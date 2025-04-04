@@ -14,7 +14,7 @@ export const getEnvVariable = (envVar: EnvVariableKey) => {
   return envMap[envVar]
 }
 
-export const getDefaultProviderChainId = () => {
+export const getEthereumDefaultProviderChainId = () => {
   const chainId = getEnvVariable(EnvVariable.DEFAULT_PROVIDER_CHAIN_ID)
 
   if (!chainId || isNaN(+chainId)) {

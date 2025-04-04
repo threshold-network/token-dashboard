@@ -5,7 +5,7 @@ import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { walletConnected } from "../../store/account"
 import { isTestnetChainId } from "../../networks/utils"
-import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
+import { useConnectedOrDefaultEthereumChainId } from "../../networks/hooks/useConnectedOrDefaultEthereumChainId"
 import { useAppDispatch } from "../store/useAppDispatch"
 import { useIsEmbed } from "../useIsEmbed"
 import { useIsActive } from "../useIsActive"
@@ -30,7 +30,7 @@ export function useRequestEthereumAccount(): UseRequestAccountReturn {
   const { chainId } = useIsActive()
   const dispatch = useAppDispatch()
   const { isEmbed } = useIsEmbed()
-  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultEthereumChainId()
 
   useEffect(() => {
     // Setting the eth account in LedgerLiveAppContext through `setEthAccount`

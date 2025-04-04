@@ -1,6 +1,6 @@
 import { EnvVariable } from "../../enums"
 import {
-  getDefaultProviderChainId,
+  getEthereumDefaultProviderChainId,
   getEnvVariable,
 } from "../../utils/getEnvVariable"
 import { SupportedChainIds } from "../enums/networks"
@@ -10,7 +10,7 @@ const MAIN_ALCHEMY_URL = "g.alchemy.com/v2/"
 
 export const getRpcUrl = (chainId?: number | string) => {
   const alchemyApiKey = getEnvVariable(EnvVariable.ALCHEMY_API_KEY)
-  const defaultChainId = getDefaultProviderChainId()
+  const defaultChainId = getEthereumDefaultProviderChainId()
   const chainIdNum = Number(chainId) || defaultChainId
   const alchemyConfig = networksAlchemyConfig[chainIdNum as SupportedChainIds]
 
