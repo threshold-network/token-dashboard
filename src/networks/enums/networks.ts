@@ -14,6 +14,10 @@ export enum SupportedChainIds {
   // BaseSepolia = 84532,
 }
 
+export enum NonEVMNetworks {
+  Solana = "Solana",
+}
+
 export enum AlchemyName {
   Ethereum = "eth",
   Arbitrum = "arb",

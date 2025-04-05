@@ -7,9 +7,15 @@ import {
   TBTCLocalStorageDepositData,
 } from "../../utils/tbtcLocalStorageData"
 import { useIsActive } from "../useIsActive"
+import { useNonEVMConnection } from "../useNonEVMConnection"
+import { getEthereumNetworkNameFromChainId } from "../../networks/utils"
 
 export const useTBTCDepositDataFromLocalStorage = () => {
   const { account, chainId } = useIsActive()
+  const { nonEVMPublicKey, nonEVMChainName } = useNonEVMConnection()
+
+  const networkName =
+    nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
   const [tBTCDepositData, setTBTCLocalStorageData] =
     useState<TBTCLocalStorageDepositData>({})
@@ -23,35 +29,37 @@ export const useTBTCDepositDataFromLocalStorage = () => {
   }, [chainId])
 
   const setDepositDataInLocalStorage = useCallback(
-    (depositData: TBTCDepositData, chainId?: number | string) => {
-      if (!account || !chainId) return
+    (depositData: TBTCDepositData, networkName: string) => {
+      const connectedAccount = account ?? nonEVMPublicKey
+      if (!connectedAccount || !networkName) return
 
-      const storageKey = `${key}-${chainId.toString()}`
-      write(account, depositData, tBTCDepositData, chainId)
+      const storageKey = `${key}-${networkName.toString()}`
+      write(connectedAccount, depositData, tBTCDepositData, networkName)
 
       const updatedData = {
         ...tBTCDepositData,
-        [account]: depositData,
+        [connectedAccount]: depositData,
       }
       localStorage.setItem(storageKey, JSON.stringify(updatedData))
       setTBTCLocalStorageData(updatedData)
     },
-    [account, tBTCDepositData, chainId]
+    [account, tBTCDepositData, networkName, nonEVMPublicKey]
   )
 
   const removeDepositDataFromLocalStorage = useCallback(
-    (chainId?: number | string) => {
-      if (!account) return
+    (networkName: string) => {
+      const connectedAccount = account ?? nonEVMPublicKey
+      if (!connectedAccount || !networkName) return
 
-      const storageKey = `${key}-${chainId?.toString()}`
-      removeDataForAccount(account, tBTCDepositData, chainId)
+      const storageKey = `${key}-${networkName?.toString()}`
+      removeDataForAccount(connectedAccount, tBTCDepositData, networkName)
 
       const updatedData = { ...tBTCDepositData }
-      delete updatedData[account]
+      delete updatedData[connectedAccount]
       localStorage.setItem(storageKey, JSON.stringify(updatedData))
       setTBTCLocalStorageData(updatedData)
     },
-    [account, tBTCDepositData, chainId]
+    [account, nonEVMPublicKey, tBTCDepositData, chainId]
   )
 
   return {

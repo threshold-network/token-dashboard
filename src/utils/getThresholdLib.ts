@@ -8,6 +8,7 @@ import {
   shouldUseTestnetDevelopmentContracts,
 } from "../utils/getEnvVariable"
 import {
+  isL2Network,
   isSupportedNetwork,
   isTestnetChainId,
 } from "../networks/utils/connectedNetwork"
@@ -18,19 +19,29 @@ import {
   BitcoinNetwork,
   BitcoinClientCredentials,
   EthereumConfig,
+  ChainName,
+  CrossChainConfig,
 } from "../threshold-ts/types"
 import { SupportedChainIds } from "../networks/enums/networks"
 import { getDefaultBitcoinCredentials } from "./getDefaultBitcoinCredentials"
 
 const defaultProviderChainId = getEthereumDefaultProviderChainId()
 
+function getInitialCrossChainConfig(): CrossChainConfig {
+  return {
+    isCrossChain: isL2Network(defaultProviderChainId),
+    chainName: isL2Network(defaultProviderChainId) ? ChainName.Ethereum : null,
+    nonEVMProvider: null,
+  }
+}
 function getInitialEthereumConfig(
-  providerOrSigner?: Provider | Signer
+  ethereumProviderOrSigner?: Provider | Signer
 ): EthereumConfig {
   return {
     chainId: getEthereumDefaultProviderChainId(),
-    providerOrSigner:
-      providerOrSigner || getThresholdLibProvider(defaultProviderChainId),
+    ethereumProviderOrSigner:
+      ethereumProviderOrSigner ||
+      getThresholdLibProvider(defaultProviderChainId),
     shouldUseTestnetDevelopmentContracts:
       defaultProviderChainId === SupportedChainIds.Sepolia &&
       shouldUseTestnetDevelopmentContracts,
@@ -64,10 +75,13 @@ export const getThresholdLibProvider = (chainId?: number | string) => {
   return new JsonRpcProvider(rpcUrl, supportedChainId)
 }
 
-export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
+export const getThresholdLib = (
+  ethereumProviderOrSigner?: Provider | Signer
+) => {
   return new Threshold({
-    ethereum: getInitialEthereumConfig(providerOrSigner),
+    ethereum: getInitialEthereumConfig(ethereumProviderOrSigner),
     bitcoin: getInitialBitcoinConfig(),
+    crossChain: getInitialCrossChainConfig(),
   })
 }
 

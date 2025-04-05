@@ -38,7 +38,7 @@ import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent
 import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
-import { isSameETHAddress } from "./web3/utils"
+import { isSameAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
 import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
 import {
@@ -66,6 +66,7 @@ import { useGoogleTagManager } from "./hooks/google-tag-manager"
 import { hexToNumber, isSameChainId } from "./networks/utils"
 import { walletConnected } from "./store/account"
 import { useIsActive } from "./hooks/useIsActive"
+import SolanaWalletProvider from "./contexts/SolanaWalletProvider"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -151,7 +152,7 @@ const AppBody = () => {
         )
       } else if (
         update.account &&
-        !isSameETHAddress(update.account, account as string)
+        !isSameAddress(update.account, account as string)
       ) {
         // dispatch(resetStoreAction())
 
@@ -266,19 +267,21 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <LedgerLiveAppProvider>
-          <ThresholdProvider>
-            <ReduxProvider store={reduxStore}>
-              <ChakraProvider theme={theme}>
-                <TokenContextProvider>
-                  <Web3EventHandlerComponent />
-                  <ModalRoot />
-                  <AppBody />
-                </TokenContextProvider>
-              </ChakraProvider>
-            </ReduxProvider>
-          </ThresholdProvider>
-        </LedgerLiveAppProvider>
+        <SolanaWalletProvider>
+          <LedgerLiveAppProvider>
+            <ThresholdProvider>
+              <ReduxProvider store={reduxStore}>
+                <ChakraProvider theme={theme}>
+                  <TokenContextProvider>
+                    <Web3EventHandlerComponent />
+                    <ModalRoot />
+                    <AppBody />
+                  </TokenContextProvider>
+                </ChakraProvider>
+              </ReduxProvider>
+            </ThresholdProvider>
+          </LedgerLiveAppProvider>
+        </SolanaWalletProvider>
       </Web3ReactProvider>
     </Router>
   )

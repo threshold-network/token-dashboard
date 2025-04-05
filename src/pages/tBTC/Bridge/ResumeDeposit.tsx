@@ -15,7 +15,7 @@ import { BridgeContractLink } from "../../../components/tBTC"
 import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Form } from "../../../components/Forms"
 import {
-  isSameETHAddress,
+  isSameAddress,
   isAddress,
   parseJSONFile,
   InvalidJSONFileError,
@@ -32,7 +32,7 @@ type RecoveryJsonFileData = DepositScriptParameters & {
     chainId: string
     chainName: string
   }
-  ethAddress: string
+  userWalletAddress: string
   btcRecoveryAddress: string
 }
 import { useIsActive } from "../../../hooks/useIsActive"
@@ -41,19 +41,25 @@ import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepos
 import { BitcoinNetwork } from "@keep-network/tbtc-v2.ts"
 import { SupportedChainIds } from "../../../networks/enums/networks"
 import {
+  getEthereumNetworkNameFromChainId,
   isL1Network,
   isL2Network,
   isSameChainId,
   isSupportedNetwork,
 } from "../../../networks/utils"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
   const { account, chainId, isActive } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const threshold = useThreshold()
+
+  const networkName =
+    nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
   if (!isActive || !isSupportedNetwork(chainId)) {
     return (
@@ -90,7 +96,7 @@ export const ResumeDepositPage: PageComponent = () => {
             identifierHex: depositParameters.depositor.identifierHex,
           },
           chainName: depositParameters.networkInfo.chainName,
-          ethAddress: depositParameters.ethAddress,
+          userWalletAddress: depositParameters.userWalletAddress,
           blindingFactor: depositParameters.blindingFactor,
           btcRecoveryAddress: depositParameters.btcRecoveryAddress,
           walletPublicKeyHash: depositParameters.walletPublicKeyHash,
@@ -98,7 +104,7 @@ export const ResumeDepositPage: PageComponent = () => {
           extraData: depositParameters.extraData || "",
           btcDepositAddress,
         },
-        chainId
+        networkName
       )
       navigateToMintPage()
     } catch (error) {
@@ -246,7 +252,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
           errors.depositParameters = "Deposit reveal time is expired."
         } else if (
           isL1Network(chainId) &&
-          !isSameETHAddress(dp.depositor.identifierHex, address)
+          !isSameAddress(dp.depositor.identifierHex, address)
         ) {
           errors.depositParameters = "You are not a depositor."
         }

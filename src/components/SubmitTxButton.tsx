@@ -4,6 +4,7 @@ import { useIsActive } from "../hooks/useIsActive"
 import { useConnectWallet } from "../hooks/useConnectWallet"
 import { RootState } from "../store"
 import { useSelector } from "react-redux"
+import { useNonEVMConnection } from "../hooks/useNonEVMConnection"
 
 interface SubmitTxButtonProps extends ButtonProps {
   onSubmit?: () => void
@@ -20,16 +21,20 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
     isBlocked,
     trm: { isFetching },
   } = useSelector((state: RootState) => state.account)
-
+  const { disconnectNonEVM } = useNonEVMConnection()
   const { isActive } = useIsActive()
+  const { isNonEVMActive } = useNonEVMConnection()
   const connectWallet = useConnectWallet()
   const isButtonDisabled = isBlocked || isDisabled
+  const pathnameUrl = window.location.pathname
+  const isMint = pathnameUrl.includes("tBTC/mint")
 
   const onConnectWalletClick = () => {
+    disconnectNonEVM()
     connectWallet()
   }
 
-  if (isActive) {
+  if (isActive || (isNonEVMActive && isMint)) {
     return (
       <Button
         isLoading={isFetching || isLoading}
@@ -49,7 +54,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
       type="button"
       isDisabled={false}
     >
-      Connect Wallet
+      Connect Ethereum Wallet
     </Button>
   )
 }

@@ -26,7 +26,7 @@ import {
   isTestnetChainId,
 } from "../../../../networks/utils"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
-import { downloadFile, isSameETHAddress } from "../../../../web3/utils"
+import { downloadFile, isSameAddress } from "../../../../web3/utils"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import TbtcFees from "../components/TbtcFees"
@@ -34,9 +34,10 @@ import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 
 export interface FormValues {
-  ethAddress: string
+  userWalletAddress: string
   btcRecoveryAddress: string
   bitcoinNetwork: BitcoinNetwork
 }
@@ -64,10 +65,10 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   return (
     <Form id={formId}>
       <FormikInput
-        name="ethAddress"
-        label="ETH Address"
+        name="userWalletAddress"
+        label="User Wallet Address"
         placeholder="Address where you'll receive your tBTC"
-        tooltip="ETH address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
+        tooltip="The address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
         mb={6}
         isReadOnly={true}
       />
@@ -96,13 +97,13 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     btcRecoveryAddress,
     bitcoinNetwork,
   }) => ({
-    ethAddress: initialEthAddress,
+    userWalletAddress: initialEthAddress,
     btcRecoveryAddress: btcRecoveryAddress,
     bitcoinNetwork: bitcoinNetwork,
   }),
   validate: async (values, props) => {
     const errors: FormikErrors<FormValues> = {}
-    errors.ethAddress = validateETHAddress(values.ethAddress)
+    errors.userWalletAddress = validateETHAddress(values.userWalletAddress)
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
       values.bitcoinNetwork as any
@@ -124,8 +125,13 @@ export const ProvideDataComponent: FC<{
   const formRef = useRef<FormikProps<FormValues>>(null)
   const threshold = useThreshold()
   const { account, chainId } = useIsActive()
+  const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
+    useNonEVMConnection()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+
+  const networkName =
+    nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
@@ -142,13 +148,22 @@ export const ProvideDataComponent: FC<{
 
   const onSubmit = useCallback(
     async (values: FormValues) => {
-      if (account && !isSameETHAddress(values.ethAddress, account)) {
+      if (account && !isSameAddress(values.userWalletAddress, account)) {
         throw new Error(
           "The account used to generate the deposit address must be the same as the connected wallet."
         )
       }
 
-      if (!isSupportedNetwork(chainId)) {
+      if (
+        nonEVMPublicKey &&
+        !isSameAddress(values.userWalletAddress, nonEVMPublicKey)
+      ) {
+        throw new Error(
+          "The non-EVM account used to generate the deposit address must be the same as the connected wallet."
+        )
+      }
+
+      if (!isNonEVMActive && !isSupportedNetwork(chainId)) {
         throw new Error(
           "You are currently connected to an unsupported network. Switch to a supported network"
         )
@@ -169,11 +184,11 @@ export const ProvideDataComponent: FC<{
           chainId as SupportedChainIds
         )
       }
-      const depositAddress = await threshold.tbtc.calculateDepositAddress()
+      const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
       const receipt = deposit.getReceipt()
 
       // update state,
-      updateState("ethAddress", values.ethAddress)
+      updateState("userWalletAddress", values.userWalletAddress)
       updateState("depositor", receipt.depositor.identifierHex.toString())
       updateState("blindingFactor", receipt.blindingFactor.toString())
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
@@ -183,7 +198,7 @@ export const ProvideDataComponent: FC<{
       updateState("chainName", chainName)
 
       // create a new deposit address,
-      updateState("btcDepositAddress", depositAddress)
+      updateState("btcDepositAddress", btcDepositAddress)
 
       setDepositDataInLocalStorage(
         {
@@ -191,24 +206,24 @@ export const ProvideDataComponent: FC<{
             identifierHex: receipt.depositor.identifierHex.toString(),
           },
           chainName: chainName,
-          ethAddress: values.ethAddress,
+          userWalletAddress: values.userWalletAddress,
           blindingFactor: receipt.blindingFactor.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           refundLocktime: receipt.refundLocktime.toString(),
-          btcDepositAddress: depositAddress,
+          btcDepositAddress,
           extraData: receipt.extraData?.toString() || "",
         },
-        chainId
+        networkName
       )
 
-      depositTelemetry(receipt, depositAddress)
+      depositTelemetry(receipt, btcDepositAddress)
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       if (shouldDownloadDepositReceipt) {
         const date = new Date().toISOString().split("T")[0]
 
-        const fileName = `${values.ethAddress}_${depositAddress}_${date}.json`
+        const fileName = `${values.userWalletAddress}_${btcDepositAddress}_${date}.json`
 
         const finalData = {
           depositor: {
@@ -221,7 +236,7 @@ export const ProvideDataComponent: FC<{
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
           blindingFactor: receipt.blindingFactor.toString(),
-          ethAddress: values.ethAddress,
+          userWalletAddress: values.userWalletAddress,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
           extraData: receipt.extraData?.toString() ?? "",
@@ -248,7 +263,7 @@ export const ProvideDataComponent: FC<{
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={account!}
+        initialEthAddress={(account || nonEVMPublicKey)!}
         btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}

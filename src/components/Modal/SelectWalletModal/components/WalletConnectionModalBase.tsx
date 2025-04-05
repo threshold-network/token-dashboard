@@ -14,7 +14,6 @@ import { useWeb3React } from "@web3-react/core"
 import { BaseModalProps } from "../../../../types"
 import { BodyMd, H4 } from "@threshold-network/components"
 import { AbstractConnector } from "../../../../web3/connectors"
-import { WalletType } from "../../../../enums"
 
 interface Props extends BaseModalProps {
   WalletIcon: any
@@ -49,10 +48,10 @@ const WalletConnectionModalBase: FC<Props> = ({
   const { activate, active, account } = useWeb3React()
 
   useEffect(() => {
+    if (shouldForceCloseModal) closeModal()
     if (!connector) return
 
     activate(connector)
-    if (shouldForceCloseModal) closeModal()
   }, [activate, connector, shouldForceCloseModal])
 
   return (

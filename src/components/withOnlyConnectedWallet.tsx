@@ -1,6 +1,7 @@
 import { ComponentType } from "react"
 import { H5 } from "@threshold-network/components"
 import { useIsActive } from "../hooks/useIsActive"
+import { useNonEVMConnection } from "../hooks/useNonEVMConnection"
 
 function withOnlyConnectedWallet<T>(
   Component: ComponentType<T>,
@@ -8,14 +9,16 @@ function withOnlyConnectedWallet<T>(
 ) {
   return (props: T & {}) => {
     const { account, isActive } = useIsActive()
-    if (!isActive || !account) {
-      return renderNotConnected ? (
-        renderNotConnected()
-      ) : (
-        <H5 align={"center"}>Wallet not connected</H5>
-      )
+    const isNonEVMActive = useNonEVMConnection()
+
+    if ((isActive && account) || isNonEVMActive) {
+      return <Component {...props} />
     }
-    return <Component {...props} />
+    return renderNotConnected ? (
+      renderNotConnected()
+    ) : (
+      <H5 align={"center"}>Wallet not connected</H5>
+    )
   }
 }
 
