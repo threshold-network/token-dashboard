@@ -9,7 +9,7 @@ export interface VerificationOutcome {
 
 export const verifyDepositAddress = async (
   deposit: DepositReceipt,
-  depositAddress: string,
+  btcDepositAddress: string,
   network: BitcoinNetwork
 ): Promise<VerificationOutcome> => {
   const endpointURL = `https://us-central1-keep-prd-210b.cloudfunctions.net/verify-deposit-address`
@@ -25,7 +25,7 @@ export const verifyDepositAddress = async (
   try {
     const response = await axios.get(url, { timeout: 10000 }) // 10s timeout
 
-    const match = response.data.address === depositAddress
+    const match = response.data.address === btcDepositAddress
 
     const result: VerificationOutcome = {
       status: match ? "valid" : "invalid",

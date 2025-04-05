@@ -15,7 +15,11 @@ import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
 import { StakeData } from "../../../types"
-import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
+import {
+  AddressZero,
+  isSameAddress,
+  isEthereumAddress,
+} from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
@@ -73,7 +77,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   }
 
   useEffect(() => {
-    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+    if (!isEthereumAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
   useEffect(() => {
@@ -164,7 +168,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   ) as StakeData
 
   const isLoggedInAsAuthorizer =
-    stake && account ? isSameETHAddress(stake.authorizer, account) : false
+    stake && account ? isSameAddress(stake.authorizer, account) : false
 
   const isInactiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()

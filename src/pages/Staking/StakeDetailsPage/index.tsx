@@ -31,7 +31,7 @@ import { useStakingAppDataByStakingProvider } from "../../../hooks/staking-appli
 import { useAppDispatch, useAppSelector } from "../../../hooks/store"
 import { useModal } from "../../../hooks/useModal"
 import { AddressZero } from "@ethersproject/constants"
-import { isAddress } from "../../../web3/utils"
+import { isEthereumAddress } from "../../../web3/utils"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useIsActive } from "../../../hooks/useIsActive"
@@ -45,7 +45,7 @@ const StakeDetailsPage: FC = () => {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+    if (!isEthereumAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
   useEffect(() => {
@@ -146,17 +146,17 @@ const StakeDetailsPage: FC = () => {
           <StakeDetailRow
             isPrimary
             label="Provider Address"
-            isAddress
+            isEthereumAddress
             address={stake.stakingProvider}
           />
           <StakeDetailRow
             label="Authorizer Address"
-            isAddress
+            isEthereumAddress
             address={stake.authorizer}
           />
           <StakeDetailRow
             label="Beneficiary Address"
-            isAddress
+            isEthereumAddress
             address={stake.beneficiary}
           />
           <StakeDetailRow label="TACo Node Status">

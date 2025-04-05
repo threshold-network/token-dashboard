@@ -6,7 +6,7 @@ import {
 } from "../../threshold-ts/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
-import { isAddress, isAddressZero } from "../../web3/utils"
+import { isEthereumAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
 import {
@@ -23,7 +23,7 @@ export const fetchBridgeactivityEffect = async (
   const { depositor } = action.payload
 
   if (
-    !isAddress(depositor) ||
+    !isEthereumAddress(depositor) ||
     isAddressZero(depositor) ||
     !account.chainId ||
     !isSameChainId(
@@ -75,7 +75,7 @@ export const findUtxoEffect = async (
 
   if (
     !btcDepositAddress ||
-    (!isAddress(depositor) && !isAddressZero(depositor))
+    (!isEthereumAddress(depositor) && !isAddressZero(depositor))
   )
     return
 

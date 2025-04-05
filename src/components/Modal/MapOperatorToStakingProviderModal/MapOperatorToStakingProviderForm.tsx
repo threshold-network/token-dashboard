@@ -2,7 +2,7 @@ import { FC, Ref, forwardRef } from "react"
 import { FormikProps, FormikErrors, Formik, withFormik } from "formik"
 import { Form, FormikInput } from "../../Forms"
 import { getErrorsObj, validateETHAddress } from "../../../utils/forms"
-import { isAddressZero, isSameETHAddress } from "../../../web3/utils"
+import { isAddressZero, isSameAddress } from "../../../web3/utils"
 
 export type MapOperatorToStakingProviderFormValues = {
   operator: string
@@ -56,14 +56,14 @@ const validateInputtedOperatorAddress = async (
 
       if (
         isOperatorMappedOnlyInRandomBeacon &&
-        !isSameETHAddress(operator, mappedOperatorRandomBeacon)
+        !isSameAddress(operator, mappedOperatorRandomBeacon)
       ) {
         validationMsg =
           "The operator address doesn't match the one used in random beacon app"
       }
       if (
         isOperatorMappedOnlyInTbtc &&
-        !isSameETHAddress(operator, mappedOperatorTbtc)
+        !isSameAddress(operator, mappedOperatorTbtc)
       ) {
         validationMsg =
           "The operator address doesn't match the one used in tbtc app"

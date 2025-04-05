@@ -32,7 +32,7 @@ import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
 import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
-import { isSameETHAddress } from "../../../threshold-ts/utils"
+import { isSameAddress } from "../../../threshold-ts/utils"
 import { useAppSelector } from "../../../hooks/store"
 import { selectAvailableAmountToUnstakeByStakingProvider } from "../../../store/staking"
 import { UnstakingFormLabel } from "../../../components/UnstakingFormLabel"
@@ -72,7 +72,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     )
   )
 
-  const isOwner = isSameETHAddress(account ?? AddressZero, stake.owner)
+  const isOwner = isSameAddress(account ?? AddressZero, stake.owner)
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 

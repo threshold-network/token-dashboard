@@ -24,7 +24,7 @@ describe("Multicall test", () => {
   const mockProvider = {} as providers.Provider
   const config = {
     chainId: 1,
-    providerOrSigner: mockProvider,
+    ethereumProviderOrSigner: mockProvider,
     account: "0xE775aE21E40d34f01A5C0E1Db9FB3e637D768596",
   }
 
@@ -37,7 +37,7 @@ describe("Multicall test", () => {
     expect(getContract).toHaveBeenCalledWith(
       MULTICALL_ADDRESSES[config.chainId],
       MULTICALL_ABI,
-      config.providerOrSigner,
+      config.ethereumProviderOrSigner,
       config.account
     )
     expect(multicall).toBeInstanceOf(Multicall)
@@ -46,7 +46,7 @@ describe("Multicall test", () => {
 
   test("should throw an error if pass unsupported chain id to constructor", () => {
     expect(() => {
-      new Multicall({ chainId: 123456, providerOrSigner: mockProvider })
+      new Multicall({ chainId: 123456, ethereumProviderOrSigner: mockProvider })
     }).toThrowError("Unsupported chain id")
   })
 

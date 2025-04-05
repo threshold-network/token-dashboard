@@ -3,7 +3,7 @@ import { AddressZero } from "@ethersproject/constants"
 import { useVendingMachineContract } from "./useVendingMachineContract"
 import { useLocalStorage } from "../../hooks/useLocalStorage"
 import { UpgredableToken } from "../../types"
-import { isAddressZero, isSameETHAddress } from "../../web3/utils"
+import { isAddressZero, isSameAddress } from "../../web3/utils"
 import { Token } from "../../enums"
 
 // Mutex implementation adapted from
@@ -56,7 +56,7 @@ export const useVendingMachineRatio = (token: UpgredableToken) => {
       ratioValue === "0" &&
       contractAddress &&
       (isAddressZero(localStorageContractAddress) ||
-        !isSameETHAddress(contractAddress, localStorageContractAddress))
+        !isSameAddress(contractAddress, localStorageContractAddress))
     ) {
       const fn = async () => {
         const mutex = TOKEN_TO_MUTEX[token]

@@ -1,5 +1,5 @@
 import { useSubscribeToContractEvent } from "../../web3/hooks"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
 import { useBridgeContract } from "./useBridgeContract"
 import { tbtcSlice } from "../../store/tbtc"
@@ -27,7 +27,7 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
       txMaxFee: BigNumber,
       event: Event
     ) => {
-      if (!account || !isSameETHAddress(redeemer, account)) return
+      if (!account || !isSameAddress(redeemer, account)) return
 
       const redemptionKey = threshold.tbtc.buildRedemptionKey(
         walletPublicKeyHash,

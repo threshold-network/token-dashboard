@@ -3,7 +3,7 @@ import { BigNumber } from "ethers"
 import { ZERO, max } from "../../threshold-ts/utils"
 import { RootState } from ".."
 import { StakeData } from "../../types/staking"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { selectStakingAppByStakingProvider } from "../staking-applications/selectors"
 
 export const selectStakes = (state: RootState) => state.staking.stakes
@@ -14,7 +14,7 @@ export const selectStakingProviders = createSelector(selectStakes, (stakes) =>
 export const selectStakeByStakingProvider = createSelector(
   [selectStakes, (_: RootState, stakingProvider: string) => stakingProvider],
   (stakes: StakeData[], stakingProvider: string) =>
-    stakes.find((_) => isSameETHAddress(_.stakingProvider, stakingProvider))
+    stakes.find((_) => isSameAddress(_.stakingProvider, stakingProvider))
 )
 
 // This selector returns available amount to unstake for T, KEEP and NU in T

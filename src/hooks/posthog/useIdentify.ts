@@ -44,7 +44,7 @@ export const useIdentify = () => {
   //     } else if (
   //       update.account &&
   //       account &&
-  //       !isSameETHAddress(update.account, account)
+  //       !isSameAddress(update.account, account)
   //     ) {
   //       posthog.reset()
 

@@ -112,7 +112,7 @@ export class MockBitcoinClient implements BitcoinClient {
       const { tbtc } = store.getState() as RootState
 
       const {
-        ethAddress,
+        userWalletAddress,
         btcRecoveryAddress,
         walletPublicKeyHash,
         refundLocktime,
@@ -121,7 +121,7 @@ export class MockBitcoinClient implements BitcoinClient {
       const network = await this.getNetwork()
 
       const depositReceipt: DepositReceipt = {
-        depositor: getChainIdentifier(ethAddress),
+        depositor: getChainIdentifier(userWalletAddress),
         blindingFactor: Hex.from(blindingFactor),
         walletPublicKeyHash: Hex.from(walletPublicKeyHash),
         refundPublicKeyHash: BitcoinAddressConverter.addressToPublicKeyHash(

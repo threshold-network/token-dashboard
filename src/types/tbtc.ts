@@ -10,7 +10,7 @@ export interface TbtcState {
   depositor: string
   btcRecoveryAddress: string
   btcDepositAddress: string
-  ethAddress: string
+  userWalletAddress: string
   refundLocktime: string
   blindingFactor: string
   walletPublicKeyHash: string

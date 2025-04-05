@@ -1,7 +1,7 @@
 import { operatorRegistered } from "../../store/account"
 import { StakingAppName } from "../../store/staking-applications"
 import { useSubscribeToContractEvent } from "../../web3/hooks"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
 import { useIsActive } from "../useIsActive"
 import { useStakingAppContract } from "./useStakingAppContract"
@@ -18,7 +18,7 @@ export const useSubscribeToOperatorRegisteredEvent = (
     "OperatorRegistered",
     //@ts-ignore
     async (stakingProvider: string, operator: string) => {
-      if (account && isSameETHAddress(stakingProvider, account)) {
+      if (account && isSameAddress(stakingProvider, account)) {
         dispatch(
           operatorRegistered({
             appName,

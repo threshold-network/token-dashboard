@@ -137,8 +137,12 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
 const MakeDepositComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ onPreviousStepClick }) => {
-  const { btcDepositAddress, ethAddress, btcRecoveryAddress, updateState } =
-    useTbtcState()
+  const {
+    btcDepositAddress,
+    userWalletAddress,
+    btcRecoveryAddress,
+    updateState,
+  } = useTbtcState()
 
   // ↓ Ledger Live App ↓
   const { isEmbed } = useIsEmbed()
@@ -220,7 +224,7 @@ const MakeDepositComponent: FC<{
       />
       <Stack spacing={4} mt="5">
         <BodyMd>Provided Addresses Recap</BodyMd>
-        <AddressRow text="ETH Address" address={ethAddress} />
+        <AddressRow text="Wallet Address" address={userWalletAddress} />
         <AddressRow
           text="BTC Recovery Address"
           address={btcRecoveryAddress}

@@ -1,5 +1,5 @@
 import { StakeData } from "../../types"
-import { isAddressZero, isSameETHAddress } from "../../web3/utils"
+import { isAddressZero, isSameAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { setStakes } from "../staking"
 import {
@@ -38,7 +38,7 @@ export const getStakingProviderOperatorInfo = async (
       return
 
     const stake = stakes.find((_: StakeData) =>
-      isSameETHAddress(_.stakingProvider, address)
+      isSameAddress(_.stakingProvider, address)
     )
 
     let isStakingProvider = false

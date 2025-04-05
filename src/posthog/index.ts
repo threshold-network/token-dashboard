@@ -22,11 +22,15 @@ export const init = () => {
 }
 
 export const identify = (
-  ethAddress: string,
+  userWalletAddress: string,
   userPropertiesToSet?: Properties,
   userPropertiesToSetOnce?: Properties
 ) => {
-  posthog.identify(ethAddress, userPropertiesToSet, userPropertiesToSetOnce)
+  posthog.identify(
+    userWalletAddress,
+    userPropertiesToSet,
+    userPropertiesToSetOnce
+  )
 }
 
 // Posthog automatically sends pageview events whenever it gets loaded. For a

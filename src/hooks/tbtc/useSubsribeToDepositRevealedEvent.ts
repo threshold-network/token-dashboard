@@ -1,5 +1,5 @@
 import { useSubscribeToContractEvent } from "../../web3/hooks"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { useAppDispatch } from "../store"
 import { useBridgeContract } from "./useBridgeContract"
 import { tbtcSlice } from "../../store/tbtc"
@@ -31,7 +31,7 @@ export const useSubscribeToDepositRevealedEvent = () => {
       vault: string,
       event: Event
     ) => {
-      if (!account || !isSameETHAddress(depositor, account)) return
+      if (!account || !isSameAddress(depositor, account)) return
 
       const { amountToMint } = await threshold.tbtc.getEstimatedDepositFees(
         amount.toString()

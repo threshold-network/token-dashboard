@@ -26,7 +26,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   isAddressZero,
   isEmptyOrZeroAddress,
-  isSameETHAddress,
+  isSameAddress,
   AddressZero,
 } from "../../../web3/utils"
 import { selectMappedOperators } from "../../../store/account/selectors"
@@ -85,7 +85,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMappedEcdsa) &&
-          !isSameETHAddress(stakingProviderMappedEcdsa, account!)
+          !isSameAddress(stakingProviderMappedEcdsa, account!)
         )
       case "randomBeacon":
         const stakingProviderMappedRandomBeacon =
@@ -94,7 +94,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMappedRandomBeacon) &&
-          !isSameETHAddress(stakingProviderMappedRandomBeacon, account!)
+          !isSameAddress(stakingProviderMappedRandomBeacon, account!)
         )
       case "taco":
         stakingProviderMapped =
@@ -103,7 +103,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMapped) &&
-          !isSameETHAddress(stakingProviderMapped, account!)
+          !isSameAddress(stakingProviderMapped, account!)
         )
       default:
         throw new Error(`Unsupported app name: ${appName}`)

@@ -71,7 +71,7 @@ describe("TBTC test", () => {
   const activeWalletPublicKey =
     "03989d253b17a6a0f41838b84ff0d20e8898f9d7b1a98f2564da4cc29dcf8581d9"
 
-  const ethAddress = "0x6c05E249D167a42dfFdC54Ff00c7832292889dff"
+  const userWalletAddress = "0x6c05E249D167a42dfFdC54Ff00c7832292889dff"
   const bitcoinAddressTestnet = "tb1q0tpdjdu2r3r7tzwlhqy4e2276g2q6fexsz4j0m"
 
   const satoshiMultiplier = BigNumber.from(10).pow(10)
@@ -99,7 +99,7 @@ describe("TBTC test", () => {
 
   const mockEthereumProvider = {} as providers.Provider
   const ethConfig: EthereumConfig = {
-    providerOrSigner: mockEthereumProvider,
+    ethereumProviderOrSigner: mockEthereumProvider,
     chainId: 1,
     account: AddressZero,
   }
@@ -157,25 +157,25 @@ describe("TBTC test", () => {
       expect(getContract).toHaveBeenCalledWith(
         TBTCVault.address,
         TBTCVault.abi,
-        ethConfig.providerOrSigner,
+        ethConfig.ethereumProviderOrSigner,
         ethConfig.account
       )
       expect(getContract).toHaveBeenCalledWith(
         Bridge.address,
         Bridge.abi,
-        ethConfig.providerOrSigner,
+        ethConfig.ethereumProviderOrSigner,
         ethConfig.account
       )
       expect(getContract).toHaveBeenCalledWith(
         TBTCToken.address,
         TBTCToken.abi,
-        ethConfig.providerOrSigner,
+        ethConfig.ethereumProviderOrSigner,
         ethConfig.account
       )
       expect(EthereumBridge).toHaveBeenCalledWith({
         address: Bridge.address,
         signerOrProvider: getProviderOrSigner(
-          ethConfig.providerOrSigner as any,
+          ethConfig.ethereumProviderOrSigner as any,
           ethConfig.account
         ),
       })
@@ -317,7 +317,7 @@ describe("TBTC test", () => {
         setUpValidBTCAddress(true)
         setUpIsPublicKeyHashTypeAddress(true)
         depositScriptParameters = await tBTC.createDepositScriptParameters(
-          ethAddress,
+          userWalletAddress,
           bitcoinAddressTestnet
         )
       })
@@ -335,12 +335,12 @@ describe("TBTC test", () => {
           Math.floor(mockCurrentTime / 1000),
           23328000
         )
-        expect(getChainIdentifier).toBeCalledWith(ethAddress)
+        expect(getChainIdentifier).toBeCalledWith(userWalletAddress)
       })
 
       test("should create proper deposit script parameters", async () => {
         expect(depositScriptParameters.depositor).toBe(
-          getChainIdentifier(ethAddress)
+          getChainIdentifier(userWalletAddress)
         )
         expect(depositScriptParameters.blindingFactor).toBe(mockBlindingFactor)
         expect(depositScriptParameters.refundPublicKeyHash).toBe(
@@ -364,7 +364,10 @@ describe("TBTC test", () => {
 
       test("should throw and error", async () => {
         await expect(
-          tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
+          tBTC.createDepositScriptParameters(
+            userWalletAddress,
+            bitcoinAddressTestnet
+          )
         ).rejects.toThrow(
           "Wrong bitcoin address passed to createDepositScriptParameters function"
         )
@@ -385,7 +388,10 @@ describe("TBTC test", () => {
 
       test("should throw an error", async () => {
         await expect(
-          tBTC.createDepositScriptParameters(ethAddress, bitcoinAddressTestnet)
+          tBTC.createDepositScriptParameters(
+            userWalletAddress,
+            bitcoinAddressTestnet
+          )
         ).rejects.toThrow("Bitcoin recovery address must be a P2PKH or P2WPKH")
 
         expect(isValidBtcAddress).toHaveBeenCalledWith(

@@ -20,7 +20,7 @@ describe("Vending machine test", () => {
   beforeEach(() => {
     config = {
       chainId: 1,
-      providerOrSigner: {} as providers.Provider,
+      ethereumProviderOrSigner: {} as providers.Provider,
       account: "0x6B2896f915122660163e3a17f54BC244312212FD",
     }
     artifact = {
@@ -37,7 +37,7 @@ describe("Vending machine test", () => {
     expect(getContract).toHaveBeenCalledWith(
       artifact.address,
       artifact.abi,
-      config.providerOrSigner,
+      config.ethereumProviderOrSigner,
       config.account
     )
     expect(vendingMachine.contract).toEqual(mockVendingMachineContract)

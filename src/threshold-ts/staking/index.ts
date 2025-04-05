@@ -13,8 +13,8 @@ import {
   getArtifact,
   getContract,
   getContractPastEvents,
-  isAddress,
-  isSameETHAddress,
+  isEthereumAddress,
+  isSameAddress,
   ZERO,
 } from "../utils"
 import { IVendingMachines } from "../vending-machine"
@@ -149,7 +149,7 @@ export class Staking implements IStaking {
       ? getContract(
           stakingArtifact.address,
           stakingArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -162,7 +162,7 @@ export class Staking implements IStaking {
       ? getContract(
           legacyKeepStakingArtifact.address,
           legacyKeepStakingArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -175,7 +175,7 @@ export class Staking implements IStaking {
       ? getContract(
           nuCypherStakingEscrowArtifact.address,
           nuCypherStakingEscrowArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -280,8 +280,8 @@ export class Staking implements IStaking {
     }
 
     const isNuStakingProviderValid =
-      isAddress(nuStakingProvider) &&
-      isSameETHAddress(stakingProvider, nuStakingProvider)
+      isEthereumAddress(nuStakingProvider) &&
+      isSameAddress(stakingProvider, nuStakingProvider)
 
     const possibleNuTopUpInT = isNuStakingProviderValid
       ? BigNumber.from(
@@ -449,7 +449,7 @@ export class Staking implements IStaking {
         ...rolesOf,
         stakingProvider: possibleStakingProviders[index],
       }))
-      .filter((rolesOf) => isSameETHAddress(rolesOf.owner, owner))
+      .filter((rolesOf) => isSameAddress(rolesOf.owner, owner))
       .map((_) => _.stakingProvider)
 
     // Outdated staking providers - the `owner` address is no longer an owner of
