@@ -2,6 +2,7 @@ import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { SolanaIcon } from "../../../static/icons/Solana"
+import { SUIIcon } from "../../../static/icons/SUI"
 import { Taho } from "../../../static/icons/Taho"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
 import InitialWalletSelection from "./InitialSelection"
@@ -22,6 +23,7 @@ import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { featureFlags } from "../../../constants"
 import ConnectSolana from "./ConnectSolana"
+import ConnectSUI from "./ConnectSUI"
 import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 
 const walletOptions: WalletOption[] = [
@@ -77,10 +79,18 @@ const walletOptions: WalletOption[] = [
       dark: SolanaIcon,
     },
   },
+  {
+    id: WalletType.SUI,
+    title: "SUI",
+    icon: {
+      light: SUIIcon,
+      dark: SUIIcon,
+    },
+  },
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
-  const { setVisible: setModalVisible } = useWalletModal()
+  const { setVisible: setSolanaModalVisible } = useWalletModal()
   const { deactivate } = useWeb3React()
   const { closeModal } = useModal()
 
@@ -99,9 +109,9 @@ const SelectWalletModal: FC<BaseModalProps> = () => {
 
   useEffect(() => {
     if (walletToConnect === WalletType.Solana) {
-      setModalVisible(true)
+      setSolanaModalVisible(true)
     }
-  }, [walletToConnect])
+  }, [walletToConnect, setSolanaModalVisible])
 
   return (
     <>
@@ -144,6 +154,8 @@ const ConnectWallet: FC<{
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
     case WalletType.Solana:
       return <ConnectSolana goBack={goBack} closeModal={onClose} />
+    case WalletType.SUI:
+      return <ConnectSUI goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }

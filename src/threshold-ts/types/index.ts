@@ -16,6 +16,7 @@ export type CrossChainConfig = {
 export enum ChainName {
   Ethereum = "Ethereum", // can be any l2 based on Ethereum network as such as arbitrum, optimism, etc.
   Solana = "Solana",
+  SUI = "SUI",
 }
 export interface EthereumConfig {
   ethereumProviderOrSigner: providers.Provider | Signer

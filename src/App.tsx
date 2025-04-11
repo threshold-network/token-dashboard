@@ -67,6 +67,7 @@ import { hexToNumber, isSameChainId } from "./networks/utils"
 import { walletConnected } from "./store/account"
 import { useIsActive } from "./hooks/useIsActive"
 import SolanaWalletProvider from "./contexts/SolanaWalletProvider"
+import SUIWalletProvider from "./contexts/SUIWalletProvider"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -268,19 +269,21 @@ const App: FC = () => {
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
         <SolanaWalletProvider>
-          <LedgerLiveAppProvider>
-            <ThresholdProvider>
-              <ReduxProvider store={reduxStore}>
-                <ChakraProvider theme={theme}>
-                  <TokenContextProvider>
-                    <Web3EventHandlerComponent />
-                    <ModalRoot />
-                    <AppBody />
-                  </TokenContextProvider>
-                </ChakraProvider>
-              </ReduxProvider>
-            </ThresholdProvider>
-          </LedgerLiveAppProvider>
+          <SUIWalletProvider>
+            <LedgerLiveAppProvider>
+              <ThresholdProvider>
+                <ReduxProvider store={reduxStore}>
+                  <ChakraProvider theme={theme}>
+                    <TokenContextProvider>
+                      <Web3EventHandlerComponent />
+                      <ModalRoot />
+                      <AppBody />
+                    </TokenContextProvider>
+                  </ChakraProvider>
+                </ReduxProvider>
+              </ThresholdProvider>
+            </LedgerLiveAppProvider>
+          </SUIWalletProvider>
         </SolanaWalletProvider>
       </Web3ReactProvider>
     </Router>
