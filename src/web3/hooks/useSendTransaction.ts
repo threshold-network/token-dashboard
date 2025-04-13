@@ -10,6 +10,7 @@ import { useIsEmbed } from "../../hooks/useIsEmbed"
 import { useIsActive } from "../../hooks/useIsActive"
 import { useSelector } from "react-redux"
 import { RootState } from "../../store"
+import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -53,6 +54,7 @@ export const useSendTransactionFromFn = <
   } = useSelector((state: RootState) => state.account)
   const { library } = useWeb3React()
   const { account } = useIsActive()
+  const { nonEVMPublicKey } = useNonEVMConnection()
   const { openModal } = useModal()
   const [transactionStatus, setTransactionStatus] = useState<TransactionStatus>(
     TransactionStatus.Idle
@@ -70,7 +72,7 @@ export const useSendTransactionFromFn = <
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
       try {
-        if (!account || isBlocked || isFetching) {
+        if ((!nonEVMPublicKey && !account) || isBlocked || isFetching) {
           const errorMessage = `Transaction attempt failed: ${
             isFetching
               ? "We're currently assessing the security details of your wallet, please try again later."

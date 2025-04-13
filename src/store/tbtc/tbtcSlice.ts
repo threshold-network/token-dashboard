@@ -108,7 +108,8 @@ export const tbtcSlice = createSlice({
       state,
       action: PayloadAction<{
         btcDepositAddress: string
-        chainId: number
+        chainId: number | undefined
+        nonEVMChainName: string | null
       }>
     ) => {},
     fetchUtxoConfirmations: (

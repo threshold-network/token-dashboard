@@ -23,7 +23,6 @@ import {
   getEthereumNetworkNameFromChainId,
   isL1Network,
   isSupportedNetwork,
-  isTestnetChainId,
 } from "../../../../networks/utils"
 import { getBridgeBTCSupportedAddressPrefixesText } from "../../../../utils/tBTC"
 import { downloadFile, isSameAddress } from "../../../../web3/utils"
@@ -54,10 +53,10 @@ type ComponentProps = {
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
 }) => {
-  const { chainId } = useIsActive()
+  const { config } = useThreshold()
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
-    isTestnetChainId(chainId as number)
+    config.bitcoin.network === BitcoinNetwork.Testnet
       ? BitcoinNetwork.Testnet
       : BitcoinNetwork.Mainnet
   )
@@ -129,6 +128,7 @@ export const ProvideDataComponent: FC<{
     useNonEVMConnection()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+  const connectedAccount = account || nonEVMPublicKey
 
   const networkName =
     nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
@@ -148,18 +148,12 @@ export const ProvideDataComponent: FC<{
 
   const onSubmit = useCallback(
     async (values: FormValues) => {
-      if (account && !isSameAddress(values.userWalletAddress, account)) {
-        throw new Error(
-          "The account used to generate the deposit address must be the same as the connected wallet."
-        )
-      }
-
       if (
-        nonEVMPublicKey &&
-        !isSameAddress(values.userWalletAddress, nonEVMPublicKey)
+        connectedAccount &&
+        !isSameAddress(values.userWalletAddress, connectedAccount)
       ) {
         throw new Error(
-          "The non-EVM account used to generate the deposit address must be the same as the connected wallet."
+          "The account used to generate the deposit address must be the same as the connected wallet."
         )
       }
 
@@ -169,12 +163,13 @@ export const ProvideDataComponent: FC<{
         )
       }
 
-      const chainName = getEthereumNetworkNameFromChainId(chainId)
+      const chainName =
+        nonEVMChainName || getEthereumNetworkNameFromChainId(chainId)
 
       setSubmitButtonLoading(true)
 
       let deposit: Deposit
-      if (isL1Network(chainId)) {
+      if (!isNonEVMActive && isL1Network(chainId)) {
         deposit = await threshold.tbtc.initiateDeposit(
           values.btcRecoveryAddress
         )
@@ -231,7 +226,7 @@ export const ProvideDataComponent: FC<{
           },
           networkInfo: {
             chainName: chainName,
-            chainId: chainId!.toString(),
+            chainId: chainId?.toString(),
           },
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),

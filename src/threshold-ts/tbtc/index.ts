@@ -675,7 +675,7 @@ export class TBTC implements ITBTC {
     // We need to use a mainnet default provider to initialize the SDK
     const sdk = await initializeFunction(
       initializerProviderOrSigner,
-      isL2Network(connectedChainId)
+      this._crossChainConfig.isCrossChain
     )
 
     return sdk

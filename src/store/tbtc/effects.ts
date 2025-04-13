@@ -14,6 +14,8 @@ import {
   isL1Network,
   isSameChainId,
 } from "../../networks/utils"
+import { isAddress } from "@ethersproject/address"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -59,7 +61,7 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress, chainId } = action.payload
+  const { btcDepositAddress, chainId, nonEVMChainName } = action.payload
 
   const {
     tbtc: {
@@ -73,10 +75,7 @@ export const findUtxoEffect = async (
     },
   } = listenerApi.getState()
 
-  if (
-    !btcDepositAddress ||
-    (!isEthereumAddress(depositor) && !isAddressZero(depositor))
-  )
+  if (!btcDepositAddress || !isAddress(depositor) || isAddressZero(depositor))
     return
 
   // Cancel any in-progress instances of this listener.
@@ -85,7 +84,10 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
-        if (getEthereumNetworkNameFromChainId(chainId) !== chainName) {
+        if (
+          !nonEVMChainName &&
+          getEthereumNetworkNameFromChainId(chainId) !== chainName
+        ) {
           throw new Error("Chain ID and deposit chain name mismatch")
         }
         // Initiating deposit from redux store (if deposit object is empty)
@@ -109,7 +111,7 @@ export const findUtxoEffect = async (
             refundLocktime,
           }
 
-          if (isL1Network(chainId)) {
+          if (!nonEVMChainName && isL1Network(chainId)) {
             await forkApi.pause(
               listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
                 depositParams
@@ -122,7 +124,7 @@ export const findUtxoEffect = async (
                   ...depositParams,
                   extraData,
                 },
-                chainId
+                chainId || SupportedChainIds.Ethereum
               )
             )
           }
