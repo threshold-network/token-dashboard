@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react"
 import { AddressZero } from "@ethersproject/constants"
 import { BodyLg, BodyMd, H5, LabelSm } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
 import { FC, useCallback, useState } from "react"
 import { ModalType } from "../../../enums"
 import { useRegisterMultipleOperatorsTransaction } from "../../../hooks/staking-applications/useRegisterMultipleOperatorsTransaction"
@@ -27,6 +26,7 @@ import { OnSuccessCallback } from "../../../web3/hooks"
 import { ApplicationForOperatorMapping } from "../MapOperatorToStakingProviderModal"
 import SubmitTxButton from "../../SubmitTxButton"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const OperatorMappingConfirmation: FC<
   BoxProps & { appName: string; operator: string; stakingProvider: string }
@@ -59,7 +59,7 @@ const MapOperatorToStakingProviderConfirmationModal: FC<
     applications: ApplicationForOperatorMapping[]
   }
 > = ({ applications, closeModal }) => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const threshold = useThreshold()
   const { registerMultipleOperators } =
     useRegisterMultipleOperatorsTransaction()

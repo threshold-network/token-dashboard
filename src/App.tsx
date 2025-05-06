@@ -7,7 +7,7 @@ import "@fontsource/ibm-plex-mono/400.css"
 import { FC, useEffect, Fragment } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
-import { useWeb3React, Web3ReactProvider } from "@web3-react/core"
+import { Web3ReactProvider } from "@web3-react/core"
 import { ConnectorEvent, ConnectorUpdate } from "@web3-react/types"
 import {
   BrowserRouter as Router,
@@ -38,7 +38,7 @@ import { useSubscribeToToppedUpEvent } from "./hooks/useSubscribeToToppedUpEvent
 import { pages } from "./pages"
 import { useCheckBonusEligibility } from "./hooks/useCheckBonusEligibility"
 import { useFetchStakingRewards } from "./hooks/useFetchStakingRewards"
-import { isSameETHAddress } from "./web3/utils"
+import { isSameAddress } from "./web3/utils"
 import { ThresholdProvider } from "./contexts/ThresholdContext"
 import { LedgerLiveAppProvider } from "./contexts/LedgerLiveAppContext"
 import {
@@ -63,9 +63,10 @@ import { useIsEmbed } from "./hooks/useIsEmbed"
 import TBTC from "./pages/tBTC"
 import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
 import { useGoogleTagManager } from "./hooks/google-tag-manager"
-import { hexToNumber, isSameChainId } from "./networks/utils"
+import { hexToNumber, isSameChainNameOrId } from "./networks/utils"
 import { walletConnected } from "./store/account"
 import { useIsActive } from "./hooks/useIsActive"
+import SolanaWalletProvider from "./contexts/SolanaWalletProvider"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -95,7 +96,7 @@ const Web3EventHandlerComponent = () => {
 
 // TODO: Let's move this to its own hook like useKeep, useT, etc
 const useSubscribeToVendingMachineContractEvents = () => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { openModal } = useModal()
   const keepVendingMachine = useVendingMachineContract(Token.Keep)
   const nuVendingMachine = useVendingMachineContract(Token.Nu)
@@ -142,7 +143,10 @@ const AppBody = () => {
     const updateHandler = (update: ConnectorUpdate) => {
       // if chain is changed then just update the redux store for the wallet
       // connection
-      if (update.chainId && !isSameChainId(update.chainId, chainId as number)) {
+      if (
+        update.chainId &&
+        !isSameChainNameOrId(update.chainId, chainId as number)
+      ) {
         dispatch(
           walletConnected({
             address: account || "",
@@ -151,7 +155,7 @@ const AppBody = () => {
         )
       } else if (
         update.account &&
-        !isSameETHAddress(update.account, account as string)
+        !isSameAddress(update.account, account as string)
       ) {
         // dispatch(resetStoreAction())
 
@@ -266,19 +270,21 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <LedgerLiveAppProvider>
-          <ThresholdProvider>
-            <ReduxProvider store={reduxStore}>
-              <ChakraProvider theme={theme}>
-                <TokenContextProvider>
-                  <Web3EventHandlerComponent />
-                  <ModalRoot />
-                  <AppBody />
-                </TokenContextProvider>
-              </ChakraProvider>
-            </ReduxProvider>
-          </ThresholdProvider>
-        </LedgerLiveAppProvider>
+        <SolanaWalletProvider>
+          <LedgerLiveAppProvider>
+            <ThresholdProvider>
+              <ReduxProvider store={reduxStore}>
+                <ChakraProvider theme={theme}>
+                  <TokenContextProvider>
+                    <Web3EventHandlerComponent />
+                    <ModalRoot />
+                    <AppBody />
+                  </TokenContextProvider>
+                </ChakraProvider>
+              </ReduxProvider>
+            </ThresholdProvider>
+          </LedgerLiveAppProvider>
+        </SolanaWalletProvider>
       </Web3ReactProvider>
     </Router>
   )

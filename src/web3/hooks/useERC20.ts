@@ -1,6 +1,5 @@
 import { useCallback } from "react"
 import { MaxUint256 } from "@ethersproject/constants"
-import { useWeb3React } from "@web3-react/core"
 import { useContract } from "./useContract"
 import ERC20_ABI from "../abi/ERC20.json"
 import { Token } from "../../enums"
@@ -9,13 +8,14 @@ import { Approve, UseErc20Interface } from "../../types/token"
 import { useTransaction } from "../../hooks/useTransaction"
 import { TransactionStatus } from "../../enums/transactionType"
 import { isWalletRejectionError } from "../../utils/isWalletRejectionError"
+import { useIsActive } from "../../hooks/useIsActive"
 
 export const useErc20TokenContract: UseErc20Interface = (
   tokenAddress,
   withSignerIfPossible,
   abi = ERC20_ABI
 ) => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const {
     setTokenLoading,
     setTokenIsLoadedFromConnectedAccount,

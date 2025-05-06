@@ -13,7 +13,7 @@ const MintingTransactionDetails = () => {
     tBTCMintAmount,
     mintingFee,
     thresholdNetworkFee,
-    ethAddress,
+    userWalletAddress,
     crossChainFee,
   } = useTbtcState()
   return (
@@ -39,7 +39,7 @@ const MintingTransactionDetails = () => {
       />
       <TransactionDetailsItem
         label="ETH address"
-        value={shortenAddress(ethAddress)}
+        value={shortenAddress(userWalletAddress)}
       />
     </List>
   )

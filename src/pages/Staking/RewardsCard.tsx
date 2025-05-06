@@ -1,6 +1,5 @@
 import { FC } from "react"
 import { Button, useColorModeValue, VStack } from "@chakra-ui/react"
-import { useWeb3React } from "@web3-react/core"
 import {
   BodyMd,
   BodyLg,
@@ -17,12 +16,13 @@ import { ModalType } from "../../enums"
 import { formatTokenAmount } from "../../utils/formatAmount"
 import { BigNumber } from "ethers"
 import { useNextRewardsDropDate } from "../../hooks/useNextRewardsDropDate"
+import { useIsActive } from "../../hooks/useIsActive"
 
 const RewardsCard: FC<{
   totalRewardsBalance: string
   totalBonusBalance: string
 }> = ({ totalRewardsBalance, totalBonusBalance }) => {
-  const { active } = useWeb3React()
+  const { isActive } = useIsActive()
   const { openModal } = useModal()
 
   const dropTimestamp = useNextRewardsDropDate()
@@ -52,8 +52,8 @@ const RewardsCard: FC<{
         )}
       </HStack>
       <BodyMd mt="6">Total Rewards</BodyMd>
-      <InfoBox mt="2" direction="row" p={active ? 0 : 4} alignItems="center">
-        {active ? (
+      <InfoBox mt="2" direction="row" p={isActive ? 0 : 4} alignItems="center">
+        {isActive ? (
           <>
             <H5
               flex="2"
@@ -83,7 +83,7 @@ const RewardsCard: FC<{
         mt="4"
         variant="outline"
         size="lg"
-        disabled={!active || !hasRewards}
+        disabled={!isActive || !hasRewards}
         isFullWidth
         onClick={() =>
           openModal(ModalType.ClaimingRewards, {

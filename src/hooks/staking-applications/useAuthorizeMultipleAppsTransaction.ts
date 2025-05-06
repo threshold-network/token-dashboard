@@ -1,7 +1,7 @@
 import { useCallback } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useSendTransactionFromFn } from "../../web3/hooks"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { useStakingApplicationAddress } from "./useStakingApplicationAddress"
 import { useModal } from "../useModal"
 import { ModalType } from "../../enums"
@@ -31,9 +31,9 @@ export const useAuthorizeMultipleAppsTransaction = () => {
 
         const includesOnlySupportedApps = applications.every(
           (_) =>
-            isSameETHAddress(_.address, tbtcAppAddress) ||
-            isSameETHAddress(_.address, randomBeaconAppAddress) ||
-            isSameETHAddress(_.address, tacoAppAddress)
+            isSameAddress(_.address, tbtcAppAddress) ||
+            isSameAddress(_.address, randomBeaconAppAddress) ||
+            isSameAddress(_.address, tacoAppAddress)
         )
 
         if (!includesOnlySupportedApps)

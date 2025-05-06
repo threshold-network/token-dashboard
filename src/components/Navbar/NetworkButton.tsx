@@ -17,13 +17,13 @@ import { EthereumDark } from "../../static/icons/EthereumDark"
 import { Arbitrum } from "../../static/icons/Arbitrum"
 import { Base } from "../../static/icons/Base"
 import {
-  chainIdToChainParameterName,
+  getParameterNameFromChainId,
   isMainnetChainId,
   networks,
 } from "../../networks/utils"
 import { useIsActive } from "../../hooks/useIsActive"
 import { NetworkType, SupportedChainIds } from "../../networks/enums/networks"
-import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 interface NetworkIconMap {
   icon: ReactElement
@@ -31,7 +31,7 @@ interface NetworkIconMap {
 }
 
 const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
-  const defaultChainId = getDefaultProviderChainId()
+  const defaultChainId = getEthereumDefaultProviderChainId()
   const ethereumLogo = colorMode === "light" ? EthereumDark : EthereumLight
   const grayBackground = "gray.700"
 
@@ -84,7 +84,7 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
 const NetworkButton: FC = () => {
   const { colorMode } = useColorMode()
   const { chainId, switchNetwork } = useIsActive()
-  const defaultChainId = getDefaultProviderChainId()
+  const defaultChainId = getEthereumDefaultProviderChainId()
 
   const networkIcon = useMemo(
     () => getNetworkIcon(chainId || 0, colorMode),
@@ -156,7 +156,7 @@ const NetworkButton: FC = () => {
               rightIcon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               display={{ base: "none", md: "inherit" }}
             >
-              {chainIdToChainParameterName(chainId)}
+              {getParameterNameFromChainId(chainId)}
             </MenuButton>
             <MenuList zIndex={20}>{renderMenuItems()}</MenuList>
           </>

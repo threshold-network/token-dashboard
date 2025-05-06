@@ -1,4 +1,3 @@
-import { useWeb3React } from "@web3-react/core"
 import { useDispatch } from "react-redux"
 import { Event } from "@ethersproject/contracts"
 import { BigNumberish } from "@ethersproject/bignumber"
@@ -7,10 +6,11 @@ import {
   providerStakedForStakingProvider,
 } from "../store/staking"
 import { useSubscribeToContractEvent, useTStakingContract } from "../web3/hooks"
+import { useIsActive } from "./useIsActive"
 
 export const useSubscribeToStakedEvent = () => {
   const tStakingContract = useTStakingContract()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const dispatch = useDispatch()
 
   /**

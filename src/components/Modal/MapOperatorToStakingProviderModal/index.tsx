@@ -22,17 +22,17 @@ import { FormikProps } from "formik"
 import { ModalType } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
 import StakeAddressInfo from "../../../pages/Staking/StakeCard/StakeAddressInfo"
-import { useWeb3React } from "@web3-react/core"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import {
   isAddressZero,
   isEmptyOrZeroAddress,
-  isSameETHAddress,
+  isSameAddress,
   AddressZero,
 } from "../../../web3/utils"
 import { selectMappedOperators } from "../../../store/account/selectors"
 import { useAppSelector } from "../../../hooks/store"
 import ModalCloseButton from "../ModalCloseButton"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export interface MapOperatorToStakingProviderModalProps {
   mappedOperatorTbtc: string
@@ -49,7 +49,7 @@ export interface ApplicationForOperatorMapping {
 const MapOperatorToStakingProviderModal: FC<
   BaseModalProps & MapOperatorToStakingProviderModalProps
 > = () => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const formRefTbtcRb =
     useRef<FormikProps<MapOperatorToStakingProviderFormValues>>(null)
   const formRefTaco =
@@ -85,7 +85,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMappedEcdsa) &&
-          !isSameETHAddress(stakingProviderMappedEcdsa, account!)
+          !isSameAddress(stakingProviderMappedEcdsa, account!)
         )
       case "randomBeacon":
         const stakingProviderMappedRandomBeacon =
@@ -94,7 +94,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMappedRandomBeacon) &&
-          !isSameETHAddress(stakingProviderMappedRandomBeacon, account!)
+          !isSameAddress(stakingProviderMappedRandomBeacon, account!)
         )
       case "taco":
         stakingProviderMapped =
@@ -103,7 +103,7 @@ const MapOperatorToStakingProviderModal: FC<
           )!
         return (
           !isAddressZero(stakingProviderMapped) &&
-          !isSameETHAddress(stakingProviderMapped, account!)
+          !isSameAddress(stakingProviderMapped, account!)
         )
       default:
         throw new Error(`Unsupported app name: ${appName}`)

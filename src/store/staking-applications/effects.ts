@@ -24,7 +24,7 @@ import {
 import { isAddressZero } from "../../web3/utils"
 import { BigNumber } from "ethers"
 import { MAX_UINT64 } from "../../threshold-ts/utils"
-import { isSameChainId } from "../../networks/utils"
+import { isSameChainNameOrId } from "../../networks/utils"
 
 export const getSupportedAppsEffect = async (
   action: ReturnType<typeof stakingApplicationsSlice.actions.getSupportedApps>,
@@ -34,7 +34,7 @@ export const getSupportedAppsEffect = async (
 
   if (
     !account.chainId ||
-    !isSameChainId(
+    !isSameChainNameOrId(
       account.chainId,
       listenerApi.extra.threshold.config.ethereum.chainId
     ) ||
@@ -146,7 +146,7 @@ export const getSupportedAppsStakingProvidersData = async (
 
   if (
     !account.chainId ||
-    !isSameChainId(account.chainId, threshold.config.ethereum.chainId) ||
+    !isSameChainNameOrId(account.chainId, threshold.config.ethereum.chainId) ||
     !threshold.multiAppStaking.ecdsa ||
     !threshold.multiAppStaking.randomBeacon ||
     !threshold.multiAppStaking.taco

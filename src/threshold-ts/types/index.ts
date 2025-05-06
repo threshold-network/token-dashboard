@@ -1,3 +1,4 @@
+import { AnchorProvider } from "@coral-xyz/anchor"
 import {
   BitcoinClient,
   BitcoinNetwork,
@@ -6,8 +7,18 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { providers, Signer } from "ethers"
 
+export type CrossChainConfig = {
+  isCrossChain: boolean
+  chainName: ChainName | null
+  nonEVMProvider: AnchorProvider | null
+}
+
+export enum ChainName {
+  Ethereum = "Ethereum", // can be any l2 based on Ethereum network as such as arbitrum, optimism, etc.
+  Solana = "Solana",
+}
 export interface EthereumConfig {
-  providerOrSigner: providers.Provider | Signer
+  ethereumProviderOrSigner: providers.Provider | Signer
   chainId: string | number
   shouldUseTestnetDevelopmentContracts: boolean
   account?: string
@@ -44,6 +55,7 @@ export interface BitcoinConfig {
 export interface ThresholdConfig {
   ethereum: EthereumConfig
   bitcoin: BitcoinConfig
+  crossChain: CrossChainConfig
 }
 
 export { BitcoinNetwork }

@@ -2,7 +2,7 @@ import { AddressZero } from "@ethersproject/constants"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { useContract } from "./useContract"
 import KeepBonding from "@keep-network/keep-ecdsa/artifacts/KeepBonding.json"
-import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
+import { useConnectedOrDefaultEthereumChainId } from "../../networks/hooks/useConnectedOrDefaultEthereumChainId"
 
 const KEEP_BONDING_ADDRESSES = {
   // https://etherscan.io/address/0x27321f84704a599aB740281E285cc4463d89A3D5
@@ -12,7 +12,7 @@ const KEEP_BONDING_ADDRESSES = {
 } as Record<number, string>
 
 export const useKeepBondingContract = () => {
-  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultEthereumChainId()
 
   return useContract(
     KEEP_BONDING_ADDRESSES[Number(defaultOrConnectedChainId)],

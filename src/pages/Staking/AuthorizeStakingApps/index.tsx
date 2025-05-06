@@ -15,7 +15,11 @@ import { useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { RootState } from "../../../store"
 import { StakeData } from "../../../types"
-import { AddressZero, isSameETHAddress, isAddress } from "../../../web3/utils"
+import {
+  AddressZero,
+  isSameAddress,
+  isEthereumAddress,
+} from "../../../web3/utils"
 import { StakeCardHeaderTitle } from "../StakeCard/Header/HeaderTitle"
 import AuthorizeApplicationsCardCheckbox, {
   AppAuthDataProps,
@@ -25,7 +29,6 @@ import {
   requestStakeByStakingProvider,
   selectStakeByStakingProvider,
 } from "../../../store/staking"
-import { useWeb3React } from "@web3-react/core"
 import {
   useStakingAppDataByStakingProvider,
   useStakingApplicationAddress,
@@ -39,10 +42,11 @@ import { useAppDispatch } from "../../../hooks/store"
 import { stakingApplicationsSlice } from "../../../store/staking-applications"
 import BundledRewardsAlert from "../../../components/BundledRewardsAlert"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const AuthorizeStakingAppsPage: FC = () => {
   const { stakingProviderAddress } = useParams()
-  const { account, active, chainId } = useWeb3React()
+  const { account, isActive, chainId } = useIsActive()
   const threshold = useThreshold()
   const navigate = useNavigate()
   const { openModal } = useModal()
@@ -73,7 +77,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   }
 
   useEffect(() => {
-    if (!isAddress(stakingProviderAddress!)) navigate(`/staking`)
+    if (!isEthereumAddress(stakingProviderAddress!)) navigate(`/staking`)
   }, [stakingProviderAddress, navigate])
 
   useEffect(() => {
@@ -164,7 +168,7 @@ const AuthorizeStakingAppsPage: FC = () => {
   ) as StakeData
 
   const isLoggedInAsAuthorizer =
-    stake && account ? isSameETHAddress(stake.authorizer, account) : false
+    stake && account ? isSameAddress(stake.authorizer, account) : false
 
   const isInactiveStake = stake
     ? BigNumber.from(stake?.totalInTStake).isZero()
@@ -240,12 +244,12 @@ const AuthorizeStakingAppsPage: FC = () => {
 
   const alertTextColor = useColorModeValue("gray.900", "white")
 
-  if (active && !stake)
+  if (isActive && !stake)
     return (
       <BodyLg>No stake found for address: {stakingProviderAddress} </BodyLg>
     )
 
-  return active ? (
+  return isActive ? (
     <>
       <Card>
         <HStack justify={"space-between"}>

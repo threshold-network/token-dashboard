@@ -2,7 +2,7 @@ import TokenStakingABI from "../abi/TokenStaking.json"
 import { useContract } from "./useContract"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { AddressZero } from "@ethersproject/constants"
-import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
+import { useConnectedOrDefaultEthereumChainId } from "../../networks/hooks/useConnectedOrDefaultEthereumChainId"
 
 const DEPLOYMENT_BLOCKS: { [key: number]: number } = {
   [SupportedChainIds.Ethereum]: 14113768,
@@ -23,7 +23,7 @@ export const getTStakingDeploymentBlock = (chainId?: number | string) => {
 }
 
 export const useTStakingContract = () => {
-  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultEthereumChainId()
 
   return useContract(
     T_STAKING_ADDRESSES[Number(defaultOrConnectedChainId)],

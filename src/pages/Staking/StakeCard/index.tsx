@@ -32,11 +32,11 @@ import StakeAddressInfo from "./StakeAddressInfo"
 import { featureFlags } from "../../../constants"
 import { StakeCardContext } from "../../../contexts/StakeCardContext"
 import { useStakeCardContext } from "../../../hooks/useStakeCardContext"
-import { isSameETHAddress } from "../../../threshold-ts/utils"
-import { useWeb3React } from "@web3-react/core"
+import { isSameAddress } from "../../../threshold-ts/utils"
 import { useAppSelector } from "../../../hooks/store"
 import { selectAvailableAmountToUnstakeByStakingProvider } from "../../../store/staking"
 import { UnstakingFormLabel } from "../../../components/UnstakingFormLabel"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 const StakeCardProvider: FC<{ stake: StakeData }> = ({ stake }) => {
   const isInactiveStake = BigNumber.from(stake.totalInTStake).isZero()
@@ -64,7 +64,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
   const tBalance = useTokenBalance(Token.T)
   const { openModal } = useModal()
   const { isInactiveStake, canTopUpKepp, canTopUpNu } = useStakeCardContext()
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const availableAmountToUnstake = useAppSelector((state) =>
     selectAvailableAmountToUnstakeByStakingProvider(
       state,
@@ -72,7 +72,7 @@ const StakeCard: FC<{ stake: StakeData }> = ({ stake }) => {
     )
   )
 
-  const isOwner = isSameETHAddress(account ?? AddressZero, stake.owner)
+  const isOwner = isSameAddress(account ?? AddressZero, stake.owner)
 
   const submitButtonText = !isStakeAction ? "Unstake" : "Top-up"
 

@@ -7,7 +7,7 @@ import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { isSameETHAddress } from "../../../web3/utils"
+import { isSameAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
 
 import {
@@ -20,6 +20,7 @@ import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepositExpirationTime"
 import { useRemoveDepositData } from "../../../hooks/tbtc/useRemoveDepositData"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -29,30 +30,37 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState, resetDepositData } = useTbtcState()
   const { account, chainId } = useIsActive()
+  const { nonEVMPublicKey, nonEVMChainName } = useNonEVMConnection()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const removeDepositData = useRemoveDepositData()
+
+  const userConnectedAccount = account || nonEVMPublicKey
 
   useEffect(() => {
     const updateDepositData = async () => {
       if (
+        (chainId || nonEVMChainName) &&
         tBTCDepositData &&
-        account &&
-        chainId &&
-        tBTCDepositData[account] &&
-        isSameETHAddress(tBTCDepositData[account].ethAddress, account) &&
-        tBTCDepositData[account].btcDepositAddress !== btcDepositAddress
+        userConnectedAccount &&
+        tBTCDepositData[userConnectedAccount] &&
+        isSameAddress(
+          tBTCDepositData[userConnectedAccount].userWalletAddress,
+          userConnectedAccount
+        ) &&
+        tBTCDepositData[userConnectedAccount].btcDepositAddress !==
+          btcDepositAddress
       ) {
         const {
           depositor: { identifierHex: depositorAddress },
           btcDepositAddress,
-          ethAddress,
+          userWalletAddress,
           blindingFactor,
           btcRecoveryAddress,
           walletPublicKeyHash,
           refundLocktime,
           extraData,
           chainName,
-        } = tBTCDepositData[account]
+        } = tBTCDepositData[userConnectedAccount]
         const { isExpired } = await checkDepositExpiration(refundLocktime)
         if (isExpired) {
           resetDepositData()
@@ -60,7 +68,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
           return
         }
 
-        updateState("ethAddress", ethAddress)
+        updateState("userWalletAddress", userWalletAddress)
         updateState("blindingFactor", blindingFactor)
         updateState("btcRecoveryAddress", btcRecoveryAddress)
         updateState("walletPublicKeyHash", walletPublicKeyHash)
@@ -95,6 +103,7 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { isActive } = useIsActive()
+  const { isNonEVMActive } = useNonEVMConnection()
   const { mintingStep, utxo } = useTbtcState()
   const {
     tbtc: {
@@ -112,7 +121,7 @@ const MintPageLayout: PageComponent = () => {
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive ? (
+        {isActive || isNonEVMActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

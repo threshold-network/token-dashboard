@@ -2,7 +2,7 @@ import { AddressZero } from "@ethersproject/constants"
 import { AnyAction, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { featureFlags } from "../../constants"
 import { FetchingState, TrmState } from "../../types"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { startAppListening } from "../listener"
 import {
   providerStaked,
@@ -134,7 +134,7 @@ export const accountSlice = createSlice({
 
         const { address } = state
 
-        if (isSameETHAddress(stakingProvider, address)) {
+        if (isSameAddress(stakingProvider, address)) {
           state.isStakingProvider = true
         }
       }

@@ -24,7 +24,7 @@ import { BaseModalProps } from "../../../types"
 import withBaseModal from "../withBaseModal"
 import { useStakingState } from "../../../hooks/useStakingState"
 import { getStakeTitle } from "../../../utils/getStakeTitle"
-import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import { isEthereumAddress, isSameAddress } from "../../../web3/utils"
 import ButtonLink from "../../ButtonLink"
 import ModalCloseButton from "../ModalCloseButton"
 
@@ -62,8 +62,8 @@ const NewAppsToAuthorizeModal: FC<BaseModalProps> = ({ closeModal }) => {
                     key={stake.stakingProvider}
                     boxShadow="none"
                     borderColor={
-                      isAddress(selectedProviderAddress) &&
-                      isSameETHAddress(
+                      isEthereumAddress(selectedProviderAddress) &&
+                      isSameAddress(
                         stake.stakingProvider,
                         selectedProviderAddress
                       )

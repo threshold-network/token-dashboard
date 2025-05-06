@@ -14,9 +14,9 @@ import { useTConvertedAmount } from "../../hooks/useTConvertedAmount"
 import { useTExchangeRate } from "../../hooks/useTExchangeRate"
 import { UpgredableToken } from "../../types"
 import { Token } from "../../enums"
-import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "ethers"
 import { useVendingMachineContract } from "../../web3/hooks"
+import { useIsActive } from "../../hooks/useIsActive"
 
 export interface UpgradeCardTemplateProps {
   token: UpgredableToken
@@ -34,7 +34,7 @@ const UpgradeCardTemplate: FC<UpgradeCardTemplateProps> = ({
 }) => {
   const { formattedAmount } = useTConvertedAmount(token, amountToConvert)
   const { formattedAmount: exchangeRate } = useTExchangeRate(token)
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const vendingMachineContract = useVendingMachineContract(token)
 
   const titleText = useMemo(() => {

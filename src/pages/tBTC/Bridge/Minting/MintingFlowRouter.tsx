@@ -14,10 +14,12 @@ import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
   const { account, chainId } = useIsActive()
+  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
   const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
@@ -36,13 +38,14 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    if (!btcDepositAddress || !account || !chainId) {
+    if (!btcDepositAddress || (!chainId && !isNonEVMActive)) {
       return
     }
     dispatch(
       tbtcSlice.actions.findUtxo({
         btcDepositAddress,
         chainId,
+        nonEVMChainName,
       })
     )
   }, [btcDepositAddress, account, chainId, dispatch])

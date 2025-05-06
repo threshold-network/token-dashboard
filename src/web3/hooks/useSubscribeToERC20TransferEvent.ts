@@ -1,15 +1,15 @@
-import { useWeb3React } from "@web3-react/core"
 import { BigNumber } from "@ethersproject/bignumber"
 import { Token } from "../../enums/token"
 import { useSubscribeToContractEvent } from "./useSubscribeToContractEvent"
 import { useTokenBalance } from "../../hooks/useTokenBalance"
-import { isSameETHAddress } from "../../web3/utils"
+import { isSameAddress } from "../../web3/utils"
 import { useTokenState } from "../../hooks/useTokenState"
 import { useToken } from "../../hooks/useToken"
 import { useCallback } from "react"
+import { useIsActive } from "../../hooks/useIsActive"
 
 export const useSubscribeToERC20TransferEvent = (token: Token) => {
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
   const { contract } = useToken(token)
   const currentTokenBalance = useTokenBalance(token)
 
@@ -17,8 +17,8 @@ export const useSubscribeToERC20TransferEvent = (token: Token) => {
 
   const balanceUpdater = useCallback(
     (from, to, amount) => {
-      const isToAddress = isSameETHAddress(to, account!)
-      const isFromAddress = isSameETHAddress(from, account!)
+      const isToAddress = isSameAddress(to, account!)
+      const isFromAddress = isSameAddress(from, account!)
 
       if (isToAddress || isFromAddress) {
         console.log(`Received ${token}.Transfer event`, {

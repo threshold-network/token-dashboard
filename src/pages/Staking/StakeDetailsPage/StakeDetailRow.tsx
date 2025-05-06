@@ -8,11 +8,11 @@ type CommonProps = {
 }
 type ConditionalProps =
   | {
-      isAddress?: false
+      isEthereumAddress?: false
       address?: never
     }
   | {
-      isAddress: true
+      isEthereumAddress: true
       address: string
     }
 
@@ -20,7 +20,7 @@ type Props = CommonProps & ConditionalProps
 
 const StakeDetailRow: FC<Props> = ({
   label,
-  isAddress,
+  isEthereumAddress,
   address,
   isPrimary,
   children,
@@ -28,7 +28,7 @@ const StakeDetailRow: FC<Props> = ({
   return (
     <HStack justify="space-between" minH="40px">
       <BoxLabel status={isPrimary ? "primary" : "secondary"}>{label}</BoxLabel>
-      {isAddress ? (
+      {isEthereumAddress ? (
         <CopyAddressToClipboard
           color={isPrimary ? "brand.500" : "gray.500"}
           address={address}

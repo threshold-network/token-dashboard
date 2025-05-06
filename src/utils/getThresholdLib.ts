@@ -3,11 +3,12 @@ import { Signer } from "ethers"
 import { Threshold } from "../threshold-ts"
 import { EnvVariable } from "../enums"
 import {
-  getDefaultProviderChainId,
+  getEthereumDefaultProviderChainId,
   getEnvVariable,
   shouldUseTestnetDevelopmentContracts,
 } from "../utils/getEnvVariable"
 import {
+  isL2Network,
   isSupportedNetwork,
   isTestnetChainId,
 } from "../networks/utils/connectedNetwork"
@@ -18,19 +19,29 @@ import {
   BitcoinNetwork,
   BitcoinClientCredentials,
   EthereumConfig,
+  ChainName,
+  CrossChainConfig,
 } from "../threshold-ts/types"
 import { SupportedChainIds } from "../networks/enums/networks"
 import { getDefaultBitcoinCredentials } from "./getDefaultBitcoinCredentials"
 
-const defaultProviderChainId = getDefaultProviderChainId()
+const defaultProviderChainId = getEthereumDefaultProviderChainId()
 
+function getInitialCrossChainConfig(): CrossChainConfig {
+  return {
+    isCrossChain: isL2Network(defaultProviderChainId),
+    chainName: isL2Network(defaultProviderChainId) ? ChainName.Ethereum : null,
+    nonEVMProvider: null,
+  }
+}
 function getInitialEthereumConfig(
-  providerOrSigner?: Provider | Signer
+  ethereumProviderOrSigner?: Provider | Signer
 ): EthereumConfig {
   return {
-    chainId: getDefaultProviderChainId(),
-    providerOrSigner:
-      providerOrSigner || getThresholdLibProvider(defaultProviderChainId),
+    chainId: getEthereumDefaultProviderChainId(),
+    ethereumProviderOrSigner:
+      ethereumProviderOrSigner ||
+      getThresholdLibProvider(defaultProviderChainId),
     shouldUseTestnetDevelopmentContracts:
       defaultProviderChainId === SupportedChainIds.Sepolia &&
       shouldUseTestnetDevelopmentContracts,
@@ -57,17 +68,20 @@ function getInitialBitcoinConfig(): BitcoinConfig {
 export const getThresholdLibProvider = (chainId?: number | string) => {
   const supportedChainId = isSupportedNetwork(chainId)
     ? Number(chainId)
-    : getDefaultProviderChainId()
+    : getEthereumDefaultProviderChainId()
 
   const rpcUrl = getRpcUrl(supportedChainId)
 
   return new JsonRpcProvider(rpcUrl, supportedChainId)
 }
 
-export const getThresholdLib = (providerOrSigner?: Provider | Signer) => {
+export const getThresholdLib = (
+  ethereumProviderOrSigner?: Provider | Signer
+) => {
   return new Threshold({
-    ethereum: getInitialEthereumConfig(providerOrSigner),
+    ethereum: getInitialEthereumConfig(ethereumProviderOrSigner),
     bitcoin: getInitialBitcoinConfig(),
+    crossChain: getInitialCrossChainConfig(),
   })
 }
 

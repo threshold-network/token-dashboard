@@ -43,7 +43,7 @@ describe("Multi app staking test", () => {
     multicall = { aggregate: jest.fn() } as IMulticall
     ;(Application as unknown as jest.Mock).mockReturnValueOnce(app1)
     ;(Application as unknown as jest.Mock).mockReturnValueOnce(app2)
-    config = { chainId: 1, providerOrSigner: {} as providers.Provider }
+    config = { chainId: 1, ethereumProviderOrSigner: {} as providers.Provider }
     mas = new MultiAppStaking(staking, multicall, config)
   })
 

@@ -150,18 +150,18 @@ export function getProviderOrSigner(
 export const getContract = (
   address: string,
   abi: ContractInterface,
-  providerOrSigner: providers.Provider | Signer | undefined,
+  ethereumProviderOrSigner: providers.Provider | Signer | undefined,
   account?: string
 ) => {
   if (!getAddress(address) || isAddressZero(address)) {
     throw Error(`Invalid 'address' parameter '${address}'.`)
   }
   // Sets the correct provider for ledger live app if the instance of
-  // LedgerLiveEthereumSigner is passed as providerOrSigner.
+  // LedgerLiveEthereumSigner is passed as ethereumProviderOrSigner.
   const _providerOrSigner =
-    providerOrSigner instanceof LedgerLiveSigner
-      ? providerOrSigner
-      : (getProviderOrSigner(providerOrSigner as any, account) as any)
+    ethereumProviderOrSigner instanceof LedgerLiveSigner
+      ? ethereumProviderOrSigner
+      : (getProviderOrSigner(ethereumProviderOrSigner as any, account) as any)
   return new Contract(address, abi, _providerOrSigner)
 }
 

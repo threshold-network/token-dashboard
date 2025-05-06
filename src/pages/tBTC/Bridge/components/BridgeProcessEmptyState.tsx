@@ -11,6 +11,7 @@ import {
 import { useFetchRecentDeposits } from "../../../../hooks/tbtc"
 import { useFetchTvl } from "../../../../hooks/useFetchTvl"
 import { BridgeProcess } from "../../../../types"
+import { useConnectWallet } from "../../../../hooks/useConnectWallet"
 
 export const BridgeProcessEmptyState: FC<{
   title: string
@@ -22,17 +23,22 @@ export const BridgeProcessEmptyState: FC<{
     "linear-gradient(360deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 117.78%)",
     "linear-gradient(360deg, #333A47 0%, rgba(255, 255, 255, 0) 117.78%)"
   )
+  const connectWallet = useConnectWallet()
 
   useEffect(() => {
     fetchTvl()
   }, [fetchTvl])
 
+  const onConnectWalletClick = () => {
+    connectWallet()
+  }
+
   return (
     <>
       <BridgeProcessCardTitle bridgeProcess={bridgeProcess} />
       <H5 align={"center"}>{title}</H5>
-      <SubmitTxButton isFullWidth mb="6" mt="4">
-        Connect Wallet
+      <SubmitTxButton onClick={onConnectWalletClick} isFullWidth mb="6" mt="4">
+        Connect your Wallet
       </SubmitTxButton>
       <Tvl tvl={tvl.tBTC} tvlInUSD={tvlInUSD.tBTC} />
       <ProtocolHistoryTitle mt="8" />

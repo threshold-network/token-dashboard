@@ -61,7 +61,7 @@ export class Multicall implements IMulticall {
       ? getContract(
           address,
           MULTICALL_ABI,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null

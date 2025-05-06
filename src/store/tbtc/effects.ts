@@ -6,14 +6,16 @@ import {
 } from "../../threshold-ts/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
-import { isAddress, isAddressZero } from "../../web3/utils"
+import { isEthereumAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
 import {
-  getChainIdToNetworkName,
+  getEthereumNetworkNameFromChainId,
   isL1Network,
-  isSameChainId,
+  isSameChainNameOrId,
 } from "../../networks/utils"
+import { isAddress } from "@ethersproject/address"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -23,10 +25,10 @@ export const fetchBridgeactivityEffect = async (
   const { depositor } = action.payload
 
   if (
-    !isAddress(depositor) ||
+    !isEthereumAddress(depositor) ||
     isAddressZero(depositor) ||
     !account.chainId ||
-    !isSameChainId(
+    !isSameChainNameOrId(
       account.chainId,
       listenerApi.extra.threshold.config.ethereum.chainId
     )
@@ -59,7 +61,7 @@ export const findUtxoEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.findUtxo>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { btcDepositAddress, chainId } = action.payload
+  const { btcDepositAddress, chainId, nonEVMChainName } = action.payload
 
   const {
     tbtc: {
@@ -73,10 +75,7 @@ export const findUtxoEffect = async (
     },
   } = listenerApi.getState()
 
-  if (
-    !btcDepositAddress ||
-    (!isAddress(depositor) && !isAddressZero(depositor))
-  )
+  if (!btcDepositAddress || !isAddress(depositor) || isAddressZero(depositor))
     return
 
   // Cancel any in-progress instances of this listener.
@@ -85,7 +84,10 @@ export const findUtxoEffect = async (
   const pollingTask = listenerApi.fork(async (forkApi) => {
     try {
       while (true) {
-        if (getChainIdToNetworkName(chainId) !== chainName) {
+        if (
+          !nonEVMChainName &&
+          getEthereumNetworkNameFromChainId(chainId) !== chainName
+        ) {
           throw new Error("Chain ID and deposit chain name mismatch")
         }
         // Initiating deposit from redux store (if deposit object is empty)
@@ -109,7 +111,7 @@ export const findUtxoEffect = async (
             refundLocktime,
           }
 
-          if (isL1Network(chainId)) {
+          if (!nonEVMChainName && isL1Network(chainId)) {
             await forkApi.pause(
               listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
                 depositParams
@@ -122,7 +124,7 @@ export const findUtxoEffect = async (
                   ...depositParams,
                   extraData,
                 },
-                chainId
+                chainId || SupportedChainIds.Ethereum
               )
             )
           }

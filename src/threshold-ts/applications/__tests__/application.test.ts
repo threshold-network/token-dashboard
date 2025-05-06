@@ -58,7 +58,7 @@ describe("Application test", () => {
     application = new Application(staking, mockMulticall, {
       address,
       abi,
-      providerOrSigner: mockedEthereumProvider,
+      ethereumProviderOrSigner: mockedEthereumProvider,
       chainId: "1",
       account,
     })

@@ -85,7 +85,7 @@ export class VendingMachine implements IVendingMachine {
       ? getContract(
           artifact.address,
           artifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null

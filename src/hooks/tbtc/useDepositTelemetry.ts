@@ -8,10 +8,10 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
   const captureMessage = useCaptureMessage()
 
   return useCallback(
-    async (deposit: DepositReceipt, depositAddress: string) => {
+    async (deposit: DepositReceipt, btcDepositAddress: string) => {
       const { status, response } = await verifyDepositAddress(
         deposit,
-        depositAddress,
+        btcDepositAddress,
         network
       )
 
@@ -25,7 +25,7 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
       } = deposit
 
       captureMessage(
-        `Generated deposit [${depositAddress}]`,
+        `Generated deposit [${btcDepositAddress}]`,
         {
           depositor: depositor.identifierHex,
           blindingFactor: blindingFactor.toString(),

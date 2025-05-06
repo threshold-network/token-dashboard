@@ -68,7 +68,7 @@ describe("Staking test", () => {
   const application = "0xE775aE21E40d34f01A5C0E1Db9FB3e637D768596"
   const mockedEthereumProvider = {} as providers.Provider
   const ethConfig = {
-    providerOrSigner: mockedEthereumProvider,
+    ethereumProviderOrSigner: mockedEthereumProvider,
     chainId: 1,
     account: AddressZero,
   }
@@ -104,7 +104,7 @@ describe("Staking test", () => {
       1,
       TokenStaking.address,
       TokenStaking.abi,
-      ethConfig.providerOrSigner,
+      ethConfig.ethereumProviderOrSigner,
       ethConfig.account
     )
     expect(getContractAddressFromTruffleArtifact).toHaveBeenCalledWith(
@@ -114,14 +114,14 @@ describe("Staking test", () => {
       2,
       keepTokenStakingAddress,
       KeepTokenStaking.abi,
-      ethConfig.providerOrSigner,
+      ethConfig.ethereumProviderOrSigner,
       ethConfig.account
     )
     expect(getContract).toHaveBeenNthCalledWith(
       3,
       NuCypherStakingEscrow.address,
       NuCypherStakingEscrow.abi,
-      ethConfig.providerOrSigner,
+      ethConfig.ethereumProviderOrSigner,
       ethConfig.account
     )
     expect(staking.stakingContract).toEqual(mockStakingContract)

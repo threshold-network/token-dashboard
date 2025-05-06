@@ -15,7 +15,7 @@ export const useTbtcState: UseTbtcState = () => {
   )
 
   const resetDepositData = useCallback(() => {
-    updateState("ethAddress", undefined)
+    updateState("userWalletAddress", undefined)
     updateState("blindingFactor", undefined)
     updateState("btcRecoveryAddress", undefined)
     updateState("walletPublicKeyHash", undefined)

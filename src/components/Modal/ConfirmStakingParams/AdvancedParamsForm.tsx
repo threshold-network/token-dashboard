@@ -8,9 +8,9 @@ import {
   BodyXs,
   useColorModeValue,
 } from "@threshold-network/components"
-import { useWeb3React } from "@web3-react/core"
-import { isAddress, isSameETHAddress } from "../../../web3/utils"
+import { isEthereumAddress, isSameAddress } from "../../../web3/utils"
 import Link from "../../Link"
+import { useIsActive } from "../../../hooks/useIsActive"
 
 export interface FormValues {
   stakingProvider: string
@@ -27,7 +27,7 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   values,
 }) => {
   const { authorizer } = values
-  const { account } = useWeb3React()
+  const { account } = useIsActive()
 
   return (
     <Form id={formId}>
@@ -52,8 +52,8 @@ const AdvancedParamsFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
           <AddressHelper text="This address will authorize applications. We recommend you to use the same address as your wallet address." />
         }
       />
-      {isAddress(authorizer) &&
-        !isSameETHAddress(authorizer, account as string) && (
+      {isEthereumAddress(authorizer) &&
+        !isSameAddress(authorizer, account as string) && (
           <Alert status="warning" mt={6}>
             <AlertIcon />
             <BodyXs>
