@@ -1,4 +1,4 @@
-import { ethers } from "ethers"
+import { BigNumber, ethers } from "ethers"
 
 export const toHex = (value: string | number): string =>
   ethers.utils.hexValue(ethers.BigNumber.from(value))
@@ -14,7 +14,17 @@ export const hexToNumber = (value: string | number): number => {
   return parseInt(value)
 }
 
-export const isSameChainId = (
-  chainId1: string | number,
-  chainId2: string | number
-): boolean => toHex(chainId1) === toHex(chainId2)
+export const isSameChainNameOrId = (
+  a: string | number | undefined,
+  b: string | number | undefined
+): boolean => {
+  if (a === undefined || b === undefined) return false
+
+  // both numeric → safe BigNumber comparison
+  if (!isNaN(+a) && !isNaN(+b)) {
+    return BigNumber.from(a).eq(BigNumber.from(b))
+  }
+
+  // at least one side is not numeric → do case-insensitive string compare
+  return String(a).toLowerCase() === String(b).toLowerCase()
+}

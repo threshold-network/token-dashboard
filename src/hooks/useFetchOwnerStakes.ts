@@ -3,7 +3,7 @@ import { StakeData } from "../types/staking"
 import { setStakes } from "../store/staking"
 import { useThreshold } from "../contexts/ThresholdContext"
 import { useAppDispatch } from "./store"
-import { isSameChainId } from "../networks/utils"
+import { isSameChainNameOrId } from "../networks/utils"
 
 export const useFetchOwnerStakes = () => {
   const threshold = useThreshold()
@@ -18,7 +18,7 @@ export const useFetchOwnerStakes = () => {
         !address ||
         !threshold.staking ||
         !chainId ||
-        !isSameChainId(threshold.config.ethereum.chainId, chainId)
+        !isSameChainNameOrId(threshold.config.ethereum.chainId, chainId)
       ) {
         return []
       }

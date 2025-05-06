@@ -12,7 +12,7 @@ import { tbtcSlice } from "./tbtcSlice"
 import {
   getEthereumNetworkNameFromChainId,
   isL1Network,
-  isSameChainId,
+  isSameChainNameOrId,
 } from "../../networks/utils"
 import { isAddress } from "@ethersproject/address"
 import { SupportedChainIds } from "../../networks/enums/networks"
@@ -28,7 +28,7 @@ export const fetchBridgeactivityEffect = async (
     !isEthereumAddress(depositor) ||
     isAddressZero(depositor) ||
     !account.chainId ||
-    !isSameChainId(
+    !isSameChainNameOrId(
       account.chainId,
       listenerApi.extra.threshold.config.ethereum.chainId
     )

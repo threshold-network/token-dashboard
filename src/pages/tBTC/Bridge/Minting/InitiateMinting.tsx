@@ -91,9 +91,9 @@ const InitiateMintingComponent: FC<{
           </Skeleton>
         </H5>
         <BodyLg>
-          Receiving tBTC requires a single transaction on Ethereum and takes
-          approximately 2 hours. The bridging can be initiated before you get
-          all your Bitcoin deposit confirmations.
+          Receiving tBTC requires a single transaction and takes approximately 2
+          hours. The bridging can be initiated before you get all your Bitcoin
+          deposit confirmations.
         </BodyLg>
       </InfoBox>
       <MintingTransactionDetails />

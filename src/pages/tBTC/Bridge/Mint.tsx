@@ -30,7 +30,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState, resetDepositData } = useTbtcState()
   const { account, chainId } = useIsActive()
-  const { nonEVMPublicKey } = useNonEVMConnection()
+  const { nonEVMPublicKey, nonEVMChainName } = useNonEVMConnection()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const removeDepositData = useRemoveDepositData()
 
@@ -39,9 +39,9 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   useEffect(() => {
     const updateDepositData = async () => {
       if (
+        (chainId || nonEVMChainName) &&
         tBTCDepositData &&
         userConnectedAccount &&
-        chainId &&
         tBTCDepositData[userConnectedAccount] &&
         isSameAddress(
           tBTCDepositData[userConnectedAccount].userWalletAddress,

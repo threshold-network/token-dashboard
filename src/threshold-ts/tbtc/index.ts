@@ -1,4 +1,4 @@
-import { BlockTag } from "@ethersproject/abstract-provider"
+import { BlockTag, TransactionReceipt } from "@ethersproject/abstract-provider"
 import { Web3Provider } from "@ethersproject/providers"
 import {
   BitcoinClient,
@@ -51,6 +51,8 @@ import {
   ZERO,
   ArtifactNameType,
   RELAYER_BOT_WALLET,
+  isReceipt,
+  isHexLike,
 } from "../utils"
 import {
   isL1Network,
@@ -283,7 +285,7 @@ export interface ITBTC {
    */
   initiateCrossChainDepositFromScriptParameters(
     depositScriptParameters: DepositScriptParameters,
-    ethereumChainId: number
+    ethereumChainId?: number
   ): Promise<Deposit>
 
   /**
@@ -331,7 +333,7 @@ export interface ITBTC {
    * @param utxo Bitcoin UTXO of the revealed deposit
    * @return Prefixed transaction hash of the reveal.
    */
-  revealDeposit(utxo: BitcoinUtxo): Promise<string>
+  revealDeposit(utxo: BitcoinUtxo): Promise<string | TransactionReceipt>
 
   /**
    * Gets a revealed deposit from the bridge.
@@ -820,7 +822,7 @@ export class TBTC implements ITBTC {
 
   initiateCrossChainDepositFromScriptParameters = async (
     depositScriptParameters: DepositScriptParameters,
-    ethereumChainId: number
+    ethereumChainId?: number
   ): Promise<Deposit> => {
     if (!this._crossChainConfig.isCrossChain) {
       console.log("this._crossChainConfig", this._crossChainConfig)
@@ -986,13 +988,28 @@ export class TBTC implements ITBTC {
     }
   }
 
-  revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+  revealDeposit = async (
+    utxo: BitcoinUtxo
+  ): Promise<string | TransactionReceipt> => {
     const { value, ...transactionOutpoint } = utxo
     if (!this._deposit) throw new EmptyDepositObjectError()
-    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+
+    const result = await this._deposit.initiateMinting(transactionOutpoint)
     this.removeDepositData()
 
-    return chainHash.toPrefixedString()
+    if (isReceipt(result)) {
+      return result
+    }
+
+    if (isHexLike(result)) {
+      return result.toPrefixedString()
+    }
+
+    if (typeof result === "string") {
+      return result
+    }
+
+    throw new Error("Unexpected result type from initiateMinting")
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {

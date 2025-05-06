@@ -21,7 +21,7 @@ export const useTBTCDepositDataFromLocalStorage = () => {
     useState<TBTCLocalStorageDepositData>({})
 
   useEffect(() => {
-    const storageKey = `${key}-${chainId?.toString()}`
+    const storageKey = `${key}-${networkName?.toString()}`
     const storedData = localStorage.getItem(storageKey)
     const parsedData = storedData ? JSON.parse(storedData) : {}
 

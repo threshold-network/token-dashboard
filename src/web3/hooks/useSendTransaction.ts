@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useState } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Contract, ContractTransaction } from "@ethersproject/contracts"
 import { ModalType, TransactionStatus } from "../../enums"
@@ -11,6 +11,7 @@ import { useIsActive } from "../../hooks/useIsActive"
 import { useSelector } from "react-redux"
 import { RootState } from "../../store"
 import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
+import { isReceipt } from "../../threshold-ts/utils"
 
 type TransactionHashWithAdditionalParams = {
   hash: string
@@ -19,7 +20,7 @@ type TransactionHashWithAdditionalParams = {
 
 export type ContractTransactionFunction =
   | Promise<ContractTransaction>
-  | Promise<string>
+  | Promise<string | TransactionReceipt>
   | Promise<TransactionHashWithAdditionalParams>
 
 export type OnSuccessCallback = (
@@ -82,8 +83,13 @@ export const useSendTransactionFromFn = <
           pendingText,
         })
 
-        const tx = await fn(...args)
-        const txHash = typeof tx === "string" ? tx : tx.hash
+        const fnResult = await fn(...args)
+
+        if (isReceipt(fnResult)) {
+          if (onSuccess) await onSuccess(fnResult)
+          return fnResult // return transaction receipt
+        }
+        const txHash = typeof fnResult === "string" ? fnResult : fnResult.hash
 
         openModal(ModalType.TransactionIsPending, { transactionHash: txHash })
         setTransactionStatus(TransactionStatus.PendingOnChain)
@@ -94,15 +100,17 @@ export const useSendTransactionFromFn = <
           if (!transaction) throw new Error(`Transaction ${txHash} not found!`)
           txReceipt = await transaction.wait()
         } else {
-          txReceipt = await (isContractTransaction(tx)
-            ? (tx as ContractTransaction).wait()
+          txReceipt = await (isContractTransaction(fnResult)
+            ? (fnResult as ContractTransaction).wait()
             : library.waitForTransaction(txHash))
         }
 
         setTransactionStatus(TransactionStatus.Succeeded)
         if (onSuccess) {
-          const additionalParams = isTransactionHashWithAdditionalParams(tx)
-            ? (tx as TransactionHashWithAdditionalParams).additionalParams
+          const additionalParams = isTransactionHashWithAdditionalParams(
+            fnResult
+          )
+            ? (fnResult as TransactionHashWithAdditionalParams).additionalParams
             : null
           await onSuccess(txReceipt, additionalParams)
         }

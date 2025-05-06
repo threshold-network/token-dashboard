@@ -583,7 +583,7 @@ const StepSwitcher: FC = () => {
             </BodyMd>
           ) : (
             <BodyMd mt="2">
-              Add the tBTC <TBTCTokenContractLink /> to your Ethereum wallet.
+              Add the tBTC <TBTCTokenContractLink /> to your wallet.
             </BodyMd>
           )}
           <Divider my="4" />

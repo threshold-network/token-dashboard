@@ -27,7 +27,9 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
   const connectWallet = useConnectWallet()
   const isButtonDisabled = isBlocked || isDisabled
   const pathnameUrl = window.location.pathname
-  const isMint = pathnameUrl.includes("tBTC/mint")
+  const isMint =
+    pathnameUrl.includes("tBTC/mint") ||
+    pathnameUrl.includes("tBTC/resume-deposit")
 
   const onConnectWalletClick = () => {
     disconnectNonEVM()
@@ -54,7 +56,7 @@ const SubmitTxButton: FC<SubmitTxButtonProps> = ({
       type="button"
       isDisabled={false}
     >
-      Connect Ethereum Wallet
+      Connect Wallet
     </Button>
   )
 }

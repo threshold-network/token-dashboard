@@ -44,15 +44,14 @@ import {
   getEthereumNetworkNameFromChainId,
   isL1Network,
   isL2Network,
-  isSameChainId,
-  isSupportedNetwork,
+  isSameChainNameOrId,
 } from "../../../networks/utils"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
   const { account, chainId, isActive } = useIsActive()
-  const { nonEVMChainName } = useNonEVMConnection()
+  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const checkDepositExpiration = useCheckDepositExpirationTime()
@@ -61,7 +60,7 @@ export const ResumeDepositPage: PageComponent = () => {
   const networkName =
     nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
-  if (!isActive || !isSupportedNetwork(chainId)) {
+  if (!isActive && !isNonEVMActive) {
     return (
       <Card position="relative" maxW="640px" m={"0 auto"}>
         <BridgeProcessEmptyState title="Want to resume deposit?" />
@@ -85,7 +84,7 @@ export const ResumeDepositPage: PageComponent = () => {
       } else {
         await threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
           depositParameters,
-          chainId!
+          chainId
         )
       }
       const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
@@ -129,6 +128,7 @@ export const ResumeDepositPage: PageComponent = () => {
         <ResumeDepositFormik
           address={account!}
           chainId={chainId!}
+          networkName={networkName}
           onSubmitForm={onSubmit}
           checkDepositExpiration={checkDepositExpiration}
           bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
@@ -207,13 +207,14 @@ type ResumeDepositFormikProps = {
   checkDepositExpiration: ReturnType<typeof useCheckDepositExpirationTime>
   bitcoinNetwork: BitcoinNetwork
   chainId: SupportedChainIds
+  networkName: string
 }
 
 const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
   mapPropsToValues: () => ({ depositParameters: null }),
   validate: async (
     values,
-    { address, checkDepositExpiration, bitcoinNetwork, chainId }
+    { address, checkDepositExpiration, bitcoinNetwork, chainId, networkName }
   ) => {
     const errors: FormikErrors<FormValues> = {}
 
@@ -224,8 +225,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
     } else if (
       !dp.depositor ||
       !dp.depositor.identifierHex ||
-      !dp.networkInfo?.chainName ||
-      !dp.networkInfo?.chainId ||
+      !dp.networkInfo.chainName ||
       !isAddress(dp.depositor.identifierHex) ||
       !dp.refundLocktime ||
       !dp.refundPublicKeyHash ||
@@ -234,9 +234,12 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
       !dp.btcRecoveryAddress
     ) {
       errors.depositParameters = "Invalid .JSON file."
-    } else if (!isSameChainId(dp.networkInfo.chainId, chainId)) {
-      errors.depositParameters = "Chain Id mismatch."
-    } else if (isL2Network(chainId) && !dp.extraData) {
+    } else if (!isSameChainNameOrId(dp.networkInfo.chainName, networkName)) {
+      errors.depositParameters = "Chain name mismatch."
+    } else if (
+      (isL2Network(chainId) || networkName !== "Mainnet") &&
+      !dp.extraData
+    ) {
       errors.depositParameters = "Extra data is required for L2 networks."
     } else {
       const btcAddressError = validateBTCAddress(

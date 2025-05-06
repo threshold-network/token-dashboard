@@ -129,7 +129,7 @@ export const MintingTimelineStep3: FC<MintingTimelineItemProps> = ({
       isComplete={isComplete}
       stepNumber={3}
       label="Initiate minting"
-      description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
+      description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
       {...restProps}
     />
   )
