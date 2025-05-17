@@ -1,12 +1,12 @@
-import {
-  useAnchorWallet,
-  useConnection,
-  useWallet as useSolanaWallet,
-} from "@solana/wallet-adapter-react"
-import { useWallet as useSUIWallet } from "../contexts/SUIWalletProvider"
+// import {
+//   useAnchorWallet,
+//   useConnection,
+//   useWallet as useSolanaWallet,
+// } from "@solana/wallet-adapter-react"
+import { useWallet as useSUIWalletKit } from "@suiet/wallet-kit" // Import directly from the kit
 import { useCallback } from "react"
 import { ChainName } from "../threshold-ts/types"
-import { AnchorProvider } from "@coral-xyz/anchor"
+// import { AnchorProvider } from "@coral-xyz/anchor"
 import { NonEVMNetworks } from "../web3/types"
 
 const defaultNonEVMConnection = {
@@ -22,7 +22,7 @@ const defaultNonEVMConnection = {
 }
 
 export type NonEVMConnection = {
-  nonEVMProvider: AnchorProvider | null
+  nonEVMProvider: any | null // Changed from AnchorProvider
   nonEVMChainName: Exclude<keyof typeof ChainName, "Ethereum"> | null
   nonEVMPublicKey: string | null
   isNonEVMActive: boolean
@@ -34,90 +34,87 @@ export type NonEVMConnection = {
 }
 
 /**
- * Checks if a non-EVM wallet (Solana or SUI) is connected to the dashboard.
+ * Checks if a non-EVM wallet (SUI) is connected to the dashboard.
+ * Solana support has been temporarily disabled.
  *
  * Returns whether the wallet is active, its publicKey, and methods to
  * connect, disconnect, and select different wallets.
  * @return {NonEVMConnection}
  */
 export function useNonEVMConnection(): NonEVMConnection {
-  // Solana wallet connection
-  const {
-    publicKey: solanaPublicKey,
-    wallet: solanaWallet,
-    connected: isSolanaConnected,
-    connecting: isSolanaConnecting,
-    disconnecting: isSolanaDisconnecting,
-    disconnect: disconnectSolana,
-  } = useSolanaWallet()
+  // Solana wallet connection - temporarily disabled
+  // const {
+  //   publicKey: solanaPublicKey,
+  //   wallet: solanaWallet,
+  //   connected: isSolanaConnected,
+  //   connecting: isSolanaConnecting,
+  //   disconnecting: isSolanaDisconnecting,
+  //   disconnect: disconnectSolana,
+  // } = useSolanaWallet()
 
   // SUI wallet connection
   const {
-    account: suiAccount,
-    connected: isSUIConnected,
-    disconnect: disconnectSUI,
-  } = useSUIWallet()
+    account: suiAccount, // from @suiet/wallet-kit
+    connected: isSUIConnected, // from @suiet/wallet-kit
+    disconnect: disconnectSuiet, // from @suiet/wallet-kit
+    connecting: isSUIConnecting, // from @suiet/wallet-kit
+    adapter: suiAdapter, // from @suiet/wallet-kit, provides name and icon
+  } = useSUIWalletKit()
 
-  const { connection } = useConnection()
-  const solanaAnchorWallet = useAnchorWallet()
+  // const { connection } = useConnection()
+  // const solanaAnchorWallet = useAnchorWallet()
 
-  const isSolanaActive = isSolanaConnected && !!solanaPublicKey
-  const isSUIActive = isSUIConnected && !!suiAccount
+  // const isSolanaActive = isSolanaConnected && !!solanaPublicKey
+  const isSUIActive = isSUIConnected && !!suiAccount?.address
 
   const connectionData: NonEVMConnection = {
     ...defaultNonEVMConnection,
   }
 
-  // Handle Solana wallet connection
-  if (isSolanaActive && solanaAnchorWallet) {
-    connectionData.nonEVMProvider = new AnchorProvider(
-      connection,
-      solanaAnchorWallet,
-      {}
-    )
-    connectionData.nonEVMChainName = ChainName.Solana
-    connectionData.nonEVMPublicKey = solanaPublicKey.toBase58() ?? null
-    connectionData.isNonEVMActive = isSolanaActive
-    connectionData.connectedWalletName = solanaWallet?.adapter?.name
-    connectionData.connectedWalletIcon = solanaWallet?.adapter?.icon
-    connectionData.isNonEVMConnecting = isSolanaConnecting
-    connectionData.isNonEVMDisconnecting = isSolanaDisconnecting
-  }
+  // Handle Solana wallet connection - temporarily disabled
+  // if (isSolanaActive && solanaAnchorWallet) {
+  //   connectionData.nonEVMProvider = new AnchorProvider(
+  //     connection,
+  //     solanaAnchorWallet,
+  //     {}
+  //   )
+  //   connectionData.nonEVMChainName = ChainName.Solana
+  //   connectionData.nonEVMPublicKey = solanaPublicKey.toBase58() ?? null
+  //   connectionData.isNonEVMActive = isSolanaActive
+  //   connectionData.connectedWalletName = solanaWallet?.adapter?.name
+  //   connectionData.connectedWalletIcon = solanaWallet?.adapter?.icon
+  //   connectionData.isNonEVMConnecting = isSolanaConnecting
+  //   connectionData.isNonEVMDisconnecting = isSolanaDisconnecting
+  // }
   // Handle SUI wallet connection
-  else if (isSUIActive && suiAccount?.address) {
+  if (isSUIActive && suiAccount?.address) {
     // For SUI, we use null as provider since it's not using AnchorProvider
     connectionData.nonEVMProvider = null
     connectionData.nonEVMChainName = ChainName.SUI as unknown as Exclude<
       keyof typeof ChainName,
       "Ethereum"
     >
-    connectionData.nonEVMPublicKey = suiAccount.address ?? null
+    connectionData.nonEVMPublicKey = suiAccount.address
     connectionData.isNonEVMActive = isSUIActive
-    connectionData.connectedWalletName = "SUI Wallet"
-    // SUI wallet doesn't provide icon through the hook
-    connectionData.connectedWalletIcon = undefined
-    connectionData.isNonEVMConnecting = false
+    connectionData.connectedWalletName = suiAdapter?.name
+    connectionData.connectedWalletIcon = suiAdapter?.icon
+    connectionData.isNonEVMConnecting = isSUIConnecting
+    // The kit might not explicitly have a disconnecting state, map to connecting or assume false
     connectionData.isNonEVMDisconnecting = false
   }
 
   const disconnectWallet = useCallback(async () => {
     try {
-      if (isSolanaConnected && !!solanaPublicKey) {
-        await disconnectSolana()
-      } else if (isSUIConnected && !!suiAccount) {
-        await disconnectSUI()
+      // if (isSolanaConnected && !!solanaPublicKey) {
+      //   await disconnectSolana()
+      // } else
+      if (isSUIActive) {
+        await disconnectSuiet()
       }
     } catch (error) {
-      console.error("Failed to disconnect wallet:", error)
+      console.error("Failed to disconnect SUI wallet:", error)
     }
-  }, [
-    disconnectSolana,
-    isSolanaConnected,
-    solanaPublicKey,
-    disconnectSUI,
-    isSUIConnected,
-    suiAccount,
-  ])
+  }, [isSUIActive, disconnectSuiet])
 
   return {
     ...connectionData,

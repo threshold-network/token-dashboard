@@ -1,7 +1,7 @@
 import { ModalHeader } from "@chakra-ui/react"
 import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
-import { SolanaIcon } from "../../../static/icons/Solana"
+// import { SolanaIcon } from "../../../static/icons/Solana"
 import { SUIIcon } from "../../../static/icons/SUI"
 import { Taho } from "../../../static/icons/Taho"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
@@ -22,9 +22,9 @@ import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { featureFlags } from "../../../constants"
-import ConnectSolana from "./ConnectSolana"
+// import ConnectSolana from "./ConnectSolana"
 import ConnectSUI from "./ConnectSUI"
-import { useWalletModal } from "@solana/wallet-adapter-react-ui"
+// import { useWalletModal } from "@solana/wallet-adapter-react-ui"
 
 const walletOptions: WalletOption[] = [
   {
@@ -71,14 +71,14 @@ const walletOptions: WalletOption[] = [
       dark: CoinbaseWallet,
     },
   },
-  {
-    id: WalletType.Solana,
-    title: "Solana",
-    icon: {
-      light: SolanaIcon,
-      dark: SolanaIcon,
-    },
-  },
+  // {
+  //   id: WalletType.Solana,
+  //   title: "Solana",
+  //   icon: {
+  //     light: SolanaIcon,
+  //     dark: SolanaIcon,
+  //   },
+  // },
   {
     id: WalletType.SUI,
     title: "SUI",
@@ -90,7 +90,7 @@ const walletOptions: WalletOption[] = [
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
-  const { setVisible: setSolanaModalVisible } = useWalletModal()
+  // const { setVisible: setSolanaModalVisible } = useWalletModal()
   const { deactivate } = useWeb3React()
   const { closeModal } = useModal()
 
@@ -107,11 +107,11 @@ const SelectWalletModal: FC<BaseModalProps> = () => {
     setWalletToConnect(walletType)
   }
 
-  useEffect(() => {
-    if (walletToConnect === WalletType.Solana) {
-      setSolanaModalVisible(true)
-    }
-  }, [walletToConnect, setSolanaModalVisible])
+  // useEffect(() => {
+  //   if (walletToConnect === WalletType.Solana) {
+  //     setSolanaModalVisible(true)
+  //   }
+  // }, [walletToConnect, setSolanaModalVisible])
 
   return (
     <>
@@ -152,8 +152,8 @@ const ConnectWallet: FC<{
       return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
     case WalletType.LedgerLive:
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
-    case WalletType.Solana:
-      return <ConnectSolana goBack={goBack} closeModal={onClose} />
+    // case WalletType.Solana:
+    //   return <ConnectSolana goBack={goBack} closeModal={onClose} />
     case WalletType.SUI:
       return <ConnectSUI goBack={goBack} closeModal={onClose} />
     default:
