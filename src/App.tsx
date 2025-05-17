@@ -4,6 +4,7 @@ import "@fontsource/inter/600.css"
 import "@fontsource/inter/500.css"
 import "@fontsource/inter/400.css"
 import "@fontsource/ibm-plex-mono/400.css"
+import "@suiet/wallet-kit/dist/style.css"
 import { FC, useEffect, Fragment } from "react"
 import { Box, ChakraProvider, useColorModeValue } from "@chakra-ui/react"
 import { Provider as ReduxProvider, useDispatch } from "react-redux"
@@ -66,7 +67,7 @@ import { useGoogleTagManager } from "./hooks/google-tag-manager"
 import { hexToNumber, isSameChainId } from "./networks/utils"
 import { walletConnected } from "./store/account"
 import { useIsActive } from "./hooks/useIsActive"
-import SolanaWalletProvider from "./contexts/SolanaWalletProvider"
+// import SolanaWalletProvider from "./contexts/SolanaWalletProvider"
 import SUIWalletProvider from "./contexts/SUIWalletProvider"
 
 const Web3EventHandlerComponent = () => {
@@ -268,23 +269,23 @@ const App: FC = () => {
   return (
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <SolanaWalletProvider>
-          <SUIWalletProvider>
-            <LedgerLiveAppProvider>
-              <ThresholdProvider>
-                <ReduxProvider store={reduxStore}>
-                  <ChakraProvider theme={theme}>
-                    <TokenContextProvider>
-                      <Web3EventHandlerComponent />
-                      <ModalRoot />
-                      <AppBody />
-                    </TokenContextProvider>
-                  </ChakraProvider>
-                </ReduxProvider>
-              </ThresholdProvider>
-            </LedgerLiveAppProvider>
-          </SUIWalletProvider>
-        </SolanaWalletProvider>
+        {/* <SolanaWalletProvider> */}
+        <SUIWalletProvider>
+          <LedgerLiveAppProvider>
+            <ThresholdProvider>
+              <ReduxProvider store={reduxStore}>
+                <ChakraProvider theme={theme}>
+                  <TokenContextProvider>
+                    <Web3EventHandlerComponent />
+                    <ModalRoot />
+                    <AppBody />
+                  </TokenContextProvider>
+                </ChakraProvider>
+              </ReduxProvider>
+            </ThresholdProvider>
+          </LedgerLiveAppProvider>
+        </SUIWalletProvider>
+        {/* </SolanaWalletProvider> */}
       </Web3ReactProvider>
     </Router>
   )

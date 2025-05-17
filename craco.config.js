@@ -26,17 +26,17 @@ module.exports = {
         type: "javascript/auto",
       })
 
-      // Add special handling for Suiet Wallet Kit
-      webpackConfig.module.rules.push({
-        test: /@suiet\/.*\.js$/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env"],
-            plugins: ["@babel/plugin-transform-modules-commonjs"],
-          },
-        },
-      })
+      // // Add special handling for Suiet Wallet Kit - This might be causing issues
+      // webpackConfig.module.rules.push({
+      //   test: /@suiet\/.*\.js$/,
+      //   use: {
+      //     loader: "babel-loader",
+      //     options: {
+      //       presets: ["@babel/preset-env"],
+      //       plugins: ["@babel/plugin-transform-modules-commonjs"],
+      //     },
+      //   },
+      // })
 
       // Add resolve extensions to handle .mjs
       webpackConfig.resolve.extensions.push(".mjs")
