@@ -3,7 +3,7 @@
   "version": "2.0.3",
   "private": true,
   "engines": {
-    "node": ">=16"
+    "node": ">=20"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.0.15",
