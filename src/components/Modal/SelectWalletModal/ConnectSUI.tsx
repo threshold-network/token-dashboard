@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useState, ReactElement } from "react"
 import {
   Box,
   Stack,
@@ -6,10 +6,14 @@ import {
   Text,
   Alert,
   AlertIcon,
-  Link,
+  Button,
+  Spinner,
+  VStack,
   useColorModeValue,
+  HStack,
+  Image,
 } from "@chakra-ui/react"
-import { ConnectButton, useWallet, ErrorCode } from "@suiet/wallet-kit"
+import { useWallet, ErrorCode, IWallet, Wallet } from "@suiet/wallet-kit"
 import { WalletConnectionModalBase } from "./components"
 import { SUIIcon } from "../../../static/icons/SUI"
 
@@ -17,60 +21,159 @@ const ConnectSUI: FC<{
   goBack: () => void
   closeModal: () => void
 }> = ({ goBack, closeModal }) => {
-  const wallet = useWallet()
+  const { connected, account, connecting, select, allAvailableWallets } =
+    useWallet()
+
   const [displayError, setDisplayError] = useState<string | null>(null)
+  const [selectedWalletName, setSelectedWalletName] = useState<string | null>(
+    null
+  )
 
   useEffect(() => {
-    if (wallet.connected && wallet.account) {
+    if (connected && account) {
       closeModal()
     }
-  }, [wallet.connected, wallet.account, closeModal])
+  }, [connected, account, closeModal])
 
-  const handleKitConnectError = (error: any) => {
-    console.error("ConnectSUI - @suiet/wallet-kit ConnectButton Error:", error)
-    let message = "SUI Wallet connection failed."
-    if (error.code === ErrorCode.WALLET__CONNECT_ERROR__USER_REJECTED) {
-      message = "Connection request rejected by user."
-    } else if (error.message) {
-      message = error.message
-    } else if (typeof error === "string") {
-      message = error
+  useEffect(() => {
+    if (!connecting) {
+      if (
+        !displayError?.includes("Failed to connect") &&
+        !displayError?.includes("rejected")
+      ) {
+        setDisplayError(null)
+      }
     }
-    setDisplayError(message)
-  }
+  }, [connecting, displayError])
 
-  const handleKitConnectSuccess = (walletName: string) => {
-    console.log(
-      `ConnectSUI - @suiet/wallet-kit ConnectButton Success: Connected to ${walletName}`
-    )
+  const handleConnect = async (walletName: string) => {
+    setSelectedWalletName(walletName)
     setDisplayError(null)
+    try {
+      await select(walletName)
+    } catch (e: any) {
+      console.error(`SUI select(${walletName}) caught error:`, e)
+      let message = "Failed to connect to selected SUI wallet."
+      if (
+        e &&
+        typeof e === "object" &&
+        e.code === ErrorCode.WALLET__CONNECT_ERROR__USER_REJECTED
+      ) {
+        message = "Connection request rejected by user."
+      } else if (e && typeof e === "object" && e.message) {
+        message = e.message
+      } else if (typeof e === "string") {
+        message = e
+      }
+      setDisplayError(message)
+      setSelectedWalletName(null)
+    }
   }
 
-  const KitConnectionStatus: FC = () => {
-    if (wallet.connecting) {
+  const getWalletIconElement = (wallet: IWallet): ReactElement | undefined => {
+    let iconSrc: string | undefined = undefined
+    if (wallet.adapter && typeof wallet.adapter.icon === "string") {
+      iconSrc = wallet.adapter.icon
+    }
+
+    if (iconSrc) {
       return (
-        <Alert status="info" borderRadius="md" mt={4}>
-          <AlertIcon />
-          <Text>Connecting with SUI Wallet Kit... Check wallet extension.</Text>
-        </Alert>
+        <Image
+          src={iconSrc}
+          alt={`${wallet.name} icon`}
+          boxSize="28px"
+          borderRadius="md"
+        />
       )
     }
-    if (wallet.connected && wallet.account?.address) {
-      const addr = wallet.account.address
-      const displayAddr =
-        addr.length > 10
-          ? `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`
-          : addr
-      return (
-        <Alert status="success" borderRadius="md" mt={4}>
+    return undefined
+  }
+
+  const isLoadingThisWallet = (walletName: string) =>
+    !!(connecting && selectedWalletName === walletName)
+  const isAnotherWalletConnecting = !!(
+    connecting && selectedWalletName !== null
+  )
+
+  let content: ReactElement
+  if (isLoadingThisWallet(selectedWalletName || "") && selectedWalletName) {
+    content = (
+      <VStack spacing={4} justifyContent="center" h="100%" pt={4}>
+        <Spinner size="xl" color="blue.500" />
+        <Text>Connecting to {selectedWalletName}...</Text>
+      </VStack>
+    )
+  } else if (connecting && !selectedWalletName) {
+    content = (
+      <VStack spacing={4} justifyContent="center" h="100%" pt={4}>
+        <Spinner size="xl" color="blue.500" />
+        <Text>Attempting to connect...</Text>
+      </VStack>
+    )
+  } else if (displayError) {
+    content = (
+      <VStack spacing={4} justifyContent="center" h="100%" pt={4}>
+        <Alert status="error" borderRadius="md" variant="subtle">
           <AlertIcon />
-          <Text>
-            Kit Connected: {displayAddr} ({wallet.adapter?.name})
-          </Text>
+          <Box flex="1">
+            <Text fontSize="sm">{displayError}</Text>
+          </Box>
         </Alert>
-      )
-    }
-    return null
+        <Button onClick={goBack} colorScheme="blue" variant="outline" mt={2}>
+          Go Back
+        </Button>
+      </VStack>
+    )
+  } else if (allAvailableWallets.length === 0) {
+    content = (
+      <Text
+        color={useColorModeValue("gray.600", "gray.400")}
+        textAlign="center"
+        py={4}
+        pt={4}
+      >
+        No SUI wallets detected. Please install a SUI wallet extension.
+      </Text>
+    )
+  } else {
+    content = (
+      <VStack spacing={3} width="100%" align="stretch">
+        {allAvailableWallets.map((wallet: IWallet) => (
+          <Button
+            key={wallet.name}
+            onClick={() => handleConnect(wallet.name)}
+            variant="outline"
+            size="lg"
+            width="100%"
+            leftIcon={getWalletIconElement(wallet)}
+            isDisabled={
+              isAnotherWalletConnecting && selectedWalletName !== wallet.name
+            }
+            justifyContent="flex-start"
+            py={6}
+            px={4}
+            borderColor={useColorModeValue("gray.300", "gray.600")}
+            _hover={{
+              bg: useColorModeValue("gray.100", "gray.700"),
+              borderColor: useColorModeValue("gray.400", "gray.500"),
+            }}
+          >
+            <Text fontWeight="medium">{wallet.name}</Text>
+            {!wallet.installed && (
+              <Text
+                as="span"
+                fontSize="xs"
+                color="gray.500"
+                ml={2}
+                fontWeight="normal"
+              >
+                (Not Installed)
+              </Text>
+            )}
+          </Button>
+        ))}
+      </VStack>
+    )
   }
 
   return (
@@ -79,68 +182,14 @@ const ConnectSUI: FC<{
       closeModal={closeModal}
       WalletIcon={SUIIcon}
       title="Connect SUI Wallet"
-      subTitle="Use the button below to select your SUI wallet."
-      shouldForceCloseModal={false}
+      subTitle={
+        selectedWalletName && connecting
+          ? ""
+          : "Select your preferred SUI wallet from the list below."
+      }
     >
-      <Box mt={4} width="100%">
-        <Center>
-          <Stack spacing={4} width="100%" maxWidth="320px">
-            <Center>
-              <ConnectButton
-                onConnectSuccess={handleKitConnectSuccess}
-                onConnectError={handleKitConnectError}
-                style={{
-                  width: "100%",
-                  padding: "10px 16px",
-                  borderRadius: "8px",
-                  fontWeight: "600",
-                  backgroundColor: "#3182ce",
-                  color: "white",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              />
-            </Center>
-
-            <KitConnectionStatus />
-
-            {displayError && (
-              <Alert status="error" borderRadius="md" mt={4}>
-                <AlertIcon />
-                <Text>{displayError}</Text>
-              </Alert>
-            )}
-
-            <Box
-              borderRadius="md"
-              p={3}
-              backgroundColor={useColorModeValue("gray.100", "gray.700")}
-              mt={4}
-            >
-              <Text fontSize="sm" fontWeight="medium" mb={2}>
-                Detected SUI Wallets (by @suiet/wallet-kit):
-              </Text>
-              {wallet.allAvailableWallets &&
-              wallet.allAvailableWallets.length > 0 ? (
-                <Stack>
-                  {wallet.allAvailableWallets.map((w) => (
-                    <Text key={w.name} fontSize="sm">
-                      {w.name} {w.installed ? "(Installed)" : "(Not Installed)"}
-                    </Text>
-                  ))}
-                </Stack>
-              ) : (
-                <Text fontSize="sm" color="gray.500">
-                  No SUI wallets detected. Ensure your extension is active.
-                </Text>
-              )}
-            </Box>
-            <Text fontSize="xs" color="gray.500" textAlign="center" mt={2}>
-              The SUI wallet selection modal should appear from the button
-              above.
-            </Text>
-          </Stack>
-        </Center>
+      <Box pt={3} px={1} minH="200px">
+        {content}
       </Box>
     </WalletConnectionModalBase>
   )
