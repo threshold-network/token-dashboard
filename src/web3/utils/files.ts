@@ -22,7 +22,6 @@ export const safeDownloadJSON = (
         JSON.parse(data)
         jsonData = data
       } catch (e) {
-        console.warn("Invalid JSON string provided to safeDownloadJSON:", e)
         // Fallback to safe stringification of the original data
         jsonData = JSON.stringify({ data: safeToString(data) })
       }
@@ -47,7 +46,6 @@ export const safeDownloadJSON = (
     a.dispatchEvent(clickEvt)
     a.remove()
   } catch (error) {
-    console.error("Failed to download file:", error)
     // Provide a fallback simple download with just the critical data
     try {
       const fallbackData = JSON.stringify({
@@ -61,7 +59,7 @@ export const safeDownloadJSON = (
       a.click()
       a.remove()
     } catch (e) {
-      console.error("Even fallback download failed:", e)
+      // Silent failure on fallback
     }
   }
 }

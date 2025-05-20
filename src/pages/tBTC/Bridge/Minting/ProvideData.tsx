@@ -187,9 +187,6 @@ export const ProvideDataComponent: FC<{
 
       if (nonEVMChainName === SDKChainName.SUI) {
         if (!suiConnected || !suiAccount?.address) {
-          console.log(
-            "SUI Wallet not connected or address unavailable for SUI deposit generation."
-          )
           alert(
             "Please connect your SUI wallet (and ensure address is available) to generate a deposit address for the SUI network."
           )
@@ -202,9 +199,6 @@ export const ProvideDataComponent: FC<{
             tbtcInstance &&
             typeof tbtcInstance.updateSuiSigner === "function"
           ) {
-            console.log(
-              "SUI Wallet connected, calling tbtcInstance.updateSuiSigner with adapter and address."
-            )
             await tbtcInstance.updateSuiSigner(suiAdapter, suiAccount.address)
           } else {
             console.warn(
@@ -236,57 +230,6 @@ export const ProvideDataComponent: FC<{
       const btcDepositAddress = await tbtcInstance.calculateDepositAddress()
       const receipt = deposit.getReceipt()
 
-      // Initial detailed logs for extraData (these are fine and can be kept or commented)
-      console.log(
-        "[ProvideData DEBUG] Full receipt object from deposit.getReceipt():",
-        JSON.stringify(receipt, null, 2)
-      )
-      console.log(
-        "[ProvideData DEBUG] receipt.extraData from deposit.getReceipt():",
-        receipt.extraData
-      )
-      if (receipt.extraData) {
-        console.log(
-          "[ProvideData DEBUG] receipt.extraData.toString() attempt will be made on (raw value):",
-          receipt.extraData
-        )
-        console.log(
-          "[ProvideData DEBUG] typeof receipt.extraData:",
-          typeof receipt.extraData
-        )
-        try {
-          console.log(
-            "[ProvideData DEBUG] receipt.extraData instanceof SDKHex:",
-            receipt.extraData instanceof SDKHex
-          )
-        } catch (e) {
-          console.warn(
-            "[ProvideData DEBUG] Could not perform instanceof SDKHex check:",
-            e
-          )
-        }
-        console.log(
-          "[ProvideData DEBUG] Attempting receipt.extraData.toString() result:",
-          receipt.extraData.toString()
-        )
-      } else {
-        console.log(
-          "[ProvideData DEBUG] receipt.extraData is undefined or null at point of use."
-        )
-      }
-
-      // Log before updateState calls
-      console.log("--- [ProvideData DEBUG] Before updateState calls ---")
-      console.log("receipt.depositor:", receipt.depositor)
-      console.log(
-        "receipt.depositor?.identifierHex:",
-        receipt.depositor?.identifierHex
-      )
-      console.log("receipt.blindingFactor:", receipt.blindingFactor)
-      console.log("receipt.walletPublicKeyHash:", receipt.walletPublicKeyHash)
-      console.log("receipt.refundLocktime:", receipt.refundLocktime)
-      console.log("receipt.extraData (for updateState):", receipt.extraData)
-
       // update state
       updateState("userWalletAddress", values.userWalletAddress)
       updateState("depositor", receipt.depositor?.identifierHex?.toString())
@@ -302,29 +245,6 @@ export const ProvideDataComponent: FC<{
 
       // create a new deposit address,
       updateState("btcDepositAddress", btcDepositAddress)
-
-      // Log before setDepositDataInLocalStorage
-      console.log(
-        "--- [ProvideData DEBUG] Before setDepositDataInLocalStorage --- "
-      )
-      console.log("receipt.depositor (for localStorage):", receipt.depositor)
-      console.log(
-        "receipt.depositor?.identifierHex (for localStorage):",
-        receipt.depositor?.identifierHex
-      )
-      console.log(
-        "receipt.blindingFactor (for localStorage):",
-        receipt.blindingFactor
-      )
-      console.log(
-        "receipt.walletPublicKeyHash (for localStorage):",
-        receipt.walletPublicKeyHash
-      )
-      console.log(
-        "receipt.refundLocktime (for localStorage):",
-        receipt.refundLocktime
-      )
-      console.log("receipt.extraData (for localStorage):", receipt.extraData)
 
       setDepositDataInLocalStorage(
         {
@@ -344,59 +264,6 @@ export const ProvideDataComponent: FC<{
       )
 
       depositTelemetry(receipt, btcDepositAddress)
-
-      // Log before finalData for download (this block can be condensed after testing)
-      console.log("--- [ProvideData DEBUG] Before finalData for download --- ")
-      console.log("receipt.depositor (for download):", receipt.depositor)
-      console.log(
-        "receipt.depositor?.identifierHex (for download):",
-        receipt.depositor?.identifierHex
-      )
-      console.log(
-        "receipt.refundLocktime (for download):",
-        receipt.refundLocktime
-      )
-      console.log(
-        "receipt.refundPublicKeyHash (for download):",
-        receipt.refundPublicKeyHash
-      )
-      console.log(
-        "receipt.blindingFactor (for download):",
-        receipt.blindingFactor
-      )
-      console.log(
-        "receipt.walletPublicKeyHash (for download):",
-        receipt.walletPublicKeyHash
-      )
-      console.log("receipt.extraData (for download):", receipt.extraData)
-
-      console.log("--- [ProvideData DEBUG] Strings prepared for finalData --- ")
-
-      // Use our safe conversion utilities to avoid toString errors
-      const depositorIdHexStr =
-        receipt.depositor && receipt.depositor.identifierHex
-          ? safeToString(receipt.depositor.identifierHex, "")
-          : ""
-      const refundLocktimeStr = safeToString(receipt.refundLocktime, "")
-      const refundPublicKeyHashStr = safeToString(
-        receipt.refundPublicKeyHash,
-        ""
-      )
-      const blindingFactorStr = safeToString(receipt.blindingFactor, "")
-      const walletPublicKeyHashStr = safeToString(
-        receipt.walletPublicKeyHash,
-        ""
-      )
-      const extraDataStringForDownload = safeToString(receipt.extraData, "")
-
-      console.log({
-        depositorIdHexStr,
-        refundLocktimeStr,
-        refundPublicKeyHashStr,
-        blindingFactorStr,
-        walletPublicKeyHashStr,
-        extraDataStringForDownload,
-      })
 
       if (shouldDownloadDepositReceipt) {
         // Use our helper utility to generate and download the receipt file

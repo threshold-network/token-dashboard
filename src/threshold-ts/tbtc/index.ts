@@ -777,9 +777,6 @@ export class TBTC implements ITBTC {
 
     // Convert to SDK expected format using our utility
     const sdkDestinationChainName = toSDKChainName(destinationChainName || "")
-    console.log(
-      `[SDK CORE] Converting chain name from "${destinationChainName}" to SDK format: "${sdkDestinationChainName}"`
-    )
 
     // Conditionally pass parameters based on destination chain
     if (sdkDestinationChainName === "Sui") {
@@ -790,22 +787,13 @@ export class TBTC implements ITBTC {
       const networkConfig = getSuiNetworkConfig(
         isTestnet ? "testnet" : "mainnet"
       )
-      console.log("[DEBUG] SUI networkConfig:", networkConfig) // DEBUG LOG
 
       // Create SUI client with the configured RPC URL
       const suiClient = new SuiClient({
         url: networkConfig.rpcUrl,
       })
-      console.log(
-        "[DEBUG] SUI suiClient created with URL:",
-        networkConfig.rpcUrl
-      ) // DEBUG LOG
 
       try {
-        console.log(
-          "[DEBUG] Calling sdk.initializeCrossChain for SUI with client:",
-          suiClient
-        ) // DEBUG LOG
         // Initialize with client only (no signer needed with our patched SDK)
         await sdk.initializeCrossChain(
           sdkDestinationChainName as DestinationChainName,
@@ -814,50 +802,12 @@ export class TBTC implements ITBTC {
           suiClient // Pass the SUI client we created
           // No SUI signer passed initially
         )
-        console.log("[DEBUG] sdk.initializeCrossChain for SUI completed.") // DEBUG LOG
-
-        // Debug the crossChainContracts Map to verify it contains expected keys
-        if (
-          sdk.crossChainContracts &&
-          typeof sdk.crossChainContracts === "function"
-        ) {
-          try {
-            console.log(
-              "[SDK CORE DEBUG] Inspecting sdk.crossChainContracts internal map..."
-            )
-            // Access the private map using reflective access if available
-            const contractsMap = (sdk as any)["#crossChainContracts"]
-            if (contractsMap instanceof Map) {
-              console.log(
-                "[SDK CORE DEBUG] " + inspectMapKeys(contractsMap, "SUI")
-              )
-              console.log(
-                "[SDK CORE DEBUG] " + inspectMapKeys(contractsMap, "Sui")
-              )
-            } else {
-              console.log(
-                "[SDK CORE DEBUG] Could not access internal contracts map for inspection"
-              )
-            }
-          } catch (err) {
-            console.warn(
-              "[SDK CORE DEBUG] Error while inspecting crossChainContracts:",
-              err
-            )
-          }
-        }
 
         // If we already have a SUI wallet connected, set the signer now
         if (this._crossChainConfig.nonEVMProvider) {
-          console.log("[DEBUG] Attempting to update SUI signer.") // DEBUG LOG
           this.updateSuiSigner(this._crossChainConfig.nonEVMProvider)
         }
       } catch (initError) {
-        // DEBUG LOG
-        console.error(
-          "[DEBUG] Error during sdk.initializeCrossChain for SUI:",
-          initError
-        ) // DEBUG LOG
         throw new Error(`Error initializing SUI cross-chain: ${initError}`)
       }
     } else {
@@ -902,9 +852,6 @@ export class TBTC implements ITBTC {
       const sdk = await this._getSdk()
       // Pass both the adapter (as signer) and the address string (which can be undefined)
       sdk.setSuiSigner(suiWalletAdapter as MystenSuiSigner, suiAddressString)
-      console.log(
-        `[Threshold SDK Wrapper] SUI signer updated in SDK. Address provided: ${suiAddressString}`
-      )
       return true
     } catch (error: unknown) {
       console.error(
@@ -939,9 +886,6 @@ export class TBTC implements ITBTC {
     const sdkDestinationNetworkName = toSDKChainName(
       destinationNetworkName || ""
     )
-    console.log(
-      `[SDK CORE] Using destination network: "${sdkDestinationNetworkName}" (from "${destinationNetworkName}")`
-    )
 
     try {
       // Directly use the SDK for deposit initiation since it handles contracts internally
@@ -951,25 +895,6 @@ export class TBTC implements ITBTC {
       )
       return this._deposit
     } catch (error: any) {
-      // If error contains "not initialized", verify contracts access
-      if (error.message && error.message.includes("not initialized")) {
-        console.log("[SDK CORE] Testing cross-chain contracts access...")
-
-        // Check if we can access the contracts with our robust method
-        const contracts = await this.getCrossChainContracts(
-          sdkDestinationNetworkName
-        )
-        if (contracts) {
-          console.log(
-            "[SDK CORE] Contracts found, but SDK still couldn't use them. This suggests an internal SDK issue."
-          )
-        } else {
-          console.log(
-            "[SDK CORE] No contracts found with any method. Cross-chain initialization likely failed."
-          )
-        }
-      }
-
       // Re-throw the original error
       throw error
     }
@@ -1022,30 +947,18 @@ export class TBTC implements ITBTC {
 
       // First try direct access with proper casing
       const sdkChainName = toSDKChainName(chainName)
-      console.log(
-        `[SDK ACCESS] Trying to get contracts with standardized name: ${sdkChainName}`
-      )
-
       let contracts = sdk.crossChainContracts(sdkChainName as any)
       if (contracts) {
-        console.log(
-          `[SDK ACCESS] Successfully found contracts with name: ${sdkChainName}`
-        )
         return contracts
       }
 
       // Try with original name
-      console.log(`[SDK ACCESS] Trying with original chain name: ${chainName}`)
       contracts = sdk.crossChainContracts(chainName as any)
       if (contracts) {
-        console.log(
-          `[SDK ACCESS] Successfully found contracts with original name: ${chainName}`
-        )
         return contracts
       }
 
       // Try case-insensitive lookup as last resort
-      console.log(`[SDK ACCESS] Attempting case-insensitive lookup`)
       const contractsMap = (sdk as any)["#crossChainContracts"]
       if (contractsMap && contractsMap instanceof Map) {
         for (const [key, value] of contractsMap.entries()) {
@@ -1053,23 +966,13 @@ export class TBTC implements ITBTC {
             typeof key === "string" &&
             key.toLowerCase() === chainName.toLowerCase()
           ) {
-            console.log(
-              `[SDK ACCESS] Found contracts with case-insensitive lookup: ${key}`
-            )
             return value
           }
         }
       }
 
-      console.warn(
-        `[SDK ACCESS] Could not find contracts for ${chainName} with any method`
-      )
       return undefined
     } catch (error) {
-      console.error(
-        `[SDK ACCESS] Error accessing cross-chain contracts:`,
-        error
-      )
       return undefined
     }
   }
@@ -1089,9 +992,6 @@ export class TBTC implements ITBTC {
     // Convert to SDK expected format
     const sdkDestinationNetworkName = toSDKChainName(
       destinationNetworkName || ""
-    )
-    console.log(
-      `[SDK CORE] Using destination network: "${sdkDestinationNetworkName}" (from "${destinationNetworkName}")`
     )
 
     const sdk = await this._getSdk()

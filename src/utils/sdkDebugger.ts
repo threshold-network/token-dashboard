@@ -57,14 +57,13 @@ export function safeToString(
       try {
         return JSON.stringify(sdkObject)
       } catch (e) {
-        console.warn("Failed to JSON stringify object:", e)
+        // Silent failure
       }
     }
 
     // Final fallback
     return String(sdkObject) || defaultValue
   } catch (error) {
-    console.warn(`[SAFE_TO_STRING] Error converting object to string:`, error)
     return defaultValue
   }
 }
@@ -124,9 +123,6 @@ export async function diagnoseCrossChainContracts(
 
     if (!result.contractsFound) {
       // Try case-insensitive lookup
-      const mapInfo = inspectMapKeys(contractsMap, networkName)
-      console.log("[SDK DEBUGGER] Map inspection:", mapInfo)
-
       const caseInsensitiveMatch = result.existingKeys.find(
         (key) =>
           typeof key === "string" &&
@@ -163,9 +159,6 @@ export function getFlexibleCrossChainContracts(
     !sdk.crossChainContracts ||
     typeof sdk.crossChainContracts !== "function"
   ) {
-    console.error(
-      "[SDK FLEXIBLE ACCESS] SDK or crossChainContracts method is missing"
-    )
     return null
   }
 
@@ -173,34 +166,23 @@ export function getFlexibleCrossChainContracts(
     // Try direct access first
     const contracts = sdk.crossChainContracts(networkName as any)
     if (contracts) {
-      console.log(
-        `[SDK FLEXIBLE ACCESS] Direct access with "${networkName}" succeeded`
-      )
       return contracts
     }
 
     // If direct access fails, try to access internal map
     const contractsMap = (sdk as any)["#crossChainContracts"]
     if (!contractsMap || !(contractsMap instanceof Map)) {
-      console.error("[SDK FLEXIBLE ACCESS] Internal map not accessible")
       return null
     }
 
     // Try case-insensitive lookup
     const foundContracts = findInMapCaseInsensitive(contractsMap, networkName)
     if (foundContracts) {
-      console.log(
-        `[SDK FLEXIBLE ACCESS] Found contracts with case-insensitive lookup`
-      )
       return foundContracts
     }
 
-    console.error(
-      `[SDK FLEXIBLE ACCESS] No contracts found for "${networkName}" with any method`
-    )
     return null
   } catch (error) {
-    console.error("[SDK FLEXIBLE ACCESS] Error accessing contracts:", error)
     return null
   }
 }

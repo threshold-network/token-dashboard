@@ -64,9 +64,6 @@ export function generateDepositReceiptFile({
       extraData: extraDataStringForDownload,
     }
 
-    // Log prepared data and download
-    console.log("[DepositHelper] finalData object prepared:", typeof finalData)
-
     // Use our safe download utility
     safeDownloadJSON(finalData, fileName)
     return true
