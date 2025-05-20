@@ -61,6 +61,21 @@ import {
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { SuiClient } from "@mysten/sui/client"
+import type { Signer as MystenSuiSigner } from "@mysten/sui/cryptography"
+import { getSuiNetworkConfig, shouldUseSuiTestnet } from "../../config/sui"
+import {
+  findInMapCaseInsensitive,
+  inspectMapKeys,
+} from "../../utils/debugHelpers"
+import { toSDKChainName } from "../../types/chains"
+
+// Extend the SDK type to include our new setSuiSigner method
+declare module "@keep-network/tbtc-v2.ts" {
+  interface TBTC {
+    setSuiSigner(signer: MystenSuiSigner, suiAddressString?: string): void
+  }
+}
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -481,6 +496,11 @@ export interface ITBTC {
     treasuryFee: string
     estimatedAmountToBeReceived: string
   }>
+
+  updateSuiSigner(
+    suiWalletAdapter: any,
+    suiAddressString?: string
+  ): Promise<boolean>
 }
 
 export class TBTC implements ITBTC {
@@ -675,7 +695,7 @@ export class TBTC implements ITBTC {
     // We need to use a mainnet default provider to initialize the SDK
     const sdk = await initializeFunction(
       initializerProviderOrSigner,
-      isL2Network(connectedChainId)
+      this._crossChainConfig.isCrossChain
     )
 
     return sdk
@@ -686,13 +706,23 @@ export class TBTC implements ITBTC {
     account?: string | undefined
   ): Promise<void> {
     try {
-      this._sdkPromise = this._initializeSdk(ethereumProviderOrSigner, account)
+      const sdkPromise = this._initializeSdk(ethereumProviderOrSigner, account)
+      this._sdkPromise = sdkPromise
 
       if (this._crossChainConfig.isCrossChain) {
-        await this._initiateCrossChain(
-          ethereumProviderOrSigner as Web3Provider,
-          account as string
-        )
+        const sdk = await sdkPromise
+
+        if (!sdk) {
+          throw new Error("SDK was not initialized properly")
+        }
+
+        // Get a signer from the Ethereum provider
+        const signer = account
+          ? getSigner(ethereumProviderOrSigner as Web3Provider, account)
+          : (ethereumProviderOrSigner as Signer)
+
+        // Pass SDK and signer to _initiateCrossChain
+        await this._initiateCrossChain(sdk, signer)
       }
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
@@ -738,24 +768,151 @@ export class TBTC implements ITBTC {
     return sdk
   }
 
-  private _initiateCrossChain = async (
-    ethereumProviderOrSigner: Web3Provider,
-    account: string
-  ): Promise<void> => {
-    const sdk = await this._getSdk()
-    const signer = getSigner(ethereumProviderOrSigner as Web3Provider, account)
-
+  private async _initiateCrossChain(sdk: SDK, signer: Signer) {
     const connectedChainId = await chainIdFromSigner(signer)
     const destinationChainName =
       this._crossChainConfig.chainName === ChainName.Ethereum
         ? getEthereumNetworkNameFromChainId(connectedChainId)
         : this._crossChainConfig.chainName
 
-    await sdk.initializeCrossChain(
-      destinationChainName as DestinationChainName,
-      signer,
-      this._crossChainConfig.nonEVMProvider
+    // Convert to SDK expected format using our utility
+    const sdkDestinationChainName = toSDKChainName(destinationChainName || "")
+    console.log(
+      `[SDK CORE] Converting chain name from "${destinationChainName}" to SDK format: "${sdkDestinationChainName}"`
     )
+
+    // Conditionally pass parameters based on destination chain
+    if (sdkDestinationChainName === "Sui") {
+      // Determine if we're using testnet based on the Ethereum connection
+      const isTestnet = shouldUseSuiTestnet(Number(connectedChainId))
+
+      // Get network configuration
+      const networkConfig = getSuiNetworkConfig(
+        isTestnet ? "testnet" : "mainnet"
+      )
+      console.log("[DEBUG] SUI networkConfig:", networkConfig) // DEBUG LOG
+
+      // Create SUI client with the configured RPC URL
+      const suiClient = new SuiClient({
+        url: networkConfig.rpcUrl,
+      })
+      console.log(
+        "[DEBUG] SUI suiClient created with URL:",
+        networkConfig.rpcUrl
+      ) // DEBUG LOG
+
+      try {
+        console.log(
+          "[DEBUG] Calling sdk.initializeCrossChain for SUI with client:",
+          suiClient
+        ) // DEBUG LOG
+        // Initialize with client only (no signer needed with our patched SDK)
+        await sdk.initializeCrossChain(
+          sdkDestinationChainName as DestinationChainName,
+          signer,
+          undefined, // No Solana provider
+          suiClient // Pass the SUI client we created
+          // No SUI signer passed initially
+        )
+        console.log("[DEBUG] sdk.initializeCrossChain for SUI completed.") // DEBUG LOG
+
+        // Debug the crossChainContracts Map to verify it contains expected keys
+        if (
+          sdk.crossChainContracts &&
+          typeof sdk.crossChainContracts === "function"
+        ) {
+          try {
+            console.log(
+              "[SDK CORE DEBUG] Inspecting sdk.crossChainContracts internal map..."
+            )
+            // Access the private map using reflective access if available
+            const contractsMap = (sdk as any)["#crossChainContracts"]
+            if (contractsMap instanceof Map) {
+              console.log(
+                "[SDK CORE DEBUG] " + inspectMapKeys(contractsMap, "SUI")
+              )
+              console.log(
+                "[SDK CORE DEBUG] " + inspectMapKeys(contractsMap, "Sui")
+              )
+            } else {
+              console.log(
+                "[SDK CORE DEBUG] Could not access internal contracts map for inspection"
+              )
+            }
+          } catch (err) {
+            console.warn(
+              "[SDK CORE DEBUG] Error while inspecting crossChainContracts:",
+              err
+            )
+          }
+        }
+
+        // If we already have a SUI wallet connected, set the signer now
+        if (this._crossChainConfig.nonEVMProvider) {
+          console.log("[DEBUG] Attempting to update SUI signer.") // DEBUG LOG
+          this.updateSuiSigner(this._crossChainConfig.nonEVMProvider)
+        }
+      } catch (initError) {
+        // DEBUG LOG
+        console.error(
+          "[DEBUG] Error during sdk.initializeCrossChain for SUI:",
+          initError
+        ) // DEBUG LOG
+        throw new Error(`Error initializing SUI cross-chain: ${initError}`)
+      }
+    } else {
+      // Original call for other chains
+      await sdk.initializeCrossChain(
+        sdkDestinationChainName as DestinationChainName,
+        signer,
+        this._crossChainConfig.nonEVMProvider
+      )
+    }
+  }
+
+  /**
+   * Updates the SUI signer in the SDK when a wallet is connected.
+   * This method is exposed by the ThresholdDash wrapper.
+   * @param {any} suiWalletAdapter - The SUI wallet adapter from @suiet/wallet-kit.
+   * @param {string} suiAddressString - The optional SUI address string.
+   * @return {Promise<boolean>} True if successful, false otherwise.
+   */
+  async updateSuiSigner(
+    suiWalletAdapter: any,
+    suiAddressString?: string
+  ): Promise<boolean> {
+    if (
+      !suiWalletAdapter ||
+      typeof suiWalletAdapter.signPersonalMessage !== "function"
+    ) {
+      console.error(
+        "[Threshold SDK Wrapper] Invalid SUI wallet adapter provided to updateSuiSigner (missing signPersonalMessage or falsy)."
+      )
+      return false
+    }
+    if (!suiAddressString) {
+      // It's possible the address isn't available immediately, or this function is called without it.
+      // Log a warning but still attempt to set the signer, as some operations might not need the owner yet,
+      // or the SDK handles it. However, for deposit address generation, it IS needed.
+      console.warn(
+        "[Threshold SDK Wrapper] SUI address string not provided to updateSuiSigner. Signer will be set, but owner-dependent operations may fail."
+      )
+    }
+    try {
+      const sdk = await this._getSdk()
+      // Pass both the adapter (as signer) and the address string (which can be undefined)
+      sdk.setSuiSigner(suiWalletAdapter as MystenSuiSigner, suiAddressString)
+      console.log(
+        `[Threshold SDK Wrapper] SUI signer updated in SDK. Address provided: ${suiAddressString}`
+      )
+      return true
+    } catch (error: unknown) {
+      console.error(
+        "[Threshold SDK Wrapper] Failed to set SUI signer/address via adapter:",
+        error
+      )
+      return false
+    }
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -769,7 +926,6 @@ export class TBTC implements ITBTC {
     ethereumChainId?: number | undefined
   ): Promise<Deposit> => {
     if (!this._crossChainConfig.isCrossChain) {
-      console.log("this._crossChainConfig", this._crossChainConfig)
       throw new Error("Unsupported connected network")
     }
 
@@ -779,11 +935,44 @@ export class TBTC implements ITBTC {
         ? getEthereumNetworkNameFromChainId(ethereumChainId)
         : this._crossChainConfig.chainName
 
-    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
-      btcRecoveryAddress,
-      destinationNetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    // Convert to SDK expected format
+    const sdkDestinationNetworkName = toSDKChainName(
+      destinationNetworkName || ""
     )
-    return this._deposit
+    console.log(
+      `[SDK CORE] Using destination network: "${sdkDestinationNetworkName}" (from "${destinationNetworkName}")`
+    )
+
+    try {
+      // Directly use the SDK for deposit initiation since it handles contracts internally
+      this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+        btcRecoveryAddress,
+        sdkDestinationNetworkName as Exclude<keyof typeof Chains, "Ethereum">
+      )
+      return this._deposit
+    } catch (error: any) {
+      // If error contains "not initialized", verify contracts access
+      if (error.message && error.message.includes("not initialized")) {
+        console.log("[SDK CORE] Testing cross-chain contracts access...")
+
+        // Check if we can access the contracts with our robust method
+        const contracts = await this.getCrossChainContracts(
+          sdkDestinationNetworkName
+        )
+        if (contracts) {
+          console.log(
+            "[SDK CORE] Contracts found, but SDK still couldn't use them. This suggests an internal SDK issue."
+          )
+        } else {
+          console.log(
+            "[SDK CORE] No contracts found with any method. Cross-chain initialization likely failed."
+          )
+        }
+      }
+
+      // Re-throw the original error
+      throw error
+    }
   }
 
   removeDepositData = (): void => {
@@ -818,18 +1007,93 @@ export class TBTC implements ITBTC {
     return this._deposit
   }
 
+  /**
+   * Access cross-chain contracts with case-insensitive matching
+   * This method provides a robust way to access contracts regardless of case differences
+   *
+   * @param {string} chainName - The chain name to get contracts for
+   * @return {any} The contracts or undefined if not found
+   */
+  getCrossChainContracts = async (chainName: string): Promise<any> => {
+    if (!chainName) return undefined
+
+    try {
+      const sdk = await this._getSdk()
+
+      // First try direct access with proper casing
+      const sdkChainName = toSDKChainName(chainName)
+      console.log(
+        `[SDK ACCESS] Trying to get contracts with standardized name: ${sdkChainName}`
+      )
+
+      let contracts = sdk.crossChainContracts(sdkChainName as any)
+      if (contracts) {
+        console.log(
+          `[SDK ACCESS] Successfully found contracts with name: ${sdkChainName}`
+        )
+        return contracts
+      }
+
+      // Try with original name
+      console.log(`[SDK ACCESS] Trying with original chain name: ${chainName}`)
+      contracts = sdk.crossChainContracts(chainName as any)
+      if (contracts) {
+        console.log(
+          `[SDK ACCESS] Successfully found contracts with original name: ${chainName}`
+        )
+        return contracts
+      }
+
+      // Try case-insensitive lookup as last resort
+      console.log(`[SDK ACCESS] Attempting case-insensitive lookup`)
+      const contractsMap = (sdk as any)["#crossChainContracts"]
+      if (contractsMap && contractsMap instanceof Map) {
+        for (const [key, value] of contractsMap.entries()) {
+          if (
+            typeof key === "string" &&
+            key.toLowerCase() === chainName.toLowerCase()
+          ) {
+            console.log(
+              `[SDK ACCESS] Found contracts with case-insensitive lookup: ${key}`
+            )
+            return value
+          }
+        }
+      }
+
+      console.warn(
+        `[SDK ACCESS] Could not find contracts for ${chainName} with any method`
+      )
+      return undefined
+    } catch (error) {
+      console.error(
+        `[SDK ACCESS] Error accessing cross-chain contracts:`,
+        error
+      )
+      return undefined
+    }
+  }
+
   initiateCrossChainDepositFromScriptParameters = async (
     depositScriptParameters: DepositScriptParameters,
     ethereumChainId: number
   ): Promise<Deposit> => {
     if (!this._crossChainConfig.isCrossChain) {
-      console.log("this._crossChainConfig", this._crossChainConfig)
       throw new Error("Unsupported chain ID")
     }
     const destinationNetworkName =
       this._crossChainConfig.chainName === ChainName.Ethereum
         ? getEthereumNetworkNameFromChainId(ethereumChainId)
         : this._crossChainConfig.chainName
+
+    // Convert to SDK expected format
+    const sdkDestinationNetworkName = toSDKChainName(
+      destinationNetworkName || ""
+    )
+    console.log(
+      `[SDK CORE] Using destination network: "${sdkDestinationNetworkName}" (from "${destinationNetworkName}")`
+    )
+
     const sdk = await this._getSdk()
 
     const {
@@ -854,18 +1118,26 @@ export class TBTC implements ITBTC {
       extraData: Hex.from(extraData),
     }
 
-    await this._initiateCrossChain(
+    // Get a signer from the Ethereum provider
+    const signer = getSigner(
       this._ethereumConfig.ethereumProviderOrSigner as Web3Provider,
       this._ethereumConfig.account as string
     )
 
-    const crossChainContracts = sdk.crossChainContracts(
-      destinationNetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    // Pass SDK and signer to _initiateCrossChain
+    await this._initiateCrossChain(sdk, signer)
+
+    // Use our robust getter method instead of direct SDK access
+    const crossChainContracts = await this.getCrossChainContracts(
+      sdkDestinationNetworkName
     )
 
     if (!crossChainContracts) {
-      throw new Error("Cross-chain contracts are not initialized")
+      throw new Error(
+        `Cross-chain contracts for ${sdkDestinationNetworkName} not initialized`
+      )
     }
+
     const depositorProxy = new CrossChainDepositor(crossChainContracts)
 
     this._deposit = await Deposit.fromReceipt(
@@ -987,12 +1259,36 @@ export class TBTC implements ITBTC {
   }
 
   revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
-    const { value, ...transactionOutpoint } = utxo
-    if (!this._deposit) throw new EmptyDepositObjectError()
-    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
-    this.removeDepositData()
+    try {
+      const { value, ...transactionOutpoint } = utxo
+      if (!this._deposit) throw new EmptyDepositObjectError()
 
-    return chainHash.toPrefixedString()
+      // Initiate minting (this will check for SUI signer if needed)
+      const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+      this.removeDepositData()
+
+      return chainHash.toPrefixedString()
+    } catch (error: unknown) {
+      // Enhanced error handling
+      if (
+        error instanceof Error &&
+        error.message.includes("SUI wallet connection required")
+      ) {
+        // Create a more user-friendly error that the UI can handle
+        const enhancedError = new Error(
+          "SUI wallet connection required to complete this operation. Please connect your SUI wallet and try again."
+        )
+        // Add a property to help UI identify this as a wallet connection error
+        Object.assign(enhancedError, {
+          code: "WALLET_CONNECTION_REQUIRED",
+          chain: "SUI",
+        })
+        throw enhancedError
+      }
+
+      // Re-throw the original error
+      throw error
+    }
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
