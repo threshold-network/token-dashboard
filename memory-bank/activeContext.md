@@ -3,6 +3,7 @@
 ## Current Task Description
 
 The previous tasks related to SUI Network integration have been completed:
+
 1. Token-dashboard setup with linked tbtc-v2 SDK (TD-SUI-01)
 2. BTCDepositorWormhole contract analysis for SUI compatibility (TD-SUI-01.8)
 
@@ -12,7 +13,7 @@ The environment is now fully configured for SUI integration and the contract arc
 
 - **Previous Task**: TD-SUI-01 (SUI Integration Setup)
 - **Status**: COMPLETED and ARCHIVED
-- **Archive Locations**: 
+- **Archive Locations**:
   - memory-bank/archive/archive-TD-SUI-01-config.md
   - memory-bank/archive/archive-TD-SUI-01-BTCDepositorWormhole.md
 

@@ -47,4 +47,4 @@ The implementation aligned well with the task's objectives to understand and eva
 2. Document any potential performance optimizations for the SUI implementation
 3. Create comprehensive testing scenarios for the end-to-end flow
 
-The analysis confirms that the existing BTCDepositorWormhole contract is compatible with SUI integration when used with the off-chain VAA relayer approach. No changes to the Ethereum contract are required. 
+The analysis confirms that the existing BTCDepositorWormhole contract is compatible with SUI integration when used with the off-chain VAA relayer approach. No changes to the Ethereum contract are required.

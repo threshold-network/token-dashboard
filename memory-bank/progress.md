@@ -387,6 +387,7 @@ _ **Solution**: Implemented a temporary normalization in the `TBTC.crossChainCon
 ## Milestone: Token Dashboard SUI Integration
 
 ### Task TD-SUI-01: SUI Integration Setup (COMPLETED)
+
 - Setup token-dashboard with linked tbtc-v2 SDK for testing the SUI Network integration
 - **Status**: COMPLETED
 - **Task ID**: TD-SUI-01
@@ -395,6 +396,7 @@ _ **Solution**: Implemented a temporary normalization in the `TBTC.crossChainCon
 - **Sub-task Archive**: memory-bank/archive/archive-TD-SUI-01-BTCDepositorWormhole.md
 
 ### Key Changes
+
 - Implemented Phased Initialization with Lazy Signer for SUI in tbtc-v2 SDK
 - Implemented artifact-based configuration for SUI in tbtc-v2 SDK
 - Updated token-dashboard to use new SUI configuration architecture from SDK
@@ -404,6 +406,7 @@ _ **Solution**: Implemented a temporary normalization in the `TBTC.crossChainCon
 - Configuration values documented for both testnet and planned mainnet deployment
 
 ### Technical Achievements
+
 - Clean architecture for cross-chain contract initialization
 - Reliable deposit address generation for SUI destination chain
 - Clear separation of contract configuration from implementation logic
