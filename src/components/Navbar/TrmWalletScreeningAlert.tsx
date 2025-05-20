@@ -23,7 +23,7 @@ const TrmWalletScreeningAlert: FC = () => {
 
     if (isTemporarilyDisabled) {
       setAlertDescription(
-        `The minting functionality is temporarily unavailable, we will restore service as soon as possible.`
+        `The minting functionality is temporarily unavailable, we will restore the service as soon as possible.`
       )
       setHideAlert(false)
       return
