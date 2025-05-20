@@ -136,6 +136,7 @@ export const ResumeDepositPage: PageComponent = () => {
 }
 
 const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
+  const isTemporarilyDisabled = true // TODO: remove this
   const { setValues, getFieldMeta, setFieldError, isSubmitting, values } = props
   const { error } = getFieldMeta("depositParameters")
   const threshold = useThreshold()
@@ -175,6 +176,7 @@ const ResumeDepositForm: FC<FormikProps<FormValues>> = (props) => {
         isFullWidth
         mt="6"
         isDisabled={
+          isTemporarilyDisabled ||
           !values.depositParameters ||
           isError ||
           isSubmitting ||
