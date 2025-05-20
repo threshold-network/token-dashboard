@@ -383,3 +383,28 @@ _ **Solution**: Implemented a temporary normalization in the `TBTC.crossChainCon
   _ Only after SUI wallet connection and SDK update should the deposit address generation proceed.
 
 **Next Steps**: Implement the recommended UI/UX changes in the token-dashboard's SUI deposit flow. Consider a more permanent fix for key casing consistency within the `tbtc-v2` SDK. Clean up extensive debugging logs from the SDK.
+
+## Milestone: Token Dashboard SUI Integration
+
+### Task TD-SUI-01: SUI Integration Setup (COMPLETED)
+- Setup token-dashboard with linked tbtc-v2 SDK for testing the SUI Network integration
+- **Status**: COMPLETED
+- **Task ID**: TD-SUI-01
+- **Archive**: memory-bank/archive/archive-TD-SUI-01-config.md
+- **Sub-task**: TD-SUI-01.8 - BTCDepositorWormhole Contract Review
+- **Sub-task Archive**: memory-bank/archive/archive-TD-SUI-01-BTCDepositorWormhole.md
+
+### Key Changes
+- Implemented Phased Initialization with Lazy Signer for SUI in tbtc-v2 SDK
+- Implemented artifact-based configuration for SUI in tbtc-v2 SDK
+- Updated token-dashboard to use new SUI configuration architecture from SDK
+- Resolved dependency conflicts by temporarily disabling Solana integration
+- Analyzed BTCDepositorWormhole contract for SUI compatibility
+- Confirmed existing off-chain VAA relayer works with SUI implementation
+- Configuration values documented for both testnet and planned mainnet deployment
+
+### Technical Achievements
+- Clean architecture for cross-chain contract initialization
+- Reliable deposit address generation for SUI destination chain
+- Clear separation of contract configuration from implementation logic
+- Compatibility with all required bridge components verified

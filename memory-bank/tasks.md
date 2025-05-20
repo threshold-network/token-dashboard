@@ -32,10 +32,15 @@ Configuration Architecture Implementation Completed
   - Details:
     - Fixed "Cross-chain contracts for SUI not initialized" due to map key case-sensitivity in SDK.
     - Identified that "Cannot resolve destination chain deposit owner" requires SUI wallet connection prior to address generation for `extraData`.
-- **TD-SUI-01.7**: (NEW) Implement pre-check for SUI wallet connection in token-dashboard before SUI deposit address generation.
-  - Status: PENDING
-  - Assignee: [Developer/AI]
-  - Priority: High
+- **TD-SUI-01.7**: Implement pre-check for SUI wallet connection in token-dashboard before SUI deposit address generation.
+  - Status: COMPLETED
+- **TD-SUI-01.8**: Review BTCDepositorWormhole contract for SUI compatibility.
+  - Status: COMPLETED
+  - Details:
+    - Analyzed contract architecture and functions
+    - Evaluated options for SUI integration
+    - Recommended retaining current architecture with SUI-specific WormholeGateway
+    - Documented in `memory-bank/creative/creative-btc-depositor-wormhole-sui-analysis.md`
 
 ## Task Complexity
 
