@@ -67,3 +67,30 @@
 - BTCDepositorWormhole contract on Ethereum side
 - SUI Wormhole Gateway on SUI network side
 - Chain-specific wallet adapters for both networks
+
+## System Design & Architecture Patterns
+
+### Map/Dictionary Key Consistency
+
+**Pattern**: Ensure strict consistency (including case-sensitivity for string keys) when using keys to set and get values from Maps, Dictionaries, or similar associative arrays.
+
+**Context**: Encountered an issue where `Map.get(key)` returned `undefined` despite the map appearing to contain the key. The root cause was a case mismatch between the key used for `Map.set("Sui", ...)` and the key used for `Map.get("SUI", ...)`.
+
+**Solution/Prevention**:
+
+- Define canonical key formats (e.g., enums, constants, or clear string casing rules) for map keys, especially if keys originate from different parts of the system or external configurations.
+- When debugging such issues, log the exact key string and its `typeof` for both `set` and `get` operations.
+- Consider normalization (e.g., `.toLowerCase()`, `.toUpperCase()`, or a specific mapping) at the point of access if canonical keys cannot be strictly enforced at the source, but prefer fixing the source of inconsistency.
+
+### Handling Pre-conditions for SDK Operations (Cross-Chain Example)
+
+**Pattern**: For SDK operations that have implicit pre-conditions on external state (e.g., a connected wallet, user input), the consuming application UI/UX must ensure these pre-conditions are met before invoking the SDK function.
+
+**Context**: The `tbtc-v2` SDK's `initiateCrossChainDeposit` for SUI requires the destination SUI address to be known for `extraData` generation. If a SUI wallet is not yet connected, the SDK (using mock interfaces) cannot provide this address, leading to an error ("Cannot resolve destination chain deposit owner").
+
+**Solution/Prevention**:
+
+- Clearly document SDK pre-conditions for such operations.
+- The application UI should check for these pre-conditions (e.g., SUI wallet connected and its address available) _before_ calling the relevant SDK method.
+- If pre-conditions are not met, prompt the user to fulfill them (e.g., "Please connect your SUI wallet to proceed.").
+- Utilize phased SDK initialization if available (e.g., initialize with read-only capabilities, then update with a signer/wallet context) and ensure the application logic respects the capabilities available at each phase.

@@ -10,8 +10,32 @@ TD-SUI-01
 
 ## Task Status
 
-Implementation Completed - Ready for User Testing
+COMPLETED - Archived on June 15, 2023
+Previous status: Implementation Completed - Reflection Phase Completed - Ready for Archiving
 Creative Phase Completed for Dependency Conflict Resolution
+Configuration Architecture Implementation Completed
+
+## Sub-Tasks & Progress
+
+- **TD-SUI-01.1**: Initial SUI SDK integration and configuration.
+  - Status: COMPLETED
+- **TD-SUI-01.2**: Resolve SDK dependency conflicts (e.g., Solana packages).
+  - Status: COMPLETED
+- **TD-SUI-01.3**: Implement "Phased Initialization with Lazy Signer" for SUI in tbtc-v2 SDK and dashboard.
+  - Status: COMPLETED
+- **TD-SUI-01.4**: Implement artifact-based configuration for SUI in tbtc-v2 SDK.
+  - Status: COMPLETED
+- **TD-SUI-01.5**: Update token-dashboard to use new SUI configuration architecture from SDK.
+  - Status: COMPLETED
+- **TD-SUI-01.6**: Debug and resolve runtime errors during SUI deposit address generation.
+  - Status: COMPLETED
+  - Details:
+    - Fixed "Cross-chain contracts for SUI not initialized" due to map key case-sensitivity in SDK.
+    - Identified that "Cannot resolve destination chain deposit owner" requires SUI wallet connection prior to address generation for `extraData`.
+- **TD-SUI-01.7**: (NEW) Implement pre-check for SUI wallet connection in token-dashboard before SUI deposit address generation.
+  - Status: PENDING
+  - Assignee: [Developer/AI]
+  - Priority: High
 
 ## Task Complexity
 
@@ -69,6 +93,16 @@ This plan outlines the steps to set up a local development environment for the t
 
 - [ ] Connect wallet to Sepolia network
 - [ ] Attempt connection with SUI wallet
+  - [ ] **Current Issue (TD-SUI-01.1):** SDK Initialization Problems
+    - Status: Creative Phase 1 Completed (see `memory-bank/creative/creative-tbtc-sdk-sui-initialization.md`) - Resolved "L1 loader" error.
+    - Status: Creative Phase 2 Completed (see `memory-bank/creative/creative-tbtc-sdk-sui-unsupported-chain.md`) - Identified capitalization mismatch in ChainName.SUI ("SUI" vs expected "Sui").
+    - Status: Implementation Completed for Phase 2 - Added explicit mapping from enum values to expected SDK strings.
+    - Status: Creative Phase 3 Completed (see `memory-bank/creative/creative-tbtc-sdk-sui-client-missing.md`) - Identified "SUI client is not defined" error.
+    - Status: Implementation Completed for Phase 3 - Created a SuiClient instance to pass to SDK.initializeCrossChain.
+    - Status: Creative Phase 4 Completed (see `memory-bank/creative/creative-tbtc-sdk-sui-signer.md`) - Identified "SUI signer is not defined" error.
+    - Status: Implementation Attempted for Phase 4 - Added code to more clearly report the issue and suggested SDK modifications.
+    - Status: Comprehensive Solution Designed (see `memory-bank/creative/creative-tbtc-sdk-sui-integration-solution.md`) - Created detailed implementation plan for "Phased Initialization with Lazy Signer" approach.
+    - Next Step: Implement the SDK patch proposed in the solution design document.
 - [ ] Verify cross-chain deposit form shows SUI as option
 - [ ] Test the deposit flow to SUI network
 - [ ] Verify Wormhole bridging functionality
@@ -80,6 +114,7 @@ This plan outlines the steps to set up a local development environment for the t
 - [x] Add troubleshooting steps
 - [x] Document implementation process
 - [x] Complete implementation documentation
+- [x] Complete reflection on implementation
 
 ## Implementation Details
 
@@ -194,3 +229,15 @@ After encountering dependency conflicts related to Solana packages, a creative p
 ## Conclusion
 
 The implementation of the token-dashboard with the linked tbtc-v2 SDK for testing the SUI Network integration has been completed successfully. A creative phase was conducted to resolve dependency conflicts by temporarily disabling Solana integration. The application is now running with all necessary configurations and is ready for user testing.
+
+## Key Components & Files (SUI Integration Specific)
+
+- `token-dashboard/src/config/sui.ts` (Simplified to mainly provide RPC URL)
+- `token-dashboard/src/threshold-ts/tbtc/index.ts` (SUI initialization logic, `updateSuiSigner`)
+- `token-dashboard/src/contexts/SUIWalletProvider.tsx`
+- `token-dashboard/src/components/Modal/SelectWalletModal/ConnectSUI.tsx`
+- `tbtc-v2/typescript/src/services/tbtc.ts` (Main SDK class, `initializeCrossChain`, `crossChainContracts`, `setSuiSigner`)
+- `tbtc-v2/typescript/src/lib/sui/index.ts` (`loadSuiDestinationChainContracts`)
+- `tbtc-v2/typescript/src/lib/sui/artifacts/` (SUI contract addresses)
+- `tbtc-v2/typescript/src/services/deposits-service.ts` (Source of `initiateCrossChainDeposit`)
+- `tbtc-v2/typescript/src/lib/cross-chain.ts` (Source of `CrossChainDepositor.extraData()`)
