@@ -21,7 +21,6 @@ const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ utxo, onPreviousStepClick }) => {
-  const isTemporarilyDisabled = true // TODO: remove this
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
   const { closeModal } = useModal()
@@ -99,7 +98,7 @@ const InitiateMintingComponent: FC<{
       </InfoBox>
       <MintingTransactionDetails />
       <SubmitTxButton
-        isDisabled={isTemporarilyDisabled || !threshold.tbtc.bridgeContract}
+        isDisabled={!threshold.tbtc.bridgeContract}
         onSubmit={initiateMintTransaction}
         isFullWidth
         data-ph-capture-attribute-button-name={

@@ -9,23 +9,14 @@ import { RootState } from "../../store"
 import { useSelector } from "react-redux"
 
 const TrmWalletScreeningAlert: FC = () => {
-  const isTemporarilyDisabled = true // TODO: remove this
   const { isBlocked } = useSelector((state: RootState) => state.account)
   const [hideAlert, setHideAlert] = useState(true)
 
   const [alertDescription, setAlertDescription] = useState("")
 
   useEffect(() => {
-    if (!isTemporarilyDisabled && !isBlocked) {
+    if (!isBlocked) {
       setHideAlert(true)
-      return
-    }
-
-    if (isTemporarilyDisabled) {
-      setAlertDescription(
-        `The minting functionality is temporarily unavailable, we will restore the service as soon as possible.`
-      )
-      setHideAlert(false)
       return
     }
 
@@ -49,11 +40,7 @@ const TrmWalletScreeningAlert: FC = () => {
   }
 
   return (
-    <Alert
-      status={isTemporarilyDisabled ? "warning" : "error"}
-      variant="solid"
-      w="fit-content"
-    >
+    <Alert status="error" variant="solid" w="fit-content">
       <AlertIcon alignSelf="center" />
       <AlertDescription>{alertDescription}</AlertDescription>
       <CloseButton onClick={resetAlert} />
