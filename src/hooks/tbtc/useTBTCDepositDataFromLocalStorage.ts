@@ -9,15 +9,12 @@ import {
 import { useIsActive } from "../useIsActive"
 
 export const useTBTCDepositDataFromLocalStorage = () => {
-  const isTemporarilyDisabled = true // TODO: remove this
   const { account, chainId } = useIsActive()
 
   const [tBTCDepositData, setTBTCLocalStorageData] =
     useState<TBTCLocalStorageDepositData>({})
 
   useEffect(() => {
-    if (isTemporarilyDisabled) return
-
     const storageKey = `${key}-${chainId?.toString()}`
     const storedData = localStorage.getItem(storageKey)
     const parsedData = storedData ? JSON.parse(storedData) : {}

@@ -5,15 +5,18 @@ import { ApiUrl, endpointUrl } from "../enums"
 interface WalletScreeningRequest {
   address: string
   chainId: number
+  networkName?: string
 }
 
 export async function fetchWalletScreening({
   address,
   chainId,
+  networkName,
 }: WalletScreeningRequest): Promise<TrmPayload> {
   const requestBody = {
     address,
     chainId,
+    networkName,
   }
 
   try {

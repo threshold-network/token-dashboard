@@ -24,6 +24,7 @@ export const tbtcSlice = createSlice({
       error: "",
       data: [] as BridgeActivity[],
     },
+    firstDepositWarningConfirmed: false,
   } as TbtcState,
   reducers: {
     updateState: (
@@ -185,6 +186,12 @@ export const tbtcSlice = createSlice({
         status: BridgeActivityStatus.UNMINTED,
       }
     },
+    setFirstDepositWarningConfirmed: (state) => {
+      state.firstDepositWarningConfirmed = true
+    },
+    resetFirstDepositWarningConfirmed: (state) => {
+      state.firstDepositWarningConfirmed = false
+    },
   },
 })
 
@@ -225,7 +232,21 @@ function findRedemptionActivity(
   }
 }
 
-export const { updateState } = tbtcSlice.actions
+export const {
+  updateState,
+  requestBridgeActivity,
+  fetchingBridgeActivity,
+  bridgeActivityFetched,
+  bridgeActivityFailed,
+  depositRevealed,
+  optimisticMintingFinalized,
+  findUtxo,
+  fetchUtxoConfirmations,
+  redemptionRequested,
+  redemptionCompleted,
+  setFirstDepositWarningConfirmed,
+  resetFirstDepositWarningConfirmed,
+} = tbtcSlice.actions
 
 export const registerTBTCListeners = () => {
   if (!featureFlags.TBTC_V2) return
