@@ -40,11 +40,13 @@ const FirstDepositWarningModalBase: FC<FirstDepositWarningModalProps> = ({
       <ModalCloseButton />
       <ModalBody>
         <InfoBox variant="modal">
-          <H5 mb="4">First Deposit Amount</H5>
-          <BodyLg my="2">
+          <H5 mb="4">
             The first minting deposit should be exactly the minimum deposit
-            amount of 0.01 BTC. The system won\'t recognize initial deposits
-            larger than that amount, putting it at risk of not being minted.
+            amount of 0.01 BTC.
+          </H5>
+          <BodyLg my="2">
+            The system won't recognize initial deposits larger than 0.01 BTC for
+            the first minting deposit, putting it at risk of not being minted.
           </BodyLg>
         </InfoBox>
         <Box
@@ -57,7 +59,7 @@ const FirstDepositWarningModalBase: FC<FirstDepositWarningModalProps> = ({
           <Checkbox
             isChecked={isChecked}
             onChange={handleCheckboxChange}
-            alignItems="flex-start"
+            alignItems="center"
             size="lg"
             spacing="3"
             my={3}
