@@ -4,7 +4,15 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { FC, Ref, useCallback, useRef, useState, useEffect } from "react"
+import {
+  FC,
+  Ref,
+  useCallback,
+  useRef,
+  useState,
+  useEffect,
+  FocusEvent,
+} from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
@@ -40,6 +48,7 @@ import { useAppSelector, useAppDispatch } from "../../../../hooks/store"
 import { BridgeActivityStatus } from "../../../../threshold-ts/tbtc"
 import { RootState } from "../../../../store"
 import { tbtcSlice } from "../../../../store/tbtc/tbtcSlice"
+import { accountSlice } from "../../../../store/account/slice"
 
 export interface FormValues {
   ethAddress: string
@@ -58,14 +67,42 @@ type ComponentProps = {
  */
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
+  values,
+  setFieldTouched,
 }) => {
-  const { chainId } = useIsActive()
+  const { chainId: ethChainIdForTRM } = useIsActive()
+  const dispatch = useAppDispatch()
+  const threshold = useThreshold()
+
+  const { chainId: displayLogicChainId } = useIsActive()
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
-    isTestnetChainId(chainId as number)
+    isTestnetChainId(displayLogicChainId as number)
       ? BitcoinNetwork.Testnet
       : BitcoinNetwork.Mainnet
   )
+
+  const handleBtcAddressBlur = (event: FocusEvent<HTMLInputElement>) => {
+    const btcAddress = event.target.value
+    setFieldTouched("btcRecoveryAddress", true)
+
+    const isValidFormat =
+      validateBTCAddress(btcAddress, threshold.tbtc.bitcoinNetwork) ===
+      undefined
+
+    if (btcAddress && isValidFormat) {
+      dispatch(
+        accountSlice.actions.bitcoinAddressSubmitted({
+          btcAddress,
+          ethChainId: ethChainIdForTRM,
+        })
+      )
+    } else if (btcAddress) {
+      console.log(
+        "BTC Address format validation failed (onBlur) or address is empty."
+      )
+    }
+  }
 
   return (
     <Form id={formId}>
@@ -83,6 +120,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         tooltip={`This address needs to start with ${resolvedBTCAddressPrefix}. Return Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Return Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file`}
         placeholder={`BTC Address should start with ${resolvedBTCAddressPrefix}`}
         mb={6}
+        onBlur={handleBtcAddressBlur}
       />
     </Form>
   )
