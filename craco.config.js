@@ -1,3 +1,5 @@
+const webpack = require("webpack")
+
 module.exports = {
   babel: {
     plugins: [
@@ -10,5 +12,36 @@ module.exports = {
        */
       ["@babel/plugin-transform-class-properties", { loose: true }],
     ],
+  },
+  webpack: {
+    configure: (webpackConfig) => {
+      // Add webpack plugins
+      webpackConfig.plugins = [
+        ...webpackConfig.plugins,
+        new webpack.ProvidePlugin({
+          Buffer: ["buffer", "Buffer"],
+          process: "process/browser",
+        }),
+      ]
+
+      // Add node polyfills (webpack 4 style)
+      webpackConfig.node = {
+        ...webpackConfig.node,
+        crypto: true,
+        stream: true,
+        buffer: true,
+      }
+
+      // Ensure starknet is properly resolved
+      webpackConfig.resolve.alias = {
+        ...webpackConfig.resolve.alias,
+        starknet: require.resolve("starknet"),
+        crypto: require.resolve("crypto-browserify"),
+        stream: require.resolve("stream-browserify"),
+        buffer: require.resolve("buffer/"),
+      }
+
+      return webpackConfig
+    },
   },
 }

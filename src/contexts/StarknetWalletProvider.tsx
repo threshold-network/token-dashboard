@@ -6,7 +6,27 @@ import React, {
   useCallback,
   useMemo,
 } from "react"
-import { connect, disconnect } from "starknetkit"
+import { constants } from "starknet"
+import { getDefaultProviderChainId } from "../utils/getEnvVariable"
+import { isMainnetChainId } from "../networks/utils"
+
+// Lazy load starknetkit to avoid module resolution issues
+let starknetKitModule: any = null
+
+const getStarknetKit = async () => {
+  if (!starknetKitModule) {
+    starknetKitModule = await import("starknetkit")
+  }
+  return starknetKitModule
+}
+
+// Determine the expected Starknet network based on EVM network
+const getExpectedStarknetChainId = () => {
+  const defaultChainId = getDefaultProviderChainId()
+  return isMainnetChainId(defaultChainId)
+    ? constants.StarknetChainId.SN_MAIN
+    : constants.StarknetChainId.SN_SEPOLIA
+}
 
 // Define the wallet connection state interface
 interface StarknetWalletContextValue {
@@ -87,6 +107,9 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       setConnecting(true)
       setError(null)
 
+      // Get starknetkit module
+      const { connect } = await getStarknetKit()
+
       // Use starknetkit's connect with modal
       const result = await connect({
         modalMode: "alwaysAsk",
@@ -96,6 +119,26 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
         const { wallet, connectorData } = result
 
         if (wallet && connectorData) {
+          // Check if we need to switch networks
+          const expectedChainId = getExpectedStarknetChainId()
+          const currentChainId = wallet.chainId || wallet.account?.chainId
+
+          if (currentChainId && currentChainId !== expectedChainId) {
+            try {
+              // Request network switch
+              await wallet.request({
+                type: "wallet_switchStarknetChain",
+                params: {
+                  chainId: expectedChainId,
+                },
+              })
+            } catch (switchError) {
+              console.warn("Failed to switch Starknet network:", switchError)
+              // Some wallets might not support network switching
+              // Continue with the current network
+            }
+          }
+
           // Store wallet instance (this is the provider for SDK)
           setProvider(wallet)
 
@@ -146,6 +189,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
   // Disconnect wallet function
   const handleDisconnect = useCallback(async () => {
     try {
+      const { disconnect } = await getStarknetKit()
       await disconnect({ clearLastWallet: true })
 
       // Clean up state
@@ -172,53 +216,55 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
 
     if (storedAddress && lastWallet) {
       // Attempt to reconnect
-      connect({
-        modalMode: "neverAsk",
-      })
-        .then((result) => {
-          if (result) {
-            const { wallet, connectorData } = result
+      getStarknetKit().then(({ connect }) => {
+        connect({
+          modalMode: "neverAsk",
+        })
+          .then((result: any) => {
+            if (result) {
+              const { wallet, connectorData } = result
 
-            if (
-              wallet &&
-              connectorData &&
-              connectorData.account === storedAddress
-            ) {
-              // Successfully reconnected to the same account
-              setProvider(wallet)
-              setAccount(connectorData.account)
-              setConnected(true)
-              const data = connectorData as any
-              setWalletName(data.name || "Unknown Wallet")
-              setWalletIcon(data.icon || "")
+              if (
+                wallet &&
+                connectorData &&
+                connectorData.account === storedAddress
+              ) {
+                // Successfully reconnected to the same account
+                setProvider(wallet)
+                setAccount(connectorData.account)
+                setConnected(true)
+                const data = connectorData as any
+                setWalletName(data.name || "Unknown Wallet")
+                setWalletIcon(data.icon || "")
 
-              // Set up event listeners
-              if (wallet.on) {
-                wallet.on("accountsChanged", (accounts?: string[]) => {
-                  if (accounts && accounts.length > 0) {
-                    setAccount(accounts[0])
-                  } else {
-                    handleDisconnect()
-                  }
-                })
+                // Set up event listeners
+                if (wallet.on) {
+                  wallet.on("accountsChanged", (accounts?: string[]) => {
+                    if (accounts && accounts.length > 0) {
+                      setAccount(accounts[0])
+                    } else {
+                      handleDisconnect()
+                    }
+                  })
 
-                wallet.on("networkChanged", (chainId?: string) => {
-                  console.log("Network changed to:", chainId)
-                })
+                  wallet.on("networkChanged", (chainId?: string) => {
+                    console.log("Network changed to:", chainId)
+                  })
+                }
+              } else {
+                // Different account or failed to reconnect - clear storage
+                localStorage.removeItem(STARKNET_WALLET_KEY)
+                localStorage.removeItem(STARKNET_LAST_WALLET)
               }
-            } else {
-              // Different account or failed to reconnect - clear storage
-              localStorage.removeItem(STARKNET_WALLET_KEY)
-              localStorage.removeItem(STARKNET_LAST_WALLET)
             }
-          }
-        })
-        .catch((err) => {
-          console.error("Auto-reconnect failed:", err)
-          // Clear storage on error
-          localStorage.removeItem(STARKNET_WALLET_KEY)
-          localStorage.removeItem(STARKNET_LAST_WALLET)
-        })
+          })
+          .catch((err: any) => {
+            console.error("Auto-reconnect failed:", err)
+            // Clear storage on error
+            localStorage.removeItem(STARKNET_WALLET_KEY)
+            localStorage.removeItem(STARKNET_LAST_WALLET)
+          })
+      })
     }
   }, [handleDisconnect])
 

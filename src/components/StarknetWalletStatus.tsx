@@ -1,4 +1,4 @@
-import React, { FC } from "react"
+import { FC } from "react"
 import {
   Box,
   Flex,
@@ -13,8 +13,8 @@ import { BiPowerOff } from "react-icons/bi"
 import { useStarknetConnection } from "../hooks/useStarknetConnection"
 import { StarknetIcon } from "../static/icons/Starknet"
 import { ArgentIcon } from "../static/icons/Argent"
-import { shortenAddress } from "../utils/shortenAddress"
-import { CopyToClipboard } from "./CopyToClipboard"
+import shortenAddress from "../utils/shortenAddress"
+import CopyToClipboard from "./CopyToClipboard"
 
 const StarknetWalletStatus: FC = () => {
   const { isConnected, address, walletName, disconnect, chainId } =
@@ -66,14 +66,15 @@ const StarknetWalletStatus: FC = () => {
               {walletName || "Starknet Wallet"}
             </Text>
             <HStack spacing={2} align="center">
-              <Text fontSize="xs" color="gray.500">
-                {shortenAddress(address)}
-              </Text>
               <CopyToClipboard
-                text={address}
-                tooltip="Copy Starknet address"
-                size="xs"
-              />
+                textToCopy={address}
+                helperText="Copy Starknet address"
+                copyButtonPosition="end"
+              >
+                <Text fontSize="xs" color="gray.500">
+                  {shortenAddress(address)}
+                </Text>
+              </CopyToClipboard>
             </HStack>
             <Text fontSize="xs" color="gray.400" mt={1}>
               {networkName}

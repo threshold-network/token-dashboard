@@ -19,7 +19,7 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.config = config
-    const { ethereum, bitcoin, crossChain } = config
+    const { ethereum, bitcoin } = config
 
     this.multicall = new Multicall(ethereum)
     this.vendingMachines = new VendingMachines(ethereum)
@@ -29,7 +29,7 @@ export class Threshold {
       this.multicall,
       ethereum
     )
-    this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
+    this.tbtc = new TBTC(ethereum, bitcoin)
   }
 
   updateConfig = (config: ThresholdConfig) => {

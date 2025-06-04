@@ -118,7 +118,9 @@
     "@testing-library/react-hooks": "7.0.2",
     "@typescript-eslint/eslint-plugin": "^4.31.1",
     "@typescript-eslint/parser": "^4.31.1",
+    "buffer": "^6.0.3",
     "chromatic": "^6.0.0-canary.1",
+    "crypto-browserify": "^3.12.1",
     "cypress": "^8.5.0",
     "eslint": "^7.32.0",
     "eslint-config-keep": "github:keep-network/eslint-config-keep#0c27ade",
@@ -128,6 +130,8 @@
     "husky": ">=6",
     "lint-staged": ">=10",
     "prettier": "^2.4.0",
+    "process": "^0.11.10",
+    "stream-browserify": "^3.0.0",
     "ts-essentials": "^9.1.2"
   }
 }

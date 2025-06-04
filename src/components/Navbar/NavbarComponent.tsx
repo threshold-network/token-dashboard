@@ -21,9 +21,6 @@ import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
 import { pages } from "../../pages"
 import { PageComponent } from "../../types"
-import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
-import { ChainName } from "../../threshold-ts/types"
-import StarknetWalletStatus from "../StarknetWalletStatus"
 
 interface NavbarComponentProps {
   account?: string | null
@@ -42,7 +39,6 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
   const IconComponent = useColorModeValue(ThresholdPurple, ThresholdWhite)
   const isOverviewPage = useMatch("overview/*")
   const borderBottomColor = useColorModeValue("gray.100", "gray.700")
-  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
 
   return (
     <>
@@ -72,9 +68,6 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
           <DarkModeSwitcher />
           {chainId && <NetworkButton />}
           <AccountButton {...{ openWalletModal, deactivate, account }} />
-          {isNonEVMActive && nonEVMChainName === ChainName.Starknet && (
-            <StarknetWalletStatus />
-          )}
         </Stack>
         <VStack
           position="absolute"

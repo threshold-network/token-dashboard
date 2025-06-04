@@ -10,6 +10,7 @@ export enum SupportedChainIds {
   Localhost = 1337,
   Arbitrum = 42161,
   Base = 8453,
+  StarkNet = 0x534e5f4d41494e, // "SN_MAIN" in hex
   // ArbitrumSepolia = 421614,
   // BaseSepolia = 84532,
 }
