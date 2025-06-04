@@ -749,10 +749,14 @@ export class TBTC implements ITBTC {
     account: string,
     chainName?: string
   ): Promise<void> => {
+    console.log("TBTC initiateCrossChain called with:", {
+      chainName,
+      hasProvider: !!providerOrSigner,
+    })
     const sdk = await this._getSdk()
 
     // For Starknet, use single-parameter initialization
-    if (chainName === "StarkNet") {
+    if (chainName === "Starknet" || chainName === "StarkNet") {
       // Validate provider
       if (!providerOrSigner) {
         throw new Error("Provider is required for StarkNet")
@@ -772,12 +776,15 @@ export class TBTC implements ITBTC {
       }
 
       // Single-parameter initialization for StarkNet
-      await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
+      console.log("Initializing StarkNet cross-chain with SDK...")
+      await sdk.initializeCrossChain("Starknet" as L2Chain, providerOrSigner)
 
       // Get the L2 tBTC token instance from SDK
-      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      const crossChainContracts = sdk.crossChainContracts("Starknet" as L2Chain)
+      console.log("Cross-chain contracts:", crossChainContracts)
       if (crossChainContracts) {
         this._l2TbtcToken = crossChainContracts.l2TbtcToken
+        console.log("L2 tBTC token initialized:", !!this._l2TbtcToken)
       }
     } else {
       // Standard L2 initialization for EVM chains

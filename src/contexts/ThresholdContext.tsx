@@ -55,41 +55,45 @@ export const ThresholdProvider: FC = ({ children }) => {
     useNonEVMConnection()
 
   useEffect(() => {
-    if (isActive && chainId) {
-      threshold.updateConfig({
-        ethereum: {
-          ...threshold.config.ethereum,
-          providerOrSigner: isEmbed ? ledgerLiveAppEthereumSigner : library,
-          account,
-          chainId,
-        },
-        bitcoin: threshold.config.bitcoin,
-        crossChain: {
-          isCrossChain: isNonEVMActive,
-          chainName: nonEVMChainName,
-          nonEVMProvider: nonEVMProvider,
-        },
-      })
-      hasThresholdLibConfigBeenUpdated.current = true
+    const updateThresholdConfig = async () => {
+      if (isActive && chainId) {
+        await threshold.updateConfig({
+          ethereum: {
+            ...threshold.config.ethereum,
+            providerOrSigner: isEmbed ? ledgerLiveAppEthereumSigner : library,
+            account,
+            chainId,
+          },
+          bitcoin: threshold.config.bitcoin,
+          crossChain: {
+            isCrossChain: isNonEVMActive,
+            chainName: nonEVMChainName,
+            nonEVMProvider: nonEVMProvider,
+          },
+        })
+        hasThresholdLibConfigBeenUpdated.current = true
+      }
+
+      if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
+        await threshold.updateConfig({
+          ethereum: {
+            ...threshold.config.ethereum,
+            providerOrSigner: getThresholdLibProvider(),
+            account: undefined,
+            chainId: getDefaultProviderChainId(),
+          },
+          bitcoin: threshold.config.bitcoin,
+          crossChain: {
+            isCrossChain: false,
+            chainName: null,
+            nonEVMProvider: null,
+          },
+        })
+        hasThresholdLibConfigBeenUpdated.current = false
+      }
     }
 
-    if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
-      threshold.updateConfig({
-        ethereum: {
-          ...threshold.config.ethereum,
-          providerOrSigner: getThresholdLibProvider(),
-          account: undefined,
-          chainId: getDefaultProviderChainId(),
-        },
-        bitcoin: threshold.config.bitcoin,
-        crossChain: {
-          isCrossChain: false,
-          chainName: null,
-          nonEVMProvider: null,
-        },
-      })
-      hasThresholdLibConfigBeenUpdated.current = false
-    }
+    updateThresholdConfig()
   }, [
     isActive,
     account,

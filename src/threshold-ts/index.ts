@@ -41,10 +41,16 @@ export class Threshold {
       config.crossChain.chainName &&
       config.crossChain.nonEVMProvider
     ) {
-      await this.initializeCrossChain(
-        config.crossChain.chainName,
-        config.crossChain.nonEVMProvider
-      )
+      console.log("Initializing cross-chain for:", config.crossChain.chainName)
+      try {
+        await this.initializeCrossChain(
+          config.crossChain.chainName,
+          config.crossChain.nonEVMProvider
+        )
+        console.log("Cross-chain initialization complete")
+      } catch (error) {
+        console.error("Cross-chain initialization failed:", error)
+      }
     }
   }
 

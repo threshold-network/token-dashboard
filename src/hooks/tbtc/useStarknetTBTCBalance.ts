@@ -38,9 +38,20 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
     setError(null)
 
     try {
-      // Check if l2TbtcToken is available
+      // Check if l2TbtcToken is available, if not, wait a bit and retry once
       if (!threshold.tbtc.l2TbtcToken) {
-        throw new Error("tBTC token not initialized")
+        // Wait for initialization to complete
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+
+        // Check again after waiting
+        if (!threshold.tbtc.l2TbtcToken) {
+          console.warn(
+            "tBTC token not initialized yet, will retry on next render"
+          )
+          setBalance("0")
+          setIsLoading(false)
+          return
+        }
       }
 
       // Fetch balance using the SDK's l2TbtcToken
@@ -62,6 +73,7 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
           : cleanBalance + ".0"
 
       setBalance(finalBalance)
+      setError(null)
     } catch (err) {
       console.error("Failed to fetch StarkNet tBTC balance:", err)
       setError(err instanceof Error ? err.message : "Failed to fetch balance")
@@ -73,7 +85,7 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
 
   useEffect(() => {
     fetchBalance()
-  }, [isStarknetConnected, nonEVMPublicKey])
+  }, [isStarknetConnected, nonEVMPublicKey, threshold.tbtc.l2TbtcToken])
 
   return {
     balance,
