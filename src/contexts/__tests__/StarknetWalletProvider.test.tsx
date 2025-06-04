@@ -1,12 +1,11 @@
 import React from "react"
-import { render, screen, waitFor, act } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import {
   StarknetWalletProvider,
   useStarknetWallet,
 } from "../StarknetWalletProvider"
 import * as starknetkit from "starknetkit"
-import { constants } from "starknet"
 
 // Mock starknetkit
 jest.mock("starknetkit", () => ({
@@ -14,37 +13,12 @@ jest.mock("starknetkit", () => ({
   disconnect: jest.fn(),
 }))
 
-// Mock starknet
-jest.mock("starknet", () => ({
-  constants: {
-    StarknetChainId: {
-      SN_MAIN: "0x534e5f4d41494e",
-      SN_SEPOLIA: "0x534e5f5345504f4c4941",
-    },
-  },
-}))
-
-// Mock starknet-react modules
-jest.mock("@starknet-react/core", () => ({
-  StarknetConfig: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  StarknetProvider: ({ children }: { children: React.ReactNode }) => (
-    <>{children}</>
-  ),
-  mainnet: { id: "mainnet" },
-  sepolia: { id: "sepolia" },
-}))
-
-jest.mock("starknetkit/injected", () => ({
+// Mock starknetkit connectors
+jest.mock("starknetkit/dist/connectors/injected/index.js", () => ({
   InjectedConnector: jest.fn().mockImplementation(() => ({})),
 }))
 
-jest.mock("starknetkit/argentMobile", () => ({
-  ArgentMobileConnector: jest.fn().mockImplementation(() => ({})),
-}))
-
-jest.mock("starknetkit/webwallet", () => ({
+jest.mock("starknetkit/dist/connectors/webwallet/index.js", () => ({
   WebWalletConnector: jest.fn().mockImplementation(() => ({})),
 }))
 
@@ -89,10 +63,10 @@ describe("StarknetWalletProvider", () => {
   const mockAddress =
     "0x04a909347487d909a6629b56880e6e03ad3859e772048c4481f3fba88ea02c32f"
   const mockWallet = {
-    selectedAddress: mockAddress,
-    account: { address: mockAddress },
+    on: jest.fn(),
   }
   const mockConnectorData = {
+    account: mockAddress,
     id: "argentX",
     name: "Argent X",
     icon: "/argent-x-icon.svg",
@@ -137,11 +111,10 @@ describe("StarknetWalletProvider", () => {
     expect(screen.getByTestId("error")).toHaveTextContent("No error")
     expect(screen.getByTestId("wallet-name")).toHaveTextContent("No wallet")
     expect(screen.getByTestId("provider")).toHaveTextContent("No provider")
-    expect(screen.getByTestId("wallets-count")).toHaveTextContent("4")
+    expect(screen.getByTestId("wallets-count")).toHaveTextContent("3")
   })
 
   it("should connect wallet successfully", async () => {
-    const user = userEvent.setup()
     const mockConnect = starknetkit.connect as jest.Mock
     mockConnect.mockResolvedValue({
       wallet: mockWallet,
@@ -155,7 +128,7 @@ describe("StarknetWalletProvider", () => {
     )
 
     const connectButton = screen.getByText("Connect")
-    await user.click(connectButton)
+    await userEvent.click(connectButton)
 
     await waitFor(() => {
       expect(screen.getByTestId("account")).toHaveTextContent(mockAddress)
@@ -168,21 +141,25 @@ describe("StarknetWalletProvider", () => {
 
     expect(mockConnect).toHaveBeenCalledWith({
       modalMode: "alwaysAsk",
-      modalTheme: "dark",
-      webWalletUrl: "https://web.argent.xyz",
-      argentMobileOptions: {
-        dappName: "Threshold Network",
-        url: expect.any(String),
-      },
+      connectors: expect.any(Array),
     })
 
     // Check localStorage
     expect(localStorage.getItem("starknet-wallet")).toBe(mockAddress)
     expect(localStorage.getItem("starknet-last-wallet")).toBe("argentX")
+
+    // Check event listeners were set up
+    expect(mockWallet.on).toHaveBeenCalledWith(
+      "accountsChanged",
+      expect.any(Function)
+    )
+    expect(mockWallet.on).toHaveBeenCalledWith(
+      "networkChanged",
+      expect.any(Function)
+    )
   })
 
   it("should handle connection error", async () => {
-    const user = userEvent.setup()
     const mockConnect = starknetkit.connect as jest.Mock
     const error = new Error("Connection failed")
     mockConnect.mockRejectedValue(error)
@@ -194,7 +171,7 @@ describe("StarknetWalletProvider", () => {
     )
 
     const connectButton = screen.getByText("Connect")
-    await user.click(connectButton)
+    await userEvent.click(connectButton)
 
     await waitFor(() => {
       expect(screen.getByTestId("error")).toHaveTextContent("Connection failed")
@@ -203,7 +180,6 @@ describe("StarknetWalletProvider", () => {
   })
 
   it("should disconnect wallet successfully", async () => {
-    const user = userEvent.setup()
     const mockConnect = starknetkit.connect as jest.Mock
     const mockDisconnect = starknetkit.disconnect as jest.Mock
 
@@ -221,7 +197,7 @@ describe("StarknetWalletProvider", () => {
 
     // Connect first
     const connectButton = screen.getByText("Connect")
-    await user.click(connectButton)
+    await userEvent.click(connectButton)
 
     await waitFor(() => {
       expect(screen.getByTestId("connected")).toHaveTextContent("Connected")
@@ -229,7 +205,7 @@ describe("StarknetWalletProvider", () => {
 
     // Then disconnect
     const disconnectButton = screen.getByText("Disconnect")
-    await user.click(disconnectButton)
+    await userEvent.click(disconnectButton)
 
     await waitFor(() => {
       expect(screen.getByTestId("account")).toHaveTextContent("No account")
@@ -266,7 +242,7 @@ describe("StarknetWalletProvider", () => {
 
     expect(mockConnect).toHaveBeenCalledWith({
       modalMode: "neverAsk",
-      webWalletUrl: "https://web.argent.xyz",
+      connectors: expect.any(Array),
     })
   })
 
@@ -289,39 +265,20 @@ describe("StarknetWalletProvider", () => {
     })
   })
 
-  it("should use mainnet for Ethereum mainnet chain ID", () => {
-    render(
-      <StarknetWalletProvider ethereumChainId={1}>
-        <TestComponent />
-      </StarknetWalletProvider>
-    )
-
-    // The component should render without errors
-    expect(screen.getByTestId("connected")).toBeInTheDocument()
-  })
-
-  it("should use sepolia for Ethereum sepolia chain ID", () => {
-    render(
-      <StarknetWalletProvider ethereumChainId={11155111}>
-        <TestComponent />
-      </StarknetWalletProvider>
-    )
-
-    // The component should render without errors
-    expect(screen.getByTestId("connected")).toBeInTheDocument()
-  })
-
-  it("should extract address from wallet.account when selectedAddress is not available", async () => {
-    const user = userEvent.setup()
+  it("should handle account change events", async () => {
     const mockConnect = starknetkit.connect as jest.Mock
+    let accountsChangedHandler: ((accounts?: string[]) => void) | null = null
 
-    // Wallet without selectedAddress
-    const walletWithAccount = {
-      account: { address: mockAddress },
+    const mockWalletWithEvents = {
+      on: jest.fn((event, handler) => {
+        if (event === "accountsChanged") {
+          accountsChangedHandler = handler
+        }
+      }),
     }
 
     mockConnect.mockResolvedValue({
-      wallet: walletWithAccount,
+      wallet: mockWalletWithEvents,
       connectorData: mockConnectorData,
     })
 
@@ -332,23 +289,39 @@ describe("StarknetWalletProvider", () => {
     )
 
     const connectButton = screen.getByText("Connect")
-    await user.click(connectButton)
+    await userEvent.click(connectButton)
 
     await waitFor(() => {
       expect(screen.getByTestId("account")).toHaveTextContent(mockAddress)
-      expect(screen.getByTestId("connected")).toHaveTextContent("Connected")
+    })
+
+    // Simulate account change
+    const newAddress =
+      "0x05a909347487d909a6629b56880e6e03ad3859e772048c4481f3fba88ea02c32f"
+    accountsChangedHandler?.([newAddress])
+
+    await waitFor(() => {
+      expect(screen.getByTestId("account")).toHaveTextContent(newAddress)
     })
   })
 
-  it("should handle wallet without address", async () => {
-    const user = userEvent.setup()
+  it("should handle disconnect through account change event", async () => {
     const mockConnect = starknetkit.connect as jest.Mock
+    const mockDisconnect = starknetkit.disconnect as jest.Mock
+    mockDisconnect.mockResolvedValue(undefined)
 
-    // Wallet without any address
-    const walletWithoutAddress = {}
+    let accountsChangedHandler: ((accounts?: string[]) => void) | null = null
+
+    const mockWalletWithEvents = {
+      on: jest.fn((event, handler) => {
+        if (event === "accountsChanged") {
+          accountsChangedHandler = handler
+        }
+      }),
+    }
 
     mockConnect.mockResolvedValue({
-      wallet: walletWithoutAddress,
+      wallet: mockWalletWithEvents,
       connectorData: mockConnectorData,
     })
 
@@ -359,13 +332,18 @@ describe("StarknetWalletProvider", () => {
     )
 
     const connectButton = screen.getByText("Connect")
-    await user.click(connectButton)
+    await userEvent.click(connectButton)
 
     await waitFor(() => {
-      expect(screen.getByTestId("error")).toHaveTextContent(
-        "Failed to get wallet address"
-      )
+      expect(screen.getByTestId("connected")).toHaveTextContent("Connected")
+    })
+
+    // Simulate disconnect through empty accounts
+    accountsChangedHandler?.([])
+
+    await waitFor(() => {
       expect(screen.getByTestId("connected")).toHaveTextContent("Not connected")
+      expect(screen.getByTestId("account")).toHaveTextContent("No account")
     })
   })
 })
