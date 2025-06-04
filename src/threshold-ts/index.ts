@@ -32,7 +32,24 @@ export class Threshold {
     this.tbtc = new TBTC(ethereum, bitcoin)
   }
 
-  updateConfig = (config: ThresholdConfig) => {
+  updateConfig = async (config: ThresholdConfig) => {
     this._initialize(config)
+
+    // Handle cross-chain initialization if configured
+    if (
+      config.crossChain?.isCrossChain &&
+      config.crossChain.chainName &&
+      config.crossChain.nonEVMProvider
+    ) {
+      await this.initializeCrossChain(
+        config.crossChain.chainName,
+        config.crossChain.nonEVMProvider
+      )
+    }
+  }
+
+  initializeCrossChain = async (chainName: string, provider: any) => {
+    // Use the public method from TBTC class for cross-chain init
+    await this.tbtc.initiateCrossChain(provider, "", chainName)
   }
 }

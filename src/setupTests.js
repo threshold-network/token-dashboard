@@ -8,7 +8,41 @@ import "@testing-library/jest-dom"
 global.TextEncoder = require("util").TextEncoder
 global.TextDecoder = require("util").TextDecoder
 
+// Mock react-icons to fix test issues
+jest.mock("react-icons/all", () => ({
+  __esModule: true,
+}))
+
+// Mock axios to fix test issues
+jest.mock("axios", () => ({
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+}))
+
 jest.mock("@keep-network/tbtc-v2.ts", () => ({
+  BitcoinNetwork: {
+    Mainnet: "mainnet",
+    Testnet: "testnet",
+  },
+  chainIdFromSigner: jest.fn().mockResolvedValue(1),
+  ethereumAddressFromSigner: jest.fn().mockResolvedValue("0x123"),
+  loadEthereumCoreContracts: jest.fn().mockResolvedValue({}),
+  TBTC: {
+    initializeMainnet: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+    initializeSepolia: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+    initializeCustom: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+  },
   calculateDepositAddress: jest.fn(),
   calculateDepositRefundLocktime: jest.fn(),
   DepositScriptParameters: jest.fn(),

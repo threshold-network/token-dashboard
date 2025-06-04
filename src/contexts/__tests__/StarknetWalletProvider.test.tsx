@@ -11,15 +11,17 @@ import * as starknetkit from "starknetkit"
 jest.mock("starknetkit", () => ({
   connect: jest.fn(),
   disconnect: jest.fn(),
-}))
-
-// Mock starknetkit connectors
-jest.mock("starknetkit/dist/connectors/injected/index.js", () => ({
-  InjectedConnector: jest.fn().mockImplementation(() => ({})),
-}))
-
-jest.mock("starknetkit/dist/connectors/webwallet/index.js", () => ({
-  WebWalletConnector: jest.fn().mockImplementation(() => ({})),
+  // Mock the connectors directly in the main module
+  InjectedConnector: jest.fn().mockImplementation(() => ({
+    id: "argentX",
+    name: "Argent X",
+    icon: "/argentx-icon.svg",
+  })),
+  WebWalletConnector: jest.fn().mockImplementation(() => ({
+    id: "argentWebWallet",
+    name: "Argent Web Wallet",
+    icon: "/argent-web-icon.svg",
+  })),
 }))
 
 // Test component to consume the context

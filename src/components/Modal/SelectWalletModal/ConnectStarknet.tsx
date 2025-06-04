@@ -13,7 +13,7 @@ import {
   Icon,
   useColorModeValue,
 } from "@chakra-ui/react"
-import { BiLeftArrowAlt } from "react-icons/all"
+import { BiLeftArrowAlt } from "react-icons/bi"
 import { H4, BodyMd } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import { useStarknetConnection } from "../../../hooks/useStarknetConnection"

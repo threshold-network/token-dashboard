@@ -221,6 +221,23 @@ export interface ITBTC {
   readonly isCrossChain: boolean
 
   /**
+   * L2 tBTC token contract for cross-chain operations
+   */
+  readonly l2TbtcToken: any | null
+
+  /**
+   * Initializes cross-chain support for non-EVM chains like StarkNet
+   * @param providerOrSigner Provider or signer for the cross-chain
+   * @param account Account address (optional for non-EVM chains)
+   * @param chainName The name of the chain (e.g., "StarkNet")
+   */
+  initiateCrossChain(
+    providerOrSigner: any,
+    account: string,
+    chainName?: string
+  ): Promise<void>
+
+  /**
    * Initializes tbtc-v2 SDK
    * @param providerOrSigner Ethers instance of Provider (if wallet is not
    * connected) or Signer (if wallet is connected).
@@ -482,6 +499,7 @@ export class TBTC implements ITBTC {
   private _tbtcVaultContract: Contract | null
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
+  private _l2TbtcToken: any | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -673,7 +691,7 @@ export class TBTC implements ITBTC {
       this._sdkPromise = this._initializeSdk(providerOrSigner, account)
 
       if (this.isCrossChain) {
-        await this._initiateCrossChain(
+        await this.initiateCrossChain(
           providerOrSigner as Web3Provider,
           account as string
         )
@@ -715,6 +733,10 @@ export class TBTC implements ITBTC {
     return this._isCrossChain
   }
 
+  get l2TbtcToken() {
+    return this._l2TbtcToken
+  }
+
   private _getSdk = async (): Promise<SDK> => {
     const sdk = await this._sdkPromise
     if (!sdk) throw new EmptySdkObjectError()
@@ -722,17 +744,48 @@ export class TBTC implements ITBTC {
     return sdk
   }
 
-  private _initiateCrossChain = async (
-    providerOrSigner: Web3Provider,
-    account: string
+  initiateCrossChain = async (
+    providerOrSigner: Web3Provider | any, // Support non-EVM providers
+    account: string,
+    chainName?: string
   ): Promise<void> => {
     const sdk = await this._getSdk()
-    const signer = getSigner(providerOrSigner as Web3Provider, account)
 
-    const connectedChainId = await chainIdFromSigner(signer)
-    const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+    // For Starknet, use single-parameter initialization
+    if (chainName === "StarkNet") {
+      // Validate provider
+      if (!providerOrSigner) {
+        throw new Error("Provider is required for StarkNet")
+      }
 
-    await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
+      // Check if provider has account information
+      const hasAddress =
+        "address" in providerOrSigner &&
+        typeof providerOrSigner.address === "string"
+      const hasAccount =
+        "account" in providerOrSigner && providerOrSigner.account?.address
+
+      if (!hasAddress && !hasAccount) {
+        throw new Error(
+          "StarkNet provider must be an Account object or Provider with connected account."
+        )
+      }
+
+      // Single-parameter initialization for StarkNet
+      await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
+
+      // Get the L2 tBTC token instance from SDK
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      if (crossChainContracts) {
+        this._l2TbtcToken = crossChainContracts.l2TbtcToken
+      }
+    } else {
+      // Standard L2 initialization for EVM chains
+      const signer = getSigner(providerOrSigner as Web3Provider, account)
+      const connectedChainId = await chainIdFromSigner(signer)
+      const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+      await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
+    }
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -822,7 +875,7 @@ export class TBTC implements ITBTC {
       extraData: Hex.from(extraData),
     }
 
-    await this._initiateCrossChain(
+    await this.initiateCrossChain(
       this._ethereumConfig.providerOrSigner as Web3Provider,
       this._ethereumConfig.account as string
     )
