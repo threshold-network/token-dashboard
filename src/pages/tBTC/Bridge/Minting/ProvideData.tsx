@@ -16,7 +16,7 @@ import { MintingStep } from "../../../../types/tbtc"
 import {
   getErrorsObj,
   validateBTCAddress,
-  validateETHAddress,
+  validateUserWalletAddress,
 } from "../../../../utils/forms"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
 import {
@@ -36,7 +36,7 @@ import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
 
 export interface FormValues {
-  ethAddress: string
+  userWalletAddress: string
   btcRecoveryAddress: string
   bitcoinNetwork: BitcoinNetwork
 }
@@ -64,10 +64,10 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   return (
     <Form id={formId}>
       <FormikInput
-        name="ethAddress"
-        label="ETH Address"
+        name="userWalletAddress"
+        label="User Wallet Address"
         placeholder="Address where you'll receive your tBTC"
-        tooltip="ETH address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
+        tooltip="User wallet address is prepopulated with your connected wallet address. This is the address where you'll receive your tBTC."
         mb={6}
         isReadOnly={true}
       />
@@ -83,7 +83,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }
 
 type MintingProcessFormProps = {
-  initialEthAddress: string
+  initialUserWalletAddress: string
   btcRecoveryAddress: string
   bitcoinNetwork: BitcoinNetwork
   innerRef: Ref<FormikProps<FormValues>>
@@ -92,17 +92,19 @@ type MintingProcessFormProps = {
 
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   mapPropsToValues: ({
-    initialEthAddress,
+    initialUserWalletAddress,
     btcRecoveryAddress,
     bitcoinNetwork,
   }) => ({
-    ethAddress: initialEthAddress,
+    userWalletAddress: initialUserWalletAddress,
     btcRecoveryAddress: btcRecoveryAddress,
     bitcoinNetwork: bitcoinNetwork,
   }),
   validate: async (values, props) => {
     const errors: FormikErrors<FormValues> = {}
-    errors.ethAddress = validateETHAddress(values.ethAddress)
+    errors.userWalletAddress = validateUserWalletAddress(
+      values.userWalletAddress
+    )
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
       values.bitcoinNetwork as any
@@ -142,7 +144,7 @@ export const ProvideDataComponent: FC<{
 
   const onSubmit = useCallback(
     async (values: FormValues) => {
-      if (account && !isSameETHAddress(values.ethAddress, account)) {
+      if (account && !isSameETHAddress(values.userWalletAddress, account)) {
         throw new Error(
           "The account used to generate the deposit address must be the same as the connected wallet."
         )
@@ -173,7 +175,7 @@ export const ProvideDataComponent: FC<{
       const receipt = deposit.getReceipt()
 
       // update state,
-      updateState("ethAddress", values.ethAddress)
+      updateState("ethAddress", values.userWalletAddress)
       updateState("depositor", receipt.depositor.identifierHex.toString())
       updateState("blindingFactor", receipt.blindingFactor.toString())
       updateState("btcRecoveryAddress", values.btcRecoveryAddress)
@@ -191,7 +193,7 @@ export const ProvideDataComponent: FC<{
             identifierHex: receipt.depositor.identifierHex.toString(),
           },
           chainName: chainName,
-          ethAddress: values.ethAddress,
+          ethAddress: values.userWalletAddress,
           blindingFactor: receipt.blindingFactor.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
@@ -208,7 +210,7 @@ export const ProvideDataComponent: FC<{
       if (shouldDownloadDepositReceipt) {
         const date = new Date().toISOString().split("T")[0]
 
-        const fileName = `${values.ethAddress}_${depositAddress}_${date}.json`
+        const fileName = `${values.userWalletAddress}_${depositAddress}_${date}.json`
 
         const finalData = {
           depositor: {
@@ -221,7 +223,7 @@ export const ProvideDataComponent: FC<{
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
           blindingFactor: receipt.blindingFactor.toString(),
-          ethAddress: values.ethAddress,
+          ethAddress: values.userWalletAddress,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
           extraData: receipt.extraData?.toString() ?? "",
@@ -248,7 +250,7 @@ export const ProvideDataComponent: FC<{
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
-        initialEthAddress={account!}
+        initialUserWalletAddress={account!}
         btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}

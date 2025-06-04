@@ -6,7 +6,7 @@ import {
   isPublicKeyHashTypeAddress,
   isValidBtcAddress,
 } from "../threshold-ts/utils"
-import { isAddress, isAddressZero } from "../web3/utils"
+import { isAddress, isAddressZero, isEthereumAddress } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
 
@@ -118,6 +118,16 @@ export const validateETHAddress = (address: string) => {
   } else if (!isAddress(address)) {
     return "Invalid eth address."
   } else if (isAddressZero(address)) {
+    return "Address is a zero address."
+  }
+}
+
+export const validateUserWalletAddress = (address: string) => {
+  if (!address) {
+    return "Required."
+  } else if (!isAddress(address)) {
+    return "Invalid address."
+  } else if (isEthereumAddress(address) && isAddressZero(address)) {
     return "Address is a zero address."
   }
 }
