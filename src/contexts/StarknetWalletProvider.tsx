@@ -7,10 +7,6 @@ import React, {
   useMemo,
 } from "react"
 import { connect, disconnect } from "starknetkit"
-// @ts-ignore - TypeScript module resolution issue
-import { InjectedConnector } from "starknetkit/dist/connectors/injected/index.js"
-// @ts-ignore - TypeScript module resolution issue
-import { WebWalletConnector } from "starknetkit/dist/connectors/webwallet/index.js"
 
 // Define the wallet connection state interface
 interface StarknetWalletContextValue {
@@ -61,16 +57,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
   const [walletName, setWalletName] = useState<string | null>(null)
   const [walletIcon, setWalletIcon] = useState<string | null>(null)
 
-  // Configure connectors
-  const connectors = useMemo(
-    () => [
-      new InjectedConnector({ options: { id: "argentX", name: "Argent X" } }),
-      new InjectedConnector({ options: { id: "braavos", name: "Braavos" } }),
-      new WebWalletConnector({ url: "https://web.argent.xyz" }),
-      // ArgentMobileConnector can be added when projectId is available
-    ],
-    []
-  )
+  // Remove connectors array since starknetkit handles this internally
 
   // Available wallets - simplified info for UI
   const availableWallets = useMemo(
@@ -100,10 +87,9 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       setConnecting(true)
       setError(null)
 
-      // Use starknetkit's connect with connectors
+      // Use starknetkit's connect with modal
       const result = await connect({
         modalMode: "alwaysAsk",
-        connectors: connectors,
       })
 
       if (result) {
@@ -155,7 +141,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
     } finally {
       setConnecting(false)
     }
-  }, [connectors])
+  }, [])
 
   // Disconnect wallet function
   const handleDisconnect = useCallback(async () => {
@@ -188,7 +174,6 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       // Attempt to reconnect
       connect({
         modalMode: "neverAsk",
-        connectors: connectors,
       })
         .then((result) => {
           if (result) {
@@ -235,7 +220,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
           localStorage.removeItem(STARKNET_LAST_WALLET)
         })
     }
-  }, [connectors, handleDisconnect])
+  }, [handleDisconnect])
 
   const contextValue: StarknetWalletContextValue = {
     connect: handleConnect,

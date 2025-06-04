@@ -20,6 +20,8 @@ import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { featureFlags } from "../../../constants"
+import { ConnectStarknet } from "./ConnectStarknet"
+import { StarknetIcon } from "../../../static/icons/Starknet"
 
 const walletOptions: WalletOption[] = [
   {
@@ -64,6 +66,14 @@ const walletOptions: WalletOption[] = [
     icon: {
       light: CoinbaseWallet,
       dark: CoinbaseWallet,
+    },
+  },
+  {
+    id: WalletType.Starknet,
+    title: "Starknet",
+    icon: {
+      light: StarknetIcon,
+      dark: StarknetIcon,
     },
   },
 ]
@@ -124,6 +134,8 @@ const ConnectWallet: FC<{
       return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
     case WalletType.LedgerLive:
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
+    case WalletType.Starknet:
+      return <ConnectStarknet goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }

@@ -4,15 +4,16 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom"
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/deposit", () => ({
+// Add TextEncoder/TextDecoder polyfills for tests
+global.TextEncoder = require("util").TextEncoder
+global.TextDecoder = require("util").TextDecoder
+
+jest.mock("@keep-network/tbtc-v2.ts", () => ({
   calculateDepositAddress: jest.fn(),
   calculateDepositRefundLocktime: jest.fn(),
   DepositScriptParameters: jest.fn(),
   revealDeposit: jest.fn(),
   getRevealedDeposit: jest.fn(),
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
   decodeBitcoinAddress: jest.fn(),
   TransactionHash: {
     from: jest.fn().mockReturnValue({
@@ -39,9 +40,6 @@ jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
       ),
   },
   computeHash160: jest.fn(),
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
   ElectrumClient: jest.fn(),
   EthereumTBTCToken: jest.fn(),
