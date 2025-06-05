@@ -104,15 +104,13 @@ export const STARKNET_SDK_CHAIN_NAME = "StarkNet" // SDK expects "StarkNet"
 export const STARKNET_MAINNET_CHAIN_ID = "0x534e5f4d41494e"
 export const STARKNET_SEPOLIA_CHAIN_ID = "0x534e5f5345504f4c4941"
 
-// StarkNet configuration defaults
+// StarkNet configuration defaults (RPC and explorer URLs only)
 export const STARKNET_DEFAULTS = {
   mainnet: {
-    relayerUrl: "https://relayer.tbtcscan.com/api/reveal",
     rpcUrl: "https://starknet-mainnet.public.blastapi.io",
     explorerUrl: "https://starkscan.co",
   },
   testnet: {
-    relayerUrl: "http://relayer.tbtcscan.com/api/reveal",
     rpcUrl: "https://starknet-sepolia.public.blastapi.io",
     explorerUrl: "https://sepolia.starkscan.co",
   },

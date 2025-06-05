@@ -18,6 +18,7 @@ import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 import { ChainName } from "../../../../threshold-ts/types"
+import { ModalType } from "../../../../enums"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -25,7 +26,7 @@ const InitiateMintingComponent: FC<{
 }> = ({ utxo, onPreviousStepClick }) => {
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
-  const { closeModal } = useModal()
+  const { closeModal, openModal } = useModal()
   const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
 
   const isStarkNetDeposit =
@@ -39,7 +40,19 @@ const InitiateMintingComponent: FC<{
   }
 
   const { sendTransaction: revealDeposit } = useRevealDepositTransaction(
-    onSuccessfulDepositReveal
+    onSuccessfulDepositReveal,
+    (error) => {
+      console.error("RevealDepositTransaction error callback:", error)
+      // For StarkNet deposits, check if it's a wallet connection issue
+      if (
+        isStarkNetDeposit &&
+        error?.message?.includes("No connected account")
+      ) {
+        console.error(
+          "StarkNet deposit requires a different flow - should use relayer"
+        )
+      }
+    }
   )
 
   const depositedAmount = BigNumber.from(utxo.value).toString()
@@ -59,7 +72,32 @@ const InitiateMintingComponent: FC<{
   }, [depositedAmount, updateState, threshold.tbtc])
 
   const initiateMintTransaction = async () => {
-    await revealDeposit(utxo)
+    console.log("InitiateMinting - starting mint transaction", {
+      utxo,
+      isStarkNetDeposit,
+      hasThresholdTbtc: !!threshold.tbtc,
+      hasBridgeContract: !!threshold.tbtc.bridgeContract,
+    })
+
+    try {
+      if (isStarkNetDeposit) {
+        // For StarkNet, directly call the SDK method which will use the relayer
+        console.log("StarkNet deposit - calling SDK revealDeposit directly")
+        const txHash = await threshold.tbtc.revealDeposit(utxo)
+        console.log("StarkNet reveal successful, tx hash:", txHash)
+        onSuccessfulDepositReveal()
+      } else {
+        // For EVM chains, use the transaction wrapper
+        await revealDeposit(utxo)
+      }
+    } catch (error) {
+      console.error("InitiateMinting - revealDeposit failed:", error)
+      openModal(ModalType.TransactionFailed, {
+        error:
+          error instanceof Error ? error.message : "Failed to initiate minting",
+        isExpandableError: true,
+      })
+    }
   }
 
   return (
