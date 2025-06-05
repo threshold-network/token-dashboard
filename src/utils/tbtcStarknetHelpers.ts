@@ -126,14 +126,11 @@ export const initializeStarkNetDeposit = async (
     // Log configuration being used
     console.log(`Initializing StarkNet deposit on ${config.chainName}`)
 
-    // For StarkNet, we need to map the chain ID to a numeric value
-    // This is a placeholder - the actual chain ID mapping needs to be determined
-    const starknetChainId = config.isTestnet ? 11155111 : 1 // Using Ethereum chain IDs for now
-
-    // Initialize cross-chain deposit
-    const deposit = await tbtc.initiateCrossChainDeposit(
+    // For StarkNet cross-chain deposits, we pass the L2 chain name directly
+    // The SDK expects the chain name as a string, not a numeric chain ID
+    const deposit = await tbtc.initiateCrossChainDepositWithChainName(
       btcRecoveryAddress,
-      starknetChainId
+      "StarkNet" // L2 chain name expected by SDK
     )
 
     return deposit
@@ -192,7 +189,7 @@ export const checkStarkNetNetworkCompatibility = (
   if (!isCorrectStarkNetChain) {
     return {
       compatible: false,
-      error: `Wrong StarkNet network. Expected ${config.chainName}, but connected to different network.`,
+      error: `Wrong StarkNet network. Please switch to ${config.chainName} in your wallet.`,
     }
   }
 

@@ -29,7 +29,12 @@ import {
 } from "ethers"
 import { LogDescription } from "ethers/lib/utils"
 import { ContractCall, IMulticall, Multicall } from "../multicall"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import {
+  BitcoinConfig,
+  BitcoinNetwork,
+  EthereumConfig,
+  CrossChainConfig,
+} from "../types"
 import {
   AddressZero,
   fromSatoshiToTokenPrecision,
@@ -265,6 +270,18 @@ export interface ITBTC {
   initiateCrossChainDeposit(
     btcRecoveryAddress: string,
     chainId: number
+  ): Promise<Deposit>
+
+  /**
+   * Initiates a Deposit object from bitcoin recovery address using chain name.
+   * @param btcRecoveryAddress The bitcoin address in which the user will
+   * receive the bitcoin back in case something goes wrong.
+   * @param chainName The L2 chain name (e.g., "StarkNet", "Base", "Arbitrum")
+   * @returns Deposit object
+   */
+  initiateCrossChainDepositWithChainName(
+    btcRecoveryAddress: string,
+    chainName: string
   ): Promise<Deposit>
 
   /**
@@ -529,7 +546,11 @@ export class TBTC implements ITBTC {
   private _deposit: Deposit | undefined
   private _isCrossChain: boolean = false
 
-  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
+  constructor(
+    ethereumConfig: EthereumConfig,
+    bitcoinConfig: BitcoinConfig,
+    crossChainConfig?: CrossChainConfig
+  ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -541,7 +562,8 @@ export class TBTC implements ITBTC {
       providerOrSigner,
       account,
     } = ethereumConfig
-    this._isCrossChain = isL2Network(chainId)
+    // Use explicit cross-chain flag if provided, otherwise check if it's an L2 network
+    this._isCrossChain = crossChainConfig?.isCrossChain ?? isL2Network(chainId)
 
     // This ensures that, if the user is connected to an L2 network, the TBTC
     // contracts are connected to the corresponding Ethereum mainnet or testnet
@@ -675,9 +697,10 @@ export class TBTC implements ITBTC {
       : SDK.initializeSepolia
 
     // We need to use a mainnet default provider to initialize the SDK
+    // Always enable cross-chain support since we support non-EVM chains like StarkNet
     const sdk = await initializeFunction(
       initializerProviderOrSigner,
-      isL2Network(connectedChainId)
+      true // Always enable cross-chain support
     )
 
     return sdk
@@ -690,12 +713,8 @@ export class TBTC implements ITBTC {
     try {
       this._sdkPromise = this._initializeSdk(providerOrSigner, account)
 
-      if (this.isCrossChain) {
-        await this.initiateCrossChain(
-          providerOrSigner as Web3Provider,
-          account as string
-        )
-      }
+      // Don't auto-initialize cross-chain here - it will be done explicitly
+      // by the Threshold class with the proper chain name
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
     }
@@ -779,10 +798,10 @@ export class TBTC implements ITBTC {
       }
 
       // Single-parameter initialization for StarkNet
-      await sdk.initializeCrossChain("Starknet" as L2Chain, providerOrSigner)
+      await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
 
       // Get the L2 tBTC token instance from SDK
-      const crossChainContracts = sdk.crossChainContracts("Starknet" as L2Chain)
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
       if (crossChainContracts) {
         this._l2TbtcToken = crossChainContracts.l2TbtcToken
       }
@@ -814,6 +833,28 @@ export class TBTC implements ITBTC {
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    )
+    return this._deposit
+  }
+
+  initiateCrossChainDepositWithChainName = async (
+    btcRecoveryAddress: string,
+    chainName: string
+  ): Promise<Deposit> => {
+    if (!isValidBtcAddress(btcRecoveryAddress, this.bitcoinNetwork)) {
+      throw new Error(
+        `Bitcoin recovery address is not valid for ${this.bitcoinNetwork}.`
+      )
+    }
+
+    if (!this._isCrossChain) {
+      throw new Error("Cross-chain not initialized")
+    }
+
+    const sdk = await this._getSdk()
+    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+      btcRecoveryAddress,
+      chainName as L2Chain
     )
     return this._deposit
   }

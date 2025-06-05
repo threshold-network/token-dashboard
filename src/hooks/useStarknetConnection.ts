@@ -59,9 +59,23 @@ export const useStarknetConnection = (): UseStarknetConnectionResult => {
       return provider.account.chainId
     }
 
-    // Default to mainnet if we can't determine
-    // This should be improved to actually detect the network
-    return constants.StarknetChainId.SN_MAIN
+    // Try to get from provider's getChainId method
+    if (provider.getChainId && typeof provider.getChainId === "function") {
+      try {
+        const id = provider.getChainId()
+        if (id) return id
+      } catch (e) {
+        console.warn("Failed to get chain ID from provider:", e)
+      }
+    }
+
+    // Check if provider has a channel property with chainId (some wallets use this)
+    if (provider.channel?.chainId) {
+      return provider.channel.chainId
+    }
+
+    // Don't default to mainnet - return null to indicate unknown
+    return null
   }, [provider])
 
   return {

@@ -19,7 +19,7 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.config = config
-    const { ethereum, bitcoin } = config
+    const { ethereum, bitcoin, crossChain } = config
 
     this.multicall = new Multicall(ethereum)
     this.vendingMachines = new VendingMachines(ethereum)
@@ -29,7 +29,7 @@ export class Threshold {
       this.multicall,
       ethereum
     )
-    this.tbtc = new TBTC(ethereum, bitcoin)
+    this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
   }
 
   updateConfig = async (config: ThresholdConfig) => {
@@ -41,10 +41,16 @@ export class Threshold {
       config.crossChain.chainName &&
       config.crossChain.nonEVMProvider
     ) {
-      console.log("Initializing cross-chain for:", config.crossChain.chainName)
+      // Convert ChainName enum to SDK expected string
+      const sdkChainName =
+        config.crossChain.chainName === "Starknet"
+          ? "StarkNet"
+          : config.crossChain.chainName
+
+      console.log("Initializing cross-chain for:", sdkChainName)
       try {
         await this.initializeCrossChain(
-          config.crossChain.chainName,
+          sdkChainName,
           config.crossChain.nonEVMProvider
         )
         console.log("Cross-chain initialization complete")

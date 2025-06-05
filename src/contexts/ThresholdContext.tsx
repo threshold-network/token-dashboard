@@ -24,7 +24,7 @@ import { featureFlags } from "../constants"
 
 // Chain name mapping for SDK compatibility
 const CHAIN_NAME_MAPPING: Record<string, ChainName> = {
-  Starknet: ChainName.Starknet, // UI uses "Starknet", SDK expects "StarkNet"
+  Starknet: ChainName.Starknet,
   StarkNet: ChainName.Starknet,
   Solana: ChainName.Solana,
 }

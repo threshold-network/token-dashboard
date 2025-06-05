@@ -45,6 +45,7 @@ import {
   initializeStarkNetDeposit,
   isValidStarkNetAddress,
   checkStarkNetNetworkCompatibility,
+  getStarkNetConfig,
 } from "../../../../utils/tbtcStarknetHelpers"
 import { StarkNetLoadingState } from "../components/StarkNetLoadingState"
 import { StarkNetErrorState } from "../components/StarkNetErrorState"
@@ -306,7 +307,10 @@ export const ProvideDataComponent: FC<{
           networkInfo: {
             chainName: chainName,
             chainId:
-              (isStarkNetDeposit ? starknetChainId : chainId)?.toString() || "",
+              (isStarkNetDeposit
+                ? starknetChainId || getStarkNetConfig().chainId
+                : chainId
+              )?.toString() || "",
             isStarkNetDeposit,
           },
           refundLocktime: receipt.refundLocktime.toString(),

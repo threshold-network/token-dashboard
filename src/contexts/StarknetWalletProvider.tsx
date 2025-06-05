@@ -51,6 +51,83 @@ const StarknetWalletContext = createContext<
 const STARKNET_WALLET_KEY = "starknet-wallet"
 const STARKNET_LAST_WALLET = "starknet-last-wallet"
 
+// Helper function to extract chain ID from wallet object
+const extractChainIdFromWallet = (wallet: any): string | null => {
+  // Priority order for chain ID extraction
+  // 1. Direct wallet.chainId
+  if (wallet.chainId) return wallet.chainId
+
+  // 2. Account chainId
+  if (wallet.account?.chainId) return wallet.account.chainId
+
+  // 3. Provider chainId
+  if (wallet.provider?.chainId) return wallet.provider.chainId
+
+  // 4. Provider getChainId method
+  if (
+    wallet.provider?.getChainId &&
+    typeof wallet.provider.getChainId === "function"
+  ) {
+    try {
+      const chainId = wallet.provider.getChainId()
+      if (chainId) return chainId
+    } catch (e) {
+      console.warn("Failed to get chain ID from provider.getChainId:", e)
+    }
+  }
+
+  // 5. Check for starknet-specific properties
+  if (wallet.starknet?.chainId) return wallet.starknet.chainId
+
+  // 6. Selected account chainId
+  if (wallet.selectedAccount?.chainId) return wallet.selectedAccount.chainId
+
+  // 7. Infer from node URL as last resort
+  if (wallet.provider?.channel?.nodeUrl) {
+    const nodeUrl = wallet.provider.channel.nodeUrl
+    if (nodeUrl.includes("sepolia") || nodeUrl.includes("testnet")) {
+      return constants.StarknetChainId.SN_SEPOLIA
+    }
+    if (nodeUrl.includes("mainnet")) {
+      return constants.StarknetChainId.SN_MAIN
+    }
+  }
+
+  return null
+}
+
+// Helper function to create SDK-compatible provider
+const createSdkProvider = (
+  wallet: any,
+  chainId: string | null,
+  accountAddress: string
+) => {
+  const baseProvider = {
+    ...wallet,
+    chainId: chainId,
+  }
+
+  // Ensure account property exists with address
+  if (wallet.account && wallet.account.address) {
+    return baseProvider
+  } else if (wallet.account) {
+    return {
+      ...baseProvider,
+      account: {
+        ...wallet.account,
+        address: accountAddress,
+      },
+    }
+  } else {
+    return {
+      ...baseProvider,
+      account: {
+        address: accountAddress,
+      },
+    }
+  }
+}
+
 // Custom hook to use the context
 export const useStarknetWallet = () => {
   const context = useContext(StarknetWalletContext)
@@ -119,88 +196,63 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
         const { wallet, connectorData } = result
 
         if (wallet && connectorData) {
-          // Check if we need to switch networks
-          const expectedChainId = getExpectedStarknetChainId()
-          const currentChainId = wallet.chainId || wallet.account?.chainId
-
-          if (currentChainId && currentChainId !== expectedChainId) {
-            try {
-              // Request network switch
-              await wallet.request({
-                type: "wallet_switchStarknetChain",
-                params: {
-                  chainId: expectedChainId,
-                },
-              })
-            } catch (switchError) {
-              console.warn("Failed to switch Starknet network:", switchError)
-              // Some wallets might not support network switching
-              // Continue with the current network
-            }
-          }
-
-          // Create a provider object that matches SDK expectations
-          // The SDK expects either an Account object or a Provider with account property
-          let sdkProvider
-
-          if (wallet.account && wallet.account.address) {
-            // If wallet already has a properly structured account with address, use it
-            sdkProvider = wallet
-          } else if (wallet.account) {
-            // If wallet has account but address is empty, update it
-            sdkProvider = {
-              ...wallet,
-              account: {
-                ...wallet.account,
-                address: connectorData.account,
-              },
-            }
-          } else {
-            // If wallet has no account property, create one
-            sdkProvider = {
-              ...wallet,
-              account: {
-                address: connectorData.account,
-              },
-            }
-          }
-
-          // Store wallet instance (this is the provider for SDK)
-          setProvider(sdkProvider)
-
-          // Store account address
           const address = connectorData.account
-          if (address) {
-            setAccount(address)
-            setConnected(true)
-
-            // Store wallet info for UI
-            const data = connectorData as any
-            setWalletName(data.name || "Unknown Wallet")
-            setWalletIcon(data.icon || "")
-
-            // Store for auto-reconnect
-            localStorage.setItem(STARKNET_WALLET_KEY, address)
-            localStorage.setItem(STARKNET_LAST_WALLET, data.id || "")
-
-            // Set up event listeners
-            if (wallet.on) {
-              wallet.on("accountsChanged", (accounts?: string[]) => {
-                if (accounts && accounts.length > 0) {
-                  setAccount(accounts[0])
-                } else {
-                  // User disconnected from wallet
-                  handleDisconnect()
-                }
-              })
-
-              wallet.on("networkChanged", (chainId?: string) => {
-                console.log("Network changed to:", chainId)
-                // You might want to handle network changes here
-              })
-            }
-          } else {
+          if (!address) {
             throw new Error("Failed to get wallet address")
+          }
+
+          // Extract chain ID using helper function
+          const chainId = extractChainIdFromWallet(wallet)
+
+          // Check network compatibility
+          const expectedChainId = getExpectedStarknetChainId()
+          if (chainId && chainId !== expectedChainId) {
+            console.warn(
+              `Network mismatch: Expected ${expectedChainId} but wallet is on ${chainId}. Please manually switch to the correct network in your wallet.`
+            )
+          }
+
+          // Create SDK-compatible provider
+          const sdkProvider = createSdkProvider(wallet, chainId, address)
+          setProvider(sdkProvider)
+          setAccount(address)
+          setConnected(true)
+
+          // Store wallet info for UI
+          const data = connectorData as any
+          setWalletName(data.name || "Unknown Wallet")
+          setWalletIcon(data.icon || "")
+
+          // Store for auto-reconnect
+          localStorage.setItem(STARKNET_WALLET_KEY, address)
+          localStorage.setItem(STARKNET_LAST_WALLET, data.id || "")
+
+          // Set up event listeners
+          if (wallet.on) {
+            wallet.on("accountsChanged", (accounts?: string[]) => {
+              if (accounts && accounts.length > 0) {
+                setAccount(accounts[0])
+              } else {
+                // User disconnected from wallet
+                handleDisconnect()
+              }
+            })
+
+            wallet.on("networkChanged", (newChainId?: string) => {
+              console.log("Network changed to:", newChainId)
+              // Update the provider with the new chain ID
+              if (newChainId) {
+                setProvider((prevProvider: any) => {
+                  if (prevProvider) {
+                    return {
+                      ...prevProvider,
+                      chainId: newChainId,
+                    }
+                  }
+                  return prevProvider
+                })
+              }
+            })
           }
         }
       }
