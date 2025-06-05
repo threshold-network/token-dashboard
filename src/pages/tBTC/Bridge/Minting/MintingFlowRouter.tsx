@@ -16,6 +16,8 @@ import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
+import { ChainRegistry } from "../../../../chains/ChainRegistry"
+import { ChainType } from "../../../../types/chain"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
@@ -26,15 +28,21 @@ const MintingFlowRouterBase = () => {
     useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
+  const chainRegistry = ChainRegistry.getInstance()
 
   // For StarkNet deposits, use non-EVM connection info
   const effectiveAccount = account || nonEVMPublicKey
-  const effectiveChainId =
-    chainId ||
-    (isNonEVMActive &&
-    (chainName === "StarkNet" || nonEVMChainName === "Starknet")
-      ? SupportedChainIds.Sepolia
-      : undefined)
+
+  // Use chain abstraction to get effective chain ID
+  let effectiveChainId = chainId
+  if (!effectiveChainId && isNonEVMActive) {
+    const normalizedChainName =
+      nonEVMChainName?.toLowerCase() || chainName?.toLowerCase()
+    effectiveChainId = chainRegistry.getEffectiveChainId(
+      normalizedChainName === "starknet" ? "0x534e5f5345504f4c4941" : "", // StarkNet Sepolia
+      normalizedChainName
+    )
+  }
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (mintingStep === MintingStep.MintingSuccess) {

@@ -14,6 +14,8 @@ import {
   isL1Network,
   isSameChainId,
 } from "../../networks/utils"
+import { ChainRegistry } from "../../chains/ChainRegistry"
+import { ChainType } from "../../types/chain"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
@@ -108,13 +110,33 @@ export const findUtxoEffect = async (
     console.log("Starting UTXO polling for deposit address:", btcDepositAddress)
     try {
       while (true) {
-        if (getChainIdToNetworkName(chainId) !== chainName) {
-          console.error("Chain mismatch:", {
-            chainId,
+        // Use chain registry for validation
+        const chainRegistry = ChainRegistry.getInstance()
+        const chain = chainRegistry.getChain(chainId, chainName)
+
+        if (!chain) {
+          // Legacy validation for backward compatibility
+          if (getChainIdToNetworkName(chainId) !== chainName) {
+            console.error("Chain mismatch:", {
+              chainId,
+              chainName,
+              expected: getChainIdToNetworkName(chainId),
+            })
+            throw new Error("Chain ID and deposit chain name mismatch")
+          }
+        } else {
+          // For StarkNet, we use the proxy chain ID for validation
+          const effectiveChainId =
+            chain.getType() === ChainType.STARKNET
+              ? chainRegistry.getEffectiveChainId(chainId, chainName)
+              : chainId
+
+          console.log("Chain validation passed:", {
+            chainType: chain.getType(),
+            originalChainId: chainId,
+            effectiveChainId,
             chainName,
-            expected: getChainIdToNetworkName(chainId),
           })
-          throw new Error("Chain ID and deposit chain name mismatch")
         }
         // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
