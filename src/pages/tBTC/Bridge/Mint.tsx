@@ -66,9 +66,10 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         tBTCDepositData[effectiveAccount].btcDepositAddress !==
           btcDepositAddress
       ) {
+        const depositData = tBTCDepositData[effectiveAccount]
         const {
           depositor: { identifierHex: depositorAddress },
-          btcDepositAddress,
+          btcDepositAddress: storedBtcDepositAddress,
           ethAddress,
           blindingFactor,
           btcRecoveryAddress,
@@ -76,7 +77,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
           refundLocktime,
           extraData,
           chainName,
-        } = tBTCDepositData[effectiveAccount]
+        } = depositData
         const { isExpired } = await checkDepositExpiration(refundLocktime)
         if (isExpired) {
           resetDepositData()
@@ -88,7 +89,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
           "MintingFormPage - Setting deposit data from localStorage:",
           {
             depositorAddress,
-            btcDepositAddress,
+            btcDepositAddress: storedBtcDepositAddress,
             chainName,
             ethAddress,
           }
@@ -102,11 +103,20 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         updateState("depositor", depositorAddress)
         updateState("extraData", extraData)
         updateState("chainName", chainName)
-        // We reset the minting step to undefined to show skeleton and the
-        // useEffect in MintingFlowRouter will update and set the proper minting
-        // step when it recognizes the "btcDepositAddress" change.
-        updateState("mintingStep", undefined)
-        updateState("btcDepositAddress", btcDepositAddress)
+
+        // Update btcDepositAddress from localStorage if it's different
+        if (btcDepositAddress !== storedBtcDepositAddress) {
+          console.log("MintingFormPage - Updating btcDepositAddress:", {
+            current: btcDepositAddress,
+            stored: storedBtcDepositAddress,
+            willUpdate: true,
+          })
+          // We reset the minting step to undefined to show skeleton and the
+          // useEffect in MintingFlowRouter will update and set the proper minting
+          // step when it recognizes the "btcDepositAddress" change.
+          updateState("mintingStep", undefined)
+          updateState("btcDepositAddress", storedBtcDepositAddress)
+        }
       } else {
         resetDepositData()
       }
@@ -121,7 +131,6 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
     tBTCDepositData,
     isNonEVMActive,
     chainId,
-    btcDepositAddress,
     updateState,
     resetDepositData,
     checkDepositExpiration,

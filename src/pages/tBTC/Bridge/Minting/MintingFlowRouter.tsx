@@ -35,13 +35,19 @@ const MintingFlowRouterBase = () => {
 
   // Use chain abstraction to get effective chain ID
   let effectiveChainId = chainId
-  if (!effectiveChainId && isNonEVMActive) {
-    const normalizedChainName =
-      nonEVMChainName?.toLowerCase() || chainName?.toLowerCase()
-    effectiveChainId = chainRegistry.getEffectiveChainId(
-      normalizedChainName === "starknet" ? "0x534e5f5345504f4c4941" : "", // StarkNet Sepolia
-      normalizedChainName
-    )
+  if (!effectiveChainId && isNonEVMActive && nonEVMChainName) {
+    // For StarkNet, we need to use the actual StarkNet chain ID, not the proxy
+    const normalizedChainName = nonEVMChainName.toLowerCase()
+    if (normalizedChainName === "starknet") {
+      // Use StarkNet Sepolia chain ID directly
+      effectiveChainId = "0x534e5f5345504f4c4941" as any
+    } else {
+      // For other non-EVM chains, use the registry
+      effectiveChainId = chainRegistry.getEffectiveChainId(
+        "",
+        normalizedChainName
+      )
+    }
   }
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {

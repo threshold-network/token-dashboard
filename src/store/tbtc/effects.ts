@@ -171,27 +171,28 @@ export const findUtxoEffect = async (
               chainName,
             })
 
-            // Use the proxy chain ID for StarkNet (Ethereum mainnet or Sepolia)
-            const chainRegistry = ChainRegistry.getInstance()
-            const proxyChainId =
-              chainRegistry.getEffectiveChainId("starknet", chainName) ||
-              chainId
-
-            // For StarkNet cross-chain deposits, the depositor is an Ethereum-format address
-            // and the extraData contains the encoded StarkNet address
-            await forkApi.pause(
-              listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
-                {
-                  depositor: getChainIdentifier(depositor), // This is safe - it's an Ethereum format address
-                  blindingFactor,
-                  walletPublicKeyHash,
-                  refundPublicKeyHash,
-                  refundLocktime,
-                  extraData, // Contains the encoded StarkNet address
-                },
-                proxyChainId
+            try {
+              // For StarkNet, we need to use undefined as chainId to trigger the StarkNet-specific path
+              // This will use the already initialized StarkNet cross-chain setup
+              await forkApi.pause(
+                listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+                  {
+                    depositor: getChainIdentifier(depositor), // This is safe - it's an Ethereum format address
+                    blindingFactor,
+                    walletPublicKeyHash,
+                    refundPublicKeyHash,
+                    refundLocktime,
+                    extraData, // Contains the encoded StarkNet address
+                  },
+                  undefined // StarkNet doesn't use Ethereum chain ID
+                )
               )
-            )
+
+              console.log("StarkNet deposit restoration completed successfully")
+            } catch (error) {
+              console.error("Failed to restore StarkNet deposit:", error)
+              throw error
+            }
           } else {
             // For EVM chains, proceed with standard deposit initialization
             const depositParams = {

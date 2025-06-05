@@ -325,7 +325,6 @@ export const ProvideDataComponent: FC<{
                 ? starknetChainId || getStarkNetConfig().chainId
                 : chainId
               )?.toString() || "",
-            isStarkNetDeposit,
           },
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),

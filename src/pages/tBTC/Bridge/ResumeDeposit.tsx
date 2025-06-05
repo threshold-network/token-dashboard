@@ -27,6 +27,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
 import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { getStarkNetConfig } from "../../../utils/tbtcStarknetHelpers"
 
 type RecoveryJsonFileData = DepositScriptParameters & {
   networkInfo: {
@@ -102,18 +103,25 @@ export const ResumeDepositPage: PageComponent = () => {
         depositParameters.networkInfo?.chainName?.toLowerCase() === "starknet"
 
       if (isStarkNetDeposit) {
-        // Initialize StarkNet cross-chain
+        // Initialize StarkNet cross-chain if not already initialized
         if (!starknetProvider) {
           throw new Error("StarkNet provider not available")
         }
-        await threshold.tbtc.initiateCrossChain(
-          starknetProvider,
-          connectedAddress || "",
-          "StarkNet"
-        )
-        // For StarkNet, we need to use a different initialization method
-        await threshold.tbtc.initiateDepositFromDepositScriptParameters(
-          depositParameters
+
+        // Only initialize cross-chain if it's not already initialized
+        if (!threshold.tbtc.isCrossChain) {
+          await threshold.tbtc.initiateCrossChain(
+            starknetProvider,
+            connectedAddress || "",
+            "StarkNet"
+          )
+        }
+
+        // For StarkNet, we need to use initiateCrossChainDepositFromScriptParameters
+        // but we pass undefined for chainId since StarkNet uses the chainName instead
+        await threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+          depositParameters,
+          undefined // StarkNet doesn't use Ethereum chain ID
         )
       } else if (isL1Network(effectiveChainId)) {
         await threshold.tbtc.initiateDepositFromDepositScriptParameters(

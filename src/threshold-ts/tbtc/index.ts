@@ -307,11 +307,12 @@ export interface ITBTC {
    * function.
    * @param depositScriptParameters DepositScriptParameters object that contains
    * all the data related to the deposit we want to re-initiate.
+   * @param chainId Optional chain ID for EVM L2s. Not needed for StarkNet.
    * @returns Deposit object
    */
   initiateCrossChainDepositFromScriptParameters(
     depositScriptParameters: DepositScriptParameters,
-    chainId: number
+    chainId?: number
   ): Promise<Deposit>
 
   /**
@@ -924,13 +925,27 @@ export class TBTC implements ITBTC {
 
   initiateCrossChainDepositFromScriptParameters = async (
     depositScriptParameters: DepositScriptParameters,
-    chainId: number
+    chainId?: number
   ): Promise<Deposit> => {
     if (!this._isCrossChain) {
-      throw new Error("Unsupported chain ID")
+      throw new Error("Cross-chain not initialized")
     }
-    const l2NetworkName = getChainIdToNetworkName(chainId)
+
     const sdk = await this._getSdk()
+
+    // Determine the L2 network name
+    let l2NetworkName: string
+    if (chainId) {
+      l2NetworkName = getChainIdToNetworkName(chainId)
+    } else {
+      // For StarkNet, we need to check if cross-chain is already initialized
+      // and use the chain name from the cross-chain contracts
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      if (!crossChainContracts) {
+        throw new Error("StarkNet cross-chain contracts not initialized")
+      }
+      l2NetworkName = "StarkNet"
+    }
 
     const {
       depositor,
@@ -954,10 +969,15 @@ export class TBTC implements ITBTC {
       extraData: Hex.from(extraData),
     }
 
-    await this.initiateCrossChain(
-      this._ethereumConfig.providerOrSigner as Web3Provider,
-      this._ethereumConfig.account as string
-    )
+    // Skip re-initialization if already initialized for StarkNet
+    if (!chainId && l2NetworkName === "StarkNet") {
+      // StarkNet is already initialized, just proceed
+    } else {
+      await this.initiateCrossChain(
+        this._ethereumConfig.providerOrSigner as Web3Provider,
+        this._ethereumConfig.account as string
+      )
+    }
 
     const crossChainContracts = sdk.crossChainContracts(
       l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
@@ -1087,12 +1107,26 @@ export class TBTC implements ITBTC {
   }
 
   revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+    console.log("revealDeposit called with UTXO:", utxo)
     const { value, ...transactionOutpoint } = utxo
-    if (!this._deposit) throw new EmptyDepositObjectError()
-    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
-    this.removeDepositData()
 
-    return chainHash.toPrefixedString()
+    if (!this._deposit) {
+      console.error("No deposit object found in revealDeposit")
+      throw new EmptyDepositObjectError()
+    }
+
+    console.log("Deposit object exists, initiating minting...")
+    console.log("Is cross-chain deposit:", this._isCrossChain)
+
+    try {
+      const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+      console.log("Minting initiated successfully, chain hash:", chainHash)
+      this.removeDepositData()
+      return chainHash.toPrefixedString()
+    } catch (error) {
+      console.error("Failed to initiate minting:", error)
+      throw error
+    }
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {
