@@ -158,36 +158,67 @@ export const findUtxoEffect = async (
               btcRecoveryAddress,
               bitcoinNetwork
             ).toString()
-          // For StarkNet deposits, use ethAddress as the depositor
-          const effectiveDepositor =
-            chainName?.toLowerCase() === "starknet" && ethAddress
-              ? ethAddress
-              : depositor
+          // For StarkNet deposits, we need to handle the depositor differently
+          // since StarkNet addresses can't be converted to EthereumAddress objects
+          const isStarkNetDeposit = chainName?.toLowerCase() === "starknet"
 
-          const depositParams = {
-            depositor: getChainIdentifier(effectiveDepositor),
-            blindingFactor,
-            walletPublicKeyHash,
-            refundPublicKeyHash,
-            refundLocktime,
-          }
+          if (isStarkNetDeposit) {
+            // For StarkNet, we need to restore the deposit from saved parameters
+            console.log("Restoring StarkNet deposit from saved parameters", {
+              depositor,
+              ethAddress,
+              extraData,
+              chainName,
+            })
 
-          if (isL1Network(chainId)) {
-            await forkApi.pause(
-              listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
-                depositParams
-              )
-            )
-          } else {
+            // Use the proxy chain ID for StarkNet (Ethereum mainnet or Sepolia)
+            const chainRegistry = ChainRegistry.getInstance()
+            const proxyChainId =
+              chainRegistry.getEffectiveChainId("starknet", chainName) ||
+              chainId
+
+            // For StarkNet cross-chain deposits, the depositor is an Ethereum-format address
+            // and the extraData contains the encoded StarkNet address
             await forkApi.pause(
               listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
                 {
-                  ...depositParams,
-                  extraData,
+                  depositor: getChainIdentifier(depositor), // This is safe - it's an Ethereum format address
+                  blindingFactor,
+                  walletPublicKeyHash,
+                  refundPublicKeyHash,
+                  refundLocktime,
+                  extraData, // Contains the encoded StarkNet address
                 },
-                chainId
+                proxyChainId
               )
             )
+          } else {
+            // For EVM chains, proceed with standard deposit initialization
+            const depositParams = {
+              depositor: getChainIdentifier(depositor),
+              blindingFactor,
+              walletPublicKeyHash,
+              refundPublicKeyHash,
+              refundLocktime,
+            }
+
+            if (isL1Network(chainId)) {
+              await forkApi.pause(
+                listenerApi.extra.threshold.tbtc.initiateDepositFromDepositScriptParameters(
+                  depositParams
+                )
+              )
+            } else {
+              await forkApi.pause(
+                listenerApi.extra.threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+                  {
+                    ...depositParams,
+                    extraData,
+                  },
+                  chainId
+                )
+              )
+            }
           }
         }
 

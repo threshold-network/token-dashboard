@@ -798,12 +798,29 @@ export class TBTC implements ITBTC {
       }
 
       // Single-parameter initialization for StarkNet
+      console.log("Initializing StarkNet cross-chain with provider:", {
+        hasAddress: "address" in providerOrSigner,
+        hasAccount: "account" in providerOrSigner,
+        address:
+          (providerOrSigner as any).address ||
+          (providerOrSigner as any).account?.address,
+      })
+
       await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
 
       // Get the L2 tBTC token instance from SDK
       const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
       if (crossChainContracts) {
         this._l2TbtcToken = crossChainContracts.l2TbtcToken
+
+        // Log deposit owner status
+        const depositOwner = (
+          crossChainContracts.l2BitcoinDepositor as any
+        ).getDepositOwner?.()
+        console.log(
+          "StarkNet deposit owner after init:",
+          depositOwner?.toString()
+        )
       }
     } else {
       // Standard L2 initialization for EVM chains
@@ -852,6 +869,20 @@ export class TBTC implements ITBTC {
     }
 
     const sdk = await this._getSdk()
+
+    // Log cross-chain contracts state before deposit
+    const crossChainContracts = sdk.crossChainContracts(chainName as L2Chain)
+    if (crossChainContracts) {
+      const depositOwner = (
+        crossChainContracts.l2BitcoinDepositor as any
+      ).getDepositOwner?.()
+      console.log("Deposit owner before initiateCrossChainDeposit:", {
+        chainName,
+        depositOwner: depositOwner?.toString(),
+        hasL2BitcoinDepositor: !!crossChainContracts.l2BitcoinDepositor,
+      })
+    }
+
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       chainName as L2Chain

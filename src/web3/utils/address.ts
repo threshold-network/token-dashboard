@@ -36,7 +36,12 @@ export const isSameETHAddress = (
   address2: string
 ): boolean => {
   // TODO: this has the potential to cause an app crash if the addresses passed are not valid ETH addresses
-  return getAddress(address1) === getAddress(address2)
+  try {
+    return getAddress(address1) === getAddress(address2)
+  } catch {
+    // If either address is invalid, they can't be the same
+    return false
+  }
 }
 
 export const isSameAddress = (address1: string, address2: string): boolean => {

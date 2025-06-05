@@ -151,6 +151,7 @@ export const initializeStarkNetDeposit = async (
 
     // Log configuration being used
     console.log(`Initializing StarkNet deposit on ${config.chainName}`)
+    console.log(`StarkNet wallet address: ${starkNetAddress}`)
 
     // For StarkNet cross-chain deposits, we pass the L2 chain name directly
     // The SDK expects the chain name as a string, not a numeric chain ID

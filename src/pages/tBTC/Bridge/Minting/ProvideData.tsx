@@ -286,6 +286,7 @@ export const ProvideDataComponent: FC<{
         chainName,
         depositor: receipt.depositor.identifierHex.toString(),
         userWalletAddress: values.userWalletAddress,
+        extraData: receipt.extraData?.toString(),
       })
 
       setDepositDataInLocalStorage(
