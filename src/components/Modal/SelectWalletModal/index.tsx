@@ -23,7 +23,7 @@ import { featureFlags } from "../../../constants"
 import { ConnectStarknet } from "./ConnectStarknet"
 import { StarknetIcon } from "../../../static/icons/Starknet"
 
-const walletOptions: WalletOption[] = [
+const baseWalletOptions: WalletOption[] = [
   {
     id: WalletType.TAHO,
     title: "Taho",
@@ -68,14 +68,23 @@ const walletOptions: WalletOption[] = [
       dark: CoinbaseWallet,
     },
   },
-  {
-    id: WalletType.Starknet,
-    title: "Starknet",
-    icon: {
-      light: StarknetIcon,
-      dark: StarknetIcon,
-    },
-  },
+]
+
+// Conditionally add StarkNet based on feature flag
+const walletOptions: WalletOption[] = [
+  ...baseWalletOptions,
+  ...(featureFlags.STARKNET_ENABLED
+    ? [
+        {
+          id: WalletType.Starknet,
+          title: "Starknet",
+          icon: {
+            light: StarknetIcon,
+            dark: StarknetIcon,
+          },
+        },
+      ]
+    : []),
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {

@@ -21,6 +21,7 @@ const envVariables = [
   "DAPP_DEVELOPMENT_TESTNET_CONTRACTS",
   "FEATURE_FLAG_GOOGLE_TAG_MANAGER",
   "GOOGLE_TAG_MANAGER_ID",
+  "FEATURE_FLAG_STARKNET",
 ] as const
 
 export type EnvVariableKey = typeof envVariables[number]

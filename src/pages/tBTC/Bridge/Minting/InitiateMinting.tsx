@@ -16,6 +16,8 @@ import { Toast } from "../../../../components/Toast"
 import { useModal } from "../../../../hooks/useModal"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { ChainName } from "../../../../threshold-ts/types"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -24,6 +26,10 @@ const InitiateMintingComponent: FC<{
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
   const { closeModal } = useModal()
+  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
+
+  const isStarkNetDeposit =
+    isNonEVMActive && nonEVMChainName === ChainName.Starknet
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -65,7 +71,9 @@ const InitiateMintingComponent: FC<{
       />
       <BridgeProcessCardSubTitle
         stepText="Step 3"
-        subTitle="Initiate minting"
+        subTitle={
+          isStarkNetDeposit ? "Initiate StarkNet minting" : "Initiate minting"
+        }
       />
       <InfoBox variant="modal" mb="6">
         <H5 mb={4}>
@@ -91,24 +99,48 @@ const InitiateMintingComponent: FC<{
           </Skeleton>
         </H5>
         <BodyLg>
-          Receiving tBTC requires a single transaction on Ethereum and takes
-          approximately 2 hours. The bridging can be initiated before you get
-          all your Bitcoin deposit confirmations.
+          {isStarkNetDeposit ? (
+            <>
+              Receiving tBTC on StarkNet requires bridging through the StarkGate
+              bridge. Your tBTC will be minted on Ethereum Mainnet and then
+              bridged to StarkNet Mainnet. This process typically takes 15-30
+              minutes to complete.
+            </>
+          ) : (
+            <>
+              Receiving tBTC requires a single transaction on Ethereum and takes
+              approximately 2 hours. The bridging can be initiated before you
+              get all your Bitcoin deposit confirmations.
+            </>
+          )}
         </BodyLg>
       </InfoBox>
       <MintingTransactionDetails />
+      {isStarkNetDeposit && (
+        <InfoBox variant="modal" mb="6">
+          <BodyLg>
+            <strong>Bridge to StarkNet:</strong> After minting on Ethereum, your
+            tBTC will automatically be bridged to StarkNet using the StarkGate
+            bridge.
+          </BodyLg>
+        </InfoBox>
+      )}
       <SubmitTxButton
         isDisabled={!threshold.tbtc.bridgeContract}
         onSubmit={initiateMintTransaction}
         isFullWidth
         data-ph-capture-attribute-button-name={
-          "Confirm deposit & mint (Step 2)"
+          isStarkNetDeposit
+            ? "Confirm StarkNet deposit & bridge"
+            : "Confirm deposit & mint (Step 2)"
         }
         data-ph-capture-attribute-button-id={PosthogButtonId.InitiateMinting}
-        data-ph-capture-attribute-button-text={"Bridge"}
+        data-ph-capture-attribute-button-text={
+          isStarkNetDeposit ? "Initiate StarkNet Bridging" : "Bridge"
+        }
         data-ph-capture-attribute-deposited-btc-amount={utxo.value}
       >
-        Bridge
+        {isStarkNetDeposit ? "Initiate StarkNet Bridging" : "Bridge"}
       </SubmitTxButton>
     </>
   )

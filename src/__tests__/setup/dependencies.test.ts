@@ -18,7 +18,8 @@ describe("Starknet Dependencies", () => {
     const chains = await import("@starknet-react/chains")
     expect(chains).toBeDefined()
     expect(chains.mainnet).toBeDefined()
-    expect(chains.goerli).toBeDefined()
+    // Note: goerli was deprecated, checking for sepolia instead
+    expect(chains.sepolia).toBeDefined()
   })
 
   it("should import @starknet-react/core without errors", async () => {

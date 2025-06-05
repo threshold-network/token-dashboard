@@ -1,0 +1,205 @@
+import { getChainIdToNetworkName } from "../../networks/utils/getChainIdToNetworkName"
+import { hexToNumber } from "../../networks/utils/chainId"
+import {
+  isValidStarkNetAddress,
+  checkStarkNetNetworkCompatibility,
+  getStarkNetConfig,
+} from "../../utils/tbtcStarknetHelpers"
+
+// Mock environment variables
+const originalEnv = process.env
+
+beforeEach(() => {
+  jest.resetModules()
+  process.env = { ...originalEnv }
+})
+
+afterEach(() => {
+  process.env = originalEnv
+})
+
+describe("Backwards Compatibility Suite", () => {
+  describe("Arbitrum Deposits", () => {
+    it("should map Arbitrum chainId exactly as before", () => {
+      // Test numeric chainId
+      expect(getChainIdToNetworkName(42161)).toBe("Arbitrum")
+      // Test string chainId
+      expect(getChainIdToNetworkName("42161")).toBe("Arbitrum")
+      // Test hex chainId
+      expect(getChainIdToNetworkName("0xa4b1")).toBe("Arbitrum")
+    })
+
+    it("should handle Arbitrum hex conversion correctly", () => {
+      expect(hexToNumber("0xa4b1")).toBe(42161)
+      expect(hexToNumber(42161)).toBe(42161)
+      expect(hexToNumber("42161")).toBe(42161)
+    })
+
+    it("should not affect Arbitrum with StarkNet functions", () => {
+      // StarkNet validation should not interfere with Arbitrum addresses
+      expect(isValidStarkNetAddress("0xArbitrumAddress123")).toBe(false)
+
+      // Network compatibility check should handle non-StarkNet chains gracefully
+      const result = checkStarkNetNetworkCompatibility(1, "0xa4b1")
+      expect(result.compatible).toBe(false)
+      expect(result.error).toContain("Wrong StarkNet network")
+    })
+  })
+
+  describe("Base Deposits", () => {
+    it("should map Base chainId exactly as before", () => {
+      // Test numeric chainId
+      expect(getChainIdToNetworkName(8453)).toBe("Base")
+      // Test string chainId
+      expect(getChainIdToNetworkName("8453")).toBe("Base")
+      // Test hex chainId
+      expect(getChainIdToNetworkName("0x2105")).toBe("Base")
+    })
+
+    it("should handle Base hex conversion correctly", () => {
+      expect(hexToNumber("0x2105")).toBe(8453)
+      expect(hexToNumber(8453)).toBe(8453)
+      expect(hexToNumber("8453")).toBe(8453)
+    })
+  })
+
+  describe("Ethereum Standard Minting", () => {
+    it("should map Ethereum mainnet exactly as before", () => {
+      // Mock mainnet environment
+      jest.mock("../../utils/getEnvVariable", () => ({
+        ...jest.requireActual("../../utils/getEnvVariable"),
+        getDefaultProviderChainId: jest.fn().mockReturnValue(1),
+      }))
+
+      expect(getChainIdToNetworkName(1)).toBe("Ethereum")
+      expect(getChainIdToNetworkName("1")).toBe("Ethereum")
+      expect(getChainIdToNetworkName("0x1")).toBe("Ethereum")
+    })
+
+    it("should map Ethereum Sepolia exactly as before", () => {
+      // Mock testnet environment
+      jest.mock("../../utils/getEnvVariable", () => ({
+        ...jest.requireActual("../../utils/getEnvVariable"),
+        getDefaultProviderChainId: jest.fn().mockReturnValue(11155111),
+      }))
+
+      expect(getChainIdToNetworkName(11155111)).toBe("Ethereum")
+      expect(getChainIdToNetworkName("11155111")).toBe("Ethereum")
+      expect(getChainIdToNetworkName("0xaa36a7")).toBe("Ethereum")
+    })
+  })
+
+  describe("StarkNet New Functionality", () => {
+    it("should work with Sepolia config by default", () => {
+      delete process.env.REACT_APP_STARKNET_MAINNET
+      const config = getStarkNetConfig()
+
+      expect(config.isTestnet).toBe(true)
+      expect(config.chainId).toBe("0x534e5f5345504f4c4941")
+      expect(config.chainName).toBe("StarkNet Sepolia")
+    })
+
+    it("should work with Mainnet config when enabled", () => {
+      process.env.REACT_APP_STARKNET_MAINNET = "true"
+      const config = getStarkNetConfig()
+
+      expect(config.isTestnet).toBe(false)
+      expect(config.chainId).toBe("0x534e5f4d41494e")
+      expect(config.chainName).toBe("StarkNet")
+    })
+
+    it("should validate StarkNet addresses correctly", () => {
+      // Valid StarkNet addresses
+      expect(isValidStarkNetAddress("0x1234567890abcdef")).toBe(true)
+      expect(
+        isValidStarkNetAddress(
+          "0x06ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678"
+        )
+      ).toBe(true)
+
+      // Invalid addresses
+      expect(isValidStarkNetAddress("0xInvalid")).toBe(false)
+      expect(isValidStarkNetAddress("not-an-address")).toBe(false)
+      expect(isValidStarkNetAddress("")).toBe(false)
+      expect(isValidStarkNetAddress(undefined)).toBe(false)
+    })
+
+    it("should check network compatibility correctly", () => {
+      // Sepolia compatibility
+      const sepoliaResult = checkStarkNetNetworkCompatibility(
+        11155111,
+        "0x534e5f5345504f4c4941"
+      )
+      expect(sepoliaResult.compatible).toBe(true)
+      expect(sepoliaResult.error).toBeUndefined()
+
+      // Mainnet compatibility
+      process.env.REACT_APP_STARKNET_MAINNET = "true"
+      const mainnetResult = checkStarkNetNetworkCompatibility(
+        1,
+        "0x534e5f4d41494e"
+      )
+      expect(mainnetResult.compatible).toBe(true)
+      expect(mainnetResult.error).toBeUndefined()
+
+      // Mismatch detection
+      const mismatchResult = checkStarkNetNetworkCompatibility(
+        1,
+        "0x534e5f5345504f4c4941"
+      )
+      expect(mismatchResult.compatible).toBe(false)
+      expect(mismatchResult.error).toContain("Network mismatch")
+    })
+  })
+
+  describe("Chain ID Edge Cases", () => {
+    it("should handle unknown chain IDs without breaking", () => {
+      expect(getChainIdToNetworkName(999999)).toBe("Unsupported")
+      expect(getChainIdToNetworkName("0xDEADBEEF")).toBe("Unsupported")
+      expect(getChainIdToNetworkName()).toBe("Unsupported")
+      expect(getChainIdToNetworkName(null)).toBe("Unsupported")
+    })
+
+    it("should handle very large hex values gracefully", () => {
+      // Should not throw, even with very large hex values
+      expect(() => hexToNumber("0xFFFFFFFFFFFFFFFF")).not.toThrow()
+      expect(() => getChainIdToNetworkName("0xFFFFFFFFFFFFFFFF")).not.toThrow()
+    })
+  })
+
+  describe("Performance and Memory", () => {
+    it("should not increase memory usage significantly", () => {
+      // Test that repeated calls don't leak memory
+      const initialMemory = process.memoryUsage().heapUsed
+
+      for (let i = 0; i < 1000; i++) {
+        getChainIdToNetworkName(42161)
+        getChainIdToNetworkName(8453)
+        getChainIdToNetworkName("0x534e5f4d41494e")
+        getStarkNetConfig()
+      }
+
+      const finalMemory = process.memoryUsage().heapUsed
+      const memoryIncrease = finalMemory - initialMemory
+
+      // Memory increase should be minimal (less than 10MB)
+      expect(memoryIncrease).toBeLessThan(10 * 1024 * 1024)
+    })
+
+    it("should handle chainId conversion quickly", () => {
+      const start = performance.now()
+
+      for (let i = 0; i < 10000; i++) {
+        hexToNumber("0xa4b1")
+        hexToNumber("0x2105")
+        hexToNumber("0x534e5f4d41494e")
+      }
+
+      const end = performance.now()
+      const duration = end - start
+
+      // Should complete 10k conversions in less than 100ms
+      expect(duration).toBeLessThan(100)
+    })
+  })
+})

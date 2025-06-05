@@ -26,3 +26,6 @@ export const LEDGER_LIVE =
 
 export const GOOGLE_TAG_MANAGER =
   getEnvVariable(EnvVariable.FEATURE_FLAG_GOOGLE_TAG_MANAGER) === "true"
+
+export const STARKNET_ENABLED =
+  getEnvVariable(EnvVariable.FEATURE_FLAG_STARKNET) === "true"
