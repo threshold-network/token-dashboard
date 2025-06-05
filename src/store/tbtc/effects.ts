@@ -40,6 +40,11 @@ export const fetchBridgeactivityEffect = async (
       )
     )
       return
+  } else {
+    // For StarkNet addresses, skip chain ID validation since StarkNet uses different chain IDs
+    if (!depositor || isAddressZero(depositor)) {
+      return
+    }
   }
 
   listenerApi.unsubscribe()
@@ -73,6 +78,7 @@ export const findUtxoEffect = async (
   const {
     tbtc: {
       depositor,
+      ethAddress,
       blindingFactor,
       walletPublicKeyHash,
       refundLocktime,
@@ -86,6 +92,7 @@ export const findUtxoEffect = async (
     btcDepositAddress,
     chainId,
     depositor,
+    ethAddress,
     chainName,
     isEthAddress: isAddress(depositor),
     isZeroAddress: isAddressZero(depositor),
@@ -151,8 +158,14 @@ export const findUtxoEffect = async (
               btcRecoveryAddress,
               bitcoinNetwork
             ).toString()
+          // For StarkNet deposits, use ethAddress as the depositor
+          const effectiveDepositor =
+            chainName?.toLowerCase() === "starknet" && ethAddress
+              ? ethAddress
+              : depositor
+
           const depositParams = {
-            depositor: getChainIdentifier(depositor),
+            depositor: getChainIdentifier(effectiveDepositor),
             blindingFactor,
             walletPublicKeyHash,
             refundPublicKeyHash,

@@ -2,8 +2,8 @@ import { BaseChain } from "./BaseChain"
 import { EVMChain } from "./EVMChain"
 import { StarkNetChain } from "./StarkNetChain"
 import { ChainType } from "../types/chain"
-import { supportedChains, SupportedChainIds } from "../constants/chains"
-import networks from "../data/networks.json"
+import { SupportedChainIds } from "../networks/enums/networks"
+import { networks } from "../networks/utils/networks"
 
 export class ChainRegistry {
   private static instance: ChainRegistry
@@ -22,18 +22,14 @@ export class ChainRegistry {
 
   private initializeChains(): void {
     // Initialize EVM chains
-    supportedChains.forEach((chain) => {
-      const network = networks.find((n) => n.chainId === chain.id)
-      if (network) {
-        const evmChain = new EVMChain(chain.id, chain.name, {
-          displayName: chain.name,
-          icon: network.iconUrl,
-          rpcUrl: network.rpcUrls?.[0]?.url,
-          explorerUrl: network.blockExplorerUrls?.[0]?.url,
-          nativeToken: network.nativeCurrency,
-        })
-        this.registerChain(evmChain)
-      }
+    networks.forEach((network) => {
+      const evmChain = new EVMChain(network.chainId, network.name, {
+        displayName: network.chainParameters.chainName,
+        rpcUrl: network.chainParameters.rpcUrls?.[0],
+        explorerUrl: network.chainParameters.blockExplorerUrls?.[0],
+        nativeToken: network.chainParameters.nativeCurrency,
+      })
+      this.registerChain(evmChain)
     })
 
     // Initialize StarkNet chains
@@ -48,7 +44,7 @@ export class ChainRegistry {
           decimals: 18,
         },
       },
-      SupportedChainIds.Mainnet // Proxy to Ethereum Mainnet
+      SupportedChainIds.Ethereum // Proxy to Ethereum Mainnet
     )
     this.registerChain(starknetMainnet)
 

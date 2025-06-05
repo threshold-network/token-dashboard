@@ -54,10 +54,27 @@ export const isSameAddress = (address1: string, address2: string): boolean => {
   return false
 }
 
-export const isAddressZero = (address: string): boolean =>
-  isSameETHAddress(address, AddressZero)
+export const isAddressZero = (address: string): boolean => {
+  // Check if it's a StarkNet address
+  if (address?.startsWith("0x") && address.length === 66) {
+    // StarkNet zero address is 0x0 (padded to 66 chars)
+    return (
+      address ===
+      "0x0000000000000000000000000000000000000000000000000000000000000000"
+    )
+  }
+  return isSameETHAddress(address, AddressZero)
+}
 
 export const isEmptyOrZeroAddress = (address: string): boolean => {
+  if (!address) return true
+
+  // For StarkNet addresses
+  if (address.startsWith("0x") && address.length === 66) {
+    return !isStarknetAddress(address) || isAddressZero(address)
+  }
+
+  // For Ethereum addresses
   return !isAddress(address) || isAddressZero(address)
 }
 

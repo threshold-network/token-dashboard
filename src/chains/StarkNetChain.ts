@@ -6,7 +6,7 @@ import {
   ChainMetadata,
   ChainDepositInfo,
 } from "../types/chain"
-import { SupportedChainIds } from "../constants/chains"
+import { SupportedChainIds } from "../networks/enums/networks"
 
 export class StarkNetChain extends BaseChain {
   private readonly proxyChainId: number
