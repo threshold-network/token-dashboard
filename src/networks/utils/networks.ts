@@ -101,42 +101,43 @@ export const networks: Network[] = [
       blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.Sepolia)],
     },
   },
-  {
-    chainId: SupportedChainIds.StarkNet,
-    name: "StarkNet",
-    layer: Layer.L2,
-    networkType: NetworkType.Mainnet,
-    chainParameters: {
-      chainId: "0x534e5f4d41494e",
-      chainName: "StarkNet Mainnet",
-      nativeCurrency: {
-        name: "Ether",
-        symbol: ETH_SYMBOL,
-        decimals: DECIMALS,
-      },
-      rpcUrls: ["https://starknet-mainnet.public.blastapi.io"],
-      blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.StarkNet)],
-    },
-  },
-  {
-    chainId: SupportedChainIds.StarkNetSepolia,
-    name: "StarkNet",
-    layer: Layer.L2,
-    networkType: NetworkType.Testnet,
-    chainParameters: {
-      chainId: "0x534e5f5345504f4c4941",
-      chainName: "StarkNet Sepolia",
-      nativeCurrency: {
-        name: "Sepolia Ether",
-        symbol: ETH_SYMBOL,
-        decimals: DECIMALS,
-      },
-      rpcUrls: ["https://starknet-sepolia.public.blastapi.io"],
-      blockExplorerUrls: [
-        createExplorerPrefix(SupportedChainIds.StarkNetSepolia),
-      ],
-    },
-  },
+  // StarkNet networks are handled separately via StarkNet wallet connection
+  // {
+  //   chainId: SupportedChainIds.StarkNet,
+  //   name: "StarkNet",
+  //   layer: Layer.L2,
+  //   networkType: NetworkType.Mainnet,
+  //   chainParameters: {
+  //     chainId: "0x534e5f4d41494e",
+  //     chainName: "StarkNet Mainnet",
+  //     nativeCurrency: {
+  //       name: "Ether",
+  //       symbol: ETH_SYMBOL,
+  //       decimals: DECIMALS,
+  //     },
+  //     rpcUrls: ["https://starknet-mainnet.public.blastapi.io"],
+  //     blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.StarkNet)],
+  //   },
+  // },
+  // {
+  //   chainId: SupportedChainIds.StarkNetSepolia,
+  //   name: "StarkNet",
+  //   layer: Layer.L2,
+  //   networkType: NetworkType.Testnet,
+  //   chainParameters: {
+  //     chainId: "0x534e5f5345504f4c4941",
+  //     chainName: "StarkNet Sepolia",
+  //     nativeCurrency: {
+  //       name: "Sepolia Ether",
+  //       symbol: ETH_SYMBOL,
+  //       decimals: DECIMALS,
+  //     },
+  //     rpcUrls: ["https://starknet-sepolia.public.blastapi.io"],
+  //     blockExplorerUrls: [
+  //       createExplorerPrefix(SupportedChainIds.StarkNetSepolia),
+  //     ],
+  //   },
+  // },
   // {
   //   chainId: SupportedChainIds.ArbitrumSepolia,
   //   name: "Arbitrum",

@@ -40,6 +40,8 @@ interface StarknetWalletContextValue {
   availableWallets: any[]
   walletName: string | null
   walletIcon: string | null
+  switchNetwork: (chainId: string) => Promise<void>
+  currentWallet: any | null // Store the original wallet object
 }
 
 // Create the context
@@ -63,7 +65,7 @@ const extractChainIdFromWallet = (wallet: any): string | null => {
   // 3. Provider chainId
   if (wallet.provider?.chainId) return wallet.provider.chainId
 
-  // 4. Provider getChainId method
+  // 4. Provider getChainId method (synchronous call)
   if (
     wallet.provider?.getChainId &&
     typeof wallet.provider.getChainId === "function"
@@ -75,6 +77,9 @@ const extractChainIdFromWallet = (wallet: any): string | null => {
       console.warn("Failed to get chain ID from provider.getChainId:", e)
     }
   }
+
+  // 4b. Check if it's an async method that needs await
+  // Note: This won't work in a sync function, but we'll handle it in handleConnect
 
   // 5. Check for starknet-specific properties
   if (wallet.starknet?.chainId) return wallet.starknet.chainId
@@ -153,6 +158,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
   const [error, setError] = useState<Error | null>(null)
   const [walletName, setWalletName] = useState<string | null>(null)
   const [walletIcon, setWalletIcon] = useState<string | null>(null)
+  const [currentWallet, setCurrentWallet] = useState<any | null>(null)
 
   // Remove connectors array since starknetkit handles this internally
 
@@ -202,7 +208,29 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
           }
 
           // Extract chain ID using helper function
-          const chainId = extractChainIdFromWallet(wallet)
+          let chainId = extractChainIdFromWallet(wallet)
+          console.log("Initial chain ID:", chainId)
+
+          // If no chain ID found, try to get it from the provider's RPC
+          if (!chainId && wallet.provider) {
+            try {
+              // Some wallets need a moment to establish connection
+              if (
+                wallet.provider.getChainId &&
+                typeof wallet.provider.getChainId === "function"
+              ) {
+                const rpcChainId = await wallet.provider.getChainId()
+                if (rpcChainId) {
+                  chainId = rpcChainId
+                  console.log("Got chain ID from RPC call:", chainId)
+                }
+              }
+            } catch (e) {
+              console.warn("Failed to get chain ID from RPC:", e)
+            }
+          }
+
+          console.log("Final chain ID:", chainId)
 
           // Check network compatibility
           const expectedChainId = getExpectedStarknetChainId()
@@ -217,6 +245,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
           setProvider(sdkProvider)
           setAccount(address)
           setConnected(true)
+          setCurrentWallet(wallet) // Store the original wallet object
 
           // Store wallet info for UI
           const data = connectorData as any
@@ -277,6 +306,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       setWalletName(null)
       setWalletIcon(null)
       setError(null)
+      setCurrentWallet(null)
 
       // Clear stored wallet info
       localStorage.removeItem(STARKNET_WALLET_KEY)
@@ -286,6 +316,49 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       setError(err as Error)
     }
   }, [])
+
+  // Switch network function
+  const switchNetwork = useCallback(
+    async (targetChainId: string) => {
+      if (!currentWallet || !connected) {
+        throw new Error("No wallet connected")
+      }
+
+      try {
+        // Try different methods to switch network
+        if (currentWallet.request) {
+          await currentWallet.request({
+            type: "wallet_switchStarknetChain",
+            params: {
+              chainId: targetChainId,
+            },
+          })
+        } else if (currentWallet.wallet?.request) {
+          await currentWallet.wallet.request({
+            type: "wallet_switchStarknetChain",
+            params: {
+              chainId: targetChainId,
+            },
+          })
+        } else {
+          throw new Error("Wallet does not support network switching")
+        }
+
+        // Update the provider with new chain ID
+        if (provider) {
+          const updatedProvider = {
+            ...provider,
+            chainId: targetChainId,
+          }
+          setProvider(updatedProvider)
+        }
+      } catch (error) {
+        console.error("Failed to switch network:", error)
+        throw error
+      }
+    },
+    [currentWallet, connected, provider]
+  )
 
   // Auto-reconnect on mount
   useEffect(() => {
@@ -357,6 +430,8 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
     availableWallets,
     walletName,
     walletIcon,
+    switchNetwork,
+    currentWallet,
   }
 
   return (

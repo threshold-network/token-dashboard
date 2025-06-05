@@ -43,8 +43,33 @@ export const STARKNET_CONFIGS: Record<
 }
 
 // Helper to get current StarkNet configuration
-export function getStarkNetConfig(): StarkNetConfig {
-  // Default to Sepolia unless explicitly set to mainnet
+export function getStarkNetConfig(chainId?: string | number): StarkNetConfig {
+  // If chainId is provided, use it to determine the network
+  if (chainId) {
+    const chainIdStr =
+      typeof chainId === "string"
+        ? chainId.toLowerCase()
+        : chainId.toString(16).toLowerCase()
+    const isMainnet =
+      chainIdStr === STARKNET_MAINNET_CHAIN_ID.toLowerCase() ||
+      chainIdStr === STARKNET_MAINNET_CHAIN_ID.toLowerCase().replace("0x", "")
+
+    const baseConfig = STARKNET_CONFIGS[isMainnet ? "mainnet" : "sepolia"]
+
+    // Add the relayer URL with environment variable override
+    const relayerUrl = isMainnet
+      ? process.env.REACT_APP_STARKNET_MAINNET_RELAYER_URL ||
+        "https://relayer.threshold.network"
+      : process.env.REACT_APP_STARKNET_SEPOLIA_RELAYER_URL ||
+        "https://sepolia-relayer.threshold.network"
+
+    return {
+      ...baseConfig,
+      relayerUrl,
+    }
+  }
+
+  // Fallback to environment variable if no chainId provided
   const useMainnet = process.env.REACT_APP_STARKNET_MAINNET === "true"
   const baseConfig = STARKNET_CONFIGS[useMainnet ? "mainnet" : "sepolia"]
 
@@ -108,7 +133,8 @@ export const getStarkNetDepositOwner = (tbtc?: ITBTC): string | undefined => {
 export const initializeStarkNetDeposit = async (
   tbtc: ITBTC,
   starkNetAddress: string,
-  btcRecoveryAddress: string
+  btcRecoveryAddress: string,
+  chainId?: string | number
 ) => {
   if (!isValidStarkNetAddress(starkNetAddress)) {
     throw new Error("Invalid StarkNet address format")
@@ -121,7 +147,7 @@ export const initializeStarkNetDeposit = async (
   }
 
   try {
-    const config = getStarkNetConfig()
+    const config = getStarkNetConfig(chainId)
 
     // Log configuration being used
     console.log(`Initializing StarkNet deposit on ${config.chainName}`)
@@ -169,7 +195,7 @@ export const checkStarkNetNetworkCompatibility = (
     return { compatible: false, error: "Network information missing" }
   }
 
-  const config = getStarkNetConfig()
+  const config = getStarkNetConfig(starkNetChainId)
 
   // Check if both networks are mainnet or both are testnet
   const isEvmTestnet = [11155111, 5].includes(evmChainId) // Sepolia, Goerli

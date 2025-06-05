@@ -242,7 +242,8 @@ export const ProvideDataComponent: FC<{
         deposit = await initializeStarkNetDeposit(
           threshold.tbtc,
           nonEVMPublicKey,
-          values.btcRecoveryAddress
+          values.btcRecoveryAddress,
+          starknetChainId || undefined
         )
       } else if (isL1Network(chainId)) {
         // Standard Ethereum L1 minting
