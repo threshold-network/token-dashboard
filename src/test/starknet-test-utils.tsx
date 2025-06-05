@@ -253,3 +253,6 @@ export const renderWithStarknetProvider = (
 // Re-export React Testing Library render for convenience
 import { render } from "@testing-library/react"
 export { render }
+
+// Export alias for backward compatibility
+export { MockStarknetWalletProvider as MockStarknetProvider }

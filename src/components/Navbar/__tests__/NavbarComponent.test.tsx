@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import NavbarComponent from "../NavbarComponent"
-import { MockStarknetProvider } from "../../../test/starknet-test-utils"
+import { MockStarknetWalletProvider } from "../../../test/starknet-test-utils"
 
 // Mock the imported components
 jest.mock("../WalletConnectionAlert", () => ({
@@ -66,9 +66,9 @@ describe("NavbarComponent", () => {
     return render(
       <ChakraProvider>
         <MemoryRouter>
-          <MockStarknetProvider value={starknetValue}>
+          <MockStarknetWalletProvider value={starknetValue}>
             <NavbarComponent {...defaultProps} {...props} />
-          </MockStarknetProvider>
+          </MockStarknetWalletProvider>
         </MemoryRouter>
       </ChakraProvider>
     )

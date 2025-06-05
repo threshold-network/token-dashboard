@@ -13,6 +13,24 @@ module.exports = {
       ["@babel/plugin-transform-class-properties", { loose: true }],
     ],
   },
+  jest: {
+    configure: {
+      transformIgnorePatterns: [
+        "node_modules/(?!(@starknet-react|axios|@walletconnect|uint8arrays|eventemitter3|multiformats)/)",
+      ],
+      moduleNameMapper: {
+        "^@keep-network/tbtc-v2.ts/dist/src/bitcoin$":
+          "@keep-network/tbtc-v2.ts",
+        "^uint8arrays$": "<rootDir>/src/__mocks__/uint8arrays.js",
+        "^multiformats$": "<rootDir>/src/__mocks__/multiformats.js",
+      },
+      globals: {
+        "ts-jest": {
+          useESM: true,
+        },
+      },
+    },
+  },
   webpack: {
     configure: (webpackConfig) => {
       // Add webpack plugins

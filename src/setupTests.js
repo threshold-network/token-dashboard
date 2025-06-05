@@ -80,3 +80,14 @@ jest.mock("@keep-network/tbtc-v2.ts", () => ({
 }))
 
 jest.mock("crypto-js")
+
+// Mock the @threshold-network/components theme to fix test issues
+jest.mock("@threshold-network/components", () => ({
+  defaultTheme: {
+    components: {
+      Badge: {
+        variants: {},
+      },
+    },
+  },
+}))

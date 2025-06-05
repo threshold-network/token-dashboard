@@ -4,7 +4,21 @@ import { useNonEVMConnection } from "../useNonEVMConnection"
 import { useStarknetConnection } from "../useStarknetConnection"
 
 // Mock the Starknet connection hook
-jest.mock("../useStarknetConnection")
+jest.mock("../useStarknetConnection", () => ({
+  useStarknetConnection: jest.fn(() => ({
+    isConnected: false,
+    isConnecting: false,
+    address: null,
+    provider: null,
+    walletName: null,
+    walletIcon: null,
+    chainId: null,
+    availableWallets: [],
+    error: null,
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+  })),
+}))
 
 // Add SDK mocks to avoid setupTests issues
 jest.mock("@keep-network/tbtc-v2.ts/dist/src/lib/bitcoin", () => ({}))
@@ -189,6 +203,21 @@ describe("useNonEVMConnection", () => {
       // 2. Add chain detection logic to determine active chain
       // 3. Update disconnect function to handle the new chain
       // 4. The API should remain the same for consumers
+
+      // Set up mock to return default values
+      mockUseStarknetConnection.mockReturnValue({
+        isConnected: false,
+        isConnecting: false,
+        address: null,
+        provider: null,
+        walletName: null,
+        walletIcon: null,
+        chainId: null,
+        availableWallets: [],
+        error: null,
+        connect: jest.fn(),
+        disconnect: jest.fn(),
+      })
 
       const { result } = renderHook(() => useNonEVMConnection())
 

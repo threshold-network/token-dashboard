@@ -202,4 +202,67 @@ describe("Backwards Compatibility Suite", () => {
       expect(duration).toBeLessThan(100)
     })
   })
+
+  describe("Chain ID Utility Functions", () => {
+    it("toHex should maintain backwards compatibility for all chains", () => {
+      const { toHex } = require("../../networks/utils/chainId")
+
+      // Ethereum
+      expect(toHex(1)).toBe("0x1")
+      expect(toHex("1")).toBe("0x1")
+      expect(toHex("0x1")).toBe("0x1")
+
+      // Arbitrum
+      expect(toHex(42161)).toBe("0xa4b1")
+      expect(toHex("42161")).toBe("0xa4b1")
+      expect(toHex("0xa4b1")).toBe("0xa4b1")
+
+      // Base
+      expect(toHex(8453)).toBe("0x2105")
+      expect(toHex("8453")).toBe("0x2105")
+      expect(toHex("0x2105")).toBe("0x2105")
+
+      // StarkNet - should not throw overflow error
+      const starknetHex = "0x534e5f4d41494e"
+      expect(() => toHex(starknetHex)).not.toThrow()
+      expect(toHex(starknetHex)).toBe(starknetHex)
+    })
+
+    it("compareChainIds should work correctly for all chain combinations", () => {
+      const { compareChainIds } = require("../../networks/utils/chainId")
+
+      // Same chain comparisons
+      expect(compareChainIds(1, 1)).toBe(true)
+      expect(compareChainIds(42161, 42161)).toBe(true)
+      expect(compareChainIds(8453, 8453)).toBe(true)
+
+      // Different format comparisons
+      expect(compareChainIds("0xa4b1", 42161)).toBe(true)
+      expect(compareChainIds("0x2105", 8453)).toBe(true)
+      expect(compareChainIds("1", 1)).toBe(true)
+
+      // Cross-chain comparisons should return false
+      expect(compareChainIds(1, 42161)).toBe(false)
+      expect(compareChainIds(8453, 42161)).toBe(false)
+      expect(compareChainIds("0x534e5f4d41494e", 1)).toBe(false)
+    })
+
+    it("should handle StarkNet's large hex values without BigNumber overflow", () => {
+      const { toHex, hexToNumber } = require("../../networks/utils/chainId")
+
+      // These used to cause "overflow" errors
+      const starknetMainnet = "0x534e5f4d41494e"
+      const starknetSepolia = "0x534e5f5345504f4c4941"
+
+      // toHex should return the value as-is for hex strings
+      expect(() => toHex(starknetMainnet)).not.toThrow()
+      expect(() => toHex(starknetSepolia)).not.toThrow()
+      expect(toHex(starknetMainnet)).toBe(starknetMainnet)
+      expect(toHex(starknetSepolia)).toBe(starknetSepolia)
+
+      // hexToNumber should handle StarkNet chain IDs
+      expect(() => hexToNumber(starknetMainnet)).not.toThrow()
+      expect(() => hexToNumber(starknetSepolia)).not.toThrow()
+    })
+  })
 })
