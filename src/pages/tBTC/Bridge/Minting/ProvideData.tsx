@@ -276,6 +276,18 @@ export const ProvideDataComponent: FC<{
       // create a new deposit address,
       updateState("btcDepositAddress", depositAddress)
 
+      const storageChainId = isStarkNetDeposit
+        ? starknetChainId || getStarkNetConfig().chainId
+        : chainId
+
+      console.log("ProvideData - saving deposit to localStorage:", {
+        isStarkNetDeposit,
+        storageChainId,
+        chainName,
+        depositor: receipt.depositor.identifierHex.toString(),
+        userWalletAddress: values.userWalletAddress,
+      })
+
       setDepositDataInLocalStorage(
         {
           depositor: {
@@ -290,7 +302,7 @@ export const ProvideDataComponent: FC<{
           btcDepositAddress: depositAddress,
           extraData: receipt.extraData?.toString() || "",
         },
-        isStarkNetDeposit ? starknetChainId || undefined : chainId
+        storageChainId
       )
 
       depositTelemetry(receipt, depositAddress)

@@ -22,16 +22,23 @@ export const fetchBridgeactivityEffect = async (
   const { account } = listenerApi.getState()
   const { depositor } = action.payload
 
-  if (
-    !isAddress(depositor) ||
-    isAddressZero(depositor) ||
-    !account.chainId ||
-    !isSameChainId(
-      account.chainId,
-      listenerApi.extra.threshold.config.ethereum.chainId
+  // Check if it's a StarkNet address (starts with 0x and is 64 chars long)
+  const isStarkNetAddress =
+    depositor?.startsWith("0x") && depositor.length === 66
+
+  if (!isStarkNetAddress) {
+    // For EVM addresses, validate normally
+    if (
+      !isAddress(depositor) ||
+      isAddressZero(depositor) ||
+      !account.chainId ||
+      !isSameChainId(
+        account.chainId,
+        listenerApi.extra.threshold.config.ethereum.chainId
+      )
     )
-  )
-    return
+      return
+  }
 
   listenerApi.unsubscribe()
 
@@ -73,19 +80,40 @@ export const findUtxoEffect = async (
     },
   } = listenerApi.getState()
 
+  console.log("findUtxoEffect triggered with:", {
+    btcDepositAddress,
+    chainId,
+    depositor,
+    chainName,
+    isEthAddress: isAddress(depositor),
+    isZeroAddress: isAddressZero(depositor),
+  })
+
+  // For StarkNet deposits, depositor might be a StarkNet address
+  // which won't pass the Ethereum address check
+  const isStarkNetDeposit = chainName?.toLowerCase() === "starknet"
+
   if (
     !btcDepositAddress ||
-    (!isAddress(depositor) && !isAddressZero(depositor))
-  )
+    (!isStarkNetDeposit && !isAddress(depositor) && !isAddressZero(depositor))
+  ) {
+    console.log("findUtxoEffect early return - conditions not met")
     return
+  }
 
   // Cancel any in-progress instances of this listener.
   listenerApi.cancelActiveListeners()
 
   const pollingTask = listenerApi.fork(async (forkApi) => {
+    console.log("Starting UTXO polling for deposit address:", btcDepositAddress)
     try {
       while (true) {
         if (getChainIdToNetworkName(chainId) !== chainName) {
+          console.error("Chain mismatch:", {
+            chainId,
+            chainName,
+            expected: getChainIdToNetworkName(chainId),
+          })
           throw new Error("Chain ID and deposit chain name mismatch")
         }
         // Initiating deposit from redux store (if deposit object is empty)
@@ -129,11 +157,13 @@ export const findUtxoEffect = async (
         }
 
         // Looking for utxo.
+        console.log("Checking for UTXOs...")
         const utxos = await forkApi.pause(
           listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs()
         )
 
         if (!utxos || utxos.length === 0) {
+          console.log("No UTXOs found yet, continuing to poll...")
           // Bitcoin deposit address exists and there is no utxo for a given
           // deposit address- this means someone wants to use this deposit
           // address to mint tBTC. Redirect to step 2 and continue searching for
@@ -147,6 +177,8 @@ export const findUtxoEffect = async (
           await forkApi.delay(10 * ONE_SEC_IN_MILISECONDS)
           continue
         }
+
+        console.log("Found UTXOs:", utxos.length, utxos)
 
         let utxo = utxos[0]
         let areAllDepositRevealed = true

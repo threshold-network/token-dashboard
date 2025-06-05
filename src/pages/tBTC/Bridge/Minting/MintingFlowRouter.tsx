@@ -14,13 +14,27 @@ import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
   const { account, chainId } = useIsActive()
-  const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
+  const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
+    useNonEVMConnection()
+  const { mintingStep, updateState, btcDepositAddress, utxo, chainName } =
+    useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
+
+  // For StarkNet deposits, use non-EVM connection info
+  const effectiveAccount = account || nonEVMPublicKey
+  const effectiveChainId =
+    chainId ||
+    (isNonEVMActive &&
+    (chainName === "StarkNet" || nonEVMChainName === "Starknet")
+      ? SupportedChainIds.Sepolia
+      : undefined)
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (mintingStep === MintingStep.MintingSuccess) {
@@ -36,16 +50,38 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    if (!btcDepositAddress || !account || !chainId) {
+    console.log("MintingFlowRouter useEffect:", {
+      btcDepositAddress,
+      account,
+      chainId,
+      effectiveAccount,
+      effectiveChainId,
+      isNonEVMActive,
+      chainName,
+      nonEVMChainName,
+      mintingStep,
+    })
+
+    if (!btcDepositAddress || !effectiveAccount || !effectiveChainId) {
+      console.log(
+        "MintingFlowRouter - missing required data, not dispatching findUtxo",
+        {
+          hasBtcAddress: !!btcDepositAddress,
+          hasAccount: !!effectiveAccount,
+          hasChainId: !!effectiveChainId,
+        }
+      )
       return
     }
+
+    console.log("MintingFlowRouter - dispatching findUtxo action")
     dispatch(
       tbtcSlice.actions.findUtxo({
         btcDepositAddress,
-        chainId,
+        chainId: effectiveChainId,
       })
     )
-  }, [btcDepositAddress, account, chainId, dispatch])
+  }, [btcDepositAddress, effectiveAccount, effectiveChainId, dispatch])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {
