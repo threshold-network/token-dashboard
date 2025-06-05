@@ -3,7 +3,6 @@ import { isStarknetNetwork } from "../networks/utils/connectedNetwork"
 import {
   StarkNetProvider,
   StarkNetDepositConfig,
-  isValidStarkNetAddress as typeGuardIsValidStarkNetAddress,
   isStarkNetChainId,
   STARKNET_MAINNET_CHAIN_ID,
   STARKNET_SEPOLIA_CHAIN_ID,

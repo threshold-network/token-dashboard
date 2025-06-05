@@ -34,9 +34,22 @@ import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { useStarkNetStatus } from "../../../../contexts/ThresholdContext"
+import { ChainName } from "../../../../threshold-ts/types"
+import {
+  initializeStarkNetDeposit,
+  isValidStarkNetAddress,
+  checkStarkNetNetworkCompatibility,
+} from "../../../../utils/tbtcStarknetHelpers"
+import { StarkNetLoadingState } from "../components/StarkNetLoadingState"
+import { StarkNetErrorState } from "../components/StarkNetErrorState"
+import { featureFlags } from "../../../../constants"
+import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
 
 export interface FormValues {
   userWalletAddress: string
+  starknetAddress?: string // Optional StarkNet address for cross-chain deposits
   btcRecoveryAddress: string
   bitcoinNetwork: BitcoinNetwork
 }
@@ -54,6 +67,12 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
 }) => {
   const { chainId } = useIsActive()
+  const { nonEVMChainName, isNonEVMActive } = useNonEVMConnection()
+  // StarkNet detection - MUST be explicit to avoid affecting other chains
+  const isStarkNetDeposit =
+    featureFlags.STARKNET_ENABLED &&
+    isNonEVMActive &&
+    nonEVMChainName === ChainName.Starknet
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
     isTestnetChainId(chainId as number)
@@ -71,6 +90,16 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         mb={6}
         isReadOnly={true}
       />
+      {isStarkNetDeposit && (
+        <FormikInput
+          name="starknetAddress"
+          label="StarkNet Wallet Address"
+          placeholder="StarkNet address where you'll receive your tBTC"
+          tooltip="This is your StarkNet wallet address where you'll receive your tBTC. This address is automatically populated from your connected StarkNet wallet."
+          mb={6}
+          isReadOnly={true}
+        />
+      )}
       <FormikInput
         name="btcRecoveryAddress"
         label="BTC Return Address"
@@ -84,6 +113,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 
 type MintingProcessFormProps = {
   initialUserWalletAddress: string
+  initialStarknetAddress?: string
   btcRecoveryAddress: string
   bitcoinNetwork: BitcoinNetwork
   innerRef: Ref<FormikProps<FormValues>>
@@ -93,10 +123,12 @@ type MintingProcessFormProps = {
 const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   mapPropsToValues: ({
     initialUserWalletAddress,
+    initialStarknetAddress,
     btcRecoveryAddress,
     bitcoinNetwork,
   }) => ({
     userWalletAddress: initialUserWalletAddress,
+    starknetAddress: initialStarknetAddress,
     btcRecoveryAddress: btcRecoveryAddress,
     bitcoinNetwork: bitcoinNetwork,
   }),
@@ -105,6 +137,14 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     errors.userWalletAddress = validateUserWalletAddress(
       values.userWalletAddress
     )
+
+    // Validate StarkNet address if provided
+    if (values.starknetAddress) {
+      if (!isValidStarkNetAddress(values.starknetAddress)) {
+        errors.starknetAddress = "Invalid StarkNet address format"
+      }
+    }
+
     errors.btcRecoveryAddress = validateBTCAddress(
       values.btcRecoveryAddress,
       values.bitcoinNetwork as any
@@ -128,6 +168,17 @@ export const ProvideDataComponent: FC<{
   const { account, chainId } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+  const { nonEVMChainName, isNonEVMActive, nonEVMPublicKey } =
+    useNonEVMConnection()
+  const starkNetStatus = useStarkNetStatus()
+  const { chainId: starknetChainId } = useStarknetConnection()
+
+  // Check if this is a StarkNet deposit
+  // StarkNet detection - MUST be explicit to avoid affecting other chains
+  const isStarkNetDeposit =
+    featureFlags.STARKNET_ENABLED &&
+    isNonEVMActive &&
+    nonEVMChainName === ChainName.Starknet
 
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
@@ -156,16 +207,55 @@ export const ProvideDataComponent: FC<{
         )
       }
 
-      const chainName = getChainIdToNetworkName(chainId)
+      // StarkNet-specific validations
+      if (isStarkNetDeposit) {
+        if (!starkNetStatus.isStarkNetReady) {
+          throw new Error(
+            starkNetStatus.crossChainError ||
+              "StarkNet not properly initialized. Please reconnect your wallet and try again."
+          )
+        }
 
+        if (!values.starknetAddress) {
+          throw new Error(
+            "StarkNet address is required for cross-chain deposits"
+          )
+        }
+
+        // Check network compatibility
+        const compatibility = checkStarkNetNetworkCompatibility(
+          chainId,
+          starknetChainId || undefined
+        )
+        if (!compatibility.compatible) {
+          throw new Error(
+            compatibility.error || "Network compatibility check failed"
+          )
+        }
+      }
+
+      const chainName = getChainIdToNetworkName(chainId)
       setSubmitButtonLoading(true)
 
       let deposit: Deposit
+
+      // CRITICAL: Different chains require different deposit flows
       if (isL1Network(chainId)) {
+        // Standard Ethereum L1 minting
         deposit = await threshold.tbtc.initiateDeposit(
           values.btcRecoveryAddress
         )
+      } else if (isStarkNetDeposit) {
+        // StarkNet requires special flow with proxy and L1Transaction mode
+        // DO NOT change this - StarkNet cannot use the standard cross-chain flow
+        deposit = await initializeStarkNetDeposit(
+          threshold.tbtc,
+          values.starknetAddress!,
+          values.btcRecoveryAddress
+        )
       } else {
+        // Standard L2 cross-chain flow (Arbitrum, Base, etc.)
+        // DO NOT change this - it's working correctly for these chains
         deposit = await threshold.tbtc.initiateCrossChainDeposit(
           values.btcRecoveryAddress,
           chainId as SupportedChainIds
@@ -219,11 +309,15 @@ export const ProvideDataComponent: FC<{
           networkInfo: {
             chainName: chainName,
             chainId: chainId!.toString(),
+            isStarkNetDeposit,
           },
           refundLocktime: receipt.refundLocktime.toString(),
           refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
           blindingFactor: receipt.blindingFactor.toString(),
           ethAddress: values.userWalletAddress,
+          starknetAddress: isStarkNetDeposit
+            ? values.starknetAddress
+            : undefined,
           walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
           btcRecoveryAddress: values.btcRecoveryAddress,
           extraData: receipt.extraData?.toString() ?? "",
@@ -232,8 +326,30 @@ export const ProvideDataComponent: FC<{
       }
       updateState("mintingStep", MintingStep.Deposit)
     },
-    [shouldDownloadDepositReceipt, chainId]
+    [
+      shouldDownloadDepositReceipt,
+      chainId,
+      isStarkNetDeposit,
+      starkNetStatus,
+      nonEVMPublicKey,
+      starknetChainId,
+    ]
   )
+
+  // Only show special UI for StarkNet
+  if (isStarkNetDeposit) {
+    if (starkNetStatus.isCrossChainInitializing) {
+      return <StarkNetLoadingState />
+    }
+    if (starkNetStatus.crossChainError) {
+      return (
+        <StarkNetErrorState
+          error={starkNetStatus.crossChainError}
+          onRetry={starkNetStatus.retryInitialization}
+        />
+      )
+    }
+  }
 
   return (
     <>
@@ -243,14 +359,28 @@ export const ProvideDataComponent: FC<{
         subTitle="Generate a Deposit Address"
       />
       <BodyMd color={textColor} mb={12}>
-        Based on these two addresses, the system will generate a unique BTC
-        deposit address for you. There is no limit to the amount you can
-        deposit.
+        {isStarkNetDeposit ? (
+          <>
+            Based on these addresses, the system will generate a unique BTC
+            deposit address for you. When you deposit BTC, it will be minted as
+            tBTC on Ethereum first, then bridged to your StarkNet wallet. There
+            is no limit to the amount you can deposit.
+          </>
+        ) : (
+          <>
+            Based on these two addresses, the system will generate a unique BTC
+            deposit address for you. There is no limit to the amount you can
+            deposit.
+          </>
+        )}
       </BodyMd>
       <MintingProcessForm
         innerRef={formRef}
         formId="tbtc-minting-data-form"
         initialUserWalletAddress={account!}
+        initialStarknetAddress={
+          isStarkNetDeposit ? nonEVMPublicKey || "" : undefined
+        }
         btcRecoveryAddress={""}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         onSubmitForm={onSubmit}
