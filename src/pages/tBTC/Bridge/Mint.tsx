@@ -7,7 +7,7 @@ import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { isSameETHAddress } from "../../../web3/utils"
+import { isSameETHAddress, isSameAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
 
 import {
@@ -20,6 +20,7 @@ import { MintDurationWidget } from "../../../components/MintDurationWidget"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useCheckDepositExpirationTime } from "../../../hooks/tbtc/useCheckDepositExpirationTime"
 import { useRemoveDepositData } from "../../../hooks/tbtc/useRemoveDepositData"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 export const MintPage: PageComponent = ({}) => {
   return <Outlet />
@@ -95,6 +96,7 @@ MintingFormPage.route = {
 
 const MintPageLayout: PageComponent = () => {
   const { isActive } = useIsActive()
+  const { isNonEVMActive } = useNonEVMConnection()
   const { mintingStep, utxo } = useTbtcState()
   const {
     tbtc: {
@@ -109,10 +111,13 @@ const MintPageLayout: PageComponent = () => {
   ].includes(mintingStep)
   const confirmations = getNumberOfConfirmationsByAmount(utxo?.value || 0)
 
+  // Check for either EVM or non-EVM (StarkNet) wallet connection
+  const isWalletConnected = isActive || isNonEVMActive
+
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isActive ? (
+        {isWalletConnected ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

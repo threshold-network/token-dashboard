@@ -11,10 +11,19 @@ export const isEthereumAddress = (address: string): boolean =>
   ethersIsAddress(address)
 
 export const isStarknetAddress = (address: string): boolean => {
-  // Starknet addresses are 0x prefixed 64 hex characters (32 bytes)
-  // They are case-insensitive
-  const starknetAddressRegex = /^0x[a-fA-F0-9]{64}$/
-  return starknetAddressRegex.test(address)
+  if (!address) return false
+
+  // Basic validation for StarkNet address format
+  if (!address.startsWith("0x") && !address.startsWith("0X")) return false
+
+  // Remove 0x prefix and check if it's a valid hex string
+  const hexPart = address.slice(2)
+  if (!/^[0-9a-fA-F]+$/.test(hexPart)) return false
+
+  // StarkNet addresses can be up to 64 characters (32 bytes) but typically shorter
+  if (hexPart.length === 0 || hexPart.length > 64) return false
+
+  return true
 }
 
 export const isAddress = (address: string): boolean => {

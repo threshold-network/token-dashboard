@@ -59,7 +59,7 @@ const AccountButton: FC<{
               {shortenAddress(account)}
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={onDisconnectClick}>Disconnect EVM</MenuItem>
+              <MenuItem onClick={onDisconnectClick}>Disconnect</MenuItem>
             </MenuList>
           </Menu>
         )}
@@ -74,9 +74,7 @@ const AccountButton: FC<{
               </HStack>
             </MenuButton>
             <MenuList>
-              <MenuItem onClick={onDisconnectNonEVM}>
-                Disconnect {nonEVMChainName}
-              </MenuItem>
+              <MenuItem onClick={onDisconnectNonEVM}>Disconnect</MenuItem>
             </MenuList>
           </Menu>
         )}

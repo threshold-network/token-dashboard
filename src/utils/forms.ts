@@ -9,6 +9,7 @@ import {
 import { isAddress, isAddressZero, isEthereumAddress } from "../web3/utils"
 import { formatTokenAmount } from "./formatAmount"
 import { getBridgeBTCSupportedAddressPrefixesText } from "./tBTC"
+import { isValidStarkNetAddress } from "./tbtcStarknetHelpers"
 
 type AmountValidationMessage =
   | string
@@ -115,7 +116,7 @@ export const getErrorsObj = <T>(errors: { [key in keyof T]: string }) => {
 export const validateETHAddress = (address: string) => {
   if (!address) {
     return "Required."
-  } else if (!isAddress(address)) {
+  } else if (!isEthereumAddress(address)) {
     return "Invalid eth address."
   } else if (isAddressZero(address)) {
     return "Address is a zero address."
@@ -125,11 +126,23 @@ export const validateETHAddress = (address: string) => {
 export const validateUserWalletAddress = (address: string) => {
   if (!address) {
     return "Required."
-  } else if (!isAddress(address)) {
-    return "Invalid address."
-  } else if (isEthereumAddress(address) && isAddressZero(address)) {
-    return "Address is a zero address."
   }
+
+  // Check if it's a valid Ethereum address
+  if (isEthereumAddress(address)) {
+    if (isAddressZero(address)) {
+      return "Address is a zero address."
+    }
+    return undefined // Valid Ethereum address
+  }
+
+  // Check if it's a valid StarkNet address
+  if (isValidStarkNetAddress(address)) {
+    return undefined // Valid StarkNet address
+  }
+
+  // Neither valid Ethereum nor StarkNet address
+  return "Invalid address."
 }
 
 export const validateBTCAddress = (

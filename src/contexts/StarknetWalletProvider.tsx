@@ -139,8 +139,34 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
             }
           }
 
+          // Create a provider object that matches SDK expectations
+          // The SDK expects either an Account object or a Provider with account property
+          let sdkProvider
+
+          if (wallet.account && wallet.account.address) {
+            // If wallet already has a properly structured account with address, use it
+            sdkProvider = wallet
+          } else if (wallet.account) {
+            // If wallet has account but address is empty, update it
+            sdkProvider = {
+              ...wallet,
+              account: {
+                ...wallet.account,
+                address: connectorData.account,
+              },
+            }
+          } else {
+            // If wallet has no account property, create one
+            sdkProvider = {
+              ...wallet,
+              account: {
+                address: connectorData.account,
+              },
+            }
+          }
+
           // Store wallet instance (this is the provider for SDK)
-          setProvider(wallet)
+          setProvider(sdkProvider)
 
           // Store account address
           const address = connectorData.account

@@ -4,7 +4,7 @@ import { FC, useEffect } from "react"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import withWalletConnection from "../../../../components/withWalletConnection"
 import InfoBox from "../../../../components/InfoBox"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
 import MintingTransactionDetails from "../components/MintingTransactionDetails"
@@ -146,4 +146,4 @@ const InitiateMintingComponent: FC<{
   )
 }
 
-export const InitiateMinting = withOnlyConnectedWallet(InitiateMintingComponent)
+export const InitiateMinting = withWalletConnection(InitiateMintingComponent)

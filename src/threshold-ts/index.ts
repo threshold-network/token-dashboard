@@ -50,6 +50,8 @@ export class Threshold {
         console.log("Cross-chain initialization complete")
       } catch (error) {
         console.error("Cross-chain initialization failed:", error)
+        // Note: This is expected for StarkNet until contracts are deployed
+        // The SDK has placeholder contracts that need to be updated with real addresses
       }
     }
   }

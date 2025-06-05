@@ -764,10 +764,13 @@ export class TBTC implements ITBTC {
 
       // Check if provider has account information
       const hasAddress =
+        providerOrSigner &&
         "address" in providerOrSigner &&
         typeof providerOrSigner.address === "string"
       const hasAccount =
-        "account" in providerOrSigner && providerOrSigner.account?.address
+        providerOrSigner &&
+        "account" in providerOrSigner &&
+        providerOrSigner.account?.address
 
       if (!hasAddress && !hasAccount) {
         throw new Error(
@@ -776,15 +779,12 @@ export class TBTC implements ITBTC {
       }
 
       // Single-parameter initialization for StarkNet
-      console.log("Initializing StarkNet cross-chain with SDK...")
       await sdk.initializeCrossChain("Starknet" as L2Chain, providerOrSigner)
 
       // Get the L2 tBTC token instance from SDK
       const crossChainContracts = sdk.crossChainContracts("Starknet" as L2Chain)
-      console.log("Cross-chain contracts:", crossChainContracts)
       if (crossChainContracts) {
         this._l2TbtcToken = crossChainContracts.l2TbtcToken
-        console.log("L2 tBTC token initialized:", !!this._l2TbtcToken)
       }
     } else {
       // Standard L2 initialization for EVM chains

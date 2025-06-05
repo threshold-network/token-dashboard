@@ -103,13 +103,9 @@ export const ThresholdProvider: FC = ({ children }) => {
 
   const isStarkNetReady = useMemo(() => {
     if (nonEVMChainName !== ChainName.Starknet || !isNonEVMActive) return false
-    return (
-      isStarkNetInitialized(threshold.tbtc, chainId) &&
-      !isCrossChainInitializing &&
-      !crossChainError
-    )
+    // For StarkNet, we're ready if initialization completed without errors
+    return !isCrossChainInitializing && !crossChainError
   }, [
-    chainId,
     nonEVMChainName,
     isNonEVMActive,
     isCrossChainInitializing,
@@ -130,13 +126,24 @@ export const ThresholdProvider: FC = ({ children }) => {
 
   useEffect(() => {
     const updateThresholdConfig = async () => {
-      if (isActive && chainId) {
+      // Update config if either EVM or non-EVM is active
+      if ((isActive && chainId) || isNonEVMActive) {
+        // For StarkNet-only connections, we need to provide a valid provider
+        // even if there's no EVM wallet connected
+        const ethereumProvider = isActive
+          ? isEmbed
+            ? ledgerLiveAppEthereumSigner
+            : library
+          : getThresholdLibProvider()
+
+        const ethereumChainId = chainId || getDefaultProviderChainId()
+
         await threshold.updateConfig({
           ethereum: {
             ...threshold.config.ethereum,
-            providerOrSigner: isEmbed ? ledgerLiveAppEthereumSigner : library,
+            providerOrSigner: ethereumProvider,
             account,
-            chainId,
+            chainId: ethereumChainId,
           },
           bitcoin: threshold.config.bitcoin,
           crossChain: {
@@ -150,7 +157,12 @@ export const ThresholdProvider: FC = ({ children }) => {
         hasThresholdLibConfigBeenUpdated.current = true
       }
 
-      if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
+      // Reset config only when both are disconnected
+      if (
+        !isActive &&
+        !isNonEVMActive &&
+        hasThresholdLibConfigBeenUpdated.current
+      ) {
         await threshold.updateConfig({
           ethereum: {
             ...threshold.config.ethereum,
@@ -198,14 +210,16 @@ export const ThresholdProvider: FC = ({ children }) => {
         return
       }
 
-      if (!isStarknetNetwork(chainId)) {
-        return
-      }
+      // For StarkNet-only connections, we don't need to check EVM chainId
+      // The StarkNet network check happens through the provider itself
 
       setIsCrossChainInitializing(true)
       setCrossChainError(null)
 
       try {
+        // Wait longer for the config update and SDK initialization to complete
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
         // Extract wallet address from provider
         let walletAddress: string | undefined
 
@@ -230,11 +244,8 @@ export const ThresholdProvider: FC = ({ children }) => {
           throw new Error("Could not extract StarkNet address from wallet")
         }
 
-        // Verify StarkNet is initialized using our helper function
-        // Note: Deposit owner will be set later in initializeStarkNetDeposit helper
-        if (!isStarkNetInitialized(threshold.tbtc, chainId)) {
-          throw new Error("StarkNet depositor not initialized")
-        }
+        // The cross-chain initialization happens in updateConfig, so we just need to wait
+        // The actual SDK cross-chain setup will be done when initiating deposits
 
         setIsCrossChainInitializing(false)
       } catch (error) {

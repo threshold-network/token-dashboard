@@ -16,6 +16,7 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Form } from "../../../components/Forms"
 import {
   isSameETHAddress,
+  isSameAddress,
   isAddress,
   parseJSONFile,
   InvalidJSONFileError,
@@ -46,16 +47,22 @@ import {
   isSameChainId,
   isSupportedNetwork,
 } from "../../../networks/utils"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
   const { account, chainId, isActive } = useIsActive()
+  const { isNonEVMActive, nonEVMPublicKey } = useNonEVMConnection()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const threshold = useThreshold()
 
-  if (!isActive || !isSupportedNetwork(chainId)) {
+  // Check for either EVM or non-EVM wallet connection
+  const isWalletConnected = isActive || isNonEVMActive
+  const connectedAddress = account || nonEVMPublicKey
+
+  if (!isWalletConnected || (!isNonEVMActive && !isSupportedNetwork(chainId))) {
     return (
       <Card position="relative" maxW="640px" m={"0 auto"}>
         <BridgeProcessEmptyState title="Want to resume deposit?" />
@@ -121,7 +128,7 @@ export const ResumeDepositPage: PageComponent = () => {
           Minting Initiation transaction triggered in the dApp.
         </BodyMd>
         <ResumeDepositFormik
-          address={account!}
+          address={connectedAddress!}
           chainId={chainId!}
           onSubmitForm={onSubmit}
           checkDepositExpiration={checkDepositExpiration}
@@ -244,10 +251,7 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
         const { isExpired } = await checkDepositExpiration(dp.refundLocktime)
         if (isExpired) {
           errors.depositParameters = "Deposit reveal time is expired."
-        } else if (
-          isL1Network(chainId) &&
-          !isSameETHAddress(dp.depositor.identifierHex, address)
-        ) {
+        } else if (!isSameAddress(dp.depositor.identifierHex, address)) {
           errors.depositParameters = "You are not a depositor."
         }
       }
