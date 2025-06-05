@@ -20,8 +20,10 @@ import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { featureFlags } from "../../../constants"
+import { ConnectStarknet } from "./ConnectStarknet"
+import { StarknetIcon } from "../../../static/icons/Starknet"
 
-const walletOptions: WalletOption[] = [
+const baseWalletOptions: WalletOption[] = [
   {
     id: WalletType.TAHO,
     title: "Taho",
@@ -66,6 +68,23 @@ const walletOptions: WalletOption[] = [
       dark: CoinbaseWallet,
     },
   },
+]
+
+// Conditionally add StarkNet based on feature flag
+const walletOptions: WalletOption[] = [
+  ...baseWalletOptions,
+  ...(featureFlags.STARKNET_ENABLED
+    ? [
+        {
+          id: WalletType.Starknet,
+          title: "Starknet",
+          icon: {
+            light: StarknetIcon,
+            dark: StarknetIcon,
+          },
+        },
+      ]
+    : []),
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
@@ -124,6 +143,8 @@ const ConnectWallet: FC<{
       return <ConnectCoinbase goBack={goBack} closeModal={onClose} />
     case WalletType.LedgerLive:
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
+    case WalletType.Starknet:
+      return <ConnectStarknet goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }

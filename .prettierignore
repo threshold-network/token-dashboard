@@ -2,3 +2,5 @@ storybook-static
 cypress/fixtures
 cypress/plugins
 external
+build
+dist

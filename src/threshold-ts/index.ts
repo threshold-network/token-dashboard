@@ -19,7 +19,7 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.config = config
-    const { ethereum, bitcoin } = config
+    const { ethereum, bitcoin, crossChain } = config
 
     this.multicall = new Multicall(ethereum)
     this.vendingMachines = new VendingMachines(ethereum)
@@ -29,10 +29,41 @@ export class Threshold {
       this.multicall,
       ethereum
     )
-    this.tbtc = new TBTC(ethereum, bitcoin)
+    this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
   }
 
-  updateConfig = (config: ThresholdConfig) => {
+  updateConfig = async (config: ThresholdConfig) => {
     this._initialize(config)
+
+    // Handle cross-chain initialization if configured
+    if (
+      config.crossChain?.isCrossChain &&
+      config.crossChain.chainName &&
+      config.crossChain.nonEVMProvider
+    ) {
+      // Convert ChainName enum to SDK expected string
+      const sdkChainName =
+        config.crossChain.chainName === "Starknet"
+          ? "StarkNet"
+          : config.crossChain.chainName
+
+      console.log("Initializing cross-chain for:", sdkChainName)
+      try {
+        await this.initializeCrossChain(
+          sdkChainName,
+          config.crossChain.nonEVMProvider
+        )
+        console.log("Cross-chain initialization complete")
+      } catch (error) {
+        console.error("Cross-chain initialization failed:", error)
+        // Note: This is expected for StarkNet until contracts are deployed
+        // The SDK has placeholder contracts that need to be updated with real addresses
+      }
+    }
+  }
+
+  initializeCrossChain = async (chainName: string, provider: any) => {
+    // Use the public method from TBTC class for cross-chain init
+    await this.tbtc.initiateCrossChain(provider, "", chainName)
   }
 }

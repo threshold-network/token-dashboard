@@ -61,6 +61,10 @@ jobs:
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: false
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
+          REACT_APP_FEATURE_FLAG_STARKNET: ${{ secrets.FEATURE_FLAG_STARKNET || 'false' }}
+          REACT_APP_STARKNET_MAINNET: ${{ secrets.STARKNET_MAINNET || 'true' }}
+          REACT_APP_STARKNET_SEPOLIA_RELAYER_URL: ${{ secrets.STARKNET_SEPOLIA_RELAYER_URL || '' }}
+          REACT_APP_STARKNET_MAINNET_RELAYER_URL: ${{ secrets.STARKNET_MAINNET_RELAYER_URL || '' }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -83,6 +87,10 @@ jobs:
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
+          REACT_APP_FEATURE_FLAG_STARKNET: ${{ secrets.FEATURE_FLAG_STARKNET || 'false' }}
+          REACT_APP_STARKNET_MAINNET: ${{ secrets.STARKNET_MAINNET || 'true' }}
+          REACT_APP_STARKNET_SEPOLIA_RELAYER_URL: ${{ secrets.STARKNET_SEPOLIA_RELAYER_URL || '' }}
+          REACT_APP_STARKNET_MAINNET_RELAYER_URL: ${{ secrets.STARKNET_MAINNET_RELAYER_URL || '' }}
 
       - uses: actions/upload-artifact@v4
         with:

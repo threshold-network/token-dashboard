@@ -7,7 +7,7 @@ import {
   decodeBitcoinAddress,
   TransactionHash,
   UnspentTransactionOutput,
-} from "@keep-network/tbtc-v2.ts/dist/src/bitcoin"
+} from "@keep-network/tbtc-v2.ts"
 import { IMulticall } from "../../multicall"
 import { AddressZero } from "@ethersproject/constants"
 import {

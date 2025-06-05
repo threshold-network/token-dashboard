@@ -14,6 +14,7 @@ import { MintPage } from "./Mint"
 import { UnmintPage } from "./Unmint"
 import { useIsActive } from "../../../hooks/useIsActive"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 const gridTemplateAreas = {
   base: `
@@ -33,20 +34,24 @@ const TBTCBridge: PageComponent = (props) => {
   )
   const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
   const { account } = useIsActive()
+  const { isNonEVMActive, nonEVMPublicKey } = useNonEVMConnection()
   const threshold = useThreshold()
+
+  // For StarkNet connections, use non-EVM connection info
+  const effectiveAccount = account || nonEVMPublicKey
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
   }, [hasUserResponded])
 
   useEffect(() => {
-    if (!account) return
+    if (!effectiveAccount) return
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
-        depositor: account,
+        depositor: effectiveAccount,
       })
     )
-  }, [dispatch, account, mintingStep, threshold.tbtc.ethereumChainId])
+  }, [dispatch, effectiveAccount, mintingStep, threshold.tbtc.ethereumChainId])
 
   return (
     <Grid

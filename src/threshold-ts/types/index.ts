@@ -6,6 +6,18 @@ import {
 } from "@keep-network/tbtc-v2.ts"
 import { providers, Signer } from "ethers"
 
+export type CrossChainConfig = {
+  isCrossChain: boolean
+  chainName: ChainName | null
+  nonEVMProvider: any | null // Will be AnchorProvider for Solana, StarknetProvider for Starknet
+}
+
+export enum ChainName {
+  Ethereum = "Ethereum", // can be any l2 based on Ethereum network as such as arbitrum, optimism, etc.
+  Solana = "Solana",
+  Starknet = "Starknet",
+}
+
 export interface EthereumConfig {
   providerOrSigner: providers.Provider | Signer
   chainId: string | number
@@ -44,6 +56,7 @@ export interface BitcoinConfig {
 export interface ThresholdConfig {
   ethereum: EthereumConfig
   bitcoin: BitcoinConfig
+  crossChain?: CrossChainConfig
 }
 
 export { BitcoinNetwork }

@@ -23,7 +23,7 @@ import { QRCode } from "../../../../components/QRCode"
 import { Toast } from "../../../../components/Toast"
 import TooltipIcon from "../../../../components/TooltipIcon"
 import { ViewInBlockExplorerProps } from "../../../../components/ViewInBlockExplorer"
-import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
+import withWalletConnection from "../../../../components/withWalletConnection"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
@@ -257,4 +257,4 @@ const MakeDepositComponent: FC<{
   )
 }
 
-export const MakeDeposit = withOnlyConnectedWallet(MakeDepositComponent)
+export const MakeDeposit = withWalletConnection(MakeDepositComponent)

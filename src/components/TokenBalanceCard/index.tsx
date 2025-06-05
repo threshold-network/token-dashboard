@@ -13,6 +13,7 @@ export type TokenBalanceCardProps = {
   title?: string | JSX.Element
   tokenSymbol?: string
   withSymbol?: boolean
+  additionalInfo?: JSX.Element
 } & Pick<
   TokenBalanceProps,
   "precision" | "withHigherPrecision" | "higherPrecision"
@@ -30,6 +31,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
   title = token,
   tokenSymbol,
   withSymbol = false,
+  additionalInfo,
   ...restProps
 }) => {
   const { balance, usdBalance, contract, decimals } = useToken(token)
@@ -44,6 +46,7 @@ const TokenBalanceCard: FC<TokenBalanceCardProps> = ({
       tokenSymbol={tokenSymbol}
       withSymbol={withSymbol}
       tokenDecimals={decimals}
+      additionalInfo={additionalInfo}
       {...restProps}
     />
   )

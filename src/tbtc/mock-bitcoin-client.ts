@@ -17,9 +17,17 @@ import { RootState } from "../store"
 import { getChainIdentifier } from "../threshold-ts/utils"
 import { delay } from "../utils/helpers"
 
-const testnetTransactionHash = Hex.from(
-  "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883"
-)
+const testnetTransactionHash = {
+  toString: () =>
+    "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883",
+  toPrefixedString: () =>
+    "0x2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883",
+  toBuffer: () =>
+    Buffer.from(
+      "2f952bdc206bf51bb745b967cb7166149becada878d3191ffe341155ebcd4883",
+      "hex"
+    ),
+} as BitcoinTxHash
 const testnetTransaction: BitcoinRawTx = {
   transactionHex:
     "0100000000010162cae24e74ad64f9f0493b09f3964908b3b3038f4924882d3dbd853b" +

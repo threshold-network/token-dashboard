@@ -195,7 +195,7 @@ export const DepositDetails: PageComponent = () => {
           optimisticMintingFinalizedTxHash ?? mintingFinalizedTxHash,
         l1BitcoinDepositorDepositStatus,
         confirmations: confirmations || txConfirmations,
-        requiredConfirmations: requiredConfirmations!,
+        requiredConfirmations: requiredConfirmations || 0,
         amount: amount,
         thresholdNetworkFee,
         mintingFee,

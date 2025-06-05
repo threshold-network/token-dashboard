@@ -16,6 +16,7 @@ import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
 import AccountButton from "./AccountButton"
 import NetworkButton from "./NetworkButton"
+import StarkNetNetworkButton from "./StarkNetNetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
@@ -51,7 +52,9 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
       >
         <Routes>{pages.map(renderPageTitle)}</Routes>
         <Flex>
-          <HamburgerButton display={{ base: "block", md: "none" }} />
+          <Box display={{ base: "block", md: "none" }}>
+            <HamburgerButton />
+          </Box>
           {isMobile && (
             <Link to="/">
               <IconButton
@@ -65,6 +68,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         <Stack spacing={4} direction="row" ml="auto">
           <DarkModeSwitcher />
           {chainId && <NetworkButton />}
+          <StarkNetNetworkButton />
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <VStack

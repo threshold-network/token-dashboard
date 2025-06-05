@@ -29,6 +29,8 @@ export const createExplorerPrefix = (
     [SupportedChainIds.Sepolia]: "https://sepolia.etherscan.io",
     [SupportedChainIds.Arbitrum]: "https://arbiscan.io",
     [SupportedChainIds.Base]: "https://basescan.org",
+    [SupportedChainIds.StarkNet]: "https://starkscan.co",
+    [SupportedChainIds.StarkNetSepolia]: "https://sepolia.starkscan.co",
     // [SupportedChainIds.BaseSepolia]: "https://sepolia.basescan.org",
     // [SupportedChainIds.ArbitrumSepolia]: "https://sepolia.arbiscan.io",
   }

@@ -4,15 +4,50 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom"
 
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/deposit", () => ({
+// Add TextEncoder/TextDecoder polyfills for tests
+global.TextEncoder = require("util").TextEncoder
+global.TextDecoder = require("util").TextDecoder
+
+// Mock react-icons to fix test issues
+jest.mock("react-icons/all", () => ({
+  __esModule: true,
+}))
+
+// Mock axios to fix test issues
+jest.mock("axios", () => ({
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+}))
+
+jest.mock("@keep-network/tbtc-v2.ts", () => ({
+  BitcoinNetwork: {
+    Mainnet: "mainnet",
+    Testnet: "testnet",
+  },
+  chainIdFromSigner: jest.fn().mockResolvedValue(1),
+  ethereumAddressFromSigner: jest.fn().mockResolvedValue("0x123"),
+  loadEthereumCoreContracts: jest.fn().mockResolvedValue({}),
+  TBTC: {
+    initializeMainnet: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+    initializeSepolia: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+    initializeCustom: jest.fn().mockResolvedValue({
+      initializeCrossChain: jest.fn(),
+      crossChainContracts: jest.fn(),
+    }),
+  },
   calculateDepositAddress: jest.fn(),
   calculateDepositRefundLocktime: jest.fn(),
   DepositScriptParameters: jest.fn(),
   revealDeposit: jest.fn(),
   getRevealedDeposit: jest.fn(),
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
   decodeBitcoinAddress: jest.fn(),
   TransactionHash: {
     from: jest.fn().mockReturnValue({
@@ -39,12 +74,20 @@ jest.mock("@keep-network/tbtc-v2.ts/dist/src/bitcoin", () => ({
       ),
   },
   computeHash160: jest.fn(),
-}))
-
-jest.mock("@keep-network/tbtc-v2.ts/dist/src", () => ({
   EthereumBridge: jest.fn(),
   ElectrumClient: jest.fn(),
   EthereumTBTCToken: jest.fn(),
 }))
 
 jest.mock("crypto-js")
+
+// Mock the @threshold-network/components theme to fix test issues
+jest.mock("@threshold-network/components", () => ({
+  defaultTheme: {
+    components: {
+      Badge: {
+        variants: {},
+      },
+    },
+  },
+}))
