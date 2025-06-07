@@ -812,11 +812,11 @@ export class TBTC implements ITBTC {
       // Get the L2 tBTC token instance from SDK
       const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
       if (crossChainContracts) {
-        this._l2TbtcToken = crossChainContracts.l2TbtcToken
+        this._l2TbtcToken = crossChainContracts.destinationChainTbtcToken
 
         // Log deposit owner status
         const depositOwner = (
-          crossChainContracts.l2BitcoinDepositor as any
+          crossChainContracts.destinationChainBitcoinDepositor as any
         ).getDepositOwner?.()
         console.log(
           "StarkNet deposit owner after init:",
@@ -875,12 +875,13 @@ export class TBTC implements ITBTC {
     const crossChainContracts = sdk.crossChainContracts(chainName as L2Chain)
     if (crossChainContracts) {
       const depositOwner = (
-        crossChainContracts.l2BitcoinDepositor as any
+        crossChainContracts.destinationChainBitcoinDepositor as any
       ).getDepositOwner?.()
       console.log("Deposit owner before initiateCrossChainDeposit:", {
         chainName,
         depositOwner: depositOwner?.toString(),
-        hasL2BitcoinDepositor: !!crossChainContracts.l2BitcoinDepositor,
+        hasL2BitcoinDepositor:
+          !!crossChainContracts.destinationChainBitcoinDepositor,
       })
     }
 
