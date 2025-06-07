@@ -83,8 +83,21 @@ const InitiateMintingComponent: FC<{
       if (isStarkNetDeposit) {
         // For StarkNet, directly call the SDK method which will use the relayer
         console.log("StarkNet deposit - calling SDK revealDeposit directly")
-        const txHash = await threshold.tbtc.revealDeposit(utxo)
-        console.log("StarkNet reveal successful, tx hash:", txHash)
+        const result: any = await threshold.tbtc.revealDeposit(utxo)
+
+        // TEMPORARY: Handle the returned payload for debugging
+        if (typeof result === "object" && result.fundingTx) {
+          openModal(ModalType.TransactionFailed, {
+            error: JSON.stringify(result, null, 2),
+            isExpandableError: true,
+            title: "StarkNet Deposit Payload",
+            subtitle:
+              "This is the data that will be sent to the relayer. This is for debugging purposes and will be removed.",
+          })
+          return // Stop execution here
+        }
+
+        console.log("StarkNet reveal successful, tx hash:", result)
         onSuccessfulDepositReveal()
       } else {
         // For EVM chains, use the transaction wrapper
