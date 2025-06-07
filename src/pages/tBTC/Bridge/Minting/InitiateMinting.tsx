@@ -87,14 +87,15 @@ const InitiateMintingComponent: FC<{
 
         // TEMPORARY: Handle the returned payload for debugging
         if (typeof result === "object" && result.fundingTx) {
-          openModal(ModalType.TransactionFailed, {
-            error: JSON.stringify(result, null, 2),
-            isExpandableError: true,
-            title: "StarkNet Deposit Payload",
-            subtitle:
-              "This is the data that will be sent to the relayer. This is for debugging purposes and will be removed.",
-          })
-          return // Stop execution here
+          console.group("StarkNet Deposit Payload (Temporary)")
+          console.log(
+            "This is the data that would be sent to the relayer. This is for debugging purposes and will be removed."
+          )
+          console.log(JSON.stringify(result, null, 2))
+          console.groupEnd()
+          // The normal workflow will now continue, but please note the next
+          // screen will likely fail to find the deposit details since the
+          // relayer was bypassed.
         }
 
         console.log("StarkNet reveal successful, tx hash:", result)

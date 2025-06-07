@@ -360,7 +360,7 @@ export interface ITBTC {
    * @param utxo Bitcoin UTXO of the revealed deposit
    * @return Prefixed transaction hash of the reveal.
    */
-  revealDeposit(utxo: BitcoinUtxo): Promise<string>
+  revealDeposit(utxo: BitcoinUtxo): Promise<any>
 
   /**
    * Gets a revealed deposit from the bridge.
@@ -1107,7 +1107,7 @@ export class TBTC implements ITBTC {
     }
   }
 
-  revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+  revealDeposit = async (utxo: BitcoinUtxo): Promise<any> => {
     console.log("revealDeposit called with UTXO:", utxo)
     const { value, ...transactionOutpoint } = utxo
 
@@ -1120,9 +1120,17 @@ export class TBTC implements ITBTC {
     console.log("Is cross-chain deposit:", this._isCrossChain)
 
     try {
-      const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+      const chainHash: any = await this._deposit.initiateMinting(
+        transactionOutpoint
+      )
       console.log("Minting initiated successfully, chain hash:", chainHash)
       this.removeDepositData()
+
+      // TEMPORARY: Handle the returned payload for debugging
+      if (typeof chainHash === "object" && chainHash.fundingTx) {
+        return chainHash
+      }
+
       return chainHash.toPrefixedString()
     } catch (error) {
       console.error("Failed to initiate minting:", error)
