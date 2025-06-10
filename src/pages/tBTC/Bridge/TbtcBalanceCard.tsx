@@ -36,10 +36,12 @@ export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = ({
       )
     }
 
+    // Don't show error for disabled networks or initialization issues
     if (error) {
+      // Show "Not available" for disabled networks
       return (
-        <Text fontSize="sm" color="red.500">
-          StarkNet: Error
+        <Text fontSize="sm" color="gray.500">
+          StarkNet: Not available
         </Text>
       )
     }

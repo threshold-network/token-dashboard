@@ -13,6 +13,7 @@ import { SupportedChainIds } from "../../networks/enums/networks"
 
 import ArbitrumL1BitcoinDepositorArtifactMainnet from "../tbtc/mainnet-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactMainnet from "../tbtc/mainnet-artifacts/BaseL1BitcoinDepositor.json"
+import StarkNetBitcoinDepositorArtifactMainnet from "../tbtc/mainnet-artifacts/StarkNetBitcoinDepositor.json"
 import BridgeArtifactMainnet from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/mainnet/Bridge.json"
 import NuCypherStakingEscrowMainnet from "../staking/mainnet-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenMainnet from "../tokens/mainnet-artifacts/NuCypherToken.json"
@@ -28,6 +29,7 @@ import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifac
 
 import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
+import StarkNetBitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/StarkNetBitcoinDepositor.json"
 import BridgeArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/Bridge.json"
 import NuCypherStakingEscrowSepolia from "../staking/sepolia-artifacts/NuCypherStakingEscrow.json"
 import NuCypherTokenSepolia from "../tokens/sepolia-artifacts/NuCypherToken.json"
@@ -69,6 +71,7 @@ export type ArtifactNameType =
   | "WalletRegistry"
   | "ArbitrumL1BitcoinDepositor"
   | "BaseL1BitcoinDepositor"
+  | "StarkNetBitcoinDepositor"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -84,6 +87,7 @@ const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Ethereum]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactMainnet,
+    StarkNetBitcoinDepositor: StarkNetBitcoinDepositorArtifactMainnet,
     TacoRegistry:
       TacoArtifactMainnet[SupportedChainIds.Ethereum].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactMainnet,
@@ -101,6 +105,7 @@ const contractArtifacts: ContractArtifacts = {
   [SupportedChainIds.Sepolia]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
+    StarkNetBitcoinDepositor: StarkNetBitcoinDepositorArtifactSepolia,
     TacoRegistry:
       TacoArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     RandomBeacon: RandomBeaconArtifactSepolia,

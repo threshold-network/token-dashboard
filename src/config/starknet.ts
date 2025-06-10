@@ -10,7 +10,7 @@
  * Comment out any network here to disable it throughout the application
  */
 export const ENABLED_STARKNET_NETWORKS = {
-  mainnet: false,
+  mainnet: true,
   sepolia: true, // Set to false or comment out to disable StarkNet Sepolia
 } as const
 

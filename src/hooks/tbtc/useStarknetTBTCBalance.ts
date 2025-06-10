@@ -34,24 +34,28 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
       return
     }
 
+    // Skip balance fetch if tBTC token is not initialized
+    // This can happen when the network is disabled or initialization failed
+    if (!threshold.tbtc.l2TbtcToken) {
+      console.log(
+        "Skipping StarkNet tBTC balance fetch - token not initialized"
+      )
+      setBalance("0")
+      setIsLoading(false)
+      setError(null)
+      return
+    }
+
     setIsLoading(true)
     setError(null)
 
     try {
-      // Check if l2TbtcToken is available, if not, wait a bit and retry once
-      if (!threshold.tbtc.l2TbtcToken) {
-        // Wait for initialization to complete
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        // Check again after waiting
-        if (!threshold.tbtc.l2TbtcToken) {
-          console.warn(
-            "tBTC token not initialized yet, will retry on next render"
-          )
-          setBalance("0")
-          setIsLoading(false)
-          return
-        }
+      // Validate StarkNet address format
+      if (!nonEVMPublicKey.startsWith("0x") || nonEVMPublicKey.length < 40) {
+        console.warn("Invalid StarkNet address format:", nonEVMPublicKey)
+        setBalance("0")
+        setError("Invalid address format")
+        return
       }
 
       // Fetch balance using the SDK's l2TbtcToken
@@ -75,9 +79,10 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
       setBalance(finalBalance)
       setError(null)
     } catch (err) {
-      console.error("Failed to fetch StarkNet tBTC balance:", err)
-      setError(err instanceof Error ? err.message : "Failed to fetch balance")
+      // Only log to console, don't set error state for disabled networks
+      console.log("Could not fetch StarkNet tBTC balance:", err)
       setBalance("0")
+      setError(null) // Don't show error in UI
     } finally {
       setIsLoading(false)
     }

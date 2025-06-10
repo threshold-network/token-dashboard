@@ -1361,8 +1361,45 @@ export class TBTC implements ITBTC {
   ): Promise<BridgeActivity[]> => {
     const l2DepositActivities: BridgeActivity[] = []
 
+    // Check if this is a StarkNet address (0x prefixed, 64-66 chars)
+    const isStarkNetAddress =
+      depositor.startsWith("0x") && depositor.length >= 64
+
+    // Get the appropriate L1BitcoinDepositor contract
+    let l1BitcoinDepositorContract = this.l1BitcoinDepositorContract
+
+    if (isStarkNetAddress) {
+      // For StarkNet, we need to use the StarkNet L1BitcoinDepositor
+      const mainnetOrTestnetChainId = getMainnetOrTestnetChainId(
+        this.ethereumChainId
+      )
+      const starkNetL1BitcoinDepositorArtifact = getArtifact(
+        "StarkNetBitcoinDepositor" as ArtifactNameType,
+        mainnetOrTestnetChainId,
+        this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+      )
+
+      if (starkNetL1BitcoinDepositorArtifact) {
+        const provider =
+          this._bridgeContract?.provider || getThresholdLibProvider()
+        l1BitcoinDepositorContract = getContract(
+          starkNetL1BitcoinDepositorArtifact.address,
+          starkNetL1BitcoinDepositorArtifact.abi,
+          provider
+        )
+      }
+    }
+
+    if (!l1BitcoinDepositorContract) {
+      console.warn(
+        "L1 Bitcoin Depositor contract not found for",
+        isStarkNetAddress ? "StarkNet" : "L2"
+      )
+      return []
+    }
+
     const l2AllRevealedDeposits = await this.findAllRevealedDeposits(
-      this.l1BitcoinDepositorContract?.address as string
+      l1BitcoinDepositorContract.address as string
     )
     const l2DepositKeys = l2AllRevealedDeposits.map((_) => _.depositKey)
 
@@ -1372,9 +1409,13 @@ export class TBTC implements ITBTC {
       )
 
     const l2InitializedDepositsEvents =
-      await this._findAllInitializedL2Deposits(depositor)
+      await this._findAllInitializedL2Deposits(
+        depositor,
+        l1BitcoinDepositorContract
+      )
     const l2FinalizedDepositsEvents = await this._findAllFinalizedL2Deposits(
-      depositor
+      depositor,
+      l1BitcoinDepositorContract
     )
 
     const l2InitializedDeposits = new Map(
@@ -1427,24 +1468,39 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllFinalizedL2Deposits = async (
-    depositor: string
+    depositor: string,
+    l1BitcoinDepositorContract?: Contract
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const l2DepositOwner = depositor
     const l1Sender = L2_RELAYER_BOT_WALLET
 
-    const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
-        this.ethereumChainId
-      )}L1BitcoinDepositor` as ArtifactNameType,
-      getMainnetOrTestnetChainId(this.ethereumChainId)
-    )
+    // Use provided contract or fall back to the instance contract
+    const contractToUse =
+      l1BitcoinDepositorContract || this._l1BitcoinDepositorContract
 
-    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+    if (!contractToUse) {
       console.warn("L1 Bitcoin Depositor contract is not initialized.")
       return []
     }
 
-    return await getContractPastEvents(this._l1BitcoinDepositorContract, {
+    // Get the artifact for the block number
+    const isStarkNet = depositor.startsWith("0x") && depositor.length >= 64
+    const artifactName = isStarkNet
+      ? "StarkNetBitcoinDepositor"
+      : `${getChainIdToNetworkName(this.ethereumChainId)}L1BitcoinDepositor`
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      artifactName as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId),
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (!l1BitcoinDepositorArtifact) {
+      console.warn(`${artifactName} artifact not found`)
+      return []
+    }
+
+    return await getContractPastEvents(contractToUse, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
       eventName: "DepositFinalized",
@@ -1452,24 +1508,39 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllInitializedL2Deposits = async (
-    depositor: string
+    depositor: string,
+    l1BitcoinDepositorContract?: Contract
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const l2DepositOwner = depositor
     const l1Sender = L2_RELAYER_BOT_WALLET
 
-    const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
-        this.ethereumChainId
-      )}L1BitcoinDepositor` as ArtifactNameType,
-      getMainnetOrTestnetChainId(this.ethereumChainId)
-    )
+    // Use provided contract or fall back to the instance contract
+    const contractToUse =
+      l1BitcoinDepositorContract || this._l1BitcoinDepositorContract
 
-    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+    if (!contractToUse) {
       console.warn("L1 Bitcoin Depositor contract is not initialized.")
       return []
     }
 
-    return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
+    // Get the artifact for the block number
+    const isStarkNet = depositor.startsWith("0x") && depositor.length >= 64
+    const artifactName = isStarkNet
+      ? "StarkNetBitcoinDepositor"
+      : `${getChainIdToNetworkName(this.ethereumChainId)}L1BitcoinDepositor`
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      artifactName as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId),
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (!l1BitcoinDepositorArtifact) {
+      console.warn(`${artifactName} artifact not found`)
+      return []
+    }
+
+    return await getContractPastEvents(contractToUse, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
       eventName: "DepositInitialized",

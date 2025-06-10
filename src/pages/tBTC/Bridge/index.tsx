@@ -15,6 +15,8 @@ import { UnmintPage } from "./Unmint"
 import { useIsActive } from "../../../hooks/useIsActive"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
+import { useTbtcState } from "../../../hooks/useTbtcState"
+import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 
 const gridTemplateAreas = {
   base: `
@@ -34,11 +36,26 @@ const TBTCBridge: PageComponent = (props) => {
   )
   const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
   const { account } = useIsActive()
-  const { isNonEVMActive, nonEVMPublicKey } = useNonEVMConnection()
+  const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
+    useNonEVMConnection()
   const threshold = useThreshold()
+  const { depositor } = useTbtcState()
+  const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
 
-  // For StarkNet connections, use non-EVM connection info
-  const effectiveAccount = account || nonEVMPublicKey
+  // For StarkNet connections, use the Ethereum depositor address from the deposit
+  // For regular EVM connections, use the account address
+  let effectiveAccount = account
+
+  if (isNonEVMActive && nonEVMChainName === "Starknet") {
+    // For StarkNet, check if we have a depositor from current state
+    if (depositor) {
+      effectiveAccount = depositor
+    } else if (nonEVMPublicKey && tBTCDepositData[nonEVMPublicKey]) {
+      // Otherwise check localStorage for saved deposit data
+      effectiveAccount =
+        tBTCDepositData[nonEVMPublicKey].depositor?.identifierHex
+    }
+  }
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
@@ -51,7 +68,13 @@ const TBTCBridge: PageComponent = (props) => {
         depositor: effectiveAccount,
       })
     )
-  }, [dispatch, effectiveAccount, mintingStep, threshold.tbtc.ethereumChainId])
+  }, [
+    dispatch,
+    effectiveAccount,
+    mintingStep,
+    threshold.tbtc.ethereumChainId,
+    depositor,
+  ])
 
   return (
     <Grid
