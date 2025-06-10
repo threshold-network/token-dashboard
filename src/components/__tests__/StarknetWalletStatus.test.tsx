@@ -7,10 +7,9 @@ import { mockStarknetWalletData } from "../../test/starknet-test-utils"
 // Mock dependencies
 jest.mock("../../hooks/useStarknetConnection")
 jest.mock("../CopyToClipboard", () => ({
-  CopyToClipboard: ({ text, tooltip }: any) => (
-    <button data-testid="copy-button" title={tooltip}>
-      Copy {text}
-    </button>
+  __esModule: true,
+  default: ({ children }: any) => (
+    <button data-testid="copy-button">{children}</button>
   ),
 }))
 jest.mock("starknetkit", () => ({
@@ -18,7 +17,8 @@ jest.mock("starknetkit", () => ({
   disconnect: jest.fn(),
 }))
 jest.mock("../../utils/shortenAddress", () => ({
-  shortenAddress: (address: string) => mockStarknetWalletData.shortAddress,
+  __esModule: true,
+  default: (address: string) => mockStarknetWalletData.shortAddress,
 }))
 
 const mockUseStarknetConnection = useStarknetConnection as jest.MockedFunction<

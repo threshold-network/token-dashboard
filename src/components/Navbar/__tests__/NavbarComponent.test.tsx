@@ -1,8 +1,20 @@
+// Mock @threshold-network/components before imports
+jest.mock("@threshold-network/components", () => ({
+  ...jest.requireActual("@threshold-network/components"),
+  useColorModeValue: jest.requireActual("@chakra-ui/react").useColorModeValue,
+  H5: ({ children }: any) => <h5>{children}</h5>,
+  VStack: ({ children }: any) => <div>{children}</div>,
+}))
+
 import { render, screen } from "@testing-library/react"
-import { MemoryRouter } from "react-router-dom"
+import { MemoryRouter, useMatch } from "react-router-dom"
 import { ChakraProvider } from "@chakra-ui/react"
 import NavbarComponent from "../NavbarComponent"
-import { MockStarknetWalletProvider } from "../../../test/starknet-test-utils"
+import {
+  MockStarknetWalletProvider,
+  createMockStarknetContextValue,
+} from "../../../test/starknet-test-utils"
+import { theme } from "@threshold-network/components"
 
 // Mock the imported components
 jest.mock("../WalletConnectionAlert", () => ({
@@ -37,6 +49,11 @@ jest.mock("../NetworkButton", () => ({
   default: () => <button>NetworkButton</button>,
 }))
 
+jest.mock("../StarkNetNetworkButton", () => ({
+  __esModule: true,
+  default: () => <button>StarkNetNetworkButton</button>,
+}))
+
 jest.mock("../../StarknetWalletStatus", () => ({
   __esModule: true,
   default: () => <div>StarknetWalletStatus</div>,
@@ -51,6 +68,11 @@ jest.mock("../../../pages", () => ({
   pages: [],
 }))
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useMatch: jest.fn(() => false),
+}))
+
 describe("NavbarComponent", () => {
   const defaultProps = {
     account: "0x123456789",
@@ -61,10 +83,12 @@ describe("NavbarComponent", () => {
 
   const renderComponent = (
     props = {},
-    starknetValue = { isConnected: false }
+    starknetValue: Partial<
+      ReturnType<typeof createMockStarknetContextValue>
+    > = { connected: false }
   ) => {
     return render(
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <MemoryRouter>
           <MockStarknetWalletProvider value={starknetValue}>
             <NavbarComponent {...defaultProps} {...props} />
@@ -86,23 +110,16 @@ describe("NavbarComponent", () => {
     expect(screen.getByText("AccountButton")).toBeInTheDocument()
   })
 
-  it("should not render StarknetWalletStatus when Starknet is not connected", () => {
+  it("should render StarkNetNetworkButton", () => {
     renderComponent()
 
-    expect(screen.queryByText("StarknetWalletStatus")).not.toBeInTheDocument()
+    expect(screen.getByText("StarkNetNetworkButton")).toBeInTheDocument()
   })
 
-  it("should render StarknetWalletStatus when Starknet is connected", () => {
-    renderComponent({}, { isConnected: true })
-
-    expect(screen.getByText("StarknetWalletStatus")).toBeInTheDocument()
-  })
-
-  it("should render both AccountButton and StarknetWalletStatus when both wallets are connected", () => {
-    renderComponent({ account: "0x123" }, { isConnected: true })
+  it("should render AccountButton when account is provided", () => {
+    renderComponent({ account: "0x123" })
 
     expect(screen.getByText("AccountButton")).toBeInTheDocument()
-    expect(screen.getByText("StarknetWalletStatus")).toBeInTheDocument()
   })
 
   it("should not render NetworkButton when chainId is not provided", () => {

@@ -16,7 +16,7 @@ module.exports = {
   jest: {
     configure: {
       transformIgnorePatterns: [
-        "node_modules/(?!(@starknet-react|axios|@walletconnect|uint8arrays|eventemitter3|multiformats)/)",
+        "/node_modules/(?!(@ledgerhq/connect-kit-loader|@ledgerhq|@starknet-react|axios|@walletconnect|uint8arrays|eventemitter3|multiformats|@keep-network/tbtc-v2.ts)/)",
       ],
       moduleNameMapper: {
         "^@keep-network/tbtc-v2.ts/dist/src/bitcoin$":

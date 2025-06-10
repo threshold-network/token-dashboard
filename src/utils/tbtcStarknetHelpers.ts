@@ -18,6 +18,10 @@ export { isStarknetNetwork }
 export type { StarkNetNetworkConfig as StarkNetConfig } from "../config/starknet"
 export { STARKNET_MAINNET_CHAIN_ID, STARKNET_SEPOLIA_CHAIN_ID }
 
+// Export STARKNET_CONFIGS for backward compatibility
+import { STARKNET_NETWORK_CONFIGS } from "../config/starknet"
+export const STARKNET_CONFIGS = STARKNET_NETWORK_CONFIGS
+
 // Helper to get current StarkNet configuration
 // This is a wrapper around the config function for backward compatibility
 export function getStarkNetConfig(chainId?: string | number) {
@@ -35,8 +39,9 @@ export const isValidStarkNetAddress = (address?: string): boolean => {
   const hexPart = address.slice(2)
   if (!/^[0-9a-fA-F]+$/.test(hexPart)) return false
 
-  // StarkNet addresses can be up to 64 characters (32 bytes) but typically shorter
-  if (hexPart.length > 64) return false
+  // StarkNet addresses should be at least 40 characters (20 bytes) to be valid
+  // This prevents very short strings like "0x123" from being considered valid
+  if (hexPart.length < 40 || hexPart.length > 64) return false
 
   return true
 }

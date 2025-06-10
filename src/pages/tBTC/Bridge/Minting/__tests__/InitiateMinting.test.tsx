@@ -1,229 +1,202 @@
 import React from "react"
-import { render } from "@testing-library/react"
+import { render, screen, fireEvent } from "@testing-library/react"
+import { ChakraProvider, extendTheme } from "@chakra-ui/react"
+import { Provider } from "react-redux"
+import { configureStore } from "@reduxjs/toolkit"
+import { rootReducer } from "../../../../../store"
+import { InitiateMinting } from "../InitiateMinting"
+import { useTbtcState } from "../../../../../hooks/useTbtcState"
+import { useThreshold } from "../../../../../contexts/ThresholdContext"
+import { useModal } from "../../../../../hooks/useModal"
+import { useNonEVMConnection } from "../../../../../hooks/useNonEVMConnection"
+import { useRevealDepositTransaction } from "../../../../../hooks/tbtc"
 import { ChainName } from "../../../../../threshold-ts/types"
+import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 
-// Mock all complex dependencies first
-jest.mock("@keep-network/tbtc-v2.ts", () => ({
-  BitcoinUtxo: jest.fn(),
-  TBTC: jest.fn(),
-}))
+// --- Mocks Setup ---
+jest.mock("../../../../../hooks/useTbtcState")
+jest.mock("../../../../../contexts/ThresholdContext")
+jest.mock("../../../../../hooks/useModal")
+jest.mock("../../../../../hooks/useNonEVMConnection")
+jest.mock("../../../../../hooks/tbtc")
 
-jest.mock("../../../../../components/tBTC", () => ({
-  __esModule: true,
-}))
-
-jest.mock("../../../../../utils/getThresholdLib", () => ({
-  getThresholdLib: jest.fn(),
-  threshold: {},
-}))
-
-// Mock dependencies
-jest.mock("../../../../../hooks/useNonEVMConnection", () => ({
-  useNonEVMConnection: jest.fn(() => ({
-    isNonEVMActive: false,
-    nonEVMChainName: null,
-    nonEVMPublicKey: null,
-    nonEVMProvider: null,
-  })),
-}))
-
-jest.mock("../../../../../hooks/useTbtcState", () => ({
-  useTbtcState: jest.fn(() => ({
-    tBTCMintAmount: "1500000000000000000",
-    mintingFee: "1000000000000000",
-    thresholdNetworkFee: "2000000000000000",
-    crossChainFee: "3000000000000000",
-    updateState: jest.fn(),
-    starknetAddress: undefined,
-    chainName: "Ethereum",
-  })),
-}))
-
-jest.mock("../../../../../contexts/ThresholdContext", () => ({
-  useThreshold: jest.fn(() => ({
-    tbtc: {
-      getEstimatedDepositFees: jest.fn().mockResolvedValue({
-        treasuryFee: "2000000000000000",
-        optimisticMintFee: "1000000000000000",
-        amountToMint: "1500000000000000000",
-        crossChainFee: "3000000000000000",
-      }),
-    },
-  })),
-}))
-
-jest.mock("../../../../../hooks/tbtc", () => ({
-  useRevealDepositTransaction: jest.fn(() => ({
-    sendTransaction: jest.fn(),
-  })),
-}))
-
-jest.mock("../../../../../hooks/useModal", () => ({
-  useModal: jest.fn().mockReturnValue({
-    closeModal: jest.fn(),
-  }),
-}))
-
+// Mock the HOC by making it a pass-through
 jest.mock(
-  "../../../../../components/withOnlyConnectedWallet",
-  () => (Component: any) => Component
+  "../../../../../components/withWalletConnection",
+  () => (Component: any) => (props: any) => <Component {...props} />
 )
 
-const mockUseNonEVMConnection = jest.requireMock(
-  "../../../../../hooks/useNonEVMConnection"
-).useNonEVMConnection
-const mockUseTbtcState = jest.requireMock(
-  "../../../../../hooks/useTbtcState"
-).useTbtcState
+const mockUseTbtcState = useTbtcState as jest.Mock
+const mockUseThreshold = useThreshold as jest.Mock
+const mockUseModal = useModal as jest.Mock
+const mockUseNonEVMConnection = useNonEVMConnection as jest.Mock
+const mockUseRevealDepositTransaction = useRevealDepositTransaction as jest.Mock
 
-// Import after mocks
-const { InitiateMinting } = require("../InitiateMinting")
+const mockRevealDeposit = jest.fn()
+const mockOpenModal = jest.fn()
 
-describe("InitiateMinting StarkNet Support", () => {
-  const mockUtxo = {
-    transactionHash: "0x123",
-    outputIndex: 0,
-    value: "100000000", // 1 BTC in satoshis
-  }
+const mockUtxo = {
+  transactionHash: "0x12345",
+  outputIndex: 0,
+  value: "100000000", // 1 BTC
+} as unknown as BitcoinUtxo
 
-  const mockOnPreviousStepClick = jest.fn()
+const onPreviousStepClick = jest.fn()
 
+const renderWithProviders = (
+  ui: React.ReactElement,
+  {
+    initialState = {},
+    store = configureStore({
+      reducer: rootReducer,
+      preloadedState: initialState,
+      middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+          serializableCheck: false,
+        }),
+    }),
+    ...renderOptions
+  } = {}
+) => {
+  const Wrapper: React.FC = ({ children }) => (
+    <ChakraProvider theme={extendTheme({})}>
+      <Provider store={store}>{children}</Provider>
+    </ChakraProvider>
+  )
+  return render(ui, { wrapper: Wrapper, ...renderOptions })
+}
+
+describe("<InitiateMinting />", () => {
   beforeEach(() => {
+    // Reset mocks before each test
     jest.clearAllMocks()
+
+    // Default mock implementations
+    mockUseTbtcState.mockReturnValue({
+      tBTCMintAmount: "99900000",
+      updateState: jest.fn(),
+    })
+    mockUseThreshold.mockReturnValue({
+      tbtc: {
+        getEstimatedDepositFees: jest.fn().mockResolvedValue({
+          treasuryFee: "50000",
+          optimisticMintFee: "50000",
+          amountToMint: "99900000",
+          crossChainFee: "0",
+        }),
+        revealDeposit: jest.fn().mockResolvedValue("0xtxhash"),
+        bridgeContract: true, // Assume bridge contract is available
+      },
+    })
+    mockUseModal.mockReturnValue({
+      openModal: mockOpenModal,
+      closeModal: jest.fn(),
+    })
+    mockUseRevealDepositTransaction.mockReturnValue({
+      sendTransaction: mockRevealDeposit,
+    })
+    mockUseNonEVMConnection.mockReturnValue({
+      isNonEVMActive: false,
+      nonEVMChainName: null,
+    })
   })
 
-  describe("TDD - Expected StarkNet behavior", () => {
-    it("should show StarkNet-specific UI content when it's a StarkNet deposit", () => {
-      // Arrange
-      mockUseNonEVMConnection.mockReturnValue({
-        isNonEVMActive: true,
-        nonEVMChainName: ChainName.Starknet,
-        nonEVMPublicKey: "0x123abc",
-        nonEVMProvider: {},
-      })
+  test("renders standard EVM minting flow correctly", async () => {
+    renderWithProviders(
+      <InitiateMinting
+        utxo={mockUtxo}
+        onPreviousStepClick={onPreviousStepClick}
+      />
+    )
 
-      mockUseTbtcState.mockReturnValue({
-        tBTCMintAmount: "1500000000000000000",
-        mintingFee: "1000000000000000",
-        thresholdNetworkFee: "2000000000000000",
-        crossChainFee: "3000000000000000",
-        updateState: jest.fn(),
-        starknetAddress: "0x123abc",
-        chainName: "StarkNet",
-      })
+    // Check titles and subtitles
+    expect(
+      screen.getByText("Initiate minting", { exact: false })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText("Initiate StarkNet minting")
+    ).not.toBeInTheDocument()
 
-      // Act
-      const { getByText } = render(
-        <InitiateMinting
-          utxo={mockUtxo}
-          onPreviousStepClick={mockOnPreviousStepClick}
-        />
-      )
+    // Check balances
+    await screen.findByText("0.999 tBTC") // Wait for fees to be calculated and displayed
+    expect(screen.getByText("1 BTC")).toBeInTheDocument()
 
-      // Assert
-      expect(getByText(/initiate starknet minting/i)).toBeInTheDocument()
-      expect(getByText(/starkgate bridge/i)).toBeInTheDocument()
-      expect(getByText(/15-30 minutes/i)).toBeInTheDocument()
+    // Check button text and interaction
+    const bridgeButton = screen.getByRole("button", { name: "Bridge" })
+    expect(bridgeButton).toBeInTheDocument()
+    fireEvent.click(bridgeButton)
+    expect(mockRevealDeposit).toHaveBeenCalledWith(mockUtxo)
+  })
+
+  test("renders StarkNet minting flow correctly", async () => {
+    // Arrange for StarkNet
+    mockUseNonEVMConnection.mockReturnValue({
+      isNonEVMActive: true,
+      nonEVMChainName: ChainName.Starknet,
     })
 
-    it("should show standard minting UI for non-StarkNet deposits", () => {
-      // Arrange
-      mockUseNonEVMConnection.mockReturnValue({
-        isNonEVMActive: false,
-        nonEVMChainName: null,
-        nonEVMPublicKey: null,
-        nonEVMProvider: null,
-      })
-
-      mockUseTbtcState.mockReturnValue({
-        tBTCMintAmount: "1500000000000000000",
-        mintingFee: "1000000000000000",
-        thresholdNetworkFee: "2000000000000000",
-        crossChainFee: "0",
-        updateState: jest.fn(),
-        starknetAddress: undefined,
-        chainName: "Ethereum",
-      })
-
-      // Act
-      const { getByText, queryByText } = render(
-        <InitiateMinting
-          utxo={mockUtxo}
-          onPreviousStepClick={mockOnPreviousStepClick}
-        />
-      )
-
-      // Assert
-      expect(queryByText(/initiate starknet minting/i)).not.toBeInTheDocument()
-      expect(queryByText(/starkgate bridge/i)).not.toBeInTheDocument()
-      expect(getByText(/initiate minting/i)).toBeInTheDocument()
+    const mockRevealDepositSDK = jest.fn().mockResolvedValue("0xstarknettxhash")
+    mockUseThreshold.mockReturnValue({
+      tbtc: {
+        getEstimatedDepositFees: jest.fn().mockResolvedValue({
+          treasuryFee: "50000",
+          optimisticMintFee: "50000",
+          amountToMint: "99900000",
+          crossChainFee: "10000",
+        }),
+        revealDeposit: mockRevealDepositSDK,
+        bridgeContract: true,
+      },
     })
 
-    it("should display cross-chain bridging explanation for StarkNet", () => {
-      // Arrange
-      mockUseNonEVMConnection.mockReturnValue({
-        isNonEVMActive: true,
-        nonEVMChainName: ChainName.Starknet,
-        nonEVMPublicKey: "0x123abc",
-        nonEVMProvider: {},
-      })
+    renderWithProviders(
+      <InitiateMinting
+        utxo={mockUtxo}
+        onPreviousStepClick={onPreviousStepClick}
+      />
+    )
 
-      mockUseTbtcState.mockReturnValue({
-        tBTCMintAmount: "1500000000000000000",
-        mintingFee: "1000000000000000",
-        thresholdNetworkFee: "2000000000000000",
-        crossChainFee: "3000000000000000",
-        updateState: jest.fn(),
-        starknetAddress: "0x123abc",
-        chainName: "StarkNet",
-      })
+    // Check titles and subtitles
+    expect(
+      screen.getByText("Initiate StarkNet minting", { exact: false })
+    ).toBeInTheDocument()
+    expect(screen.getByText(/starkgate bridge/i)).toBeInTheDocument()
 
-      // Act
-      const { getByText } = render(
-        <InitiateMinting
-          utxo={mockUtxo}
-          onPreviousStepClick={mockOnPreviousStepClick}
-        />
-      )
+    // Check balances
+    await screen.findByText("0.999 tBTC")
 
-      // Assert
-      expect(getByText(/bridge to starknet/i)).toBeInTheDocument()
-      expect(getByText(/ethereum mainnet/i)).toBeInTheDocument()
-      expect(getByText(/starknet mainnet/i)).toBeInTheDocument()
+    // Check button text and interaction
+    const bridgeButton = screen.getByRole("button", {
+      name: "Initiate StarkNet Bridging",
+    })
+    expect(bridgeButton).toBeInTheDocument()
+    fireEvent.click(bridgeButton)
+    expect(mockRevealDepositSDK).toHaveBeenCalledWith(mockUtxo)
+    expect(mockRevealDeposit).not.toHaveBeenCalled() // Ensure EVM method is not called
+  })
+
+  test("shows error modal if minting fails", async () => {
+    // Arrange for failure
+    const errorMessage = "User rejected transaction"
+    mockUseRevealDepositTransaction.mockReturnValue({
+      sendTransaction: jest.fn().mockRejectedValue(new Error(errorMessage)),
     })
 
-    it("should show proper button text for StarkNet", () => {
-      // Arrange
-      mockUseNonEVMConnection.mockReturnValue({
-        isNonEVMActive: true,
-        nonEVMChainName: ChainName.Starknet,
-        nonEVMPublicKey: "0x123abc",
-        nonEVMProvider: {},
-      })
+    renderWithProviders(
+      <InitiateMinting
+        utxo={mockUtxo}
+        onPreviousStepClick={onPreviousStepClick}
+      />
+    )
 
-      mockUseTbtcState.mockReturnValue({
-        tBTCMintAmount: "1500000000000000000",
-        mintingFee: "1000000000000000",
-        thresholdNetworkFee: "2000000000000000",
-        crossChainFee: "3000000000000000",
-        updateState: jest.fn(),
-        starknetAddress: "0x123abc",
-        chainName: "StarkNet",
-      })
+    const bridgeButton = screen.getByRole("button", { name: "Bridge" })
+    fireEvent.click(bridgeButton)
 
-      // Act
-      const { getByRole } = render(
-        <InitiateMinting
-          utxo={mockUtxo}
-          onPreviousStepClick={mockOnPreviousStepClick}
-        />
-      )
-
-      // Assert
-      const button = getByRole("button", {
-        name: /initiate starknet bridging/i,
-      })
-      expect(button).toBeInTheDocument()
+    // Assert that the modal was opened with the error
+    await screen.findByRole("button") // Wait for async actions
+    expect(mockOpenModal).toHaveBeenCalledWith("TransactionFailed", {
+      error: errorMessage,
+      isExpandableError: true,
     })
   })
 })

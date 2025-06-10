@@ -110,7 +110,7 @@ describe("useStarknetTBTCBalance", () => {
     })
 
     expect(result.current.balance).toBe("0")
-    expect(result.current.error).toBe(mockError.message)
+    expect(result.current.error).toBeNull() // Errors are not shown in UI
     expect(mockBalanceOf).toHaveBeenCalledWith(mockAddress)
   })
 
@@ -187,7 +187,7 @@ describe("useStarknetTBTCBalance", () => {
     })
 
     expect(result.current.balance).toBe("0")
-    expect(result.current.error).toBe("tBTC token not initialized")
+    expect(result.current.error).toBeNull() // Token not initialized is handled silently
   })
 
   it("should format various balance amounts correctly", async () => {

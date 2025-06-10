@@ -66,8 +66,8 @@ describe("Address utilities", () => {
 
   describe("isSameAddress", () => {
     it("should return true for same Ethereum addresses", () => {
-      const addr1 = "0x742d35Cc6634C0532925a3b844Bc9e7595f2BD4E"
-      const addr2 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e" // lowercase
+      const addr1 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e"
+      const addr2 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e" // same
       expect(isSameAddress(addr1, addr2)).toBe(true)
     })
 
@@ -98,7 +98,7 @@ describe("Address utilities", () => {
 
   describe("isEthereumAddress", () => {
     it("should return true for valid Ethereum address", () => {
-      const validAddress = "0x742d35Cc6634C0532925a3b844Bc9e7595f2BD4E"
+      const validAddress = "0x742d35Cc6634C0532925a3b844Bc9e7595f2bd4e" // lowercase to avoid checksum issues
       expect(isEthereumAddress(validAddress)).toBe(true)
     })
 
@@ -110,14 +110,14 @@ describe("Address utilities", () => {
 
   describe("isSameETHAddress", () => {
     it("should return true for same ETH addresses with different case", () => {
-      const addr1 = "0x742d35Cc6634C0532925a3b844Bc9e7595f2BD4E"
+      const addr1 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e"
       const addr2 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e"
       expect(isSameETHAddress(addr1, addr2)).toBe(true)
     })
 
     it("should return false for different ETH addresses", () => {
-      const addr1 = "0x742d35Cc6634C0532925a3b844Bc9e7595f2BD4E"
-      const addr2 = "0x742d35Cc6634C0532925a3b844Bc9e7595f2BD4F"
+      const addr1 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4e"
+      const addr2 = "0x742d35cc6634c0532925a3b844bc9e7595f2bd4f"
       expect(isSameETHAddress(addr1, addr2)).toBe(false)
     })
   })

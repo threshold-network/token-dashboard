@@ -147,7 +147,7 @@ describe("useStarknetConnection", () => {
     expect(result.current.chainId).toBe(constants.StarknetChainId.SN_SEPOLIA)
   })
 
-  it("should default to mainnet chainId when unable to determine from provider", () => {
+  it("should return null chainId when unable to determine from provider", () => {
     const mockProvider = {} // Provider without chainId
 
     ;(useStarknetWallet as jest.Mock).mockReturnValue({
@@ -158,7 +158,7 @@ describe("useStarknetConnection", () => {
 
     const { result } = renderHook(() => useStarknetConnection())
 
-    expect(result.current.chainId).toBe(constants.StarknetChainId.SN_MAIN)
+    expect(result.current.chainId).toBeNull()
   })
 })
 

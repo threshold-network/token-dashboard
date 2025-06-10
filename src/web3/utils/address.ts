@@ -7,8 +7,13 @@ export { unprefixedAndUncheckedAddress } from "../../threshold-ts/utils"
 
 export const getAddress = (address: string) => ethersGetAddress(address)
 
-export const isEthereumAddress = (address: string): boolean =>
-  ethersIsAddress(address)
+export const isEthereumAddress = (address: string): boolean => {
+  try {
+    return ethersIsAddress(address)
+  } catch {
+    return false
+  }
+}
 
 export const isStarknetAddress = (address: string): boolean => {
   if (!address) return false
@@ -20,8 +25,9 @@ export const isStarknetAddress = (address: string): boolean => {
   const hexPart = address.slice(2)
   if (!/^[0-9a-fA-F]+$/.test(hexPart)) return false
 
-  // StarkNet addresses can be up to 64 characters (32 bytes) but typically shorter
-  if (hexPart.length === 0 || hexPart.length > 64) return false
+  // StarkNet addresses must be exactly 64 characters (32 bytes)
+  // This distinguishes them from Ethereum addresses (40 chars)
+  if (hexPart.length !== 64) return false
 
   return true
 }
