@@ -16,11 +16,11 @@ import { useWeb3React } from "@web3-react/core"
 import { useStarknetConnection } from "../hooks/useStarknetConnection"
 import { useNonEVMConnection } from "../hooks/useNonEVMConnection"
 import { ChainName } from "../threshold-ts/types"
+import { isL2Network } from "../networks/utils/connectedNetwork"
 import {
   isStarkNetInitialized,
   isStarknetNetwork,
 } from "../utils/tbtcStarknetHelpers"
-import { featureFlags } from "../constants"
 
 // Chain name mapping for SDK compatibility
 const CHAIN_NAME_MAPPING: Record<string, ChainName> = {
@@ -92,8 +92,13 @@ export const ThresholdProvider: FC = ({ children }) => {
   const { isEmbed } = useIsEmbed()
 
   // Non-EVM chain connections
-  const { nonEVMChainName, nonEVMPublicKey, nonEVMProvider, isNonEVMActive } =
-    useNonEVMConnection()
+  const {
+    nonEVMChainName,
+    nonEVMPublicKey,
+    nonEVMProvider,
+    isNonEVMActive,
+    nonEVMChainId,
+  } = useNonEVMConnection()
 
   // StarkNet state management
   const [isCrossChainInitializing, setIsCrossChainInitializing] =
@@ -147,7 +152,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           },
           bitcoin: threshold.config.bitcoin,
           crossChain: {
-            isCrossChain: isNonEVMActive,
+            isCrossChain: isNonEVMActive || isL2Network(ethereumChainId),
             chainName: nonEVMChainName
               ? CHAIN_NAME_MAPPING[nonEVMChainName] || nonEVMChainName
               : nonEVMChainName,
@@ -197,11 +202,6 @@ export const ThresholdProvider: FC = ({ children }) => {
   // Separate effect for StarkNet initialization with address extraction and deposit owner setting
   useEffect(() => {
     const initializeStarkNetCrossChain = async () => {
-      // Check feature flag first
-      if (!featureFlags.STARKNET_ENABLED) {
-        return
-      }
-
       if (
         nonEVMChainName !== ChainName.Starknet ||
         !isNonEVMActive ||
@@ -210,8 +210,17 @@ export const ThresholdProvider: FC = ({ children }) => {
         return
       }
 
-      // For StarkNet-only connections, we don't need to check EVM chainId
-      // The StarkNet network check happens through the provider itself
+      // Check if the StarkNet network is enabled
+      const { isEnabledStarkNetChainId } = await import("../config/starknet")
+      if (nonEVMChainId && !isEnabledStarkNetChainId(nonEVMChainId)) {
+        console.log(
+          `StarkNet network ${nonEVMChainId} is disabled. Skipping cross-chain initialization.`
+        )
+        setCrossChainError(
+          "This StarkNet network is disabled. Please switch to an enabled network."
+        )
+        return
+      }
 
       setIsCrossChainInitializing(true)
       setCrossChainError(null)
@@ -265,6 +274,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     isNonEVMActive,
     nonEVMProvider,
     nonEVMPublicKey,
+    nonEVMChainId,
     chainId,
     retryCount,
   ])

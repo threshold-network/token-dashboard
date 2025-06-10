@@ -171,6 +171,20 @@ export const findUtxoEffect = async (
               chainName,
             })
 
+            // For StarkNet deposits, we need to check if the cross-chain contracts are initialized
+            // If not, we'll skip restoration here and let the UI handle it when the wallet connects
+            const { threshold: thresholdContext } = listenerApi.extra
+            const isStarkNetInitialized =
+              await thresholdContext.tbtc.isStarkNetInitialized()
+            if (!isStarkNetInitialized) {
+              console.log(
+                "StarkNet cross-chain contracts not initialized yet. Skipping deposit restoration in effects. " +
+                  "Deposit will be restored when StarkNet initialization completes."
+              )
+              // Don't throw error, just skip - the UI will handle restoration when wallet connects
+              return
+            }
+
             try {
               // For StarkNet, we need to use undefined as chainId to trigger the StarkNet-specific path
               // This will use the already initialized StarkNet cross-chain setup

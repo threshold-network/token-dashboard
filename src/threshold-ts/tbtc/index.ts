@@ -231,6 +231,12 @@ export interface ITBTC {
   readonly l2TbtcToken: any | null
 
   /**
+   * Check if StarkNet cross-chain contracts are initialized
+   * @returns Promise<boolean> true if initialized, false otherwise
+   */
+  isStarkNetInitialized(): Promise<boolean>
+
+  /**
    * Initializes cross-chain support for non-EVM chains like StarkNet
    * @param providerOrSigner Provider or signer for the cross-chain
    * @param account Account address (optional for non-EVM chains)
@@ -757,6 +763,16 @@ export class TBTC implements ITBTC {
     return this._l2TbtcToken
   }
 
+  isStarkNetInitialized = async (): Promise<boolean> => {
+    try {
+      const sdk = await this._getSdk()
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      return !!crossChainContracts
+    } catch {
+      return false
+    }
+  }
+
   private _getSdk = async (): Promise<SDK> => {
     const sdk = await this._sdkPromise
     if (!sdk) throw new EmptySdkObjectError()
@@ -780,6 +796,43 @@ export class TBTC implements ITBTC {
       // Validate provider
       if (!providerOrSigner) {
         throw new Error("Provider is required for StarkNet")
+      }
+
+      // Check if the StarkNet network is enabled
+      const { isEnabledStarkNetChainId } = await import("../../config/starknet")
+
+      // Try multiple ways to get the chain ID
+      let chainId =
+        providerOrSigner.chainId ||
+        providerOrSigner.account?.chainId ||
+        providerOrSigner.channel?.chainId
+
+      // If we still don't have a chainId, try to get it from getChainId method
+      if (
+        !chainId &&
+        providerOrSigner.getChainId &&
+        typeof providerOrSigner.getChainId === "function"
+      ) {
+        try {
+          chainId = providerOrSigner.getChainId()
+        } catch (e) {
+          console.warn("Failed to get chain ID from provider:", e)
+        }
+      }
+
+      console.log("StarkNet provider chain ID detection:", {
+        chainId,
+        hasChainId: !!providerOrSigner.chainId,
+        hasAccountChainId: !!providerOrSigner.account?.chainId,
+        hasChannelChainId: !!providerOrSigner.channel?.chainId,
+      })
+
+      if (chainId && !isEnabledStarkNetChainId(chainId)) {
+        console.log(
+          `StarkNet initialization blocked: Network ${chainId} is disabled. Please switch to an enabled network.`
+        )
+        // Return early without initializing - this prevents the SDK from working on disabled networks
+        return
       }
 
       // Check if provider has account information

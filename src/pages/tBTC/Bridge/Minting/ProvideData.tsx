@@ -49,7 +49,6 @@ import {
 } from "../../../../utils/tbtcStarknetHelpers"
 import { StarkNetLoadingState } from "../components/StarkNetLoadingState"
 import { StarkNetErrorState } from "../components/StarkNetErrorState"
-import { featureFlags } from "../../../../constants"
 import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
 
 export interface FormValues {
@@ -74,9 +73,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   const { nonEVMChainName, isNonEVMActive } = useNonEVMConnection()
   // StarkNet detection - MUST be explicit to avoid affecting other chains
   const isStarkNetDeposit =
-    featureFlags.STARKNET_ENABLED &&
-    isNonEVMActive &&
-    nonEVMChainName === ChainName.Starknet
+    isNonEVMActive && nonEVMChainName === ChainName.Starknet
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
     isTestnetChainId(chainId as number)
@@ -135,8 +132,18 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     )
     return getErrorsObj(errors)
   },
-  handleSubmit: (values, { props }) => {
-    props.onSubmitForm(values)
+  handleSubmit: async (values, { props, setSubmitting, setErrors }) => {
+    try {
+      await props.onSubmitForm(values)
+    } catch (error) {
+      // Set form-level error for display
+      setErrors({
+        btcRecoveryAddress:
+          error instanceof Error ? error.message : "An error occurred",
+      })
+      setSubmitting(false)
+      // Don't re-throw - this prevents the console error
+    }
   },
   displayName: "MintingProcessForm",
   enableReinitialize: true,
@@ -160,9 +167,7 @@ export const ProvideDataComponent: FC<{
   // Check if this is a StarkNet deposit
   // StarkNet detection - MUST be explicit to avoid affecting other chains
   const isStarkNetDeposit =
-    featureFlags.STARKNET_ENABLED &&
-    isNonEVMActive &&
-    nonEVMChainName === ChainName.Starknet
+    isNonEVMActive && nonEVMChainName === ChainName.Starknet
 
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
@@ -179,164 +184,185 @@ export const ProvideDataComponent: FC<{
 
   const onSubmit = useCallback(
     async (values: FormValues) => {
-      // For StarkNet, compare with nonEVMPublicKey; for EVM, compare with account
-      const connectedAddress = isStarkNetDeposit ? nonEVMPublicKey : account
+      try {
+        // For StarkNet, compare with nonEVMPublicKey; for EVM, compare with account
+        const connectedAddress = isStarkNetDeposit ? nonEVMPublicKey : account
 
-      if (
-        connectedAddress &&
-        !isSameAddress(values.userWalletAddress, connectedAddress)
-      ) {
-        throw new Error(
-          "The account used to generate the deposit address must be the same as the connected wallet."
-        )
-      }
-
-      // For EVM deposits, check if the network is supported
-      if (!isStarkNetDeposit && !isSupportedNetwork(chainId)) {
-        throw new Error(
-          "You are currently connected to an unsupported network. Switch to a supported network"
-        )
-      }
-
-      // StarkNet-specific validations
-      if (isStarkNetDeposit) {
-        if (!starkNetStatus.isStarkNetReady) {
+        if (
+          connectedAddress &&
+          !isSameAddress(values.userWalletAddress, connectedAddress)
+        ) {
           throw new Error(
-            starkNetStatus.crossChainError ||
-              "StarkNet not properly initialized. Please reconnect your wallet and try again."
+            "The account used to generate the deposit address must be the same as the connected wallet."
           )
         }
 
-        // For StarkNet-only connections, we don't need to check EVM compatibility
-        // Only check if an EVM wallet is also connected
-        if (chainId) {
-          // Check network compatibility between EVM and StarkNet
-          const compatibility = checkStarkNetNetworkCompatibility(
-            chainId,
-            starknetChainId || undefined
+        // For EVM deposits, check if the network is supported
+        if (!isStarkNetDeposit && !isSupportedNetwork(chainId)) {
+          throw new Error(
+            "You are currently connected to an unsupported network. Switch to a supported network"
           )
-          if (!compatibility.compatible) {
+        }
+
+        // StarkNet-specific validations
+        if (isStarkNetDeposit) {
+          if (!starkNetStatus.isStarkNetReady) {
             throw new Error(
-              compatibility.error || "Network compatibility check failed"
+              starkNetStatus.crossChainError ||
+                "StarkNet not properly initialized. Please reconnect your wallet and try again."
             )
           }
+
+          // For StarkNet-only connections, we don't need to check EVM compatibility
+          // Only check if an EVM wallet is also connected
+          if (chainId) {
+            // Check network compatibility between EVM and StarkNet
+            const compatibility = checkStarkNetNetworkCompatibility(
+              chainId,
+              starknetChainId || undefined
+            )
+            if (!compatibility.compatible) {
+              throw new Error(
+                compatibility.error || "Network compatibility check failed"
+              )
+            }
+          }
         }
-      }
 
-      // For StarkNet, use the StarkNet chain name; for EVM, use the chainId
-      const chainName = isStarkNetDeposit
-        ? nonEVMChainName
-        : getChainIdToNetworkName(chainId)
-      setSubmitButtonLoading(true)
+        // For StarkNet, use the StarkNet chain name; for EVM, use the chainId
+        const chainName = isStarkNetDeposit
+          ? nonEVMChainName
+          : getChainIdToNetworkName(chainId)
+        setSubmitButtonLoading(true)
 
-      let deposit: Deposit
+        let deposit: Deposit
 
-      // CRITICAL: Different chains require different deposit flows
-      if (isStarkNetDeposit) {
-        // StarkNet requires special flow with proxy and L1Transaction mode
-        // DO NOT change this - StarkNet cannot use the standard cross-chain flow
-        // The StarkNet address is taken from the connected wallet
-        if (!nonEVMPublicKey) {
-          throw new Error("StarkNet wallet not connected")
+        // CRITICAL: Different chains require different deposit flows
+        if (isStarkNetDeposit) {
+          // StarkNet requires special flow with proxy and L1Transaction mode
+          // DO NOT change this - StarkNet cannot use the standard cross-chain flow
+          // The StarkNet address is taken from the connected wallet
+          if (!nonEVMPublicKey) {
+            throw new Error("StarkNet wallet not connected")
+          }
+
+          // Check if StarkNet is properly initialized
+          const isStarkNetInitialized =
+            await threshold.tbtc.isStarkNetInitialized()
+          if (!isStarkNetInitialized) {
+            throw new Error(
+              "Cannot mint on this StarkNet network. Please switch to an enabled network."
+            )
+          }
+
+          deposit = await initializeStarkNetDeposit(
+            threshold.tbtc,
+            nonEVMPublicKey,
+            values.btcRecoveryAddress,
+            starknetChainId || undefined
+          )
+        } else if (isL1Network(chainId)) {
+          // Standard Ethereum L1 minting
+          deposit = await threshold.tbtc.initiateDeposit(
+            values.btcRecoveryAddress
+          )
+        } else if (chainId) {
+          // Standard L2 cross-chain flow (Arbitrum, Base, etc.)
+          // DO NOT change this - it's working correctly for these chains
+          deposit = await threshold.tbtc.initiateCrossChainDeposit(
+            values.btcRecoveryAddress,
+            chainId as SupportedChainIds
+          )
+        } else {
+          throw new Error("No wallet connected or unsupported network")
         }
-        deposit = await initializeStarkNetDeposit(
-          threshold.tbtc,
-          nonEVMPublicKey,
-          values.btcRecoveryAddress,
-          starknetChainId || undefined
+        const depositAddress = await threshold.tbtc.calculateDepositAddress()
+        const receipt = deposit.getReceipt()
+
+        // update state,
+        updateState("ethAddress", values.userWalletAddress)
+        updateState("depositor", receipt.depositor.identifierHex.toString())
+        updateState("blindingFactor", receipt.blindingFactor.toString())
+        updateState("btcRecoveryAddress", values.btcRecoveryAddress)
+        updateState(
+          "walletPublicKeyHash",
+          receipt.walletPublicKeyHash.toString()
         )
-      } else if (isL1Network(chainId)) {
-        // Standard Ethereum L1 minting
-        deposit = await threshold.tbtc.initiateDeposit(
-          values.btcRecoveryAddress
-        )
-      } else if (chainId) {
-        // Standard L2 cross-chain flow (Arbitrum, Base, etc.)
-        // DO NOT change this - it's working correctly for these chains
-        deposit = await threshold.tbtc.initiateCrossChainDeposit(
-          values.btcRecoveryAddress,
-          chainId as SupportedChainIds
-        )
-      } else {
-        throw new Error("No wallet connected or unsupported network")
-      }
-      const depositAddress = await threshold.tbtc.calculateDepositAddress()
-      const receipt = deposit.getReceipt()
+        updateState("refundLocktime", receipt.refundLocktime.toString())
+        updateState("extraData", receipt.extraData?.toString())
+        updateState("chainName", chainName)
 
-      // update state,
-      updateState("ethAddress", values.userWalletAddress)
-      updateState("depositor", receipt.depositor.identifierHex.toString())
-      updateState("blindingFactor", receipt.blindingFactor.toString())
-      updateState("btcRecoveryAddress", values.btcRecoveryAddress)
-      updateState("walletPublicKeyHash", receipt.walletPublicKeyHash.toString())
-      updateState("refundLocktime", receipt.refundLocktime.toString())
-      updateState("extraData", receipt.extraData?.toString())
-      updateState("chainName", chainName)
+        // create a new deposit address,
+        updateState("btcDepositAddress", depositAddress)
 
-      // create a new deposit address,
-      updateState("btcDepositAddress", depositAddress)
+        const storageChainId = isStarkNetDeposit
+          ? starknetChainId || getStarkNetConfig().chainId
+          : chainId
 
-      const storageChainId = isStarkNetDeposit
-        ? starknetChainId || getStarkNetConfig().chainId
-        : chainId
+        console.log("ProvideData - saving deposit to localStorage:", {
+          isStarkNetDeposit,
+          storageChainId,
+          chainName,
+          depositor: receipt.depositor.identifierHex.toString(),
+          userWalletAddress: values.userWalletAddress,
+          extraData: receipt.extraData?.toString(),
+        })
 
-      console.log("ProvideData - saving deposit to localStorage:", {
-        isStarkNetDeposit,
-        storageChainId,
-        chainName,
-        depositor: receipt.depositor.identifierHex.toString(),
-        userWalletAddress: values.userWalletAddress,
-        extraData: receipt.extraData?.toString(),
-      })
-
-      setDepositDataInLocalStorage(
-        {
-          depositor: {
-            identifierHex: receipt.depositor.identifierHex.toString(),
-          },
-          chainName: chainName,
-          ethAddress: values.userWalletAddress,
-          blindingFactor: receipt.blindingFactor.toString(),
-          btcRecoveryAddress: values.btcRecoveryAddress,
-          walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
-          refundLocktime: receipt.refundLocktime.toString(),
-          btcDepositAddress: depositAddress,
-          extraData: receipt.extraData?.toString() || "",
-        },
-        storageChainId
-      )
-
-      depositTelemetry(receipt, depositAddress)
-
-      // if the user has NOT declined the json file, ask the user if they want to accept the new file
-      if (shouldDownloadDepositReceipt) {
-        const date = new Date().toISOString().split("T")[0]
-
-        const fileName = `${values.userWalletAddress}_${depositAddress}_${date}.json`
-
-        const finalData = {
-          depositor: {
-            identifierHex: receipt.depositor.identifierHex.toString(),
-          },
-          networkInfo: {
+        setDepositDataInLocalStorage(
+          {
+            depositor: {
+              identifierHex: receipt.depositor.identifierHex.toString(),
+            },
             chainName: chainName,
-            chainId:
-              (isStarkNetDeposit
-                ? starknetChainId || getStarkNetConfig().chainId
-                : chainId
-              )?.toString() || "",
+            ethAddress: values.userWalletAddress,
+            blindingFactor: receipt.blindingFactor.toString(),
+            btcRecoveryAddress: values.btcRecoveryAddress,
+            walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+            refundLocktime: receipt.refundLocktime.toString(),
+            btcDepositAddress: depositAddress,
+            extraData: receipt.extraData?.toString() || "",
           },
-          refundLocktime: receipt.refundLocktime.toString(),
-          refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
-          blindingFactor: receipt.blindingFactor.toString(),
-          ethAddress: values.userWalletAddress,
-          walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
-          btcRecoveryAddress: values.btcRecoveryAddress,
-          extraData: receipt.extraData?.toString() ?? "",
+          storageChainId
+        )
+
+        depositTelemetry(receipt, depositAddress)
+
+        // if the user has NOT declined the json file, ask the user if they want to accept the new file
+        if (shouldDownloadDepositReceipt) {
+          const date = new Date().toISOString().split("T")[0]
+
+          const fileName = `${values.userWalletAddress}_${depositAddress}_${date}.json`
+
+          const finalData = {
+            depositor: {
+              identifierHex: receipt.depositor.identifierHex.toString(),
+            },
+            networkInfo: {
+              chainName: chainName,
+              chainId:
+                (isStarkNetDeposit
+                  ? starknetChainId || getStarkNetConfig().chainId
+                  : chainId
+                )?.toString() || "",
+            },
+            refundLocktime: receipt.refundLocktime.toString(),
+            refundPublicKeyHash: receipt.refundPublicKeyHash.toString(),
+            blindingFactor: receipt.blindingFactor.toString(),
+            ethAddress: values.userWalletAddress,
+            walletPublicKeyHash: receipt.walletPublicKeyHash.toString(),
+            btcRecoveryAddress: values.btcRecoveryAddress,
+            extraData: receipt.extraData?.toString() ?? "",
+          }
+          downloadFile(JSON.stringify(finalData), fileName, "text/json")
         }
-        downloadFile(JSON.stringify(finalData), fileName, "text/json")
+        updateState("mintingStep", MintingStep.Deposit)
+      } catch (error) {
+        setSubmitButtonLoading(false)
+        // Re-throw to let Formik handle it
+        throw error
+      } finally {
+        // Loading state is already handled in catch
       }
-      updateState("mintingStep", MintingStep.Deposit)
     },
     [
       shouldDownloadDepositReceipt,

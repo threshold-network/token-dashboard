@@ -10,14 +10,17 @@ import {
   MenuItem,
   MenuList,
   useToast,
+  Text,
 } from "@chakra-ui/react"
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons"
 import { useStarknetConnection } from "../../hooks/useStarknetConnection"
 import { useStarknetWallet } from "../../contexts/StarknetWalletProvider"
 import {
+  ENABLED_STARKNET_NETWORKS,
   STARKNET_MAINNET_CHAIN_ID,
   STARKNET_SEPOLIA_CHAIN_ID,
-} from "../../types/starknet"
+  getEnabledStarkNetChainIds,
+} from "../../config/starknet"
 import { useIsActive } from "../../hooks/useIsActive"
 
 interface StarkNetNetwork {
@@ -26,18 +29,24 @@ interface StarkNetNetwork {
   isTestnet: boolean
 }
 
-const STARKNET_NETWORKS: StarkNetNetwork[] = [
-  {
+// Build network list based on enabled networks
+const STARKNET_NETWORKS: StarkNetNetwork[] = []
+
+if (ENABLED_STARKNET_NETWORKS.mainnet && STARKNET_MAINNET_CHAIN_ID) {
+  STARKNET_NETWORKS.push({
     chainId: STARKNET_MAINNET_CHAIN_ID,
     name: "StarkNet Mainnet",
     isTestnet: false,
-  },
-  {
+  })
+}
+
+if (ENABLED_STARKNET_NETWORKS.sepolia && STARKNET_SEPOLIA_CHAIN_ID) {
+  STARKNET_NETWORKS.push({
     chainId: STARKNET_SEPOLIA_CHAIN_ID,
     name: "StarkNet Sepolia",
     isTestnet: true,
-  },
-]
+  })
+}
 
 const StarkNetNetworkButton: FC = () => {
   const { colorMode } = useColorMode()
@@ -51,10 +60,21 @@ const StarkNetNetworkButton: FC = () => {
   const hoverBg = useColorModeValue("gray.200", "gray.600")
 
   const currentNetwork = useMemo(() => {
-    return (
-      STARKNET_NETWORKS.find((network) => network.chainId === chainId) ||
-      STARKNET_NETWORKS[1]
-    ) // Default to Sepolia
+    // Check if current chain is enabled
+    const network = STARKNET_NETWORKS.find(
+      (network) => network.chainId === chainId
+    )
+    if (network) return network
+
+    // If current network is disabled, return first enabled network or null
+    return STARKNET_NETWORKS[0] || null
+  }, [chainId])
+
+  // Check if wallet is on a disabled network
+  const isOnDisabledNetwork = useMemo(() => {
+    if (!chainId) return false
+    const enabledChainIds = getEnabledStarkNetChainIds()
+    return !enabledChainIds.includes(chainId)
   }, [chainId])
 
   const handleNetworkSwitch = async (networkChainId: string) => {
@@ -96,6 +116,46 @@ const StarkNetNetworkButton: FC = () => {
   // Only show if StarkNet wallet is connected AND no EVM wallet is connected
   if (!isConnected || evmAccount) return null
 
+  // Show warning if no networks are enabled
+  if (STARKNET_NETWORKS.length === 0) {
+    return (
+      <Text
+        fontSize="sm"
+        color="red.500"
+        px={4}
+        py={2}
+        bg={useColorModeValue("red.50", "red.900")}
+        borderRadius="md"
+      >
+        No StarkNet networks enabled
+      </Text>
+    )
+  }
+
+  // Show warning if on disabled network
+  if (isOnDisabledNetwork) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        colorScheme="red"
+        onClick={() => {
+          const firstEnabledNetwork = STARKNET_NETWORKS[0]
+          if (firstEnabledNetwork) {
+            handleNetworkSwitch(firstEnabledNetwork.chainId)
+          }
+        }}
+        leftIcon={
+          <Icon viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+          </Icon>
+        }
+      >
+        Network Disabled - Click to Switch
+      </Button>
+    )
+  }
+
   return (
     <>
       {/* Mobile */}
@@ -132,7 +192,7 @@ const StarkNetNetworkButton: FC = () => {
               _active={{ bg: hoverBg }}
               size="sm"
             >
-              {currentNetwork.name}
+              {currentNetwork?.name || "Unknown Network"}
             </MenuButton>
             <MenuList zIndex="dropdown" minW="0">
               {renderMenuItems(handleNetworkSwitch, chainId)}

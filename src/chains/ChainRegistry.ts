@@ -4,6 +4,10 @@ import { StarkNetChain } from "./StarkNetChain"
 import { ChainType } from "../types/chain"
 import { SupportedChainIds } from "../networks/enums/networks"
 import { networks } from "../networks/utils/networks"
+import {
+  ENABLED_STARKNET_NETWORKS,
+  STARKNET_NETWORK_CONFIGS,
+} from "../config/starknet"
 
 export class ChainRegistry {
   private static instance: ChainRegistry
@@ -32,36 +36,40 @@ export class ChainRegistry {
       this.registerChain(evmChain)
     })
 
-    // Initialize StarkNet chains
-    const starknetMainnet = new StarkNetChain(
-      "0x534e5f4d41494e",
-      "starknet",
-      {
-        displayName: "StarkNet Mainnet",
-        explorerUrl: "https://starkscan.co",
-        nativeToken: {
-          symbol: "ETH",
-          decimals: 18,
+    // Initialize StarkNet chains based on configuration
+    if (ENABLED_STARKNET_NETWORKS.mainnet) {
+      const starknetMainnet = new StarkNetChain(
+        STARKNET_NETWORK_CONFIGS.mainnet.chainId,
+        "starknet",
+        {
+          displayName: STARKNET_NETWORK_CONFIGS.mainnet.chainName,
+          explorerUrl: STARKNET_NETWORK_CONFIGS.mainnet.explorerUrl,
+          nativeToken: {
+            symbol: "ETH",
+            decimals: 18,
+          },
         },
-      },
-      SupportedChainIds.Ethereum // Proxy to Ethereum Mainnet
-    )
-    this.registerChain(starknetMainnet)
+        SupportedChainIds.Ethereum // Proxy to Ethereum Mainnet
+      )
+      this.registerChain(starknetMainnet)
+    }
 
-    const starknetSepolia = new StarkNetChain(
-      "0x534e5f5345504f4c4941",
-      "starknet-sepolia",
-      {
-        displayName: "StarkNet Sepolia",
-        explorerUrl: "https://sepolia.starkscan.co",
-        nativeToken: {
-          symbol: "ETH",
-          decimals: 18,
+    if (ENABLED_STARKNET_NETWORKS.sepolia) {
+      const starknetSepolia = new StarkNetChain(
+        STARKNET_NETWORK_CONFIGS.sepolia.chainId,
+        "starknet-sepolia",
+        {
+          displayName: STARKNET_NETWORK_CONFIGS.sepolia.chainName,
+          explorerUrl: STARKNET_NETWORK_CONFIGS.sepolia.explorerUrl,
+          nativeToken: {
+            symbol: "ETH",
+            decimals: 18,
+          },
         },
-      },
-      SupportedChainIds.Sepolia // Proxy to Ethereum Sepolia
-    )
-    this.registerChain(starknetSepolia)
+        SupportedChainIds.Sepolia // Proxy to Ethereum Sepolia
+      )
+      this.registerChain(starknetSepolia)
+    }
   }
 
   registerChain(chain: BaseChain): void {

@@ -19,9 +19,9 @@ import ConnectTaho from "./ConnectTaho"
 import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
-import { featureFlags } from "../../../constants"
 import { ConnectStarknet } from "./ConnectStarknet"
 import { StarknetIcon } from "../../../static/icons/Starknet"
+import { featureFlags } from "../../../constants"
 
 const baseWalletOptions: WalletOption[] = [
   {
@@ -70,21 +70,17 @@ const baseWalletOptions: WalletOption[] = [
   },
 ]
 
-// Conditionally add StarkNet based on feature flag
+// Include all wallet options including StarkNet
 const walletOptions: WalletOption[] = [
   ...baseWalletOptions,
-  ...(featureFlags.STARKNET_ENABLED
-    ? [
-        {
-          id: WalletType.Starknet,
-          title: "Starknet",
-          icon: {
-            light: StarknetIcon,
-            dark: StarknetIcon,
-          },
-        },
-      ]
-    : []),
+  {
+    id: WalletType.Starknet,
+    title: "Starknet",
+    icon: {
+      light: StarknetIcon,
+      dark: StarknetIcon,
+    },
+  },
 ]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {

@@ -4,86 +4,24 @@ import {
   StarkNetProvider,
   StarkNetDepositConfig,
   isStarkNetChainId,
+} from "../types/starknet"
+import {
+  getStarkNetNetworkConfig,
   STARKNET_MAINNET_CHAIN_ID,
   STARKNET_SEPOLIA_CHAIN_ID,
-} from "../types/starknet"
+} from "../config/starknet"
 
 // Re-export isStarknetNetwork for convenience
 export { isStarknetNetwork }
 
-// StarkNet Configuration Interface
-export interface StarkNetConfig {
-  chainId: string
-  chainName: string
-  l1BitcoinDepositorAddress: string
-  relayerUrl: string
-  explorerUrl: string
-  isTestnet: boolean
-}
-
-// StarkNet Configuration Constants - base configs without env vars
-export const STARKNET_CONFIGS: Record<
-  "sepolia" | "mainnet",
-  Omit<StarkNetConfig, "relayerUrl">
-> = {
-  sepolia: {
-    chainId: "0x534e5f5345504f4c4941",
-    chainName: "StarkNet Sepolia",
-    l1BitcoinDepositorAddress: "0x9Ee0F52fDe7dEf063450fD128c0686e169d3b3D3", // TODO: Replace with actual Sepolia address from SDK deployments
-    explorerUrl: "https://sepolia.starkscan.co",
-    isTestnet: true,
-  },
-  mainnet: {
-    chainId: "0x534e5f4d41494e",
-    chainName: "StarkNet",
-    l1BitcoinDepositorAddress: "0xCA897c4a52afB48A923C6a3E08d47193893B1ba9", // TODO: Replace with actual mainnet address from SDK deployments
-    explorerUrl: "https://starkscan.co",
-    isTestnet: false,
-  },
-}
+// Re-export StarkNet configuration types and helpers
+export type { StarkNetNetworkConfig as StarkNetConfig } from "../config/starknet"
+export { STARKNET_MAINNET_CHAIN_ID, STARKNET_SEPOLIA_CHAIN_ID }
 
 // Helper to get current StarkNet configuration
-export function getStarkNetConfig(chainId?: string | number): StarkNetConfig {
-  // If chainId is provided, use it to determine the network
-  if (chainId) {
-    const chainIdStr =
-      typeof chainId === "string"
-        ? chainId.toLowerCase()
-        : chainId.toString(16).toLowerCase()
-    const isMainnet =
-      chainIdStr === STARKNET_MAINNET_CHAIN_ID.toLowerCase() ||
-      chainIdStr === STARKNET_MAINNET_CHAIN_ID.toLowerCase().replace("0x", "")
-
-    const baseConfig = STARKNET_CONFIGS[isMainnet ? "mainnet" : "sepolia"]
-
-    // Add the relayer URL with environment variable override
-    const relayerUrl = isMainnet
-      ? process.env.REACT_APP_STARKNET_MAINNET_RELAYER_URL ||
-        "https://relayer.threshold.network"
-      : process.env.REACT_APP_STARKNET_SEPOLIA_RELAYER_URL ||
-        "https://sepolia-relayer.threshold.network"
-
-    return {
-      ...baseConfig,
-      relayerUrl,
-    }
-  }
-
-  // Fallback to environment variable if no chainId provided
-  const useMainnet = process.env.REACT_APP_STARKNET_MAINNET === "true"
-  const baseConfig = STARKNET_CONFIGS[useMainnet ? "mainnet" : "sepolia"]
-
-  // Add the relayer URL with environment variable override
-  const relayerUrl = useMainnet
-    ? process.env.REACT_APP_STARKNET_MAINNET_RELAYER_URL ||
-      "https://relayer.threshold.network"
-    : process.env.REACT_APP_STARKNET_SEPOLIA_RELAYER_URL ||
-      "https://sepolia-relayer.threshold.network"
-
-  return {
-    ...baseConfig,
-    relayerUrl,
-  }
+// This is a wrapper around the config function for backward compatibility
+export function getStarkNetConfig(chainId?: string | number) {
+  return getStarkNetNetworkConfig(chainId)
 }
 
 // StarkNet address validation

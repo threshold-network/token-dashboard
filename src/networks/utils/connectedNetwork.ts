@@ -11,6 +11,7 @@ import { hexToNumber, compareChainIds } from "./chainId"
 import { SupportedChainIds } from "../enums/networks"
 import { networks } from "./networks"
 import { Network } from "../types/networks"
+import { isEnabledStarkNetChainId } from "../../config/starknet"
 
 export const isSupportedNetwork = (chainId?: string | number): boolean => {
   return getChainIdToNetworkName(chainId) !== "Unsupported"
@@ -51,10 +52,8 @@ export const isStarknetNetwork = (
   networkChainId?: string | number | null
 ): boolean => {
   if (!networkChainId) return false
-  return (
-    compareChainIds(networkChainId, SupportedChainIds.StarkNet) ||
-    compareChainIds(networkChainId, SupportedChainIds.StarkNetSepolia)
-  )
+  // Use the centralized configuration to check if this is an enabled StarkNet network
+  return isEnabledStarkNetChainId(networkChainId)
 }
 
 export const getChainIdToL2Chain = (
@@ -62,11 +61,8 @@ export const getChainIdToL2Chain = (
 ): string | null => {
   if (!networkChainId) return null
 
-  // Handle StarkNet chains with enhanced comparison for large hex values
-  if (
-    compareChainIds(networkChainId, SupportedChainIds.StarkNet) ||
-    compareChainIds(networkChainId, SupportedChainIds.StarkNetSepolia)
-  ) {
+  // Handle StarkNet chains using centralized configuration
+  if (isEnabledStarkNetChainId(networkChainId)) {
     return "StarkNet"
   }
 

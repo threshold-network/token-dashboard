@@ -36,28 +36,47 @@ export class Threshold {
     this._initialize(config)
 
     // Handle cross-chain initialization if configured
-    if (
-      config.crossChain?.isCrossChain &&
-      config.crossChain.chainName &&
-      config.crossChain.nonEVMProvider
-    ) {
-      // Convert ChainName enum to SDK expected string
-      const sdkChainName =
-        config.crossChain.chainName === "Starknet"
-          ? "StarkNet"
-          : config.crossChain.chainName
+    if (config.crossChain?.isCrossChain) {
+      // For non-EVM chains (like StarkNet), use the nonEVMProvider
+      if (config.crossChain.chainName && config.crossChain.nonEVMProvider) {
+        // Convert ChainName enum to SDK expected string
+        const sdkChainName =
+          config.crossChain.chainName === "Starknet"
+            ? "StarkNet"
+            : config.crossChain.chainName
 
-      console.log("Initializing cross-chain for:", sdkChainName)
-      try {
-        await this.initializeCrossChain(
-          sdkChainName,
-          config.crossChain.nonEVMProvider
-        )
-        console.log("Cross-chain initialization complete")
-      } catch (error) {
-        console.error("Cross-chain initialization failed:", error)
-        // Note: This is expected for StarkNet until contracts are deployed
-        // The SDK has placeholder contracts that need to be updated with real addresses
+        console.log("Initializing cross-chain for:", sdkChainName)
+        try {
+          await this.initializeCrossChain(
+            sdkChainName,
+            config.crossChain.nonEVMProvider
+          )
+          console.log("Cross-chain initialization complete")
+        } catch (error: any) {
+          // If it's a disabled network error, handle it silently
+          if (error.message?.includes("disabled")) {
+            console.log("StarkNet network is disabled, skipping initialization")
+            return
+          }
+          console.error("Cross-chain initialization failed:", error)
+          // Note: This is expected for StarkNet until contracts are deployed
+          // The SDK has placeholder contracts that need to be updated with real addresses
+        }
+      } else if (
+        config.ethereum?.providerOrSigner &&
+        config.ethereum?.account
+      ) {
+        // For EVM L2 chains (like Base, Arbitrum), initialize using the ethereum provider
+        console.log("Initializing cross-chain for EVM L2")
+        try {
+          await this.tbtc.initiateCrossChain(
+            config.ethereum.providerOrSigner,
+            config.ethereum.account
+          )
+          console.log("EVM L2 cross-chain initialization complete")
+        } catch (error) {
+          console.error("EVM L2 cross-chain initialization failed:", error)
+        }
       }
     }
   }

@@ -8,27 +8,25 @@ import {
 } from "../../utils/tbtcLocalStorageData"
 import { useIsActive } from "../useIsActive"
 import { useNonEVMConnection } from "../useNonEVMConnection"
-import { getStarkNetConfig } from "../../utils/tbtcStarknetHelpers"
 
 export const useTBTCDepositDataFromLocalStorage = () => {
   const { account, chainId } = useIsActive()
-  const { isNonEVMActive, nonEVMChainName, nonEVMPublicKey } =
+  const { isNonEVMActive, nonEVMChainName, nonEVMPublicKey, nonEVMChainId } =
     useNonEVMConnection()
 
-  // For StarkNet connections, use the StarkNet chain ID
-  const starknetConfig = getStarkNetConfig()
+  // For StarkNet connections, use the actual connected chain ID
   const effectiveChainId =
     chainId ||
     (isNonEVMActive && nonEVMChainName === "Starknet"
-      ? starknetConfig.chainId
+      ? nonEVMChainId
       : undefined)
 
   console.log("useTBTCDepositDataFromLocalStorage - chain detection:", {
     chainId,
     isNonEVMActive,
     nonEVMChainName,
+    nonEVMChainId,
     effectiveChainId,
-    starknetConfigChainId: starknetConfig.chainId,
   })
 
   const [tBTCDepositData, setTBTCLocalStorageData] =

@@ -5,6 +5,7 @@ export interface UseNonEVMConnectionResult {
   nonEVMChainName: ChainName | null
   nonEVMPublicKey: string | null
   nonEVMProvider: any | null
+  nonEVMChainId: string | null
   isNonEVMActive: boolean
   connectedWalletName: string | null
   connectedWalletIcon: string | null
@@ -26,6 +27,7 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
     isConnecting: isStarknetConnecting,
     address: starknetAddress,
     provider: starknetProvider,
+    chainId: starknetChainId,
     walletName: starknetWalletName,
     walletIcon: starknetWalletIcon,
     disconnect: disconnectStarknet,
@@ -40,6 +42,7 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
   const nonEVMChainName = isStarknetConnected ? ChainName.Starknet : null
   const nonEVMPublicKey = isStarknetConnected ? starknetAddress : null
   const nonEVMProvider = isStarknetConnected ? starknetProvider : null
+  const nonEVMChainId = isStarknetConnected ? starknetChainId : null
   const isNonEVMActive = isStarknetConnected
   const connectedWalletName = isStarknetConnected ? starknetWalletName : null
   const connectedWalletIcon = isStarknetConnected ? starknetWalletIcon : null
@@ -57,6 +60,7 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
     nonEVMChainName,
     nonEVMPublicKey,
     nonEVMProvider,
+    nonEVMChainId,
     isNonEVMActive,
     connectedWalletName,
     connectedWalletIcon,
