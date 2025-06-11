@@ -21,33 +21,17 @@ export const useTBTCDepositDataFromLocalStorage = () => {
       ? nonEVMChainId
       : undefined)
 
-  console.log("useTBTCDepositDataFromLocalStorage - chain detection:", {
-    chainId,
-    isNonEVMActive,
-    nonEVMChainName,
-    nonEVMChainId,
-    effectiveChainId,
-  })
-
   const [tBTCDepositData, setTBTCLocalStorageData] =
     useState<TBTCLocalStorageDepositData>({})
 
   useEffect(() => {
     if (!effectiveChainId) {
-      console.log("useTBTCDepositDataFromLocalStorage - no effectiveChainId")
       return
     }
 
     const storageKey = `${key}-${effectiveChainId.toString()}`
     const storedData = localStorage.getItem(storageKey)
     const parsedData = storedData ? JSON.parse(storedData) : {}
-
-    console.log("useTBTCDepositDataFromLocalStorage - loading data:", {
-      effectiveChainId,
-      storageKey,
-      hasData: !!storedData,
-      parsedData,
-    })
 
     setTBTCLocalStorageData(parsedData)
   }, [effectiveChainId])
@@ -59,15 +43,6 @@ export const useTBTCDepositDataFromLocalStorage = () => {
         account || (isNonEVMActive ? nonEVMPublicKey : null)
 
       if (!effectiveAccount || !chainId) {
-        console.log(
-          "setDepositDataInLocalStorage - missing account or chainId:",
-          {
-            account,
-            nonEVMPublicKey,
-            effectiveAccount,
-            chainId,
-          }
-        )
         return
       }
 
@@ -80,15 +55,6 @@ export const useTBTCDepositDataFromLocalStorage = () => {
       }
       localStorage.setItem(storageKey, JSON.stringify(updatedData))
       setTBTCLocalStorageData(updatedData)
-
-      console.log("setDepositDataInLocalStorage - saved deposit:", {
-        account,
-        nonEVMPublicKey,
-        effectiveAccount,
-        chainId,
-        storageKey,
-        depositData,
-      })
     },
     [account, nonEVMPublicKey, isNonEVMActive, tBTCDepositData]
   )

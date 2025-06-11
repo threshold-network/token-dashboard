@@ -39,20 +39,6 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
 
   useEffect(() => {
     const updateDepositData = async () => {
-      console.log("MintingFormPage - updateDepositData check:", {
-        hasTBTCDepositData: !!tBTCDepositData,
-        effectiveAccount,
-        hasDepositForAccount: effectiveAccount
-          ? !!tBTCDepositData?.[effectiveAccount]
-          : false,
-        isNonEVMActive,
-        chainId,
-        currentBtcDepositAddress: btcDepositAddress,
-        storedBtcDepositAddress: effectiveAccount
-          ? tBTCDepositData?.[effectiveAccount]?.btcDepositAddress
-          : undefined,
-      })
-
       if (
         tBTCDepositData &&
         effectiveAccount &&
@@ -85,16 +71,6 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
           return
         }
 
-        console.log(
-          "MintingFormPage - Setting deposit data from localStorage:",
-          {
-            depositorAddress,
-            btcDepositAddress: storedBtcDepositAddress,
-            chainName,
-            ethAddress,
-          }
-        )
-
         updateState("ethAddress", ethAddress)
         updateState("blindingFactor", blindingFactor)
         updateState("btcRecoveryAddress", btcRecoveryAddress)
@@ -106,11 +82,6 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
 
         // Update btcDepositAddress from localStorage if it's different
         if (btcDepositAddress !== storedBtcDepositAddress) {
-          console.log("MintingFormPage - Updating btcDepositAddress:", {
-            current: btcDepositAddress,
-            stored: storedBtcDepositAddress,
-            willUpdate: true,
-          })
           // We reset the minting step to undefined to show skeleton and the
           // useEffect in MintingFlowRouter will update and set the proper minting
           // step when it recognizes the "btcDepositAddress" change.

@@ -1,8 +1,6 @@
 import React, { FC, useEffect, useState } from "react"
 import {
-  ModalBody,
   Stack,
-  HStack,
   Button,
   VStack,
   Text,
@@ -12,9 +10,11 @@ import {
   Spinner,
   Icon,
   useColorModeValue,
+  StackDivider,
+  ModalBody,
 } from "@chakra-ui/react"
-import { BiLeftArrowAlt } from "react-icons/bi"
-import { H4, BodyMd } from "@threshold-network/components"
+import { BiRightArrowAlt, BiLeftArrowAlt } from "react-icons/all"
+import { H4 } from "@threshold-network/components"
 import { BaseModalProps } from "../../../types"
 import { useStarknetConnection } from "../../../hooks/useStarknetConnection"
 import { StarknetIcon } from "../../../static/icons/Starknet"
@@ -24,13 +24,28 @@ interface Props extends BaseModalProps {
   goBack: () => void
 }
 
-export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
+export const ConnectStarknetDirect: FC<Props> = ({ goBack, closeModal }) => {
   const { connect, isConnected, isConnecting, error, availableWallets } =
     useStarknetConnection()
 
   const [localError, setLocalError] = useState<string | null>(null)
   const buttonBg = useColorModeValue("gray.50", "gray.700")
   const buttonHoverBg = useColorModeValue("gray.100", "gray.600")
+
+  // Auto-connect on mount like Ledger Live does
+  useEffect(() => {
+    const autoConnect = async () => {
+      try {
+        // Close the modal immediately to let the wallet's own modal take over
+        closeModal()
+        await connect()
+      } catch (err: any) {
+        setLocalError(err?.message || "Failed to connect wallet")
+      }
+    }
+
+    autoConnect()
+  }, [connect, closeModal])
 
   useEffect(() => {
     // Auto-close modal when successfully connected
@@ -69,17 +84,6 @@ export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
     <>
       <ModalBody>
         <Stack spacing={6}>
-          <HStack justify="center">
-            <StarknetIcon />
-          </HStack>
-
-          <VStack>
-            <H4>Connect StarkNet Wallet</H4>
-            <BodyMd color="gray.500" textAlign="center">
-              Connect your StarkNet wallet to interact with tBTC on StarkNet
-            </BodyMd>
-          </VStack>
-
           {isConnecting ? (
             <VStack spacing={4} py={4}>
               <Spinner size="lg" color="brand.500" />
@@ -91,42 +95,54 @@ export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
             <VStack spacing={3} width="100%">
               {availableWallets.length > 0 ? (
                 <>
-                  <Text fontSize="sm" color="gray.500" mb={2}>
-                    Available wallets:
-                  </Text>
                   {availableWallets.map((wallet) => (
                     <Button
                       key={wallet.id}
-                      variant="outline"
+                      variant="unstyled"
                       width="100%"
-                      height="auto"
-                      py={3}
-                      px={4}
+                      height="100px"
                       justifyContent="flex-start"
                       bg={buttonBg}
                       _hover={{ bg: buttonHoverBg }}
                       onClick={handleConnect}
                       isDisabled={isConnecting}
+                      borderRadius={0}
                     >
-                      <HStack spacing={3} width="100%">
-                        {getWalletIcon(wallet.id)}
-                        <Text fontWeight="medium">{wallet.name}</Text>
-                      </HStack>
+                      <Stack
+                        justify="space-between"
+                        direction="row"
+                        px="40px"
+                        width="100%"
+                      >
+                        <Stack direction="row" align="center">
+                          <Icon
+                            as={() => getWalletIcon(wallet.id)}
+                            h="40px"
+                            w="40px"
+                            mr="32px"
+                          />
+                          <Text fontSize="lg" fontWeight="bold">
+                            {wallet.name}
+                          </Text>
+                        </Stack>
+                        <Icon
+                          as={BiLeftArrowAlt}
+                          h="40px"
+                          w="40px"
+                          transform="rotate(180deg)"
+                        />
+                      </Stack>
                     </Button>
                   ))}
                 </>
               ) : (
-                <Button
-                  variant="solid"
-                  colorScheme="brand"
-                  width="100%"
-                  size="lg"
-                  onClick={handleConnect}
-                  isLoading={isConnecting}
-                  loadingText="Connecting..."
-                >
-                  Connect Starknet Wallet
-                </Button>
+                <Alert status="info" borderRadius="md">
+                  <AlertIcon />
+                  <AlertDescription fontSize="sm">
+                    No StarkNet wallets detected. Please install Argent X or
+                    Braavos.
+                  </AlertDescription>
+                </Alert>
               )}
             </VStack>
           )}
@@ -135,16 +151,6 @@ export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
             <Alert status="error" borderRadius="md">
               <AlertIcon />
               <AlertDescription fontSize="sm">{localError}</AlertDescription>
-            </Alert>
-          )}
-
-          {!isConnecting && availableWallets.length === 0 && (
-            <Alert status="info" borderRadius="md">
-              <AlertIcon />
-              <AlertDescription fontSize="sm">
-                No StarkNet wallets detected. Please install Argent X or
-                Braavos.
-              </AlertDescription>
             </Alert>
           )}
 

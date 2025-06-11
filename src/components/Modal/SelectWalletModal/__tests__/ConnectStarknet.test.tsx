@@ -109,11 +109,11 @@ describe("ConnectStarknet", () => {
       renderComponent()
 
       expect(
-        screen.getByRole("heading", { name: "Connect Starknet Wallet" })
+        screen.getByRole("heading", { name: "Connect StarkNet Wallet" })
       ).toBeInTheDocument()
       expect(
         screen.getByText(
-          "Connect your Starknet wallet to interact with tBTC on Starknet"
+          "Connect your StarkNet wallet to interact with tBTC on StarkNet"
         )
       ).toBeInTheDocument()
       expect(
@@ -126,7 +126,7 @@ describe("ConnectStarknet", () => {
 
       expect(
         screen.getByText(
-          "No Starknet wallets detected. Please install Argent X or Braavos."
+          "No StarkNet wallets detected. Please install Argent X or Braavos."
         )
       ).toBeInTheDocument()
     })

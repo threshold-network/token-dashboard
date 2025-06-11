@@ -96,11 +96,19 @@ export const initializeStarkNetDeposit = async (
     console.log(`Initializing StarkNet deposit on ${config.chainName}`)
     console.log(`StarkNet wallet address: ${starkNetAddress}`)
 
-    // For StarkNet cross-chain deposits, we pass the L2 chain name directly
-    // The SDK expects the chain name as a string, not a numeric chain ID
-    const deposit = await tbtc.initiateCrossChainDepositWithChainName(
+    // Import BitcoinNetwork enum
+    const { BitcoinNetwork } = await import("../threshold-ts/types")
+
+    // Determine the correct Bitcoin network based on StarkNet network
+    const bitcoinNetwork = config.isTestnet
+      ? BitcoinNetwork.Testnet
+      : BitcoinNetwork.Mainnet
+
+    // For StarkNet cross-chain deposits, use the new method that accepts Bitcoin network
+    const deposit = await tbtc.initiateCrossChainDepositWithNetwork(
       btcRecoveryAddress,
-      "StarkNet" // L2 chain name expected by SDK
+      "StarkNet", // L2 chain name expected by SDK
+      bitcoinNetwork
     )
 
     return deposit

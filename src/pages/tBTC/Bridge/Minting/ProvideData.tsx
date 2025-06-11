@@ -71,14 +71,29 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }) => {
   const { chainId } = useIsActive()
   const { nonEVMChainName, isNonEVMActive } = useNonEVMConnection()
+  const { chainId: starknetChainId } = useStarknetConnection()
   // StarkNet detection - MUST be explicit to avoid affecting other chains
   const isStarkNetDeposit =
     isNonEVMActive && nonEVMChainName === ChainName.Starknet
-  const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
-    "mint",
-    isTestnetChainId(chainId as number)
+
+  // Determine Bitcoin network based on the active chain
+  const determineBitcoinNetwork = (): BitcoinNetwork => {
+    if (isStarkNetDeposit && starknetChainId) {
+      // For StarkNet, check if it's testnet based on StarkNet chain ID
+      const isStarknetTestnet =
+        starknetChainId.toLowerCase() === "0x534e5f5345504f4c4941".toLowerCase()
+      return isStarknetTestnet ? BitcoinNetwork.Testnet : BitcoinNetwork.Mainnet
+    }
+    // For EVM chains, use the existing logic
+    return isTestnetChainId(chainId as number)
       ? BitcoinNetwork.Testnet
       : BitcoinNetwork.Mainnet
+  }
+
+  const bitcoinNetwork = determineBitcoinNetwork()
+  const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
+    "mint",
+    bitcoinNetwork
   )
 
   return (
@@ -136,10 +151,14 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
     try {
       await props.onSubmitForm(values)
     } catch (error) {
-      // Set form-level error for display
+      // Check if error has a specific field
+      const fieldName = (error as any)?.field || "btcRecoveryAddress"
+      const errorMessage =
+        error instanceof Error ? error.message : "An error occurred"
+
+      // Set error on the appropriate field
       setErrors({
-        btcRecoveryAddress:
-          error instanceof Error ? error.message : "An error occurred",
+        [fieldName]: errorMessage,
       })
       setSubmitting(false)
       // Don't re-throw - this prevents the console error
@@ -169,6 +188,21 @@ export const ProvideDataComponent: FC<{
   const isStarkNetDeposit =
     isNonEVMActive && nonEVMChainName === ChainName.Starknet
 
+  // Determine Bitcoin network based on the active chain
+  const determineBitcoinNetwork = (): BitcoinNetwork => {
+    if (isStarkNetDeposit && starknetChainId) {
+      // For StarkNet, check if it's testnet based on StarkNet chain ID
+      const isStarknetTestnet =
+        starknetChainId.toLowerCase() === "0x534e5f5345504f4c4941".toLowerCase()
+      return isStarknetTestnet ? BitcoinNetwork.Testnet : BitcoinNetwork.Mainnet
+    }
+    // For EVM chains, use the existing logic
+    return isTestnetChainId(chainId as number)
+      ? BitcoinNetwork.Testnet
+      : BitcoinNetwork.Mainnet
+  }
+
+  const bitcoinNetwork = determineBitcoinNetwork()
   const textColor = useColorModeValue("gray.500", "gray.300")
   const [shouldDownloadDepositReceipt, setShouldDownloadDepositReceipt] =
     useState(true)
@@ -185,16 +219,17 @@ export const ProvideDataComponent: FC<{
   const onSubmit = useCallback(
     async (values: FormValues) => {
       try {
-        // For StarkNet, compare with nonEVMPublicKey; for EVM, compare with account
-        const connectedAddress = isStarkNetDeposit ? nonEVMPublicKey : account
-
-        if (
-          connectedAddress &&
-          !isSameAddress(values.userWalletAddress, connectedAddress)
-        ) {
-          throw new Error(
-            "The account used to generate the deposit address must be the same as the connected wallet."
-          )
+        // Only validate wallet address matching for EVM chains
+        // For StarkNet, the BTC recovery address is independent of the connected wallet
+        if (!isStarkNetDeposit) {
+          if (account && !isSameAddress(values.userWalletAddress, account)) {
+            const error = new Error(
+              "The account used to generate the deposit address must be the same as the connected wallet."
+            )
+            // Mark this as a userWalletAddress error
+            ;(error as any).field = "userWalletAddress"
+            throw error
+          }
         }
 
         // For EVM deposits, check if the network is supported
@@ -298,15 +333,6 @@ export const ProvideDataComponent: FC<{
         const storageChainId = isStarkNetDeposit
           ? starknetChainId || getStarkNetConfig().chainId
           : chainId
-
-        console.log("ProvideData - saving deposit to localStorage:", {
-          isStarkNetDeposit,
-          storageChainId,
-          chainName,
-          depositor: receipt.depositor.identifierHex.toString(),
-          userWalletAddress: values.userWalletAddress,
-          extraData: receipt.extraData?.toString(),
-        })
 
         setDepositDataInLocalStorage(
           {
@@ -424,7 +450,7 @@ export const ProvideDataComponent: FC<{
           isStarkNetDeposit ? nonEVMPublicKey || "" : account || ""
         }
         btcRecoveryAddress={""}
-        bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
+        bitcoinNetwork={bitcoinNetwork}
         onSubmitForm={onSubmit}
       />
       <Checkbox

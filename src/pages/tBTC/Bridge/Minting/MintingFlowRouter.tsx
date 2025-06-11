@@ -64,31 +64,10 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    console.log("MintingFlowRouter useEffect:", {
-      btcDepositAddress,
-      account,
-      chainId,
-      effectiveAccount,
-      effectiveChainId,
-      isNonEVMActive,
-      chainName,
-      nonEVMChainName,
-      mintingStep,
-    })
-
     if (!btcDepositAddress || !effectiveAccount || !effectiveChainId) {
-      console.log(
-        "MintingFlowRouter - missing required data, not dispatching findUtxo",
-        {
-          hasBtcAddress: !!btcDepositAddress,
-          hasAccount: !!effectiveAccount,
-          hasChainId: !!effectiveChainId,
-        }
-      )
       return
     }
 
-    console.log("MintingFlowRouter - dispatching findUtxo action")
     dispatch(
       tbtcSlice.actions.findUtxo({
         btcDepositAddress,

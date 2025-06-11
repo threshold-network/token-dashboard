@@ -1,6 +1,6 @@
 import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { BodyLg, Button, H5, Skeleton } from "@threshold-network/components"
-import { FC, useEffect } from "react"
+import { FC, useEffect, useState } from "react"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
@@ -19,6 +19,7 @@ import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 import { ChainName } from "../../../../threshold-ts/types"
 import { ModalType } from "../../../../enums"
+import { handleStarkNetDepositError } from "../../../../utils/starknetErrorHandler"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -31,6 +32,8 @@ const InitiateMintingComponent: FC<{
 
   const isStarkNetDeposit =
     isNonEVMActive && nonEVMChainName === ChainName.Starknet
+
+  const [isInitiating, setIsInitiating] = useState(false)
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -72,45 +75,60 @@ const InitiateMintingComponent: FC<{
   }, [depositedAmount, updateState, threshold.tbtc])
 
   const initiateMintTransaction = async () => {
-    console.log("InitiateMinting - starting mint transaction", {
-      utxo,
-      isStarkNetDeposit,
-      hasThresholdTbtc: !!threshold.tbtc,
-      hasBridgeContract: !!threshold.tbtc.bridgeContract,
-    })
-
+    setIsInitiating(true)
     try {
       if (isStarkNetDeposit) {
+        // Show loading modal for StarkNet since it can take a while
+        openModal(ModalType.TransactionIsWaitingForConfirmation, {
+          transactionHash: "",
+          additionalText:
+            "Processing your StarkNet deposit... This may take up to 2 minutes. Please wait while we communicate with the relayer.",
+        })
+
         // For StarkNet, directly call the SDK method which will use the relayer
-        console.log("StarkNet deposit - calling SDK revealDeposit directly")
-        const result: any = await threshold.tbtc.revealDeposit(utxo)
-
-        // TEMPORARY: Handle the returned payload for debugging
-        if (typeof result === "object" && result.fundingTx) {
-          console.group("StarkNet Deposit Payload (Temporary)")
-          console.log(
-            "This is the data that would be sent to the relayer. This is for debugging purposes and will be removed."
-          )
-          console.log(JSON.stringify(result, null, 2))
-          console.groupEnd()
-          // The normal workflow will now continue, but please note the next
-          // screen will likely fail to find the deposit details since the
-          // relayer was bypassed.
-        }
-
-        console.log("StarkNet reveal successful, tx hash:", result)
+        await threshold.tbtc.revealDeposit(utxo)
         onSuccessfulDepositReveal()
       } else {
         // For EVM chains, use the transaction wrapper
         await revealDeposit(utxo)
       }
     } catch (error) {
-      console.error("InitiateMinting - revealDeposit failed:", error)
-      openModal(ModalType.TransactionFailed, {
-        error:
-          error instanceof Error ? error.message : "Failed to initiate minting",
-        isExpandableError: true,
-      })
+      console.error("InitiateMinting error:", error)
+
+      // Use special handling for StarkNet errors
+      if (isStarkNetDeposit) {
+        const { userMessage, severity } = handleStarkNetDepositError(error)
+
+        // For info messages (like "already exists"), show a different modal
+        if (severity === "info") {
+          openModal(ModalType.TransactionIsWaitingForConfirmation, {
+            transactionHash: "",
+            additionalText: userMessage,
+          })
+        } else if (severity === "warning") {
+          // For warnings, show transaction failed but with less alarming styling
+          openModal(ModalType.TransactionFailed, {
+            error: userMessage,
+            isExpandableError: false,
+          })
+        } else {
+          // For actual errors, show the full error modal
+          openModal(ModalType.TransactionFailed, {
+            error: userMessage,
+            isExpandableError: true,
+          })
+        }
+      } else {
+        // For EVM chains, use existing error handling
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to initiate minting"
+        openModal(ModalType.TransactionFailed, {
+          error: errorMessage,
+          isExpandableError: true,
+        })
+      }
+    } finally {
+      setIsInitiating(false)
     }
   }
 
@@ -179,6 +197,7 @@ const InitiateMintingComponent: FC<{
       )}
       <SubmitTxButton
         isDisabled={!threshold.tbtc.bridgeContract}
+        isLoading={isInitiating}
         onSubmit={initiateMintTransaction}
         isFullWidth
         data-ph-capture-attribute-button-name={

@@ -193,9 +193,11 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       // Get starknetkit module
       const { connect } = await getStarknetKit()
 
-      // Use starknetkit's connect with modal
+      // Use starknetkit's connect with modal and custom dApp name
       const result = await connect({
         modalMode: "alwaysAsk",
+        dappName: "StarkNet",
+        modalTheme: "dark",
       })
 
       if (result) {
@@ -268,7 +270,6 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
             })
 
             wallet.on("networkChanged", (newChainId?: string) => {
-              console.log("Network changed to:", newChainId)
               // Update the provider with the new chain ID
               if (newChainId) {
                 setProvider((prevProvider: any) => {
@@ -370,6 +371,8 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       getStarknetKit().then(({ connect }) => {
         connect({
           modalMode: "neverAsk",
+          dappName: "StarkNet",
+          modalTheme: "dark",
         })
           .then((result: any) => {
             if (result) {
@@ -399,7 +402,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
                   })
 
                   wallet.on("networkChanged", (chainId?: string) => {
-                    console.log("Network changed to:", chainId)
+                    // Network changed event
                   })
                 }
               } else {

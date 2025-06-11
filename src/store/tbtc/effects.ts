@@ -88,16 +88,6 @@ export const findUtxoEffect = async (
     },
   } = listenerApi.getState()
 
-  console.log("findUtxoEffect triggered with:", {
-    btcDepositAddress,
-    chainId,
-    depositor,
-    ethAddress,
-    chainName,
-    isEthAddress: isAddress(depositor),
-    isZeroAddress: isAddressZero(depositor),
-  })
-
   // For StarkNet deposits, depositor might be a StarkNet address
   // which won't pass the Ethereum address check
   const isStarkNetDeposit = chainName?.toLowerCase() === "starknet"
@@ -106,7 +96,6 @@ export const findUtxoEffect = async (
     !btcDepositAddress ||
     (!isStarkNetDeposit && !isAddress(depositor) && !isAddressZero(depositor))
   ) {
-    console.log("findUtxoEffect early return - conditions not met")
     return
   }
 
@@ -114,7 +103,6 @@ export const findUtxoEffect = async (
   listenerApi.cancelActiveListeners()
 
   const pollingTask = listenerApi.fork(async (forkApi) => {
-    console.log("Starting UTXO polling for deposit address:", btcDepositAddress)
     try {
       while (true) {
         // Use chain registry for validation
@@ -137,13 +125,6 @@ export const findUtxoEffect = async (
             chain.getType() === ChainType.STARKNET
               ? chainRegistry.getEffectiveChainId(chainId, chainName)
               : chainId
-
-          console.log("Chain validation passed:", {
-            chainType: chain.getType(),
-            originalChainId: chainId,
-            effectiveChainId,
-            chainName,
-          })
         }
         // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
@@ -164,12 +145,6 @@ export const findUtxoEffect = async (
 
           if (isStarkNetDeposit) {
             // For StarkNet, we need to restore the deposit from saved parameters
-            console.log("Restoring StarkNet deposit from saved parameters", {
-              depositor,
-              ethAddress,
-              extraData,
-              chainName,
-            })
 
             // For StarkNet deposits, we need to check if the cross-chain contracts are initialized
             // If not, we'll skip restoration here and let the UI handle it when the wallet connects
@@ -177,10 +152,6 @@ export const findUtxoEffect = async (
             const isStarkNetInitialized =
               await thresholdContext.tbtc.isStarkNetInitialized()
             if (!isStarkNetInitialized) {
-              console.log(
-                "StarkNet cross-chain contracts not initialized yet. Skipping deposit restoration in effects. " +
-                  "Deposit will be restored when StarkNet initialization completes."
-              )
               // Don't throw error, just skip - the UI will handle restoration when wallet connects
               return
             }
@@ -201,8 +172,6 @@ export const findUtxoEffect = async (
                   undefined // StarkNet doesn't use Ethereum chain ID
                 )
               )
-
-              console.log("StarkNet deposit restoration completed successfully")
             } catch (error) {
               console.error("Failed to restore StarkNet deposit:", error)
               throw error
@@ -238,13 +207,11 @@ export const findUtxoEffect = async (
         }
 
         // Looking for utxo.
-        console.log("Checking for UTXOs...")
         const utxos = await forkApi.pause(
           listenerApi.extra.threshold.tbtc.findAllUnspentTransactionOutputs()
         )
 
         if (!utxos || utxos.length === 0) {
-          console.log("No UTXOs found yet, continuing to poll...")
           // Bitcoin deposit address exists and there is no utxo for a given
           // deposit address- this means someone wants to use this deposit
           // address to mint tBTC. Redirect to step 2 and continue searching for
@@ -258,8 +225,6 @@ export const findUtxoEffect = async (
           await forkApi.delay(10 * ONE_SEC_IN_MILISECONDS)
           continue
         }
-
-        console.log("Found UTXOs:", utxos.length, utxos)
 
         let utxo = utxos[0]
         let areAllDepositRevealed = true

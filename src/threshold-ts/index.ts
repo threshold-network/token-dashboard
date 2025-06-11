@@ -45,17 +45,14 @@ export class Threshold {
             ? "StarkNet"
             : config.crossChain.chainName
 
-        console.log("Initializing cross-chain for:", sdkChainName)
         try {
           await this.initializeCrossChain(
             sdkChainName,
             config.crossChain.nonEVMProvider
           )
-          console.log("Cross-chain initialization complete")
         } catch (error: any) {
           // If it's a disabled network error, handle it silently
           if (error.message?.includes("disabled")) {
-            console.log("StarkNet network is disabled, skipping initialization")
             return
           }
           console.error("Cross-chain initialization failed:", error)

@@ -249,6 +249,22 @@ export interface ITBTC {
   ): Promise<void>
 
   /**
+   * Initiates a cross-chain deposit with explicit Bitcoin network validation.
+   * This method is specifically designed for chains like StarkNet where the Bitcoin
+   * network should be determined by the L2 chain's network, not the L1 EVM network.
+   *
+   * @param {string} btcRecoveryAddress - The Bitcoin address for recovery
+   * @param {string} chainName - The name of the L2 chain (e.g., "StarkNet")
+   * @param {BitcoinNetwork} bitcoinNetwork - The Bitcoin network to validate against
+   * @return {Promise<Deposit>} The initiated deposit
+   */
+  initiateCrossChainDepositWithNetwork(
+    btcRecoveryAddress: string,
+    chainName: string,
+    bitcoinNetwork: BitcoinNetwork
+  ): Promise<Deposit>
+
+  /**
    * Initializes tbtc-v2 SDK
    * @param providerOrSigner Ethers instance of Provider (if wallet is not
    * connected) or Signer (if wallet is connected).
@@ -785,10 +801,6 @@ export class TBTC implements ITBTC {
     account: string,
     chainName?: string
   ): Promise<void> => {
-    console.log("TBTC initiateCrossChain called with:", {
-      chainName,
-      hasProvider: !!providerOrSigner,
-    })
     const sdk = await this._getSdk()
 
     // For Starknet, use single-parameter initialization
@@ -820,17 +832,7 @@ export class TBTC implements ITBTC {
         }
       }
 
-      console.log("StarkNet provider chain ID detection:", {
-        chainId,
-        hasChainId: !!providerOrSigner.chainId,
-        hasAccountChainId: !!providerOrSigner.account?.chainId,
-        hasChannelChainId: !!providerOrSigner.channel?.chainId,
-      })
-
       if (chainId && !isEnabledStarkNetChainId(chainId)) {
-        console.log(
-          `StarkNet initialization blocked: Network ${chainId} is disabled. Please switch to an enabled network.`
-        )
         // Return early without initializing - this prevents the SDK from working on disabled networks
         return
       }
@@ -852,13 +854,6 @@ export class TBTC implements ITBTC {
       }
 
       // Single-parameter initialization for StarkNet
-      console.log("Initializing StarkNet cross-chain with provider:", {
-        hasAddress: "address" in providerOrSigner,
-        hasAccount: "account" in providerOrSigner,
-        address:
-          (providerOrSigner as any).address ||
-          (providerOrSigner as any).account?.address,
-      })
 
       await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
 
@@ -867,14 +862,10 @@ export class TBTC implements ITBTC {
       if (crossChainContracts) {
         this._l2TbtcToken = crossChainContracts.destinationChainTbtcToken
 
-        // Log deposit owner status
+        // Get deposit owner status
         const depositOwner = (
           crossChainContracts.destinationChainBitcoinDepositor as any
         ).getDepositOwner?.()
-        console.log(
-          "StarkNet deposit owner after init:",
-          depositOwner?.toString()
-        )
       }
     } else {
       // Standard L2 initialization for EVM chains
@@ -923,21 +914,39 @@ export class TBTC implements ITBTC {
     }
 
     const sdk = await this._getSdk()
+    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+      btcRecoveryAddress,
+      chainName as L2Chain
+    )
+    return this._deposit
+  }
 
-    // Log cross-chain contracts state before deposit
-    const crossChainContracts = sdk.crossChainContracts(chainName as L2Chain)
-    if (crossChainContracts) {
-      const depositOwner = (
-        crossChainContracts.destinationChainBitcoinDepositor as any
-      ).getDepositOwner?.()
-      console.log("Deposit owner before initiateCrossChainDeposit:", {
-        chainName,
-        depositOwner: depositOwner?.toString(),
-        hasL2BitcoinDepositor:
-          !!crossChainContracts.destinationChainBitcoinDepositor,
-      })
+  /**
+   * Initiates a cross-chain deposit with explicit Bitcoin network validation.
+   * This method is specifically designed for chains like StarkNet where the Bitcoin
+   * network should be determined by the L2 chain's network, not the L1 EVM network.
+   *
+   * @param {string} btcRecoveryAddress - The Bitcoin address for recovery
+   * @param {string} chainName - The name of the L2 chain (e.g., "StarkNet")
+   * @param {BitcoinNetwork} bitcoinNetwork - The Bitcoin network to validate against
+   * @return {Promise<Deposit>} The initiated deposit
+   */
+  initiateCrossChainDepositWithNetwork = async (
+    btcRecoveryAddress: string,
+    chainName: string,
+    bitcoinNetwork: BitcoinNetwork
+  ): Promise<Deposit> => {
+    if (!isValidBtcAddress(btcRecoveryAddress, bitcoinNetwork)) {
+      throw new Error(
+        `Bitcoin recovery address is not valid for ${bitcoinNetwork}.`
+      )
     }
 
+    if (!this._isCrossChain) {
+      throw new Error("Cross-chain not initialized")
+    }
+
+    const sdk = await this._getSdk()
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       chainName as L2Chain
@@ -1161,34 +1170,16 @@ export class TBTC implements ITBTC {
   }
 
   revealDeposit = async (utxo: BitcoinUtxo): Promise<any> => {
-    console.log("revealDeposit called with UTXO:", utxo)
     const { value, ...transactionOutpoint } = utxo
 
     if (!this._deposit) {
-      console.error("No deposit object found in revealDeposit")
       throw new EmptyDepositObjectError()
     }
 
-    console.log("Deposit object exists, initiating minting...")
-    console.log("Is cross-chain deposit:", this._isCrossChain)
+    const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
+    this.removeDepositData()
 
-    try {
-      const chainHash: any = await this._deposit.initiateMinting(
-        transactionOutpoint
-      )
-      console.log("Minting initiated successfully, chain hash:", chainHash)
-      this.removeDepositData()
-
-      // TEMPORARY: Handle the returned payload for debugging
-      if (typeof chainHash === "object" && chainHash.fundingTx) {
-        return chainHash
-      }
-
-      return chainHash.toPrefixedString()
-    } catch (error) {
-      console.error("Failed to initiate minting:", error)
-      throw error
-    }
+    return chainHash.toPrefixedString()
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {

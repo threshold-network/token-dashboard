@@ -19,9 +19,18 @@ import ConnectTaho from "./ConnectTaho"
 import ConnectLedgerLive from "./ConnectLedgerLive"
 import { LedgerLight } from "../../../static/icons/LedgerLight"
 import { LedgerDark } from "../../../static/icons/LedgerDark"
-import { ConnectStarknet } from "./ConnectStarknet"
+import { ConnectStarknetDirect } from "./ConnectStarknetDirect"
 import { StarknetIcon } from "../../../static/icons/Starknet"
 import { featureFlags } from "../../../constants"
+
+const starknetWalletOption: WalletOption = {
+  id: WalletType.Starknet,
+  title: "StarkNet Wallets",
+  icon: {
+    light: StarknetIcon,
+    dark: StarknetIcon,
+  },
+}
 
 const baseWalletOptions: WalletOption[] = [
   {
@@ -40,6 +49,7 @@ const baseWalletOptions: WalletOption[] = [
       dark: MetaMaskIcon,
     },
   },
+  starknetWalletOption,
   ...(featureFlags.LEDGER_LIVE
     ? [
         {
@@ -71,17 +81,7 @@ const baseWalletOptions: WalletOption[] = [
 ]
 
 // Include all wallet options including StarkNet
-const walletOptions: WalletOption[] = [
-  ...baseWalletOptions,
-  {
-    id: WalletType.Starknet,
-    title: "Starknet",
-    icon: {
-      light: StarknetIcon,
-      dark: StarknetIcon,
-    },
-  },
-]
+const walletOptions: WalletOption[] = [...baseWalletOptions]
 
 const SelectWalletModal: FC<BaseModalProps> = () => {
   const { deactivate } = useWeb3React()
@@ -140,7 +140,7 @@ const ConnectWallet: FC<{
     case WalletType.LedgerLive:
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
     case WalletType.Starknet:
-      return <ConnectStarknet goBack={goBack} closeModal={onClose} />
+      return <ConnectStarknetDirect goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }

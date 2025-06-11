@@ -37,9 +37,6 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
     // Skip balance fetch if tBTC token is not initialized
     // This can happen when the network is disabled or initialization failed
     if (!threshold.tbtc.l2TbtcToken) {
-      console.log(
-        "Skipping StarkNet tBTC balance fetch - token not initialized"
-      )
       setBalance("0")
       setIsLoading(false)
       setError(null)
@@ -52,7 +49,6 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
     try {
       // Validate StarkNet address format
       if (!nonEVMPublicKey.startsWith("0x") || nonEVMPublicKey.length < 40) {
-        console.warn("Invalid StarkNet address format:", nonEVMPublicKey)
         setBalance("0")
         setError("Invalid address format")
         return
@@ -79,8 +75,7 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
       setBalance(finalBalance)
       setError(null)
     } catch (err) {
-      // Only log to console, don't set error state for disabled networks
-      console.log("Could not fetch StarkNet tBTC balance:", err)
+      // Don't set error state for disabled networks
       setBalance("0")
       setError(null) // Don't show error in UI
     } finally {

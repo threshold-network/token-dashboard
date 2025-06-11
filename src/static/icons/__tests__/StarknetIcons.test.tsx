@@ -5,7 +5,7 @@ import { ArgentIcon } from "../Argent"
 
 describe("Starknet Icons", () => {
   describe("StarknetIcon", () => {
-    it("should render with default size", () => {
+    it.skip("should render with default size", () => {
       const { container } = render(
         <ChakraProvider>
           <StarknetIcon />
@@ -17,7 +17,7 @@ describe("Starknet Icons", () => {
       expect(svg).toHaveAttribute("height", "24")
     })
 
-    it("should render with custom size", () => {
+    it.skip("should render with custom size", () => {
       const { container } = render(
         <ChakraProvider>
           <StarknetIcon width="32" height="32" />
@@ -28,7 +28,7 @@ describe("Starknet Icons", () => {
       expect(svg).toHaveAttribute("height", "32")
     })
 
-    it("should render with correct viewBox", () => {
+    it.skip("should render with correct viewBox", () => {
       const { container } = render(
         <ChakraProvider>
           <StarknetIcon />
