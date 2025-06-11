@@ -64,6 +64,8 @@
     "react-redux": "^7.2.5",
     "react-router-dom": "6.2.1",
     "react-scripts": "4.0.3",
+    "starknet": "^6.11.0",
+    "starknetkit": "^2.10.4",    
     "typescript": "^4.4.3",
     "web-vitals": "^1.0.1"
   },
