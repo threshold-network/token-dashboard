@@ -29,7 +29,12 @@ import {
 } from "ethers"
 import { LogDescription } from "ethers/lib/utils"
 import { ContractCall, IMulticall, Multicall } from "../multicall"
-import { BitcoinConfig, BitcoinNetwork, EthereumConfig } from "../types"
+import {
+  BitcoinConfig,
+  BitcoinNetwork,
+  EthereumConfig,
+  CrossChainConfig,
+} from "../types"
 import {
   AddressZero,
   fromSatoshiToTokenPrecision,
@@ -221,6 +226,45 @@ export interface ITBTC {
   readonly isCrossChain: boolean
 
   /**
+   * L2 tBTC token contract for cross-chain operations
+   */
+  readonly l2TbtcToken: any | null
+
+  /**
+   * Check if StarkNet cross-chain contracts are initialized
+   * @returns Promise<boolean> true if initialized, false otherwise
+   */
+  isStarkNetInitialized(): Promise<boolean>
+
+  /**
+   * Initializes cross-chain support for non-EVM chains like StarkNet
+   * @param providerOrSigner Provider or signer for the cross-chain
+   * @param account Account address (optional for non-EVM chains)
+   * @param chainName The name of the chain (e.g., "StarkNet")
+   */
+  initiateCrossChain(
+    providerOrSigner: any,
+    account: string,
+    chainName?: string
+  ): Promise<void>
+
+  /**
+   * Initiates a cross-chain deposit with explicit Bitcoin network validation.
+   * This method is specifically designed for chains like StarkNet where the Bitcoin
+   * network should be determined by the L2 chain's network, not the L1 EVM network.
+   *
+   * @param {string} btcRecoveryAddress - The Bitcoin address for recovery
+   * @param {string} chainName - The name of the L2 chain (e.g., "StarkNet")
+   * @param {BitcoinNetwork} bitcoinNetwork - The Bitcoin network to validate against
+   * @return {Promise<Deposit>} The initiated deposit
+   */
+  initiateCrossChainDepositWithNetwork(
+    btcRecoveryAddress: string,
+    chainName: string,
+    bitcoinNetwork: BitcoinNetwork
+  ): Promise<Deposit>
+
+  /**
    * Initializes tbtc-v2 SDK
    * @param providerOrSigner Ethers instance of Provider (if wallet is not
    * connected) or Signer (if wallet is connected).
@@ -251,6 +295,18 @@ export interface ITBTC {
   ): Promise<Deposit>
 
   /**
+   * Initiates a Deposit object from bitcoin recovery address using chain name.
+   * @param btcRecoveryAddress The bitcoin address in which the user will
+   * receive the bitcoin back in case something goes wrong.
+   * @param chainName The L2 chain name (e.g., "StarkNet", "Base", "Arbitrum")
+   * @returns Deposit object
+   */
+  initiateCrossChainDepositWithChainName(
+    btcRecoveryAddress: string,
+    chainName: string
+  ): Promise<Deposit>
+
+  /**
    * Removes the deposit data assigned to `this._deposit` property.
    */
   removeDepositData(): void
@@ -273,11 +329,12 @@ export interface ITBTC {
    * function.
    * @param depositScriptParameters DepositScriptParameters object that contains
    * all the data related to the deposit we want to re-initiate.
+   * @param chainId Optional chain ID for EVM L2s. Not needed for StarkNet.
    * @returns Deposit object
    */
   initiateCrossChainDepositFromScriptParameters(
     depositScriptParameters: DepositScriptParameters,
-    chainId: number
+    chainId?: number
   ): Promise<Deposit>
 
   /**
@@ -325,7 +382,7 @@ export interface ITBTC {
    * @param utxo Bitcoin UTXO of the revealed deposit
    * @return Prefixed transaction hash of the reveal.
    */
-  revealDeposit(utxo: BitcoinUtxo): Promise<string>
+  revealDeposit(utxo: BitcoinUtxo): Promise<any>
 
   /**
    * Gets a revealed deposit from the bridge.
@@ -482,6 +539,7 @@ export class TBTC implements ITBTC {
   private _tbtcVaultContract: Contract | null
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
+  private _l2TbtcToken: any | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -511,7 +569,11 @@ export class TBTC implements ITBTC {
   private _deposit: Deposit | undefined
   private _isCrossChain: boolean = false
 
-  constructor(ethereumConfig: EthereumConfig, bitcoinConfig: BitcoinConfig) {
+  constructor(
+    ethereumConfig: EthereumConfig,
+    bitcoinConfig: BitcoinConfig,
+    crossChainConfig?: CrossChainConfig
+  ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
         "Neither bitcoin client nor bitcoin credentials are specified"
@@ -523,7 +585,8 @@ export class TBTC implements ITBTC {
       providerOrSigner,
       account,
     } = ethereumConfig
-    this._isCrossChain = isL2Network(chainId)
+    // Use explicit cross-chain flag if provided, otherwise check if it's an L2 network
+    this._isCrossChain = crossChainConfig?.isCrossChain ?? isL2Network(chainId)
 
     // This ensures that, if the user is connected to an L2 network, the TBTC
     // contracts are connected to the corresponding Ethereum mainnet or testnet
@@ -657,9 +720,10 @@ export class TBTC implements ITBTC {
       : SDK.initializeSepolia
 
     // We need to use a mainnet default provider to initialize the SDK
+    // Always enable cross-chain support since we support non-EVM chains like StarkNet
     const sdk = await initializeFunction(
       initializerProviderOrSigner,
-      isL2Network(connectedChainId)
+      true // Always enable cross-chain support
     )
 
     return sdk
@@ -672,12 +736,8 @@ export class TBTC implements ITBTC {
     try {
       this._sdkPromise = this._initializeSdk(providerOrSigner, account)
 
-      if (this.isCrossChain) {
-        await this._initiateCrossChain(
-          providerOrSigner as Web3Provider,
-          account as string
-        )
-      }
+      // Don't auto-initialize cross-chain here - it will be done explicitly
+      // by the Threshold class with the proper chain name
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
     }
@@ -715,6 +775,20 @@ export class TBTC implements ITBTC {
     return this._isCrossChain
   }
 
+  get l2TbtcToken() {
+    return this._l2TbtcToken
+  }
+
+  isStarkNetInitialized = async (): Promise<boolean> => {
+    try {
+      const sdk = await this._getSdk()
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      return !!crossChainContracts
+    } catch {
+      return false
+    }
+  }
+
   private _getSdk = async (): Promise<SDK> => {
     const sdk = await this._sdkPromise
     if (!sdk) throw new EmptySdkObjectError()
@@ -722,17 +796,84 @@ export class TBTC implements ITBTC {
     return sdk
   }
 
-  private _initiateCrossChain = async (
-    providerOrSigner: Web3Provider,
-    account: string
+  initiateCrossChain = async (
+    providerOrSigner: Web3Provider | any, // Support non-EVM providers
+    account: string,
+    chainName?: string
   ): Promise<void> => {
     const sdk = await this._getSdk()
-    const signer = getSigner(providerOrSigner as Web3Provider, account)
 
-    const connectedChainId = await chainIdFromSigner(signer)
-    const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+    // For Starknet, use single-parameter initialization
+    if (chainName === "Starknet" || chainName === "StarkNet") {
+      // Validate provider
+      if (!providerOrSigner) {
+        throw new Error("Provider is required for StarkNet")
+      }
 
-    await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
+      // Check if the StarkNet network is enabled
+      const { isEnabledStarkNetChainId } = await import("../../config/starknet")
+
+      // Try multiple ways to get the chain ID
+      let chainId =
+        providerOrSigner.chainId ||
+        providerOrSigner.account?.chainId ||
+        providerOrSigner.channel?.chainId
+
+      // If we still don't have a chainId, try to get it from getChainId method
+      if (
+        !chainId &&
+        providerOrSigner.getChainId &&
+        typeof providerOrSigner.getChainId === "function"
+      ) {
+        try {
+          chainId = providerOrSigner.getChainId()
+        } catch (e) {
+          console.warn("Failed to get chain ID from provider:", e)
+        }
+      }
+
+      if (chainId && !isEnabledStarkNetChainId(chainId)) {
+        // Return early without initializing - this prevents the SDK from working on disabled networks
+        return
+      }
+
+      // Check if provider has account information
+      const hasAddress =
+        providerOrSigner &&
+        "address" in providerOrSigner &&
+        typeof providerOrSigner.address === "string"
+      const hasAccount =
+        providerOrSigner &&
+        "account" in providerOrSigner &&
+        providerOrSigner.account?.address
+
+      if (!hasAddress && !hasAccount) {
+        throw new Error(
+          "StarkNet provider must be an Account object or Provider with connected account."
+        )
+      }
+
+      // Single-parameter initialization for StarkNet
+
+      await sdk.initializeCrossChain("StarkNet" as L2Chain, providerOrSigner)
+
+      // Get the L2 tBTC token instance from SDK
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      if (crossChainContracts) {
+        this._l2TbtcToken = crossChainContracts.destinationChainTbtcToken
+
+        // Get deposit owner status
+        const depositOwner = (
+          crossChainContracts.destinationChainBitcoinDepositor as any
+        ).getDepositOwner?.()
+      }
+    } else {
+      // Standard L2 initialization for EVM chains
+      const signer = getSigner(providerOrSigner as Web3Provider, account)
+      const connectedChainId = await chainIdFromSigner(signer)
+      const l2NetworkName = getChainIdToNetworkName(connectedChainId)
+      await sdk.initializeCrossChain(l2NetworkName as L2Chain, signer)
+    }
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -754,6 +895,61 @@ export class TBTC implements ITBTC {
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
+    )
+    return this._deposit
+  }
+
+  initiateCrossChainDepositWithChainName = async (
+    btcRecoveryAddress: string,
+    chainName: string
+  ): Promise<Deposit> => {
+    if (!isValidBtcAddress(btcRecoveryAddress, this.bitcoinNetwork)) {
+      throw new Error(
+        `Bitcoin recovery address is not valid for ${this.bitcoinNetwork}.`
+      )
+    }
+
+    if (!this._isCrossChain) {
+      throw new Error("Cross-chain not initialized")
+    }
+
+    const sdk = await this._getSdk()
+    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+      btcRecoveryAddress,
+      chainName as L2Chain
+    )
+    return this._deposit
+  }
+
+  /**
+   * Initiates a cross-chain deposit with explicit Bitcoin network validation.
+   * This method is specifically designed for chains like StarkNet where the Bitcoin
+   * network should be determined by the L2 chain's network, not the L1 EVM network.
+   *
+   * @param {string} btcRecoveryAddress - The Bitcoin address for recovery
+   * @param {string} chainName - The name of the L2 chain (e.g., "StarkNet")
+   * @param {BitcoinNetwork} bitcoinNetwork - The Bitcoin network to validate against
+   * @return {Promise<Deposit>} The initiated deposit
+   */
+  initiateCrossChainDepositWithNetwork = async (
+    btcRecoveryAddress: string,
+    chainName: string,
+    bitcoinNetwork: BitcoinNetwork
+  ): Promise<Deposit> => {
+    if (!isValidBtcAddress(btcRecoveryAddress, bitcoinNetwork)) {
+      throw new Error(
+        `Bitcoin recovery address is not valid for ${bitcoinNetwork}.`
+      )
+    }
+
+    if (!this._isCrossChain) {
+      throw new Error("Cross-chain not initialized")
+    }
+
+    const sdk = await this._getSdk()
+    this._deposit = await sdk.deposits.initiateCrossChainDeposit(
+      btcRecoveryAddress,
+      chainName as L2Chain
     )
     return this._deposit
   }
@@ -792,13 +988,27 @@ export class TBTC implements ITBTC {
 
   initiateCrossChainDepositFromScriptParameters = async (
     depositScriptParameters: DepositScriptParameters,
-    chainId: number
+    chainId?: number
   ): Promise<Deposit> => {
     if (!this._isCrossChain) {
-      throw new Error("Unsupported chain ID")
+      throw new Error("Cross-chain not initialized")
     }
-    const l2NetworkName = getChainIdToNetworkName(chainId)
+
     const sdk = await this._getSdk()
+
+    // Determine the L2 network name
+    let l2NetworkName: string
+    if (chainId) {
+      l2NetworkName = getChainIdToNetworkName(chainId)
+    } else {
+      // For StarkNet, we need to check if cross-chain is already initialized
+      // and use the chain name from the cross-chain contracts
+      const crossChainContracts = sdk.crossChainContracts("StarkNet" as L2Chain)
+      if (!crossChainContracts) {
+        throw new Error("StarkNet cross-chain contracts not initialized")
+      }
+      l2NetworkName = "StarkNet"
+    }
 
     const {
       depositor,
@@ -822,10 +1032,15 @@ export class TBTC implements ITBTC {
       extraData: Hex.from(extraData),
     }
 
-    await this._initiateCrossChain(
-      this._ethereumConfig.providerOrSigner as Web3Provider,
-      this._ethereumConfig.account as string
-    )
+    // Skip re-initialization if already initialized for StarkNet
+    if (!chainId && l2NetworkName === "StarkNet") {
+      // StarkNet is already initialized, just proceed
+    } else {
+      await this.initiateCrossChain(
+        this._ethereumConfig.providerOrSigner as Web3Provider,
+        this._ethereumConfig.account as string
+      )
+    }
 
     const crossChainContracts = sdk.crossChainContracts(
       l2NetworkName as Exclude<keyof typeof Chains, "Ethereum">
@@ -954,9 +1169,13 @@ export class TBTC implements ITBTC {
     }
   }
 
-  revealDeposit = async (utxo: BitcoinUtxo): Promise<string> => {
+  revealDeposit = async (utxo: BitcoinUtxo): Promise<any> => {
     const { value, ...transactionOutpoint } = utxo
-    if (!this._deposit) throw new EmptyDepositObjectError()
+
+    if (!this._deposit) {
+      throw new EmptyDepositObjectError()
+    }
+
     const chainHash = await this._deposit.initiateMinting(transactionOutpoint)
     this.removeDepositData()
 
@@ -1133,8 +1352,45 @@ export class TBTC implements ITBTC {
   ): Promise<BridgeActivity[]> => {
     const l2DepositActivities: BridgeActivity[] = []
 
+    // Check if this is a StarkNet address (0x prefixed, 64-66 chars)
+    const isStarkNetAddress =
+      depositor.startsWith("0x") && depositor.length >= 64
+
+    // Get the appropriate L1BitcoinDepositor contract
+    let l1BitcoinDepositorContract = this.l1BitcoinDepositorContract
+
+    if (isStarkNetAddress) {
+      // For StarkNet, we need to use the StarkNet L1BitcoinDepositor
+      const mainnetOrTestnetChainId = getMainnetOrTestnetChainId(
+        this.ethereumChainId
+      )
+      const starkNetL1BitcoinDepositorArtifact = getArtifact(
+        "StarkNetBitcoinDepositor" as ArtifactNameType,
+        mainnetOrTestnetChainId,
+        this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+      )
+
+      if (starkNetL1BitcoinDepositorArtifact) {
+        const provider =
+          this._bridgeContract?.provider || getThresholdLibProvider()
+        l1BitcoinDepositorContract = getContract(
+          starkNetL1BitcoinDepositorArtifact.address,
+          starkNetL1BitcoinDepositorArtifact.abi,
+          provider
+        )
+      }
+    }
+
+    if (!l1BitcoinDepositorContract) {
+      console.warn(
+        "L1 Bitcoin Depositor contract not found for",
+        isStarkNetAddress ? "StarkNet" : "L2"
+      )
+      return []
+    }
+
     const l2AllRevealedDeposits = await this.findAllRevealedDeposits(
-      this.l1BitcoinDepositorContract?.address as string
+      l1BitcoinDepositorContract.address as string
     )
     const l2DepositKeys = l2AllRevealedDeposits.map((_) => _.depositKey)
 
@@ -1144,9 +1400,13 @@ export class TBTC implements ITBTC {
       )
 
     const l2InitializedDepositsEvents =
-      await this._findAllInitializedL2Deposits(depositor)
+      await this._findAllInitializedL2Deposits(
+        depositor,
+        l1BitcoinDepositorContract
+      )
     const l2FinalizedDepositsEvents = await this._findAllFinalizedL2Deposits(
-      depositor
+      depositor,
+      l1BitcoinDepositorContract
     )
 
     const l2InitializedDeposits = new Map(
@@ -1199,24 +1459,39 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllFinalizedL2Deposits = async (
-    depositor: string
+    depositor: string,
+    l1BitcoinDepositorContract?: Contract
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const l2DepositOwner = depositor
     const l1Sender = L2_RELAYER_BOT_WALLET
 
-    const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
-        this.ethereumChainId
-      )}L1BitcoinDepositor` as ArtifactNameType,
-      getMainnetOrTestnetChainId(this.ethereumChainId)
-    )
+    // Use provided contract or fall back to the instance contract
+    const contractToUse =
+      l1BitcoinDepositorContract || this._l1BitcoinDepositorContract
 
-    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+    if (!contractToUse) {
       console.warn("L1 Bitcoin Depositor contract is not initialized.")
       return []
     }
 
-    return await getContractPastEvents(this._l1BitcoinDepositorContract, {
+    // Get the artifact for the block number
+    const isStarkNet = depositor.startsWith("0x") && depositor.length >= 64
+    const artifactName = isStarkNet
+      ? "StarkNetBitcoinDepositor"
+      : `${getChainIdToNetworkName(this.ethereumChainId)}L1BitcoinDepositor`
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      artifactName as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId),
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (!l1BitcoinDepositorArtifact) {
+      console.warn(`${artifactName} artifact not found`)
+      return []
+    }
+
+    return await getContractPastEvents(contractToUse, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
       eventName: "DepositFinalized",
@@ -1224,24 +1499,39 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllInitializedL2Deposits = async (
-    depositor: string
+    depositor: string,
+    l1BitcoinDepositorContract?: Contract
   ): Promise<ReturnType<typeof getContractPastEvents>> => {
     const l2DepositOwner = depositor
     const l1Sender = L2_RELAYER_BOT_WALLET
 
-    const l1BitcoinDepositorArtifact = getArtifact(
-      `${getChainIdToNetworkName(
-        this.ethereumChainId
-      )}L1BitcoinDepositor` as ArtifactNameType,
-      getMainnetOrTestnetChainId(this.ethereumChainId)
-    )
+    // Use provided contract or fall back to the instance contract
+    const contractToUse =
+      l1BitcoinDepositorContract || this._l1BitcoinDepositorContract
 
-    if (!l1BitcoinDepositorArtifact || !this._l1BitcoinDepositorContract) {
+    if (!contractToUse) {
       console.warn("L1 Bitcoin Depositor contract is not initialized.")
       return []
     }
 
-    return await getContractPastEvents(this._l1BitcoinDepositorContract!, {
+    // Get the artifact for the block number
+    const isStarkNet = depositor.startsWith("0x") && depositor.length >= 64
+    const artifactName = isStarkNet
+      ? "StarkNetBitcoinDepositor"
+      : `${getChainIdToNetworkName(this.ethereumChainId)}L1BitcoinDepositor`
+
+    const l1BitcoinDepositorArtifact = getArtifact(
+      artifactName as ArtifactNameType,
+      getMainnetOrTestnetChainId(this.ethereumChainId),
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (!l1BitcoinDepositorArtifact) {
+      console.warn(`${artifactName} artifact not found`)
+      return []
+    }
+
+    return await getContractPastEvents(contractToUse, {
       fromBlock: l1BitcoinDepositorArtifact.receipt.blockNumber,
       filterParams: [null, l2DepositOwner, l1Sender],
       eventName: "DepositInitialized",

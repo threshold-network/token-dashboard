@@ -9,6 +9,7 @@ type Props = {
   title: string | JSX.Element
   tokenBalance: number | string
   contract: Contract | null
+  additionalInfo?: JSX.Element
 } & Pick<
   TokenBalanceProps,
   | "tokenDecimals"
@@ -34,6 +35,7 @@ const TokenBalanceCardTemplate: FC<Props> = ({
   precision,
   higherPrecision,
   withSymbol = false,
+  additionalInfo,
   ...restProps
 }) => {
   return (
@@ -54,6 +56,7 @@ const TokenBalanceCardTemplate: FC<Props> = ({
         precision={precision}
         higherPrecision={higherPrecision}
       />
+      {additionalInfo && additionalInfo}
       {/* <AddToMetamaskButton contract={contract} /> */}
     </Card>
   )

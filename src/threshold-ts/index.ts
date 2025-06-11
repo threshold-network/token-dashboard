@@ -19,7 +19,7 @@ export class Threshold {
 
   private _initialize = (config: ThresholdConfig) => {
     this.config = config
-    const { ethereum, bitcoin } = config
+    const { ethereum, bitcoin, crossChain } = config
 
     this.multicall = new Multicall(ethereum)
     this.vendingMachines = new VendingMachines(ethereum)
@@ -29,10 +29,57 @@ export class Threshold {
       this.multicall,
       ethereum
     )
-    this.tbtc = new TBTC(ethereum, bitcoin)
+    this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
   }
 
-  updateConfig = (config: ThresholdConfig) => {
+  updateConfig = async (config: ThresholdConfig) => {
     this._initialize(config)
+
+    // Handle cross-chain initialization if configured
+    if (config.crossChain?.isCrossChain) {
+      // For non-EVM chains (like StarkNet), use the nonEVMProvider
+      if (config.crossChain.chainName && config.crossChain.nonEVMProvider) {
+        // Convert ChainName enum to SDK expected string
+        const sdkChainName =
+          config.crossChain.chainName === "Starknet"
+            ? "StarkNet"
+            : config.crossChain.chainName
+
+        try {
+          await this.initializeCrossChain(
+            sdkChainName,
+            config.crossChain.nonEVMProvider
+          )
+        } catch (error: any) {
+          // If it's a disabled network error, handle it silently
+          if (error.message?.includes("disabled")) {
+            return
+          }
+          console.error("Cross-chain initialization failed:", error)
+          // Note: This is expected for StarkNet until contracts are deployed
+          // The SDK has placeholder contracts that need to be updated with real addresses
+        }
+      } else if (
+        config.ethereum?.providerOrSigner &&
+        config.ethereum?.account
+      ) {
+        // For EVM L2 chains (like Base, Arbitrum), initialize using the ethereum provider
+        console.log("Initializing cross-chain for EVM L2")
+        try {
+          await this.tbtc.initiateCrossChain(
+            config.ethereum.providerOrSigner,
+            config.ethereum.account
+          )
+          console.log("EVM L2 cross-chain initialization complete")
+        } catch (error) {
+          console.error("EVM L2 cross-chain initialization failed:", error)
+        }
+      }
+    }
+  }
+
+  initializeCrossChain = async (chainName: string, provider: any) => {
+    // Use the public method from TBTC class for cross-chain init
+    await this.tbtc.initiateCrossChain(provider, "", chainName)
   }
 }

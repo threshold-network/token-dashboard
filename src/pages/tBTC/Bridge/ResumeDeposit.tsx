@@ -16,6 +16,7 @@ import { useTbtcState } from "../../../hooks/useTbtcState"
 import { Form } from "../../../components/Forms"
 import {
   isSameETHAddress,
+  isSameAddress,
   isAddress,
   parseJSONFile,
   InvalidJSONFileError,
@@ -26,11 +27,13 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 import HelperErrorText from "../../../components/Forms/HelperErrorText"
 import { DepositScriptParameters } from "../../../threshold-ts/tbtc"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
+import { getStarkNetConfig } from "../../../utils/tbtcStarknetHelpers"
 
 type RecoveryJsonFileData = DepositScriptParameters & {
   networkInfo: {
     chainId: string
     chainName: string
+    isStarkNetDeposit?: boolean
   }
   ethAddress: string
   btcRecoveryAddress: string
@@ -46,16 +49,39 @@ import {
   isSameChainId,
   isSupportedNetwork,
 } from "../../../networks/utils"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
+import { useStarknetWallet } from "../../../contexts/StarknetWalletProvider"
+import { constants } from "starknet"
+import { getDefaultProviderChainId } from "../../../utils/getEnvVariable"
+import { isMainnetChainId as isMainnetEVMChainId } from "../../../networks/utils"
+
+// Helper to get expected StarkNet chain ID based on environment
+const getExpectedStarknetChainId = () => {
+  const defaultChainId = getDefaultProviderChainId()
+  return isMainnetEVMChainId(defaultChainId)
+    ? constants.StarknetChainId.SN_MAIN
+    : constants.StarknetChainId.SN_SEPOLIA
+}
 
 export const ResumeDepositPage: PageComponent = () => {
   const { updateState } = useTbtcState()
   const { account, chainId, isActive } = useIsActive()
+  const { isNonEVMActive, nonEVMPublicKey } = useNonEVMConnection()
+  const { provider: starknetProvider } = useStarknetWallet()
   const navigate = useNavigate()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const threshold = useThreshold()
 
-  if (!isActive || !isSupportedNetwork(chainId)) {
+  // Check for either EVM or non-EVM wallet connection
+  const isWalletConnected = isActive || isNonEVMActive
+  const connectedAddress = account || nonEVMPublicKey
+
+  // For StarkNet only connections, use a default chainId (Sepolia)
+  const effectiveChainId =
+    chainId || (isNonEVMActive ? SupportedChainIds.Sepolia : undefined)
+
+  if (!isWalletConnected || (!isNonEVMActive && !isSupportedNetwork(chainId))) {
     return (
       <Card position="relative" maxW="640px" m={"0 auto"}>
         <BridgeProcessEmptyState title="Want to resume deposit?" />
@@ -72,18 +98,57 @@ export const ResumeDepositPage: PageComponent = () => {
     const { depositParameters } = values
 
     try {
-      if (isL1Network(chainId)) {
+      // For StarkNet deposits, we need to initialize cross-chain appropriately
+      const isStarkNetDeposit =
+        depositParameters.networkInfo?.chainName?.toLowerCase() === "starknet"
+
+      if (isStarkNetDeposit) {
+        // Initialize StarkNet cross-chain if not already initialized
+        if (!starknetProvider) {
+          throw new Error("StarkNet provider not available")
+        }
+
+        // Only initialize cross-chain if it's not already initialized
+        if (!threshold.tbtc.isCrossChain) {
+          await threshold.tbtc.initiateCrossChain(
+            starknetProvider,
+            connectedAddress || "",
+            "StarkNet"
+          )
+        }
+
+        // For StarkNet, we need to use initiateCrossChainDepositFromScriptParameters
+        // but we pass undefined for chainId since StarkNet uses the chainName instead
+        await threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
+          depositParameters,
+          undefined // StarkNet doesn't use Ethereum chain ID
+        )
+      } else if (isL1Network(effectiveChainId)) {
         await threshold.tbtc.initiateDepositFromDepositScriptParameters(
           depositParameters
         )
       } else {
         await threshold.tbtc.initiateCrossChainDepositFromScriptParameters(
           depositParameters,
-          chainId!
+          effectiveChainId!
         )
       }
       const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
       updateState("mintingStep", undefined)
+
+      const storageChainId = isStarkNetDeposit
+        ? depositParameters.networkInfo.chainId
+        : effectiveChainId
+
+      console.log("ResumeDeposit - saving to localStorage:", {
+        isStarkNetDeposit,
+        chainName: depositParameters.networkInfo?.chainName,
+        networkChainId: depositParameters.networkInfo?.chainId,
+        storageChainId,
+        btcDepositAddress,
+        depositor: depositParameters.depositor.identifierHex,
+      })
+
       setDepositDataInLocalStorage(
         {
           depositor: {
@@ -98,7 +163,9 @@ export const ResumeDepositPage: PageComponent = () => {
           extraData: depositParameters.extraData || "",
           btcDepositAddress,
         },
-        chainId
+        isStarkNetDeposit
+          ? depositParameters.networkInfo.chainId
+          : effectiveChainId
       )
       navigateToMintPage()
     } catch (error) {
@@ -121,8 +188,8 @@ export const ResumeDepositPage: PageComponent = () => {
           Minting Initiation transaction triggered in the dApp.
         </BodyMd>
         <ResumeDepositFormik
-          address={account!}
-          chainId={chainId!}
+          address={connectedAddress!}
+          chainId={effectiveChainId!}
           onSubmitForm={onSubmit}
           checkDepositExpiration={checkDepositExpiration}
           bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
@@ -213,6 +280,15 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
 
     const dp = values.depositParameters
 
+    console.log("ResumeDeposit validation:", {
+      depositParameters: dp,
+      networkInfo: dp?.networkInfo,
+      chainName: dp?.networkInfo?.chainName,
+      isStarkNet: dp?.networkInfo?.chainName === "StarkNet",
+      chainId,
+      address,
+    })
+
     if (!dp) {
       errors.depositParameters = "Required."
     } else if (
@@ -220,7 +296,6 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
       !dp.depositor.identifierHex ||
       !dp.networkInfo?.chainName ||
       !dp.networkInfo?.chainId ||
-      !isAddress(dp.depositor.identifierHex) ||
       !dp.refundLocktime ||
       !dp.refundPublicKeyHash ||
       !dp.blindingFactor ||
@@ -228,8 +303,34 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
       !dp.btcRecoveryAddress
     ) {
       errors.depositParameters = "Invalid .JSON file."
+    } else if (!dp.networkInfo?.chainId) {
+      errors.depositParameters = "Missing chain ID in deposit data."
+    } else if (
+      dp.networkInfo?.chainName?.toLowerCase() !== "starknet" &&
+      !isAddress(dp.depositor.identifierHex)
+    ) {
+      errors.depositParameters = "Invalid depositor address for EVM network."
+    } else if (
+      dp.networkInfo?.chainName?.toLowerCase() === "starknet" ||
+      dp.networkInfo?.chainId?.startsWith("0x534e5f") // StarkNet chain IDs start with this prefix
+    ) {
+      // For StarkNet deposits, validate against StarkNet chain IDs
+      const expectedStarknetChainId = getExpectedStarknetChainId()
+      const depositChainId = dp.networkInfo.chainId.toLowerCase()
+      console.log("StarkNet validation:", {
+        expectedStarknetChainId,
+        depositChainId,
+        match: depositChainId === expectedStarknetChainId.toLowerCase(),
+      })
+      if (depositChainId !== expectedStarknetChainId.toLowerCase()) {
+        errors.depositParameters = `StarkNet chain mismatch. Expected ${expectedStarknetChainId} but deposit was for ${dp.networkInfo.chainId}.`
+      }
     } else if (!isSameChainId(dp.networkInfo.chainId, chainId)) {
-      errors.depositParameters = "Chain Id mismatch."
+      console.log("EVM chain validation:", {
+        depositChainId: dp.networkInfo.chainId,
+        expectedChainId: chainId,
+      })
+      errors.depositParameters = `Chain Id mismatch. Expected ${chainId}, but deposit was for ${dp.networkInfo.chainId}.`
     } else if (isL2Network(chainId) && !dp.extraData) {
       errors.depositParameters = "Extra data is required for L2 networks."
     } else {
@@ -245,8 +346,9 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
         if (isExpired) {
           errors.depositParameters = "Deposit reveal time is expired."
         } else if (
-          isL1Network(chainId) &&
-          !isSameETHAddress(dp.depositor.identifierHex, address)
+          dp.networkInfo?.chainName?.toLowerCase() === "starknet"
+            ? dp.depositor.identifierHex.toLowerCase() !== address.toLowerCase()
+            : !isSameAddress(dp.depositor.identifierHex, address)
         ) {
           errors.depositParameters = "You are not a depositor."
         }

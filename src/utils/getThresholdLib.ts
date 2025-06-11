@@ -11,6 +11,7 @@ import {
   isSupportedNetwork,
   isTestnetChainId,
 } from "../networks/utils/connectedNetwork"
+import { hexToNumber } from "../networks/utils/chainId"
 import { getRpcUrl } from "../networks/utils/getRpcUrl"
 import { MockBitcoinClient } from "../tbtc/mock-bitcoin-client"
 import {
@@ -55,9 +56,10 @@ function getInitialBitcoinConfig(): BitcoinConfig {
 }
 
 export const getThresholdLibProvider = (chainId?: number | string) => {
-  const supportedChainId = isSupportedNetwork(chainId)
-    ? Number(chainId)
-    : getDefaultProviderChainId()
+  const supportedChainId =
+    isSupportedNetwork(chainId) && chainId !== undefined
+      ? hexToNumber(chainId)
+      : getDefaultProviderChainId()
 
   const rpcUrl = getRpcUrl(supportedChainId)
 

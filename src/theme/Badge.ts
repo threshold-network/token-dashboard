@@ -17,7 +17,7 @@ const variantMagic: SystemStyleFunction = (props) => {
 }
 
 const variants = {
-  ...defaultTheme.components.Badge.variants,
+  ...(defaultTheme.components?.Badge?.variants || {}),
   magic: variantMagic,
   subtle: (props: any) => {
     const { colorScheme: c, theme } = props

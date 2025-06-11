@@ -55,8 +55,8 @@ const WalletButton: FC<WalletButtonProps> = ({ option, onSelect }) => {
       borderRadius={0}
       onClick={() => onSelect(option.id)}
     >
-      <Stack justify="space-between" direction="row" px="40px">
-        <Stack direction="row">
+      <Stack justify="space-between" direction="row" px="40px" align="center">
+        <Stack direction="row" align="center">
           <Icon as={icon} h="40px" w="40px" mr="32px" />
           <H4>{option.title}</H4>
         </Stack>

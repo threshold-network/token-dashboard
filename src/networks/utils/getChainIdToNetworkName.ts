@@ -1,11 +1,12 @@
 import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 import { isMainnetChainId, isTestnetChainId } from "./connectedNetwork"
 import { networks } from "./networks"
+import { hexToNumber } from "./chainId"
 
 function findSupportedNetwork(chainId?: number | string) {
   if (!chainId) return null
 
-  const chainIdNumber = Number(chainId)
+  const chainIdNumber = hexToNumber(chainId)
   const defaultChainId = getDefaultProviderChainId()
 
   return networks.find((network) =>

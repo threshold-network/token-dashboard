@@ -1,4 +1,8 @@
 import { ExplorerDataType, SupportedChainIds } from "../enums/networks"
+import {
+  getStarkNetNetworkConfig,
+  isEnabledStarkNetChainId,
+} from "../../config/starknet"
 
 export const createBlockExplorerLink = (
   prefix: string,
@@ -25,6 +29,12 @@ export const createBlockExplorerLink = (
 export const createExplorerPrefix = (
   chainId: number | string | undefined
 ): string => {
+  // Check if it's a StarkNet chain first (using centralized config)
+  if (chainId && isEnabledStarkNetChainId(chainId)) {
+    const config = getStarkNetNetworkConfig(chainId)
+    return config.explorerUrl
+  }
+
   const prefixMap: { [key: number]: string } = {
     [SupportedChainIds.Sepolia]: "https://sepolia.etherscan.io",
     [SupportedChainIds.Arbitrum]: "https://arbiscan.io",
