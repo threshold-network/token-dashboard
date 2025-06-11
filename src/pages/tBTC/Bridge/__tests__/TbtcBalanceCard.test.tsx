@@ -1,10 +1,20 @@
-import React from "react"
+import React, { FC } from "react"
 import { render, screen } from "@testing-library/react"
 import { TbtcBalanceCard } from "../TbtcBalanceCard"
 import { useToken } from "../../../../hooks/useToken"
 import { useStarknetTBTCBalance } from "../../../../hooks/tbtc/useStarknetTBTCBalance"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 import { ChainName } from "../../../../threshold-ts/types"
+import { Token } from "../../../../enums"
+import {
+  TokenContext,
+  TokenContextType,
+} from "../../../../contexts/TokenContext"
+import { TokenBalanceCardProps } from "../../../../components/TokenBalanceCard"
+import {
+  StarknetReactProvider,
+  StarknetWalletProvider,
+} from "../../../../contexts/StarknetWalletProvider"
 
 // Mock the threshold context to avoid initialization issues
 jest.mock("../../../../utils/getThresholdLib", () => ({
@@ -22,20 +32,41 @@ jest.mock("../../../../contexts/ThresholdContext", () => ({
 // Mock the hooks
 jest.mock("../../../../hooks/useToken")
 jest.mock("../../../../hooks/tbtc/useStarknetTBTCBalance")
-jest.mock("../../../../contexts/StarknetWalletProvider")
-jest.mock("../../../../components/TokenBalanceCard", () => ({
-  __esModule: true,
-  default: ({ title, tokenBalance, usdBalance, additionalInfo }: any) => (
-    <div data-testid="token-balance-card">
-      <div>{title}</div>
-      <div data-testid="balance">{tokenBalance}</div>
-      <div data-testid="usd-balance">{usdBalance}</div>
-      {additionalInfo && (
-        <div data-testid="additional-info">{additionalInfo}</div>
-      )}
-    </div>
+jest.mock("../../../../hooks/useNonEVMConnection")
+jest.mock("../../../../contexts/StarknetWalletProvider", () => ({
+  StarknetReactProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  StarknetWalletProvider: ({ children }: { children: React.ReactNode }) => (
+    <>{children}</>
   ),
 }))
+jest.mock("../../../../components/TokenBalanceCard", () => ({
+  __esModule: true,
+  default: ({ token, title, additionalInfo, ...props }: any) => {
+    const { useToken } = require("../../../../hooks/useToken")
+    const { balance, usdBalance } = useToken(token)
+
+    return (
+      <div data-testid="token-balance-card">
+        <div>{title}</div>
+        <div data-testid="balance">{balance}</div>
+        <div data-testid="usd-balance">{usdBalance}</div>
+        {additionalInfo && (
+          <div data-testid="additional-info">{additionalInfo}</div>
+        )}
+      </div>
+    )
+  },
+}))
+
+jest.mock("@web3-react/core", () => ({
+  __esModule: true,
+  useWeb3React: jest.fn(),
+}))
+
+// Import useWeb3React after mocking to ensure the mock is available
+import { useWeb3React } from "@web3-react/core"
 
 describe("TbtcBalanceCard", () => {
   const mockUseToken = useToken as jest.MockedFunction<typeof useToken>
@@ -45,22 +76,44 @@ describe("TbtcBalanceCard", () => {
     typeof useNonEVMConnection
   >
 
+  const tbtcContext: TokenContextType[Token.TBTCV2] = {
+    balance: "100.5",
+    usdBalance: "5000",
+    contract: null,
+    decimals: 18,
+    loading: false,
+    error: null,
+  } as any
+
+  const wrapper: FC = ({ children }) => (
+    <TokenContext.Provider
+      value={{
+        [Token.TBTCV2]: tbtcContext,
+      }}
+    >
+      <StarknetReactProvider>
+        <StarknetWalletProvider>{children}</StarknetWalletProvider>
+      </StarknetReactProvider>
+    </TokenContext.Provider>
+  )
+
   beforeEach(() => {
-    // Default mocks
+    ;(useWeb3React as jest.Mock).mockReturnValue({
+      account: "0x0",
+      active: true,
+    })
     mockUseToken.mockReturnValue({
       balance: "100.5",
       usdBalance: "5000",
       contract: null,
       decimals: 18,
     } as any)
-
     mockUseStarknetTBTCBalance.mockReturnValue({
       balance: "0",
       isLoading: false,
       error: null,
       refetch: jest.fn(),
     })
-
     mockUseNonEVMConnection.mockReturnValue({
       nonEVMChainName: null,
       nonEVMPublicKey: null,
@@ -71,6 +124,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: null,
     })
   })
 
@@ -79,7 +133,7 @@ describe("TbtcBalanceCard", () => {
   })
 
   it("should render tBTC balance when only Ethereum is connected", () => {
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("balance")).toHaveTextContent("100.5")
     expect(screen.getByTestId("usd-balance")).toHaveTextContent("5000")
@@ -97,6 +151,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: "SN_GOERLI",
     })
 
     mockUseStarknetTBTCBalance.mockReturnValue({
@@ -106,7 +161,7 @@ describe("TbtcBalanceCard", () => {
       refetch: jest.fn(),
     })
 
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("balance")).toHaveTextContent("100.5")
     expect(screen.getByTestId("additional-info")).toBeInTheDocument()
@@ -126,6 +181,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: "SN_GOERLI",
     })
 
     mockUseStarknetTBTCBalance.mockReturnValue({
@@ -135,10 +191,10 @@ describe("TbtcBalanceCard", () => {
       refetch: jest.fn(),
     })
 
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: Loading..."
+      "StarkNet:Loading..."
     )
   })
 
@@ -153,6 +209,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: "SN_GOERLI",
     })
 
     mockUseStarknetTBTCBalance.mockReturnValue({
@@ -162,10 +219,10 @@ describe("TbtcBalanceCard", () => {
       refetch: jest.fn(),
     })
 
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: Error"
+      "StarkNet: Not available"
     )
   })
 
@@ -187,6 +244,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: "SN_GOERLI",
     })
 
     mockUseStarknetTBTCBalance.mockReturnValue({
@@ -196,7 +254,7 @@ describe("TbtcBalanceCard", () => {
       refetch: jest.fn(),
     })
 
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     // The main balance should show Ethereum balance
     expect(screen.getByTestId("balance")).toHaveTextContent("100")
@@ -218,6 +276,7 @@ describe("TbtcBalanceCard", () => {
       isNonEVMConnecting: false,
       isNonEVMDisconnecting: false,
       disconnectNonEVMWallet: jest.fn(),
+      nonEVMChainId: "SN_GOERLI",
     })
 
     mockUseStarknetTBTCBalance.mockReturnValue({
@@ -227,7 +286,7 @@ describe("TbtcBalanceCard", () => {
       refetch: jest.fn(),
     })
 
-    render(<TbtcBalanceCard />)
+    render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
       "StarkNet: 0 tBTC"

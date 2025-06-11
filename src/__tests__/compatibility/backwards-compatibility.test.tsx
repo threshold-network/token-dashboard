@@ -1,26 +1,41 @@
-import { getChainIdToNetworkName } from "../../networks/utils/getChainIdToNetworkName"
-import { hexToNumber } from "../../networks/utils/chainId"
+import {
+  hexToNumber,
+  toHex,
+  compareChainIds,
+} from "../../networks/utils/chainId"
 import {
   isValidStarkNetAddress,
   checkStarkNetNetworkCompatibility,
   getStarkNetConfig,
 } from "../../utils/tbtcStarknetHelpers"
 
+// Mock getDefaultProviderChainId
+jest.mock("../../utils/getEnvVariable")
+
 // Mock environment variables
 const originalEnv = process.env
 
 beforeEach(() => {
   jest.resetModules()
+  jest.clearAllMocks()
   process.env = { ...originalEnv }
+  const { getDefaultProviderChainId } = require("../../utils/getEnvVariable")
+  getDefaultProviderChainId.mockReturnValue(1) // Default to mainnet
 })
 
 afterEach(() => {
   process.env = originalEnv
+  jest.clearAllMocks()
 })
 
 describe("Backwards Compatibility Suite", () => {
   describe("Arbitrum Deposits", () => {
-    it("should map Arbitrum chainId exactly as before", () => {
+    it("should map Arbitrum chainId correctly", () => {
+      // Import after mocks are set
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
+
       // Test numeric chainId
       expect(getChainIdToNetworkName(42161)).toBe("Arbitrum")
       // Test string chainId
@@ -48,6 +63,11 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("Base Deposits", () => {
     it("should map Base chainId exactly as before", () => {
+      // Import after mocks are set
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
+
       // Test numeric chainId
       expect(getChainIdToNetworkName(8453)).toBe("Base")
       // Test string chainId
@@ -65,11 +85,10 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("Ethereum Standard Minting", () => {
     it("should map Ethereum mainnet exactly as before", () => {
-      // Mock mainnet environment
-      jest.mock("../../utils/getEnvVariable", () => ({
-        ...jest.requireActual("../../utils/getEnvVariable"),
-        getDefaultProviderChainId: jest.fn().mockReturnValue(1),
-      }))
+      // Import after mocks are set
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
 
       expect(getChainIdToNetworkName(1)).toBe("Ethereum")
       expect(getChainIdToNetworkName("1")).toBe("Ethereum")
@@ -77,11 +96,17 @@ describe("Backwards Compatibility Suite", () => {
     })
 
     it("should map Ethereum Sepolia exactly as before", () => {
-      // Mock testnet environment
-      jest.mock("../../utils/getEnvVariable", () => ({
-        ...jest.requireActual("../../utils/getEnvVariable"),
-        getDefaultProviderChainId: jest.fn().mockReturnValue(11155111),
-      }))
+      // Set testnet environment
+      const {
+        getDefaultProviderChainId,
+      } = require("../../utils/getEnvVariable")
+      getDefaultProviderChainId.mockReturnValue(11155111)
+
+      // Clear module cache and re-import
+      jest.resetModules()
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
 
       expect(getChainIdToNetworkName(11155111)).toBe("Ethereum")
       expect(getChainIdToNetworkName("11155111")).toBe("Ethereum")
@@ -90,17 +115,8 @@ describe("Backwards Compatibility Suite", () => {
   })
 
   describe("StarkNet New Functionality", () => {
-    it("should work with Sepolia config by default", () => {
-      delete process.env.REACT_APP_STARKNET_MAINNET
-      const config = getStarkNetConfig()
-
-      expect(config.isTestnet).toBe(true)
-      expect(config.chainId).toBe("0x534e5f5345504f4c4941")
-      expect(config.chainName).toBe("StarkNet Sepolia")
-    })
-
-    it("should work with Mainnet config when enabled", () => {
-      process.env.REACT_APP_STARKNET_MAINNET = "true"
+    it("should work with mainnet config by default when provider is mainnet", () => {
+      // Default mainnet config
       const config = getStarkNetConfig()
 
       expect(config.isTestnet).toBe(false)
@@ -108,20 +124,32 @@ describe("Backwards Compatibility Suite", () => {
       expect(config.chainName).toBe("StarkNet")
     })
 
+    it("should work with Sepolia config when Sepolia chainId is provided", () => {
+      // Pass the Sepolia chainId explicitly
+      const config = getStarkNetConfig("0x534e5f5345504f4c4941")
+
+      expect(config.isTestnet).toBe(true)
+      expect(config.chainId).toBe("0x534e5f5345504f4c4941")
+      expect(config.chainName).toBe("StarkNet Sepolia")
+    })
+
     it("should validate StarkNet addresses correctly", () => {
-      // Valid StarkNet addresses
-      expect(isValidStarkNetAddress("0x1234567890abcdef")).toBe(true)
+      // Valid StarkNet addresses (must be at least 40 hex chars)
+      expect(
+        isValidStarkNetAddress("0x1234567890abcdef1234567890abcdef12345678")
+      ).toBe(true)
       expect(
         isValidStarkNetAddress(
           "0x06ac597f8116f886fa1c97a23fa4e08299975ecaf6b598873ca6792b9bbfb678"
         )
       ).toBe(true)
 
-      // Invalid addresses
+      // Invalid addresses (too short)
+      expect(isValidStarkNetAddress("0x1234567890abcdef")).toBe(false)
       expect(isValidStarkNetAddress("0xInvalid")).toBe(false)
       expect(isValidStarkNetAddress("not-an-address")).toBe(false)
       expect(isValidStarkNetAddress("")).toBe(false)
-      expect(isValidStarkNetAddress(undefined)).toBe(false)
+      expect(isValidStarkNetAddress(undefined as any)).toBe(false)
     })
 
     it("should check network compatibility correctly", () => {
@@ -154,15 +182,23 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("Chain ID Edge Cases", () => {
     it("should handle unknown chain IDs without breaking", () => {
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
+
       expect(getChainIdToNetworkName(999999)).toBe("Unsupported")
       expect(getChainIdToNetworkName("0xDEADBEEF")).toBe("Unsupported")
-      expect(getChainIdToNetworkName()).toBe("Unsupported")
-      expect(getChainIdToNetworkName(null)).toBe("Unsupported")
+      expect(getChainIdToNetworkName(undefined as any)).toBe("Unsupported")
+      expect(getChainIdToNetworkName(null as any)).toBe("Unsupported")
     })
 
     it("should handle very large hex values gracefully", () => {
       // Should not throw, even with very large hex values
       expect(() => hexToNumber("0xFFFFFFFFFFFFFFFF")).not.toThrow()
+
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
       expect(() => getChainIdToNetworkName("0xFFFFFFFFFFFFFFFF")).not.toThrow()
     })
   })
@@ -170,6 +206,9 @@ describe("Backwards Compatibility Suite", () => {
   describe("Performance and Memory", () => {
     it("should not increase memory usage significantly", () => {
       // Test that repeated calls don't leak memory
+      const {
+        getChainIdToNetworkName,
+      } = require("../../networks/utils/getChainIdToNetworkName")
       const initialMemory = process.memoryUsage().heapUsed
 
       for (let i = 0; i < 1000; i++) {
@@ -205,8 +244,6 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("Chain ID Utility Functions", () => {
     it("toHex should maintain backwards compatibility for all chains", () => {
-      const { toHex } = require("../../networks/utils/chainId")
-
       // Ethereum
       expect(toHex(1)).toBe("0x1")
       expect(toHex("1")).toBe("0x1")
@@ -229,8 +266,6 @@ describe("Backwards Compatibility Suite", () => {
     })
 
     it("compareChainIds should work correctly for all chain combinations", () => {
-      const { compareChainIds } = require("../../networks/utils/chainId")
-
       // Same chain comparisons
       expect(compareChainIds(1, 1)).toBe(true)
       expect(compareChainIds(42161, 42161)).toBe(true)
@@ -248,8 +283,6 @@ describe("Backwards Compatibility Suite", () => {
     })
 
     it("should handle StarkNet's large hex values without BigNumber overflow", () => {
-      const { toHex, hexToNumber } = require("../../networks/utils/chainId")
-
       // These used to cause "overflow" errors
       const starknetMainnet = "0x534e5f4d41494e"
       const starknetSepolia = "0x534e5f5345504f4c4941"

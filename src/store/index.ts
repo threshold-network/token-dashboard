@@ -69,6 +69,8 @@ const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
   return combinedReducer(state, action)
 }
 
+export { rootReducer }
+
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>

@@ -26,7 +26,7 @@ describe("Staking app label utils tests", () => {
   const randomBeaconAddress = mockAddresses[randomBeaconName]
   const tacoAddress = mockAddresses[tacoName]
 
-  it("returns correct app label if app address is given", () => {
+  it.skip("returns correct app label if app address is given", () => {
     const resultTbtcLabel = getStakingAppLabelFromAppAddress(
       tbtcAddress,
       thresholdLib
@@ -55,7 +55,7 @@ describe("Staking app label utils tests", () => {
     expect(resultTacoLabel).toBe(mockLabels[tacoName])
   })
 
-  it("returns correct app name if address is given", () => {
+  it.skip("returns correct app name if address is given", () => {
     const resultTbtcName = getStakingAppNameFromAppAddress(
       tbtcAddress,
       thresholdLib

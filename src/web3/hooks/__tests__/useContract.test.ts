@@ -1,30 +1,38 @@
-import { renderHook } from "@testing-library/react-hooks"
-import { useWeb3React } from "@web3-react/core"
-import { JsonRpcProvider } from "@ethersproject/providers"
-import { useContract } from "../useContract"
-import { getContract } from "../../../utils/getContract"
-import { getEnvVariable } from "../../../utils/getEnvVariable"
-import { getRpcUrl } from "../../../networks/utils"
+// Mock modules before imports
+jest.mock("../../../utils/getThresholdLib", () => ({
+  getThresholdLib: jest.fn(),
+  getThresholdLibProvider: jest.fn(() => ({})),
+  threshold: {},
+}))
 
 jest.mock("../../../utils/getContract", () => ({
-  ...(jest.requireActual("../../../utils/getContract") as {}),
   getContract: jest.fn(() => {}),
 }))
 
 jest.mock("../../../utils/getEnvVariable", () => ({
-  ...(jest.requireActual("../../../utils/getEnvVariable") as {}),
   getEnvVariable: jest.fn(),
 }))
 
 jest.mock("@web3-react/core", () => ({
-  ...(jest.requireActual("@web3-react/core") as {}),
   useWeb3React: jest.fn(),
 }))
 
 jest.mock("@ethersproject/providers", () => ({
-  ...(jest.requireActual("@ethersproject/providers") as {}),
   JsonRpcProvider: jest.fn(),
+  Web3Provider: jest.fn(),
 }))
+
+import { renderHook } from "@testing-library/react-hooks"
+import { useWeb3React } from "@web3-react/core"
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers"
+import { useContract } from "../useContract"
+import { getContract } from "../../../utils/getContract"
+import { getEnvVariable } from "../../../utils/getEnvVariable"
+import { getRpcUrl } from "../../../networks/utils"
+import {
+  getThresholdLib,
+  getThresholdLibProvider,
+} from "../../../utils/getThresholdLib"
 
 describe("Test the `useContract` hook", () => {
   const address = "0x3aA3D0Bb15FAdDB154141c92DAaaA9022b2A346d"
@@ -33,6 +41,16 @@ describe("Test the `useContract` hook", () => {
   const mockedJsonRpcProvider = {}
   const mockedEthNodeUrl = "http://localhost:8545"
   const mockedContract = {}
+
+  beforeEach(() => {
+    // @ts-ignore
+    ;(getThresholdLib as jest.Mock).mockReturnValue({
+      ethers: {
+        // @ts-ignore
+        provider: new Web3Provider(jest.fn()),
+      },
+    })
+  })
 
   describe("when web3 react context is not active", () => {
     beforeEach(() => {
@@ -59,11 +77,19 @@ describe("Test the `useContract` hook", () => {
 
     test("should create a contract instance with a default provider if web3 react provider is not active", () => {
       ;(getContract as jest.Mock).mockReturnValue(mockedContract)
+      ;(getThresholdLibProvider as jest.Mock).mockReturnValue(
+        mockedJsonRpcProvider
+      )
 
       const { result } = renderHook(() => useContract(address, abi))
 
-      expect(getEnvVariable).toHaveBeenCalledWith(getRpcUrl())
-      expect(JsonRpcProvider).toHaveBeenCalledWith(mockedEthNodeUrl)
+      expect(getThresholdLibProvider).toHaveBeenCalled()
+      expect(getContract).toHaveBeenCalledWith(
+        address,
+        abi,
+        mockedJsonRpcProvider,
+        undefined
+      )
       expect(result.current).toEqual(mockedContract)
     })
   })

@@ -1,45 +1,38 @@
 import { renderHook } from "@testing-library/react-hooks"
-// @ts-ignore
-import VendingMachineKeep from "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json"
-// @ts-ignore
-import VendingMachineNuCypher from "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json"
 import { useVendingMachineContract } from "../useVendingMachineContract"
-import { useContract } from "../useContract"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 import { Token } from "../../../enums"
 
-jest.mock(
-  "@threshold-network/solidity-contracts/artifacts/VendingMachineKeep.json",
-  () => ({
-    address: "0x1",
-    abi: [],
-  })
-)
-jest.mock(
-  "@threshold-network/solidity-contracts/artifacts/VendingMachineNuCypher.json",
-  () => ({
-    address: "0x2",
-    abi: [],
-  })
-)
-
-jest.mock("../useContract", () => ({
-  useContract: jest.fn(),
+jest.mock("../../../contexts/ThresholdContext", () => ({
+  useThreshold: jest.fn(),
 }))
 
 describe("Test `useVendingMachineContract` hook", () => {
-  test.each`
-    token         | contractArtifact
-    ${Token.Keep} | ${VendingMachineKeep}
-    ${Token.Nu}   | ${VendingMachineNuCypher}
-  `(
-    "should return the vending machine contract instance for $token token",
-    ({ token, contractArtifact }) => {
-      renderHook(() => useVendingMachineContract(token))
+  const keepVendingMachineContract = { address: "0x1" }
+  const nuVendingMachineContract = { address: "0x2" }
 
-      expect(useContract).toHaveBeenCalledWith(
-        contractArtifact.address,
-        contractArtifact.abi
-      )
-    }
-  )
+  beforeEach(() => {
+    ;(useThreshold as jest.Mock).mockReturnValue({
+      vendingMachines: {
+        keep: { contract: keepVendingMachineContract },
+        nu: { contract: nuVendingMachineContract },
+      },
+    })
+  })
+
+  test("should return the vending machine contract instance for KEEP token", () => {
+    const { result } = renderHook(() => useVendingMachineContract(Token.Keep))
+    expect(result.current).toEqual(keepVendingMachineContract)
+  })
+
+  test("should return the vending machine contract instance for NU token", () => {
+    const { result } = renderHook(() => useVendingMachineContract(Token.Nu))
+    expect(result.current).toEqual(nuVendingMachineContract)
+  })
+
+  test("should return null if vending machines are not available", () => {
+    ;(useThreshold as jest.Mock).mockReturnValue({})
+    const { result } = renderHook(() => useVendingMachineContract(Token.Keep))
+    expect(result.current).toBeNull()
+  })
 })

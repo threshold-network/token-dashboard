@@ -1,10 +1,17 @@
 import React from "react"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
-import { ChakraProvider } from "@chakra-ui/react"
+import {
+  ChakraProvider,
+  extendTheme,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+} from "@chakra-ui/react"
 import { ConnectStarknet } from "../ConnectStarknet"
 import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
-import theme from "../../../../theme"
-
 // Mock the hooks and components
 jest.mock("../../../../hooks/useStarknetConnection")
 jest.mock("@threshold-network/components", () => ({
@@ -18,12 +25,49 @@ jest.mock("../../../../static/icons/Starknet", () => ({
 }))
 
 jest.mock("../../../../static/icons/Argent", () => ({
-  Argent: () => <div data-testid="argent-icon">Argent Icon</div>,
+  ArgentIcon: () => <div data-testid="argent-icon">Argent Icon</div>,
+}))
+
+jest.mock("@chakra-ui/react", () => ({
+  ...jest.requireActual("@chakra-ui/react"),
+  Badge: ({ children }: { children: React.ReactNode }) => (
+    <span>{children}</span>
+  ),
 }))
 
 const mockUseStarknetConnection = useStarknetConnection as jest.MockedFunction<
   typeof useStarknetConnection
 >
+
+// Create a minimal theme to avoid issues with the default theme.
+const testTheme = extendTheme({
+  components: {
+    Badge: {
+      baseStyle: {
+        borderRadius: "full",
+        px: 3,
+        py: 1,
+        textTransform: "none",
+        fontSize: "sm",
+        fontWeight: "medium",
+        letterSpacing: "0.5px",
+      },
+    },
+  },
+})
+
+const TestWrapper: React.FC = ({ children }) => (
+  <ChakraProvider theme={testTheme}>
+    <Modal isOpen={true} onClose={() => {}}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Connect Starknet</ModalHeader>
+        <ModalBody>{children}</ModalBody>
+        <ModalFooter />
+      </ModalContent>
+    </Modal>
+  </ChakraProvider>
+)
 
 const renderComponent = (props = {}) => {
   const defaultProps = {
@@ -31,11 +75,9 @@ const renderComponent = (props = {}) => {
     closeModal: jest.fn(),
   }
 
-  return render(
-    <ChakraProvider theme={theme}>
-      <ConnectStarknet {...defaultProps} {...props} />
-    </ChakraProvider>
-  )
+  return render(<ConnectStarknet {...defaultProps} {...props} />, {
+    wrapper: TestWrapper,
+  })
 }
 
 describe("ConnectStarknet", () => {
@@ -66,7 +108,9 @@ describe("ConnectStarknet", () => {
     it("should render the connect button", () => {
       renderComponent()
 
-      expect(screen.getByText("Connect Starknet Wallet")).toBeInTheDocument()
+      expect(
+        screen.getByRole("heading", { name: "Connect Starknet Wallet" })
+      ).toBeInTheDocument()
       expect(
         screen.getByText(
           "Connect your Starknet wallet to interact with tBTC on Starknet"
@@ -140,9 +184,13 @@ describe("ConnectStarknet", () => {
       renderComponent()
 
       const braavosButton = screen.getByText("Braavos").closest("button")
-      expect(braavosButton).toContainElement(
-        screen.getAllByTestId("starknet-icon")[1]
+      // Get all starknet icons, the first one is in the header
+      const starknetIcons = screen.getAllByTestId("starknet-icon")
+      // The Braavos wallet should contain one of them (not the header one)
+      const buttonIcon = braavosButton?.querySelector(
+        '[data-testid="starknet-icon"]'
       )
+      expect(buttonIcon).toBeInTheDocument()
     })
 
     it("should call connect when wallet button is clicked", async () => {
@@ -222,13 +270,7 @@ describe("ConnectStarknet", () => {
     it("should close modal when connection is successful", () => {
       const closeModal = jest.fn()
 
-      const { rerender } = render(
-        <ChakraProvider theme={theme}>
-          <ConnectStarknet goBack={jest.fn()} closeModal={closeModal} />
-        </ChakraProvider>
-      )
-
-      // Start disconnected
+      // Start disconnected - set up mock BEFORE render
       mockUseStarknetConnection.mockReturnValue({
         isConnected: false,
         isConnecting: false,
@@ -243,10 +285,9 @@ describe("ConnectStarknet", () => {
         disconnect: mockDisconnect,
       })
 
-      rerender(
-        <ChakraProvider theme={theme}>
-          <ConnectStarknet goBack={jest.fn()} closeModal={closeModal} />
-        </ChakraProvider>
+      const { rerender } = render(
+        <ConnectStarknet goBack={jest.fn()} closeModal={closeModal} />,
+        { wrapper: TestWrapper }
       )
 
       expect(closeModal).not.toHaveBeenCalled()
@@ -266,11 +307,7 @@ describe("ConnectStarknet", () => {
         disconnect: mockDisconnect,
       })
 
-      rerender(
-        <ChakraProvider theme={theme}>
-          <ConnectStarknet goBack={jest.fn()} closeModal={closeModal} />
-        </ChakraProvider>
-      )
+      rerender(<ConnectStarknet goBack={jest.fn()} closeModal={closeModal} />)
 
       expect(closeModal).toHaveBeenCalledTimes(1)
     })

@@ -167,28 +167,35 @@ describe("Test `useFetchTvl` hook", () => {
         address: mockedMultiCallContract.address,
         method: "getEthBalance",
         args: [mockedKeepBondingContract.address],
+        key: "ecdsaTvl",
       },
       {
         interface: tbtcv1Context.contract.interface,
         address: tbtcv1Context.contract.address,
         method: "totalSupply",
+        args: [],
+        key: "tbtcv1Tvl",
       },
       {
         interface: keepContext.contract.interface,
         address: keepContext.contract.address,
         method: "balanceOf",
         args: [mockedKeepTokenStakingContract.address],
+        key: "keepStakingTvl",
       },
       {
         interface: tContext.contract.interface,
         address: tContext.contract.address,
         method: "balanceOf",
         args: [mockedTStakingContract.address],
+        key: "tStakingTvl",
       },
       {
         interface: tBTCContext.contract.interface,
         address: tBTCContext.contract.address,
         method: "totalSupply",
+        args: [],
+        key: "tBTC",
       },
     ])
 
@@ -209,27 +216,27 @@ describe("Test `useFetchTvl` hook", () => {
     )
 
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      8,
+      6,
       ethInKeepBonding.format,
       mockedETHData.usdPrice
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      9,
+      7,
       tbtcTokenTotalSupply.format,
       tbtcv1Context.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      10,
+      8,
       tBTC.format,
       tBTCContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      11,
+      9,
       keepStaking.format,
       keepContext.usdConversion
     )
     expect(spyOnToUsdBalance).toHaveBeenNthCalledWith(
-      12,
+      10,
       tStaking.format,
       tContext.usdConversion
     )

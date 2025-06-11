@@ -6,15 +6,14 @@ jest.mock("@threshold-network/components", () => ({
   VStack: ({ children }: any) => <div>{children}</div>,
 }))
 
-import { render, screen } from "@testing-library/react"
-import { MemoryRouter, useMatch } from "react-router-dom"
-import { ChakraProvider } from "@chakra-ui/react"
+import { screen } from "@testing-library/react"
+import { useMatch } from "react-router-dom"
+import { renderWithRouter } from "../../../test-helpers/renderWithRouter"
 import NavbarComponent from "../NavbarComponent"
 import {
   MockStarknetWalletProvider,
   createMockStarknetContextValue,
 } from "../../../test/starknet-test-utils"
-import { theme } from "@threshold-network/components"
 
 // Mock the imported components
 jest.mock("../WalletConnectionAlert", () => ({
@@ -87,14 +86,10 @@ describe("NavbarComponent", () => {
       ReturnType<typeof createMockStarknetContextValue>
     > = { connected: false }
   ) => {
-    return render(
-      <ChakraProvider theme={theme}>
-        <MemoryRouter>
-          <MockStarknetWalletProvider value={starknetValue}>
-            <NavbarComponent {...defaultProps} {...props} />
-          </MockStarknetWalletProvider>
-        </MemoryRouter>
-      </ChakraProvider>
+    return renderWithRouter(
+      <MockStarknetWalletProvider value={starknetValue}>
+        <NavbarComponent {...defaultProps} {...props} />
+      </MockStarknetWalletProvider>
     )
   }
 

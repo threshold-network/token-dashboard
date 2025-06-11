@@ -1,3 +1,28 @@
+// Mock axios before any imports
+jest.mock("axios", () => ({
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+}))
+
+// Mock getThresholdLib to avoid initialization issues
+jest.mock("../../utils/getThresholdLib", () => ({
+  threshold: {
+    tbtc: {
+      initializeCrossChain: jest.fn(),
+      l2TbtcToken: {
+        balanceOf: jest.fn(),
+      },
+    },
+    updateConfig: jest.fn(),
+    config: {
+      ethereum: {},
+      bitcoin: {},
+    },
+  },
+}))
+
 import { providers } from "ethers"
 import { threshold } from "../../utils/getThresholdLib"
 import { ChainName } from "../types"

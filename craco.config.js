@@ -16,9 +16,11 @@ module.exports = {
   jest: {
     configure: {
       transformIgnorePatterns: [
-        "/node_modules/(?!(@ledgerhq/connect-kit-loader|@ledgerhq|@starknet-react|axios|@walletconnect|uint8arrays|eventemitter3|multiformats|@keep-network/tbtc-v2.ts)/)",
+        "/node_modules/(?!(@starknet-react|axios|@walletconnect|uint8arrays|eventemitter3|multiformats|@keep-network/tbtc-v2.ts)/)",
       ],
       moduleNameMapper: {
+        "^@ledgerhq/connect-kit-loader$":
+          "<rootDir>/src/__mocks__/@ledgerhq/connect-kit-loader.js",
         "^@keep-network/tbtc-v2.ts/dist/src/bitcoin$":
           "@keep-network/tbtc-v2.ts",
         "^uint8arrays$": "<rootDir>/src/__mocks__/uint8arrays.js",
@@ -29,6 +31,7 @@ module.exports = {
           useESM: true,
         },
       },
+      testPathIgnorePatterns: ["/node_modules/", "/__mocks__/"],
     },
   },
   webpack: {

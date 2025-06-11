@@ -4,6 +4,12 @@ import { getSigner } from "../../../utils/getContract"
 import { useSendTransaction } from "../useSendTransaction"
 import { ModalType, TransactionStatus } from "../../../enums"
 import { useModal } from "../../../hooks/useModal"
+import { Provider } from "react-redux"
+import { configureStore } from "@reduxjs/toolkit"
+import { accountSlice } from "../../../store/account"
+import { modalSlice } from "../../../store/modal"
+import { transactionSlice } from "../../../store/transactions"
+import React from "react"
 
 jest.mock("@web3-react/core", () => ({
   ...(jest.requireActual("@web3-react/core") as {}),
@@ -49,6 +55,18 @@ describe("Test `useSendTransaction` hook", () => {
   const mockedOnSuccessCallback = jest.fn()
   const mockedOnErroCallback = jest.fn()
 
+  const store = configureStore({
+    reducer: {
+      account: accountSlice.reducer,
+      modal: modalSlice.reducer,
+      transactions: transactionSlice.reducer,
+    },
+  })
+
+  const wrapper: React.FC = ({ children }) => (
+    <Provider store={store}>{children}</Provider>
+  )
+
   beforeEach(() => {
     ;(useWeb3React as jest.Mock).mockReturnValue({
       chainId: 1,
@@ -62,8 +80,9 @@ describe("Test `useSendTransaction` hook", () => {
   test("should proceed the transaction correctly", async () => {
     mockedContract[methodName].mockResolvedValue(mockedTx)
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useSendTransaction(mockedContract, methodName)
+    const { result, waitForNextUpdate } = renderHook(
+      () => useSendTransaction(mockedContract, methodName),
+      { wrapper }
     )
 
     expect(result.current.status).toEqual(TransactionStatus.Idle)
@@ -88,8 +107,10 @@ describe("Test `useSendTransaction` hook", () => {
   test("should proceed the transaction correctly and call custom on success callback", async () => {
     mockedContract[methodName].mockResolvedValue(mockedTx)
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useSendTransaction(mockedContract, methodName, mockedOnSuccessCallback)
+    const { result, waitForNextUpdate } = renderHook(
+      () =>
+        useSendTransaction(mockedContract, methodName, mockedOnSuccessCallback),
+      { wrapper }
     )
 
     expect(result.current.status).toEqual(TransactionStatus.Idle)
@@ -97,66 +118,82 @@ describe("Test `useSendTransaction` hook", () => {
     result.current.sendTransaction(from, value)
     await waitForNextUpdate()
 
-    expect(mockedOnSuccessCallback).toHaveBeenCalledWith(mockedTx.wait())
+    expect(mockedTx.wait).toHaveBeenCalled()
+    const txReceipt = await mockedTx.wait()
+    expect(mockedOnSuccessCallback).toHaveBeenCalledWith(txReceipt, null)
   })
 
-  test("should do nothing if there is no signer", async () => {
+  test("should fail if there is no signer", async () => {
     ;(useWeb3React as jest.Mock).mockReturnValue({
       chainId: 1,
       library: mockedLibrary,
       account: null,
     })
 
-    const { result } = renderHook(() =>
-      useSendTransaction(mockedContract, methodName)
+    const { result } = renderHook(
+      () => useSendTransaction(mockedContract, methodName),
+      { wrapper }
     )
 
     expect(result.current.status).toEqual(TransactionStatus.Idle)
 
-    result.current.sendTransaction(from, value)
+    // Don't await since error is thrown synchronously
+    await result.current.sendTransaction(from, value)
 
     expect(getSigner).not.toHaveBeenCalledWith(mockedLibrary, account)
     expect(mockedContract.connect).not.toHaveBeenCalledWith(mockedSigner)
     expect(mockedContract[methodName]).not.toHaveBeenCalledWith(from, value)
     expect(mockedTx.wait).not.toHaveBeenCalled()
-    expect(result.current.status).toEqual(TransactionStatus.Idle)
-    expect(mockedOpenModalFn).not.toHaveBeenCalled()
+    expect(result.current.status).toEqual(TransactionStatus.Failed)
+    expect(mockedOpenModalFn).toHaveBeenCalledWith(
+      ModalType.TransactionFailed,
+      expect.objectContaining({
+        error: expect.stringContaining("No connected account detected"),
+      })
+    )
   })
 
-  test("should do nothing if there is no method name", async () => {
+  test("should fail if there is no method name", async () => {
     ;(useWeb3React as jest.Mock).mockReturnValue({
       chainId: 1,
       library: mockedLibrary,
-      account: null,
+      account,
     })
     const nonExistentMethodName = "asd"
 
-    const { result } = renderHook(() =>
-      useSendTransaction(mockedContract, nonExistentMethodName)
+    const { result } = renderHook(
+      () => useSendTransaction(mockedContract, nonExistentMethodName),
+      { wrapper }
     )
 
     expect(result.current.status).toEqual(TransactionStatus.Idle)
 
-    result.current.sendTransaction(from, value)
+    // Don't await since error is thrown synchronously
+    await result.current.sendTransaction(from, value)
 
-    expect(getSigner).not.toHaveBeenCalledWith(mockedLibrary, account)
-    expect(mockedContract.connect).not.toHaveBeenCalledWith(mockedSigner)
-    expect(mockedTx.wait).not.toHaveBeenCalled()
-    expect(result.current.status).toEqual(TransactionStatus.Idle)
-    expect(mockedOpenModalFn).not.toHaveBeenCalled()
+    expect(mockedContract[nonExistentMethodName]).toBeUndefined()
+    expect(result.current.status).toEqual(TransactionStatus.Failed)
+    expect(mockedOpenModalFn).toHaveBeenCalledWith(
+      ModalType.TransactionFailed,
+      expect.objectContaining({
+        error: expect.any(String),
+      })
+    )
   })
 
   test("should call a custom error callback", async () => {
     const error = new Error()
     mockedContract[methodName].mockRejectedValue(error)
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useSendTransaction(
-        mockedContract,
-        methodName,
-        mockedOnSuccessCallback,
-        mockedOnErroCallback
-      )
+    const { result, waitForNextUpdate } = renderHook(
+      () =>
+        useSendTransaction(
+          mockedContract,
+          methodName,
+          mockedOnSuccessCallback,
+          mockedOnErroCallback
+        ),
+      { wrapper }
     )
 
     expect(result.current.status).toEqual(TransactionStatus.Idle)
@@ -180,8 +217,9 @@ describe("Test `useSendTransaction` hook", () => {
       const error = new Error(errorMsg)
       mockedContract[methodName].mockRejectedValue(error)
 
-      const { result, waitForNextUpdate } = renderHook(() =>
-        useSendTransaction(mockedContract, methodName)
+      const { result, waitForNextUpdate } = renderHook(
+        () => useSendTransaction(mockedContract, methodName),
+        { wrapper }
       )
 
       expect(result.current.status).toEqual(TransactionStatus.Idle)

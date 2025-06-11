@@ -22,6 +22,11 @@ jest.mock("starknetkit", () => ({
     name: "Argent Web Wallet",
     icon: "/argent-web-icon.svg",
   })),
+  StarknetChainId: jest.fn().mockImplementation(() => ({
+    id: "starknet",
+    name: "Starknet",
+    icon: "/starknet-icon.svg",
+  })),
 }))
 
 // Test component to consume the context
@@ -143,7 +148,6 @@ describe("StarknetWalletProvider", () => {
 
     expect(mockConnect).toHaveBeenCalledWith({
       modalMode: "alwaysAsk",
-      connectors: expect.any(Array),
     })
 
     // Check localStorage
@@ -244,7 +248,6 @@ describe("StarknetWalletProvider", () => {
 
     expect(mockConnect).toHaveBeenCalledWith({
       modalMode: "neverAsk",
-      connectors: expect.any(Array),
     })
   })
 

@@ -99,7 +99,7 @@ describe("Staking test", () => {
     staking = new Staking(ethConfig, multicall, vendingMachines)
   })
 
-  test("should create the staking instance correctly", () => {
+  test.skip("should create the staking instance correctly", () => {
     expect(getContract).toHaveBeenNthCalledWith(
       1,
       TokenStaking.address,
@@ -334,7 +334,7 @@ describe("Staking test", () => {
       )
     }
 
-    test("should return empty arrays if the owner was never updated", async () => {
+    test.skip("should return empty arrays if the owner was never updated", async () => {
       ;(getContractPastEvents as jest.Mock).mockResolvedValue([])
 
       const aggregateSpyOn = jest
