@@ -30,4 +30,4 @@ yarn-error.log
 CLAUDE.md
 coverage/
 .do/app.yaml
-.env.test
+.env.testnet
