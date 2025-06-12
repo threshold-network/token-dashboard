@@ -14,6 +14,7 @@ import {
   getBlocklistInfo,
   getStakingProviderOperatorInfo,
   getTrmInfo,
+  getBtcAddressTrmInfo,
 } from "./effects"
 
 export interface AccountState {
@@ -57,6 +58,15 @@ export const accountSlice = createSlice({
       const { address, chainId } = action.payload
       state.address = address
       state.chainId = chainId
+    },
+    bitcoinAddressSubmitted: (
+      state: AccountState,
+      action: PayloadAction<{ btcAddress: string; ethChainId?: number }>
+    ) => {
+      // This action primarily triggers an effect. State changes related to TRM
+      // (like isFetching, error, isBlocked) are handled by other reducers
+      // dispatched from the effect (fetchingTrm, setAccountBlockedStatus, etc.).
+      // We could add a specific state here if needed, e.g., state.trm.lastCheckedBtcAddress = action.payload.btcAddress
     },
     accountUsedAsStakingProvider: (
       state: AccountState,
@@ -160,12 +170,17 @@ export const registerAccountListeners = () => {
       actionCreator: accountSlice.actions.walletConnected,
       effect: getTrmInfo,
     })
+    startAppListening({
+      actionCreator: accountSlice.actions.bitcoinAddressSubmitted,
+      effect: getBtcAddressTrmInfo,
+    })
   }
 }
 registerAccountListeners()
 
 export const {
   walletConnected,
+  bitcoinAddressSubmitted,
   accountUsedAsStakingProvider,
   setAccountBlockedStatus,
   setMappedOperators,
