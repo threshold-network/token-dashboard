@@ -32,12 +32,15 @@ jest.mock(
   })
 )
 
+// Mock for NuCypherStakingEscrow - this artifact doesn't exist in the current package
+// Using a manual mock instead
 jest.mock(
   "@threshold-network/solidity-contracts/artifacts/NuCypherStakingEscrow.json",
   () => ({
     address: "0xd696d5a9b083959587F30e487038529a876b08C2",
     abi: [],
-  })
+  }),
+  { virtual: true }
 )
 
 jest.mock("@keep-network/keep-core/artifacts/TokenStaking.json", () => ({

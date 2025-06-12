@@ -23,15 +23,27 @@ describe("StarkNet Configuration", () => {
 
   describe("getStarkNetConfig", () => {
     it("should default to mainnet when no chainId provided", () => {
-      const config = getStarkNetConfig()
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
       expect(config.chainName).toBe("StarkNet")
     })
 
     it("should use mainnet when env is true", () => {
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
       process.env.REACT_APP_STARKNET_MAINNET = "true"
-      const config = getStarkNetConfig()
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
       expect(config.chainName).toBe("StarkNet")
@@ -51,7 +63,13 @@ describe("StarkNet Configuration", () => {
     })
 
     it("should have correct relayer URL for mainnet", () => {
-      const config = getStarkNetConfig("0x534e5f4d41494e")
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig("0x534e5f4d41494e")
       expect(config.relayerUrl).toBe("https://relayer.threshold.network")
     })
 
@@ -111,8 +129,16 @@ describe("StarkNet Configuration", () => {
     })
 
     it("should check compatibility correctly for mainnet", () => {
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
       process.env.REACT_APP_STARKNET_MAINNET = "true"
-      const result = checkStarkNetNetworkCompatibility(1, "0x534e5f4d41494e")
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility: checkCompat,
+      } = require("../tbtcStarknetHelpers")
+
+      const result = checkCompat(1, "0x534e5f4d41494e")
       expect(result.compatible).toBe(true)
       expect(result.error).toBeUndefined()
     })

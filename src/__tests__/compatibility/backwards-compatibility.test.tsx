@@ -119,6 +119,12 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("StarkNet New Functionality", () => {
     it("should work with mainnet config by default when provider is mainnet", () => {
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig } = require("../../utils/tbtcStarknetHelpers")
+
       // Default mainnet config
       const config = getStarkNetConfig()
 
