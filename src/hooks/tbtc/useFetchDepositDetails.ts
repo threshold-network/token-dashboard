@@ -26,10 +26,17 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
   const [depositData, setDepositData] = useState<DepositData | undefined>()
 
   useEffect(() => {
+    if (!depositKey) {
+      console.log("No depositKey provided to useFetchDepositDetails")
+      return
+    }
+
     const isMounted = { current: true }
 
     const fetch = async () => {
+      console.log("Starting to fetch deposit details for key:", depositKey)
       setIsFetching(true)
+
       try {
         const { depositor } = (await threshold.tbtc.bridgeContract!.deposits(
           depositKey
@@ -92,9 +99,17 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
         )
 
         const btcTxHash = reverseTxHash(deposit.fundingTxHash)
-        const confirmations = await threshold.tbtc.getTransactionConfirmations(
-          btcTxHash
-        )
+        let confirmations = 0
+        try {
+          console.log("Fetching confirmations for tx:", btcTxHash)
+          confirmations = await threshold.tbtc.getTransactionConfirmations(
+            btcTxHash
+          )
+          console.log("Got confirmations:", confirmations)
+        } catch (error) {
+          console.warn("Failed to get transaction confirmations:", error)
+          // Continue with 0 confirmations if Electrum fails
+        }
         const requiredConfirmations =
           threshold.tbtc.minimumNumberOfConfirmationsNeeded(deposit.amount)
 

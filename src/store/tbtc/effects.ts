@@ -78,7 +78,6 @@ export const findUtxoEffect = async (
   const {
     tbtc: {
       depositor,
-      ethAddress,
       blindingFactor,
       walletPublicKeyHash,
       refundLocktime,
@@ -110,7 +109,19 @@ export const findUtxoEffect = async (
         const chain = chainRegistry.getChain(chainId, chainName)
 
         if (!chain) {
-          // Legacy validation for backward compatibility
+          // For StarkNet chains, check if they're disabled
+          if (chainName?.toLowerCase() === "starknet") {
+            console.error("StarkNet network is disabled:", {
+              chainId,
+              chainName,
+              message: "Cannot process deposits on disabled StarkNet network",
+            })
+            throw new Error(
+              "The connected StarkNet network is not enabled. Please switch to a supported network."
+            )
+          }
+
+          // Legacy validation for backward compatibility (EVM chains)
           if (getChainIdToNetworkName(chainId) !== chainName) {
             console.error("Chain mismatch:", {
               chainId,
@@ -121,10 +132,9 @@ export const findUtxoEffect = async (
           }
         } else {
           // For StarkNet, we use the proxy chain ID for validation
-          const effectiveChainId =
-            chain.getType() === ChainType.STARKNET
-              ? chainRegistry.getEffectiveChainId(chainId, chainName)
-              : chainId
+          if (chain.getType() === ChainType.STARKNET) {
+            chainRegistry.getEffectiveChainId(chainId, chainName)
+          }
         }
         // Initiating deposit from redux store (if deposit object is empty)
         if (!listenerApi.extra.threshold.tbtc.deposit) {
@@ -329,17 +339,25 @@ export const fetchUtxoConfirmationsEffect = async (
     try {
       while (true) {
         // Get confirmations
-        const confirmations = await forkApi.pause(
-          listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
-            utxo.transactionHash
+        try {
+          const confirmations = await forkApi.pause(
+            listenerApi.extra.threshold.tbtc.getTransactionConfirmations(
+              utxo.transactionHash
+            )
           )
-        )
-        listenerApi.dispatch(
-          tbtcSlice.actions.updateState({
-            key: "txConfirmations",
-            value: confirmations,
-          })
-        )
+          listenerApi.dispatch(
+            tbtcSlice.actions.updateState({
+              key: "txConfirmations",
+              value: confirmations,
+            })
+          )
+        } catch (error) {
+          // Log the error but continue polling
+          console.warn(
+            `Failed to get confirmations for ${utxo.transactionHash}, will retry:`,
+            error
+          )
+        }
         await forkApi.delay(10 * ONE_SEC_IN_MILISECONDS)
       }
     } catch (err) {

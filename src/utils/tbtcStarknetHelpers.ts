@@ -9,6 +9,7 @@ import {
   getStarkNetNetworkConfig,
   STARKNET_MAINNET_CHAIN_ID,
   STARKNET_SEPOLIA_CHAIN_ID,
+  isEnabledStarkNetChainId,
 } from "../config/starknet"
 
 // Re-export isStarknetNetwork for convenience
@@ -90,6 +91,13 @@ export const initializeStarkNetDeposit = async (
   }
 
   try {
+    // Check if the network is enabled before attempting to get config
+    if (!isEnabledStarkNetChainId(chainId)) {
+      throw new Error(
+        "The connected StarkNet network is not enabled. Please switch to a supported network in your wallet."
+      )
+    }
+
     const config = getStarkNetConfig(chainId)
 
     // Log configuration being used
@@ -145,6 +153,15 @@ export const checkStarkNetNetworkCompatibility = (
 ): { compatible: boolean; error?: string } => {
   if (!evmChainId || !starkNetChainId) {
     return { compatible: false, error: "Network information missing" }
+  }
+
+  // First check if the StarkNet network is enabled
+  if (!isEnabledStarkNetChainId(starkNetChainId)) {
+    return {
+      compatible: false,
+      error:
+        "The connected StarkNet network is not enabled. Please switch to a supported network in your wallet.",
+    }
   }
 
   const config = getStarkNetConfig(starkNetChainId)

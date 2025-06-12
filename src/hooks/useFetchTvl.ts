@@ -14,6 +14,7 @@ import { Token } from "../enums"
 import { toUsdBalance } from "../utils/getUsdBalance"
 import { useIsActive } from "./useIsActive"
 import { ContractCall } from "../threshold-ts/multicall"
+import { safeFormatUnits } from "../utils/safeBigNumber"
 
 interface TvlRawData {
   ecdsaTvl: string
@@ -144,17 +145,26 @@ export const useFetchTvl = (): [
   }, [fetchOnChainData, chainId])
 
   const data = useMemo(() => {
-    const ecdsa = toUsdBalance(formatUnits(ecdsaTvl), eth.usdPrice)
+    const ecdsa = toUsdBalance(safeFormatUnits(ecdsaTvl), eth.usdPrice)
 
-    const tbtcv1USD = toUsdBalance(formatUnits(tbtcTvl), tbtcv1.usdConversion)
-    const tBTCUSD = toUsdBalance(formatUnits(tBTCTvl), tBTCToken.usdConversion)
+    const tbtcv1USD = toUsdBalance(
+      safeFormatUnits(tbtcTvl),
+      tbtcv1.usdConversion
+    )
+    const tBTCUSD = toUsdBalance(
+      safeFormatUnits(tBTCTvl),
+      tBTCToken.usdConversion
+    )
 
     const keepStakingUSD = toUsdBalance(
-      formatUnits(keepStakingTvl),
+      safeFormatUnits(keepStakingTvl),
       keep.usdConversion
     )
 
-    const tStakingUSD = toUsdBalance(formatUnits(tStakingTvl), t.usdConversion)
+    const tStakingUSD = toUsdBalance(
+      safeFormatUnits(tStakingTvl),
+      t.usdConversion
+    )
 
     const total = ecdsa
       .addUnsafe(tbtcv1USD)

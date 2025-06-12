@@ -6,12 +6,24 @@
  */
 
 /**
- * SINGLE CONTROL POINT FOR STARKNET NETWORKS
- * Comment out any network here to disable it throughout the application
+ * Get the default provider chain ID from environment
+ * @return {number} Returns 1 for mainnet or 11155111 for Sepolia
  */
+const getDefaultProviderChainId = (): number => {
+  const chainId = process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
+  return chainId ? parseInt(chainId) : 1
+}
+
+/**
+ * SINGLE CONTROL POINT FOR STARKNET NETWORKS
+ * Automatically enables the appropriate network based on the environment
+ * - If REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = 1: mainnet enabled, sepolia disabled
+ * - If REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = 11155111: sepolia enabled, mainnet disabled
+ */
+const defaultChainId = getDefaultProviderChainId()
 export const ENABLED_STARKNET_NETWORKS = {
-  mainnet: true,
-  sepolia: true, // Set to false or comment out to disable StarkNet Sepolia
+  mainnet: defaultChainId === 1,
+  sepolia: defaultChainId === 11155111,
 } as const
 
 export interface StarkNetNetworkConfig {

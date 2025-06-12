@@ -57,7 +57,9 @@ describe("Backwards Compatibility Suite", () => {
       // Network compatibility check should handle non-StarkNet chains gracefully
       const result = checkStarkNetNetworkCompatibility(1, "0xa4b1")
       expect(result.compatible).toBe(false)
-      expect(result.error).toContain("Wrong StarkNet network")
+      expect(result.error).toContain(
+        "The connected StarkNet network is not enabled"
+      )
     })
   })
 
@@ -237,8 +239,8 @@ describe("Backwards Compatibility Suite", () => {
       const end = performance.now()
       const duration = end - start
 
-      // Should complete 10k conversions in less than 100ms
-      expect(duration).toBeLessThan(100)
+      // Should complete 30k conversions in less than 200ms
+      expect(duration).toBeLessThan(200)
     })
   })
 

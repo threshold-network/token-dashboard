@@ -1,0 +1,71 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - "release/**"
+  pull_request:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+            echo "env_file=.env.prod.example" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            echo "environment=test" >> $GITHUB_OUTPUT
+            echo "env_file=.env.test.example" >> $GITHUB_OUTPUT
+          else
+            echo "environment=dev" >> $GITHUB_OUTPUT
+            echo "env_file=.env.docker.example" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up environment file
+        run: |
+          cp ${{ steps.env.outputs.env_file }} .env.${{ steps.env.outputs.environment }}
+          # In real deployment, secrets would be injected here
+          # For example:
+          # echo "REACT_APP_ETH_HOSTNAME_MAINNET=${{ secrets.ETH_HOSTNAME_MAINNET }}" >> .env.${{ steps.env.outputs.environment }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.env.outputs.environment }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          build-args: |
+            REACT_APP_SUPPORTED_CHAIN_ID=${{ steps.env.outputs.environment == 'prod' && '1' || '11155111' }}
+            REACT_APP_CHAIN_ID=${{ steps.env.outputs.environment == 'prod' && '1' || '11155111' }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
