@@ -60,13 +60,6 @@ export const useSendTransactionFromFn = <
   const { ledgerLiveAppEthereumSigner: signer } = useLedgerLiveApp()
   const { isEmbed } = useIsEmbed()
 
-  const isMounted = useRef(true)
-  useEffect(() => {
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-
   const sendTransaction = useCallback(
     async (...args: Parameters<typeof fn>) => {
       try {
@@ -81,61 +74,50 @@ export const useSendTransactionFromFn = <
           throw new Error(errorMessage)
         }
 
-        if (isMounted.current) {
-          setTransactionStatus(TransactionStatus.PendingWallet)
-          openModal(ModalType.TransactionIsWaitingForConfirmation)
-        }
+        setTransactionStatus(TransactionStatus.PendingWallet)
+        openModal(ModalType.TransactionIsWaitingForConfirmation)
+
         const tx = await fn(...args)
 
         const txHash = typeof tx === "string" ? tx : tx.hash
 
-        if (isMounted.current) {
-          openModal(ModalType.TransactionIsPending, {
-            transactionHash: txHash,
-          })
-          setTransactionStatus(TransactionStatus.PendingOnChain)
-        }
+        openModal(ModalType.TransactionIsPending, { transactionHash: txHash })
+        setTransactionStatus(TransactionStatus.PendingOnChain)
 
         let txReceipt: TransactionReceipt
         if (isEmbed) {
           const transaction = await signer!.provider?.getTransaction(txHash)
-          if (!transaction)
-            throw new Error(`Transaction ${transaction} not found!`)
-          txReceipt = await transaction?.wait()
+          if (!transaction) throw new Error(`Transaction ${txHash} not found!`)
+          txReceipt = await transaction.wait()
         } else {
           txReceipt = await (isContractTransaction(tx)
             ? (tx as ContractTransaction).wait()
             : library.waitForTransaction(txHash))
         }
 
-        if (isMounted.current) {
-          setTransactionStatus(TransactionStatus.Succeeded)
-          if (onSuccess) {
-            const additionalParams = isTransactionHashWithAdditionalParams(tx)
-              ? (tx as TransactionHashWithAdditionalParams).additionalParams
-              : null
-            await onSuccess(txReceipt, additionalParams)
-          }
+        setTransactionStatus(TransactionStatus.Succeeded)
+        if (onSuccess) {
+          const additionalParams = isTransactionHashWithAdditionalParams(tx)
+            ? (tx as TransactionHashWithAdditionalParams).additionalParams
+            : null
+          await onSuccess(txReceipt, additionalParams)
         }
+
         return txReceipt
       } catch (error: any) {
-        if (isMounted.current) {
-          setTransactionStatus(
-            isWalletRejectionError(error)
-              ? TransactionStatus.Rejected
-              : TransactionStatus.Failed
-          )
+        const status = isWalletRejectionError(error)
+          ? TransactionStatus.Rejected
+          : TransactionStatus.Failed
+        setTransactionStatus(status)
 
-          if (onError) {
-            await onError(error)
-          } else {
-            openModal(ModalType.TransactionFailed, {
-              transactionHash: error?.transaction?.hash,
-              error: error?.message,
-              // TODO: how to check if an error is expandable?
-              isExpandableError: true,
-            })
-          }
+        if (onError) {
+          await onError(error)
+        } else {
+          openModal(ModalType.TransactionFailed, {
+            transactionHash: error?.transaction?.hash,
+            error: error?.message,
+            isExpandableError: true,
+          })
         }
       }
     },
