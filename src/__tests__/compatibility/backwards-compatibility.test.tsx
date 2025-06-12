@@ -231,10 +231,19 @@ describe("Backwards Compatibility Suite", () => {
 
   describe("Performance and Memory", () => {
     it("should not increase memory usage significantly", () => {
+      // Set a valid chain ID for this test
+      const originalChainId = process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+
+      // Clear module cache to pick up new env
+      jest.resetModules()
+
       // Test that repeated calls don't leak memory
       const {
         getChainIdToNetworkName,
       } = require("../../networks/utils/getChainIdToNetworkName")
+      const { getStarkNetConfig } = require("../../utils/tbtcStarknetHelpers")
+
       const initialMemory = process.memoryUsage().heapUsed
 
       for (let i = 0; i < 1000; i++) {
@@ -246,6 +255,9 @@ describe("Backwards Compatibility Suite", () => {
 
       const finalMemory = process.memoryUsage().heapUsed
       const memoryIncrease = finalMemory - initialMemory
+
+      // Restore original chain ID
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = originalChainId
 
       // Memory increase should be minimal (less than 10MB)
       expect(memoryIncrease).toBeLessThan(10 * 1024 * 1024)
