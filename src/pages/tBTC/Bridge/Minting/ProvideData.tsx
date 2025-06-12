@@ -4,7 +4,7 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { FC, Ref, useCallback, useRef, useState } from "react"
+import { FC, Ref, useCallback, useRef, useState, useEffect } from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
 import withWalletConnection from "../../../../components/withWalletConnection"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
@@ -50,6 +50,12 @@ import {
 import { StarkNetLoadingState } from "../components/StarkNetLoadingState"
 import { StarkNetErrorState } from "../components/StarkNetErrorState"
 import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
+import { useAppSelector, useAppDispatch } from "../../../../hooks/store"
+import { BridgeActivityStatus } from "../../../../threshold-ts/tbtc"
+import { RootState } from "../../../../store"
+import { tbtcSlice } from "../../../../store/tbtc/tbtcSlice"
 
 export interface FormValues {
   userWalletAddress: string
@@ -173,11 +179,27 @@ export const ProvideDataComponent: FC<{
 }> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
+  const [stagedDepositValues, setStagedDepositValues] =
+    useState<FormValues | null>(null)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const threshold = useThreshold()
   const { account, chainId } = useIsActive()
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
+  const { openModal, closeModal: closeModalFromHook, modalType } = useModal()
+  const dispatch = useAppDispatch()
+
+  const bridgeActivity = useAppSelector(
+    (state: RootState) => state.tbtc.bridgeActivity.data
+  )
+  const firstDepositWarningConfirmed = useAppSelector(
+    (state: RootState) => state.tbtc.firstDepositWarningConfirmed
+  )
+  const currentModalType = useAppSelector(
+    (state: RootState) => state.modal.modalType
+  )
+  const previousModalTypeRef = useRef<ModalType | null>()
+
   const { nonEVMChainName, isNonEVMActive, nonEVMPublicKey } =
     useNonEVMConnection()
   const starkNetStatus = useStarkNetStatus()
@@ -216,7 +238,7 @@ export const ProvideDataComponent: FC<{
     setShouldDownloadDepositReceipt(checked)
   }
 
-  const onSubmit = useCallback(
+  const proceedWithDeposit = useCallback(
     async (values: FormValues) => {
       try {
         // Only validate wallet address matching for EVM chains
@@ -383,11 +405,11 @@ export const ProvideDataComponent: FC<{
         }
         updateState("mintingStep", MintingStep.Deposit)
       } catch (error) {
-        setSubmitButtonLoading(false)
-        // Re-throw to let Formik handle it
+        console.error("Error during deposit process:", error)
         throw error
       } finally {
-        // Loading state is already handled in catch
+        setSubmitButtonLoading(false)
+        setStagedDepositValues(null)
       }
     },
     [
@@ -398,11 +420,65 @@ export const ProvideDataComponent: FC<{
       nonEVMPublicKey,
       starknetChainId,
       account,
-      threshold,
+      threshold.tbtc,
       updateState,
       setDepositDataInLocalStorage,
       depositTelemetry,
     ]
+  )
+
+  useEffect(() => {
+    if (firstDepositWarningConfirmed && stagedDepositValues) {
+      proceedWithDeposit(stagedDepositValues)
+      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
+    }
+  }, [
+    firstDepositWarningConfirmed,
+    stagedDepositValues,
+    dispatch,
+    proceedWithDeposit,
+  ])
+
+  useEffect(() => {
+    if (
+      previousModalTypeRef.current === ModalType.FirstDepositWarning &&
+      currentModalType === null &&
+      !firstDepositWarningConfirmed
+    ) {
+      setSubmitButtonLoading(false)
+      setStagedDepositValues(null)
+      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
+    }
+    previousModalTypeRef.current = currentModalType
+  }, [currentModalType, firstDepositWarningConfirmed, dispatch])
+
+  const onSubmit = useCallback(
+    async (values: FormValues) => {
+      setSubmitButtonLoading(true)
+      try {
+        const isFirstDeposit =
+          !bridgeActivity ||
+          bridgeActivity.length === 0 ||
+          !bridgeActivity.some(
+            (activity) => activity.status === BridgeActivityStatus.MINTED
+          )
+
+        if (isFirstDeposit) {
+          setStagedDepositValues(values)
+          openModal(ModalType.FirstDepositWarning)
+        } else {
+          await proceedWithDeposit(values)
+        }
+      } catch (error) {
+        console.error(
+          "Error in onSubmit before opening modal or proceeding with deposit:",
+          error
+        )
+        setSubmitButtonLoading(false)
+        setStagedDepositValues(null)
+      }
+    },
+    [bridgeActivity, openModal, proceedWithDeposit]
   )
 
   // Only show special UI for StarkNet

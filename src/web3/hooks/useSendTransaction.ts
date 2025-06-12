@@ -45,7 +45,8 @@ export const useSendTransactionFromFn = <
 >(
   fn: F,
   onSuccess?: OnSuccessCallback,
-  onError?: OnErrorCallback
+  onError?: OnErrorCallback,
+  pendingText?: string
 ) => {
   const {
     isBlocked,
@@ -75,7 +76,9 @@ export const useSendTransactionFromFn = <
         }
 
         setTransactionStatus(TransactionStatus.PendingWallet)
-        openModal(ModalType.TransactionIsWaitingForConfirmation)
+        openModal(ModalType.TransactionIsWaitingForConfirmation, {
+          pendingText,
+        })
 
         const tx = await fn(...args)
 

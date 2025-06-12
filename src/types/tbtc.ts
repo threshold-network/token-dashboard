@@ -28,6 +28,7 @@ export interface TbtcState {
   extraData?: string
 
   bridgeActivity: FetchingState<BridgeActivity[]>
+  firstDepositWarningConfirmed?: boolean
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">
