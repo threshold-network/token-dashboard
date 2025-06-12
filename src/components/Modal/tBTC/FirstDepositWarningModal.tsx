@@ -45,8 +45,9 @@ const FirstDepositWarningModalBase: FC<FirstDepositWarningModalProps> = ({
             amount of 0.01 BTC.
           </H5>
           <BodyLg my="2">
-            The system won't recognize initial deposits larger than 0.01 BTC for
-            the first minting deposit, putting it at risk of not being minted.
+            The system won't recognize initial deposits different than 0.01 BTC
+            for the first minting deposit, putting it at risk of not being
+            minted.
           </BodyLg>
         </InfoBox>
         <Box
