@@ -19,6 +19,7 @@ beforeEach(() => {
   jest.resetModules()
   jest.clearAllMocks()
   process.env = { ...originalEnv }
+  delete process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
   const { getDefaultProviderChainId } = require("../../utils/getEnvVariable")
   getDefaultProviderChainId.mockReturnValue(1) // Default to mainnet
 })
@@ -127,6 +128,12 @@ describe("Backwards Compatibility Suite", () => {
     })
 
     it("should work with Sepolia config when Sepolia chainId is provided", () => {
+      // Set environment to Sepolia for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig } = require("../../utils/tbtcStarknetHelpers")
+
       // Pass the Sepolia chainId explicitly
       const config = getStarkNetConfig("0x534e5f5345504f4c4941")
 
@@ -155,6 +162,14 @@ describe("Backwards Compatibility Suite", () => {
     })
 
     it("should check network compatibility correctly", () => {
+      // Set environment to Sepolia for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility,
+      } = require("../../utils/tbtcStarknetHelpers")
+
       // Sepolia compatibility
       const sepoliaResult = checkStarkNetNetworkCompatibility(
         11155111,
@@ -163,12 +178,15 @@ describe("Backwards Compatibility Suite", () => {
       expect(sepoliaResult.compatible).toBe(true)
       expect(sepoliaResult.error).toBeUndefined()
 
+      // Reset for mainnet test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility: checkCompatMainnet,
+      } = require("../../utils/tbtcStarknetHelpers")
+
       // Mainnet compatibility
-      process.env.REACT_APP_STARKNET_MAINNET = "true"
-      const mainnetResult = checkStarkNetNetworkCompatibility(
-        1,
-        "0x534e5f4d41494e"
-      )
+      const mainnetResult = checkCompatMainnet(1, "0x534e5f4d41494e")
       expect(mainnetResult.compatible).toBe(true)
       expect(mainnetResult.error).toBeUndefined()
 
