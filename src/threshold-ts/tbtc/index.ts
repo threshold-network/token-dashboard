@@ -1269,10 +1269,11 @@ export class TBTC implements ITBTC {
   }
 
   getBridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
-    const depositActivities = await this._findAllDepositActivities(account)
-
-    const redemptionActivities: BridgeActivity[] =
-      await this._findRedemptionActivities(account)
+    // Run fetching deposit and redemption activities in parallelAdd commentMore actions
+    const [depositActivities, redemptionActivities] = await Promise.all([
+      this._findAllDepositActivities(account),
+      this._findRedemptionActivities(account) as Promise<BridgeActivity[]>,
+    ])
 
     return depositActivities
       .concat(redemptionActivities)
@@ -1346,13 +1347,19 @@ export class TBTC implements ITBTC {
     const revealedDeposits = await this.findAllRevealedDeposits(depositor)
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
 
-    const estimatedAmountToMintByDepositKey =
-      await this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys)
+    if (depositKeys.length === 0) {
+      return [] // No revealed deposits, so no further processing needed.
+    }
 
-    const mintedDepositEvents = await this._findAllMintedDeposits(
-      depositor,
-      depositKeys
-    )
+    const [
+      estimatedAmountToMintByDepositKey,
+      mintedDepositEvents,
+      cancelledDepositsEvents,
+    ] = await Promise.all([
+      this._calculateEstimatedAmountToMintForRevealedDeposits(depositKeys),
+      this._findAllMintedDeposits(depositor, depositKeys),
+      this._findAllCancelledDeposits(depositKeys),
+    ])
 
     const mintedDeposits = new Map(
       mintedDepositEvents.map((event) => [
@@ -1362,12 +1369,14 @@ export class TBTC implements ITBTC {
     )
 
     const cancelledDeposits = new Map(
-      (await this._findAllCancelledDeposits(depositKeys)).map((event) => [
+      cancelledDepositsEvents.map((event) => [
+        // Use the result from Promise.all
         (event.args?.depositKey as BigNumber).toHexString(),
         event.transactionHash,
       ])
     )
 
+    // This still needs to run after mintedDeposits is populated
     const mintedAmountByTxHash = new Map(
       await Promise.all(
         Array.from(mintedDeposits.values()).map((txHash) =>
@@ -1444,25 +1453,25 @@ export class TBTC implements ITBTC {
       return []
     }
 
+    // This fetches L1 events that are relevant for L2 deposits
     const l2AllRevealedDeposits = await this.findAllRevealedDeposits(
       l1BitcoinDepositorContract.address as string
     )
     const l2DepositKeys = l2AllRevealedDeposits.map((_) => _.depositKey)
 
-    const estimatedAmountToMintByDepositKey =
-      await this._calculateEstimatedAmountToMintForRevealedDeposits(
-        l2DepositKeys
-      )
+    if (l2DepositKeys.length === 0) {
+      return [] // No relevant L2 deposit keys, so no further processing needed.
+    }
 
-    const l2InitializedDepositsEvents =
-      await this._findAllInitializedL2Deposits(
-        depositor,
-        l1BitcoinDepositorContract
-      )
-    const l2FinalizedDepositsEvents = await this._findAllFinalizedL2Deposits(
-      depositor,
-      l1BitcoinDepositorContract
-    )
+    const [
+      estimatedAmountToMintByDepositKey,
+      l2InitializedDepositsEvents,
+      l2FinalizedDepositsEvents,
+    ] = await Promise.all([
+      this._calculateEstimatedAmountToMintForRevealedDeposits(l2DepositKeys),
+      this._findAllInitializedL2Deposits(depositor),
+      this._findAllFinalizedL2Deposits(depositor),
+    ])
 
     const l2InitializedDeposits = new Map(
       l2InitializedDepositsEvents.map((event) => [
