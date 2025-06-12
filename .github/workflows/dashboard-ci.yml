@@ -113,10 +113,8 @@ jobs:
     with:
       environment: sepolia
       useUpstreamBuilds: false
-      # We use `dapp-development-sepolia`-taggeed packages with modified
-      # contracts. They contain modifications that help with the testing of
-      # dashboard features.
-      dependentPackagesTag: dapp-development-sepolia
+      # Use regular sepolia contracts for preview builds
+      dependentPackagesTag: sepolia
       gcpBucketName: preview.dashboard.test.threshold.network
       gcpBucketPath: ${{ github.head_ref }}
       preview: true
