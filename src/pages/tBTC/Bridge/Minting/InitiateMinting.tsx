@@ -1,6 +1,6 @@
 import { BitcoinUtxo } from "@keep-network/tbtc-v2.ts"
 import { BodyLg, Button, H5, Skeleton } from "@threshold-network/components"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect, useState, useRef } from "react"
 import { BridgeProcessCardTitle } from "../components/BridgeProcessCardTitle"
 import { MintingStep } from "../../../../types/tbtc"
 import { BridgeProcessCardSubTitle } from "../components/BridgeProcessCardSubTitle"
@@ -34,6 +34,17 @@ const InitiateMintingComponent: FC<{
     isNonEVMActive && nonEVMChainName === ChainName.Starknet
 
   const [isInitiating, setIsInitiating] = useState(false)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    // Set mounted flag
+    isMountedRef.current = true
+
+    return () => {
+      // Cleanup: set mounted flag to false
+      isMountedRef.current = false
+    }
+  }, [])
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -128,7 +139,10 @@ const InitiateMintingComponent: FC<{
         })
       }
     } finally {
-      setIsInitiating(false)
+      // Only update state if component is still mounted
+      if (isMountedRef.current) {
+        setIsInitiating(false)
+      }
     }
   }
 
@@ -158,7 +172,7 @@ const InitiateMintingComponent: FC<{
             withSymbol
           />{" "}
           and will receive{" "}
-          <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+          <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px">
             <InlineTokenBalance
               tokenAmount={tBTCMintAmount}
               tokenSymbol="tBTC"

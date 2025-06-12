@@ -22,8 +22,11 @@ cypress/plugins
 node_modules/
 yarn-error.log
 .env
+
 .cosine/
 
 .claude/
 CLAUDE.md
 coverage/
+.do/app.yaml
+.env.testnet

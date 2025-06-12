@@ -14,6 +14,7 @@ describe("StarkNet Configuration", () => {
     delete process.env.REACT_APP_STARKNET_MAINNET
     delete process.env.REACT_APP_STARKNET_SEPOLIA_RELAYER_URL
     delete process.env.REACT_APP_STARKNET_MAINNET_RELAYER_URL
+    delete process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
   })
 
   afterEach(() => {
@@ -22,34 +23,64 @@ describe("StarkNet Configuration", () => {
 
   describe("getStarkNetConfig", () => {
     it("should default to mainnet when no chainId provided", () => {
-      const config = getStarkNetConfig()
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
       expect(config.chainName).toBe("StarkNet")
     })
 
     it("should use mainnet when env is true", () => {
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
       process.env.REACT_APP_STARKNET_MAINNET = "true"
-      const config = getStarkNetConfig()
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
       expect(config.chainName).toBe("StarkNet")
     })
 
     it("should use Sepolia when Sepolia chainId is provided", () => {
-      const config = getStarkNetConfig("0x534e5f5345504f4c4941")
+      // Set environment to Sepolia for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig("0x534e5f5345504f4c4941")
       expect(config.isTestnet).toBe(true)
       expect(config.chainId).toBe("0x534e5f5345504f4c4941")
       expect(config.chainName).toBe("StarkNet Sepolia")
     })
 
     it("should have correct relayer URL for mainnet", () => {
-      const config = getStarkNetConfig("0x534e5f4d41494e")
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig("0x534e5f4d41494e")
       expect(config.relayerUrl).toBe("https://relayer.threshold.network")
     })
 
     it("should have correct relayer URL for sepolia", () => {
-      const config = getStarkNetConfig("0x534e5f5345504f4c4941")
+      // Set environment to Sepolia for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const { getStarkNetConfig: getConfig } = require("../tbtcStarknetHelpers")
+
+      const config = getConfig("0x534e5f5345504f4c4941")
       expect(config.relayerUrl).toBe(
         "https://sepolia-relayer.threshold.network"
       )
@@ -84,27 +115,45 @@ describe("StarkNet Configuration", () => {
 
   describe("checkStarkNetNetworkCompatibility enhanced", () => {
     it("should check compatibility correctly for Sepolia", () => {
-      const result = checkStarkNetNetworkCompatibility(
-        11155111,
-        "0x534e5f5345504f4c4941"
-      )
+      // Set environment to Sepolia for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility: checkCompat,
+      } = require("../tbtcStarknetHelpers")
+
+      const result = checkCompat(11155111, "0x534e5f5345504f4c4941")
       expect(result.compatible).toBe(true)
       expect(result.error).toBeUndefined()
     })
 
     it("should check compatibility correctly for mainnet", () => {
+      // Set environment to mainnet for this test
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "1"
       process.env.REACT_APP_STARKNET_MAINNET = "true"
-      const result = checkStarkNetNetworkCompatibility(1, "0x534e5f4d41494e")
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility: checkCompat,
+      } = require("../tbtcStarknetHelpers")
+
+      const result = checkCompat(1, "0x534e5f4d41494e")
       expect(result.compatible).toBe(true)
       expect(result.error).toBeUndefined()
     })
 
     it("should detect network mismatch", () => {
-      // Sepolia StarkNet config + Mainnet Ethereum
-      const result = checkStarkNetNetworkCompatibility(
-        1,
-        "0x534e5f5345504f4c4941"
-      )
+      // Set environment to Sepolia for this test to enable Sepolia StarkNet
+      process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = "11155111"
+      // Need to re-import to get the updated environment
+      jest.resetModules()
+      const {
+        checkStarkNetNetworkCompatibility: checkCompat,
+      } = require("../tbtcStarknetHelpers")
+
+      // Sepolia StarkNet config + Mainnet Ethereum (mismatched)
+      const result = checkCompat(1, "0x534e5f5345504f4c4941")
       expect(result.compatible).toBe(false)
       expect(result.error).toContain("Network mismatch")
     })

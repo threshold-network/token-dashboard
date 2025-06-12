@@ -171,7 +171,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.tbtcSubgraphApiKey }}
-          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: false
 
       - name: Build
         if: inputs.gcpBucketPath != '.'
@@ -189,11 +189,7 @@ jobs:
           SENTRY_DSN: ${{ secrets.sentryDsn }}
           WALLET_CONNECT_PROJECT_ID: ${{ secrets.walletConnectProjectId }}
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.tbtcSubgraphApiKey }}
-          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: ${{ inputs.preview == true }}
-          REACT_APP_FEATURE_FLAG_STARKNET: ${{ secrets.FEATURE_FLAG_STARKNET || 'false' }}
-          REACT_APP_STARKNET_MAINNET: ${{ secrets.STARKNET_MAINNET || 'false' }}
-          REACT_APP_STARKNET_SEPOLIA_RELAYER_URL: ${{ secrets.STARKNET_SEPOLIA_RELAYER_URL || '' }}
-          REACT_APP_STARKNET_MAINNET_RELAYER_URL: ${{ secrets.STARKNET_MAINNET_RELAYER_URL || '' }}
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS: false
 
       - name: Deploy to GCP
         uses: thesis/gcp-storage-bucket-action@v3.1.0

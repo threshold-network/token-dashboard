@@ -18,14 +18,15 @@ import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
 import { ChainRegistry } from "../../../../chains/ChainRegistry"
 import { ChainType } from "../../../../types/chain"
+import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
   const { account, chainId } = useIsActive()
   const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
     useNonEVMConnection()
-  const { mintingStep, updateState, btcDepositAddress, utxo, chainName } =
-    useTbtcState()
+  const { chainId: starknetChainId } = useStarknetConnection()
+  const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
   const chainRegistry = ChainRegistry.getInstance()
@@ -38,9 +39,9 @@ const MintingFlowRouterBase = () => {
   if (!effectiveChainId && isNonEVMActive && nonEVMChainName) {
     // For StarkNet, we need to use the actual StarkNet chain ID, not the proxy
     const normalizedChainName = nonEVMChainName.toLowerCase()
-    if (normalizedChainName === "starknet") {
-      // Use StarkNet Sepolia chain ID directly
-      effectiveChainId = "0x534e5f5345504f4c4941" as any
+    if (normalizedChainName === "starknet" && starknetChainId) {
+      // Use the actual connected StarkNet chain ID
+      effectiveChainId = starknetChainId as any
     } else {
       // For other non-EVM chains, use the registry
       effectiveChainId = chainRegistry.getEffectiveChainId(

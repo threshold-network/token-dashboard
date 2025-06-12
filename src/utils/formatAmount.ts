@@ -13,8 +13,18 @@ export const formatTokenAmount = (
   precision = 2,
   displayTildeBelow = 1
 ) => {
+  // Handle empty or invalid values
+  if (!rawAmount || rawAmount === "" || rawAmount === "0") return "0"
+
+  let _rawAmount: BigNumber
+  try {
+    _rawAmount = BigNumber.from(rawAmount)
+  } catch (error) {
+    console.warn("Invalid amount for formatting:", rawAmount)
+    return "0"
+  }
+
   const minAmountToDisplay = BigNumber.from(10).pow(decimals - precision)
-  const _rawAmount = BigNumber.from(rawAmount)
 
   if (_rawAmount.isZero()) return "0"
 

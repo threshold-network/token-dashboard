@@ -59,7 +59,6 @@ import {
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
-import { getDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -229,6 +228,11 @@ export interface ITBTC {
    * L2 tBTC token contract for cross-chain operations
    */
   readonly l2TbtcToken: any | null
+
+  /**
+   * Promise for SDK initialization
+   */
+  readonly _sdkPromise: Promise<any | undefined>
 
   /**
    * Check if StarkNet cross-chain contracts are initialized
@@ -565,7 +569,7 @@ export class TBTC implements ITBTC {
    * resolves before returning the SDK.
    */
 
-  private _sdkPromise: Promise<SDK | undefined>
+  _sdkPromise: Promise<SDK | undefined>
   private _deposit: Deposit | undefined
   private _isCrossChain: boolean = false
 
@@ -679,68 +683,119 @@ export class TBTC implements ITBTC {
     providerOrSigner: providers.Provider | Signer,
     account?: string
   ): Promise<SDK> {
-    const isMainnet = this.bitcoinNetwork === BitcoinNetwork.Mainnet
-    const defaultProvider = isMainnet
-      ? getThresholdLibProvider(SupportedChainIds.Ethereum)
-      : getThresholdLibProvider(SupportedChainIds.Sepolia)
+    try {
+      const isMainnet = this.bitcoinNetwork === BitcoinNetwork.Mainnet
+      const defaultProvider = isMainnet
+        ? getThresholdLibProvider(SupportedChainIds.Ethereum)
+        : getThresholdLibProvider(SupportedChainIds.Sepolia)
 
-    const signer =
-      !!account && providerOrSigner instanceof Web3Provider
-        ? getSigner(providerOrSigner as Web3Provider, account)
-        : providerOrSigner
+      const signer =
+        !!account && providerOrSigner instanceof Web3Provider
+          ? getSigner(providerOrSigner as Web3Provider, account)
+          : providerOrSigner
 
-    const connectedChainId = await chainIdFromSigner(signer)
+      let connectedChainId: number
+      try {
+        const chainIdFromSignerResult = await chainIdFromSigner(signer)
+        connectedChainId =
+          typeof chainIdFromSignerResult === "string"
+            ? parseInt(chainIdFromSignerResult)
+            : chainIdFromSignerResult
+      } catch (error) {
+        console.warn(
+          "Failed to get chain ID from signer, using default:",
+          error
+        )
+        // Use the expected chain ID from config
+        connectedChainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+      }
 
-    const initializerProviderOrSigner = isL1Network(connectedChainId)
-      ? signer
-      : defaultProvider
+      const initializerProviderOrSigner = isL1Network(connectedChainId)
+        ? signer
+        : defaultProvider
 
-    const { shouldUseTestnetDevelopmentContracts } = this._ethereumConfig
-    const { client: clientFromConfig } = this._bitcoinConfig
+      const { shouldUseTestnetDevelopmentContracts } = this._ethereumConfig
+      const { client: clientFromConfig } = this._bitcoinConfig
 
-    // For both of these cases we will use SDK.initializeCustom() method
-    if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
-      const depositorAddress = await ethereumAddressFromSigner(signer)
-      const tbtcContracts = shouldUseTestnetDevelopmentContracts
-        ? getSepoliaDevelopmentContracts(signer)
-        : await loadEthereumCoreContracts(
-            defaultProvider,
-            getDefaultProviderChainId().valueOf().toString() as Chains.Ethereum
+      // For both of these cases we will use SDK.initializeCustom() method
+      if (clientFromConfig || shouldUseTestnetDevelopmentContracts) {
+        const depositorAddress = await ethereumAddressFromSigner(signer)
+
+        // Check for chain mismatch before loading contracts
+        const expectedChainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+        if (
+          !isL1Network(connectedChainId) ||
+          connectedChainId !== expectedChainId
+        ) {
+          // Use default provider for contract loading to avoid chain mismatch
+          const tbtcContracts = shouldUseTestnetDevelopmentContracts
+            ? getSepoliaDevelopmentContracts(defaultProvider)
+            : await loadEthereumCoreContracts(
+                defaultProvider,
+                expectedChainId.toString() as Chains.Ethereum
+              )
+
+          const sdk = await SDK.initializeCustom(
+            tbtcContracts,
+            this._bitcoinClient
           )
+          depositorAddress && sdk.deposits.setDefaultDepositor(depositorAddress)
+          return sdk
+        }
 
-      const sdk = await SDK.initializeCustom(tbtcContracts, this._bitcoinClient)
+        // Normal flow when chains match
+        const tbtcContracts = shouldUseTestnetDevelopmentContracts
+          ? getSepoliaDevelopmentContracts(signer)
+          : await loadEthereumCoreContracts(
+              signer,
+              connectedChainId.toString() as Chains.Ethereum
+            )
 
-      depositorAddress && sdk.deposits.setDefaultDepositor(depositorAddress)
+        const sdk = await SDK.initializeCustom(
+          tbtcContracts,
+          this._bitcoinClient
+        )
+
+        depositorAddress && sdk.deposits.setDefaultDepositor(depositorAddress)
+
+        return sdk
+      }
+
+      const initializeFunction = isMainnet
+        ? SDK.initializeMainnet
+        : SDK.initializeSepolia
+
+      // We need to use a mainnet default provider to initialize the SDK
+      // Always enable cross-chain support since we support non-EVM chains like StarkNet
+      const sdk = await initializeFunction(
+        initializerProviderOrSigner,
+        true // Always enable cross-chain support
+      )
 
       return sdk
+    } catch (error: any) {
+      console.error("Failed to initialize tBTC SDK:", error)
+      // Re-throw the error so it can be caught by the caller
+      throw error
     }
-
-    const initializeFunction = isMainnet
-      ? SDK.initializeMainnet
-      : SDK.initializeSepolia
-
-    // We need to use a mainnet default provider to initialize the SDK
-    // Always enable cross-chain support since we support non-EVM chains like StarkNet
-    const sdk = await initializeFunction(
-      initializerProviderOrSigner,
-      true // Always enable cross-chain support
-    )
-
-    return sdk
   }
 
   async initializeSdk(
     providerOrSigner: providers.Provider | Signer,
     account?: string | undefined
   ): Promise<void> {
-    try {
-      this._sdkPromise = this._initializeSdk(providerOrSigner, account)
+    // Handle async errors properly
+    this._sdkPromise = this._initializeSdk(providerOrSigner, account).catch(
+      (err) => {
+        console.error("Failed to initialize tBTC SDK:", err)
+        // Don't throw - let the app continue working with limited functionality
+        // The error will be handled at the UI level
+        return undefined
+      }
+    )
 
-      // Don't auto-initialize cross-chain here - it will be done explicitly
-      // by the Threshold class with the proper chain name
-    } catch (err) {
-      throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
-    }
+    // Don't auto-initialize cross-chain here - it will be done explicitly
+    // by the Threshold class with the proper chain name
   }
 
   get deposit(): Deposit | undefined {
@@ -1544,19 +1599,27 @@ export class TBTC implements ITBTC {
     const { optimisticMintingFeeDivisor, depositTxMaxFee } =
       await this.getDepositFees()
 
-    const deposits = (
-      await this._multicall.aggregate(
-        depositKeys.map((depositKey) => ({
-          interface: this.bridgeContract!.interface,
-          address: this.bridgeContract!.address,
-          method: "deposits",
-          args: [depositKey],
-        }))
-      )
-    ).map((deposit) => deposit[0]) as {
-      amount: BigNumber
-      treasuryFee: BigNumber
-    }[]
+    let deposits: { amount: BigNumber; treasuryFee: BigNumber }[] = []
+
+    try {
+      deposits = (
+        await this._multicall.aggregate(
+          depositKeys.map((depositKey) => ({
+            interface: this.bridgeContract!.interface,
+            address: this.bridgeContract!.address,
+            method: "deposits",
+            args: [depositKey],
+          }))
+        )
+      ).map((deposit) => deposit[0]) as {
+        amount: BigNumber
+        treasuryFee: BigNumber
+      }[]
+    } catch (error) {
+      console.warn("Failed to fetch deposits via multicall:", error)
+      // Return empty deposits array if multicall fails
+      return new Map(depositKeys.map((key) => [key, ZERO]))
+    }
 
     return new Map(
       depositKeys.map((depositKey, index) => {

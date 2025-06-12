@@ -11,6 +11,7 @@ import {
 } from "../../types/token"
 import { exchangeAPI } from "../../utils/exchangeAPI"
 import getUsdBalance from "../../utils/getUsdBalance"
+import { safeBigNumber } from "../../utils/safeBigNumber"
 
 export const fetchTokenPriceUSD = createAsyncThunk(
   "tokens/fetchTokenPriceUSD",
@@ -22,12 +23,25 @@ export const fetchTokenPriceUSD = createAsyncThunk(
 )
 
 const toUsdBalance = (token: TokenState) => {
-  const amount = BigNumber.from(10)
-    .pow(18 - (token.decimals ?? 18)) // cast all to 18 decimals
-    .mul(BigNumber.from(token.balance))
-    .toString()
+  // Handle empty or invalid balance
+  const balance = token.balance || "0"
+  const balanceStr = balance.toString().trim()
 
-  return getUsdBalance(amount, token.usdConversion)
+  if (!balanceStr || balanceStr === "") {
+    return "0"
+  }
+
+  try {
+    const amount = BigNumber.from(10)
+      .pow(18 - (token.decimals ?? 18)) // cast all to 18 decimals
+      .mul(safeBigNumber(balanceStr))
+      .toString()
+
+    return getUsdBalance(amount, token.usdConversion)
+  } catch (error) {
+    console.warn("Failed to convert token balance to USD:", error)
+    return "0"
+  }
 }
 
 export const tokenSlice = createSlice({

@@ -13,12 +13,17 @@ const MintingSuccessComponent: FC = () => {
   const { utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
 
-  const btcDepositTxHash = utxo?.transactionHash?.toString()
+  if (!utxo || !utxo.transactionHash) {
+    return <div>Error: No deposit transaction found</div>
+  }
+
+  const btcDepositTxHash = utxo.transactionHash.toString()
   const depositKey = threshold.tbtc.buildDepositKey(
     btcDepositTxHash,
     utxo.outputIndex,
     "big-endian"
   )
+
   const { isFetching, data, error } = useFetchDepositDetails(depositKey)
 
   useEffect(() => {

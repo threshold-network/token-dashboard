@@ -7,6 +7,7 @@ import {
   useState,
   useMemo,
 } from "react"
+import { Box, Text } from "@chakra-ui/react"
 import { getThresholdLibProvider, threshold } from "../utils/getThresholdLib"
 import { useLedgerLiveApp } from "./LedgerLiveAppContext"
 import { useIsActive } from "../hooks/useIsActive"
@@ -90,6 +91,12 @@ export const ThresholdProvider: FC = ({ children }) => {
   const { ledgerLiveAppEthereumSigner } = useLedgerLiveApp()
   const { account, isActive, chainId } = useIsActive()
   const { isEmbed } = useIsEmbed()
+  const [error, setError] = useState<{
+    type: string
+    message: string
+    expectedNetwork?: string
+    currentNetwork?: string
+  } | null>(null)
 
   // Non-EVM chain connections
   const {
@@ -143,23 +150,55 @@ export const ThresholdProvider: FC = ({ children }) => {
 
         const ethereumChainId = chainId || getDefaultProviderChainId()
 
-        await threshold.updateConfig({
-          ethereum: {
-            ...threshold.config.ethereum,
-            providerOrSigner: ethereumProvider,
-            account,
-            chainId: ethereumChainId,
-          },
-          bitcoin: threshold.config.bitcoin,
-          crossChain: {
-            isCrossChain: isNonEVMActive || isL2Network(ethereumChainId),
-            chainName: nonEVMChainName
-              ? CHAIN_NAME_MAPPING[nonEVMChainName] || nonEVMChainName
-              : nonEVMChainName,
-            nonEVMProvider: nonEVMProvider,
-          },
-        })
-        hasThresholdLibConfigBeenUpdated.current = true
+        try {
+          await threshold.updateConfig({
+            ethereum: {
+              ...threshold.config.ethereum,
+              providerOrSigner: ethereumProvider,
+              account,
+              chainId: ethereumChainId,
+            },
+            bitcoin: threshold.config.bitcoin,
+            crossChain: {
+              isCrossChain: isNonEVMActive || isL2Network(ethereumChainId),
+              chainName: nonEVMChainName
+                ? CHAIN_NAME_MAPPING[nonEVMChainName] || nonEVMChainName
+                : nonEVMChainName,
+              nonEVMProvider: nonEVMProvider,
+            },
+          })
+          hasThresholdLibConfigBeenUpdated.current = true
+          // Clear any previous errors on successful update
+          setError(null)
+        } catch (error: any) {
+          console.error("Failed to update threshold config:", error)
+
+          // Handle chain mismatch error specifically
+          if (error.message?.includes("Signer uses different chain")) {
+            const expectedChainId = getDefaultProviderChainId()
+            const expectedNetwork =
+              expectedChainId === 1 ? "Ethereum Mainnet" : "Sepolia Testnet"
+            const currentNetwork =
+              chainId === 1 ? "Ethereum Mainnet" : "Sepolia Testnet"
+
+            // Store error state instead of showing alert
+            setError({
+              type: "NETWORK_MISMATCH",
+              message: `The app is configured for ${expectedNetwork} but your wallet is connected to ${currentNetwork}.`,
+              expectedNetwork,
+              currentNetwork,
+            })
+          } else {
+            // Handle other errors
+            setError({
+              type: "INITIALIZATION_ERROR",
+              message:
+                error.message || "Failed to initialize threshold library",
+            })
+          }
+          // Don't update the flag if there was an error
+          return
+        }
       }
 
       // Reset config only when both are disconnected
@@ -282,6 +321,30 @@ export const ThresholdProvider: FC = ({ children }) => {
   return (
     <ThresholdContext.Provider value={threshold}>
       <StarkNetStatusContext.Provider value={starkNetStatus}>
+        {error && error.type === "NETWORK_MISMATCH" && (
+          <Box
+            position="fixed"
+            top="0"
+            left="0"
+            right="0"
+            bg="red.500"
+            color="white"
+            p={4}
+            textAlign="center"
+            zIndex={9999}
+            boxShadow="lg"
+          >
+            <Box>
+              <Text fontWeight="bold" mb={1}>
+                Network Mismatch Detected!
+              </Text>
+              <Text fontSize="sm">
+                {error.message} Please switch your wallet to{" "}
+                {error.expectedNetwork}.
+              </Text>
+            </Box>
+          </Box>
+        )}
         {children}
       </StarkNetStatusContext.Provider>
     </ThresholdContext.Provider>

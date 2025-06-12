@@ -108,7 +108,9 @@ export const TokenContextProvider: React.FC = ({ children }) => {
       if (token === Token.TBTCV2 && !featureFlags.TBTC_V2) {
         setTokenBalance(token, "0")
       } else {
-        setTokenBalance(token, balance.toString())
+        // Ensure balance is a valid string and not empty
+        const balanceStr = balance ? balance.toString().trim() : "0"
+        setTokenBalance(token, balanceStr || "0")
       }
       setTokenLoading(token, isLoading)
       setTokenIsLoadedFromConnectedAccount(token, isLoaded)
