@@ -126,3 +126,39 @@ export const getBlocklistInfo = async (
     return
   }
 }
+
+export const getBtcAddressTrmInfo = async (
+  action: ReturnType<typeof accountSlice.actions.bitcoinAddressSubmitted>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { btcAddress, ethChainId } = action.payload
+  const currentChainId = ethChainId || listenerApi.getState().account.chainId
+
+  if (!btcAddress) return
+
+  try {
+    listenerApi.dispatch(fetchingTrm())
+    const {
+      data: { isBlocked },
+    } = await fetchWalletScreening({
+      address: btcAddress,
+      chainId: currentChainId || 1,
+      networkName: "bitcoin",
+    })
+
+    if (isBlocked) {
+      listenerApi.dispatch(setAccountBlockedStatus({ isBlocked }))
+    }
+    listenerApi.dispatch(hasFetchedTrm())
+  } catch (error: any) {
+    listenerApi.dispatch(
+      accountSlice.actions.setTrmError({
+        error: error.message || String(error),
+      })
+    )
+    throw new Error(
+      "Could not load TRM Wallet Screening info for BTC address: " +
+        (error.message || String(error))
+    )
+  }
+}
