@@ -48,6 +48,7 @@ import {
   GenerateNewDepositAddress,
   InitiateUnminting,
   NewTBTCApp,
+  FirstDepositWarningModal,
 } from "../components/Modal/tBTC"
 import FeedbackSubmissionModal from "../components/Modal/FeedbackSubmissionModal"
 
@@ -95,6 +96,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.InitiateUnminting]: InitiateUnminting,
   [ModalType.TACoCommitment]: TACoCommitmentModal,
   [ModalType.TACoCommitmentSuccess]: TACoCommitmentSuccessModal,
+  [ModalType.FirstDepositWarning]: FirstDepositWarningModal,
 }
 
 export interface BaseModalProps {
