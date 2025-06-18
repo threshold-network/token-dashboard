@@ -30,3 +30,4 @@ CLAUDE.md
 coverage/
 .do/app.yaml
 .env.testnet
+.env.mainnet
