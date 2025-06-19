@@ -48,7 +48,7 @@ if (ENABLED_STARKNET_NETWORKS.sepolia && STARKNET_SEPOLIA_CHAIN_ID) {
   })
 }
 
-const StarkNetNetworkButton: FC = () => {
+const StarknetNetworkButton: FC = () => {
   const { colorMode } = useColorMode()
   const { chainId, isConnected } = useStarknetConnection()
   const { switchNetwork } = useStarknetWallet()
@@ -226,4 +226,4 @@ const renderMenuItems = (
     </MenuItem>
   ))
 
-export default StarkNetNetworkButton
+export default StarknetNetworkButton

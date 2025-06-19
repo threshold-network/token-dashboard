@@ -13,7 +13,7 @@ import {
   getArtifact,
   getContract,
   getContractPastEvents,
-  isAddress,
+  isEthereumAddress,
   isSameETHAddress,
   ZERO,
 } from "../utils"
@@ -149,7 +149,7 @@ export class Staking implements IStaking {
       ? getContract(
           stakingArtifact.address,
           stakingArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -162,7 +162,7 @@ export class Staking implements IStaking {
       ? getContract(
           legacyKeepStakingArtifact.address,
           legacyKeepStakingArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -175,7 +175,7 @@ export class Staking implements IStaking {
       ? getContract(
           nuCypherStakingEscrowArtifact.address,
           nuCypherStakingEscrowArtifact.abi,
-          config.providerOrSigner,
+          config.ethereumProviderOrSigner,
           config.account
         )
       : null
@@ -280,7 +280,7 @@ export class Staking implements IStaking {
     }
 
     const isNuStakingProviderValid =
-      isAddress(nuStakingProvider) &&
+      isEthereumAddress(nuStakingProvider) &&
       isSameETHAddress(stakingProvider, nuStakingProvider)
 
     const possibleNuTopUpInT = isNuStakingProviderValid

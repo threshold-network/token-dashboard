@@ -7,7 +7,7 @@ import React, {
   useMemo,
 } from "react"
 import { constants } from "starknet"
-import { getDefaultProviderChainId } from "../utils/getEnvVariable"
+import { getEthereumDefaultProviderChainId } from "../utils/getEnvVariable"
 import { isMainnetChainId } from "../networks/utils"
 
 // Lazy load starknetkit to avoid module resolution issues
@@ -22,7 +22,7 @@ const getStarknetKit = async () => {
 
 // Determine the expected Starknet network based on EVM network
 const getExpectedStarknetChainId = () => {
-  const defaultChainId = getDefaultProviderChainId()
+  const defaultChainId = getEthereumDefaultProviderChainId()
   return isMainnetChainId(defaultChainId)
     ? constants.StarknetChainId.SN_MAIN
     : constants.StarknetChainId.SN_SEPOLIA

@@ -12,7 +12,7 @@ import {
   getRpcUrl,
   networks,
   supportedNetworks as supportedNetworksMap,
-  getChainIdToNetworkName,
+  getEthereumNetworkNameFromChainId,
 } from "../../networks/utils"
 import { EthereumRpcMap } from "../../networks/types/networks"
 
@@ -92,7 +92,7 @@ export class LedgerLiveConnector extends AbstractConnector {
 
     if (!checkSupportResult.isChainIdSupported) {
       throw new Error(
-        `The ${getChainIdToNetworkName(
+        `The ${getEthereumNetworkNameFromChainId(
           chainId
         )} network is not supported by LedgerLive.`
       )

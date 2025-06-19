@@ -7,19 +7,20 @@ import { LedgerLiveSigner } from "../../utils/ledger"
 
 export const useGetBlock = () => {
   const threshold = useThreshold()
-  const providerOrSigner = threshold.config.ethereum.providerOrSigner
+  const ethereumProviderOrSigner =
+    threshold.config.ethereum.ethereumProviderOrSigner
 
   return useCallback(
     async (blockTag: BlockTag) => {
-      if (providerOrSigner instanceof LedgerLiveSigner) {
-        return providerOrSigner.provider!.getBlock(blockTag)
+      if (ethereumProviderOrSigner instanceof LedgerLiveSigner) {
+        return ethereumProviderOrSigner.provider!.getBlock(blockTag)
       }
       const provider = getProviderOrSigner(
-        providerOrSigner as any
+        ethereumProviderOrSigner as any
       ) as Web3Provider
 
       return provider.getBlock(blockTag)
     },
-    [providerOrSigner]
+    [ethereumProviderOrSigner]
   )
 }

@@ -37,7 +37,7 @@ describe("Vending machine test", () => {
     expect(getContract).toHaveBeenCalledWith(
       artifact.address,
       artifact.abi,
-      config.providerOrSigner,
+      config.ethereumProviderOrSigner,
       config.account
     )
     expect(vendingMachine.contract).toEqual(mockVendingMachineContract)

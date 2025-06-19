@@ -15,41 +15,14 @@ import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositDat
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
-import { SupportedChainIds } from "../../../../networks/enums/networks"
-import { ChainRegistry } from "../../../../chains/ChainRegistry"
-import { ChainType } from "../../../../types/chain"
-import { useStarknetConnection } from "../../../../hooks/useStarknetConnection"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
   const { account, chainId } = useIsActive()
-  const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
-    useNonEVMConnection()
-  const { chainId: starknetChainId } = useStarknetConnection()
+  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
   const { mintingStep, updateState, btcDepositAddress, utxo } = useTbtcState()
   const removeDepositData = useRemoveDepositData()
   const { openModal } = useModal()
-  const chainRegistry = ChainRegistry.getInstance()
-
-  // For StarkNet deposits, use non-EVM connection info
-  const effectiveAccount = account || nonEVMPublicKey
-
-  // Use chain abstraction to get effective chain ID
-  let effectiveChainId = chainId
-  if (!effectiveChainId && isNonEVMActive && nonEVMChainName) {
-    // For StarkNet, we need to use the actual StarkNet chain ID, not the proxy
-    const normalizedChainName = nonEVMChainName.toLowerCase()
-    if (normalizedChainName === "starknet" && starknetChainId) {
-      // Use the actual connected StarkNet chain ID
-      effectiveChainId = starknetChainId as any
-    } else {
-      // For other non-EVM chains, use the registry
-      effectiveChainId = chainRegistry.getEffectiveChainId(
-        "",
-        normalizedChainName
-      )
-    }
-  }
 
   const onPreviousStepClick = (previousStep?: MintingStep) => {
     if (mintingStep === MintingStep.MintingSuccess) {
@@ -65,17 +38,17 @@ const MintingFlowRouterBase = () => {
   }
 
   useEffect(() => {
-    if (!btcDepositAddress || !effectiveAccount || !effectiveChainId) {
+    if (!btcDepositAddress || (!chainId && !isNonEVMActive)) {
       return
     }
-
     dispatch(
       tbtcSlice.actions.findUtxo({
         btcDepositAddress,
-        chainId: effectiveChainId,
+        chainId,
+        nonEVMChainName,
       })
     )
-  }, [btcDepositAddress, effectiveAccount, effectiveChainId, dispatch])
+  }, [btcDepositAddress, account, chainId, dispatch])
 
   switch (mintingStep) {
     case MintingStep.ProvideData: {

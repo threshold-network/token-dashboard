@@ -1,5 +1,5 @@
 export * from "./chainId"
-export * from "./getChainIdToNetworkName"
+export * from "./getEthereumNetworkNameFromChainId"
 export * from "./connectedNetwork"
 export * from "./createExplorerLink"
 export * from "./getRpcUrl"

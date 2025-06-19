@@ -4,7 +4,7 @@ import { useErc20TokenContract } from "./useERC20"
 import { Token, TransactionType } from "../../enums"
 import { AddressZero } from "@ethersproject/constants"
 import { SupportedChainIds } from "../../networks/enums/networks"
-import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
+import { useConnectedOrDefaultEthereumChainId } from "../../networks/hooks/useConnectedOrDefaultEthereumChainId"
 
 export const T_ADDRESSES = {
   // https://etherscan.io/address/0xCdF7028ceAB81fA0C6971208e83fa7872994beE5
@@ -23,7 +23,7 @@ export interface UseT {
 }
 
 export const useT: UseT = () => {
-  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultEthereumChainId()
   const { balanceOf, approve, contract } = useErc20TokenContract(
     T_ADDRESSES[Number(defaultOrConnectedChainId)],
     undefined,

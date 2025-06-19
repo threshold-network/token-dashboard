@@ -62,7 +62,6 @@ import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
 import { isSupportedNetwork } from "../../../networks/utils"
-import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -261,15 +260,11 @@ UnmintFormPage.route = {
 
 export const UnmintPageLayout: PageComponent = ({}) => {
   const { isActive } = useIsActive()
-  const { isNonEVMActive } = useNonEVMConnection()
-
-  // Check for either EVM or non-EVM wallet connection
-  const isWalletConnected = isActive || isNonEVMActive
 
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isWalletConnected ? (
+        {isActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState
