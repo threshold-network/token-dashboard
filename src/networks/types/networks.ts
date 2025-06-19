@@ -18,9 +18,10 @@ export interface EthereumRpcMap {
 }
 
 export type NetworkName = keyof typeof SupportedChainIds
+export type MainNetworkName = keyof typeof Chains
 export interface Network {
   chainId: SupportedChainIds
-  name: keyof typeof Chains | "StarkNet"
+  name: Exclude<MainNetworkName, "Solana" | "StarkNet">
   layer: Layer
   networkType: NetworkType
   chainParameters: {

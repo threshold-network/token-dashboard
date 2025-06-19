@@ -9,7 +9,7 @@ import {
   getStarkNetConfig,
 } from "../../utils/tbtcStarknetHelpers"
 
-// Mock getDefaultProviderChainId
+// Mock getEthereumDefaultProviderChainId
 jest.mock("../../utils/getEnvVariable")
 
 // Mock environment variables
@@ -20,8 +20,10 @@ beforeEach(() => {
   jest.clearAllMocks()
   process.env = { ...originalEnv }
   delete process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
-  const { getDefaultProviderChainId } = require("../../utils/getEnvVariable")
-  getDefaultProviderChainId.mockReturnValue(1) // Default to mainnet
+  const {
+    getEthereumDefaultProviderChainId,
+  } = require("../../utils/getEnvVariable")
+  getEthereumDefaultProviderChainId.mockReturnValue(1) // Default to mainnet
 })
 
 afterEach(() => {
@@ -101,9 +103,9 @@ describe("Backwards Compatibility Suite", () => {
     it("should map Ethereum Sepolia exactly as before", () => {
       // Set testnet environment
       const {
-        getDefaultProviderChainId,
+        getEthereumDefaultProviderChainId,
       } = require("../../utils/getEnvVariable")
-      getDefaultProviderChainId.mockReturnValue(11155111)
+      getEthereumDefaultProviderChainId.mockReturnValue(11155111)
 
       // Clear module cache and re-import
       jest.resetModules()
