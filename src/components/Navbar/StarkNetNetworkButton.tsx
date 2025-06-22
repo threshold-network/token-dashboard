@@ -137,7 +137,7 @@ const StarknetNetworkButton: FC = () => {
     return (
       <Button
         variant="outline"
-        size="sm"
+        size="md"
         colorScheme="red"
         onClick={() => {
           const firstEnabledNetwork = STARKNET_NETWORKS[0]
@@ -170,6 +170,7 @@ const StarknetNetworkButton: FC = () => {
               _active={{ bg: hoverBg }}
               icon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               aria-label="Select StarkNet Network"
+              size="md"
             />
             <MenuList zIndex="dropdown" minW="0">
               {renderMenuItems(handleNetworkSwitch, chainId)}
@@ -190,7 +191,7 @@ const StarknetNetworkButton: FC = () => {
               bg={buttonBg}
               _hover={{ bg: hoverBg }}
               _active={{ bg: hoverBg }}
-              size="sm"
+              size="md"
             >
               {currentNetwork?.name || "Unknown Network"}
             </MenuButton>

@@ -10,6 +10,7 @@ import Link from "../../../components/Link"
 import { PageComponent } from "../../../types"
 import { isL2Network } from "../../../networks/utils"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
 const renderNavItem = (page: PageComponent, index: number) => (
   <FilterTab
@@ -28,6 +29,7 @@ export const MintUnmintNav: FC<
   ComponentProps<typeof Card> & { pages: PageComponent[] }
 > = ({ pages, ...props }) => {
   const { chainId } = useIsActive()
+  const { nonEVMPublicKey } = useNonEVMConnection()
   const resolved = useResolvedPath("")
   const location = useLocation()
 
@@ -44,7 +46,7 @@ export const MintUnmintNav: FC<
   return (
     <Box as="nav" {...props}>
       <FilterTabs selectedTabId={activeTabId}>
-        {isL2Network(chainId)
+        {isL2Network(chainId) || nonEVMPublicKey
           ? pages
               .filter(
                 (page) =>

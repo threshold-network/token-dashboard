@@ -27,6 +27,7 @@ import Link from "../Link"
 import { OutlineListItem } from "../OutlineListItem"
 import { RedemptionDetailsLinkBuilder } from "../../utils/tBTC"
 import { useIsActive } from "../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
 
 export type BridgeActivityProps = {
   data: BridgeActivityType[]
@@ -59,8 +60,10 @@ export const BridgeActivity: FC<BridgeActivityProps> = ({
   emptyState,
   children,
 }) => {
+  const { nonEVMPublicKey } = useNonEVMConnection()
   const { account } = useIsActive()
-  const isBridgeHistoryEmpty = data.length === 0 || !account
+  const isBridgeHistoryEmpty =
+    data.length === 0 || (!account && !nonEVMPublicKey)
 
   return (
     <BridgeActivityContext.Provider

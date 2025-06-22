@@ -5,6 +5,12 @@ import {
 import { AddressZero } from "@ethersproject/constants"
 export { unprefixedAndUncheckedAddress } from "../../threshold-ts/utils"
 
+// The StarkNet prime is 2^251 + 17 * 2^192 + 1.
+// It's a 252-bit number.
+const SN_STARK_PRIME = BigInt(
+  "0x800000000000011000000000000000000000000000000000000000000000001"
+)
+
 export const getAddress = (address: string) => ethersGetAddress(address)
 
 export const isEthereumAddress = (address: string): boolean => {
@@ -17,23 +23,17 @@ export const isEthereumAddress = (address: string): boolean => {
 
 export const isStarknetAddress = (address: string): boolean => {
   if (!address) return false
-
-  // Basic validation for StarkNet address format
-  if (!address.startsWith("0x") && !address.startsWith("0X")) return false
-
-  // Remove 0x prefix and check if it's a valid hex string
-  const hexPart = address.slice(2)
-  if (!/^[0-9a-fA-F]+$/.test(hexPart)) return false
-
-  // StarkNet addresses must be exactly 64 characters (32 bytes)
-  // This distinguishes them from Ethereum addresses (40 chars)
-  if (hexPart.length !== 64) return false
-
-  return true
+  try {
+    const value = BigInt(address)
+    // A StarkNet address is a felt252, so it must be in the range [0, SN_STARK_PRIME).
+    return value >= BigInt(0) && value < SN_STARK_PRIME
+  } catch {
+    return false
+  }
 }
 
 export const isAddress = (address: string): boolean => {
-  // Check both Ethereum (40 hex) and Starknet (64 hex) formats
+  // Check both Ethereum (40 hex) and Starknet formats
   return isEthereumAddress(address) || isStarknetAddress(address)
 }
 
@@ -57,8 +57,13 @@ export const isSameAddress = (address1: string, address2: string): boolean => {
   }
 
   if (isStarknetAddress(address1) && isStarknetAddress(address2)) {
-    // Starknet addresses are case-insensitive
-    return address1.toLowerCase() === address2.toLowerCase()
+    // Starknet addresses are case-insensitive.
+    // BigInt conversion handles different paddings e.g. 0x0 is same as 0x00
+    try {
+      return BigInt(address1) === BigInt(address2)
+    } catch {
+      return false
+    }
   }
 
   // Different address types can't be the same
@@ -66,26 +71,18 @@ export const isSameAddress = (address1: string, address2: string): boolean => {
 }
 
 export const isAddressZero = (address: string): boolean => {
-  // Check if it's a StarkNet address
-  if (address?.startsWith("0x") && address.length === 66) {
-    // StarkNet zero address is 0x0 (padded to 66 chars)
-    return (
-      address ===
-      "0x0000000000000000000000000000000000000000000000000000000000000000"
-    )
+  try {
+    // `BigInt(address)` will throw for non-hex strings. `BigInt(AddressZero)` is 0n.
+    // This works for both ETH and StarkNet zero addresses.
+    return BigInt(address) === BigInt(0)
+  } catch {
+    return false
   }
-  return isSameETHAddress(address, AddressZero)
 }
 
 export const isEmptyOrZeroAddress = (address: string): boolean => {
   if (!address) return true
 
-  // For StarkNet addresses
-  if (address.startsWith("0x") && address.length === 66) {
-    return !isStarknetAddress(address) || isAddressZero(address)
-  }
-
-  // For Ethereum addresses
   return !isAddress(address) || isAddressZero(address)
 }
 
