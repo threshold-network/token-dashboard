@@ -6,37 +6,24 @@ import {
 } from "../../threshold-ts/utils"
 import { MintingStep } from "../../types/tbtc"
 import { ONE_SEC_IN_MILISECONDS } from "../../utils/date"
-import { isEthereumAddress, isAddressZero } from "../../web3/utils"
+import { isAddressZero, isAddress } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
 import { tbtcSlice } from "./tbtcSlice"
 import {
   getEthereumNetworkNameFromChainId,
   isL1Network,
-  isSameChainNameOrId,
 } from "../../networks/utils"
-import { isAddress } from "@ethersproject/address"
 import { SupportedChainIds } from "../../networks/enums/networks"
 
 export const fetchBridgeactivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { account } = listenerApi.getState()
   const { depositor } = action.payload
 
-  if (
-    !isEthereumAddress(depositor) ||
-    isAddressZero(depositor) ||
-    !account.chainId ||
-    !isSameChainNameOrId(
-      account.chainId,
-      listenerApi.extra.threshold.config.ethereum.chainId
-    )
-  )
-    return
+  if (!isAddress(depositor) || isAddressZero(depositor)) return
 
   listenerApi.unsubscribe()
-
   listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
 
   try {

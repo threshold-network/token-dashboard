@@ -116,7 +116,7 @@ export const getErrorsObj = <T>(errors: { [key in keyof T]: string }) => {
 export const validateETHAddress = (address: string) => {
   if (!address) {
     return "Required."
-  } else if (!isEthereumAddress(address)) {
+  } else if (!isAddress(address)) {
     return "Invalid eth address."
   } else if (isAddressZero(address)) {
     return "Address is a zero address."
