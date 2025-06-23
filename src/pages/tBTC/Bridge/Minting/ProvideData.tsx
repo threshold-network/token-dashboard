@@ -4,14 +4,22 @@ import {
   useColorModeValue,
 } from "@threshold-network/components"
 import { FormikErrors, FormikProps, withFormik } from "formik"
-import { FC, Ref, useCallback, useRef, useState } from "react"
+import {
+  FC,
+  Ref,
+  useCallback,
+  useRef,
+  useState,
+  useEffect,
+  FocusEvent,
+} from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
 import { useThreshold } from "../../../../contexts/ThresholdContext"
 import { useTBTCDepositDataFromLocalStorage } from "../../../../hooks/tbtc"
 import { useDepositTelemetry } from "../../../../hooks/tbtc/useDepositTelemetry"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
-import { BitcoinNetwork } from "../../../../threshold-ts/types"
+import { BitcoinNetwork, ChainName } from "../../../../threshold-ts/types"
 import { MintingStep } from "../../../../types/tbtc"
 import {
   getErrorsObj,
@@ -33,6 +41,13 @@ import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
+import { useAppSelector, useAppDispatch } from "../../../../hooks/store"
+import { BridgeActivityStatus } from "../../../../threshold-ts/tbtc"
+import { RootState } from "../../../../store"
+import { tbtcSlice } from "../../../../store/tbtc/tbtcSlice"
+import { accountSlice } from "../../../../store/account/slice"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
 
 export interface FormValues {
@@ -52,14 +67,40 @@ type ComponentProps = {
  */
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
+  values,
+  setFieldTouched,
 }) => {
-  const { config } = useThreshold()
+  const dispatch = useAppDispatch()
+  const threshold = useThreshold()
+
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
-    config.bitcoin.network === BitcoinNetwork.Testnet
+    threshold.config.bitcoin.network === BitcoinNetwork.Testnet
       ? BitcoinNetwork.Testnet
       : BitcoinNetwork.Mainnet
   )
+
+  const handleBtcAddressChange = (event: FocusEvent<HTMLInputElement>) => {
+    const btcAddress = event.target.value
+    setFieldTouched("btcRecoveryAddress", true)
+
+    const isValidFormat =
+      validateBTCAddress(btcAddress, threshold.tbtc.bitcoinNetwork) ===
+      undefined
+
+    if (btcAddress && isValidFormat) {
+      dispatch(
+        accountSlice.actions.bitcoinAddressSubmitted({
+          btcAddress,
+          ethChainId: SupportedChainIds.Ethereum,
+        })
+      )
+    } else if (btcAddress) {
+      console.log(
+        "BTC Address format validation failed (onBlur) or address is empty."
+      )
+    }
+  }
 
   return (
     <Form id={formId}>
@@ -77,6 +118,7 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
         tooltip={`This address needs to start with ${resolvedBTCAddressPrefix}. Return Address is a BTC address where your BTC funds are sent back if something exceptional happens with your deposit. A Return Address cannot be a multi-sig or an exchange address. Funds claiming is done by using the JSON file`}
         placeholder={`BTC Address should start with ${resolvedBTCAddressPrefix}`}
         mb={6}
+        onChange={handleBtcAddressChange}
       />
     </Form>
   )
@@ -121,6 +163,8 @@ export const ProvideDataComponent: FC<{
 }> = ({ onPreviousStepClick }) => {
   const { updateState } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
+  const [stagedDepositValues, setStagedDepositValues] =
+    useState<FormValues | null>(null)
   const formRef = useRef<FormikProps<FormValues>>(null)
   const threshold = useThreshold()
   const { account, chainId } = useIsActive()
@@ -129,6 +173,19 @@ export const ProvideDataComponent: FC<{
   const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
   const connectedAccount = account || nonEVMPublicKey
+  const { openModal, closeModal: closeModalFromHook, modalType } = useModal()
+  const dispatch = useAppDispatch()
+
+  const bridgeActivity = useAppSelector(
+    (state: RootState) => state.tbtc.bridgeActivity.data
+  )
+  const firstDepositWarningConfirmed = useAppSelector(
+    (state: RootState) => state.tbtc.firstDepositWarningConfirmed
+  )
+  const currentModalType = useAppSelector(
+    (state: RootState) => state.modal.modalType
+  )
+  const previousModalTypeRef = useRef<ModalType | null>()
 
   const networkName =
     nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
@@ -146,7 +203,7 @@ export const ProvideDataComponent: FC<{
     setShouldDownloadDepositReceipt(checked)
   }
 
-  const onSubmit = useCallback(
+  const proceedWithDeposit = useCallback(
     async (values: FormValues) => {
       if (
         connectedAccount &&
@@ -241,6 +298,60 @@ export const ProvideDataComponent: FC<{
       updateState("mintingStep", MintingStep.Deposit)
     },
     [shouldDownloadDepositReceipt, chainId]
+  )
+
+  useEffect(() => {
+    if (firstDepositWarningConfirmed && stagedDepositValues) {
+      proceedWithDeposit(stagedDepositValues)
+      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
+    }
+  }, [
+    firstDepositWarningConfirmed,
+    stagedDepositValues,
+    dispatch,
+    proceedWithDeposit,
+  ])
+
+  useEffect(() => {
+    if (
+      previousModalTypeRef.current === ModalType.FirstDepositWarning &&
+      currentModalType === null &&
+      !firstDepositWarningConfirmed
+    ) {
+      setSubmitButtonLoading(false)
+      setStagedDepositValues(null)
+      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
+    }
+    previousModalTypeRef.current = currentModalType
+  }, [currentModalType, firstDepositWarningConfirmed, dispatch])
+
+  const onSubmit = useCallback(
+    async (values: FormValues) => {
+      setSubmitButtonLoading(true)
+      try {
+        const isFirstDeposit =
+          !bridgeActivity ||
+          bridgeActivity.length === 0 ||
+          !bridgeActivity.some(
+            (activity) => activity.status === BridgeActivityStatus.MINTED
+          )
+
+        if (isFirstDeposit) {
+          setStagedDepositValues(values)
+          openModal(ModalType.FirstDepositWarning)
+        } else {
+          await proceedWithDeposit(values)
+        }
+      } catch (error) {
+        console.error(
+          "Error in onSubmit before opening modal or proceeding with deposit:",
+          error
+        )
+        setSubmitButtonLoading(false)
+        setStagedDepositValues(null)
+      }
+    },
+    [bridgeActivity, openModal, proceedWithDeposit]
   )
 
   return (
