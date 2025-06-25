@@ -12,9 +12,21 @@ export class Threshold {
   multiAppStaking!: MultiAppStaking
   vendingMachines!: IVendingMachines
   tbtc!: ITBTC
+  private _listeners: (() => void)[] = []
 
   constructor(config: ThresholdConfig) {
     this._initialize(config)
+  }
+
+  subscribe = (listener: () => void) => {
+    this._listeners.push(listener)
+    return () => {
+      this._listeners = this._listeners.filter((l) => l !== listener)
+    }
+  }
+
+  private _notify = () => {
+    this._listeners.forEach((l) => l())
   }
 
   private _initialize = (config: ThresholdConfig) => {
@@ -29,10 +41,24 @@ export class Threshold {
       this.multicall,
       ethereum
     )
-    this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
+    this.tbtc = new TBTC(ethereum, bitcoin, crossChain, this._notify)
   }
 
   updateConfig = async (config: ThresholdConfig) => {
     this._initialize(config)
+
+    const awaitTbtcReady = new Promise<void>((resolve) => {
+      const checkTbtc = () => {
+        if (this.tbtc.isTbtcReady) {
+          resolve()
+        } else {
+          setTimeout(checkTbtc, 100)
+        }
+      }
+      checkTbtc()
+    })
+
+    await awaitTbtcReady
+    this._notify()
   }
 }

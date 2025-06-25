@@ -40,7 +40,6 @@ import VendingMachineNuCypherSepolia from "../vending-machine/sepolia-artifacts/
 import WalletRegistryArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethereum/artifacts/sepolia/WalletRegistry.json"
 import StakingArtifactSepolia from "../staking/sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactSepolia from "../tbtc/sepolia-artifacts/RandomBeacon.json"
-import LegacyKeepStakingArtifactSepolia from "../staking/sepolia-artifacts/LegacyKeepStaking.json"
 import TacoArtifactSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/tapir.json"
 
 import BridgeArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/Bridge.json"
@@ -54,7 +53,8 @@ import WalletRegistryArtifactDappDevelopmentSepolia from "../tbtc/dapp-developme
 import StakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
-import TacoArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
+
+import L1BitcoinRedeemerArtifactSepolia from "../tbtc/sepolia-artifacts/L1BitcoinRedeemer.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"
@@ -72,6 +72,7 @@ export type ArtifactNameType =
   | "ArbitrumL1BitcoinDepositor"
   | "BaseL1BitcoinDepositor"
   | "StarkNetBitcoinDepositor"
+  | "L1BitcoinRedeemer"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -103,6 +104,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
   },
   [SupportedChainIds.Sepolia]: {
+    L1BitcoinRedeemer: L1BitcoinRedeemerArtifactSepolia,
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactSepolia,
     StarkNetBitcoinDepositor: StarkNetBitcoinDepositorArtifactSepolia,
@@ -120,6 +122,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
   },
   [SupportedChainIds.Localhost]: {
+    L1BitcoinRedeemer: L1BitcoinRedeemerArtifactSepolia,
     TacoRegistry:
       TacoArtifactSepolia[SupportedChainIds.Sepolia].TACoApplication,
     LegacyKeepStaking: LegacyKeepStakingArtifactDappDevelopmentSepolia,
