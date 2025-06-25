@@ -4,31 +4,21 @@ import { useTbtcState } from "../useTbtcState"
 import { useTBTCDepositDataFromLocalStorage } from "./useTBTCDepositDataFromLocalStorage"
 import { useIsActive } from "../useIsActive"
 import { useNonEVMConnection } from "../useNonEVMConnection"
-import { getStarkNetConfig } from "../../utils/tbtcStarknetHelpers"
+import { getEthereumNetworkNameFromChainId } from "../../networks/utils"
 
 export const useRemoveDepositData = () => {
   const { chainId } = useIsActive()
-  const { isNonEVMActive, nonEVMChainName } = useNonEVMConnection()
+  const { nonEVMChainName } = useNonEVMConnection()
   const { resetDepositData } = useTbtcState()
   const { removeDepositDataFromLocalStorage } =
     useTBTCDepositDataFromLocalStorage()
   const threshold = useThreshold()
-
-  // For StarkNet connections, use the StarkNet chain ID
-  const effectiveChainId =
-    chainId ||
-    (isNonEVMActive && nonEVMChainName === "Starknet"
-      ? getStarkNetConfig().chainId
-      : undefined)
+  const networkName =
+    nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
   return useCallback(() => {
-    removeDepositDataFromLocalStorage(effectiveChainId)
+    removeDepositDataFromLocalStorage(networkName)
     resetDepositData()
     threshold.tbtc.removeDepositData()
-  }, [
-    resetDepositData,
-    removeDepositDataFromLocalStorage,
-    threshold,
-    effectiveChainId,
-  ])
+  }, [resetDepositData, removeDepositDataFromLocalStorage, threshold])
 }

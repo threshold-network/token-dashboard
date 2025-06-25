@@ -48,7 +48,7 @@ if (ENABLED_STARKNET_NETWORKS.sepolia && STARKNET_SEPOLIA_CHAIN_ID) {
   })
 }
 
-const StarkNetNetworkButton: FC = () => {
+const StarknetNetworkButton: FC = () => {
   const { colorMode } = useColorMode()
   const { chainId, isConnected } = useStarknetConnection()
   const { switchNetwork } = useStarknetWallet()
@@ -137,7 +137,7 @@ const StarkNetNetworkButton: FC = () => {
     return (
       <Button
         variant="outline"
-        size="sm"
+        size="md"
         colorScheme="red"
         onClick={() => {
           const firstEnabledNetwork = STARKNET_NETWORKS[0]
@@ -170,6 +170,7 @@ const StarkNetNetworkButton: FC = () => {
               _active={{ bg: hoverBg }}
               icon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
               aria-label="Select StarkNet Network"
+              size="md"
             />
             <MenuList zIndex="dropdown" minW="0">
               {renderMenuItems(handleNetworkSwitch, chainId)}
@@ -190,7 +191,7 @@ const StarkNetNetworkButton: FC = () => {
               bg={buttonBg}
               _hover={{ bg: hoverBg }}
               _active={{ bg: hoverBg }}
-              size="sm"
+              size="md"
             >
               {currentNetwork?.name || "Unknown Network"}
             </MenuButton>
@@ -226,4 +227,4 @@ const renderMenuItems = (
     </MenuItem>
   ))
 
-export default StarkNetNetworkButton
+export default StarknetNetworkButton

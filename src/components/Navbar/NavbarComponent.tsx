@@ -16,7 +16,7 @@ import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
 import AccountButton from "./AccountButton"
 import NetworkButton from "./NetworkButton"
-import StarkNetNetworkButton from "./StarkNetNetworkButton"
+import StarknetNetworkButton from "./StarkNetNetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
@@ -68,7 +68,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         <Stack spacing={4} direction="row" ml="auto">
           <DarkModeSwitcher />
           {chainId && <NetworkButton />}
-          <StarkNetNetworkButton />
+          <StarknetNetworkButton />
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <VStack

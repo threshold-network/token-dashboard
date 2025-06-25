@@ -6,7 +6,6 @@ import { Navigate } from "react-router"
 import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositData"
 import { useFetchDepositDetails } from "../../../../hooks/tbtc"
 import { BridgeProcessDetailsPageSkeleton } from "../components/BridgeProcessDetailsPageSkeleton"
-import withWalletConnection from "../../../../components/withWalletConnection"
 
 const MintingSuccessComponent: FC = () => {
   const threshold = useThreshold()
@@ -47,4 +46,4 @@ const MintingSuccessComponent: FC = () => {
   )
 }
 
-export const MintingSuccess = withWalletConnection(MintingSuccessComponent)
+export const MintingSuccess = withOnlyConnectedWallet(MintingSuccessComponent)

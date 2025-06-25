@@ -48,9 +48,9 @@ jest.mock("../NetworkButton", () => ({
   default: () => <button>NetworkButton</button>,
 }))
 
-jest.mock("../StarkNetNetworkButton", () => ({
+jest.mock("../StarknetNetworkButton", () => ({
   __esModule: true,
-  default: () => <button>StarkNetNetworkButton</button>,
+  default: () => <button>StarknetNetworkButton</button>,
 }))
 
 jest.mock("../../StarknetWalletStatus", () => ({
@@ -105,10 +105,10 @@ describe("NavbarComponent", () => {
     expect(screen.getByText("AccountButton")).toBeInTheDocument()
   })
 
-  it("should render StarkNetNetworkButton", () => {
+  it("should render StarknetNetworkButton", () => {
     renderComponent()
 
-    expect(screen.getByText("StarkNetNetworkButton")).toBeInTheDocument()
+    expect(screen.getByText("StarknetNetworkButton")).toBeInTheDocument()
   })
 
   it("should render AccountButton when account is provided", () => {

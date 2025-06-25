@@ -15,7 +15,8 @@ export const unprefixedAndUncheckedAddress = (address: string): string => {
 
 export const getAddress = (address: string) => ethersGetAddress(address)
 
-export const isAddress = (address: string): boolean => ethersIsAddress(address)
+export const isEthereumAddress = (address: string): boolean =>
+  ethersIsAddress(address)
 
 export const isSameETHAddress = (
   address1: string,

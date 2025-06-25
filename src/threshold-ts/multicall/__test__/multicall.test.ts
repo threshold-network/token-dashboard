@@ -37,7 +37,7 @@ describe("Multicall test", () => {
     expect(getContract).toHaveBeenCalledWith(
       MULTICALL_ADDRESSES[config.chainId],
       MULTICALL_ABI,
-      config.providerOrSigner,
+      config.ethereumProviderOrSigner,
       config.account
     )
     expect(multicall).toBeInstanceOf(Multicall)

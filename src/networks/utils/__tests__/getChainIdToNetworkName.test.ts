@@ -1,4 +1,4 @@
-// Mock the getDefaultProviderChainId to test both mainnet and testnet scenarios
+// Mock the getEthereumDefaultProviderChainId to test both mainnet and testnet scenarios
 jest.mock("../../../utils/getEnvVariable")
 
 describe("getChainIdToNetworkName with StarkNet", () => {
@@ -10,9 +10,9 @@ describe("getChainIdToNetworkName with StarkNet", () => {
   describe("Mainnet environment", () => {
     beforeEach(() => {
       const {
-        getDefaultProviderChainId,
+        getEthereumDefaultProviderChainId,
       } = require("../../../utils/getEnvVariable")
-      getDefaultProviderChainId.mockReturnValue(1) // Ethereum mainnet
+      getEthereumDefaultProviderChainId.mockReturnValue(1) // Ethereum mainnet
     })
 
     // CRITICAL: Test existing chains still work
@@ -52,9 +52,9 @@ describe("getChainIdToNetworkName with StarkNet", () => {
   describe("Testnet environment", () => {
     beforeEach(() => {
       const {
-        getDefaultProviderChainId,
+        getEthereumDefaultProviderChainId,
       } = require("../../../utils/getEnvVariable")
-      getDefaultProviderChainId.mockReturnValue(11155111) // Sepolia
+      getEthereumDefaultProviderChainId.mockReturnValue(11155111) // Sepolia
     })
 
     it("should map Ethereum Sepolia correctly", () => {
@@ -74,9 +74,9 @@ describe("getChainIdToNetworkName with StarkNet", () => {
 
   it('should return "Unsupported" for unknown chain IDs', () => {
     const {
-      getDefaultProviderChainId,
+      getEthereumDefaultProviderChainId,
     } = require("../../../utils/getEnvVariable")
-    getDefaultProviderChainId.mockReturnValue(1) // Set a default
+    getEthereumDefaultProviderChainId.mockReturnValue(1) // Set a default
 
     const { getChainIdToNetworkName } = require("../getChainIdToNetworkName")
     expect(getChainIdToNetworkName(999999)).toBe("Unsupported")

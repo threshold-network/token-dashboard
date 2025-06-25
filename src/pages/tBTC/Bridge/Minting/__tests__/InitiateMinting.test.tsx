@@ -89,7 +89,7 @@ jest.mock("../../components/MintingTransactionDetails", () => ({
 
 // Mock the HOC by making it a pass-through
 jest.mock(
-  "../../../../../components/withWalletConnection",
+  "../../../../../components/withOnlyConnectedWallet",
   () => (Component: any) => (props: any) => <Component {...props} />
 )
 

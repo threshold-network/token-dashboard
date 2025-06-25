@@ -13,6 +13,7 @@ import {
 } from "./slice"
 import { fetchWalletScreening } from "../../utils/trmAPI"
 import rawBlocklist from "../../blocked-wallets/blocklist.json"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 const blocklist = rawBlocklist.map((address: string | null) =>
   address?.toLowerCase()
@@ -142,7 +143,7 @@ export const getBtcAddressTrmInfo = async (
       data: { isBlocked },
     } = await fetchWalletScreening({
       address: btcAddress,
-      chainId: currentChainId || 1,
+      chainId: currentChainId || SupportedChainIds.Ethereum,
       networkName: "bitcoin",
     })
 
