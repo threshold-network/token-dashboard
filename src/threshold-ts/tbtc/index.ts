@@ -226,9 +226,18 @@ export interface ITBTC {
 
   readonly l2TbtcToken: DestinationChainTBTCToken | null
 
+  readonly l1BitcoinRedeemerContract: Contract | null
+
+  readonly l2BitcoinRedeemerContract: Contract | null
+
   readonly deposit: Deposit | undefined
 
   readonly crossChainConfig: CrossChainConfig
+
+  /**
+   * A flag to indicate if the tBTC SDK is ready to be used.
+   */
+  isTbtcReady: boolean
 
   /**
    * Initializes tbtc-v2 SDK
@@ -413,7 +422,8 @@ export interface ITBTC {
   ): Promise<{
     hash: string
     additionalParams: {
-      walletPublicKey: string
+      walletPublicKey?: string
+      chainName?: ChainName | null
     }
   }>
 
@@ -487,6 +497,20 @@ export interface ITBTC {
     treasuryFee: string
     estimatedAmountToBeReceived: string
   }>
+
+  /**
+   * Gets the current allowance of the L2 tBTC token for the L2 Bitcoin Redeemer contract.
+   * @param owner The address of the token owner
+   * @returns The current allowance amount in string format
+   */
+  getL2TBTCAllowance(owner: string): Promise<string>
+
+  /**
+   * Approves the L2 Bitcoin Redeemer contract to spend L2 tBTC tokens.
+   * @param amount The amount to approve in tBTC token unit
+   * @returns Transaction receipt or transaction hash
+   */
+  approveL2TBTCToken(amount: BigNumberish): Promise<string | TransactionReceipt>
 }
 
 export class TBTC implements ITBTC {
@@ -495,6 +519,8 @@ export class TBTC implements ITBTC {
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
   private _l2TbtcToken: DestinationChainTBTCToken | null = null
+  private _l1BitcoinRedeemerContract: Contract | null = null
+  private _l2BitcoinRedeemerContract: Contract | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -523,11 +549,14 @@ export class TBTC implements ITBTC {
   private _sdkPromise: Promise<SDK | undefined>
   private _deposit: Deposit | undefined
   private _crossChainConfig: CrossChainConfig
+  private _onAsyncInitializationDone: () => void
+  isTbtcReady: boolean
 
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
-    crossChainConfig: CrossChainConfig
+    crossChainConfig: CrossChainConfig,
+    onAsyncInitializationDone: () => void = () => {}
   ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
@@ -602,6 +631,12 @@ export class TBTC implements ITBTC {
           ? getEthereumNetworkNameFromChainId(chainId)
           : this._crossChainConfig.chainName
 
+      const l1BitcoinRedeemerArtifact = getArtifact(
+        "L1BitcoinRedeemer" as ArtifactNameType,
+        mainnetOrTestnetEthereumChainId,
+        shouldUseTestnetDevelopmentContracts
+      )
+
       const l1BitcoinDepositorArtifact = getArtifact(
         `${networkName}L1BitcoinDepositor` as ArtifactNameType,
         mainnetOrTestnetEthereumChainId,
@@ -612,6 +647,15 @@ export class TBTC implements ITBTC {
         ? getContract(
             l1BitcoinDepositorArtifact.address,
             l1BitcoinDepositorArtifact.abi,
+            defaultOrConnectedProvider,
+            account
+          )
+        : null
+
+      this._l1BitcoinRedeemerContract = l1BitcoinRedeemerArtifact
+        ? getContract(
+            l1BitcoinRedeemerArtifact.address,
+            l1BitcoinRedeemerArtifact.abi,
             defaultOrConnectedProvider,
             account
           )
@@ -629,6 +673,8 @@ export class TBTC implements ITBTC {
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
     this._sdkPromise = new Promise((resolve) => resolve(undefined))
+    this._onAsyncInitializationDone = onAsyncInitializationDone
+    this.isTbtcReady = false
 
     this.initializeSdk(ethereumProviderOrSigner, account)
   }
@@ -701,6 +747,8 @@ export class TBTC implements ITBTC {
           account as string
         )
       }
+      this.isTbtcReady = true
+      this._onAsyncInitializationDone()
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
     }
@@ -742,6 +790,14 @@ export class TBTC implements ITBTC {
     return this._l2TbtcToken
   }
 
+  get l1BitcoinRedeemerContract() {
+    return this._l1BitcoinRedeemerContract
+  }
+
+  get l2BitcoinRedeemerContract() {
+    return this._l2BitcoinRedeemerContract
+  }
+
   private _getSdk = async (): Promise<SDK> => {
     const sdk = await this._sdkPromise
     if (!sdk) throw new EmptySdkObjectError()
@@ -771,6 +827,8 @@ export class TBTC implements ITBTC {
       this._crossChainConfig.chainName as DestinationChainName
     )
     this._l2TbtcToken = crossChainContracts?.destinationChainTbtcToken ?? null
+    this._l2BitcoinRedeemerContract =
+      crossChainContracts?.l2BitcoinRedeemer as unknown as Contract | null
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -1623,7 +1681,8 @@ export class TBTC implements ITBTC {
   ): Promise<{
     hash: string
     additionalParams: {
-      walletPublicKey: string
+      walletPublicKey?: string
+      chainName?: ChainName | null
     }
   }> => {
     const sdk = await this._getSdk()
@@ -1632,6 +1691,23 @@ export class TBTC implements ITBTC {
       throw new Error(
         "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
       )
+    }
+
+    if (this._crossChainConfig.isCrossChain) {
+      const { targetChainTxHash } =
+        await sdk.redemptions.requestCrossChainRedemption(
+          btcAddress,
+          BigNumber.from(amount),
+          this._crossChainConfig.chainName as DestinationChainName
+        )
+
+      return {
+        hash: targetChainTxHash.toPrefixedString(),
+        additionalParams: {
+          walletPublicKey: undefined,
+          chainName: this._crossChainConfig.chainName,
+        },
+      }
     }
 
     const { targetChainTxHash, walletPublicKey } =
@@ -1644,6 +1720,7 @@ export class TBTC implements ITBTC {
       hash: targetChainTxHash.toPrefixedString(),
       additionalParams: {
         walletPublicKey: walletPublicKey.toString(),
+        chainName: ChainName.Ethereum,
       },
     }
   }
@@ -1948,5 +2025,87 @@ export class TBTC implements ITBTC {
     }
 
     return this._redemptionTreasuryFeeDivisor
+  }
+
+  getL2TBTCAllowance = async (owner: string): Promise<string> => {
+    if (!owner) {
+      throw new Error("Owner address is required")
+    }
+
+    if (!this._l2TbtcToken) {
+      throw new Error("L2 tBTC token is not initialized")
+    }
+
+    if (!this._l2BitcoinRedeemerContract) {
+      throw new Error("L2 Bitcoin Redeemer contract is not initialized")
+    }
+
+    // Get the L2 tBTC token address
+    const l2TbtcTokenAddress =
+      this._l2TbtcToken.getChainIdentifier().identifierHex
+
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract.getChainIdentifier().identifierHex
+
+    // Create a standard ERC20 contract instance
+    const erc20Abi = [
+      "function allowance(address owner, address spender) view returns (uint256)",
+    ]
+
+    const l2TbtcTokenContract = getContract(
+      `0x${l2TbtcTokenAddress}`,
+      erc20Abi,
+      this._ethereumConfig.ethereumProviderOrSigner as
+        | providers.Provider
+        | Signer,
+      this._ethereumConfig.account
+    )
+
+    const allowance = await l2TbtcTokenContract.allowance(
+      owner,
+      `0x${l2BitcoinRedeemerAddress}`
+    )
+
+    return allowance.toString()
+  }
+
+  approveL2TBTCToken = async (
+    amount: BigNumberish
+  ): Promise<string | TransactionReceipt> => {
+    if (!this._l2TbtcToken) {
+      throw new Error("L2 tBTC token is not initialized")
+    }
+
+    if (!this._l2BitcoinRedeemerContract) {
+      throw new Error("L2 Bitcoin Redeemer contract is not initialized")
+    }
+
+    // Get the L2 tBTC token address
+    const l2TbtcTokenAddress =
+      this._l2TbtcToken.getChainIdentifier().identifierHex
+
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract.getChainIdentifier().identifierHex
+
+    // Create a standard ERC20 contract instance
+    const erc20Abi = [
+      "function approve(address spender, uint256 amount) returns (bool)",
+    ]
+
+    const l2TbtcTokenContract = getContract(
+      `0x${l2TbtcTokenAddress}`,
+      erc20Abi,
+      this._ethereumConfig.ethereumProviderOrSigner as
+        | providers.Provider
+        | Signer,
+      this._ethereumConfig.account
+    )
+
+    const tx = await l2TbtcTokenContract.approve(
+      `0x${l2BitcoinRedeemerAddress}`,
+      amount
+    )
+
+    return tx.wait()
   }
 }
