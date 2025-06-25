@@ -61,6 +61,7 @@ jobs:
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: false
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
+          COOKIE3_SITE_ID: ${{ secrets.COOKIE3_SITE_ID }}
 
       - name: Build
         if: github.event_name == 'release'
@@ -83,6 +84,7 @@ jobs:
           TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
           GOOGLE_TAG_MANAGER_SUPPORT: true
           GOOGLE_TAG_MANAGER_ID: ${{ secrets.GOOGLE_TAG_MANAGER_ID }}
+          COOKIE3_SITE_ID: ${{ secrets.COOKIE3_SITE_ID }}
 
       - uses: actions/upload-artifact@v4
         with:
