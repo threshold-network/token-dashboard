@@ -32,11 +32,6 @@ export const isStarknetAddress = (address: string): boolean => {
   }
 }
 
-export const isAddress = (address: string): boolean => {
-  // Check both Ethereum (40 hex) and Starknet formats
-  return isEthereumAddress(address) || isStarknetAddress(address)
-}
-
 export const isSameETHAddress = (
   address1: string,
   address2: string
@@ -48,6 +43,11 @@ export const isSameETHAddress = (
     // If either address is invalid, they can't be the same
     return false
   }
+}
+
+export const isSuiAddress = (address: string): boolean => {
+  // 66 characters total: "0x" + 64 hex chars
+  return /^0x[0-9A-Fa-f]{64}$/.test(address)
 }
 
 export const isSameAddress = (address1: string, address2: string): boolean => {
@@ -66,7 +66,10 @@ export const isSameAddress = (address1: string, address2: string): boolean => {
     }
   }
 
-  // Different address types can't be the same
+  if (isSuiAddress(address1) && isSuiAddress(address2)) {
+    return address1.toLowerCase() === address2.toLowerCase()
+  }
+
   return false
 }
 
@@ -78,6 +81,18 @@ export const isAddressZero = (address: string): boolean => {
   } catch {
     return false
   }
+}
+
+export const isSameBytes32Address = (addr1: string, addr2: string): boolean => {
+  return addr1.toLowerCase() === addr2.toLowerCase()
+}
+
+export const isAddress = (address: string): boolean => {
+  return (
+    isEthereumAddress(address) ||
+    isStarknetAddress(address) ||
+    isSuiAddress(address)
+  )
 }
 
 export const isEmptyOrZeroAddress = (address: string): boolean => {
