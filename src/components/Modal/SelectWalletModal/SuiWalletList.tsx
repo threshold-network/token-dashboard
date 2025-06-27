@@ -11,14 +11,20 @@ const SuiWalletList: FC<BaseModalProps> = ({ closeModal }) => {
     [configuredWallets, detectedWallets]
   )
 
-  const onSelectWallet = (wallet: any) => {
+  const onSelectWallet = async (wallet: any) => {
     if (!wallet.installed) {
       window.open(wallet.downloadUrl.browserExtension, "_blank")
       return
     }
-    select(wallet.name)
-    closeModal()
+
+    try {
+      await select(wallet.name)
+      closeModal()
+    } catch (error) {
+      console.error("Failed to connect wallet:", error)
+    }
   }
+
   return (
     <VStack spacing={4} w="full">
       {supportedWallets.map((wallet: any) => {
