@@ -2,6 +2,8 @@ import { useWallet as useSuiWallet } from "@suiet/wallet-kit"
 import { useCallback } from "react"
 import { ChainName } from "../threshold-ts/types"
 import { useStarknetConnection } from "./useStarknetConnection"
+import { getEthereumDefaultProviderChainId } from "../utils/getEnvVariable"
+import { isMainnetChainId } from "../networks/utils"
 
 const defaultNonEVMConnection = {
   nonEVMProvider: null,
@@ -68,7 +70,7 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
   if (isStarknetActive) {
     // Determine which non-EVM chain is active
     // For now, only Starknet is supported
-    connectionData.nonEVMChainName = ChainName.Starknet
+    connectionData.nonEVMChainName = "Starknet"
     connectionData.nonEVMPublicKey = starknetAddress ?? null
     connectionData.nonEVMProvider = starknetProvider ?? null
     connectionData.nonEVMChainId = starknetChainId ?? null
@@ -78,6 +80,30 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
     connectionData.isNonEVMConnecting = isStarknetConnecting
     connectionData.isNonEVMDisconnecting = false // Starknet disconnect is synchronous
   } else if (isSuiActive && suiAccount) {
+    console.log("suiWallet : ", suiWallet)
+    const isMainnet = isMainnetChainId(getEthereumDefaultProviderChainId())
+    const expectedChainId = isMainnet ? "sui:mainnet" : "sui:testnet"
+
+    // Handle unknown chain case
+    let actualChainId = suiChain?.id ?? null
+    if (actualChainId === "unknown:unknown" || !actualChainId) {
+      console.warn(
+        `[useNonEVMConnection] SUI wallet on unknown chain, expected ${expectedChainId}`
+      )
+      console.log("[useNonEVMConnection] SUI chain details:", {
+        chainId: suiChain?.id,
+        chainName: suiChain?.name,
+        chainRpcUrl: suiChain?.rpcUrl,
+        availableChains: suiWallet.chains,
+      })
+      // Use expected chain ID as fallback
+      actualChainId = expectedChainId
+    } else {
+      console.log(
+        `[useNonEVMConnection] SUI wallet connected to chain: ${actualChainId}`
+      )
+    }
+
     const suiSigner = {
       ...suiWallet,
       getAddress: async () => suiAccount.address,
@@ -85,9 +111,9 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
       getPublicKey: () => suiAccount.publicKey,
     }
     connectionData.nonEVMProvider = suiSigner
-    connectionData.nonEVMChainName = ChainName.Sui
+    connectionData.nonEVMChainName = "Sui"
     connectionData.nonEVMPublicKey = suiAccount.address
-    connectionData.nonEVMChainId = suiChain?.id ?? null
+    connectionData.nonEVMChainId = actualChainId
     connectionData.isNonEVMActive = isSuiActive
     connectionData.connectedWalletName = suiWalletName ?? null
     connectionData.connectedWalletIcon = suiAdapter?.icon ?? null
