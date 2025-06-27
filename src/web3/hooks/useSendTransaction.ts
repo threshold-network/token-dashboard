@@ -102,7 +102,7 @@ export const useSendTransactionFromFn = <
         } else {
           txReceipt = await (isContractTransaction(fnResult)
             ? (fnResult as ContractTransaction).wait()
-            : library.waitForTransaction(txHash))
+            : library?.waitForTransaction(txHash))
         }
 
         setTransactionStatus(TransactionStatus.Succeeded)

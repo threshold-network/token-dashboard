@@ -12,6 +12,7 @@ import {
 import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import TrmWalletScreeningAlert from "./TrmWalletScreeningAlert"
+import SuiNetworkAlert from "./SuiNetworkAlert"
 import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
 import AccountButton from "./AccountButton"
@@ -81,6 +82,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
           maxWidth={{ base: "38rem", xl: "100%" }}
           alignItems={"flex-end"}
         >
+          <SuiNetworkAlert />
           <TrmWalletScreeningAlert />
           <WalletConnectionAlert {...{ account, chainId }} />
         </VStack>

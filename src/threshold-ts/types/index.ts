@@ -16,6 +16,7 @@ export enum ChainName {
   Ethereum = "Ethereum", // can be any l2 based on Ethereum network as such as arbitrum, optimism, etc.
   Solana = "Solana",
   Starknet = "StarkNet",
+  Sui = "Sui",
 }
 
 export interface EthereumConfig {
@@ -60,3 +61,5 @@ export interface ThresholdConfig {
 }
 
 export { BitcoinNetwork }
+
+export type Reducer<S, A> = (state: S, action: A) => S
