@@ -26,9 +26,7 @@ export interface TbtcState {
   mintingFee: string
   chainName: NetworkName
   extraData?: string
-
   bridgeActivity: FetchingState<BridgeActivity[]>
-  firstDepositWarningConfirmed?: boolean
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">

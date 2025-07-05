@@ -179,13 +179,6 @@ export const ProvideDataComponent: FC<{
   const bridgeActivity = useAppSelector(
     (state: RootState) => state.tbtc.bridgeActivity.data
   )
-  const firstDepositWarningConfirmed = useAppSelector(
-    (state: RootState) => state.tbtc.firstDepositWarningConfirmed
-  )
-  const currentModalType = useAppSelector(
-    (state: RootState) => state.modal.modalType
-  )
-  const previousModalTypeRef = useRef<ModalType | null>()
 
   const networkName =
     nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
@@ -203,7 +196,7 @@ export const ProvideDataComponent: FC<{
     setShouldDownloadDepositReceipt(checked)
   }
 
-  const proceedWithDeposit = useCallback(
+  const onSubmit = useCallback(
     async (values: FormValues) => {
       if (
         connectedAccount &&
@@ -298,60 +291,6 @@ export const ProvideDataComponent: FC<{
       updateState("mintingStep", MintingStep.Deposit)
     },
     [shouldDownloadDepositReceipt, chainId]
-  )
-
-  useEffect(() => {
-    if (firstDepositWarningConfirmed && stagedDepositValues) {
-      proceedWithDeposit(stagedDepositValues)
-      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
-    }
-  }, [
-    firstDepositWarningConfirmed,
-    stagedDepositValues,
-    dispatch,
-    proceedWithDeposit,
-  ])
-
-  useEffect(() => {
-    if (
-      previousModalTypeRef.current === ModalType.FirstDepositWarning &&
-      currentModalType === null &&
-      !firstDepositWarningConfirmed
-    ) {
-      setSubmitButtonLoading(false)
-      setStagedDepositValues(null)
-      dispatch(tbtcSlice.actions.resetFirstDepositWarningConfirmed())
-    }
-    previousModalTypeRef.current = currentModalType
-  }, [currentModalType, firstDepositWarningConfirmed, dispatch])
-
-  const onSubmit = useCallback(
-    async (values: FormValues) => {
-      setSubmitButtonLoading(true)
-      try {
-        const isFirstDeposit =
-          !bridgeActivity ||
-          bridgeActivity.length === 0 ||
-          !bridgeActivity.some(
-            (activity) => activity.status === BridgeActivityStatus.MINTED
-          )
-
-        if (isFirstDeposit) {
-          setStagedDepositValues(values)
-          openModal(ModalType.FirstDepositWarning)
-        } else {
-          await proceedWithDeposit(values)
-        }
-      } catch (error) {
-        console.error(
-          "Error in onSubmit before opening modal or proceeding with deposit:",
-          error
-        )
-        setSubmitButtonLoading(false)
-        setStagedDepositValues(null)
-      }
-    },
-    [bridgeActivity, openModal, proceedWithDeposit]
   )
 
   return (
