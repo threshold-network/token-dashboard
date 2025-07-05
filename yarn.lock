@@ -4245,7 +4245,18 @@
   resolved "https://registry.yarnpkg.com/@keep-network/bitcoin-spv-sol/-/bitcoin-spv-sol-3.4.0-solc-0.8.tgz#8b44c246ffab8ea993efe196f6bf385b1a3b84dc"
   integrity sha512-KlpY9BbasyLvYXSS7dsJktgRChu/yjdFLOX8ldGA/pltLicCm/l0F4oqxL8wSws9XD12vq9x0B5qzPygVLB2TQ==
 
-"@keep-network/ecdsa@2.1.0-dev.19", "@keep-network/ecdsa@development":
+"@keep-network/ecdsa@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.0.1.tgz#f9de5e4ae68c48493b8a46d1d956c8bc157b1145"
+  integrity sha512-51Ef0FGak9dzuTF4e80ed1G2+3v+kQYPieYa3hX7eKg3XG0/C/xOtMSpIOxU7IMdYBHeeH+hRIqDiL5AuOidOg==
+  dependencies:
+    "@keep-network/random-beacon" "2.0.0"
+    "@keep-network/sortition-pools" "2.0.0"
+    "@openzeppelin/contracts" "^4.6.0"
+    "@openzeppelin/contracts-upgradeable" "^4.6.0"
+    "@threshold-network/solidity-contracts" "1.2.1"
+
+"@keep-network/ecdsa@development":
   version "2.1.0-dev.19"
   resolved "https://registry.yarnpkg.com/@keep-network/ecdsa/-/ecdsa-2.1.0-dev.19.tgz#749af8bd65f70135d1734f7c5f9bff82ae308fdb"
   integrity sha512-cyqRqK/sOqyaXZWY/O9ij6EINQuJ+bHLMiuufOFyP5YCj4GCuNqOcCytGAZPT+mED/0J/xn0vm+fgiCBq/uJkQ==
@@ -4345,7 +4356,7 @@
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
     "@threshold-network/solidity-contracts" "1.2.1"
 
-"@keep-network/random-beacon@2.1.0-dev.18":
+"@keep-network/random-beacon@2.1.0-dev.18", "@keep-network/random-beacon@development":
   version "2.1.0-dev.18"
   resolved "https://registry.yarnpkg.com/@keep-network/random-beacon/-/random-beacon-2.1.0-dev.18.tgz#2647731eea35f931afb565988cc8d8cf6a34f6b7"
   integrity sha512-UrVq///+jqOLQ5k8/aFvD1ZUMvVe49iS81U8mDoi9A005FiQzKUK9QFKv3Z0h6joG4prF/hlABRTEQ1UA7tgRA==
@@ -4384,14 +4395,15 @@
     "@openzeppelin/contracts" "^4.3.2"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
 
-"@keep-network/tbtc-v2.ts@^2.6.0":
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.6.0.tgz#d1988cec97172bd35641d9343a7501641eca29c3"
-  integrity sha512-69ljBNwqVF2WnvQiFV4QkvUIjRQQeYX1VV9j+zXgtCrWF0gMeSSXwmZKqViF+2ngfXm/RD9CHsNwBFUPz9Bo5Q==
+"@keep-network/tbtc-v2.ts@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2.ts/-/tbtc-v2.ts-2.7.1.tgz#99f68b7369cfbf56a8c8fe29925171352a561e4d"
+  integrity sha512-dkZj+6+AR25fFsgeKoUsDGctyaQLS4MJxXGdiepswkxgBBlzyjAsoMW8Avf7PpaDB87vxtE3ArO14Ixm/Nn+ZQ==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.0.5"
-    "@keep-network/ecdsa" development
-    "@keep-network/tbtc-v2" development
+    "@keep-network/ecdsa" "2.0.1"
+    "@keep-network/tbtc-v2" "1.7.0"
+    "@mysten/sui" "1.34.0"
     axios "^1.9.0"
     bignumber.js "^9.1.2"
     bitcoinjs-lib "^6.1.5"
@@ -4404,15 +4416,15 @@
     url-parse "^1.5.10"
     wif "2.0.6"
 
-"@keep-network/tbtc-v2@development":
-  version "1.8.0-dev.1"
-  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.8.0-dev.1.tgz#e1c4903cb7f08532f4fec29891db30f1ff1cfb8d"
-  integrity sha512-44bc3mkDBYuW2y/GfSIeiymxU/k5rheYMQ08HjjD0i9haqgHOOcjdutmKkKS2xU0Qge3OI4jAZ2VdCVG2a8wtA==
+"@keep-network/tbtc-v2@1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@keep-network/tbtc-v2/-/tbtc-v2-1.7.0.tgz#46ae258458271d589831a9fe291120691298cf80"
+  integrity sha512-qKdv+laqq03k8Ug0+q/u4Iz2Vb5rcPFYZ+GcEZ4DjVvS9edIvdmYQKnrkZGIfcwyoy0bJG+3dufplkV0lg+Gmw==
   dependencies:
     "@keep-network/bitcoin-spv-sol" "3.4.0-solc-0.8"
-    "@keep-network/ecdsa" "2.1.0-dev.19"
-    "@keep-network/random-beacon" "2.1.0-dev.18"
-    "@keep-network/tbtc" "1.1.2-dev.1"
+    "@keep-network/ecdsa" development
+    "@keep-network/random-beacon" development
+    "@keep-network/tbtc" development
     "@openzeppelin/contracts" "^4.8.1"
     "@openzeppelin/contracts-upgradeable" "^4.8.1"
     "@thesis/solidity-contracts" "github:thesis/solidity-contracts#4985bcf"
@@ -4427,7 +4439,7 @@
     "@summa-tx/relay-sol" "^2.0.2"
     openzeppelin-solidity "2.3.0"
 
-"@keep-network/tbtc@1.1.2-dev.1":
+"@keep-network/tbtc@development":
   version "1.1.2-dev.1"
   resolved "https://registry.yarnpkg.com/@keep-network/tbtc/-/tbtc-1.1.2-dev.1.tgz#dd1e734c0fed50474c74d7170c8749127231d1f9"
   integrity sha512-IRa0j1D7JBG8UpduaFxkaq2Ii6F61HhNMUBmxr7kAIZwj/yx8sYXWi921mn0L2Z+hAYNcwEUVhCM91VKQH29pQ==
@@ -4702,6 +4714,24 @@
     poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 
+"@mysten/sui@1.34.0", "@mysten/sui@^1.34.0":
+  version "1.34.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.34.0.tgz#97cdf69f7f7b775666ba6249a9f4ff4b9d5765b4"
+  integrity sha512-Btf2Tq5VPXqABOXqtw9hV13DskepggP7MpeGb7OnRNF2grh1nHyWj9J0Y2UmkhZUEdTWpnVRnl/ufIZ6VmU1kg==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.2.0"
+    "@mysten/bcs" "1.6.3"
+    "@mysten/utils" "0.1.0"
+    "@noble/curves" "^1.9.1"
+    "@noble/hashes" "^1.8.0"
+    "@scure/base" "^1.2.6"
+    "@scure/bip32" "^1.7.0"
+    "@scure/bip39" "^1.6.0"
+    gql.tada "^1.8.2"
+    graphql "^16.11.0"
+    poseidon-lite "^0.2.0"
+    valibot "^0.36.0"
+
 "@mysten/sui@1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.8.0.tgz#e5f2363e9263578cf5ac4cc27231120ca0de0980"
@@ -4718,24 +4748,6 @@
     gql.tada "^1.8.2"
     graphql "^16.9.0"
     tweetnacl "^1.0.3"
-    valibot "^0.36.0"
-
-"@mysten/sui@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@mysten/sui/-/sui-1.34.0.tgz#97cdf69f7f7b775666ba6249a9f4ff4b9d5765b4"
-  integrity sha512-Btf2Tq5VPXqABOXqtw9hV13DskepggP7MpeGb7OnRNF2grh1nHyWj9J0Y2UmkhZUEdTWpnVRnl/ufIZ6VmU1kg==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.2.0"
-    "@mysten/bcs" "1.6.3"
-    "@mysten/utils" "0.1.0"
-    "@noble/curves" "^1.9.1"
-    "@noble/hashes" "^1.8.0"
-    "@scure/base" "^1.2.6"
-    "@scure/bip32" "^1.7.0"
-    "@scure/bip39" "^1.6.0"
-    gql.tada "^1.8.2"
-    graphql "^16.11.0"
-    poseidon-lite "^0.2.0"
     valibot "^0.36.0"
 
 "@mysten/utils@0.0.0":
