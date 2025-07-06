@@ -70,7 +70,10 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
   if (isStarknetActive) {
     // Determine which non-EVM chain is active
     // For now, only Starknet is supported
-    connectionData.nonEVMChainName = "Starknet"
+    connectionData.nonEVMChainName = "StarkNet" as Exclude<
+      keyof typeof ChainName,
+      "Ethereum"
+    >
     connectionData.nonEVMPublicKey = starknetAddress ?? null
     connectionData.nonEVMProvider = starknetProvider ?? null
     connectionData.nonEVMChainId = starknetChainId ?? null
