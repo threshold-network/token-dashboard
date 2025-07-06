@@ -12,4 +12,9 @@ export enum WalletType {
   Coinbase = "COINBASE",
   LedgerLive = "LEDGER_LIVE",
   Starknet = "STARKNET",
+  Sui = "SUI",
+}
+
+export const WALLETS: { [key: string]: WalletType } = {
+  // ... existing code ...
 }

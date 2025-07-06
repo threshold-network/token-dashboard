@@ -17,6 +17,7 @@ export enum SupportedChainIds {
 export enum NonEVMNetworks {
   Solana = "Solana",
   StarkNet = "StarkNet",
+  Sui = "Sui",
 }
 
 export enum AlchemyName {
