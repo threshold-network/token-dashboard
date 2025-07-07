@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "2.3.1",
+  "version": "2.3.5",
   "private": true,
   "engines": {
     "node": ">=16"
@@ -18,10 +18,11 @@
     "@keep-network/keep-ecdsa": "1.8.0",
     "@keep-network/random-beacon": "2.0.0",
     "@keep-network/tbtc": "1.1.0",
-    "@keep-network/tbtc-v2.ts": "^2.6.0",
+    "@keep-network/tbtc-v2.ts": "^2.7.1",
     "@ledgerhq/connect-kit-loader": "1.1.8",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
+    "@mysten/sui": "^1.34.0",
     "@nucypher/nucypher-contracts": "0.23.0",
     "@reduxjs/toolkit": "^1.6.1",
     "@rehooks/local-storage": "^2.4.4",
@@ -29,6 +30,7 @@
     "@sentry/tracing": "^7.33.0",
     "@starknet-react/chains": "^3.1.3",
     "@starknet-react/core": "^3.7.4",
+    "@suiet/wallet-kit": "^0.5.1",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
