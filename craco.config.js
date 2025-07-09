@@ -11,6 +11,8 @@ module.exports = {
        * ECPair library error used by "@keep-network/tbtc-v2.ts"
        */
       ["@babel/plugin-transform-class-properties", { loose: true }],
+      ["@babel/plugin-proposal-private-methods", { loose: true }],
+      ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
     ],
   },
   jest: {
@@ -36,6 +38,11 @@ module.exports = {
   },
   webpack: {
     configure: (webpackConfig) => {
+      webpackConfig.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      })
       // Add webpack plugins
       webpackConfig.plugins = [
         ...webpackConfig.plugins,
