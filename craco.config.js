@@ -3,6 +3,7 @@ const webpack = require("webpack")
 module.exports = {
   babel: {
     plugins: [
+      "@babel/plugin-proposal-numeric-separator",
       "@babel/plugin-proposal-nullish-coalescing-operator",
       "@babel/plugin-proposal-optional-chaining",
       "@babel/plugin-proposal-logical-assignment-operators",
