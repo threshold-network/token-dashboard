@@ -18,7 +18,7 @@
     "@keep-network/keep-ecdsa": "development",
     "@keep-network/random-beacon": "development",
     "@keep-network/tbtc": "development",
-    "@keep-network/tbtc-v2.ts": "^2.6.0",
+    "@keep-network/tbtc-v2.ts": "^2.8.0",
     "@ledgerhq/connect-kit-loader": "1.1.8",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
@@ -111,7 +111,11 @@
     "babel-loader": "8.1.0",
     "react-error-overlay": "6.0.9",
     "@types/react": "17.0.30",
-    "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0"
+    "@tenderly/hardhat-tenderly": ">=1.0.12 <1.1.0",
+    "@solana/web3.js": "1.98.0",
+    "@solana/errors": "2.1.0",
+    "@solana/codecs-numbers": "2.1.0",
+    "@solana/codecs-core": "2.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-logical-assignment-operators": "^7.20.7",
