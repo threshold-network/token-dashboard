@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { ChangeEvent, FC, FocusEvent } from "react"
 import {
   FormControl,
   FormControlProps,
@@ -20,6 +20,8 @@ export const FormikInput: FC<
     helperText?: string | JSX.Element
     placeholder?: string
     tooltip?: string
+    onChange?: (e: ChangeEvent<HTMLInputElement>) => void
+    onBlur?: (e: FocusEvent<HTMLInputElement>) => void
   }
 > = ({
   name,
@@ -28,6 +30,8 @@ export const FormikInput: FC<
   helperText,
   placeholder,
   tooltip,
+  onChange,
+  onBlur,
   ...restProps
 }) => {
   const [field, meta] = useField(name)
@@ -75,8 +79,16 @@ export const FormikInput: FC<
         errorBorderColor="red.300"
         placeholder={placeholder}
         _placeholder={{ color: useColorModeValue("gray.400", "gray.500") }}
-        {...field}
-        value={meta.value}
+        name={field.name}
+        value={field.value}
+        onChange={(e) => {
+          field.onChange(e)
+          onChange?.(e)
+        }}
+        onBlur={(e) => {
+          field.onBlur(e)
+          onBlur?.(e)
+        }}
       />
       <HelperErrorText
         helperText={helperText}
