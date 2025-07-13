@@ -82,7 +82,7 @@ const baseWalletOptions: WalletOption[] = [
   },
   {
     id: WalletType.Sui,
-    title: "Sui",
+    title: "Sui Wallets",
     icon: {
       light: SuiIcon,
       dark: SuiIcon,
