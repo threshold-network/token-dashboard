@@ -11,7 +11,7 @@ const ConnectSui: FC<{
     goBack={goBack}
     closeModal={closeModal}
     WalletIcon={SuiIcon}
-    title="Sui"
+    title="Sui Wallets"
     subTitle="Connect by choosing one of the available wallets."
   >
     <SuiWalletList closeModal={closeModal} />
