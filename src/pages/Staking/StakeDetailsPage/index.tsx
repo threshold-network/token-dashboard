@@ -79,6 +79,12 @@ const StakeDetailsPage: FC = () => {
     stakingProviderAddress || AddressZero
   )
 
+  const endCommitment = tacoApp.stakingProviderInfo?.endCommitment
+  const isCommited = (Number(endCommitment) ?? 0) > 0
+  const endCommitmentDate = new Date(
+    (Number(endCommitment) ?? 0) * 1000
+  ).toLocaleDateString()
+
   const isInActiveStake = BigNumber.from(stake?.totalInTStake ?? "0").isZero()
 
   const { total: rewardsForStake } = useAppSelector((state) =>
@@ -170,10 +176,12 @@ const StakeDetailsPage: FC = () => {
           </StakeDetailRow>
         </Stack>
       </SimpleGrid>
-      {tacoApp.isAuthorized && (
+      {tacoApp.isAuthorized && !isCommited ? (
         <Button onClick={handleCommitToTaco} type="submit">
           Commit to TACo
         </Button>
+      ) : (
+        <p>Your commitment ends on {endCommitmentDate}</p>
       )}
     </Card>
   ) : (
