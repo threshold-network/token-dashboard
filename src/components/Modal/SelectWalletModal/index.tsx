@@ -3,6 +3,7 @@ import { useWeb3React } from "@web3-react/core"
 import { MetaMaskIcon } from "../../../static/icons/MetaMask"
 import { Taho } from "../../../static/icons/Taho"
 import { WalletConnectIcon } from "../../../static/icons/WalletConect"
+import { SuiIcon } from "../../../static/icons/Sui"
 import InitialWalletSelection from "./InitialSelection"
 import { FC, useState } from "react"
 import ConnectMetamask from "./ConnectMetamask"
@@ -22,6 +23,7 @@ import { LedgerDark } from "../../../static/icons/LedgerDark"
 import { ConnectStarknetDirect } from "./ConnectStarknetDirect"
 import { StarknetIcon } from "../../../static/icons/Starknet"
 import { featureFlags } from "../../../constants"
+import ConnectSui from "./ConnectSui"
 
 const starknetWalletOption: WalletOption = {
   id: WalletType.Starknet,
@@ -78,6 +80,14 @@ const baseWalletOptions: WalletOption[] = [
       dark: CoinbaseWallet,
     },
   },
+  {
+    id: WalletType.Sui,
+    title: "Sui",
+    icon: {
+      light: SuiIcon,
+      dark: SuiIcon,
+    },
+  },
 ]
 
 // Include all wallet options including StarkNet
@@ -106,7 +116,6 @@ const SelectWalletModal: FC<BaseModalProps> = () => {
         <H5>Connect a Wallet</H5>
       </ModalHeader>
       <ModalCloseButton />
-
       {walletToConnect === null ? (
         <InitialWalletSelection
           walletOptions={walletOptions}
@@ -141,6 +150,8 @@ const ConnectWallet: FC<{
       return <ConnectLedgerLive goBack={goBack} closeModal={onClose} />
     case WalletType.Starknet:
       return <ConnectStarknetDirect goBack={goBack} closeModal={onClose} />
+    case WalletType.Sui:
+      return <ConnectSui goBack={goBack} closeModal={onClose} />
     default:
       return <></>
   }

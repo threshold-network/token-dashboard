@@ -4,7 +4,7 @@ import { useCallback, useEffect } from "react"
 import { useLedgerLiveApp } from "../../contexts/LedgerLiveAppContext"
 import { useWalletApiReactTransport } from "../../contexts/TransportProvider"
 import { isTestnetChainId } from "../../networks/utils"
-import { useConnectedOrDefaultChainId } from "../../networks/hooks/useConnectedOrDefaultChainId"
+import { useConnectedOrDefaultEthereumChainId } from "../../networks/hooks/useConnectedOrDefaultEthereumChainId"
 import { useIsEmbed } from "../useIsEmbed"
 
 type UseRequestAccountState = {
@@ -25,7 +25,7 @@ export function useRequestBitcoinAccount(): UseRequestAccountReturn {
   const useRequestAccountReturn = useWalletApiRequestAccount()
   const { account, requestAccount } = useRequestAccountReturn
   const { isEmbed } = useIsEmbed()
-  const defaultOrConnectedChainId = useConnectedOrDefaultChainId()
+  const defaultOrConnectedChainId = useConnectedOrDefaultEthereumChainId()
 
   useEffect(() => {
     if (isEmbed) setBtcAccount(account || undefined)

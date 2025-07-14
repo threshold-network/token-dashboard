@@ -64,9 +64,10 @@ import { useIsEmbed } from "./hooks/useIsEmbed"
 import TBTC from "./pages/tBTC"
 import { useDetectIfEmbed } from "./hooks/useDetectIfEmbed"
 import { useGoogleTagManager } from "./hooks/google-tag-manager"
-import { hexToNumber, isSameChainId } from "./networks/utils"
+import { hexToNumber, isSameChainNameOrId } from "./networks/utils"
 import { walletConnected } from "./store/account"
 import { useIsActive } from "./hooks/useIsActive"
+import SuiWalletProvider from "./contexts/SuiWalletProvider"
 
 const Web3EventHandlerComponent = () => {
   useSubscribeToVendingMachineContractEvents()
@@ -143,7 +144,10 @@ const AppBody = () => {
     const updateHandler = (update: ConnectorUpdate) => {
       // if chain is changed then just update the redux store for the wallet
       // connection
-      if (update.chainId && !isSameChainId(update.chainId, chainId as number)) {
+      if (
+        update.chainId &&
+        !isSameChainNameOrId(update.chainId, chainId as number)
+      ) {
         dispatch(
           walletConnected({
             address: account || "",
@@ -268,19 +272,21 @@ const App: FC = () => {
     <Router basename={`${process.env.PUBLIC_URL}`}>
       <Web3ReactProvider getLibrary={getLibrary}>
         <LedgerLiveAppProvider>
-          <StarknetWalletProvider>
-            <ThresholdProvider>
-              <ReduxProvider store={reduxStore}>
-                <ChakraProvider theme={theme}>
-                  <TokenContextProvider>
-                    <Web3EventHandlerComponent />
-                    <ModalRoot />
-                    <AppBody />
-                  </TokenContextProvider>
-                </ChakraProvider>
-              </ReduxProvider>
-            </ThresholdProvider>
-          </StarknetWalletProvider>
+          <SuiWalletProvider>
+            <StarknetWalletProvider>
+              <ThresholdProvider>
+                <ReduxProvider store={reduxStore}>
+                  <ChakraProvider theme={theme}>
+                    <TokenContextProvider>
+                      <Web3EventHandlerComponent />
+                      <ModalRoot />
+                      <AppBody />
+                    </TokenContextProvider>
+                  </ChakraProvider>
+                </ReduxProvider>
+              </ThresholdProvider>
+            </StarknetWalletProvider>
+          </SuiWalletProvider>
         </LedgerLiveAppProvider>
       </Web3ReactProvider>
     </Router>

@@ -9,7 +9,7 @@
  * Get the default provider chain ID from environment
  * @return {number} Returns 1 for mainnet or 11155111 for Sepolia
  */
-const getDefaultProviderChainId = (): number => {
+const getEthereumDefaultProviderChainId = (): number => {
   const chainId = process.env.REACT_APP_DEFAULT_PROVIDER_CHAIN_ID
   return chainId ? parseInt(chainId) : 1
 }
@@ -20,7 +20,7 @@ const getDefaultProviderChainId = (): number => {
  * - If REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = 1: mainnet enabled, sepolia disabled
  * - If REACT_APP_DEFAULT_PROVIDER_CHAIN_ID = 11155111: sepolia enabled, mainnet disabled
  */
-const defaultChainId = getDefaultProviderChainId()
+const defaultChainId = getEthereumDefaultProviderChainId()
 export const ENABLED_STARKNET_NETWORKS = {
   mainnet: defaultChainId === 1,
   sepolia: defaultChainId === 11155111,

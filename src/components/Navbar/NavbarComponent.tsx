@@ -12,11 +12,12 @@ import {
 import { Routes, Route, Link, useMatch } from "react-router-dom"
 import WalletConnectionAlert from "./WalletConnectionAlert"
 import TrmWalletScreeningAlert from "./TrmWalletScreeningAlert"
+import SuiNetworkAlert from "./SuiNetworkAlert"
 import HamburgerButton from "./HamburgerButton"
 import DarkModeSwitcher from "./DarkModeSwitcher"
 import AccountButton from "./AccountButton"
 import NetworkButton from "./NetworkButton"
-import StarkNetNetworkButton from "./StarkNetNetworkButton"
+import StarknetNetworkButton from "./StarkNetNetworkButton"
 import ThresholdPurple from "../../static/icons/ThresholdPurple"
 import ThresholdWhite from "../../static/icons/ThresholdWhite"
 import useChakraBreakpoint from "../../hooks/useChakraBreakpoint"
@@ -68,7 +69,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
         <Stack spacing={4} direction="row" ml="auto">
           <DarkModeSwitcher />
           {chainId && <NetworkButton />}
-          <StarkNetNetworkButton />
+          <StarknetNetworkButton />
           <AccountButton {...{ openWalletModal, deactivate, account }} />
         </Stack>
         <VStack
@@ -81,6 +82,7 @@ const NavbarComponent: FC<NavbarComponentProps> = ({
           maxWidth={{ base: "38rem", xl: "100%" }}
           alignItems={"flex-end"}
         >
+          <SuiNetworkAlert />
           <TrmWalletScreeningAlert />
           <WalletConnectionAlert {...{ account, chainId }} />
         </VStack>

@@ -1,4 +1,4 @@
-import { isSameChainId } from "../../networks/utils"
+import { isSameChainNameOrId } from "../../networks/utils"
 import { StakeData } from "../../types"
 import { isAddress, isAddressZero } from "../../web3/utils"
 import { AppListenerEffectAPI } from "../listener"
@@ -19,7 +19,7 @@ export const fetchStakeByStakingProviderEffect = async (
     !isAddress(stakingProvider) ||
     isAddressZero(stakingProvider) ||
     !account.chainId ||
-    !isSameChainId(account.chainId, config.ethereum.chainId)
+    !isSameChainNameOrId(account.chainId, config.ethereum.chainId)
   )
     return
 

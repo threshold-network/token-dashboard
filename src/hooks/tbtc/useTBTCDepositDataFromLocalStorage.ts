@@ -8,73 +8,58 @@ import {
 } from "../../utils/tbtcLocalStorageData"
 import { useIsActive } from "../useIsActive"
 import { useNonEVMConnection } from "../useNonEVMConnection"
+import { getEthereumNetworkNameFromChainId } from "../../networks/utils"
 
 export const useTBTCDepositDataFromLocalStorage = () => {
   const { account, chainId } = useIsActive()
-  const { isNonEVMActive, nonEVMChainName, nonEVMPublicKey, nonEVMChainId } =
-    useNonEVMConnection()
+  const { nonEVMPublicKey, nonEVMChainName } = useNonEVMConnection()
 
-  // For StarkNet connections, use the actual connected chain ID
-  const effectiveChainId =
-    chainId ||
-    (isNonEVMActive && nonEVMChainName === "Starknet"
-      ? nonEVMChainId
-      : undefined)
+  const networkName =
+    nonEVMChainName ?? getEthereumNetworkNameFromChainId(chainId)
 
   const [tBTCDepositData, setTBTCLocalStorageData] =
     useState<TBTCLocalStorageDepositData>({})
 
   useEffect(() => {
-    if (!effectiveChainId) {
-      return
-    }
-
-    const storageKey = `${key}-${effectiveChainId.toString()}`
+    const storageKey = `${key}-${networkName?.toString()}`
     const storedData = localStorage.getItem(storageKey)
     const parsedData = storedData ? JSON.parse(storedData) : {}
 
     setTBTCLocalStorageData(parsedData)
-  }, [effectiveChainId])
+  }, [chainId])
 
   const setDepositDataInLocalStorage = useCallback(
-    (depositData: TBTCDepositData, chainId?: number | string) => {
-      // For StarkNet, we might need to use nonEVMPublicKey as the account
-      const effectiveAccount =
-        account || (isNonEVMActive ? nonEVMPublicKey : null)
+    (depositData: TBTCDepositData, networkName: string) => {
+      const connectedAccount = account ?? nonEVMPublicKey
+      if (!connectedAccount || !networkName) return
 
-      if (!effectiveAccount || !chainId) {
-        return
-      }
-
-      const storageKey = `${key}-${chainId.toString()}`
-      write(effectiveAccount, depositData, tBTCDepositData, chainId)
+      const storageKey = `${key}-${networkName.toString()}`
+      write(connectedAccount, depositData, tBTCDepositData, networkName)
 
       const updatedData = {
         ...tBTCDepositData,
-        [effectiveAccount]: depositData,
+        [connectedAccount]: depositData,
       }
       localStorage.setItem(storageKey, JSON.stringify(updatedData))
       setTBTCLocalStorageData(updatedData)
     },
-    [account, nonEVMPublicKey, isNonEVMActive, tBTCDepositData]
+    [account, tBTCDepositData, networkName, nonEVMPublicKey]
   )
 
   const removeDepositDataFromLocalStorage = useCallback(
-    (chainId?: number | string) => {
-      const effectiveAccount =
-        account || (isNonEVMActive ? nonEVMPublicKey : null)
+    (networkName: string) => {
+      const connectedAccount = account ?? nonEVMPublicKey
+      if (!connectedAccount || !networkName) return
 
-      if (!effectiveAccount) return
-
-      const storageKey = `${key}-${chainId?.toString()}`
-      removeDataForAccount(effectiveAccount, tBTCDepositData, chainId)
+      const storageKey = `${key}-${networkName?.toString()}`
+      removeDataForAccount(connectedAccount, tBTCDepositData, networkName)
 
       const updatedData = { ...tBTCDepositData }
-      delete updatedData[effectiveAccount]
+      delete updatedData[connectedAccount]
       localStorage.setItem(storageKey, JSON.stringify(updatedData))
       setTBTCLocalStorageData(updatedData)
     },
-    [account, nonEVMPublicKey, isNonEVMActive, tBTCDepositData]
+    [account, nonEVMPublicKey, tBTCDepositData, chainId]
   )
 
   return {

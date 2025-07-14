@@ -7,7 +7,7 @@ import { ResumeDepositPage } from "./ResumeDeposit"
 import { MintingTimeline } from "./Minting/MintingTimeline"
 import { useTBTCDepositDataFromLocalStorage } from "../../../hooks/tbtc"
 import { useTbtcState } from "../../../hooks/useTbtcState"
-import { isSameETHAddress, isSameAddress } from "../../../web3/utils"
+import { isSameAddress } from "../../../web3/utils"
 import { MintingFlowRouter } from "./Minting/MintingFlowRouter"
 
 import {
@@ -30,40 +30,37 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
   const { tBTCDepositData } = useTBTCDepositDataFromLocalStorage()
   const { btcDepositAddress, updateState, resetDepositData } = useTbtcState()
   const { account, chainId } = useIsActive()
-  const { isNonEVMActive, nonEVMPublicKey } = useNonEVMConnection()
+  const { nonEVMPublicKey, nonEVMChainName } = useNonEVMConnection()
   const checkDepositExpiration = useCheckDepositExpirationTime()
   const removeDepositData = useRemoveDepositData()
 
-  // For StarkNet connections, use non-EVM connection info
-  const effectiveAccount = account || nonEVMPublicKey
+  const userConnectedAccount = account || nonEVMPublicKey
 
   useEffect(() => {
     const updateDepositData = async () => {
       if (
+        (chainId || nonEVMChainName) &&
         tBTCDepositData &&
-        effectiveAccount &&
-        tBTCDepositData[effectiveAccount] &&
-        (isNonEVMActive ||
-          (chainId &&
-            isSameETHAddress(
-              tBTCDepositData[effectiveAccount].ethAddress,
-              effectiveAccount
-            ))) &&
-        tBTCDepositData[effectiveAccount].btcDepositAddress !==
+        userConnectedAccount &&
+        tBTCDepositData[userConnectedAccount] &&
+        isSameAddress(
+          tBTCDepositData[userConnectedAccount].userWalletAddress,
+          userConnectedAccount
+        ) &&
+        tBTCDepositData[userConnectedAccount].btcDepositAddress !==
           btcDepositAddress
       ) {
-        const depositData = tBTCDepositData[effectiveAccount]
         const {
           depositor: { identifierHex: depositorAddress },
-          btcDepositAddress: storedBtcDepositAddress,
-          ethAddress,
+          btcDepositAddress,
+          userWalletAddress,
           blindingFactor,
           btcRecoveryAddress,
           walletPublicKeyHash,
           refundLocktime,
           extraData,
           chainName,
-        } = depositData
+        } = tBTCDepositData[userConnectedAccount]
         const { isExpired } = await checkDepositExpiration(refundLocktime)
         if (isExpired) {
           resetDepositData()
@@ -71,7 +68,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
           return
         }
 
-        updateState("ethAddress", ethAddress)
+        updateState("userWalletAddress", userWalletAddress)
         updateState("blindingFactor", blindingFactor)
         updateState("btcRecoveryAddress", btcRecoveryAddress)
         updateState("walletPublicKeyHash", walletPublicKeyHash)
@@ -79,15 +76,11 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
         updateState("depositor", depositorAddress)
         updateState("extraData", extraData)
         updateState("chainName", chainName)
-
-        // Update btcDepositAddress from localStorage if it's different
-        if (btcDepositAddress !== storedBtcDepositAddress) {
-          // We reset the minting step to undefined to show skeleton and the
-          // useEffect in MintingFlowRouter will update and set the proper minting
-          // step when it recognizes the "btcDepositAddress" change.
-          updateState("mintingStep", undefined)
-          updateState("btcDepositAddress", storedBtcDepositAddress)
-        }
+        // We reset the minting step to undefined to show skeleton and the
+        // useEffect in MintingFlowRouter will update and set the proper minting
+        // step when it recognizes the "btcDepositAddress" change.
+        updateState("mintingStep", undefined)
+        updateState("btcDepositAddress", btcDepositAddress)
       } else {
         resetDepositData()
       }
@@ -97,16 +90,7 @@ export const MintingFormPage: PageComponent = ({ ...props }) => {
     // local storage.
 
     updateDepositData()
-  }, [
-    effectiveAccount,
-    tBTCDepositData,
-    isNonEVMActive,
-    chainId,
-    updateState,
-    resetDepositData,
-    checkDepositExpiration,
-    removeDepositData,
-  ])
+  }, [account, tBTCDepositData])
 
   return <MintingFlowRouter />
 }
@@ -134,13 +118,10 @@ const MintPageLayout: PageComponent = () => {
   ].includes(mintingStep)
   const confirmations = getNumberOfConfirmationsByAmount(utxo?.value || 0)
 
-  // Check for either EVM or non-EVM (StarkNet) wallet connection
-  const isWalletConnected = isActive || isNonEVMActive
-
   return (
     <BridgeLayout>
       <BridgeLayoutMainSection>
-        {isWalletConnected ? (
+        {isActive || isNonEVMActive ? (
           <Outlet />
         ) : (
           <BridgeProcessEmptyState title="Ready to mint tBTC?" />

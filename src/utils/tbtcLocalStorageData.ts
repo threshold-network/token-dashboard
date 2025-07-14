@@ -7,7 +7,7 @@ export type Depositor = {
 export type TBTCDepositData = {
   depositor: Depositor
   chainName: string
-  ethAddress: string
+  userWalletAddress: string
   blindingFactor: string
   btcRecoveryAddress: string
   walletPublicKeyHash: string
@@ -26,7 +26,7 @@ export function write(
   account: string,
   newDepositData: TBTCDepositData,
   prevData: TBTCLocalStorageDepositData,
-  chainId?: number | string
+  networkName: string
 ) {
   if (!account) return
 
@@ -36,7 +36,7 @@ export function write(
   }
 
   writeStorage<TBTCLocalStorageDepositData>(
-    `${key}-${chainId?.toString()}`,
+    `${key}-${networkName}`,
     newLocalStorageData
   )
 }
@@ -44,7 +44,7 @@ export function write(
 export function removeDataForAccount(
   account: string,
   prevData: TBTCLocalStorageDepositData,
-  chainId?: number | string
+  networkName: string
 ) {
   const newLocalStorageData = {
     ...prevData,
@@ -52,7 +52,7 @@ export function removeDataForAccount(
   delete newLocalStorageData[`${account}`]
 
   writeStorage<TBTCLocalStorageDepositData>(
-    `${key}-${chainId?.toString()}`,
+    `${key}-${networkName}`,
     newLocalStorageData
   )
 }

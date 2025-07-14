@@ -10,10 +10,14 @@ export enum SupportedChainIds {
   Localhost = 1337,
   Arbitrum = 42161,
   Base = 8453,
-  StarkNet = 0x534e5f4d41494e, // "SN_MAIN" in hex
-  StarkNetSepolia = 0x534e5f5345504f4c4941, // "SN_SEPOLIA" in hex
   // ArbitrumSepolia = 421614,
   // BaseSepolia = 84532,
+}
+
+export enum NonEVMNetworks {
+  Solana = "Solana",
+  StarkNet = "StarkNet",
+  Sui = "Sui",
 }
 
 export enum AlchemyName {

@@ -93,7 +93,7 @@ jest.mock("../NetworkButton", () => ({
   default: () => <div>Network Button</div>,
 }))
 
-jest.mock("../StarkNetNetworkButton", () => ({
+jest.mock("../StarknetNetworkButton", () => ({
   __esModule: true,
   default: () => {
     // Access the global variable to determine if button should show

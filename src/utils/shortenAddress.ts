@@ -1,4 +1,4 @@
-const shortenAddress = (address?: string, sliceDigits = -4): string => {
+const shortenAddress = (address?: string | null, sliceDigits = -4): string => {
   if (!address) return ""
 
   // Detect address type and adjust formatting

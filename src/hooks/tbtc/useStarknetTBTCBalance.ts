@@ -3,6 +3,7 @@ import { formatUnits } from "ethers/lib/utils"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { useNonEVMConnection } from "../useNonEVMConnection"
 import { ChainName } from "../../threshold-ts/types"
+import { ChainIdentifier } from "@keep-network/tbtc-v2.ts"
 
 interface UseStarknetTBTCBalanceResult {
   balance: string
@@ -56,7 +57,7 @@ export function useStarknetTBTCBalance(): UseStarknetTBTCBalanceResult {
 
       // Fetch balance using the SDK's l2TbtcToken
       const balanceResult = await threshold.tbtc.l2TbtcToken.balanceOf(
-        nonEVMPublicKey
+        nonEVMPublicKey as unknown as ChainIdentifier
       )
 
       // Convert balance to string and format (tBTC has 18 decimals)

@@ -10,7 +10,7 @@ export interface TbtcState {
   depositor: string
   btcRecoveryAddress: string
   btcDepositAddress: string
-  ethAddress: string
+  userWalletAddress: string
   refundLocktime: string
   blindingFactor: string
   walletPublicKeyHash: string
@@ -26,9 +26,7 @@ export interface TbtcState {
   mintingFee: string
   chainName: NetworkName
   extraData?: string
-
   bridgeActivity: FetchingState<BridgeActivity[]>
-  firstDepositWarningConfirmed?: boolean
 }
 
 export type TbtcStateKey = keyof Omit<TbtcState, "bridgeActivity">

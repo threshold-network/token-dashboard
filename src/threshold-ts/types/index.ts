@@ -9,17 +9,18 @@ import { providers, Signer } from "ethers"
 export type CrossChainConfig = {
   isCrossChain: boolean
   chainName: ChainName | null
-  nonEVMProvider: any | null // Will be AnchorProvider for Solana, StarknetProvider for Starknet
+  nonEVMProvider: any | null
 }
 
 export enum ChainName {
   Ethereum = "Ethereum", // can be any l2 based on Ethereum network as such as arbitrum, optimism, etc.
   Solana = "Solana",
-  Starknet = "Starknet",
+  Starknet = "StarkNet",
+  Sui = "Sui",
 }
 
 export interface EthereumConfig {
-  providerOrSigner: providers.Provider | Signer
+  ethereumProviderOrSigner: providers.Provider | Signer
   chainId: string | number
   shouldUseTestnetDevelopmentContracts: boolean
   account?: string
@@ -56,7 +57,9 @@ export interface BitcoinConfig {
 export interface ThresholdConfig {
   ethereum: EthereumConfig
   bitcoin: BitcoinConfig
-  crossChain?: CrossChainConfig
+  crossChain: CrossChainConfig
 }
 
 export { BitcoinNetwork }
+
+export type Reducer<S, A> = (state: S, action: A) => S

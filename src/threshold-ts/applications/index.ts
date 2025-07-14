@@ -5,7 +5,7 @@ import {
   ContractInterface,
   ContractTransaction,
 } from "ethers"
-import { getContract, isAddress, isAddressZero } from "../utils"
+import { getContract, isEthereumAddress, isAddressZero } from "../utils"
 import { IStaking } from "../staking"
 import { EthereumConfig } from "../types"
 import { IMulticall, ContractCall } from "../multicall"
@@ -227,8 +227,13 @@ export class Application implements IApplication {
     multicall: IMulticall,
     config: EthereumConfig & { address: string; abi: ContractInterface }
   ) {
-    const { address, abi, providerOrSigner, account } = config
-    this._application = getContract(address, abi, providerOrSigner, account)
+    const { address, abi, ethereumProviderOrSigner, account } = config
+    this._application = getContract(
+      address,
+      abi,
+      ethereumProviderOrSigner,
+      account
+    )
     this._staking = staking
     this._multicall = multicall
   }
@@ -376,7 +381,7 @@ export class Application implements IApplication {
       stakingProvider
     )
 
-    if (isAddress(operator) && isAddressZero(operator)) {
+    if (isEthereumAddress(operator) && isAddressZero(operator)) {
       return false
     }
     let isInPool = undefined
