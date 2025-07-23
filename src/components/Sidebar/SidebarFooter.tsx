@@ -53,6 +53,27 @@ const SidebarFooter = () => {
             />
           </HStack>
           <BodySm color="gray.300" textAlign="center">
+            <Link
+              href={ExternalHref.privacyPolicy}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="gray.300"
+              mr={4}
+              textDecoration="underline"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href={ExternalHref.termsOfUse}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="gray.300"
+              textDecoration="underline"
+            >
+              Terms of Use
+            </Link>
+          </BodySm>
+          <BodySm color="gray.300" textAlign="center">
             &copy; {new Date().getFullYear()} Threshold Network
           </BodySm>
         </Box>
@@ -72,6 +93,31 @@ const SidebarFooter = () => {
             passiveIcon={BsDiscord}
             href={ExternalHref.thresholdDiscord}
           />
+          <Box px={4} pb={2}>
+            <Link
+              href={ExternalHref.privacyPolicy}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="gray.300"
+              mr={4}
+              fontSize="sm"
+              textDecoration="underline"
+              display="inline-block"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href={ExternalHref.termsOfUse}
+              target="_blank"
+              rel="noopener noreferrer"
+              color="gray.300"
+              fontSize="sm"
+              textDecoration="underline"
+              display="inline-block"
+            >
+              Terms of Use
+            </Link>
+          </Box>
         </>
       )}
     </Box>
