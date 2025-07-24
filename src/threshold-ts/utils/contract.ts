@@ -60,6 +60,10 @@ import CCIPRouterArtifactBOB from "../tbtc/bob-artifacts/CCIPRouter.json"
 import StandardBridgeArtifactBOB from "../tbtc/bob-artifacts/StandardBridge.json"
 import OptimismMintableUpgradableTBTCArtifactBOB from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
 
+import CCIPRouterArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/CCIPRouter.json"
+import StandardBridgeArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/StandardBridge.json"
+import OptimismMintableUpgradableTBTCArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/OptimismMintableUpgradableTBTC.json"
+
 export type ArtifactNameType =
   | "TacoRegistry"
   | "LegacyKeepStaking"
@@ -147,9 +151,10 @@ const contractArtifacts: ContractArtifacts = {
     OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
   },
   [SupportedChainIds.BOBTestnet]: {
-    CCIPRouter: CCIPRouterArtifactBOB,
-    StandardBridge: StandardBridgeArtifactBOB,
-    OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
+    CCIPRouter: CCIPRouterArtifactBOBTestnet,
+    StandardBridge: StandardBridgeArtifactBOBTestnet,
+    OptimismMintableUpgradableTBTC:
+      OptimismMintableUpgradableTBTCArtifactBOBTestnet,
   },
 }
 
