@@ -126,11 +126,7 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for approveForStandardBridge", async () => {
-      await expect(
-        bridge.approveForStandardBridge(BigNumber.from(100))
-      ).rejects.toThrow("Method not implemented")
-    })
+    // approveForStandardBridge is now implemented, so removing this test
 
     it("should throw error when calling pickPath without proper mocks", async () => {
       // This test verifies the placeholder behavior when contracts are not properly mocked
@@ -915,6 +911,175 @@ describe("Bridge", () => {
       // Act & Assert
       await expect(bridgeNoContracts.getAllowances()).rejects.toThrow(
         "Contracts not initialized"
+      )
+    })
+  })
+
+  describe("approveForStandardBridge", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockStandardBridgeContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        approve: jest.fn(),
+        address: "0xMockTokenAddress",
+        interface: {
+          encodeFunctionData: jest.fn(),
+        },
+      }
+
+      mockStandardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("should skip approval when allowance is sufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const currentAllowance = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+
+      // Act
+      const result = await bridge.approveForStandardBridge(amount)
+
+      // Assert
+      expect(result).toBeNull()
+      expect(mockTokenContract.approve).not.toHaveBeenCalled()
+      expect(mockTokenContract.allowance).toHaveBeenCalledWith(
+        mockEthereumConfig.account,
+        mockStandardBridgeContract.address
+      )
+    })
+
+    it("should send approval transaction when allowance is insufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const currentAllowance = BigNumber.from("0")
+      const mockTx = { hash: "0x456", wait: jest.fn() }
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.approveForStandardBridge(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockTokenContract.approve).toHaveBeenCalledWith(
+        mockStandardBridgeContract.address,
+        BigNumber.from(
+          "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ) // MaxUint256
+      )
+    })
+
+    it("should throw error when contracts not initialized", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet, not BOB
+      }
+      const bridgeNoContracts = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(
+        bridgeNoContracts.approveForStandardBridge(amount)
+      ).rejects.toThrow("Contracts not initialized")
+    })
+
+    it("should throw error when no account connected", async () => {
+      // Arrange
+      const configNoAccount = { ...mockEthereumConfig, account: undefined }
+      const bridgeNoAccount = new Bridge(
+        configNoAccount,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
+      ;(bridgeNoAccount as any)._standardBridgeContract =
+        mockStandardBridgeContract
+
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(
+        bridgeNoAccount.approveForStandardBridge(amount)
+      ).rejects.toThrow("No account connected")
+    })
+
+    it("should handle approval transaction errors", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const currentAllowance = BigNumber.from("0")
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockRejectedValue(new Error("User rejected"))
+
+      // Act & Assert
+      await expect(bridge.approveForStandardBridge(amount)).rejects.toThrow(
+        "Standard Bridge approval failed: User rejected"
+      )
+    })
+
+    it("should approve exactly at the boundary", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const currentAllowance = BigNumber.from("999999999999999999") // Slightly less
+      const mockTx = { hash: "0x789", wait: jest.fn() }
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.approveForStandardBridge(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockTokenContract.approve).toHaveBeenCalled()
+    })
+
+    it("should use the same pattern as approveForCcip", async () => {
+      // This test ensures consistency between the two approval methods
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const currentAllowance = BigNumber.from("500000000000000000")
+      const mockTx = { hash: "0xabc", wait: jest.fn() }
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.approveForStandardBridge(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      // Should approve for MaxUint256, not just the amount
+      expect(mockTokenContract.approve).toHaveBeenCalledWith(
+        mockStandardBridgeContract.address,
+        BigNumber.from(
+          "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        )
       )
     })
   })

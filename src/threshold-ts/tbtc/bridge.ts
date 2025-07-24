@@ -252,7 +252,48 @@ export class Bridge implements IBridge {
   async approveForStandardBridge(
     amount: BigNumber
   ): Promise<TransactionResponse | null> {
-    throw new Error("Method not implemented.")
+    if (!this._standardBridgeContract || !this._tokenContract) {
+      throw new Error("Contracts not initialized")
+    }
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    try {
+      // Check current allowance
+      const currentAllowance = await this._tokenContract.allowance(
+        account,
+        this._standardBridgeContract.address
+      )
+
+      // Skip if already approved for this amount or more
+      if (currentAllowance.gte(amount)) {
+        console.log(
+          `Standard Bridge approval not needed. Current allowance: ${currentAllowance.toString()}`
+        )
+        return null
+      }
+
+      // Use MaxUint256 for infinite approval (common pattern)
+      const approvalAmount = MaxUint256
+
+      console.log(
+        `Approving Standard Bridge contract for ${approvalAmount.toString()}`
+      )
+
+      // Send approval transaction
+      const tx = await this._tokenContract.approve(
+        this._standardBridgeContract.address,
+        approvalAmount
+      )
+
+      return tx
+    } catch (error) {
+      console.error("Failed to approve for Standard Bridge:", error)
+      throw new Error(`Standard Bridge approval failed: ${error.message}`)
+    }
   }
 
   async pickPath(amount: BigNumber): Promise<BridgeRoute> {
