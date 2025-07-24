@@ -148,10 +148,9 @@ describe("Bridge", () => {
       await expect(bridge.pickPath(BigNumber.from(100))).rejects.toThrow()
     })
 
-    it("should throw 'not implemented' for quoteFees", async () => {
-      await expect(bridge.quoteFees(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
-      )
+    it("should throw error for quoteFees when contracts not initialized", async () => {
+      // Since placeholder test Bridge has no mocked contracts, it should fail on initialization check
+      await expect(bridge.quoteFees(BigNumber.from(100))).rejects.toThrow()
     })
 
     it("should throw error when contracts not initialized", async () => {
@@ -1729,6 +1728,209 @@ describe("Bridge", () => {
 
       // Assert
       expect(result).toBe(mockTx)
+    })
+  })
+
+  describe("quoteFees", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+    let mockStandardBridgeContract: any
+    let mockProvider: any
+
+    beforeEach(() => {
+      mockProvider = {
+        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("20000000000")), // 20 gwei
+      }
+
+      const configWithProvider = {
+        ...mockEthereumConfig,
+        ethereumProviderOrSigner: mockProvider,
+      }
+
+      mockTokenContract = {
+        allowance: jest.fn(),
+        approve: jest.fn(),
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+        getFee: jest.fn(),
+      }
+
+      mockStandardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+
+      bridge = new Bridge(
+        configWithProvider,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
+    })
+
+    it("should quote CCIP fees when route is explicitly ccip", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const expectedFee = BigNumber.from("3000000000000000") // 0.003 tBTC
+      mockCcipContract.getFee.mockResolvedValue(expectedFee)
+
+      // Act
+      const quote = await bridge.quoteFees(amount, "ccip")
+
+      // Assert
+      expect(quote.route).toBe("ccip")
+      expect(quote.fee).toEqual(expectedFee)
+      expect(quote.estimatedTime).toBe(3600) // 60 minutes
+      expect(quote.breakdown?.ccipFee).toEqual(expectedFee)
+      expect(quote.breakdown?.standardFee).toEqual(BigNumber.from(0))
+    })
+
+    it("should quote standard fees when route is explicitly standard", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const gasPrice = BigNumber.from("20000000000") // 20 gwei
+      const estimatedGas = BigNumber.from("200000")
+      const expectedFee = gasPrice.mul(estimatedGas) // 0.004 ETH
+
+      // Act
+      const quote = await bridge.quoteFees(amount, "standard")
+
+      // Assert
+      expect(quote.route).toBe("standard")
+      expect(quote.fee).toEqual(expectedFee)
+      expect(quote.estimatedTime).toBe(604800) // 7 days in seconds
+      expect(quote.breakdown?.standardFee).toEqual(expectedFee)
+      expect(quote.breakdown?.ccipFee).toEqual(BigNumber.from(0))
+    })
+
+    it("should automatically determine route when not provided", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const quote = await bridge.quoteFees(amount)
+
+      // Assert
+      expect(quote.route).toBe("standard")
+      expect(mockTokenContract.legacyCapRemaining).toHaveBeenCalled()
+    })
+
+    it("should throw error for zero amount", async () => {
+      // Act & Assert
+      await expect(bridge.quoteFees(BigNumber.from(0))).rejects.toThrow(
+        "Amount must be greater than zero"
+      )
+    })
+
+    it("should throw error for negative amount", async () => {
+      // Act & Assert
+      await expect(bridge.quoteFees(BigNumber.from(-1000))).rejects.toThrow(
+        "Amount must be greater than zero"
+      )
+    })
+
+    it("should use fallback fee calculation when CCIP getFee fails", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockCcipContract.getFee.mockRejectedValue(new Error("Network error"))
+
+      // Act
+      const quote = await bridge.quoteFees(amount, "ccip")
+
+      // Assert
+      expect(quote.route).toBe("ccip")
+      // Fallback is 0.3% of amount
+      const expectedFee = amount.mul(3).div(1000)
+      expect(quote.fee).toEqual(expectedFee)
+      expect(quote.estimatedTime).toBe(3600)
+    })
+
+    it("should handle CCIP fee calculation with correct parameters", async () => {
+      // Arrange
+      const amount = BigNumber.from("5000000000000000000") // 5 tBTC
+      const expectedFee = BigNumber.from("15000000000000000") // 0.015 tBTC
+      mockCcipContract.getFee.mockResolvedValue(expectedFee)
+
+      // Act
+      await bridge.quoteFees(amount, "ccip")
+
+      // Assert
+      expect(mockCcipContract.getFee).toHaveBeenCalledWith(
+        1, // Ethereum chain selector
+        {
+          token: mockTokenContract.address,
+          amount: amount,
+          data: "0x",
+          receiver: mockEthereumConfig.account,
+        }
+      )
+    })
+  })
+
+  describe("quoteDepositFees", () => {
+    let bridge: Bridge
+    let mockProvider: any
+
+    beforeEach(() => {
+      mockProvider = {
+        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("30000000000")), // 30 gwei for L1
+      }
+
+      const configWithProvider = {
+        ...mockEthereumConfig,
+        ethereumProviderOrSigner: mockProvider,
+      }
+
+      bridge = new Bridge(
+        configWithProvider,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+    })
+
+    it("should calculate deposit fees for L1 to BOB", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const l1GasPrice = BigNumber.from("30000000000") // 30 gwei
+      const estimatedL1Gas = BigNumber.from("150000")
+      const l1Fee = l1GasPrice.mul(estimatedL1Gas)
+
+      const l2GasLimit = BigNumber.from("200000")
+      const l2GasPrice = BigNumber.from("1000000") // 0.001 gwei
+      const l2Fee = l2GasLimit.mul(l2GasPrice)
+
+      const totalFee = l1Fee.add(l2Fee)
+
+      // Act
+      const quote = await bridge.quoteDepositFees(amount)
+
+      // Assert
+      expect(quote.route).toBe("standard")
+      expect(quote.fee).toEqual(totalFee)
+      expect(quote.estimatedTime).toBe(900) // 15 minutes
+      expect(quote.breakdown?.standardFee).toEqual(totalFee)
+      expect(quote.breakdown?.ccipFee).toEqual(BigNumber.from(0))
+    })
+
+    it("should handle provider errors gracefully", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      mockProvider.getGasPrice.mockRejectedValue(new Error("RPC error"))
+
+      // Act & Assert
+      await expect(bridge.quoteDepositFees(amount)).rejects.toThrow(
+        "Fee quotation failed: RPC error"
+      )
     })
   })
 })

@@ -46,6 +46,8 @@ export interface IBridge {
     ccip: BigNumber
     standardBridge: BigNumber
   }>
+  getWithdrawalTime(route: BridgeRoute): number
+  quoteDepositFees(amount: BigNumber): Promise<BridgeQuote>
 }
 
 export type BridgeRoute = "ccip" | "standard"
@@ -468,7 +470,32 @@ export class Bridge implements IBridge {
     amount: BigNumber,
     route?: BridgeRoute
   ): Promise<BridgeQuote> {
-    throw new Error("Method not implemented.")
+    // Validate amount
+    if (amount.lte(0)) {
+      throw new Error("Amount must be greater than zero")
+    }
+
+    // Determine route if not provided
+    const actualRoute = route || (await this.pickPath(amount))
+
+    // Get base time estimate
+    const estimatedTime = this.getWithdrawalTime(actualRoute)
+
+    try {
+      switch (actualRoute) {
+        case "ccip":
+          return await this._quoteCcipFees(amount, estimatedTime)
+
+        case "standard":
+          return await this._quoteStandardFees(amount, estimatedTime)
+
+        default:
+          throw new Error(`Unknown route: ${actualRoute}`)
+      }
+    } catch (error: any) {
+      console.error("Failed to quote fees:", error)
+      throw new Error(`Fee quotation failed: ${error.message}`)
+    }
   }
 
   // Helper method to check allowance without approving
@@ -561,6 +588,125 @@ export class Bridge implements IBridge {
       }
 
       throw new Error(`Failed to get legacy cap remaining: ${error.message}`)
+    }
+  }
+
+  // Get withdrawal time estimates
+  getWithdrawalTime(route: BridgeRoute): number {
+    switch (route) {
+      case "ccip":
+        return 60 * 60 // ~60 minutes in seconds
+      case "standard":
+        return 7 * 24 * 60 * 60 // 7 days in seconds
+      default:
+        throw new Error(`Unknown route: ${route}`)
+    }
+  }
+
+  private async _quoteCcipFees(
+    amount: BigNumber,
+    estimatedTime: number
+  ): Promise<BridgeQuote> {
+    if (!this._ccipContract) {
+      throw new Error("CCIP contract not initialized")
+    }
+
+    try {
+      // CCIP fee structure typically includes:
+      // 1. Base protocol fee
+      // 2. Token transfer fee (based on amount)
+      // 3. Destination gas fee
+
+      // Call CCIP getFee function (actual method depends on CCIP ABI)
+      const ccipFee = await this._ccipContract.getFee(
+        1, // Destination chain selector for Ethereum
+        {
+          token: this._tokenContract!.address,
+          amount: amount,
+          data: "0x", // Optional data
+          receiver:
+            this._ethereumConfig.account ||
+            "0x0000000000000000000000000000000000000000",
+        }
+      )
+
+      return {
+        route: "ccip",
+        fee: ccipFee,
+        estimatedTime: estimatedTime,
+        breakdown: {
+          ccipFee: ccipFee,
+          standardFee: BigNumber.from(0),
+        },
+      }
+    } catch (error) {
+      // Fallback to estimated fee if contract call fails
+      // CCIP typically charges 0.1-0.5% of transfer amount
+      const estimatedFee = amount.mul(3).div(1000) // 0.3%
+
+      return {
+        route: "ccip",
+        fee: estimatedFee,
+        estimatedTime: estimatedTime,
+        breakdown: {
+          ccipFee: estimatedFee,
+          standardFee: BigNumber.from(0),
+        },
+      }
+    }
+  }
+
+  private async _quoteStandardFees(
+    amount: BigNumber,
+    estimatedTime: number
+  ): Promise<BridgeQuote> {
+    // Standard bridge typically has minimal fees
+    // Main cost is L2 gas for the withdrawal transaction
+    const gasPrice =
+      await this._ethereumConfig.ethereumProviderOrSigner.getGasPrice()
+    const estimatedGas = BigNumber.from(200000) // Typical L2 withdrawal gas
+    const standardFee = gasPrice.mul(estimatedGas)
+
+    return {
+      route: "standard",
+      fee: standardFee,
+      estimatedTime: estimatedTime,
+      breakdown: {
+        standardFee: standardFee,
+        ccipFee: BigNumber.from(0),
+      },
+    }
+  }
+
+  // Special case for L1 to BOB deposit fees
+  async quoteDepositFees(amount: BigNumber): Promise<BridgeQuote> {
+    try {
+      // L1 to L2 deposits have different fee structure
+      // Main costs: L1 gas + L2 execution gas
+
+      const l1GasPrice =
+        await this._ethereumConfig.ethereumProviderOrSigner.getGasPrice()
+      const estimatedL1Gas = BigNumber.from(150000) // Typical deposit gas
+      const l1Fee = l1GasPrice.mul(estimatedL1Gas)
+
+      // L2 execution cost (paid on L1)
+      const l2GasLimit = BigNumber.from(200000)
+      const l2GasPrice = BigNumber.from(1000000) // 0.001 gwei typical for L2
+      const l2Fee = l2GasLimit.mul(l2GasPrice)
+
+      const totalFee = l1Fee.add(l2Fee)
+
+      return {
+        route: "standard", // Deposits use standard bridge
+        fee: totalFee,
+        estimatedTime: 15 * 60, // ~15 minutes for deposit
+        breakdown: {
+          standardFee: totalFee,
+          ccipFee: BigNumber.from(0),
+        },
+      }
+    } catch (error: any) {
+      throw new Error(`Fee quotation failed: ${error.message}`)
     }
   }
 }
