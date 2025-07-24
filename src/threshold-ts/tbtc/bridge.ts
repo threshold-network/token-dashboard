@@ -177,12 +177,65 @@ export class Bridge implements IBridge {
     }
   }
 
-  // Placeholder implementations
   async withdraw(
     amount: BigNumber,
     opts?: BridgeOptions
   ): Promise<TransactionResponse> {
-    throw new Error("Method not implemented.")
+    // Ensure contracts are initialized
+    this._ensureContractsInitialized()
+
+    // Validate amount
+    if (amount.lte(0)) {
+      throw new Error("Withdrawal amount must be greater than zero")
+    }
+
+    // Check if CCIP path is appropriate
+    const route = await this.pickPath(amount)
+    if (route === "standard") {
+      throw new Error(
+        "Amount fits within legacy cap. Use withdrawLegacy() instead."
+      )
+    }
+    // Note: Route validation already done in pickPath
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    // Use recipient from options or default to connected account
+    const recipient = opts?.recipient || account
+
+    try {
+      // Check and handle approval
+      const approvalTx = await this.approveForCcip(amount)
+      if (approvalTx) {
+        console.log(`Waiting for CCIP approval tx: ${approvalTx.hash}`)
+        await approvalTx.wait()
+      }
+
+      // Build transaction parameters
+      const txParams: any = {
+        // Add gas parameters if provided
+        ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
+        ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
+        ...(opts?.maxFeePerGas && { maxFeePerGas: opts.maxFeePerGas }),
+        ...(opts?.maxPriorityFeePerGas && {
+          maxPriorityFeePerGas: opts.maxPriorityFeePerGas,
+        }),
+      }
+
+      // Call CCIP withdraw function
+      // Note: Actual method name and parameters depend on CCIP contract ABI
+      const tx = await this._ccipContract!.withdraw(recipient, amount, txParams)
+
+      console.log(`CCIP withdrawal initiated. Tx hash: ${tx.hash}`)
+
+      return tx
+    } catch (error: any) {
+      console.error("CCIP withdrawal failed:", error)
+      throw new Error(`CCIP withdrawal failed: ${error.message}`)
+    }
   }
 
   async withdrawLegacy(
@@ -203,7 +256,13 @@ export class Bridge implements IBridge {
     amount: BigNumber,
     opts?: BridgeOptions
   ): Promise<TransactionResponse> {
-    throw new Error("Method not implemented.")
+    // withdrawToL1 is an alias for withdraw when on L2
+    const chainId = Number(this._ethereumConfig.chainId)
+    if (chainId !== 60808 && chainId !== 808813) {
+      throw new Error("withdrawToL1 can only be called from BOB network")
+    }
+
+    return this.withdraw(amount, opts)
   }
 
   async approveForCcip(amount: BigNumber): Promise<TransactionResponse | null> {

@@ -102,10 +102,10 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for withdraw", async () => {
-      await expect(bridge.withdraw(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
-      )
+    it("should throw error for withdraw without proper setup", async () => {
+      // Since contracts are not properly initialized in this test setup,
+      // withdraw should throw an error about contracts or token
+      await expect(bridge.withdraw(BigNumber.from(100))).rejects.toThrow()
     })
 
     it("should throw 'not implemented' for withdrawLegacy", async () => {
@@ -120,10 +120,10 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for withdrawToL1", async () => {
-      await expect(bridge.withdrawToL1(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
-      )
+    it("should throw error for withdrawToL1 without proper setup", async () => {
+      // Since contracts are not properly initialized in this test setup,
+      // withdrawToL1 should throw an error
+      await expect(bridge.withdrawToL1(BigNumber.from(100))).rejects.toThrow()
     })
 
     // approveForStandardBridge is now implemented, so removing this test
@@ -1081,6 +1081,353 @@ describe("Bridge", () => {
           "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
         )
       )
+    })
+  })
+
+  describe("withdraw", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        approve: jest.fn(),
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+        interface: {
+          encodeFunctionData: jest.fn(),
+        },
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+        withdraw: jest.fn(),
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._standardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("should execute CCIP withdrawal when legacy cap is zero", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xccip123", wait: jest.fn() }
+      const mockApprovalTx = { hash: "0xapproval123", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(BigNumber.from("0"))
+      mockTokenContract.approve.mockResolvedValue(mockApprovalTx)
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.withdraw(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
+        mockEthereumConfig.account,
+        amount,
+        {}
+      )
+      expect(mockApprovalTx.wait).toHaveBeenCalled()
+    })
+
+    it("should use recipient from options if provided", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const recipient = "0x9876543210987654321098765432109876543210"
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xccip456", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("10000000000000000000")
+      )
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.withdraw(amount, { recipient })
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
+        recipient,
+        amount,
+        {}
+      )
+    })
+
+    it("should throw error when amount fits within legacy cap", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act & Assert
+      await expect(bridge.withdraw(amount)).rejects.toThrow(
+        "Amount fits within legacy cap. Use withdrawLegacy() instead."
+      )
+    })
+
+    it("should throw error for zero amount", async () => {
+      // Arrange
+      const amount = BigNumber.from("0")
+
+      // Act & Assert
+      await expect(bridge.withdraw(amount)).rejects.toThrow(
+        "Withdrawal amount must be greater than zero"
+      )
+    })
+
+    it("should throw error when contracts not initialized", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet, not BOB
+      }
+      const bridgeNoContracts = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bridgeNoContracts.withdraw(amount)).rejects.toThrow(
+        "Bridge contracts not initialized. Ensure you're on BOB network."
+      )
+    })
+
+    it("should throw error when no account connected", async () => {
+      // Arrange
+      const configNoAccount = { ...mockEthereumConfig, account: undefined }
+      const bridgeNoAccount = new Bridge(
+        configNoAccount,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
+      ;(bridgeNoAccount as any)._ccipContract = mockCcipContract
+      ;(bridgeNoAccount as any)._standardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+
+      const amount = BigNumber.from("1000000000000000000")
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(
+        BigNumber.from("0")
+      )
+
+      // Act & Assert
+      await expect(bridgeNoAccount.withdraw(amount)).rejects.toThrow(
+        "No account connected"
+      )
+    })
+
+    it("should pass gas options to transaction", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const gasLimit = BigNumber.from("500000")
+      const maxFeePerGas = BigNumber.from("30000000000") // 30 gwei
+      const maxPriorityFeePerGas = BigNumber.from("2000000000") // 2 gwei
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xccip789", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("10000000000000000000")
+      )
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.withdraw(amount, {
+        gasLimit,
+        maxFeePerGas,
+        maxPriorityFeePerGas,
+      })
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
+        mockEthereumConfig.account,
+        amount,
+        {
+          gasLimit,
+          maxFeePerGas,
+          maxPriorityFeePerGas,
+        }
+      )
+    })
+
+    it("should skip approval when allowance is sufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xccipNoApproval", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("2000000000000000000")
+      ) // 2 tBTC allowance
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.withdraw(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockTokenContract.approve).not.toHaveBeenCalled()
+    })
+
+    it("should handle CCIP contract call errors", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const legacyCap = BigNumber.from("0")
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("10000000000000000000")
+      )
+      mockCcipContract.withdraw.mockRejectedValue(
+        new Error("Insufficient liquidity")
+      )
+
+      // Act & Assert
+      await expect(bridge.withdraw(amount)).rejects.toThrow(
+        "CCIP withdrawal failed: Insufficient liquidity"
+      )
+    })
+
+    it("should handle blocked scenario (amount exceeds cap > 0)", async () => {
+      // Arrange
+      const amount = BigNumber.from("1500000000000000000") // 1.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act & Assert
+      await expect(bridge.withdraw(amount)).rejects.toThrow(
+        /exceeds legacy cap remaining/
+      )
+    })
+  })
+
+  describe("withdrawToL1", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        approve: jest.fn(),
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+        withdraw: jest.fn(),
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._standardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+    })
+
+    it("should call withdraw when on BOB network", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xwithdrawToL1", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("10000000000000000000")
+      )
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.withdrawToL1(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+    })
+
+    it("should throw error when not on BOB network", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet
+      }
+      const bridgeNonBob = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bridgeNonBob.withdrawToL1(amount)).rejects.toThrow(
+        "withdrawToL1 can only be called from BOB network"
+      )
+    })
+
+    it("should work with BOB testnet", async () => {
+      // Arrange
+      const bobTestnetConfig = {
+        ...mockEthereumConfig,
+        chainId: 808813, // BOB testnet
+      }
+      const bridgeTestnet = new Bridge(
+        bobTestnetConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      ;(bridgeTestnet as any)._tokenContract = mockTokenContract
+      ;(bridgeTestnet as any)._ccipContract = mockCcipContract
+      ;(bridgeTestnet as any)._standardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+
+      const amount = BigNumber.from("1000000000000000000")
+      const legacyCap = BigNumber.from("0")
+      const mockTx = { hash: "0xtestnetWithdraw", wait: jest.fn() }
+
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+      mockTokenContract.allowance.mockResolvedValue(
+        BigNumber.from("10000000000000000000")
+      )
+      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridgeTestnet.withdrawToL1(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
     })
   })
 })
