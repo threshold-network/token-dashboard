@@ -4,6 +4,8 @@ import { Outlet } from "react-router-dom"
 import SubNavigationPills from "../components/SubNavigationPills"
 import { PageComponent, ExternalLinkProps } from "../types"
 import useDocumentTitle from "../hooks/useDocumentTitle"
+import { ExternalHref } from "../enums/externalHref"
+import { Box, Link as ChakraLink } from "@chakra-ui/react"
 
 export interface PageLayoutProps extends ContainerProps {
   pages?: PageComponent[]
@@ -37,6 +39,33 @@ const PageLayout: FC<PageLayoutProps> = ({
         {children}
         <Outlet />
       </Container>
+      <Box
+        as="footer"
+        w="100%"
+        py={2}
+        textAlign="center"
+        bg="rgba(255,255,255,0.9)"
+      >
+        <ChakraLink
+          href={ExternalHref.privacyPolicy}
+          isExternal
+          color="gray.400"
+          fontSize="xs"
+          textDecoration="underline"
+          mr={2}
+        >
+          Privacy Policy
+        </ChakraLink>
+        <ChakraLink
+          href={ExternalHref.termsOfUse}
+          isExternal
+          color="gray.400"
+          fontSize="xs"
+          textDecoration="underline"
+        >
+          Terms of Use
+        </ChakraLink>
+      </Box>
     </>
   )
 }

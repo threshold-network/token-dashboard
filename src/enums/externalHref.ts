@@ -37,4 +37,6 @@ export enum ExternalHref {
   delight = "https://delightlabs.io",
   runningNodeDocs = "https://docs.threshold.network/staking-and-running-a-node/running-a-node",
   colossus = "https://colossus.digital",
+  privacyPolicy = "https://docs.threshold.network/resources/privacy-policy",
+  termsOfUse = "https://docs.threshold.network/resources/tbtc-terms-of-use",
 }
