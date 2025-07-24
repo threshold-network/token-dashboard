@@ -57,12 +57,15 @@ import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-dev
 import TacoArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
 
 import CCIPRouterArtifactBOB from "../tbtc/bob-artifacts/CCIPRouter.json"
+import BurnFromMintTokenPoolArtifactBOB from "../tbtc/bob-artifacts/BurnFromMintTokenPool.json"
 import StandardBridgeArtifactBOB from "../tbtc/bob-artifacts/StandardBridge.json"
 import OptimismMintableUpgradableTBTCArtifactBOB from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
 
 import CCIPRouterArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/CCIPRouter.json"
 import StandardBridgeArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/StandardBridge.json"
 import OptimismMintableUpgradableTBTCArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/OptimismMintableUpgradableTBTC.json"
+import L1CCIPRouterArtifact from "../tbtc/l1-artifacts/CCIPRouter.json"
+import LinkTokenArtifact from "../tbtc/l1-artifacts/LinkToken.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"
@@ -81,8 +84,11 @@ export type ArtifactNameType =
   | "BaseL1BitcoinDepositor"
   | "StarkNetBitcoinDepositor"
   | "CCIPRouter"
+  | "BurnFromMintTokenPool"
   | "StandardBridge"
   | "OptimismMintableUpgradableTBTC"
+  | "L1CCIPRouter"
+  | "LinkToken"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -112,6 +118,8 @@ const contractArtifacts: ContractArtifacts = {
     WalletRegistry: WalletRegistryArtifactMainnet,
     VendingMachineKeep: VendingMachineKeepMainnet,
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
+    L1CCIPRouter: L1CCIPRouterArtifact.mainnet,
+    LinkToken: LinkTokenArtifact.mainnet,
   },
   [SupportedChainIds.Sepolia]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
@@ -129,6 +137,8 @@ const contractArtifacts: ContractArtifacts = {
     WalletRegistry: WalletRegistryArtifactSepolia,
     VendingMachineKeep: VendingMachineKeepSepolia,
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
+    L1CCIPRouter: L1CCIPRouterArtifact.sepolia,
+    LinkToken: LinkTokenArtifact.sepolia,
   },
   [SupportedChainIds.Localhost]: {
     TacoRegistry:
@@ -147,11 +157,13 @@ const contractArtifacts: ContractArtifacts = {
   },
   [SupportedChainIds.BOBMainnet]: {
     CCIPRouter: CCIPRouterArtifactBOB,
+    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBOB,
     StandardBridge: StandardBridgeArtifactBOB,
     OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
   },
   [SupportedChainIds.BOBTestnet]: {
     CCIPRouter: CCIPRouterArtifactBOBTestnet,
+    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBOB, // Using same artifact for now
     StandardBridge: StandardBridgeArtifactBOBTestnet,
     OptimismMintableUpgradableTBTC:
       OptimismMintableUpgradableTBTCArtifactBOBTestnet,

@@ -1,5 +1,5 @@
 import { BigNumber, providers } from "ethers"
-import { MaxUint256 } from "@ethersproject/constants"
+import { MaxUint256, AddressZero } from "@ethersproject/constants"
 import {
   Bridge,
   IBridge,
@@ -135,9 +135,9 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for depositToBob", async () => {
+    it("should throw error for depositToBob when not on L1", async () => {
       await expect(bridge.depositToBob(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
+        "depositToBob can only be called from Ethereum L1 (mainnet or Sepolia)"
       )
     })
 
@@ -666,7 +666,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
     })
 
     afterEach(() => {
@@ -741,7 +741,7 @@ describe("Bridge", () => {
         mockMulticall
       )
       ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
-      ;(bridgeNoAccount as any)._ccipContract = mockCcipContract
+      ;(bridgeNoAccount as any)._ccipRouterContract = mockCcipContract
 
       const amount = BigNumber.from("1000000000000000000")
 
@@ -761,7 +761,7 @@ describe("Bridge", () => {
 
       // Act & Assert
       await expect(bridge.approveForCcip(amount)).rejects.toThrow(
-        "CCIP approval failed: User rejected"
+        "CCIP Router approval failed: User rejected"
       )
     })
 
@@ -806,7 +806,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
     })
 
     it("should return current CCIP allowance", async () => {
@@ -875,7 +875,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
       ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
     })
 
@@ -1122,7 +1122,8 @@ describe("Bridge", () => {
 
       mockCcipContract = {
         address: "0xMockCcipAddress",
-        withdraw: jest.fn(),
+        ccipSend: jest.fn(),
+        getFee: jest.fn().mockResolvedValue(BigNumber.from("1000000000000000")), // 0.001 ETH fee
       }
 
       bridge = new Bridge(
@@ -1133,7 +1134,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
       ;(bridge as any)._standardBridgeContract = {
         address: "0xMockStandardBridgeAddress",
       }
@@ -1153,17 +1154,30 @@ describe("Bridge", () => {
       mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
       mockTokenContract.allowance.mockResolvedValue(BigNumber.from("0"))
       mockTokenContract.approve.mockResolvedValue(mockApprovalTx)
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridge.withdraw(amount)
 
       // Assert
       expect(result).toBe(mockTx)
-      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
-        mockEthereumConfig.account,
-        amount,
-        {}
+      expect(mockCcipContract.ccipSend).toHaveBeenCalledWith(
+        expect.any(String), // destinationChainSelector
+        expect.objectContaining({
+          receiver: expect.any(String), // encoded receiver address
+          data: "0x",
+          tokenAmounts: expect.arrayContaining([
+            expect.objectContaining({
+              token: mockTokenContract.address,
+              amount: amount,
+            }),
+          ]),
+          feeToken: "0x0000000000000000000000000000000000000000",
+          extraArgs: expect.any(String),
+        }),
+        expect.objectContaining({
+          value: BigNumber.from("1000000000000000"), // mock fee
+        })
       )
       expect(mockApprovalTx.wait).toHaveBeenCalled()
     })
@@ -1179,17 +1193,30 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("10000000000000000000")
       )
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridge.withdraw(amount, { recipient })
 
       // Assert
       expect(result).toBe(mockTx)
-      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
-        recipient,
-        amount,
-        {}
+      expect(mockCcipContract.ccipSend).toHaveBeenCalledWith(
+        expect.any(String), // destinationChainSelector
+        expect.objectContaining({
+          receiver: expect.any(String), // encoded recipient address
+          data: "0x",
+          tokenAmounts: expect.arrayContaining([
+            expect.objectContaining({
+              token: mockTokenContract.address,
+              amount: amount,
+            }),
+          ]),
+          feeToken: "0x0000000000000000000000000000000000000000",
+          extraArgs: expect.any(String),
+        }),
+        expect.objectContaining({
+          value: BigNumber.from("1000000000000000"), // mock fee
+        })
       )
     })
 
@@ -1243,7 +1270,7 @@ describe("Bridge", () => {
         mockMulticall
       )
       ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
-      ;(bridgeNoAccount as any)._ccipContract = mockCcipContract
+      ;(bridgeNoAccount as any)._ccipRouterContract = mockCcipContract
       ;(bridgeNoAccount as any)._standardBridgeContract = {
         address: "0xMockStandardBridgeAddress",
       }
@@ -1272,7 +1299,7 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("10000000000000000000")
       )
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridge.withdraw(amount, {
@@ -1283,14 +1310,26 @@ describe("Bridge", () => {
 
       // Assert
       expect(result).toBe(mockTx)
-      expect(mockCcipContract.withdraw).toHaveBeenCalledWith(
-        mockEthereumConfig.account,
-        amount,
-        {
+      expect(mockCcipContract.ccipSend).toHaveBeenCalledWith(
+        expect.any(String), // destinationChainSelector
+        expect.objectContaining({
+          receiver: expect.any(String), // encoded receiver address
+          data: "0x",
+          tokenAmounts: expect.arrayContaining([
+            expect.objectContaining({
+              token: mockTokenContract.address,
+              amount: amount,
+            }),
+          ]),
+          feeToken: "0x0000000000000000000000000000000000000000",
+          extraArgs: expect.any(String),
+        }),
+        expect.objectContaining({
+          value: BigNumber.from("1000000000000000"), // mock fee
           gasLimit,
           maxFeePerGas,
           maxPriorityFeePerGas,
-        }
+        })
       )
     })
 
@@ -1304,7 +1343,7 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("2000000000000000000")
       ) // 2 tBTC allowance
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridge.withdraw(amount)
@@ -1323,7 +1362,7 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("10000000000000000000")
       )
-      mockCcipContract.withdraw.mockRejectedValue(
+      mockCcipContract.ccipSend.mockRejectedValue(
         new Error("Insufficient liquidity")
       )
 
@@ -1372,7 +1411,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = {
+      ;(bridge as any)._ccipRouterContract = {
         address: "0xMockCcipAddress",
       }
       ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
@@ -1458,7 +1497,7 @@ describe("Bridge", () => {
       ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
       ;(bridgeNoAccount as any)._standardBridgeContract =
         mockStandardBridgeContract
-      ;(bridgeNoAccount as any)._ccipContract = {
+      ;(bridgeNoAccount as any)._ccipRouterContract = {
         address: "0xMockCcipAddress",
       }
 
@@ -1647,7 +1686,8 @@ describe("Bridge", () => {
 
       mockCcipContract = {
         address: "0xMockCcipAddress",
-        withdraw: jest.fn(),
+        ccipSend: jest.fn(),
+        getFee: jest.fn().mockResolvedValue(BigNumber.from("1000000000000000")), // 0.001 ETH fee
       }
 
       bridge = new Bridge(
@@ -1658,7 +1698,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
       ;(bridge as any)._standardBridgeContract = {
         address: "0xMockStandardBridgeAddress",
       }
@@ -1674,7 +1714,7 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("10000000000000000000")
       )
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridge.withdrawToL1(amount)
@@ -1714,7 +1754,7 @@ describe("Bridge", () => {
         mockMulticall
       )
       ;(bridgeTestnet as any)._tokenContract = mockTokenContract
-      ;(bridgeTestnet as any)._ccipContract = mockCcipContract
+      ;(bridgeTestnet as any)._ccipRouterContract = mockCcipContract
       ;(bridgeTestnet as any)._standardBridgeContract = {
         address: "0xMockStandardBridgeAddress",
       }
@@ -1727,7 +1767,7 @@ describe("Bridge", () => {
       mockTokenContract.allowance.mockResolvedValue(
         BigNumber.from("10000000000000000000")
       )
-      mockCcipContract.withdraw.mockResolvedValue(mockTx)
+      mockCcipContract.ccipSend.mockResolvedValue(mockTx)
 
       // Act
       const result = await bridgeTestnet.withdrawToL1(amount)
@@ -1799,7 +1839,7 @@ describe("Bridge", () => {
 
       // Manually set the contracts for testing
       ;(bridge as any)._tokenContract = mockTokenContract
-      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._ccipRouterContract = mockCcipContract
       ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
     })
 
@@ -1892,15 +1932,18 @@ describe("Bridge", () => {
       await bridge.quoteFees(amount, "ccip")
 
       // Assert
-      expect(mockCcipContract.getFee).toHaveBeenCalledWith(
-        1, // Ethereum chain selector
+      expect(mockCcipContract.getFee).toHaveBeenCalled()
+      const [chainSelector, message] = mockCcipContract.getFee.mock.calls[0]
+      expect(chainSelector).toBe("5009297550715157269") // Ethereum mainnet chain selector
+      expect(message.tokenAmounts).toEqual([
         {
           token: mockTokenContract.address,
           amount: amount,
-          data: "0x",
-          receiver: mockEthereumConfig.account,
-        }
-      )
+        },
+      ])
+      expect(message.data).toBe("0x")
+      expect(message.feeToken).toBe(AddressZero)
+      expect(message.extraArgs).toBeDefined()
     })
   })
 
@@ -1978,6 +2021,322 @@ describe("Bridge", () => {
       // Act & Assert
       await expect(bridge.quoteDepositFees(amount)).rejects.toThrow(
         "Fee quotation failed: RPC error"
+      )
+    })
+  })
+
+  describe("depositToBob", () => {
+    let bridge: Bridge
+    let mockL1CCIPRouterContract: any
+    let mockL1TokenContract: any
+    let mockLinkTokenContract: any
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+
+      // Mock L1 CCIP Router contract
+      mockL1CCIPRouterContract = {
+        address: "0xL1CCIPRouterAddress",
+        interface: {},
+        getFee: jest.fn().mockResolvedValue(BigNumber.from("1000000000000000")), // 0.001 ETH fee
+        ccipSend: jest.fn().mockResolvedValue({
+          hash: "0xccipDepositTx",
+          wait: jest.fn().mockResolvedValue({ status: 1 }),
+        }),
+      }
+
+      // Mock L1 token contract
+      mockL1TokenContract = {
+        address: "0xL1TokenAddress",
+        interface: {},
+        allowance: jest.fn().mockResolvedValue(BigNumber.from("0")),
+        approve: jest.fn().mockResolvedValue({
+          hash: "0xapproveTx",
+          wait: jest.fn().mockResolvedValue({ status: 1 }),
+        }),
+      }
+
+      // Mock LINK token contract
+      mockLinkTokenContract = {
+        address: "0xLinkTokenAddress",
+        interface: {},
+        allowance: jest.fn().mockResolvedValue(BigNumber.from("0")),
+        approve: jest.fn().mockResolvedValue({
+          hash: "0xlinkApproveTx",
+          wait: jest.fn().mockResolvedValue({ status: 1 }),
+        }),
+      }
+
+      // Mock getArtifact to return appropriate artifacts
+      const mockGetArtifact = jest.requireMock("../../utils").getArtifact
+      mockGetArtifact.mockImplementation((name: string) => {
+        if (name === "L1CCIPRouter") {
+          return { address: mockL1CCIPRouterContract.address, abi: [] }
+        }
+        if (name === "TBTC") {
+          return { address: mockL1TokenContract.address, abi: [] }
+        }
+        if (name === "LinkToken") {
+          return { address: mockLinkTokenContract.address, abi: [] }
+        }
+        if (name === "OptimismMintableUpgradableTBTC") {
+          return { address: "0xBOBTokenAddress", abi: [] }
+        }
+        return null
+      })
+
+      // Mock getContract to return appropriate contracts
+      const mockGetContract = jest.requireMock("../../utils").getContract
+      mockGetContract.mockImplementation((address: string) => {
+        if (address === mockL1CCIPRouterContract.address) {
+          return mockL1CCIPRouterContract
+        }
+        if (address === mockL1TokenContract.address) {
+          return mockL1TokenContract
+        }
+        if (address === mockLinkTokenContract.address) {
+          return mockLinkTokenContract
+        }
+        return null
+      })
+
+      // Create bridge instance on Ethereum mainnet
+      const mainnetConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet
+      }
+
+      bridge = new Bridge(mainnetConfig, mockCrossChainConfig, mockMulticall)
+    })
+
+    it("should execute CCIP deposit from L1 to BOB", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+
+      // Act
+      const result = await bridge.depositToBob(amount)
+
+      // Assert
+      expect(result.hash).toBe("0xccipDepositTx")
+      expect(mockL1TokenContract.approve).toHaveBeenCalledWith(
+        mockL1CCIPRouterContract.address,
+        MaxUint256
+      )
+      expect(mockL1CCIPRouterContract.getFee).toHaveBeenCalled()
+      expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
+        "3849287863852499584", // BOB mainnet chain selector
+        expect.objectContaining({
+          receiver: expect.any(String),
+          data: "0x",
+          tokenAmounts: expect.arrayContaining([
+            expect.objectContaining({
+              token: mockL1TokenContract.address,
+              amount: amount,
+            }),
+          ]),
+          feeToken: AddressZero,
+          extraArgs: expect.any(String),
+        }),
+        expect.objectContaining({
+          value: BigNumber.from("1000000000000000"), // Fee amount
+        })
+      )
+    })
+
+    it("should use custom recipient if provided", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const customRecipient = "0xCustomRecipient"
+
+      // Act
+      await bridge.depositToBob(amount, { recipient: customRecipient })
+
+      // Assert
+      expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
+        "3849287863852499584", // BOB mainnet chain selector
+        expect.objectContaining({
+          receiver: expect.stringContaining(
+            customRecipient.slice(2).toLowerCase()
+          ),
+          data: "0x",
+          tokenAmounts: expect.arrayContaining([
+            expect.objectContaining({
+              token: mockL1TokenContract.address,
+              amount: amount,
+            }),
+          ]),
+          feeToken: AddressZero,
+          extraArgs: expect.any(String),
+        }),
+        expect.any(Object)
+      )
+    })
+
+    it("should throw error when not on L1", async () => {
+      // Arrange
+      const bobConfig = {
+        ...mockEthereumConfig,
+        chainId: 60808, // BOB mainnet
+      }
+      const bobBridge = new Bridge(
+        bobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bobBridge.depositToBob(amount)).rejects.toThrow(
+        "depositToBob can only be called from Ethereum L1 (mainnet or Sepolia)"
+      )
+    })
+
+    it("should throw error for zero amount", async () => {
+      // Arrange
+      const amount = BigNumber.from("0")
+
+      // Act & Assert
+      await expect(bridge.depositToBob(amount)).rejects.toThrow(
+        "Deposit amount must be greater than zero"
+      )
+    })
+
+    it("should throw error when no account connected", async () => {
+      // Arrange
+      const configNoAccount = {
+        ...mockEthereumConfig,
+        chainId: 1,
+        account: undefined,
+      }
+      const bridgeNoAccount = new Bridge(
+        configNoAccount,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bridgeNoAccount.depositToBob(amount)).rejects.toThrow(
+        "No account connected"
+      )
+    })
+
+    it("should skip approval when allowance is sufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      mockL1TokenContract.allowance.mockResolvedValue(
+        BigNumber.from("2000000000000000000")
+      )
+
+      // Act
+      await bridge.depositToBob(amount)
+
+      // Assert
+      expect(mockL1TokenContract.approve).not.toHaveBeenCalled()
+    })
+
+    it("should pass custom gas options", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const gasOptions = {
+        gasLimit: BigNumber.from("300000"),
+        maxFeePerGas: BigNumber.from("50000000000"),
+        maxPriorityFeePerGas: BigNumber.from("2000000000"),
+      }
+
+      // Act
+      await bridge.depositToBob(amount, gasOptions)
+
+      // Assert
+      expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
+        "3849287863852499584",
+        expect.any(Object),
+        expect.objectContaining({
+          value: BigNumber.from("1000000000000000"), // Fee amount
+          gasLimit: gasOptions.gasLimit,
+          maxFeePerGas: gasOptions.maxFeePerGas,
+          maxPriorityFeePerGas: gasOptions.maxPriorityFeePerGas,
+        })
+      )
+    })
+
+    it("should handle CCIP contract errors", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      mockL1CCIPRouterContract.ccipSend.mockRejectedValue(
+        new Error("Insufficient balance")
+      )
+
+      // Act & Assert
+      await expect(bridge.depositToBob(amount)).rejects.toThrow(
+        "CCIP deposit failed: Insufficient balance"
+      )
+    })
+
+    it("should work with Sepolia testnet", async () => {
+      // Arrange
+      const sepoliaConfig = {
+        ...mockEthereumConfig,
+        chainId: 11155111, // Sepolia
+      }
+      const sepoliaBridge = new Bridge(
+        sepoliaConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act
+      const result = await sepoliaBridge.depositToBob(amount)
+
+      // Assert
+      expect(result.hash).toBe("0xccipDepositTx")
+      expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
+        "5535534526963509396", // BOB Sepolia chain selector
+        expect.any(Object),
+        expect.any(Object)
+      )
+    })
+
+    it("should handle missing L1 CCIP Router artifact", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const mockGetArtifact = jest.requireMock("../../utils").getArtifact
+      mockGetArtifact.mockImplementation((name: string) => {
+        if (name === "L1CCIPRouter") return null
+        if (name === "TBTC") {
+          return { address: mockL1TokenContract.address, abi: [] }
+        }
+        return null
+      })
+
+      // Act & Assert
+      await expect(bridge.depositToBob(amount)).rejects.toThrow(
+        "L1 CCIP Router artifact not found"
+      )
+    })
+
+    it("should use LINK token for fees when specified", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const fee = BigNumber.from("2000000000000000") // 0.002 LINK
+
+      // Act
+      await bridge.depositToBob(amount, { useLinkForFees: true })
+
+      // Assert
+      expect(mockLinkTokenContract.approve).toHaveBeenCalledWith(
+        mockL1CCIPRouterContract.address,
+        MaxUint256
+      )
+      expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
+        "3849287863852499584",
+        expect.objectContaining({
+          feeToken: mockLinkTokenContract.address,
+        }),
+        expect.not.objectContaining({
+          value: expect.any(BigNumber),
+        })
       )
     })
   })
