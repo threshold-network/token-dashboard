@@ -1,6 +1,13 @@
 import { BlockTag, TransactionReceipt } from "@ethersproject/abstract-provider"
 import { Web3Provider } from "@ethersproject/providers"
 import {
+  Bridge,
+  IBridge,
+  BridgeOptions,
+  BridgeQuote,
+  BridgeRoute,
+} from "./bridge"
+import {
   BitcoinClient,
   BitcoinTx,
   BitcoinTxHash,
@@ -229,6 +236,8 @@ export interface ITBTC {
   readonly deposit: Deposit | undefined
 
   readonly crossChainConfig: CrossChainConfig
+
+  readonly bridge: IBridge | null
 
   /**
    * Initializes tbtc-v2 SDK
@@ -495,6 +504,7 @@ export class TBTC implements ITBTC {
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
   private _l2TbtcToken: DestinationChainTBTCToken | null = null
+  private _bridge: IBridge | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -595,6 +605,17 @@ export class TBTC implements ITBTC {
       ethereumProviderOrSigner: defaultOrConnectedProvider,
       chainId: mainnetOrTestnetEthereumChainId,
     })
+
+    // Initialize Bridge if on BOB network
+    const isBOBMainnet = chainId === 60808
+    const isBOBTestnet = chainId === 111
+    if (isBOBMainnet || isBOBTestnet) {
+      this._bridge = new Bridge(
+        ethereumConfig,
+        crossChainConfig,
+        this._multicall
+      )
+    }
 
     if (this._crossChainConfig.isCrossChain) {
       const networkName =
@@ -740,6 +761,10 @@ export class TBTC implements ITBTC {
 
   get l2TbtcToken() {
     return this._l2TbtcToken
+  }
+
+  get bridge() {
+    return this._bridge
   }
 
   private _getSdk = async (): Promise<SDK> => {
@@ -1950,3 +1975,12 @@ export class TBTC implements ITBTC {
     return this._redemptionTreasuryFeeDivisor
   }
 }
+
+// Export Bridge types
+export {
+  Bridge,
+  IBridge,
+  BridgeOptions,
+  BridgeQuote,
+  BridgeRoute,
+} from "./bridge"
