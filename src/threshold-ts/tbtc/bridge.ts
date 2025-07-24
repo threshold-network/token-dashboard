@@ -242,7 +242,73 @@ export class Bridge implements IBridge {
     amount: BigNumber,
     opts?: BridgeOptions
   ): Promise<TransactionResponse> {
-    throw new Error("Method not implemented.")
+    // Ensure contracts are initialized
+    this._ensureContractsInitialized()
+
+    // Validate amount
+    if (amount.lte(0)) {
+      throw new Error("Withdrawal amount must be greater than zero")
+    }
+
+    // Check legacy cap remaining
+    const legacyCapRemaining = await this.getLegacyCapRemaining()
+    if (amount.gt(legacyCapRemaining)) {
+      throw new Error(
+        `Amount ${amount.toString()} exceeds legacy cap remaining ${legacyCapRemaining.toString()}. ` +
+          `Use withdraw() for CCIP or wait for legacy cap to deplete.`
+      )
+    }
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    // Use recipient from options or default to connected account
+    const recipient = opts?.recipient || account
+
+    try {
+      // Check and handle approval
+      const approvalTx = await this.approveForStandardBridge(amount)
+      if (approvalTx) {
+        console.log(
+          `Waiting for Standard Bridge approval tx: ${approvalTx.hash}`
+        )
+        await approvalTx.wait()
+      }
+
+      // Build transaction parameters
+      const txParams: any = {
+        // Add gas parameters if provided
+        ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
+        ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
+        ...(opts?.maxFeePerGas && { maxFeePerGas: opts.maxFeePerGas }),
+        ...(opts?.maxPriorityFeePerGas && {
+          maxPriorityFeePerGas: opts.maxPriorityFeePerGas,
+        }),
+      }
+
+      // Call Standard Bridge withdraw function
+      // Note: Actual method name depends on Standard Bridge ABI
+      // Optimism bridge typically uses withdrawTo or similar
+      const tx = await this._standardBridgeContract!.withdrawTo(
+        this._tokenContract!.address, // L2 token address
+        recipient,
+        amount,
+        opts?.deadline || 0, // Optional deadline parameter
+        "0x", // Extra data (typically empty)
+        txParams
+      )
+
+      console.log(
+        `Standard Bridge withdrawal initiated (7-day delay). Tx hash: ${tx.hash}`
+      )
+
+      return tx
+    } catch (error: any) {
+      console.error("Standard Bridge withdrawal failed:", error)
+      throw new Error(`Standard Bridge withdrawal failed: ${error.message}`)
+    }
   }
 
   async depositToBob(
