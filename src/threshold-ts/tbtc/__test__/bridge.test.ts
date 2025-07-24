@@ -138,10 +138,9 @@ describe("Bridge", () => {
       ).rejects.toThrow("Method not implemented")
     })
 
-    it("should throw 'not implemented' for pickPath", async () => {
-      await expect(bridge.pickPath(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
-      )
+    it("should throw error when calling pickPath without proper mocks", async () => {
+      // This test verifies the placeholder behavior when contracts are not properly mocked
+      await expect(bridge.pickPath(BigNumber.from(100))).rejects.toThrow()
     })
 
     it("should throw 'not implemented' for quoteFees", async () => {
@@ -430,6 +429,203 @@ describe("Bridge", () => {
       await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
         "Token contract not initialized"
       )
+    })
+  })
+
+  describe("pickPath", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the token contract for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("should return 'standard' when amount fits in legacy cap", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const path = await bridge.pickPath(amount)
+
+      // Assert
+      expect(path).toBe("standard")
+    })
+
+    it("should return 'ccip' when legacy cap is zero", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const legacyCap = BigNumber.from("0")
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const path = await bridge.pickPath(amount)
+
+      // Assert
+      expect(path).toBe("ccip")
+    })
+
+    it("should throw error when amount exceeds legacy cap but cap > 0", async () => {
+      // Arrange
+      const amount = BigNumber.from("1500000000000000000") // 1.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act & Assert
+      await expect(bridge.pickPath(amount)).rejects.toThrow(
+        "Amount 1500000000000000000 exceeds legacy cap remaining 1000000000000000000. " +
+          "Please wait for legacy cap to deplete or reduce your withdrawal amount."
+      )
+    })
+
+    it("should throw error for zero amount", async () => {
+      // Arrange
+      const amount = BigNumber.from("0")
+
+      // Act & Assert
+      await expect(bridge.pickPath(amount)).rejects.toThrow(
+        "Amount must be greater than zero"
+      )
+    })
+
+    it("should throw error for negative amount", async () => {
+      // Arrange
+      const amount = BigNumber.from("-1000000000000000000")
+
+      // Act & Assert
+      await expect(bridge.pickPath(amount)).rejects.toThrow(
+        "Amount must be greater than zero"
+      )
+    })
+
+    it("should return 'standard' when amount exactly equals legacy cap", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const path = await bridge.pickPath(amount)
+
+      // Assert
+      expect(path).toBe("standard")
+    })
+
+    it("should handle very large amounts correctly", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000000000") // 1 million tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act & Assert
+      await expect(bridge.pickPath(amount)).rejects.toThrow(
+        /exceeds legacy cap remaining/
+      )
+    })
+
+    it("should use cached legacyCapRemaining value when available", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // First call to populate cache
+      await bridge.getLegacyCapRemaining()
+
+      // Act
+      const path = await bridge.pickPath(amount)
+
+      // Assert
+      expect(path).toBe("standard")
+      // Should only be called once due to caching
+      expect(mockTokenContract.legacyCapRemaining).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe("canWithdraw", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the token contract for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("should return canWithdraw true with route when amount is valid", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const result = await bridge.canWithdraw(amount)
+
+      // Assert
+      expect(result).toEqual({
+        canWithdraw: true,
+        route: "standard",
+      })
+    })
+
+    it("should return canWithdraw false with reason when amount exceeds cap", async () => {
+      // Arrange
+      const amount = BigNumber.from("1500000000000000000") // 1.5 tBTC
+      const legacyCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(legacyCap)
+
+      // Act
+      const result = await bridge.canWithdraw(amount)
+
+      // Assert
+      expect(result.canWithdraw).toBe(false)
+      expect(result.route).toBeUndefined()
+      expect(result.reason).toContain("exceeds legacy cap remaining")
+    })
+
+    it("should return canWithdraw false for zero amount", async () => {
+      // Arrange
+      const amount = BigNumber.from("0")
+
+      // Act
+      const result = await bridge.canWithdraw(amount)
+
+      // Assert
+      expect(result).toEqual({
+        canWithdraw: false,
+        reason: "Amount must be greater than zero",
+      })
     })
   })
 })

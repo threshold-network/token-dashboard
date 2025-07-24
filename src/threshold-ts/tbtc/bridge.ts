@@ -35,6 +35,11 @@ export interface IBridge {
 
   // Utilities
   getLegacyCapRemaining(): Promise<BigNumber>
+  canWithdraw(amount: BigNumber): Promise<{
+    canWithdraw: boolean
+    route?: BridgeRoute
+    reason?: string
+  }>
 }
 
 export type BridgeRoute = "ccip" | "standard"
@@ -206,7 +211,46 @@ export class Bridge implements IBridge {
   }
 
   async pickPath(amount: BigNumber): Promise<BridgeRoute> {
-    throw new Error("Method not implemented.")
+    // Validate input
+    if (amount.lte(0)) {
+      throw new Error("Amount must be greater than zero")
+    }
+
+    // Get current legacy cap
+    const legacyCapRemaining = await this.getLegacyCapRemaining()
+
+    // Case 1: Legacy cap is exhausted - CCIP available
+    if (legacyCapRemaining.eq(0)) {
+      return "ccip"
+    }
+
+    // Case 2: Amount fits within legacy cap - use standard bridge
+    if (amount.lte(legacyCapRemaining)) {
+      return "standard"
+    }
+
+    // Case 3: Amount exceeds legacy cap but cap > 0 - blocked
+    throw new Error(
+      `Amount ${amount.toString()} exceeds legacy cap remaining ${legacyCapRemaining.toString()}. ` +
+        `Please wait for legacy cap to deplete or reduce your withdrawal amount.`
+    )
+  }
+
+  // Helper method to check if amount can be withdrawn
+  async canWithdraw(amount: BigNumber): Promise<{
+    canWithdraw: boolean
+    route?: BridgeRoute
+    reason?: string
+  }> {
+    try {
+      const route = await this.pickPath(amount)
+      return { canWithdraw: true, route }
+    } catch (error: any) {
+      return {
+        canWithdraw: false,
+        reason: error.message,
+      }
+    }
   }
 
   async quoteFees(
