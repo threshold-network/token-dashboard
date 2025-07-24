@@ -217,6 +217,40 @@ export class Bridge implements IBridge {
   }
 
   async getLegacyCapRemaining(): Promise<BigNumber> {
-    throw new Error("Method not implemented.")
+    // Check cache validity
+    if (
+      this._legacyCapCache &&
+      Date.now() - this._legacyCapCache.timestamp < this._cacheExpiry
+    ) {
+      return this._legacyCapCache.value
+    }
+
+    // Ensure contracts are initialized
+    if (!this._tokenContract) {
+      throw new Error("Token contract not initialized")
+    }
+
+    try {
+      // Fetch from contract
+      const legacyCapRemaining = await this._tokenContract.legacyCapRemaining()
+
+      // Update cache
+      this._legacyCapCache = {
+        value: legacyCapRemaining,
+        timestamp: Date.now(),
+      }
+
+      return legacyCapRemaining
+    } catch (error: any) {
+      console.error("Failed to fetch legacyCapRemaining:", error)
+
+      // If we have stale cache data, return it as fallback
+      if (this._legacyCapCache) {
+        console.warn("Returning stale cache data due to contract call failure")
+        return this._legacyCapCache.value
+      }
+
+      throw new Error(`Failed to get legacy cap remaining: ${error.message}`)
+    }
   }
 }

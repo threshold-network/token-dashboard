@@ -150,10 +150,209 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for getLegacyCapRemaining", async () => {
-      await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
-        "Method not implemented"
+    it("should throw error when contracts not initialized", async () => {
+      // This test verifies the placeholder behavior when contracts are null
+      // The Bridge instance in this suite has mock contracts that will fail
+      await expect(bridge.getLegacyCapRemaining()).rejects.toThrow()
+    })
+  })
+
+  describe("getLegacyCapRemaining", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+
+    beforeEach(() => {
+      // Create mock token contract
+      mockTokenContract = {
+        legacyCapRemaining: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      // Mock getArtifact and getContract to return our mock contract
+      jest.mock("../../utils", () => ({
+        ...jest.requireActual("../../utils"),
+        getArtifact: jest.fn((name) => {
+          if (name === "OptimismMintableUpgradableTBTC") {
+            return {
+              address: "0xMockTokenAddress",
+              abi: [],
+            }
+          }
+          return null
+        }),
+        getContract: jest.fn((address, abi, provider, account) => {
+          if (address === "0xMockTokenAddress") {
+            return mockTokenContract
+          }
+          return null
+        }),
+      }))
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
       )
+
+      // Manually set the token contract for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+      jest.restoreAllMocks()
+      jest.useRealTimers()
+    })
+
+    it("should fetch legacyCapRemaining from contract", async () => {
+      // Arrange
+      const expectedCap = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(expectedCap)
+
+      // Act
+      const result = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result).toEqual(expectedCap)
+      expect(mockTokenContract.legacyCapRemaining).toHaveBeenCalledTimes(1)
+    })
+
+    it("should use cached value within TTL", async () => {
+      // Arrange
+      const expectedCap = BigNumber.from("1000000000000000000")
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(expectedCap)
+
+      // Act - First call
+      const result1 = await bridge.getLegacyCapRemaining()
+
+      // Act - Second call (should use cache)
+      const result2 = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result1).toEqual(expectedCap)
+      expect(result2).toEqual(expectedCap)
+      expect(mockTokenContract.legacyCapRemaining).toHaveBeenCalledTimes(1) // Called only once
+    })
+
+    it("should refresh cache after TTL expires", async () => {
+      // Arrange - Mock Date.now
+      const mockNow = Date.now()
+      const dateNowSpy = jest.spyOn(Date, "now")
+
+      // First call
+      dateNowSpy.mockReturnValue(mockNow)
+
+      const cap1 = BigNumber.from("1000000000000000000")
+      const cap2 = BigNumber.from("2000000000000000000")
+      mockTokenContract.legacyCapRemaining
+        .mockResolvedValueOnce(cap1)
+        .mockResolvedValueOnce(cap2)
+
+      // Act - First call
+      const result1 = await bridge.getLegacyCapRemaining()
+
+      // Verify first result
+      expect(result1).toEqual(cap1)
+
+      // Mock time to be past TTL for second call
+      dateNowSpy.mockReturnValue(mockNow + 61000)
+
+      // Act - Second call (should fetch fresh data due to mocked time)
+      const result2 = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result2).toEqual(cap2)
+      expect(mockTokenContract.legacyCapRemaining).toHaveBeenCalledTimes(2)
+
+      dateNowSpy.mockRestore()
+    })
+
+    it("should throw error when token contract not initialized", async () => {
+      // Arrange - Remove token contract
+      ;(bridge as any)._tokenContract = null
+
+      // Act & Assert
+      await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
+        "Token contract not initialized"
+      )
+    })
+
+    it("should return stale cache on contract call failure if available", async () => {
+      // Arrange
+      const mockNow = Date.now()
+      const dateNowSpy = jest.spyOn(Date, "now")
+
+      // First call - current time
+      dateNowSpy.mockReturnValue(mockNow)
+
+      const cachedValue = BigNumber.from("1000000000000000000")
+
+      // Spy on console methods before the calls
+      const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation()
+      const consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation()
+
+      mockTokenContract.legacyCapRemaining
+        .mockResolvedValueOnce(cachedValue)
+        .mockRejectedValueOnce(new Error("RPC error"))
+
+      // First call to populate cache
+      await bridge.getLegacyCapRemaining()
+
+      // Move time forward past TTL
+      dateNowSpy.mockReturnValue(mockNow + 61000)
+
+      // Act - Should return stale cache
+      const result = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result).toEqual(cachedValue)
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        "Failed to fetch legacyCapRemaining:",
+        expect.any(Error)
+      )
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "Returning stale cache data due to contract call failure"
+      )
+
+      // Cleanup
+      consoleErrorSpy.mockRestore()
+      consoleWarnSpy.mockRestore()
+      dateNowSpy.mockRestore()
+    })
+
+    it("should throw error on contract call failure with no cache", async () => {
+      // Arrange
+      mockTokenContract.legacyCapRemaining.mockRejectedValue(
+        new Error("RPC error")
+      )
+
+      // Act & Assert
+      await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
+        "Failed to get legacy cap remaining: RPC error"
+      )
+    })
+
+    it("should handle zero legacyCapRemaining", async () => {
+      // Arrange
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(BigNumber.from(0))
+
+      // Act
+      const result = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result).toEqual(BigNumber.from(0))
+    })
+
+    it("should handle very large legacyCapRemaining values", async () => {
+      // Arrange
+      const largeCap = BigNumber.from("1000000000000000000000000") // 1 million tBTC
+      mockTokenContract.legacyCapRemaining.mockResolvedValue(largeCap)
+
+      // Act
+      const result = await bridge.getLegacyCapRemaining()
+
+      // Assert
+      expect(result).toEqual(largeCap)
     })
   })
 
@@ -229,9 +428,8 @@ describe("Bridge", () => {
 
       // Act & Assert
       await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
-        "Method not implemented"
+        "Token contract not initialized"
       )
-      // Will throw different error when implemented
     })
   })
 })
