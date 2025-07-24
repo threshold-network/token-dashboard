@@ -1977,10 +1977,5 @@ export class TBTC implements ITBTC {
 }
 
 // Export Bridge types
-export {
-  Bridge,
-  IBridge,
-  BridgeOptions,
-  BridgeQuote,
-  BridgeRoute,
-} from "./bridge"
+export { Bridge } from "./bridge"
+export type { IBridge, BridgeOptions, BridgeQuote, BridgeRoute } from "./bridge"
