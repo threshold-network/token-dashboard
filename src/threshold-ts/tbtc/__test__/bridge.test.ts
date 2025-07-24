@@ -10,6 +10,12 @@ import {
 import { EthereumConfig, CrossChainConfig } from "../../types"
 import { IMulticall } from "../../multicall"
 
+// Mock the utils module
+jest.mock("../../utils", () => ({
+  getArtifact: jest.fn(() => null),
+  getContract: jest.fn(() => null),
+}))
+
 describe("Bridge", () => {
   let mockEthereumConfig: EthereumConfig
   let mockCrossChainConfig: CrossChainConfig
@@ -1739,9 +1745,30 @@ describe("Bridge", () => {
     let mockProvider: any
 
     beforeEach(() => {
-      mockProvider = {
-        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("20000000000")), // 20 gwei
+      // Create a mock signer that satisfies ethers Contract requirements
+      const mockSigner = {
+        provider: {
+          _isProvider: true,
+          getNetwork: jest
+            .fn()
+            .mockResolvedValue({ chainId: 60808, name: "bob" }),
+        },
+        _isSigner: true,
+        getAddress: jest
+          .fn()
+          .mockResolvedValue("0x1234567890123456789012345678901234567890"),
+        connectUnchecked: jest.fn().mockReturnThis(),
       }
+
+      // Create mock provider with getGasPrice
+      mockProvider = {
+        _isProvider: true,
+        getSigner: jest.fn().mockReturnValue(mockSigner),
+        getNetwork: jest
+          .fn()
+          .mockResolvedValue({ chainId: 60808, name: "bob" }),
+        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("20000000000")), // 20 gwei
+      } as unknown as providers.Provider
 
       const configWithProvider = {
         ...mockEthereumConfig,
@@ -1882,9 +1909,30 @@ describe("Bridge", () => {
     let mockProvider: any
 
     beforeEach(() => {
-      mockProvider = {
-        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("30000000000")), // 30 gwei for L1
+      // Create a mock signer that satisfies ethers Contract requirements
+      const mockSigner = {
+        provider: {
+          _isProvider: true,
+          getNetwork: jest
+            .fn()
+            .mockResolvedValue({ chainId: 60808, name: "bob" }),
+        },
+        _isSigner: true,
+        getAddress: jest
+          .fn()
+          .mockResolvedValue("0x1234567890123456789012345678901234567890"),
+        connectUnchecked: jest.fn().mockReturnThis(),
       }
+
+      // Create mock provider with getGasPrice
+      mockProvider = {
+        _isProvider: true,
+        getSigner: jest.fn().mockReturnValue(mockSigner),
+        getNetwork: jest
+          .fn()
+          .mockResolvedValue({ chainId: 60808, name: "bob" }),
+        getGasPrice: jest.fn().mockResolvedValue(BigNumber.from("30000000000")), // 30 gwei for L1
+      } as unknown as providers.Provider
 
       const configWithProvider = {
         ...mockEthereumConfig,
