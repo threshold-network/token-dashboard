@@ -10,6 +10,8 @@ export enum SupportedChainIds {
   Localhost = 1337,
   Arbitrum = 42161,
   Base = 8453,
+  BOBMainnet = 60808,
+  BOBTestnet = 808813,
   // ArbitrumSepolia = 421614,
   // BaseSepolia = 84532,
 }

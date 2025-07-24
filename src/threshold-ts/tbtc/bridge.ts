@@ -2,6 +2,7 @@ import { BigNumber, Contract, providers, Signer } from "ethers"
 import { TransactionResponse } from "@ethersproject/abstract-provider"
 import { EthereumConfig, CrossChainConfig } from "../types"
 import { IMulticall } from "../multicall"
+import { getContract, getArtifact } from "../utils"
 
 export interface IBridge {
   // Core bridge methods
@@ -78,6 +79,91 @@ export class Bridge implements IBridge {
     this._ethereumConfig = ethereumConfig
     this._crossChainConfig = crossChainConfig
     this._multicall = multicall
+
+    // Initialize contracts
+    this._initializeContracts()
+  }
+
+  private _initializeContracts(): void {
+    const {
+      chainId,
+      shouldUseTestnetDevelopmentContracts,
+      ethereumProviderOrSigner,
+      account,
+    } = this._ethereumConfig
+
+    // Map BOB chain ID to mainnet/testnet for artifact loading
+    const isBOBMainnet = chainId === 60808
+    const isBOBTestnet = chainId === 808813
+
+    if (!isBOBMainnet && !isBOBTestnet) {
+      console.warn("Bridge: Not on BOB network, contracts will be null")
+      return
+    }
+
+    // Use BOB chain ID directly for artifact loading
+    const bobChainId = Number(chainId)
+
+    // Get provider
+    const provider = ethereumProviderOrSigner
+
+    // Load CCIP Router
+    const ccipArtifact = getArtifact(
+      "CCIPRouter",
+      bobChainId,
+      shouldUseTestnetDevelopmentContracts
+    )
+
+    this._ccipContract = ccipArtifact
+      ? getContract(ccipArtifact.address, ccipArtifact.abi, provider, account)
+      : null
+
+    // Load Standard Bridge
+    const standardBridgeArtifact = getArtifact(
+      "StandardBridge",
+      bobChainId,
+      shouldUseTestnetDevelopmentContracts
+    )
+
+    this._standardBridgeContract = standardBridgeArtifact
+      ? getContract(
+          standardBridgeArtifact.address,
+          standardBridgeArtifact.abi,
+          provider,
+          account
+        )
+      : null
+
+    // Load BOB tBTC Token (OptimismMintableUpgradableTBTC)
+    const tokenArtifact = getArtifact(
+      "OptimismMintableUpgradableTBTC",
+      bobChainId,
+      shouldUseTestnetDevelopmentContracts
+    )
+
+    this._tokenContract = tokenArtifact
+      ? getContract(tokenArtifact.address, tokenArtifact.abi, provider, account)
+      : null
+
+    // Log initialization status
+    console.log("Bridge contracts initialized:", {
+      ccip: !!this._ccipContract,
+      standardBridge: !!this._standardBridgeContract,
+      token: !!this._tokenContract,
+    })
+  }
+
+  // Helper method to check if contracts are initialized
+  private _ensureContractsInitialized(): void {
+    if (
+      !this._ccipContract ||
+      !this._standardBridgeContract ||
+      !this._tokenContract
+    ) {
+      throw new Error(
+        "Bridge contracts not initialized. Ensure you're on BOB network."
+      )
+    }
   }
 
   // Placeholder implementations

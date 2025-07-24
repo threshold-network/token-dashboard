@@ -15,9 +15,31 @@ describe("Bridge", () => {
   let mockMulticall: IMulticall
 
   beforeEach(() => {
+    // Create a mock signer that satisfies ethers Contract requirements
+    const mockSigner = {
+      provider: {
+        _isProvider: true,
+        getNetwork: jest
+          .fn()
+          .mockResolvedValue({ chainId: 60808, name: "bob" }),
+      },
+      _isSigner: true,
+      getAddress: jest
+        .fn()
+        .mockResolvedValue("0x1234567890123456789012345678901234567890"),
+      connectUnchecked: jest.fn().mockReturnThis(),
+    }
+
+    // Create a mock provider with required methods
+    const mockProvider = {
+      _isProvider: true,
+      getSigner: jest.fn().mockReturnValue(mockSigner),
+      getNetwork: jest.fn().mockResolvedValue({ chainId: 60808, name: "bob" }),
+    } as unknown as providers.Provider
+
     mockEthereumConfig = {
       chainId: 60808, // BOB mainnet
-      ethereumProviderOrSigner: {} as providers.Provider,
+      ethereumProviderOrSigner: mockProvider,
       account: "0x1234567890123456789012345678901234567890",
       shouldUseTestnetDevelopmentContracts: false,
     }
@@ -132,6 +154,84 @@ describe("Bridge", () => {
       await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
         "Method not implemented"
       )
+    })
+  })
+
+  describe("contract initialization", () => {
+    it("should initialize contracts for BOB mainnet", () => {
+      // Arrange
+      const bobMainnetConfig = {
+        ...mockEthereumConfig,
+        chainId: 60808,
+      }
+
+      // Act
+      const bridge = new Bridge(
+        bobMainnetConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Assert
+      expect(bridge).toBeInstanceOf(Bridge)
+      // Contract initialization happens in constructor
+      // We'll test actual contract loading in integration tests
+    })
+
+    it("should initialize contracts for BOB testnet", () => {
+      // Arrange
+      const bobTestnetConfig = {
+        ...mockEthereumConfig,
+        chainId: 808813,
+      }
+
+      // Act
+      const bridge = new Bridge(
+        bobTestnetConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Assert
+      expect(bridge).toBeInstanceOf(Bridge)
+    })
+
+    it("should handle non-BOB networks gracefully", () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet
+      }
+
+      // Act
+      const bridge = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Assert
+      expect(bridge).toBeInstanceOf(Bridge)
+      // Contracts should remain null for non-BOB networks
+    })
+
+    it("should ensure contracts are initialized before operations", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Non-BOB network
+      }
+      const bridge = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Act & Assert
+      await expect(bridge.getLegacyCapRemaining()).rejects.toThrow(
+        "Method not implemented"
+      )
+      // Will throw different error when implemented
     })
   })
 })

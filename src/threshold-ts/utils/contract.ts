@@ -56,6 +56,10 @@ import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
 import TacoArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
 
+import CCIPRouterArtifactBOB from "../tbtc/bob-artifacts/CCIPRouter.json"
+import StandardBridgeArtifactBOB from "../tbtc/bob-artifacts/StandardBridge.json"
+import OptimismMintableUpgradableTBTCArtifactBOB from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
+
 export type ArtifactNameType =
   | "TacoRegistry"
   | "LegacyKeepStaking"
@@ -72,6 +76,9 @@ export type ArtifactNameType =
   | "ArbitrumL1BitcoinDepositor"
   | "BaseL1BitcoinDepositor"
   | "StarkNetBitcoinDepositor"
+  | "CCIPRouter"
+  | "StandardBridge"
+  | "OptimismMintableUpgradableTBTC"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -133,6 +140,16 @@ const contractArtifacts: ContractArtifacts = {
     WalletRegistry: WalletRegistryArtifactDappDevelopmentSepolia,
     VendingMachineKeep: VendingMachineKeepDappDevelopmentSepolia,
     VendingMachineNuCypher: VendingMachineNuCypherDappDevelopmentSepolia,
+  },
+  [SupportedChainIds.BOBMainnet]: {
+    CCIPRouter: CCIPRouterArtifactBOB,
+    StandardBridge: StandardBridgeArtifactBOB,
+    OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
+  },
+  [SupportedChainIds.BOBTestnet]: {
+    CCIPRouter: CCIPRouterArtifactBOB,
+    StandardBridge: StandardBridgeArtifactBOB,
+    OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
   },
 }
 
