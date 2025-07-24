@@ -1,5 +1,6 @@
 import { BigNumber, Contract, providers, Signer } from "ethers"
 import { TransactionResponse } from "@ethersproject/abstract-provider"
+import { MaxUint256 } from "@ethersproject/constants"
 import { EthereumConfig, CrossChainConfig } from "../types"
 import { IMulticall } from "../multicall"
 import { getContract, getArtifact } from "../utils"
@@ -39,6 +40,11 @@ export interface IBridge {
     canWithdraw: boolean
     route?: BridgeRoute
     reason?: string
+  }>
+  getCcipAllowance(): Promise<BigNumber>
+  getAllowances(): Promise<{
+    ccip: BigNumber
+    standardBridge: BigNumber
   }>
 }
 
@@ -201,7 +207,46 @@ export class Bridge implements IBridge {
   }
 
   async approveForCcip(amount: BigNumber): Promise<TransactionResponse | null> {
-    throw new Error("Method not implemented.")
+    if (!this._ccipContract || !this._tokenContract) {
+      throw new Error("Contracts not initialized")
+    }
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    try {
+      // Check current allowance
+      const currentAllowance = await this._tokenContract.allowance(
+        account,
+        this._ccipContract.address
+      )
+
+      // Skip if already approved for this amount or more
+      if (currentAllowance.gte(amount)) {
+        console.log(
+          `CCIP approval not needed. Current allowance: ${currentAllowance.toString()}`
+        )
+        return null
+      }
+
+      // Use MaxUint256 for infinite approval (common pattern)
+      const approvalAmount = MaxUint256
+
+      console.log(`Approving CCIP contract for ${approvalAmount.toString()}`)
+
+      // Send approval transaction
+      const tx = await this._tokenContract.approve(
+        this._ccipContract.address,
+        approvalAmount
+      )
+
+      return tx
+    } catch (error: any) {
+      console.error("Failed to approve for CCIP:", error)
+      throw new Error(`CCIP approval failed: ${error.message}`)
+    }
   }
 
   async approveForStandardBridge(
@@ -258,6 +303,61 @@ export class Bridge implements IBridge {
     route?: BridgeRoute
   ): Promise<BridgeQuote> {
     throw new Error("Method not implemented.")
+  }
+
+  // Helper method to check allowance without approving
+  async getCcipAllowance(): Promise<BigNumber> {
+    if (!this._ccipContract || !this._tokenContract) {
+      throw new Error("Contracts not initialized")
+    }
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    return await this._tokenContract.allowance(
+      account,
+      this._ccipContract.address
+    )
+  }
+
+  // Batch approval check for both bridges
+  async getAllowances(): Promise<{
+    ccip: BigNumber
+    standardBridge: BigNumber
+  }> {
+    if (
+      !this._ccipContract ||
+      !this._standardBridgeContract ||
+      !this._tokenContract
+    ) {
+      throw new Error("Contracts not initialized")
+    }
+
+    const account = this._ethereumConfig.account
+    if (!account) {
+      throw new Error("No account connected")
+    }
+
+    const calls = [
+      {
+        interface: this._tokenContract.interface,
+        address: this._tokenContract.address,
+        method: "allowance",
+        args: [account, this._ccipContract.address],
+      },
+      {
+        interface: this._tokenContract.interface,
+        address: this._tokenContract.address,
+        method: "allowance",
+        args: [account, this._standardBridgeContract.address],
+      },
+    ]
+
+    const [ccip, standardBridge] = await this._multicall.aggregate(calls)
+
+    return { ccip, standardBridge }
   }
 
   async getLegacyCapRemaining(): Promise<BigNumber> {

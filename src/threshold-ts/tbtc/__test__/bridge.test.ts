@@ -126,12 +126,6 @@ describe("Bridge", () => {
       )
     })
 
-    it("should throw 'not implemented' for approveForCcip", async () => {
-      await expect(bridge.approveForCcip(BigNumber.from(100))).rejects.toThrow(
-        "Method not implemented"
-      )
-    })
-
     it("should throw 'not implemented' for approveForStandardBridge", async () => {
       await expect(
         bridge.approveForStandardBridge(BigNumber.from(100))
@@ -626,6 +620,302 @@ describe("Bridge", () => {
         canWithdraw: false,
         reason: "Amount must be greater than zero",
       })
+    })
+  })
+
+  describe("approveForCcip", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        approve: jest.fn(),
+        address: "0xMockTokenAddress",
+        interface: {
+          encodeFunctionData: jest.fn(),
+        },
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+    })
+
+    afterEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("should skip approval when allowance is sufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("500000000000000000") // 0.5 tBTC
+      const currentAllowance = BigNumber.from("1000000000000000000") // 1 tBTC
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+
+      // Act
+      const result = await bridge.approveForCcip(amount)
+
+      // Assert
+      expect(result).toBeNull()
+      expect(mockTokenContract.approve).not.toHaveBeenCalled()
+      expect(mockTokenContract.allowance).toHaveBeenCalledWith(
+        mockEthereumConfig.account,
+        mockCcipContract.address
+      )
+    })
+
+    it("should send approval transaction when allowance is insufficient", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const currentAllowance = BigNumber.from("0")
+      const mockTx = { hash: "0x123", wait: jest.fn() }
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.approveForCcip(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockTokenContract.approve).toHaveBeenCalledWith(
+        mockCcipContract.address,
+        BigNumber.from(
+          "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+        ) // MaxUint256
+      )
+    })
+
+    it("should throw error when contracts not initialized", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet, not BOB
+      }
+      const bridgeNoContracts = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bridgeNoContracts.approveForCcip(amount)).rejects.toThrow(
+        "Contracts not initialized"
+      )
+    })
+
+    it("should throw error when no account connected", async () => {
+      // Arrange
+      const configNoAccount = { ...mockEthereumConfig, account: undefined }
+      const bridgeNoAccount = new Bridge(
+        configNoAccount,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+      ;(bridgeNoAccount as any)._tokenContract = mockTokenContract
+      ;(bridgeNoAccount as any)._ccipContract = mockCcipContract
+
+      const amount = BigNumber.from("1000000000000000000")
+
+      // Act & Assert
+      await expect(bridgeNoAccount.approveForCcip(amount)).rejects.toThrow(
+        "No account connected"
+      )
+    })
+
+    it("should handle approval transaction errors", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000")
+      const currentAllowance = BigNumber.from("0")
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockRejectedValue(new Error("User rejected"))
+
+      // Act & Assert
+      await expect(bridge.approveForCcip(amount)).rejects.toThrow(
+        "CCIP approval failed: User rejected"
+      )
+    })
+
+    it("should approve exactly at the boundary", async () => {
+      // Arrange
+      const amount = BigNumber.from("1000000000000000000") // 1 tBTC
+      const currentAllowance = BigNumber.from("999999999999999999") // Slightly less
+      const mockTx = { hash: "0x123", wait: jest.fn() }
+
+      mockTokenContract.allowance.mockResolvedValue(currentAllowance)
+      mockTokenContract.approve.mockResolvedValue(mockTx)
+
+      // Act
+      const result = await bridge.approveForCcip(amount)
+
+      // Assert
+      expect(result).toBe(mockTx)
+      expect(mockTokenContract.approve).toHaveBeenCalled()
+    })
+  })
+
+  describe("getCcipAllowance", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        address: "0xMockTokenAddress",
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+    })
+
+    it("should return current CCIP allowance", async () => {
+      // Arrange
+      const expectedAllowance = BigNumber.from("1000000000000000000")
+      mockTokenContract.allowance.mockResolvedValue(expectedAllowance)
+
+      // Act
+      const result = await bridge.getCcipAllowance()
+
+      // Assert
+      expect(result).toEqual(expectedAllowance)
+      expect(mockTokenContract.allowance).toHaveBeenCalledWith(
+        mockEthereumConfig.account,
+        mockCcipContract.address
+      )
+    })
+
+    it("should throw error when contracts not initialized", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet, not BOB
+      }
+      const bridgeNoContracts = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Act & Assert
+      await expect(bridgeNoContracts.getCcipAllowance()).rejects.toThrow(
+        "Contracts not initialized"
+      )
+    })
+  })
+
+  describe("getAllowances", () => {
+    let bridge: Bridge
+    let mockTokenContract: any
+    let mockCcipContract: any
+    let mockStandardBridgeContract: any
+
+    beforeEach(() => {
+      mockTokenContract = {
+        allowance: jest.fn(),
+        address: "0xMockTokenAddress",
+        interface: {
+          encodeFunctionData: jest.fn(),
+        },
+      }
+
+      mockCcipContract = {
+        address: "0xMockCcipAddress",
+      }
+
+      mockStandardBridgeContract = {
+        address: "0xMockStandardBridgeAddress",
+      }
+
+      bridge = new Bridge(
+        mockEthereumConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Manually set the contracts for testing
+      ;(bridge as any)._tokenContract = mockTokenContract
+      ;(bridge as any)._ccipContract = mockCcipContract
+      ;(bridge as any)._standardBridgeContract = mockStandardBridgeContract
+    })
+
+    it("should return allowances for both bridges", async () => {
+      // Arrange
+      const ccipAllowance = BigNumber.from("1000000000000000000")
+      const standardAllowance = BigNumber.from("2000000000000000000")
+
+      mockMulticall.aggregate.mockResolvedValue([
+        ccipAllowance,
+        standardAllowance,
+      ])
+
+      // Act
+      const result = await bridge.getAllowances()
+
+      // Assert
+      expect(result).toEqual({
+        ccip: ccipAllowance,
+        standardBridge: standardAllowance,
+      })
+      expect(mockMulticall.aggregate).toHaveBeenCalledWith([
+        {
+          interface: mockTokenContract.interface,
+          address: mockTokenContract.address,
+          method: "allowance",
+          args: [mockEthereumConfig.account, mockCcipContract.address],
+        },
+        {
+          interface: mockTokenContract.interface,
+          address: mockTokenContract.address,
+          method: "allowance",
+          args: [
+            mockEthereumConfig.account,
+            mockStandardBridgeContract.address,
+          ],
+        },
+      ])
+    })
+
+    it("should throw error when contracts not initialized", async () => {
+      // Arrange
+      const nonBobConfig = {
+        ...mockEthereumConfig,
+        chainId: 1, // Ethereum mainnet, not BOB
+      }
+      const bridgeNoContracts = new Bridge(
+        nonBobConfig,
+        mockCrossChainConfig,
+        mockMulticall
+      )
+
+      // Act & Assert
+      await expect(bridgeNoContracts.getAllowances()).rejects.toThrow(
+        "Contracts not initialized"
+      )
     })
   })
 })
