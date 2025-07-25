@@ -7,20 +7,12 @@ import { getContract, getArtifact } from "../utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 
 export interface IBridge {
-  // Core bridge methods
+  // Core bridge methods - SIMPLIFIED API
   withdraw(
     amount: BigNumber,
     opts?: BridgeOptions
-  ): Promise<TransactionResponse>
-  withdrawLegacy(
-    amount: BigNumber,
-    opts?: BridgeOptions
-  ): Promise<TransactionResponse>
+  ): Promise<TransactionResponse> // Smart routing - handles both CCIP and Standard Bridge
   depositToBob(
-    amount: BigNumber,
-    opts?: BridgeOptions
-  ): Promise<TransactionResponse>
-  withdrawToL1(
     amount: BigNumber,
     opts?: BridgeOptions
   ): Promise<TransactionResponse>
@@ -32,7 +24,7 @@ export interface IBridge {
   ): Promise<TransactionResponse | null>
 
   // Routing and quotes
-  pickPath(amount: BigNumber): Promise<BridgeRoute>
+  pickPath(amount: BigNumber): Promise<BridgeRoute> // Public for UI decisions
   quoteFees(amount: BigNumber, route?: BridgeRoute): Promise<BridgeQuote>
 
   // Utilities
@@ -251,6 +243,16 @@ export class Bridge implements IBridge {
     }
   }
 
+  /**
+   * Withdraws tBTC from BOB network to Ethereum L1.
+   * Automatically routes through CCIP (fast, ~60 min) or Standard Bridge (slow, 7 days)
+   * based on the legacyCapRemaining value.
+   *
+   * @param {BigNumber} amount - Amount of tBTC to withdraw
+   * @param {BridgeOptions} [opts] - Optional transaction parameters
+   * @return {Promise<TransactionResponse>} Transaction response
+   * @throws Error if amount exceeds legacy cap but cap > 0
+   */
   async withdraw(
     amount: BigNumber,
     opts?: BridgeOptions
@@ -263,14 +265,28 @@ export class Bridge implements IBridge {
       throw new Error("Withdrawal amount must be greater than zero")
     }
 
-    // Check if CCIP path is appropriate
+    // Determine the appropriate route
     const route = await this.pickPath(amount)
-    if (route === "standard") {
-      throw new Error(
-        "Amount fits within legacy cap. Use withdrawLegacy() instead."
-      )
-    }
 
+    // Route to the appropriate withdrawal method
+    if (route === "ccip") {
+      return this._withdrawViaCcip(amount, opts)
+    } else {
+      return this._withdrawViaStandard(amount, opts)
+    }
+  }
+
+  /**
+   * Private method to handle CCIP withdrawals
+   * @private
+   * @param {BigNumber} amount - Amount to withdraw
+   * @param {BridgeOptions} [opts] - Optional transaction parameters
+   * @return {Promise<TransactionResponse>} Transaction response
+   */
+  private async _withdrawViaCcip(
+    amount: BigNumber,
+    opts?: BridgeOptions
+  ): Promise<TransactionResponse> {
     const account = this._ethereumConfig.account
     if (!account) {
       throw new Error("No account connected")
@@ -391,27 +407,17 @@ export class Bridge implements IBridge {
     }
   }
 
-  async withdrawLegacy(
+  /**
+   * Private method to handle Standard Bridge withdrawals
+   * @private
+   * @param {BigNumber} amount - Amount to withdraw
+   * @param {BridgeOptions} [opts] - Optional transaction parameters
+   * @return {Promise<TransactionResponse>} Transaction response
+   */
+  private async _withdrawViaStandard(
     amount: BigNumber,
     opts?: BridgeOptions
   ): Promise<TransactionResponse> {
-    // Ensure contracts are initialized
-    this._ensureContractsInitialized()
-
-    // Validate amount
-    if (amount.lte(0)) {
-      throw new Error("Withdrawal amount must be greater than zero")
-    }
-
-    // Check legacy cap remaining
-    const legacyCapRemaining = await this.getLegacyCapRemaining()
-    if (amount.gt(legacyCapRemaining)) {
-      throw new Error(
-        `Amount ${amount.toString()} exceeds legacy cap remaining ${legacyCapRemaining.toString()}. ` +
-          `Use withdraw() for CCIP or wait for legacy cap to deplete.`
-      )
-    }
-
     const account = this._ethereumConfig.account
     if (!account) {
       throw new Error("No account connected")
@@ -462,19 +468,6 @@ export class Bridge implements IBridge {
       console.error("Standard Bridge withdrawal failed:", error)
       throw new Error(`Standard Bridge withdrawal failed: ${error.message}`)
     }
-  }
-
-  async withdrawToL1(
-    amount: BigNumber,
-    opts?: BridgeOptions
-  ): Promise<TransactionResponse> {
-    // withdrawToL1 is an alias for withdraw when on L2
-    const chainId = Number(this._ethereumConfig.chainId)
-    if (chainId !== 60808 && chainId !== 808813) {
-      throw new Error("withdrawToL1 can only be called from BOB network")
-    }
-
-    return this.withdraw(amount, opts)
   }
 
   async approveForCcip(amount: BigNumber): Promise<TransactionResponse | null> {
@@ -567,6 +560,24 @@ export class Bridge implements IBridge {
     }
   }
 
+  /**
+   * Determines the optimal withdrawal route based on the amount and legacyCapRemaining.
+   * This is a public method that can be called by frontend to preview which route will be used.
+   *
+   * @param {BigNumber} amount - Amount of tBTC to withdraw
+   * @return {Promise<BridgeRoute>} "ccip" for fast path (~60 min) or "standard" for slow path (7 days)
+   * @throws Error if amount exceeds legacy cap but cap > 0 (blocked scenario)
+   *
+   * @example
+   * ```typescript
+   * const route = await bridge.pickPath(amount);
+   * if (route === "ccip") {
+   *   console.log("Fast withdrawal available (~60 minutes)");
+   * } else {
+   *   console.log("Standard withdrawal will be used (7 days)");
+   * }
+   * ```
+   */
   async pickPath(amount: BigNumber): Promise<BridgeRoute> {
     // Validate input
     if (amount.lte(0)) {
