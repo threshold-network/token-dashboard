@@ -1,12 +1,5 @@
 {
-  "mainnet": {
-    "address": "0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D",
-    "chainSelector": "5009297550715157269"
-  },
-  "sepolia": {
-    "address": "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59",
-    "chainSelector": "16015286601757825753"
-  },
+  "address": "0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D",
   "abi": [
     {
       "inputs": [

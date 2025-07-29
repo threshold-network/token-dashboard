@@ -1,5 +1,4 @@
-import UpgradeKEEP from "./UpgradeKEEP"
-import UpgradeNU from "./UpgradeNU"
+import TBTCBridge from "./TBTCBridge"
 import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
 
@@ -10,7 +9,7 @@ const BridgePage: PageComponent = (props) => {
 BridgePage.route = {
   path: "bridge",
   index: true,
-  pages: [UpgradeKEEP, UpgradeNU],
+  pages: [TBTCBridge],
   title: "Bridge",
   isPageEnabled: true,
 }

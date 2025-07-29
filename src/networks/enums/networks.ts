@@ -16,6 +16,16 @@ export enum SupportedChainIds {
   BaseSepolia = 84532,
 }
 
+export enum BobChainSelector {
+  Bob = "3849287863852499584",
+  BobSepolia = "5535534526963509396",
+}
+
+export enum EthereumChainSelector {
+  Ethereum = "5009297550715157269",
+  Sepolia = "16015286601757825753",
+}
+
 export enum NonEVMNetworks {
   Solana = "Solana",
   StarkNet = "StarkNet",

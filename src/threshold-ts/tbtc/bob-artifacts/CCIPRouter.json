@@ -1,12 +1,5 @@
 {
-  "mainnet": {
-    "address": "0x827716e74F769AB7b6bb374A29235d9c2156932C",
-    "chainSelector": "3849287863852499584"
-  },
-  "testnet": {
-    "address": "0x7808184405d6Cbc663764003dE21617fa640bc82",
-    "chainSelector": "5535534526963509396"
-  },
+  "address": "0x827716e74F769AB7b6bb374A29235d9c2156932C",
   "abi": [
     {
       "inputs": [

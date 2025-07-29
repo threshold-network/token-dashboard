@@ -1,17 +1,20 @@
+import { VendingMachines, IVendingMachines } from "./vending-machine"
 import { MultiAppStaking } from "./mas"
-import { IMulticall, Multicall } from "./multicall"
-import { IStaking, Staking } from "./staking"
-import { ITBTC, TBTC } from "./tbtc"
+import { Staking, IStaking } from "./staking"
+import { TBTC, ITBTC } from "./tbtc"
+import { Bridge, IBridge } from "./bridge"
+import { Multicall, IMulticall } from "./multicall"
 import { ThresholdConfig } from "./types"
-import { IVendingMachines, VendingMachines } from "./vending-machine"
 
 export class Threshold {
+  // @ts-ignore
   config!: ThresholdConfig
   multicall!: IMulticall
+  vendingMachines!: IVendingMachines
   staking!: IStaking
   multiAppStaking!: MultiAppStaking
-  vendingMachines!: IVendingMachines
   tbtc!: ITBTC
+  bridge!: IBridge
 
   constructor(config: ThresholdConfig) {
     this._initialize(config)
@@ -30,6 +33,7 @@ export class Threshold {
       ethereum
     )
     this.tbtc = new TBTC(ethereum, bitcoin, crossChain)
+    this.bridge = new Bridge(ethereum)
   }
 
   updateConfig = async (config: ThresholdConfig) => {
