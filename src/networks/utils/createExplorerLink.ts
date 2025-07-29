@@ -39,8 +39,10 @@ export const createExplorerPrefix = (
     [SupportedChainIds.Sepolia]: "https://sepolia.etherscan.io",
     [SupportedChainIds.Arbitrum]: "https://arbiscan.io",
     [SupportedChainIds.Base]: "https://basescan.org",
-    // [SupportedChainIds.BaseSepolia]: "https://sepolia.basescan.org",
-    // [SupportedChainIds.ArbitrumSepolia]: "https://sepolia.arbiscan.io",
+    [SupportedChainIds.BaseSepolia]: "https://sepolia.basescan.org",
+    [SupportedChainIds.ArbitrumSepolia]: "https://sepolia.arbiscan.io",
+    [SupportedChainIds.Bob]: "https://explorer.gobob.xyz/",
+    [SupportedChainIds.BobSepolia]: "https://bob-sepolia.explorer.gobob.xyz",
   }
 
   return prefixMap[Number(chainId)] || "https://etherscan.io"

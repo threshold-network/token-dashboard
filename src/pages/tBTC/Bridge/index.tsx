@@ -76,7 +76,7 @@ TBTCBridge.route = {
   index: false,
   pathOverride: "*",
   pages: [MintPage, UnmintPage],
-  title: "Bridge",
+  title: "Deposit",
   isPageEnabled: true,
 }
 

@@ -56,16 +56,15 @@ import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
 import TacoArtifactDappDevelopmentSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/dashboard.json"
 
-import CCIPRouterArtifactBOB from "../tbtc/bob-artifacts/CCIPRouter.json"
-import BurnFromMintTokenPoolArtifactBOB from "../tbtc/bob-artifacts/BurnFromMintTokenPool.json"
-import StandardBridgeArtifactBOB from "../tbtc/bob-artifacts/StandardBridge.json"
-import OptimismMintableUpgradableTBTCArtifactBOB from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
+import CCIPRouterArtifactBob from "../tbtc/bob-artifacts/CCIPRouter.json"
+import BurnFromMintTokenPoolArtifactBob from "../tbtc/bob-artifacts/BurnFromMintTokenPool.json"
+import StandardBridgeArtifactBob from "../tbtc/bob-artifacts/StandardBridge.json"
+import OptimismMintableUpgradableTBTCArtifactBob from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
 
-import CCIPRouterArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/CCIPRouter.json"
-import StandardBridgeArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/StandardBridge.json"
-import OptimismMintableUpgradableTBTCArtifactBOBTestnet from "../tbtc/bob-testnet-artifacts/OptimismMintableUpgradableTBTC.json"
+import CCIPRouterArtifactBobTestnet from "../tbtc/bob-testnet-artifacts/CCIPRouter.json"
+import StandardBridgeArtifactBobTestnet from "../tbtc/bob-testnet-artifacts/StandardBridge.json"
+import OptimismMintableUpgradableTBTCArtifactBobTestnet from "../tbtc/bob-testnet-artifacts/OptimismMintableUpgradableTBTC.json"
 import L1CCIPRouterArtifact from "../tbtc/l1-artifacts/CCIPRouter.json"
-import LinkTokenArtifact from "../tbtc/l1-artifacts/LinkToken.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"
@@ -88,7 +87,6 @@ export type ArtifactNameType =
   | "StandardBridge"
   | "OptimismMintableUpgradableTBTC"
   | "L1CCIPRouter"
-  | "LinkToken"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -119,7 +117,6 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineKeep: VendingMachineKeepMainnet,
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
     L1CCIPRouter: L1CCIPRouterArtifact.mainnet,
-    LinkToken: LinkTokenArtifact.mainnet,
   },
   [SupportedChainIds.Sepolia]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
@@ -138,7 +135,6 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineKeep: VendingMachineKeepSepolia,
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
     L1CCIPRouter: L1CCIPRouterArtifact.sepolia,
-    LinkToken: LinkTokenArtifact.sepolia,
   },
   [SupportedChainIds.Localhost]: {
     TacoRegistry:
@@ -155,18 +151,18 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineKeep: VendingMachineKeepDappDevelopmentSepolia,
     VendingMachineNuCypher: VendingMachineNuCypherDappDevelopmentSepolia,
   },
-  [SupportedChainIds.BOBMainnet]: {
-    CCIPRouter: CCIPRouterArtifactBOB,
-    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBOB,
-    StandardBridge: StandardBridgeArtifactBOB,
-    OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBOB,
+  [SupportedChainIds.Bob]: {
+    CCIPRouter: CCIPRouterArtifactBob,
+    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBob,
+    StandardBridge: StandardBridgeArtifactBob,
+    OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBob,
   },
-  [SupportedChainIds.BOBTestnet]: {
-    CCIPRouter: CCIPRouterArtifactBOBTestnet,
-    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBOB, // Using same artifact for now
-    StandardBridge: StandardBridgeArtifactBOBTestnet,
+  [SupportedChainIds.BobSepolia]: {
+    CCIPRouter: CCIPRouterArtifactBobTestnet,
+    BurnFromMintTokenPool: BurnFromMintTokenPoolArtifactBob, // Using same artifact for now
+    StandardBridge: StandardBridgeArtifactBobTestnet,
     OptimismMintableUpgradableTBTC:
-      OptimismMintableUpgradableTBTCArtifactBOBTestnet,
+      OptimismMintableUpgradableTBTCArtifactBobTestnet,
   },
 }
 

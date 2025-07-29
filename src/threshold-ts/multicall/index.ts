@@ -46,9 +46,10 @@ export const MULTICALL_ADDRESSES = {
   [SupportedChainIds.Arbitrum]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [SupportedChainIds.Base]: "0xcA11bde05977b3631167028862bE2a173976CA11",
   [SupportedChainIds.Localhost]: process.env.REACT_APP_MULTICALL_ADDRESS,
-  // [SupportedChainIds.BaseSepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
-  // [SupportedChainIds.ArbitrumSepolia]:
-  //   "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.BaseSepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.ArbitrumSepolia]:
+    "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.Bob]: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as Record<number | string, string>
 
 export class Multicall implements IMulticall {

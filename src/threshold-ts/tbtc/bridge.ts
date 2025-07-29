@@ -19,9 +19,6 @@ export interface IBridge {
 
   // Approval helpers
   approveForCcip(amount: BigNumber): Promise<TransactionResponse | null>
-  approveForStandardBridge(
-    amount: BigNumber
-  ): Promise<TransactionResponse | null>
 
   // Routing and quotes
   pickPath(amount: BigNumber): Promise<BridgeRoute> // Public for UI decisions
@@ -35,10 +32,6 @@ export interface IBridge {
     reason?: string
   }>
   getCcipAllowance(): Promise<BigNumber>
-  getAllowances(): Promise<{
-    ccip: BigNumber
-    standardBridge: BigNumber
-  }>
   getWithdrawalTime(route: BridgeRoute): number
   quoteDepositFees(amount: BigNumber): Promise<BridgeQuote>
 }
@@ -53,7 +46,6 @@ export interface BridgeOptions {
   recipient?: string
   slippage?: number
   deadline?: number
-  useLinkForFees?: boolean // New: option to pay CCIP fees in LINK token
 }
 
 export interface BridgeQuote {
@@ -68,27 +60,12 @@ export interface BridgeQuote {
   }
 }
 
-// Fee token addresses on BOB
-const FEE_TOKENS = {
-  LINK: {
-    mainnet: "0x5aB885CDa7216b163fb6F813DEC1E1532516c833",
-    testnet: "0x0000000000000000000000000000000000000000",
-  },
-  WETH: {
-    mainnet: "0x4200000000000000000000000000000000000006",
-    testnet: "0x0000000000000000000000000000000000000000",
-  },
-}
-
 export class Bridge implements IBridge {
   private _ethereumConfig: EthereumConfig
-  private _crossChainConfig: CrossChainConfig
   private _multicall: IMulticall
   private _ccipRouterContract: Contract | null = null // Renamed from _ccipContract
   private _standardBridgeContract: Contract | null = null
   private _tokenContract: Contract | null = null
-  private _linkTokenContract: Contract | null = null // New: for LINK fee payments
-  private _burnFromMintPoolAddress: string | null = null // Reference only
   private _legacyCapCache: { value: BigNumber; timestamp: number } | null = null
   private readonly _cacheExpiry = 60000 // 1 minute in milliseconds
 
@@ -98,7 +75,6 @@ export class Bridge implements IBridge {
     multicall: IMulticall
   ) {
     this._ethereumConfig = ethereumConfig
-    this._crossChainConfig = crossChainConfig
     this._multicall = multicall
 
     // Initialize contracts
@@ -113,16 +89,16 @@ export class Bridge implements IBridge {
       account,
     } = this._ethereumConfig
 
-    // Map BOB chain ID to mainnet/testnet for artifact loading
-    const isBOBMainnet = chainId === 60808
-    const isBOBTestnet = chainId === 808813
+    // Map Bob chain ID to mainnet/testnet for artifact loading
+    const isBobMainnet = chainId === 60808
+    const isBobTestnet = chainId === 808813
 
-    if (!isBOBMainnet && !isBOBTestnet) {
-      console.warn("Bridge: Not on BOB network, contracts will be null")
+    if (!isBobMainnet && !isBobTestnet) {
+      console.warn("Bridge: Not on Bob network, contracts will be null")
       return
     }
 
-    // Use BOB chain ID directly for artifact loading
+    // Use Bob chain ID directly for artifact loading
     const bobChainId = Number(chainId)
 
     // Get provider
@@ -137,7 +113,7 @@ export class Bridge implements IBridge {
 
     // Get the correct router address based on network
     if (ccipRouterArtifact) {
-      const routerAddress = isBOBMainnet
+      const routerAddress = isBobMainnet
         ? ccipRouterArtifact.mainnet?.address
         : ccipRouterArtifact.testnet?.address
 
@@ -157,42 +133,6 @@ export class Bridge implements IBridge {
       }
     }
 
-    // Load BurnFromMintTokenPool address for reference (we don't interact with it directly)
-    const burnFromMintPoolArtifact = getArtifact(
-      "BurnFromMintTokenPool",
-      bobChainId,
-      shouldUseTestnetDevelopmentContracts
-    )
-
-    if (burnFromMintPoolArtifact) {
-      this._burnFromMintPoolAddress = isBOBMainnet
-        ? burnFromMintPoolArtifact.mainnet?.address
-        : burnFromMintPoolArtifact.testnet?.address
-    }
-
-    // Load LINK token for fee payments
-    const linkAddress = isBOBMainnet
-      ? FEE_TOKENS.LINK.mainnet
-      : FEE_TOKENS.LINK.testnet
-
-    if (
-      linkAddress &&
-      linkAddress !== "0x0000000000000000000000000000000000000000"
-    ) {
-      // Use standard ERC20 ABI for LINK token
-      const erc20Abi = [
-        "function approve(address spender, uint256 amount) returns (bool)",
-        "function allowance(address owner, address spender) view returns (uint256)",
-        "function balanceOf(address owner) view returns (uint256)",
-      ]
-      this._linkTokenContract = getContract(
-        linkAddress,
-        erc20Abi,
-        provider,
-        account
-      )
-    }
-
     // Load Standard Bridge
     const standardBridgeArtifact = getArtifact(
       "StandardBridge",
@@ -209,7 +149,7 @@ export class Bridge implements IBridge {
         )
       : null
 
-    // Load BOB tBTC Token (OptimismMintableUpgradableTBTC)
+    // Load Bob tBTC Token (OptimismMintableUpgradableTBTC)
     const tokenArtifact = getArtifact(
       "OptimismMintableUpgradableTBTC",
       bobChainId,
@@ -225,8 +165,6 @@ export class Bridge implements IBridge {
       ccipRouter: !!this._ccipRouterContract,
       standardBridge: !!this._standardBridgeContract,
       token: !!this._tokenContract,
-      linkToken: !!this._linkTokenContract,
-      burnFromMintPool: this._burnFromMintPoolAddress,
     })
   }
 
@@ -238,13 +176,13 @@ export class Bridge implements IBridge {
       !this._tokenContract
     ) {
       throw new Error(
-        "Bridge contracts not initialized. Ensure you're on BOB network."
+        "Bridge contracts not initialized. Ensure you're on Bob network."
       )
     }
   }
 
   /**
-   * Withdraws tBTC from BOB network to Ethereum L1.
+   * Withdraws tBTC from Bob network to Ethereum L1.
    * Automatically routes through CCIP (fast, ~60 min) or Standard Bridge (slow, 7 days)
    * based on the legacyCapRemaining value.
    *
@@ -303,33 +241,6 @@ export class Bridge implements IBridge {
         await approvalTx.wait()
       }
 
-      // Step 2: Handle LINK approval if using LINK for fees
-      const useLinkForFees = opts?.useLinkForFees && this._linkTokenContract
-      let feeToken = AddressZero // Default to native token
-
-      if (useLinkForFees) {
-        feeToken = this._linkTokenContract!.address
-
-        // Check and handle LINK approval for Router
-        const linkAllowance = await this._linkTokenContract!.allowance(
-          account,
-          this._ccipRouterContract!.address
-        )
-
-        // We'll calculate fees first to know how much LINK to approve
-        // For now, approve a reasonable amount if needed
-        const estimatedLinkFee = amount.mul(3).div(1000) // 0.3% estimate
-
-        if (linkAllowance.lt(estimatedLinkFee)) {
-          console.log(`Approving LINK for CCIP Router fees`)
-          const linkApprovalTx = await this._linkTokenContract!.approve(
-            this._ccipRouterContract!.address,
-            MaxUint256
-          )
-          await linkApprovalTx.wait()
-        }
-      }
-
       // Step 3: Build EVM2AnyMessage for CCIP
       const tokenAmounts = [
         {
@@ -339,9 +250,9 @@ export class Bridge implements IBridge {
       ]
 
       // Determine destination chain selector based on network
-      const isBOBMainnet = this._ethereumConfig.chainId === 60808
+      const isBobMainnet = this._ethereumConfig.chainId === 60808
       // Get Ethereum chain selector from L1 CCIP Router artifact
-      const ethChainId = isBOBMainnet
+      const ethChainId = isBobMainnet
         ? SupportedChainIds.Ethereum
         : SupportedChainIds.Sepolia
       const ethArtifact = getArtifact(
@@ -368,7 +279,7 @@ export class Bridge implements IBridge {
         receiver: encodedReceiver,
         data: "0x", // No additional data needed for simple transfer
         tokenAmounts: tokenAmounts,
-        feeToken: feeToken, // Use LINK or native token based on user preference
+        feeToken: AddressZero, // Default to native token
         extraArgs: this._encodeExtraArgs(200000, false), // gasLimit, strict
       }
 
@@ -381,7 +292,7 @@ export class Bridge implements IBridge {
       // Step 5: Send CCIP message
       const txParams: any = {
         // Only include value if paying in native token
-        ...(feeToken === AddressZero && { value: fees }),
+        ...{ value: fees },
         // Add gas parameters if provided
         ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
         ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
@@ -427,15 +338,6 @@ export class Bridge implements IBridge {
     const recipient = opts?.recipient || account
 
     try {
-      // Check and handle approval
-      const approvalTx = await this.approveForStandardBridge(amount)
-      if (approvalTx) {
-        console.log(
-          `Waiting for Standard Bridge approval tx: ${approvalTx.hash}`
-        )
-        await approvalTx.wait()
-      }
-
       // Build transaction parameters
       const txParams: any = {
         // Add gas parameters if provided
@@ -482,15 +384,12 @@ export class Bridge implements IBridge {
 
     try {
       // Check current allowance for CCIP Router (not pool!)
-      const currentAllowance = await this._tokenContract.allowance(
-        account,
-        this._ccipRouterContract.address
-      )
+      const ccip = await this.getCcipAllowance()
 
       // Skip if already approved for this amount or more
-      if (currentAllowance.gte(amount)) {
+      if (ccip.gte(amount)) {
         console.log(
-          `CCIP Router approval not needed. Current allowance: ${currentAllowance.toString()}`
+          `CCIP Router approval not needed. Current allowance: ${ccip.toString()}`
         )
         return null
       }
@@ -510,53 +409,6 @@ export class Bridge implements IBridge {
     } catch (error: any) {
       console.error("Failed to approve for CCIP Router:", error)
       throw new Error(`CCIP Router approval failed: ${error.message}`)
-    }
-  }
-
-  async approveForStandardBridge(
-    amount: BigNumber
-  ): Promise<TransactionResponse | null> {
-    if (!this._standardBridgeContract || !this._tokenContract) {
-      throw new Error("Contracts not initialized")
-    }
-
-    const account = this._ethereumConfig.account
-    if (!account) {
-      throw new Error("No account connected")
-    }
-
-    try {
-      // Check current allowance
-      const currentAllowance = await this._tokenContract.allowance(
-        account,
-        this._standardBridgeContract.address
-      )
-
-      // Skip if already approved for this amount or more
-      if (currentAllowance.gte(amount)) {
-        console.log(
-          `Standard Bridge approval not needed. Current allowance: ${currentAllowance.toString()}`
-        )
-        return null
-      }
-
-      // Use MaxUint256 for infinite approval (common pattern)
-      const approvalAmount = MaxUint256
-
-      console.log(
-        `Approving Standard Bridge contract for ${approvalAmount.toString()}`
-      )
-
-      // Send approval transaction
-      const tx = await this._tokenContract.approve(
-        this._standardBridgeContract.address,
-        approvalAmount
-      )
-
-      return tx
-    } catch (error) {
-      console.error("Failed to approve for Standard Bridge:", error)
-      throw new Error(`Standard Bridge approval failed: ${error.message}`)
     }
   }
 
@@ -623,8 +475,7 @@ export class Bridge implements IBridge {
 
   async quoteFees(
     amount: BigNumber,
-    route?: BridgeRoute,
-    useLinkForFees?: boolean
+    route?: BridgeRoute
   ): Promise<BridgeQuote> {
     // Validate amount
     if (amount.lte(0)) {
@@ -640,11 +491,7 @@ export class Bridge implements IBridge {
     try {
       switch (actualRoute) {
         case "ccip":
-          return await this._quoteCcipFees(
-            amount,
-            estimatedTime,
-            useLinkForFees
-          )
+          return await this._quoteCcipFees(amount, estimatedTime)
 
         case "standard":
           return await this._quoteStandardFees(amount, estimatedTime)
@@ -658,7 +505,7 @@ export class Bridge implements IBridge {
     }
   }
 
-  // Helper method to check allowance without approving
+  // Batch approval check for both bridges
   async getCcipAllowance(): Promise<BigNumber> {
     if (!this._ccipRouterContract || !this._tokenContract) {
       throw new Error("Contracts not initialized")
@@ -669,48 +516,12 @@ export class Bridge implements IBridge {
       throw new Error("No account connected")
     }
 
-    return await this._tokenContract.allowance(
+    const allowance = await this._tokenContract.allowance(
       account,
       this._ccipRouterContract.address
     )
-  }
 
-  // Batch approval check for both bridges
-  async getAllowances(): Promise<{
-    ccip: BigNumber
-    standardBridge: BigNumber
-  }> {
-    if (
-      !this._ccipRouterContract ||
-      !this._standardBridgeContract ||
-      !this._tokenContract
-    ) {
-      throw new Error("Contracts not initialized")
-    }
-
-    const account = this._ethereumConfig.account
-    if (!account) {
-      throw new Error("No account connected")
-    }
-
-    const calls = [
-      {
-        interface: this._tokenContract.interface,
-        address: this._tokenContract.address,
-        method: "allowance",
-        args: [account, this._ccipRouterContract.address],
-      },
-      {
-        interface: this._tokenContract.interface,
-        address: this._tokenContract.address,
-        method: "allowance",
-        args: [account, this._standardBridgeContract.address],
-      },
-    ]
-
-    const [ccip, standardBridge] = await this._multicall.aggregate(calls)
-
-    return { ccip, standardBridge }
+    return allowance
   }
 
   async getLegacyCapRemaining(): Promise<BigNumber> {
@@ -773,8 +584,7 @@ export class Bridge implements IBridge {
 
   private async _quoteCcipFees(
     amount: BigNumber,
-    estimatedTime: number,
-    useLinkForFees?: boolean
+    estimatedTime: number
   ): Promise<BridgeQuote> {
     if (!this._ccipRouterContract) {
       throw new Error("CCIP Router not initialized")
@@ -790,9 +600,9 @@ export class Bridge implements IBridge {
       ]
 
       // Determine destination chain selector
-      const isBOBMainnet = this._ethereumConfig.chainId === 60808
+      const isBobMainnet = this._ethereumConfig.chainId === 60808
       // Get Ethereum chain selector from L1 CCIP Router artifact
-      const ethChainId = isBOBMainnet
+      const ethChainId = isBobMainnet
         ? SupportedChainIds.Ethereum
         : SupportedChainIds.Sepolia
       const ethArtifact = getArtifact(
@@ -815,17 +625,11 @@ export class Bridge implements IBridge {
         [this._ethereumConfig.account || AddressZero]
       )
 
-      // Use LINK token if requested and available
-      const feeToken =
-        useLinkForFees && this._linkTokenContract
-          ? this._linkTokenContract.address
-          : AddressZero
-
       const message = {
         receiver: encodedReceiver,
         data: "0x",
         tokenAmounts: tokenAmounts,
-        feeToken: feeToken, // Calculate for specified fee token
+        feeToken: AddressZero, // Default to native token
         extraArgs: this._encodeExtraArgs(200000, false),
       }
 
@@ -883,7 +687,7 @@ export class Bridge implements IBridge {
     }
   }
 
-  // Special case for L1 to BOB deposit fees
+  // Special case for L1 to Bob deposit fees
   async quoteDepositFees(amount: BigNumber): Promise<BridgeQuote> {
     try {
       // L1 to L2 deposits have different fee structure
@@ -998,36 +802,8 @@ export class Bridge implements IBridge {
         await approvalTx.wait()
       }
 
-      // Handle LINK token approval if using LINK for fees
-      const useLinkForFees = opts?.useLinkForFees
-      let feeToken = AddressZero // Default to native token
-
-      if (useLinkForFees) {
-        // Get LINK token contract
-        const linkTokenArtifact = getArtifact(
-          "LinkToken",
-          chainId,
-          this._ethereumConfig.shouldUseTestnetDevelopmentContracts
-        )
-
-        if (!linkTokenArtifact) {
-          throw new Error("LINK token artifact not found")
-        }
-
-        const linkTokenContract = getContract(
-          linkTokenArtifact.address,
-          linkTokenArtifact.abi,
-          this._ethereumConfig.ethereumProviderOrSigner,
-          this._ethereumConfig.account
-        )
-
-        feeToken = linkTokenContract.address
-
-        // We'll approve LINK after calculating fees
-      }
-
-      // Get BOB chain selector from L1 CCIP Router artifact
-      // This ensures we use the correct selector for the target BOB network
+      // Get Bob chain selector from L1 CCIP Router artifact
+      // This ensures we use the correct selector for the target Bob network
       const bobArtifact = getArtifact(
         "CCIPRouter",
         isMainnet ? SupportedChainIds.Bob : SupportedChainIds.BobSepolia,
@@ -1035,7 +811,7 @@ export class Bridge implements IBridge {
       )
 
       if (!bobArtifact || !bobArtifact.chainSelector) {
-        throw new Error("BOB chain selector not found in CCIPRouter artifact")
+        throw new Error("Bob chain selector not found in CCIPRouter artifact")
       }
 
       const bobChainSelector = bobArtifact.chainSelector
@@ -1058,47 +834,17 @@ export class Bridge implements IBridge {
         receiver: encodedReceiver,
         data: "0x", // No additional data needed for simple transfer
         tokenAmounts: tokenAmounts,
-        feeToken: feeToken,
+        feeToken: AddressZero, // Default to native token
         extraArgs: this._encodeExtraArgs(200000, false), // gasLimit, strict
       }
 
       // Calculate fees
       const fees = await l1CCIPRouterContract.getFee(bobChainSelector, message)
 
-      // Handle LINK approval if using LINK for fees
-      if (useLinkForFees && feeToken !== AddressZero) {
-        const linkTokenArtifact = getArtifact(
-          "LinkToken",
-          chainId,
-          this._ethereumConfig.shouldUseTestnetDevelopmentContracts
-        )
-
-        const linkTokenContract = getContract(
-          linkTokenArtifact!.address,
-          linkTokenArtifact!.abi,
-          this._ethereumConfig.ethereumProviderOrSigner,
-          this._ethereumConfig.account
-        )
-
-        const linkAllowance = await linkTokenContract.allowance(
-          account,
-          l1CCIPRouterContract.address
-        )
-
-        if (linkAllowance.lt(fees)) {
-          console.log(`Approving LINK for CCIP fees`)
-          const linkApprovalTx = await linkTokenContract.approve(
-            l1CCIPRouterContract.address,
-            MaxUint256
-          )
-          await linkApprovalTx.wait()
-        }
-      }
-
       // Build transaction parameters
       const txParams: any = {
         // Only include value if paying in native token
-        ...(feeToken === AddressZero && { value: fees }),
+        ...{ value: fees },
         // Add gas parameters if provided
         ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
         ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
@@ -1115,12 +861,12 @@ export class Bridge implements IBridge {
         txParams
       )
 
-      console.log(`L1 to BOB CCIP deposit initiated. Tx hash: ${tx.hash}`)
-      console.log(`Deposit will arrive on BOB in ~60 minutes`)
+      console.log(`L1 to Bob CCIP deposit initiated. Tx hash: ${tx.hash}`)
+      console.log(`Deposit will arrive on Bob in ~60 minutes`)
 
       return tx
     } catch (error: any) {
-      console.error("L1 to BOB CCIP deposit failed:", error)
+      console.error("L1 to Bob CCIP deposit failed:", error)
       throw new Error(`CCIP deposit failed: ${error.message}`)
     }
   }

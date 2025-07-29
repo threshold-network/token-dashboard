@@ -606,10 +606,10 @@ export class TBTC implements ITBTC {
       chainId: mainnetOrTestnetEthereumChainId,
     })
 
-    // Initialize Bridge if on BOB network
-    const isBOBMainnet = chainId === 60808
-    const isBOBTestnet = chainId === 808813
-    if (isBOBMainnet || isBOBTestnet) {
+    // Initialize Bridge if on Bob network
+    const isBobMainnet = chainId === 60808
+    const isBobTestnet = chainId === 808813
+    if (isBobMainnet || isBobTestnet) {
       this._bridge = new Bridge(
         ethereumConfig,
         crossChainConfig,

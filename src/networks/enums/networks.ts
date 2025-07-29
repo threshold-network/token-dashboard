@@ -10,10 +10,10 @@ export enum SupportedChainIds {
   Localhost = 1337,
   Arbitrum = 42161,
   Base = 8453,
-  BOBMainnet = 60808,
-  BOBTestnet = 808813,
-  // ArbitrumSepolia = 421614,
-  // BaseSepolia = 84532,
+  Bob = 60808,
+  BobSepolia = 808813,
+  ArbitrumSepolia = 421614,
+  BaseSepolia = 84532,
 }
 
 export enum NonEVMNetworks {
@@ -58,4 +58,6 @@ export enum PublicRpcUrls {
   ArbitrumSepolia = "https://arbitrum-sepolia.drpc.org",
   Base = "https://base.drpc.org",
   BaseSepolia = "https://base-sepolia.drpc.org",
+  Bob = "https://rpc.gobob.xyz/",
+  BobSepolia = "https://bob-sepolia.rpc.gobob.xyz/",
 }
