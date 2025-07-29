@@ -8,7 +8,21 @@ import { BigNumber, Event } from "ethers"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { fromSatoshiToTokenPrecision } from "../../threshold-ts/utils"
 
-export const useSubscribeToRedemptionRequestedEvent = () => {
+type RedemptionsCompletedEventCallback = (
+  walletPublicKeyHash: string,
+  redeemerOutputScript: string,
+  redeemer: string,
+  requestedAmount: BigNumber,
+  treasuryFee: BigNumber,
+  txMaxFee: BigNumber,
+  event: Event
+) => void
+
+export const useSubscribeToRedemptionRequestedEvent = (
+  callback?: RedemptionsCompletedEventCallback,
+  filterParams?: any[],
+  shouldSubscribeIfUserNotConnected?: boolean
+) => {
   const contract = useBridgeContract()
   const dispatch = useAppDispatch()
   const { account } = useWeb3React()
@@ -27,6 +41,19 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
       txMaxFee: BigNumber,
       event: Event
     ) => {
+      if (callback) {
+        callback(
+          walletPublicKeyHash,
+          redeemerOutputScript,
+          redeemer,
+          requestedAmount,
+          treasuryFee,
+          txMaxFee,
+          event
+        )
+        return
+      }
+
       if (!account || !isSameETHAddress(redeemer, account)) return
 
       const redemptionKey = threshold.tbtc.buildRedemptionKey(
@@ -44,6 +71,7 @@ export const useSubscribeToRedemptionRequestedEvent = () => {
         })
       )
     },
-    [null, null, account]
+    filterParams ?? [null, null, account],
+    !!shouldSubscribeIfUserNotConnected
   )
 }
