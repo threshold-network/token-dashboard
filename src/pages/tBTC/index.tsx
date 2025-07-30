@@ -1,10 +1,10 @@
 import PageLayout from "../PageLayout"
 import { PageComponent } from "../../types"
 import HowItWorksPage from "./HowItWorks"
-import TBTCBridge from "./Bridge"
+import TBTCBridge from "./Deposit"
 import { featureFlags } from "../../constants"
 import { ExplorerPage } from "./Explorer"
-import { ResumeDepositPage } from "./Bridge/ResumeDeposit"
+import { ResumeDepositPage } from "./Deposit/ResumeDeposit"
 
 const MainTBTCPage: PageComponent = (props) => {
   const externalLinks = [

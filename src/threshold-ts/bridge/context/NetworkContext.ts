@@ -17,7 +17,7 @@ export class NetworkContext {
   protected readonly provider: providers.Provider | Signer
   protected readonly account?: string
   protected readonly chainId: number
-  protected readonly networkType: NetworkType
+  protected readonly networkType: NetworkType | undefined
 
   // Common contracts
   protected token!: Contract
@@ -36,10 +36,12 @@ export class NetworkContext {
     this.account = cfg.account
     this.chainId = Number(cfg.chainId)
     this.networkType = this.determineNetworkType()
-    this.initContracts()
+    if (this.networkType) {
+      this.initContracts()
+    }
   }
 
-  private determineNetworkType(): NetworkType {
+  private determineNetworkType(): NetworkType | undefined {
     if (
       this.chainId === SupportedChainIds.Bob ||
       this.chainId === SupportedChainIds.BobSepolia
@@ -51,7 +53,7 @@ export class NetworkContext {
     ) {
       return "ethereum"
     }
-    throw new Error(
+    console.warn(
       `Unsupported network: chainId ${this.chainId}. Bridge only supports Bob (60808/808813) and Ethereum (1/11155111)`
     )
   }
