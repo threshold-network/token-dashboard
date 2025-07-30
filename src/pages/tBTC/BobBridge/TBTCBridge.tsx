@@ -1,8 +1,8 @@
 import { Stack } from "@chakra-ui/react"
 import BridgePanel from "./components/BridgePanel"
-import TokenBalanceCard from "../../components/TokenBalanceCard"
-import { Token } from "../../enums"
-import { PageComponent } from "../../types"
+import TokenBalanceCard from "../../../components/TokenBalanceCard"
+import { Token } from "../../../enums"
+import { PageComponent } from "../../../types"
 
 const TBTCBridge: PageComponent = () => {
   return (
@@ -21,8 +21,8 @@ const TBTCBridge: PageComponent = () => {
 }
 
 TBTCBridge.route = {
-  path: "tbtc-bridge",
-  title: "tBTC Bridge",
+  path: "bob-bridge",
+  title: "Bob Bridge",
   index: true,
   isPageEnabled: true,
 }

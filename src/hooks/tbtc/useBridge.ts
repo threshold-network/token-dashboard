@@ -4,7 +4,7 @@ import { parseUnits } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeRoute, BridgeQuote } from "../../threshold-ts/bridge"
-import { BridgeNetwork } from "../../pages/Bridge/components/NetworkSelector"
+import { BridgeNetwork } from "../../pages/BobBridge/components/NetworkSelector"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
 

@@ -1,10 +1,10 @@
 import { FC } from "react"
 import { List, Skeleton } from "@chakra-ui/react"
-import { TransactionDetailsAmountItem } from "../../../components/TransactionDetails"
-import { BridgeQuote } from "../../../threshold-ts/bridge"
+import { TransactionDetailsAmountItem } from "../../../../components/TransactionDetails"
+import { BridgeQuote } from "../../../../threshold-ts/bridge"
 import { BridgeNetwork } from "./NetworkSelector"
 import { formatUnits } from "@ethersproject/units"
-import { SupportedChainIds } from "../../../networks/enums/networks"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
 
 interface BridgeFeesProps {
   quote: BridgeQuote | null

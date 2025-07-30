@@ -6,9 +6,8 @@ import BridgeTypeSelector from "./BridgeTypeSelector"
 import BridgeAmountInput from "./BridgeAmountInput"
 import BridgeFees from "./BridgeFees"
 import BridgeButton from "./BridgeButton"
-import { useBridge } from "../../../hooks/tbtc/useBridge"
+import { useBridge } from "../../../../hooks/tbtc/useBridge"
 import { parseUnits } from "@ethersproject/units"
-import { BigNumber } from "ethers"
 
 const BridgePanel: FC = () => {
   const {

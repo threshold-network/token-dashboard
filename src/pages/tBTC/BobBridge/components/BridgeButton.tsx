@@ -1,14 +1,14 @@
-import { FC, useMemo } from "react"
+import { FC, useMemo, useState, useCallback } from "react"
 import { BigNumber } from "ethers"
 import { parseUnits } from "@ethersproject/units"
-import SubmitTxButton from "../../../components/SubmitTxButton"
 import { useWeb3React } from "@web3-react/core"
-import { useIsActive } from "../../../hooks/useIsActive"
-import { useModal } from "../../../hooks/useModal"
-import { ModalType } from "../../../enums"
-import { BridgeRoute } from "../../../threshold-ts/bridge"
+import { useIsActive } from "../../../../hooks/useIsActive"
+import { useModal } from "../../../../hooks/useModal"
+import { ModalType } from "../../../../enums"
+import { BridgeRoute } from "../../../../threshold-ts/bridge"
 import { BridgeNetwork } from "./NetworkSelector"
-import { SupportedChainIds } from "../../../networks/enums/networks"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
+import SubmitTxButton from "../../../../components/SubmitTxButton"
 
 interface BridgeButtonProps {
   amount: string
@@ -30,6 +30,7 @@ const BridgeButton: FC<BridgeButtonProps> = ({
   const { account, active } = useWeb3React()
   const { chainId, switchNetwork } = useIsActive()
   const { openModal } = useModal()
+  const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false)
 
   // Parse amount safely
   const amountBN = useMemo(() => {
@@ -56,6 +57,18 @@ const BridgeButton: FC<BridgeButtonProps> = ({
     }
   }
 
+  // Handle network switching
+  const handleNetworkSwitch = useCallback(async () => {
+    try {
+      setIsSwitchingNetwork(true)
+      await switchNetwork(fromNetwork)
+    } catch (error) {
+      console.error("Failed to switch network:", error)
+    } finally {
+      setIsSwitchingNetwork(false)
+    }
+  }, [fromNetwork, switchNetwork])
+
   // Determine button state and text
   const buttonState = useMemo(() => {
     // Not connected
@@ -63,6 +76,7 @@ const BridgeButton: FC<BridgeButtonProps> = ({
       return {
         text: "Connect Wallet",
         disabled: false,
+        isLoading: false,
         onClick: () => openModal(ModalType.SelectWallet),
       }
     }
@@ -70,9 +84,12 @@ const BridgeButton: FC<BridgeButtonProps> = ({
     // Wrong network
     if (chainId !== fromNetwork) {
       return {
-        text: `Switch to ${getNetworkName(fromNetwork)}`,
-        disabled: false,
-        onClick: () => switchNetwork(fromNetwork),
+        text: isSwitchingNetwork
+          ? "Switching Network..."
+          : `Switch to ${getNetworkName(fromNetwork)}`,
+        disabled: isSwitchingNetwork,
+        isLoading: isSwitchingNetwork,
+        onClick: handleNetworkSwitch,
       }
     }
 
@@ -81,6 +98,7 @@ const BridgeButton: FC<BridgeButtonProps> = ({
       return {
         text: "Enter Amount",
         disabled: true,
+        isLoading: false,
         onClick: () => {},
       }
     }
@@ -93,9 +111,8 @@ const BridgeButton: FC<BridgeButtonProps> = ({
       return {
         text: "Approve CCIP",
         disabled: false,
-        onClick: () => {
-          // This will be handled by the submit button's onSubmit
-        },
+        isLoading: false,
+        onClick: onBridgeAction || (() => {}),
       }
     }
 
@@ -103,9 +120,8 @@ const BridgeButton: FC<BridgeButtonProps> = ({
     return {
       text: "Bridge Asset",
       disabled: false,
-      onClick: () => {
-        // This will be handled by the submit button's onSubmit
-      },
+      isLoading: false,
+      onClick: onBridgeAction || (() => {}),
     }
   }, [
     active,
@@ -117,32 +133,17 @@ const BridgeButton: FC<BridgeButtonProps> = ({
     bridgeRoute,
     ccipAllowance,
     openModal,
-    switchNetwork,
+    isSwitchingNetwork,
+    handleNetworkSwitch,
+    onBridgeAction,
   ])
-
-  const handleSubmit = async () => {
-    // Handle different button states
-    if (!active || !account) {
-      openModal(ModalType.SelectWallet)
-      return
-    }
-
-    if (chainId !== fromNetwork) {
-      switchNetwork(fromNetwork)
-      return
-    }
-
-    // Execute the bridge action
-    if (onBridgeAction) {
-      await onBridgeAction()
-    }
-  }
 
   return (
     <SubmitTxButton
       isFullWidth
-      onSubmit={handleSubmit}
+      onSubmit={buttonState.onClick}
       isDisabled={buttonState.disabled}
+      isLoading={buttonState.isLoading}
     >
       {buttonState.text}
     </SubmitTxButton>

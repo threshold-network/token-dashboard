@@ -72,9 +72,8 @@ const TBTCBridge: PageComponent = (props) => {
 }
 
 TBTCBridge.route = {
-  path: "",
+  path: "deposit",
   index: false,
-  pathOverride: "*",
   pages: [MintPage, UnmintPage],
   title: "Deposit",
   isPageEnabled: true,

@@ -16,9 +16,9 @@ import {
 import { ChevronDownIcon } from "@chakra-ui/icons"
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi"
 import { BodySm, LineDivider } from "@threshold-network/components"
-import { EthereumLight } from "../../../static/icons/EthereumLight"
-import { EthereumDark } from "../../../static/icons/EthereumDark"
-import { SupportedChainIds } from "../../../networks/enums/networks"
+import { EthereumLight } from "../../../../static/icons/EthereumLight"
+import { EthereumDark } from "../../../../static/icons/EthereumDark"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
 import { useColorMode } from "@chakra-ui/react"
 
 export type BridgeNetwork =

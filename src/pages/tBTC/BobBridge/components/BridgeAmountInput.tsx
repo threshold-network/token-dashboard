@@ -11,13 +11,12 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 import { BodySm } from "@threshold-network/components"
-import { useTokenBalance } from "../../../hooks/useTokenBalance"
-import { Token } from "../../../enums"
-import { formatTokenAmount } from "../../../utils/formatAmount"
-import { useToken } from "../../../hooks/useToken"
-import { BigNumber } from "ethers"
+import { useTokenBalance } from "../../../../hooks/useTokenBalance"
+import { Token } from "../../../../enums"
+import { formatTokenAmount } from "../../../../utils/formatAmount"
+import { useToken } from "../../../../hooks/useToken"
 import { parseUnits } from "@ethersproject/units"
-import { tBTCFillBlack } from "../../../static/icons/tBTCFillBlack"
+import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 
 interface BridgeAmountInputProps {
   amount: string
@@ -36,7 +35,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
   const balance = useTokenBalance(Token.TBTCV2)
   const token = useToken(Token.TBTCV2)
 
-  const formattedBalance = formatTokenAmount(balance, "TBTC", 6)
+  const formattedBalance = formatTokenAmount(balance, undefined, 18, 6)
 
   // Calculate USD value
   const usdValue = (() => {
@@ -45,7 +44,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
       const amountBN = parseUnits(amount || "0", 18)
       const usdConversion = token.usdConversion || 0
       const usdAmount = amountBN.mul(Math.floor(usdConversion * 1000)).div(1000)
-      return formatTokenAmount(usdAmount, undefined, 2, false)
+      return formatTokenAmount(usdAmount.toString(), undefined, 18, 2)
     } catch {
       return "0.00"
     }
@@ -53,7 +52,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
 
   const handleMaxClick = () => {
     // Convert balance to string with proper decimals
-    const balanceStr = formatTokenAmount(balance, undefined, 18, false)
+    const balanceStr = formatTokenAmount(balance, undefined, 18, 18)
     onChange(balanceStr)
   }
 

@@ -12,8 +12,8 @@ import {
 } from "@chakra-ui/react"
 import { FiCheck } from "react-icons/fi"
 import { BodySm } from "@threshold-network/components"
-import { SupportedChainIds } from "../../../networks/enums/networks"
-import { BridgeRoute } from "../../../threshold-ts/bridge"
+import { SupportedChainIds } from "../../../../networks/enums/networks"
+import { BridgeRoute } from "../../../../threshold-ts/bridge"
 import { BridgeNetwork } from "./NetworkSelector"
 
 interface BridgeTypeSelectorProps {

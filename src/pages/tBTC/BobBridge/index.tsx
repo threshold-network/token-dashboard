@@ -1,16 +1,16 @@
 import TBTCBridge from "./TBTCBridge"
-import PageLayout from "../PageLayout"
-import { PageComponent } from "../../types"
+import PageLayout from "../../PageLayout"
+import { PageComponent } from "../../../types"
 
 const BridgePage: PageComponent = (props) => {
   return <PageLayout title={props.title} pages={props.pages} />
 }
 
 BridgePage.route = {
-  path: "bridge",
-  index: true,
+  path: "bridges",
+  index: false,
   pages: [TBTCBridge],
-  title: "Bridge",
+  title: "Bridges",
   isPageEnabled: true,
 }
 
