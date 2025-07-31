@@ -18,12 +18,12 @@ export const networksAlchemyConfig: NetworksAlchemyConfig = {
     name: AlchemyName.Base,
     type: NetworkType.Mainnet,
   },
-  // [SupportedChainIds.BaseSepolia]: {
-  //   name: AlchemyName.Base,
-  //   type: NetworkType.Testnet,
-  // },
-  // [SupportedChainIds.ArbitrumSepolia]: {
-  //   name: AlchemyName.Arbitrum,
-  //   type: NetworkType.Testnet,
-  // },
+  [SupportedChainIds.BaseSepolia]: {
+    name: AlchemyName.Base,
+    type: NetworkType.Testnet,
+  },
+  [SupportedChainIds.ArbitrumSepolia]: {
+    name: AlchemyName.Arbitrum,
+    type: NetworkType.Testnet,
+  },
 }

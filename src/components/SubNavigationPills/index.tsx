@@ -146,7 +146,7 @@ const getPathMatches = (pills: RouteProps[], locationPathname: string) => {
         : `${parentPathBase}/${path}`
     )
     const match = matchPath(
-      { path: resolved.pathname, end: true },
+      { path: resolved.pathname, end: false },
       currentPathname
     )
     pathMatches.push({
@@ -168,16 +168,15 @@ const getActivePillIndex = (pills: RouteProps[], locationPathname: string) => {
   if (matchedPaths.length === 0) return undefined
   if (matchedPaths.length === 1) return matchedPaths[0].index
 
-  const matchedElementWithLongestPathnameBase = matchedPaths.reduce(
+  const matchedElementWithLongestPath = matchedPaths.reduce(
     (maxElement, currentElement) => {
-      return currentElement.match.pathnameBase.length >
-        maxElement.match.pathnameBase.length
+      return currentElement.resolvedPath.length > maxElement.resolvedPath.length
         ? currentElement
         : maxElement
     }
   )
 
-  return matchedElementWithLongestPathnameBase.index
+  return matchedElementWithLongestPath.index
 }
 
 export default SubNavigationPills
