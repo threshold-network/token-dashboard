@@ -15,7 +15,7 @@ export const TBTCV2_ADDRESSES = {
   [SupportedChainIds.ArbitrumSepolia]:
     "0xb8f31A249bcb45267d06b9E51252c4793B917Cd0",
   [SupportedChainIds.Bob]: "0xBBa2eF945D523C4e2608C9E1214C2Cc64D4fc2e2",
-  [SupportedChainIds.BobSepolia]: "0x5A6d8c096428DA4f013199FE505Dc47bD04CBB66",
+  [SupportedChainIds.BobSepolia]: "0xD23F06550b0A7bC98B20eb81D4c21572a97598FA",
 } as Record<number | string, string>
 
 // Switching wallet networks triggers an ethers error as the app fetches balances from an outdated

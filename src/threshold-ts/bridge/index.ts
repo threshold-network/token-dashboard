@@ -30,7 +30,8 @@ export interface IBridge {
     reason?: string
   }>
   getCcipAllowance(): Promise<BigNumber>
-  getWithdrawalTime(route: BridgeRoute): number
+  getBridgingTime(route: BridgeRoute): number
+  getContext(): NetworkContext
 }
 
 export type BridgeRoute = "ccip" | "standard"
@@ -161,8 +162,12 @@ export class Bridge implements IBridge {
    * @param {BridgeRoute} route - Route type ("ccip" or "standard")
    * @return {number} Time estimate in seconds
    */
-  getWithdrawalTime(route: BridgeRoute): number {
-    return this.context.getWithdrawalTime(route)
+  getBridgingTime(route: BridgeRoute): number {
+    return this.context.getBridgingTime(route)
+  }
+
+  getContext(): NetworkContext {
+    return this.context
   }
 }
 

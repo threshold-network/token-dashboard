@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useState } from "react"
 import {
   Alert,
   AlertIcon,
@@ -15,19 +15,20 @@ import { BodySm } from "@threshold-network/components"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
 import { BridgeRoute } from "../../../../threshold-ts/bridge"
 import { BridgeNetwork } from "./NetworkSelector"
+import { useIsActive } from "../../../../hooks/useIsActive"
 
 interface BridgeTypeSelectorProps {
   fromNetwork: BridgeNetwork
   toNetwork: BridgeNetwork
   bridgeRoute: BridgeRoute | null
-  withdrawalTime?: number
+  bridgingTime?: number
 }
 
 const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
   fromNetwork,
   toNetwork,
   bridgeRoute,
-  withdrawalTime,
+  bridgingTime,
 }) => {
   const bgColor = useColorModeValue("gray.50", "gray.800")
   const borderColor = useColorModeValue("gray.200", "gray.700")
@@ -47,7 +48,6 @@ const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
       fromNetwork === SupportedChainIds.BobSepolia) &&
     (toNetwork === SupportedChainIds.Ethereum ||
       toNetwork === SupportedChainIds.Sepolia)
-
   // For Ethereum to Bob, only CCIP is available
   const ccipEnabled =
     isEthereumToBob || (isBobToEthereum && bridgeRoute === "ccip")
@@ -86,7 +86,7 @@ const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
 
   const formatTime = (seconds?: number): string => {
     if (!seconds) return ""
-    if (seconds < 3600) {
+    if (seconds <= 3600) {
       return `~${Math.round(seconds / 60)} minutes`
     }
     const days = Math.floor(seconds / 86400)
@@ -113,9 +113,7 @@ const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
         <Alert status="warning" borderRadius="md">
           <AlertIcon />
           <VStack align="start" spacing={1}>
-            <BodySm fontWeight="bold">
-              Standard Bridge: {formatTime(withdrawalTime)}
-            </BodySm>
+            <BodySm fontWeight="bold">Standard Bridge: 7 days</BodySm>
             <BodySm>
               Your withdrawal will take 7 days to complete using the Standard
               Bridge. This is a security feature of the Optimism protocol.{" "}
@@ -139,11 +137,12 @@ const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
           <AlertIcon />
           <VStack align="start" spacing={1}>
             <BodySm fontWeight="bold">
-              CCIP Bridge: {formatTime(withdrawalTime)}
+              CCIP Bridge: {formatTime(bridgingTime)}
             </BodySm>
             <BodySm>
-              Your transfer will complete in approximately 20-60 minutes using
-              Chainlink's Cross-Chain Interoperability Protocol (CCIP).
+              Your transfer will complete in approximately{" "}
+              {formatTime(bridgingTime)} using Chainlink's Cross-Chain
+              Interoperability Protocol (CCIP).
             </BodySm>
           </VStack>
         </Alert>

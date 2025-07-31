@@ -15,7 +15,7 @@ import { useTokenBalance } from "../../../../hooks/useTokenBalance"
 import { Token } from "../../../../enums"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useToken } from "../../../../hooks/useToken"
-import { parseUnits } from "@ethersproject/units"
+import { parseUnits, formatUnits } from "@ethersproject/units"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 
 interface BridgeAmountInputProps {
@@ -41,10 +41,11 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
   const usdValue = (() => {
     try {
       if (!amount || amount === "0") return "0.00"
-      const amountBN = parseUnits(amount || "0", 18)
+      const parsedAmount = parseFloat(amount)
+      if (isNaN(parsedAmount)) return "0.00"
       const usdConversion = token.usdConversion || 0
-      const usdAmount = amountBN.mul(Math.floor(usdConversion * 1000)).div(1000)
-      return formatTokenAmount(usdAmount.toString(), undefined, 18, 2)
+      const usdAmount = parsedAmount * usdConversion
+      return usdAmount.toFixed(2)
     } catch {
       return "0.00"
     }
@@ -52,8 +53,13 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
 
   const handleMaxClick = () => {
     // Convert balance to string with proper decimals
-    const balanceStr = formatTokenAmount(balance, undefined, 18, 18)
-    onChange(balanceStr)
+    try {
+      const balanceStr = formatUnits(balance, 18)
+      onChange(balanceStr)
+    } catch (error) {
+      console.error("Error formatting balance:", error)
+      onChange("0")
+    }
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

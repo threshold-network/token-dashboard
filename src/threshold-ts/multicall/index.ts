@@ -50,6 +50,7 @@ export const MULTICALL_ADDRESSES = {
   [SupportedChainIds.ArbitrumSepolia]:
     "0xcA11bde05977b3631167028862bE2a173976CA11",
   [SupportedChainIds.Bob]: "0xcA11bde05977b3631167028862bE2a173976CA11",
+  [SupportedChainIds.BobSepolia]: "0xcA11bde05977b3631167028862bE2a173976CA11",
 } as Record<number | string, string>
 
 export class Multicall implements IMulticall {

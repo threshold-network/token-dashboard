@@ -4,13 +4,16 @@ import { parseUnits } from "@ethersproject/units"
 import { useWeb3React } from "@web3-react/core"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeRoute, BridgeQuote } from "../../threshold-ts/bridge"
-import { BridgeNetwork } from "../../pages/BobBridge/components/NetworkSelector"
+import { BridgeNetwork } from "../../pages/tBTC/BobBridge/components/NetworkSelector"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { useIsActive } from "../useIsActive"
 
 export const useBridge = () => {
   const { bridge } = useThreshold()
-  const { account } = useWeb3React()
+  const context = bridge.getContext()
+  const account = context.account
+  const { chainId } = useIsActive()
 
   // Determine default networks based on environment
   const defaultChainId = getEthereumDefaultProviderChainId()
@@ -31,6 +34,7 @@ export const useBridge = () => {
   const [bridgeRoute, setBridgeRoute] = useState<BridgeRoute | null>(null)
   const [quote, setQuote] = useState<BridgeQuote | null>(null)
   const [isLoadingQuote, setIsLoadingQuote] = useState(false)
+  const [bridgingTime, setBridgingTime] = useState<number | null>(null)
   const [ccipAllowance, setCcipAllowance] = useState<BigNumber>(
     BigNumber.from(0)
   )
@@ -92,10 +96,46 @@ export const useBridge = () => {
   // Simple debounce implementation
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Determine bridge route and quote
-  const updateQuote = useCallback(async () => {
-    if (!amount || !bridge) {
+  // Update bridge route based on network selection
+  const updateBridgeRoute = useCallback(async () => {
+    if (!bridge) {
       setBridgeRoute(null)
+      return
+    }
+
+    const isDeposit =
+      fromNetwork === SupportedChainIds.Ethereum ||
+      fromNetwork === SupportedChainIds.Sepolia
+
+    try {
+      if (isDeposit) {
+        // For deposits, always use CCIP
+        setBridgeRoute("ccip")
+      } else {
+        const amountBN = amount ? parseUnits(amount, 18) : undefined
+
+        // For withdrawals from Bob, determine best route
+        // Using a small amount just to determine the default
+        // route
+        const testAmount = parseUnits("0.01", 18)
+        const route = await bridge.pickPath(amountBN ?? testAmount)
+        setBridgeRoute(route)
+      }
+    } catch (error) {
+      console.error("Failed to determine bridge route:", error)
+      setBridgeRoute(null)
+    }
+  }, [amount, bridge, fromNetwork])
+
+  // Update quote based on amount and route
+  const updateQuote = useCallback(async () => {
+    if (!amount || !bridge || !bridgeRoute) {
+      setQuote(null)
+      return
+    }
+
+    // Check if user is on the correct network
+    if (chainId !== fromNetwork) {
       setQuote(null)
       return
     }
@@ -104,31 +144,16 @@ export const useBridge = () => {
       setIsLoadingQuote(true)
       const amountBN = parseUnits(amount, 18)
 
-      // Determine if this is a deposit or withdrawal
-      const isDeposit =
-        fromNetwork === SupportedChainIds.Ethereum ||
-        fromNetwork === SupportedChainIds.Sepolia
-
-      if (isDeposit) {
-        // For deposits, always use CCIP
-        setBridgeRoute("ccip")
-        const depositQuote = await bridge.quoteFees(amountBN)
-        setQuote(depositQuote)
-      } else {
-        // For withdrawals from Bob, use pickPath
-        const route = await bridge.pickPath(amountBN)
-        setBridgeRoute(route)
-        const withdrawQuote = await bridge.quoteFees(amountBN)
-        setQuote(withdrawQuote)
-      }
+      // Just get quote for the current route
+      const quote = await bridge.quoteFees(amountBN)
+      setQuote(quote)
     } catch (error) {
       console.error("Failed to get bridge quote:", error)
-      setBridgeRoute(null)
       setQuote(null)
     } finally {
       setIsLoadingQuote(false)
     }
-  }, [amount, bridge, fromNetwork])
+  }, [amount, bridge, bridgeRoute, fromNetwork, chainId])
 
   // Update CCIP allowance
   const updateCcipAllowance = useCallback(async () => {
@@ -190,12 +215,29 @@ export const useBridge = () => {
     debounceTimerRef.current = setTimeout(() => {
       updateQuote()
     }, 500)
-  }, [updateQuote])
+  }, [updateQuote, amount, bridgeRoute])
+
+  // Update bridging time based on route and direction
+  useEffect(() => {
+    if (!bridge || !bridgeRoute) {
+      setBridgingTime(null)
+      return
+    }
+
+    // For withdrawals (Bob -> Ethereum), get time based on route
+    const time = bridge.getBridgingTime(bridgeRoute)
+    setBridgingTime(time)
+  }, [bridge, bridgeRoute, fromNetwork])
+
+  // Update bridge route when networks change
+  useEffect(() => {
+    updateBridgeRoute()
+  }, [updateBridgeRoute])
 
   // Effects
   useEffect(() => {
     debouncedUpdateQuote()
-  }, [amount, fromNetwork, toNetwork, bridge])
+  }, [amount, bridgeRoute, bridge])
 
   useEffect(() => {
     updateCcipAllowance()
@@ -217,8 +259,10 @@ export const useBridge = () => {
     bridgeRoute,
     quote,
     isLoadingQuote,
+    bridgingTime,
     ccipAllowance,
     isLoadingAllowance,
+    updateCcipAllowance,
 
     // Actions
     executeBridge,

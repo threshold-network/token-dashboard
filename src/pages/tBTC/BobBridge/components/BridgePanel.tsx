@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react"
+import { FC, useCallback, useState } from "react"
 import { Stack } from "@chakra-ui/react"
 import { Card, H5 } from "@threshold-network/components"
 import NetworkSelector from "./NetworkSelector"
@@ -22,13 +22,18 @@ const BridgePanel: FC = () => {
     ccipAllowance,
     quote,
     isLoadingQuote,
+    bridgingTime,
     executeBridge,
     approveCcip,
+    updateCcipAllowance,
   } = useBridge()
 
-  const handleBridgeAction = useCallback(async () => {
-    if (!amount) return
+  const [isTransacting, setIsTransacting] = useState(false)
 
+  const handleBridgeAction = useCallback(async () => {
+    if (!amount || isTransacting) return
+
+    setIsTransacting(true)
     try {
       const amountBN = parseUnits(amount, 18)
 
@@ -37,9 +42,11 @@ const BridgePanel: FC = () => {
         const tx = await approveCcip()
         if (tx) {
           await tx.wait()
-          // After approval, execute the bridge
-          const bridgeTx = await executeBridge()
-          return bridgeTx
+          console.log("tx: ", tx)
+          // Update allowance after approval
+          await updateCcipAllowance()
+          // Don't execute bridge here - let user click again after approval
+          return tx
         }
       } else {
         // Direct bridge execution
@@ -49,8 +56,18 @@ const BridgePanel: FC = () => {
     } catch (error) {
       console.error("Bridge action failed:", error)
       throw error
+    } finally {
+      setIsTransacting(false)
     }
-  }, [amount, bridgeRoute, ccipAllowance, approveCcip, executeBridge])
+  }, [
+    amount,
+    bridgeRoute,
+    ccipAllowance,
+    approveCcip,
+    executeBridge,
+    updateCcipAllowance,
+    isTransacting,
+  ])
 
   return (
     <Card maxW="720px">
@@ -69,7 +86,7 @@ const BridgePanel: FC = () => {
           fromNetwork={fromNetwork}
           toNetwork={toNetwork}
           bridgeRoute={bridgeRoute}
-          withdrawalTime={quote?.estimatedTime}
+          bridgingTime={bridgingTime ?? undefined}
         />
 
         <BridgeAmountInput
@@ -92,6 +109,7 @@ const BridgePanel: FC = () => {
           bridgeRoute={bridgeRoute}
           ccipAllowance={ccipAllowance}
           onBridgeAction={handleBridgeAction}
+          isLoading={isTransacting}
         />
       </Stack>
     </Card>

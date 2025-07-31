@@ -9,6 +9,8 @@ import { BridgeRoute } from "../../../../threshold-ts/bridge"
 import { BridgeNetwork } from "./NetworkSelector"
 import { SupportedChainIds } from "../../../../networks/enums/networks"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useTokenBalance } from "../../../../hooks/useTokenBalance"
+import { Token } from "../../../../enums"
 
 interface BridgeButtonProps {
   amount: string
@@ -17,6 +19,7 @@ interface BridgeButtonProps {
   bridgeRoute: BridgeRoute | null
   ccipAllowance: BigNumber
   onBridgeAction?: () => Promise<any>
+  isLoading?: boolean
 }
 
 const BridgeButton: FC<BridgeButtonProps> = ({
@@ -26,11 +29,13 @@ const BridgeButton: FC<BridgeButtonProps> = ({
   bridgeRoute,
   ccipAllowance,
   onBridgeAction,
+  isLoading = false,
 }) => {
   const { account, active } = useWeb3React()
   const { chainId, switchNetwork } = useIsActive()
   const { openModal } = useModal()
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false)
+  const balance = useTokenBalance(Token.TBTCV2)
 
   // Parse amount safely
   const amountBN = useMemo(() => {
@@ -103,24 +108,34 @@ const BridgeButton: FC<BridgeButtonProps> = ({
       }
     }
 
+    // Check if amount exceeds balance
+    if (amountBN.gt(balance)) {
+      return {
+        text: "Insufficient Balance",
+        disabled: true,
+        isLoading: false,
+        onClick: () => {},
+      }
+    }
+
     // Check if CCIP approval needed (only for CCIP route)
     const needsCCIPApproval =
       bridgeRoute === "ccip" && ccipAllowance.lt(amountBN)
 
     if (needsCCIPApproval) {
       return {
-        text: "Approve CCIP",
-        disabled: false,
-        isLoading: false,
+        text: isLoading ? "Approving..." : "Approve CCIP",
+        disabled: isLoading,
+        isLoading: isLoading,
         onClick: onBridgeAction || (() => {}),
       }
     }
 
     // Ready to bridge
     return {
-      text: "Bridge Asset",
-      disabled: false,
-      isLoading: false,
+      text: isLoading ? "Bridging..." : "Bridge Asset",
+      disabled: isLoading,
+      isLoading: isLoading,
       onClick: onBridgeAction || (() => {}),
     }
   }, [
@@ -130,12 +145,14 @@ const BridgeButton: FC<BridgeButtonProps> = ({
     fromNetwork,
     amount,
     amountBN,
+    balance,
     bridgeRoute,
     ccipAllowance,
     openModal,
     isSwitchingNetwork,
     handleNetworkSwitch,
     onBridgeAction,
+    isLoading,
   ])
 
   return (

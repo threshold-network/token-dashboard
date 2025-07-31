@@ -15,9 +15,9 @@ export type NetworkType = "ethereum" | "bob"
 export class NetworkContext {
   protected readonly cfg: EthereumConfig
   protected readonly provider: providers.Provider | Signer
-  protected readonly account?: string
-  protected readonly chainId: number
-  protected readonly networkType: NetworkType | undefined
+  public readonly account?: string
+  public readonly chainId: number
+  public readonly networkType: NetworkType | undefined
 
   // Common contracts
   protected token!: Contract
@@ -113,8 +113,11 @@ export class NetworkContext {
 
     console.log(`${this.networkType} network contracts initialized:`, {
       token: !!this.token,
+      tokenAddress: this.token?.address,
       ccipRouter: !!this.ccipRouter,
+      ccipRouterAddress: this.ccipRouter?.address,
       standardBridge: !!this.standardBridge,
+      standardBridgeAddress: this.standardBridge?.address,
     })
   }
 
@@ -130,6 +133,49 @@ export class NetworkContext {
       this.chainId === SupportedChainIds.BobSepolia ||
       this.chainId === SupportedChainIds.Sepolia
     )
+  }
+
+  /**
+   * Get the CCIP chain selector for the destination network
+   * @param {number} [targetChainId] - Optional target chain ID. If not provided, determines based on current network
+   * @return {string} The CCIP chain selector for the destination network
+   */
+  protected getDestinationChainSelector(targetChainId?: number): string {
+    // If no target specified, determine based on current network
+    if (!targetChainId) {
+      // If on Ethereum/Sepolia -> Bob/BobSepolia
+      if (
+        this.chainId === SupportedChainIds.Ethereum ||
+        this.chainId === SupportedChainIds.Sepolia
+      ) {
+        return this.isMainnet()
+          ? BobChainSelector.Bob
+          : BobChainSelector.BobSepolia
+      }
+      // If on Bob/BobSepolia -> Ethereum/Sepolia
+      else if (
+        this.chainId === SupportedChainIds.Bob ||
+        this.chainId === SupportedChainIds.BobSepolia
+      ) {
+        return this.isMainnet()
+          ? EthereumChainSelector.Ethereum
+          : EthereumChainSelector.Sepolia
+      }
+    }
+
+    // If target specified, return its selector
+    switch (targetChainId) {
+      case SupportedChainIds.Ethereum:
+        return EthereumChainSelector.Ethereum
+      case SupportedChainIds.Sepolia:
+        return EthereumChainSelector.Sepolia
+      case SupportedChainIds.Bob:
+        return BobChainSelector.Bob
+      case SupportedChainIds.BobSepolia:
+        return BobChainSelector.BobSepolia
+      default:
+        throw new Error(`Unsupported target chain ID: ${targetChainId}`)
+    }
   }
 
   /**
@@ -245,9 +291,7 @@ export class NetworkContext {
         await approvalTx.wait()
       }
 
-      const bobChainSelector = this.isMainnet()
-        ? BobChainSelector.Bob
-        : BobChainSelector.BobSepolia
+      const destinationChainSelector = this.getDestinationChainSelector()
 
       // Build EVM2AnyMessage for CCIP
       const tokenAmounts = [
@@ -257,6 +301,7 @@ export class NetworkContext {
         },
       ]
 
+      // For L1 to Bob, we always use the standard encoded format
       const encodedReceiver = ethers.utils.defaultAbiCoder.encode(
         ["address"],
         [recipient]
@@ -271,11 +316,11 @@ export class NetworkContext {
       }
 
       // Calculate fees
-      const fees = await this.ccipRouter.getFee(bobChainSelector, message)
+      const fees = await this._quoteCcipBridgingFees(amount, 60 * 60)
 
       // Build transaction parameters
       const txParams: any = {
-        value: fees,
+        value: fees.fee,
         ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
         ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
         ...(opts?.maxFeePerGas && { maxFeePerGas: opts.maxFeePerGas }),
@@ -286,7 +331,7 @@ export class NetworkContext {
 
       // Execute CCIP deposit
       const tx = await this.ccipRouter.ccipSend(
-        bobChainSelector,
+        destinationChainSelector,
         message,
         txParams
       )
@@ -311,22 +356,14 @@ export class NetworkContext {
       throw new Error("Amount must be greater than zero")
     }
 
-    if (this.networkType === "ethereum") {
-      return this._quoteDepositFees(amount)
+    const route = await this.pickPath(amount)
+    const estimatedTime = this.getBridgingTime(route)
+
+    if (route === "ccip") {
+      return this._quoteCcipBridgingFees(amount, estimatedTime)
+    } else {
+      return this._quoteStandardBridgingFees(amount, estimatedTime)
     }
-
-    if (this.networkType === "bob") {
-      const route = await this.pickPath(amount)
-      const estimatedTime = this.getWithdrawalTime(route)
-
-      if (route === "ccip") {
-        return this._quoteCcipWithdrawalFees(amount, estimatedTime)
-      } else {
-        return this._quoteStandardWithdrawalFees(amount, estimatedTime)
-      }
-    }
-
-    throw new Error(`Cannot quote service fees on ${this.networkType} network`)
   }
 
   /**
@@ -364,17 +401,23 @@ export class NetworkContext {
    * @throws Error if called on Ethereum network
    */
   async pickPath(amount: BigNumber): Promise<BridgeRoute> {
-    if (this.networkType !== "bob") {
-      throw new Error("pickPath() can only be called from Bob network")
+    if (!this.networkType) {
+      throw new Error("Network type not determined")
     }
 
     if (amount.lte(0)) {
       throw new Error("Amount must be greater than zero")
     }
 
+    // Case 1: Ethereum network - CCIP always available
+    if (this.networkType === "ethereum") {
+      return "ccip"
+    }
+
+    // Case 2: Bob network - check legacy cap
     const legacyCapRemaining = await this.getLegacyCapRemaining()
 
-    // Case 1: Legacy cap is exhausted - CCIP available
+    // Case 3: Legacy cap is exhausted - CCIP available
     if (legacyCapRemaining.eq(0)) {
       return "ccip"
     }
@@ -438,7 +481,7 @@ export class NetworkContext {
    * @param {BridgeRoute} route - The withdrawal route.
    * @return {number} The estimated withdrawal time in seconds.
    */
-  getWithdrawalTime(route: BridgeRoute): number {
+  getBridgingTime(route: BridgeRoute): number {
     switch (route) {
       case "ccip":
         return 60 * 60 // ~60 minutes in seconds
@@ -477,17 +520,10 @@ export class NetworkContext {
         },
       ]
 
-      const destinationChainSelector = this.isMainnet()
-        ? EthereumChainSelector.Ethereum
-        : EthereumChainSelector.Sepolia
-
-      const encodedReceiver = ethers.utils.defaultAbiCoder.encode(
-        ["address"],
-        [recipient]
-      )
+      const destinationChainSelector = this.getDestinationChainSelector()
 
       const message = {
-        receiver: encodedReceiver,
+        receiver: ethers.utils.defaultAbiCoder.encode(["address"], [recipient]),
         data: "0x",
         tokenAmounts: tokenAmounts,
         feeToken: AddressZero,
@@ -568,7 +604,7 @@ export class NetworkContext {
     }
   }
 
-  private async _quoteCcipWithdrawalFees(
+  private async _quoteCcipBridgingFees(
     amount: BigNumber,
     estimatedTime: number
   ): Promise<BridgeQuote> {
@@ -579,18 +615,13 @@ export class NetworkContext {
           amount: amount,
         },
       ]
-
-      const destinationChainSelector = this.isMainnet()
-        ? EthereumChainSelector.Ethereum
-        : EthereumChainSelector.Sepolia
-
-      const encodedReceiver = ethers.utils.defaultAbiCoder.encode(
-        ["address"],
-        [this.account || AddressZero]
-      )
+      const destinationChainSelector = this.getDestinationChainSelector()
 
       const message = {
-        receiver: encodedReceiver,
+        receiver: ethers.utils.defaultAbiCoder.encode(
+          ["address"],
+          [this.account || AddressZero]
+        ),
         data: "0x",
         tokenAmounts: tokenAmounts,
         feeToken: AddressZero,
@@ -612,6 +643,7 @@ export class NetworkContext {
         },
       }
     } catch (error) {
+      console.error("Failed to get CCIP fee:", error)
       // Fallback to estimated fee if contract call fails
       const estimatedFee = amount.mul(3).div(1000) // 0.3%
 
@@ -627,7 +659,7 @@ export class NetworkContext {
     }
   }
 
-  private async _quoteStandardWithdrawalFees(
+  private async _quoteStandardBridgingFees(
     amount: BigNumber,
     estimatedTime: number
   ): Promise<BridgeQuote> {
@@ -643,34 +675,6 @@ export class NetworkContext {
         standardFee: standardFee,
         ccipFee: BigNumber.from(0),
       },
-    }
-  }
-
-  private async _quoteDepositFees(amount: BigNumber): Promise<BridgeQuote> {
-    try {
-      // L1 to L2 deposits have different fee structure
-      const l1GasPrice = await this.provider.getGasPrice()
-      const estimatedL1Gas = BigNumber.from(150000)
-      const l1Fee = l1GasPrice.mul(estimatedL1Gas)
-
-      // L2 execution cost (paid on L1)
-      const l2GasLimit = BigNumber.from(200000)
-      const l2GasPrice = BigNumber.from(1000000) // 0.001 gwei typical for L2
-      const l2Fee = l2GasLimit.mul(l2GasPrice)
-
-      const totalFee = l1Fee.add(l2Fee)
-
-      return {
-        route: "standard", // Deposits use standard bridge
-        fee: totalFee,
-        estimatedTime: 15 * 60, // ~15 minutes for deposit
-        breakdown: {
-          standardFee: totalFee,
-          ccipFee: BigNumber.from(0),
-        },
-      }
-    } catch (error: any) {
-      throw new Error(`Fee quotation failed: ${error.message}`)
     }
   }
 
