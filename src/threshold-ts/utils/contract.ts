@@ -26,6 +26,8 @@ import StakingArtifactMainnet from "../staking/mainnet-artifacts/TokenStaking.js
 import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
 import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
+import L1CCIPRouterMainnet from "../tbtc/mainnet-artifacts/CCIPRouter.json"
+import LockReleaseTokenPoolUpgradeableArtifactMainnet from "../tbtc/mainnet-artifacts/LockReleaseTokenPoolUpgradeable.json"
 
 import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
@@ -55,15 +57,17 @@ import StakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-s
 import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
 import L1CCIPRouterSepolia from "../tbtc/sepolia-artifacts/CCIPRouter.json"
+import LockReleaseTokenPoolUpgradeableArtifactSepolia from "../tbtc/sepolia-artifacts/LockReleaseTokenPoolUpgradeable.json"
 
 import CCIPRouterArtifactBob from "../tbtc/bob-artifacts/CCIPRouter.json"
 import StandardBridgeArtifactBob from "../tbtc/bob-artifacts/StandardBridge.json"
 import OptimismMintableUpgradableTBTCArtifactBob from "../tbtc/bob-artifacts/OptimismMintableUpgradableTBTC.json"
+import BurnFromMintTokenPoolUpgradeableArtifactBob from "../tbtc/bob-artifacts/BurnFromMintTokenPoolUpgradeable.json"
 
 import CCIPRouterArtifactBobTestnet from "../tbtc/bob-sepolia-artifacts/CCIPRouter.json"
 import StandardBridgeArtifactBobTestnet from "../tbtc/bob-sepolia-artifacts/StandardBridge.json"
 import OptimismMintableUpgradableTBTCArtifactBobTestnet from "../tbtc/bob-sepolia-artifacts/OptimismMintableUpgradableTBTC.json"
-import L1CCIPRouterMainnet from "../tbtc/mainnet-artifacts/CCIPRouter.json"
+import BurnFromMintTokenPoolUpgradeableArtifactBobTestnet from "../tbtc/bob-sepolia-artifacts/BurnFromMintTokenPoolUpgradeable.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"
@@ -84,6 +88,7 @@ export type ArtifactNameType =
   | "CCIPRouter"
   | "StandardBridge"
   | "OptimismMintableUpgradableTBTC"
+  | "TokenPool"
 type ArtifactType = {
   address: string
   abi: ContractInterface
@@ -114,6 +119,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineKeep: VendingMachineKeepMainnet,
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
     CCIPRouter: L1CCIPRouterMainnet,
+    TokenPool: LockReleaseTokenPoolUpgradeableArtifactMainnet,
   },
   [SupportedChainIds.Sepolia]: {
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactSepolia,
@@ -132,6 +138,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineKeep: VendingMachineKeepSepolia,
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
     CCIPRouter: L1CCIPRouterSepolia,
+    TokenPool: LockReleaseTokenPoolUpgradeableArtifactSepolia,
   },
   [SupportedChainIds.Localhost]: {
     TacoRegistry:
@@ -152,12 +159,14 @@ const contractArtifacts: ContractArtifacts = {
     CCIPRouter: CCIPRouterArtifactBob,
     StandardBridge: StandardBridgeArtifactBob,
     OptimismMintableUpgradableTBTC: OptimismMintableUpgradableTBTCArtifactBob,
+    TokenPool: BurnFromMintTokenPoolUpgradeableArtifactBob,
   },
   [SupportedChainIds.BobSepolia]: {
     CCIPRouter: CCIPRouterArtifactBobTestnet,
     StandardBridge: StandardBridgeArtifactBobTestnet,
     OptimismMintableUpgradableTBTC:
       OptimismMintableUpgradableTBTCArtifactBobTestnet,
+    TokenPool: BurnFromMintTokenPoolUpgradeableArtifactBobTestnet,
   },
 }
 
