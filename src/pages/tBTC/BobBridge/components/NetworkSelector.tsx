@@ -111,35 +111,40 @@ const NetworkSelector: FC<NetworkSelectorProps> = ({
       border="1px solid"
       borderColor={borderColor}
       borderRadius="lg"
-      p={4}
+      p={2}
       flex={1}
     >
-      <VStack align="start" spacing={2}>
-        <BodySm color="gray.500" fontWeight="medium">
+      <VStack align="start" spacing={2} py={2}>
+        <BodySm color="gray.500" fontWeight="medium" px={1}>
           {label}
         </BodySm>
         <Menu>
           <MenuButton
             as={HStack}
-            spacing={3}
+            align="center"
+            justify="space-between"
             cursor="pointer"
             _hover={{ bg: hoverBg }}
             borderRadius="md"
-            p={2}
             w="full"
+            py={2}
+            px={1}
             transition="all 0.2s"
           >
-            {getNetworkIcon(network, colorMode)}
-            <Text fontWeight="bold" flex={1} textAlign="left">
-              {getNetworkName(network)}
-            </Text>
-            <ChevronDownIcon boxSize={5} />
+            <HStack>
+              {getNetworkIcon(network, colorMode)}
+              <Text fontWeight="bold" flex={1}>
+                {getNetworkName(network)}
+              </Text>
+              <ChevronDownIcon boxSize={5} />
+            </HStack>
           </MenuButton>
-          <MenuList>
+          <MenuList p={2}>
             {networks
               .filter((n) => n !== network)
               .map((n) => (
                 <MenuItem
+                  rounded="md"
                   key={n}
                   icon={getNetworkIcon(n, colorMode)}
                   onClick={() => onChange(n)}
@@ -162,19 +167,26 @@ const NetworkSelector: FC<NetworkSelectorProps> = ({
           networks={availableFromNetworks}
           onChange={onFromNetworkChange}
         />
-
         <IconButton
+          border="1px solid"
+          borderColor={borderColor}
+          borderRadius="lg"
+          bg={bgColor}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
           aria-label="Swap networks"
+          pt={6}
+          pb={6}
           icon={
-            <HStack spacing={0}>
-              <Icon as={FiArrowRight} />
-              <Icon as={FiArrowLeft} />
+            <HStack spacing={-1} pt={2} px={3}>
+              <Icon as={FiArrowRight} mb={4} boxSize={4} />
+              <Icon as={FiArrowLeft} boxSize={4} />
             </HStack>
           }
           variant="ghost"
           onClick={onSwap}
-          size="sm"
-          borderRadius="full"
+          size="md"
           _hover={{ bg: hoverBg }}
         />
 

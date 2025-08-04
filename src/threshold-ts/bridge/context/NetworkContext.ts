@@ -22,6 +22,7 @@ export class NetworkContext {
   // Common contracts
   protected token!: Contract
   protected ccipRouter!: Contract
+  protected tokenPool!: Contract
 
   // Bob-specific contracts
   protected standardBridge?: Contract
@@ -61,6 +62,11 @@ export class NetworkContext {
   protected initContracts(): void {
     const { chainId, shouldUseTestnetDevelopmentContracts, account } = this.cfg
 
+    const tokenPoolArtifact = getArtifact(
+      "TokenPool",
+      chainId,
+      shouldUseTestnetDevelopmentContracts
+    )
     const ccipRouterArtifact = getArtifact(
       "CCIPRouter",
       chainId,
@@ -72,12 +78,18 @@ export class NetworkContext {
       shouldUseTestnetDevelopmentContracts
     )
 
-    if (!ccipRouterArtifact || !tokenArtifact) {
+    if (!ccipRouterArtifact || !tokenArtifact || !tokenPoolArtifact) {
       throw new Error(
         `Bridge-related artifacts not found for ${this.networkType} network`
       )
     }
 
+    this.tokenPool = getContract(
+      tokenPoolArtifact.address,
+      tokenPoolArtifact.abi,
+      this.provider,
+      account
+    )
     this.ccipRouter = getContract(
       ccipRouterArtifact.address,
       ccipRouterArtifact.abi,
@@ -116,6 +128,8 @@ export class NetworkContext {
       tokenAddress: this.token?.address,
       ccipRouter: !!this.ccipRouter,
       ccipRouterAddress: this.ccipRouter?.address,
+      tokenPool: !!this.tokenPool,
+      tokenPoolAddress: this.tokenPool?.address,
       standardBridge: !!this.standardBridge,
       standardBridgeAddress: this.standardBridge?.address,
     })
@@ -189,10 +203,7 @@ export class NetworkContext {
     }
 
     try {
-      const currentAllowance = await this.token.allowance(
-        this.account,
-        this.ccipRouter.address
-      )
+      const currentAllowance = await this.getCcipAllowance()
 
       if (currentAllowance.gte(amount)) {
         console.log(
@@ -312,7 +323,7 @@ export class NetworkContext {
         data: "0x",
         tokenAmounts: tokenAmounts,
         feeToken: AddressZero,
-        extraArgs: this.encodeExtraArgs(200000, false),
+        extraArgs: this.encodeExtraArgs(200000),
       }
 
       // Calculate fees
@@ -527,7 +538,7 @@ export class NetworkContext {
         data: "0x",
         tokenAmounts: tokenAmounts,
         feeToken: AddressZero,
-        extraArgs: this.encodeExtraArgs(200000, false),
+        extraArgs: this.encodeExtraArgs(200000),
       }
 
       // Calculate fees
@@ -625,7 +636,7 @@ export class NetworkContext {
         data: "0x",
         tokenAmounts: tokenAmounts,
         feeToken: AddressZero,
-        extraArgs: this.encodeExtraArgs(200000, false),
+        extraArgs: this.encodeExtraArgs(200000),
       }
 
       const ccipFee = await this.ccipRouter.getFee(
@@ -678,8 +689,14 @@ export class NetworkContext {
     }
   }
 
-  private encodeExtraArgs(gasLimit: number, strict: boolean): string {
+  private encodeExtraArgs(gasLimit: number): string {
     const abiCoder = new ethers.utils.AbiCoder()
-    return abiCoder.encode(["uint256", "bool"], [gasLimit, strict])
+    // CCIP requires extraArgs to be prefixed with a version tag
+    // For EVMExtraArgsV1, we only encode gasLimit (uint256)
+    const encodedArgs = abiCoder.encode(["uint256"], [gasLimit])
+    // EVMExtraArgsV1 tag is 0x97a657c9 (required by CCIP router)
+    const evmExtraArgsV1Tag = "0x97a657c9"
+    // Concatenate tag with encoded args (removing 0x prefix from encodedArgs)
+    return evmExtraArgsV1Tag + encodedArgs.slice(2)
   }
 }

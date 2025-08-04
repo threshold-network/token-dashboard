@@ -76,8 +76,14 @@ const BridgeTypeSelector: FC<BridgeTypeSelectorProps> = ({
       <HStack justify="space-between">
         <Text fontWeight="bold">{title}</Text>
         {isActive && (
-          <Box bg={activeBorder} borderRadius="full" p={1} color="white">
-            <Icon as={FiCheck} boxSize={3} />
+          <Box
+            bg={activeBorder}
+            borderRadius="full"
+            px="0.325rem"
+            pt="0.25rem"
+            color="white"
+          >
+            <Icon as={FiCheck} boxSize={4} />
           </Box>
         )}
       </HStack>

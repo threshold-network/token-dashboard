@@ -20,6 +20,7 @@ interface BridgeButtonProps {
   ccipAllowance: BigNumber
   onBridgeAction?: () => Promise<any>
   isLoading?: boolean
+  size?: string
 }
 
 const BridgeButton: FC<BridgeButtonProps> = ({
@@ -30,6 +31,7 @@ const BridgeButton: FC<BridgeButtonProps> = ({
   ccipAllowance,
   onBridgeAction,
   isLoading = false,
+  size,
 }) => {
   const { account, active } = useWeb3React()
   const { chainId, switchNetwork } = useIsActive()
@@ -161,6 +163,8 @@ const BridgeButton: FC<BridgeButtonProps> = ({
       onSubmit={buttonState.onClick}
       isDisabled={buttonState.disabled}
       isLoading={buttonState.isLoading}
+      size={size}
+      fontSize="md"
     >
       {buttonState.text}
     </SubmitTxButton>

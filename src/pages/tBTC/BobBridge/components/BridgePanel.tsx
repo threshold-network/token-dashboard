@@ -70,10 +70,9 @@ const BridgePanel: FC = () => {
   ])
 
   return (
-    <Card maxW="720px">
+    <Card maxW="600px">
       <Stack spacing={8}>
         <H5>tBTC Bridge</H5>
-
         <NetworkSelector
           fromNetwork={fromNetwork}
           toNetwork={toNetwork}
@@ -81,20 +80,17 @@ const BridgePanel: FC = () => {
           onFromNetworkChange={setFromNetwork}
           onToNetworkChange={setToNetwork}
         />
-
         <BridgeTypeSelector
           fromNetwork={fromNetwork}
           toNetwork={toNetwork}
           bridgeRoute={bridgeRoute}
           bridgingTime={bridgingTime ?? undefined}
         />
-
         <BridgeAmountInput
           amount={amount}
           onChange={setAmount}
           tokenSymbol="tBTC"
         />
-
         <BridgeFees
           quote={quote}
           isLoading={isLoadingQuote}
@@ -110,6 +106,7 @@ const BridgePanel: FC = () => {
           ccipAllowance={ccipAllowance}
           onBridgeAction={handleBridgeAction}
           isLoading={isTransacting}
+          size="lg"
         />
       </Stack>
     </Card>

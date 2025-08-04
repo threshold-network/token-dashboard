@@ -78,7 +78,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
       borderRadius="lg"
       p={4}
     >
-      <Flex justify="space-between" align="start">
+      <Flex justify="space-between" align="center">
         <VStack align="start" spacing={2} flex={1}>
           <BodySm color="gray.500" fontWeight="medium">
             Amount
@@ -98,8 +98,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
             ${usdValue}
           </Text>
         </VStack>
-
-        <VStack align="end" spacing={2}>
+        <VStack align="end" spacing={4} pt={9}>
           <HStack spacing={2}>
             <Icon as={tBTCFillBlack} boxSize={6} />
             <Text fontWeight="bold">{tokenSymbol}</Text>
