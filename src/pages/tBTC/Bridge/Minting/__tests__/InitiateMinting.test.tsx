@@ -176,9 +176,9 @@ describe("<InitiateMinting />", () => {
       />
     )
 
-    // Check that it's NOT a StarkNet minting flow
+    // Check that it's NOT a Starknet minting flow
     expect(
-      screen.queryByText(/Initiate StarkNet minting/i)
+      screen.queryByText(/Initiate Starknet minting/i)
     ).not.toBeInTheDocument()
 
     // Check that the component shows the deposit info
@@ -199,8 +199,8 @@ describe("<InitiateMinting />", () => {
     expect(mockRevealDeposit).toHaveBeenCalledWith(mockUtxo)
   })
 
-  test("renders StarkNet minting flow correctly", async () => {
-    // Arrange for StarkNet
+  test("renders Starknet minting flow correctly", async () => {
+    // Arrange for Starknet
     mockUseNonEVMConnection.mockReturnValue({
       isNonEVMActive: true,
       nonEVMChainName: ChainName.Starknet,
@@ -227,8 +227,8 @@ describe("<InitiateMinting />", () => {
       />
     )
 
-    // Check that it IS a StarkNet minting flow
-    expect(screen.getByText(/Initiate StarkNet minting/i)).toBeInTheDocument()
+    // Check that it IS a Starknet minting flow
+    expect(screen.getByText(/Initiate Starknet minting/i)).toBeInTheDocument()
 
     // Check that starkgate bridge text appears
     const starkgateTexts = screen.getAllByText(/starkgate/i)
@@ -240,7 +240,7 @@ describe("<InitiateMinting />", () => {
 
     // Check button text and interaction
     const bridgeButton = screen.getByRole("button", {
-      name: "Initiate StarkNet Bridging",
+      name: "Initiate Starknet Bridging",
     })
     expect(bridgeButton).toBeInTheDocument()
 

@@ -140,7 +140,7 @@ describe("TbtcBalanceCard", () => {
     expect(screen.queryByTestId("additional-info")).not.toBeInTheDocument()
   })
 
-  it("should render both Ethereum and StarkNet balances when StarkNet is connected", () => {
+  it("should render both Ethereum and Starknet balances when Starknet is connected", () => {
     mockUseNonEVMConnection.mockReturnValue({
       nonEVMChainName: ChainName.Starknet,
       nonEVMPublicKey: "0x123...abc",
@@ -166,11 +166,11 @@ describe("TbtcBalanceCard", () => {
     expect(screen.getByTestId("balance")).toHaveTextContent("100.5")
     expect(screen.getByTestId("additional-info")).toBeInTheDocument()
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: 50.25 tBTC"
+      "Starknet: 50.25 tBTC"
     )
   })
 
-  it("should show loading state for StarkNet balance", () => {
+  it("should show loading state for Starknet balance", () => {
     mockUseNonEVMConnection.mockReturnValue({
       nonEVMChainName: ChainName.Starknet,
       nonEVMPublicKey: "0x123...abc",
@@ -194,11 +194,11 @@ describe("TbtcBalanceCard", () => {
     render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet:Loading..."
+      "Starknet:Loading..."
     )
   })
 
-  it("should show error state for StarkNet balance", () => {
+  it("should show error state for Starknet balance", () => {
     mockUseNonEVMConnection.mockReturnValue({
       nonEVMChainName: ChainName.Starknet,
       nonEVMPublicKey: "0x123...abc",
@@ -222,7 +222,7 @@ describe("TbtcBalanceCard", () => {
     render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: Not available"
+      "Starknet: Not available"
     )
   })
 
@@ -259,13 +259,13 @@ describe("TbtcBalanceCard", () => {
     // The main balance should show Ethereum balance
     expect(screen.getByTestId("balance")).toHaveTextContent("100")
 
-    // Additional info should show StarkNet balance
+    // Additional info should show Starknet balance
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: 50 tBTC"
+      "Starknet: 50 tBTC"
     )
   })
 
-  it("should handle StarkNet connection without balance", () => {
+  it("should handle Starknet connection without balance", () => {
     mockUseNonEVMConnection.mockReturnValue({
       nonEVMChainName: ChainName.Starknet,
       nonEVMPublicKey: "0x123...abc",
@@ -289,7 +289,7 @@ describe("TbtcBalanceCard", () => {
     render(<TbtcBalanceCard />, { wrapper })
 
     expect(screen.getByTestId("additional-info")).toHaveTextContent(
-      "StarkNet: 0 tBTC"
+      "Starknet: 0 tBTC"
     )
   })
 })

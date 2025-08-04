@@ -1,12 +1,12 @@
 /**
- * StarkNet-specific tests for InitiateMinting component
+ * Starknet-specific tests for InitiateMinting component
  * Following TDD approach
  */
 
 import React from "react"
 import { render } from "@testing-library/react"
 
-// Create a minimal test component to verify StarkNet UI logic
+// Create a minimal test component to verify Starknet UI logic
 const StarkNetMintingUI: React.FC<{
   isStarkNetDeposit: boolean
   depositAmount: string
@@ -15,7 +15,7 @@ const StarkNetMintingUI: React.FC<{
   return (
     <div>
       <h3>
-        {isStarkNetDeposit ? "Initiate StarkNet minting" : "Initiate minting"}
+        {isStarkNetDeposit ? "Initiate Starknet minting" : "Initiate minting"}
       </h3>
 
       <div>
@@ -25,9 +25,9 @@ const StarkNetMintingUI: React.FC<{
 
         {isStarkNetDeposit ? (
           <p>
-            Receiving tBTC on StarkNet requires bridging through the StarkGate
+            Receiving tBTC on Starknet requires bridging through the StarkGate
             bridge. Your tBTC will be minted on Ethereum Mainnet and then
-            bridged to StarkNet Mainnet. This process typically takes 15-30
+            bridged to Starknet Mainnet. This process typically takes 15-30
             minutes to complete.
           </p>
         ) : (
@@ -41,22 +41,22 @@ const StarkNetMintingUI: React.FC<{
 
       {isStarkNetDeposit && (
         <div>
-          <strong>Bridge to StarkNet:</strong> After minting on Ethereum, your
-          tBTC will automatically be bridged to StarkNet using the StarkGate
+          <strong>Bridge to Starknet:</strong> After minting on Ethereum, your
+          tBTC will automatically be bridged to Starknet using the StarkGate
           bridge.
         </div>
       )}
 
       <button>
-        {isStarkNetDeposit ? "Initiate StarkNet Bridging" : "Bridge"}
+        {isStarkNetDeposit ? "Initiate Starknet Bridging" : "Bridge"}
       </button>
     </div>
   )
 }
 
-describe("InitiateMinting StarkNet UI Logic", () => {
+describe("InitiateMinting Starknet UI Logic", () => {
   describe("TDD - Expected behavior", () => {
-    it("should show StarkNet-specific UI when it's a StarkNet deposit", () => {
+    it("should show Starknet-specific UI when it's a Starknet deposit", () => {
       const { getByText } = render(
         <StarkNetMintingUI
           isStarkNetDeposit={true}
@@ -65,10 +65,10 @@ describe("InitiateMinting StarkNet UI Logic", () => {
         />
       )
 
-      expect(getByText("Initiate StarkNet minting")).toBeInTheDocument()
+      expect(getByText("Initiate Starknet minting")).toBeInTheDocument()
       expect(getByText(/15-30 minutes/i)).toBeInTheDocument()
-      expect(getByText("Bridge to StarkNet:")).toBeInTheDocument()
-      expect(getByText("Initiate StarkNet Bridging")).toBeInTheDocument()
+      expect(getByText("Bridge to Starknet:")).toBeInTheDocument()
+      expect(getByText("Initiate Starknet Bridging")).toBeInTheDocument()
       // StarkGate bridge is mentioned multiple times, which is correct
       const starkGateElements = render(
         <StarkNetMintingUI
@@ -80,7 +80,7 @@ describe("InitiateMinting StarkNet UI Logic", () => {
       expect(starkGateElements.length).toBeGreaterThan(0)
     })
 
-    it("should show standard UI for non-StarkNet deposits", () => {
+    it("should show standard UI for non-Starknet deposits", () => {
       const { getByText, queryByText } = render(
         <StarkNetMintingUI
           isStarkNetDeposit={false}
@@ -91,7 +91,7 @@ describe("InitiateMinting StarkNet UI Logic", () => {
 
       expect(getByText("Initiate minting")).toBeInTheDocument()
       expect(queryByText(/starkgate bridge/i)).not.toBeInTheDocument()
-      expect(queryByText("Bridge to StarkNet:")).not.toBeInTheDocument()
+      expect(queryByText("Bridge to Starknet:")).not.toBeInTheDocument()
       expect(getByText("Bridge")).toBeInTheDocument()
       expect(getByText(/approximately 2 hours/i)).toBeInTheDocument()
     })

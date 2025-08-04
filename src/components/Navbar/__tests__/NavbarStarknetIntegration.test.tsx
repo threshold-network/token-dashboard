@@ -100,7 +100,7 @@ jest.mock("../StarknetNetworkButton", () => ({
     // @ts-ignore
     if (!global.shouldShowStarkNetButton) return null
     return (
-      <div data-testid="starknet-network-button">StarkNet Network Button</div>
+      <div data-testid="starknet-network-button">Starknet Network Button</div>
     )
   },
 }))
@@ -108,7 +108,7 @@ jest.mock("../StarknetNetworkButton", () => ({
 jest.mock("../../StarknetWalletStatus", () => ({
   __esModule: true,
   default: () => (
-    <div data-testid="starknet-wallet-status">StarkNet Wallet Status</div>
+    <div data-testid="starknet-wallet-status">Starknet Wallet Status</div>
   ),
 }))
 

@@ -139,7 +139,7 @@ export const ConnectStarknetDirect: FC<Props> = ({ goBack, closeModal }) => {
                 <Alert status="info" borderRadius="md">
                   <AlertIcon />
                   <AlertDescription fontSize="sm">
-                    No StarkNet wallets detected. Please install Argent X or
+                    No Starknet wallets detected. Please install Argent X or
                     Braavos.
                   </AlertDescription>
                 </Alert>

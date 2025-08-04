@@ -196,7 +196,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       // Use starknetkit's connect with modal and custom dApp name
       const result = await connect({
         modalMode: "alwaysAsk",
-        dappName: "StarkNet",
+        dappName: "Starknet",
         modalTheme: "dark",
       })
 
@@ -371,7 +371,7 @@ export const StarknetWalletProvider: React.FC<StarknetWalletProviderProps> = ({
       getStarknetKit().then(({ connect }) => {
         connect({
           modalMode: "neverAsk",
-          dappName: "StarkNet",
+          dappName: "Starknet",
           modalTheme: "dark",
         })
           .then((result: any) => {

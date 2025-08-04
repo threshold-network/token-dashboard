@@ -83,7 +83,7 @@ export const checkStarkNetNetworkCompatibility = (
   if (!isCorrectStarkNetChain) {
     return {
       compatible: false,
-      error: `Wrong StarkNet network. Please switch to ${config.chainName} in your wallet.`,
+      error: `Wrong Starknet network. Please switch to ${config.chainName} in your wallet.`,
     }
   }
 
@@ -92,7 +92,7 @@ export const checkStarkNetNetworkCompatibility = (
       compatible: false,
       error: `Network mismatch: EVM is on ${
         isEvmTestnet ? "testnet" : "mainnet"
-      }, StarkNet is on ${isStarkNetTestnet ? "testnet" : "mainnet"}`,
+      }, Starknet is on ${isStarkNetTestnet ? "testnet" : "mainnet"}`,
     }
   }
 
@@ -124,7 +124,7 @@ export const formatStarkNetError = (error: Error): string => {
   }
 
   if (message.includes("invalid address")) {
-    return "Invalid StarkNet address format."
+    return "Invalid Starknet address format."
   }
 
   // Return original message if no specific formatting applies

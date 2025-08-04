@@ -27,7 +27,7 @@ import ConnectSui from "./ConnectSui"
 
 const starknetWalletOption: WalletOption = {
   id: WalletType.Starknet,
-  title: "StarkNet Wallets",
+  title: "Starknet Wallets",
   icon: {
     light: StarknetIcon,
     dark: StarknetIcon,

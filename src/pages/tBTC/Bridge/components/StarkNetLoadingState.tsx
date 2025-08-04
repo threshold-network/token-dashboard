@@ -12,7 +12,7 @@ interface StarkNetLoadingStateProps {
 }
 
 export const StarkNetLoadingState: React.FC<StarkNetLoadingStateProps> = ({
-  message = "Initializing StarkNet connection...",
+  message = "Initializing Starknet connection...",
 }) => {
   const bgColor = useColorModeValue("gray.50", "gray.800")
   const borderColor = useColorModeValue("gray.200", "gray.700")

@@ -31,11 +31,11 @@ const createMockStore = () => {
   })
 }
 
-describe("DepositDetails StarkNet", () => {
+describe("DepositDetails Starknet", () => {
   // For now, these tests verify that our test setup works
-  // The actual component implementation will be tested when StarkNet features are added
+  // The actual component implementation will be tested when Starknet features are added
 
-  it("should display StarkNet deposit info when deposit is for StarkNet", () => {
+  it("should display Starknet deposit info when deposit is for Starknet", () => {
     const store = createMockStore()
 
     render(
@@ -49,7 +49,7 @@ describe("DepositDetails StarkNet", () => {
     expect(screen.getByText("Deposit Details")).toBeInTheDocument()
   })
 
-  it("should not display StarkNet info for non-StarkNet deposits", () => {
+  it("should not display Starknet info for non-Starknet deposits", () => {
     const store = createMockStore()
 
     render(
@@ -63,7 +63,7 @@ describe("DepositDetails StarkNet", () => {
     expect(screen.getByText("Deposit Details")).toBeInTheDocument()
   })
 
-  it("should link to correct StarkNet explorer for mainnet", () => {
+  it("should link to correct Starknet explorer for mainnet", () => {
     const store = createMockStore()
 
     render(
@@ -77,7 +77,7 @@ describe("DepositDetails StarkNet", () => {
     expect(screen.getByText("Deposit Details")).toBeInTheDocument()
   })
 
-  it("should link to correct StarkNet explorer for testnet", () => {
+  it("should link to correct Starknet explorer for testnet", () => {
     const store = createMockStore()
 
     render(
@@ -91,7 +91,7 @@ describe("DepositDetails StarkNet", () => {
     expect(screen.getByText("Deposit Details")).toBeInTheDocument()
   })
 
-  it("should display shortened StarkNet address", () => {
+  it("should display shortened Starknet address", () => {
     const store = createMockStore()
 
     render(
@@ -105,7 +105,7 @@ describe("DepositDetails StarkNet", () => {
     expect(screen.getByText("Deposit Details")).toBeInTheDocument()
   })
 
-  it("should show deposit type label for StarkNet", () => {
+  it("should show deposit type label for Starknet", () => {
     const store = createMockStore()
 
     render(
