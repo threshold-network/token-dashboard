@@ -37,7 +37,7 @@ const MintingSuccessComponent: FC = () => {
 
   return (
     <Navigate
-      to={`/tBTC/mint/deposit/${depositKey}`}
+      to={`/tBTC/deposit/mint/deposit/${depositKey}`}
       state={{
         shouldStartFromFirstStep: !data?.optimisticMintingFinalizedTxHash,
       }}
