@@ -124,7 +124,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
               .walletPublicKeyHash
           )
           .build()
-      : `/tBTC/mint/deposit/${activityKey}`
+      : `/tBTC/deposit/mint/deposit/${activityKey}`
 
   return (
     <ActivityItemWrapper>

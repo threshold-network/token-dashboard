@@ -163,7 +163,9 @@ export class RedemptionDetailsLinkBuilder {
     queryParams.set("walletPublicKeyHash", this.walletPublicKeyHash)
     queryParams.set("redeemerOutputScript", this.redeemerOutputScript)
 
-    return `/tBTC/unmint/redemption/${this.txHash}?${queryParams.toString()}`
+    return `/tBTC/deposit/unmint/redemption/${
+      this.txHash
+    }?${queryParams.toString()}`
   }
 }
 
