@@ -108,7 +108,7 @@ describe("MintingTransactionDetails StarkNet Support", () => {
       const { getByText } = render(<MintingTransactionDetails />)
 
       // Assert
-      expect(getByText(/StarkNet Recipient/)).toBeInTheDocument()
+      expect(getByText(/Starknet Recipient/)).toBeInTheDocument()
       expect(getByText(/0x0123...cdef/)).toBeInTheDocument()
     })
 
@@ -164,7 +164,7 @@ describe("MintingTransactionDetails StarkNet Support", () => {
       const { queryByText } = render(<MintingTransactionDetails />)
 
       // Assert
-      expect(queryByText("StarkNet Recipient")).not.toBeInTheDocument()
+      expect(queryByText("Starknet Recipient")).not.toBeInTheDocument()
     })
 
     it("should show ETH address for initiator even on StarkNet deposits", () => {

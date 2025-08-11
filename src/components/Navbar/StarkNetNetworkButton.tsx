@@ -35,7 +35,7 @@ const STARKNET_NETWORKS: StarkNetNetwork[] = []
 if (ENABLED_STARKNET_NETWORKS.mainnet && STARKNET_MAINNET_CHAIN_ID) {
   STARKNET_NETWORKS.push({
     chainId: STARKNET_MAINNET_CHAIN_ID,
-    name: "StarkNet Mainnet",
+    name: "Starknet Mainnet",
     isTestnet: false,
   })
 }
@@ -43,7 +43,7 @@ if (ENABLED_STARKNET_NETWORKS.mainnet && STARKNET_MAINNET_CHAIN_ID) {
 if (ENABLED_STARKNET_NETWORKS.sepolia && STARKNET_SEPOLIA_CHAIN_ID) {
   STARKNET_NETWORKS.push({
     chainId: STARKNET_SEPOLIA_CHAIN_ID,
-    name: "StarkNet Sepolia",
+    name: "Starknet Sepolia",
     isTestnet: true,
   })
 }
@@ -86,7 +86,7 @@ const StarknetNetworkButton: FC = () => {
     try {
       await switchNetwork(networkChainId)
     } catch (error: any) {
-      console.error("Failed to switch StarkNet network:", error)
+      console.error("Failed to switch Starknet network:", error)
 
       // Show user-friendly message for unsupported operation
       if (
@@ -96,7 +96,7 @@ const StarknetNetworkButton: FC = () => {
         toast({
           title: "Manual Network Switch Required",
           description:
-            "Please switch networks manually in your StarkNet wallet",
+            "Please switch networks manually in your Starknet wallet",
           status: "info",
           duration: 5000,
           isClosable: true,
@@ -113,7 +113,7 @@ const StarknetNetworkButton: FC = () => {
     }
   }
 
-  // Only show if StarkNet wallet is connected AND no EVM wallet is connected
+  // Only show if Starknet wallet is connected AND no EVM wallet is connected
   if (!isConnected || evmAccount) return null
 
   // Show warning if no networks are enabled
@@ -127,7 +127,7 @@ const StarknetNetworkButton: FC = () => {
         bg={useColorModeValue("red.50", "red.900")}
         borderRadius="md"
       >
-        No StarkNet networks enabled
+        No Starknet networks enabled
       </Text>
     )
   }
@@ -169,7 +169,7 @@ const StarknetNetworkButton: FC = () => {
               _hover={{ bg: hoverBg }}
               _active={{ bg: hoverBg }}
               icon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-              aria-label="Select StarkNet Network"
+              aria-label="Select Starknet Network"
               size="md"
             />
             <MenuList zIndex="dropdown" minW="0">

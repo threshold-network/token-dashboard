@@ -45,7 +45,7 @@ export const STARKNET_NETWORK_CONFIGS: Record<
 > = {
   sepolia: {
     chainId: "0x534e5f5345504f4c4941", // "SN_SEPOLIA" in hex
-    chainName: "StarkNet Sepolia",
+    chainName: "Starknet Sepolia",
     l1BitcoinDepositorAddress: "0x9Ee0F52fDe7dEf063450fD128c0686e169d3b3D3",
     relayerUrl: "https://sepolia-relayer.threshold.network",
     explorerUrl: "https://sepolia.starkscan.co",
@@ -53,7 +53,7 @@ export const STARKNET_NETWORK_CONFIGS: Record<
   },
   mainnet: {
     chainId: "0x534e5f4d41494e", // "SN_MAIN" in hex
-    chainName: "StarkNet",
+    chainName: "Starknet",
     l1BitcoinDepositorAddress: "0xCA897c4a52afB48A923C6a3E08d47193893B1ba9",
     relayerUrl: "https://relayer.threshold.network",
     explorerUrl: "https://starkscan.co",

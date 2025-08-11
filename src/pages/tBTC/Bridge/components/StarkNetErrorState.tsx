@@ -35,7 +35,7 @@ export const StarkNetErrorState: React.FC<StarkNetErrorStateProps> = ({
       <VStack spacing={4}>
         <Icon as={FiAlertCircle} boxSize={12} color={iconColor} />
         <Text fontSize="lg" fontWeight="medium">
-          StarkNet Initialization Failed
+          Starknet Initialization Failed
         </Text>
         <Text fontSize="sm" color={textColor} maxW="md">
           {error}

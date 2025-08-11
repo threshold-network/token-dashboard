@@ -26,7 +26,7 @@ export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = ({
       return (
         <HStack spacing={2}>
           <Text fontSize="sm" color="gray.500">
-            StarkNet:
+            Starknet:
           </Text>
           <Spinner size="sm" />
           <Text fontSize="sm" color="gray.500">
@@ -41,14 +41,14 @@ export const TbtcBalanceCard: FC<ComponentProps<typeof Card>> = ({
       // Show "Not available" for disabled networks
       return (
         <Text fontSize="sm" color="gray.500">
-          StarkNet: Not available
+          Starknet: Not available
         </Text>
       )
     }
 
     return (
       <Text fontSize="sm" color="gray.500">
-        StarkNet: {starknetBalance} tBTC
+        Starknet: {starknetBalance} tBTC
       </Text>
     )
   }, [isStarknetConnected, isLoading, error, starknetBalance])
