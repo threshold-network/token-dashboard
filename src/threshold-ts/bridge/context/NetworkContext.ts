@@ -20,12 +20,12 @@ export class NetworkContext {
   public readonly networkType: NetworkType | undefined
 
   // Common contracts
-  protected token!: Contract
-  protected ccipRouter!: Contract
-  protected tokenPool!: Contract
+  public token!: Contract
+  public ccipRouter!: Contract
+  public tokenPool!: Contract
 
   // Bob-specific contracts
-  protected standardBridge?: Contract
+  public standardBridge?: Contract
 
   // Cache for legacy cap (Bob only)
   private _legacyCapCache: { value: BigNumber; timestamp: number } | null = null
@@ -330,8 +330,10 @@ export class NetworkContext {
       const fees = await this._quoteCcipBridgingFees(amount, 60 * 60)
 
       // Build transaction parameters
+      // Add 10% buffer to the fee to avoid InsufficientFeeTokenAmount errors
+      const feeWithBuffer = fees.fee.mul(110).div(100)
       const txParams: any = {
-        value: fees.fee,
+        value: feeWithBuffer,
         ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
         ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
         ...(opts?.maxFeePerGas && { maxFeePerGas: opts.maxFeePerGas }),
@@ -548,8 +550,11 @@ export class NetworkContext {
       )
 
       // Send CCIP message
+      // Add 10% buffer to the fee to avoid InsufficientFeeTokenAmount errors
+      const feeWithBuffer = fees.mul(110).div(100)
+
       const txParams: any = {
-        value: fees,
+        value: feeWithBuffer,
         ...(opts?.gasLimit && { gasLimit: opts.gasLimit }),
         ...(opts?.gasPrice && { gasPrice: opts.gasPrice }),
         ...(opts?.maxFeePerGas && { maxFeePerGas: opts.maxFeePerGas }),

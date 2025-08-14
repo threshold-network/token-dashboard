@@ -47,6 +47,7 @@ import AnalyticsModal from "../components/Modal/AnalyticsModal"
 import {
   GenerateNewDepositAddress,
   InitiateUnminting,
+  InitiateBridging,
   NewTBTCApp,
 } from "../components/Modal/tBTC"
 import FeedbackSubmissionModal from "../components/Modal/FeedbackSubmissionModal"
@@ -93,6 +94,7 @@ export const MODAL_TYPES: Record<ModalType, ElementType> = {
   [ModalType.FeedbackSubmission]: FeedbackSubmissionModal,
   [ModalType.GenerateNewDepositAddress]: GenerateNewDepositAddress,
   [ModalType.InitiateUnminting]: InitiateUnminting,
+  [ModalType.InitiateBridging]: InitiateBridging,
   [ModalType.TACoCommitment]: TACoCommitmentModal,
   [ModalType.TACoCommitmentSuccess]: TACoCommitmentSuccessModal,
 }

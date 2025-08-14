@@ -30,9 +30,21 @@ import { useIsActive } from "../../hooks/useIsActive"
 import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
 
 export type BridgeActivityProps = {
-  data: BridgeActivityType[]
+  data: (BridgeActivityType | BridgeActivityTypeExtended)[]
   isFetching: boolean
   emptyState?: ReactElement
+}
+
+// Extended type to support bridge activities
+export type BridgeActivityTypeExtended = BridgeActivityType & {
+  additionalData?: {
+    bridgeRoute?: string
+    fromNetwork?: string
+    toNetwork?: string
+    explorerUrl?: string
+    redeemerOutputScript?: string
+    walletPublicKeyHash?: string
+  }
 }
 
 type BridgeActivityContextValue = {
@@ -101,7 +113,7 @@ export const BridgeActivityData: FC<ListProps> = (props) => {
   )
 }
 
-const ActivityItem: FC<BridgeActivityType> = ({
+const ActivityItem: FC<BridgeActivityTypeExtended> = ({
   amount,
   status,
   activityKey,
@@ -111,20 +123,28 @@ const ActivityItem: FC<BridgeActivityType> = ({
 }) => {
   const { account } = useIsActive()
 
-  const link =
-    bridgeProcess === "unmint"
-      ? RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
-          .withRedeemer(account!)
-          .withRedeemerOutputScript(
-            (additionalData as UnmintBridgeActivityAdditionalData)
-              .redeemerOutputScript
-          )
-          .withWalletPublicKeyHash(
-            (additionalData as UnmintBridgeActivityAdditionalData)
-              .walletPublicKeyHash
-          )
-          .build()
-      : `/tBTC/deposit/mint/deposit/${activityKey}`
+  let link: string
+  let isExternal = false
+
+  // Check if this is a bridge activity with explorerUrl
+  if (additionalData?.explorerUrl) {
+    link = additionalData.explorerUrl
+    isExternal = true
+  } else if (bridgeProcess === "unmint") {
+    link = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+      .withRedeemer(account!)
+      .withRedeemerOutputScript(
+        (additionalData as UnmintBridgeActivityAdditionalData)
+          .redeemerOutputScript
+      )
+      .withWalletPublicKeyHash(
+        (additionalData as UnmintBridgeActivityAdditionalData)
+          .walletPublicKeyHash
+      )
+      .build()
+  } else {
+    link = `/tBTC/deposit/mint/deposit/${activityKey}`
+  }
 
   return (
     <ActivityItemWrapper>
@@ -134,6 +154,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
         _hover={{ textDecoration: "none" }}
         color="inherit"
         to={link}
+        isExternal={isExternal}
       >
         <InlineTokenBalance tokenAmount={amount} />
       </LinkOverlay>
@@ -142,8 +163,13 @@ const ActivityItem: FC<BridgeActivityType> = ({
   )
 }
 
-const renderActivityItem = (item: BridgeActivityType) => (
-  <ActivityItem key={`${item.activityKey}-${item.txHash}`} {...item} />
+const renderActivityItem = (
+  item: BridgeActivityType | BridgeActivityTypeExtended
+) => (
+  <ActivityItem
+    key={`${item.activityKey}-${item.txHash}`}
+    {...(item as BridgeActivityTypeExtended)}
+  />
 )
 
 const bridgeActivityStatusToBadgeProps: Record<

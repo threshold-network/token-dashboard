@@ -1,6 +1,7 @@
 import { Stack } from "@chakra-ui/react"
 import BridgePanel from "./components/BridgePanel"
 import TokenBalanceCard from "../../../components/TokenBalanceCard"
+import { BridgeActivityCard } from "./components/BridgeActivityCard"
 import { Token } from "../../../enums"
 import { PageComponent } from "../../../types"
 
@@ -15,6 +16,7 @@ const TBTCBridge: PageComponent = () => {
       <BridgePanel />
       <Stack spacing={4} w={{ base: "100%", md: "50%" }}>
         <TokenBalanceCard token={Token.TBTCV2} />
+        <BridgeActivityCard />
       </Stack>
     </Stack>
   )
