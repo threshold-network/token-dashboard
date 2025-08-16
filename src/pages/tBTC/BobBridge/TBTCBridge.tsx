@@ -4,8 +4,11 @@ import TokenBalanceCard from "../../../components/TokenBalanceCard"
 import { BridgeActivityCard } from "./components/BridgeActivityCard"
 import { Token } from "../../../enums"
 import { PageComponent } from "../../../types"
+import { useBridgeActivity } from "../../../hooks/tbtc/useBridgeActivity"
 
 const TBTCBridge: PageComponent = () => {
+  const { data, isFetching, refetch } = useBridgeActivity()
+
   return (
     <Stack
       direction={{ base: "column-reverse", md: "row" }}
@@ -13,10 +16,10 @@ const TBTCBridge: PageComponent = () => {
       w="100%"
       align="flex-start"
     >
-      <BridgePanel />
+      <BridgePanel onBridgeSuccess={refetch} />
       <Stack spacing={4} w={{ base: "100%", md: "50%" }}>
         <TokenBalanceCard token={Token.TBTCV2} />
-        <BridgeActivityCard />
+        <BridgeActivityCard data={data} isFetching={isFetching} />
       </Stack>
     </Stack>
   )

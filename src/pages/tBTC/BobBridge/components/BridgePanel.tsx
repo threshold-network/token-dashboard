@@ -12,7 +12,11 @@ import { useModal } from "../../../../hooks/useModal"
 import BridgeTxAlert from "./BridgeTxAlert"
 import { ModalType } from "../../../../enums"
 
-const BridgePanel: FC = () => {
+interface BridgePanelProps {
+  onBridgeSuccess?: () => void
+}
+
+const BridgePanel: FC<BridgePanelProps> = ({ onBridgeSuccess }) => {
   const {
     fromNetwork,
     toNetwork,
@@ -47,6 +51,10 @@ const BridgePanel: FC = () => {
           hash: bridgeTx.hash,
           route: bridgeRoute as "ccip" | "standard",
         })
+        // Wait a bit for the transaction to be indexed
+        setTimeout(() => {
+          onBridgeSuccess?.()
+        }, 3000)
       }
       return bridgeTx
     } catch (error) {
@@ -55,7 +63,7 @@ const BridgePanel: FC = () => {
     } finally {
       setIsTransacting(false)
     }
-  }, [executeBridge, bridgeRoute])
+  }, [executeBridge, bridgeRoute, onBridgeSuccess])
 
   const handleBridgeAction = useCallback(async () => {
     if (!amount || isTransacting) return

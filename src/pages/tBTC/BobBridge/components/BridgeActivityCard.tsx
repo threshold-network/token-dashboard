@@ -10,7 +10,7 @@ import {
 } from "@threshold-network/components"
 import { ActivityItemWrapper } from "../../../../components/tBTC"
 import { InlineTokenBalance } from "../../../../components/TokenBalance"
-import { useBridgeActivity } from "../../../../hooks/tbtc/useBridgeActivity"
+import { BridgeActivity } from "../../../../threshold-ts/bridge"
 
 const BridgeTypeBadge: FC<{ bridgeRoute: string }> = ({ bridgeRoute }) => {
   const label = bridgeRoute === "ccip" ? "CCIP" : "STANDARD BOB"
@@ -78,12 +78,17 @@ const BridgeActivityLoadingState = () => {
   )
 }
 
-export const BridgeActivityCard: FC<ComponentProps<typeof Card>> = (props) => {
-  const { data, isFetching } = useBridgeActivity()
+interface BridgeActivityCardProps extends ComponentProps<typeof Card> {
+  data: BridgeActivity[]
+  isFetching: boolean
+}
+
+export const BridgeActivityCard: FC<BridgeActivityCardProps> = (props) => {
+  const { data, isFetching, ...cardProps } = props
   const isBridgeHistoryEmpty = data.length === 0
 
   return (
-    <Card {...props} minH="530px">
+    <Card {...cardProps} minH="530px">
       <LabelSm mb="5">bridge activity</LabelSm>
       <BridgeActivityHeader />
       {isFetching ? (

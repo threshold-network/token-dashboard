@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useIsActive } from "../useIsActive"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeActivity } from "../../threshold-ts/bridge"
@@ -14,6 +14,7 @@ export const useBridgeActivity = () => {
   const threshold = useThreshold()
   const [bridgeActivities, setBridgeActivities] = useState<BridgeActivity[]>([])
   const [isFetching, setIsFetching] = useState(false)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   useEffect(() => {
     if (!account || !chainId || !threshold.bridge) {
@@ -74,10 +75,26 @@ export const useBridgeActivity = () => {
     return () => {
       mounted = false
     }
+  }, [account, chainId, threshold.bridge, refreshTrigger])
+
+  // Add periodic refresh every 30 seconds
+  useEffect(() => {
+    if (!account || !chainId || !threshold.bridge) return
+
+    const interval = setInterval(() => {
+      setRefreshTrigger((prev) => prev + 1)
+    }, 30000) // 30 seconds
+
+    return () => clearInterval(interval)
   }, [account, chainId, threshold.bridge])
+
+  const refetch = useCallback(() => {
+    setRefreshTrigger((prev) => prev + 1)
+  }, [])
 
   return {
     data: bridgeActivities,
     isFetching,
+    refetch,
   }
 }
