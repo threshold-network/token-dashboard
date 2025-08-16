@@ -50,20 +50,28 @@ const getNetworkIcon = (chainId: number, colorMode: string): NetworkIconMap => {
             icon: <Icon as={Arbitrum} boxSize="5" />,
             bg: grayBackground,
           },
+          [SupportedChainIds.Bob]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
         }
       : {
           [SupportedChainIds.Sepolia]: {
             icon: <Icon as={ethereumLogo} boxSize="5" />,
             bg: grayBackground,
           },
-          // [SupportedChainIds.ArbitrumSepolia]: {
-          //   icon: <Icon as={Arbitrum} boxSize="5" />,
-          //   bg: grayBackground,
-          // },
-          // [SupportedChainIds.BaseSepolia]: {
-          //   icon: <Icon as={Base} boxSize="5" />,
-          //   bg: "blue.500",
-          // },
+          [SupportedChainIds.ArbitrumSepolia]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
+          [SupportedChainIds.BaseSepolia]: {
+            icon: <Icon as={Base} boxSize="5" />,
+            bg: "blue.500",
+          },
+          [SupportedChainIds.BobSepolia]: {
+            icon: <Icon as={Arbitrum} boxSize="5" />,
+            bg: grayBackground,
+          },
         }),
   }
 
