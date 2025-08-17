@@ -1,51 +1,58 @@
 import { FC } from "react"
-import { Box, ModalBody, ModalHeader, ModalFooter } from "@chakra-ui/react"
-import { BodyLg, BodySm } from "@threshold-network/components"
+import {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Spinner,
+  BodyLg,
+  BodySm,
+  VStack,
+} from "@threshold-network/components"
 import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../networks/enums/networks"
-import withBaseModal from "../withBaseModal"
-import { BaseModalProps } from "../../../types"
-import InfoBox from "../../InfoBox"
-import { ThresholdSpinner } from "../../ThresholdSpinner/ThresholdSpinner"
-import ModalCloseButton from "../ModalCloseButton"
-import { useIsActive } from "../../../hooks/useIsActive"
+import { useWeb3React } from "@web3-react/core"
+import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 
-interface TransactionIsPendingProps extends BaseModalProps {
-  pendingText?: string
+interface Props {
   transactionHash: string
 }
 
-const TransactionIsPending: FC<TransactionIsPendingProps> = ({
-  transactionHash,
-  pendingText = "Pending...",
-}) => {
-  const { chainId } = useIsActive()
+const TransactionIsPending: FC<Props> = ({ transactionHash }) => {
+  const { chainId } = useWeb3React()
+  const { isNonEVMActive } = useNonEVMConnection()
 
   return (
     <>
-      <ModalHeader>Confirm (pending)</ModalHeader>
-      <ModalCloseButton />
+      <ModalHeader>Transaction is pending</ModalHeader>
       <ModalBody>
-        <InfoBox py={12} variant="modal">
-          <ThresholdSpinner />
-          <BodyLg align="center" mt={8}>
-            {pendingText}
+        <VStack spacing={8}>
+          <Spinner
+            size="xl"
+            thickness="4px"
+            speed="0.65s"
+            emptyColor="gray.200"
+            color="brand.500"
+          />
+          <BodyLg>
+            Please wait a moment for your transaction to be confirmed.
           </BodyLg>
-        </InfoBox>
+        </VStack>
       </ModalBody>
-      <ModalFooter justifyContent="center">
-        <BodySm>
-          <ViewInBlockExplorer
-            text="View"
-            id={transactionHash}
-            type={ExplorerDataType.TRANSACTION}
-            ethereumNetworkChainId={chainId}
-          />{" "}
-          transaction on Etherscan
-        </BodySm>
-      </ModalFooter>
+      {!isNonEVMActive && (
+        <ModalFooter justifyContent="center">
+          <BodySm>
+            <ViewInBlockExplorer
+              text="View"
+              id={transactionHash}
+              type={ExplorerDataType.TRANSACTION}
+              ethereumNetworkChainId={chainId}
+            />{" "}
+            transaction on Etherscan
+          </BodySm>
+        </ModalFooter>
+      )}
     </>
   )
 }
 
-export default withBaseModal(TransactionIsPending)
+export default TransactionIsPending

@@ -51,6 +51,8 @@ export function getChainDisplayInfo(
       case SupportedChainIds.Arbitrum:
       case SupportedChainIds.Base:
       case SupportedChainIds.Sepolia:
+        // case SupportedChainIds.ArbitrumSepolia:
+        // case SupportedChainIds.BaseSepolia:
         return {
           chainName: networkName,
           walletAddressTooltip: `The ${networkName} address where you'll receive your tBTC.`,
