@@ -11,6 +11,8 @@ module.exports = {
        * ECPair library error used by "@keep-network/tbtc-v2.ts"
        */
       ["@babel/plugin-transform-class-properties", { loose: true }],
+      ["@babel/plugin-proposal-private-methods", { loose: true }],
+      ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
     ],
   },
   jest: {
@@ -45,22 +47,20 @@ module.exports = {
         }),
       ]
 
-      // Add node polyfills (webpack 4 style)
-      webpackConfig.node = {
-        ...webpackConfig.node,
-        crypto: true,
-        stream: true,
-        buffer: true,
-      }
-
-      // Ensure starknet is properly resolved
+      // Polyfill node modules for webpack 4
       webpackConfig.resolve.alias = {
         ...webpackConfig.resolve.alias,
-        starknet: require.resolve("starknet"),
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
-        buffer: require.resolve("buffer/"),
+        buffer: require.resolve("buffer"),
+        starknet: require.resolve("starknet"),
       }
+
+      webpackConfig.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      })
 
       return webpackConfig
     },

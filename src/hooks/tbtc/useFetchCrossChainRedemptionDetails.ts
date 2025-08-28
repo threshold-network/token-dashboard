@@ -8,6 +8,7 @@ import {
 import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 import { useFindRedemptionInBitcoinTx } from "./useFindRedemptionInBitcoinTx"
+import { ethers, Event } from "ethers"
 
 interface CrossChainRedemptionDetails {
   requestedAmount: string // in token precision
@@ -31,7 +32,8 @@ type FetchRedemptionDetailsParamType = string | null | undefined
 
 export const useFetchCrossChainRedemptionDetails = (
   redeemerOutputScript: FetchRedemptionDetailsParamType,
-  redeemer: FetchRedemptionDetailsParamType
+  redeemer: FetchRedemptionDetailsParamType,
+  encodedVm?: Uint8Array | null
 ) => {
   const threshold = useThreshold()
   const getBlock = useGetBlock()
@@ -44,6 +46,14 @@ export const useFetchCrossChainRedemptionDetails = (
 
   useEffect(() => {
     setError("")
+
+    // For cross-chain redemptions, encodedVm is required
+    if (!encodedVm) {
+      // Return empty redemption data immediately
+      setRedemptionData(undefined)
+      return
+    }
+
     if (!redeemer || isEmptyOrZeroAddress(redeemer)) {
       setError("Invalid redeemer value.")
       return
@@ -56,129 +66,226 @@ export const useFetchCrossChainRedemptionDetails = (
 
     if (!threshold.tbtc.l1BitcoinRedeemerContract) {
       setError("L1 Bitcoin Redeemer contract not initialized.")
+      console.error(
+        "L1BitcoinRedeemer contract is not available on the current network"
+      )
       return
     }
+
+    let intervalId: NodeJS.Timeout | undefined
 
     const fetch = async () => {
       setIsFetching(true)
       try {
-        // Get RedemptionRequested events from L1BTCRedeemerWormhole filtered by redeemerOutputScript
-        const redemptionRequestedEvents = await getContractPastEvents(
+        // Since redemptionOutputScript is indexed as bytes, we need to hash it
+        const redemptionOutputScriptHash =
+          ethers.utils.keccak256(redeemerOutputScript)
+
+        // First try to get events with the hash filter
+        // L1BitcoinRedeemer: RedemptionRequested(indexed uint256 redemptionKey, indexed bytes20 walletPubKeyHash, mainUtxo, indexed bytes redemptionOutputScript, uint256 amount, bytes encodedVm)
+        // The event topics are: [eventSignature, redemptionKey, walletPubKeyHash, redemptionOutputScriptHash]
+        // Since redemptionOutputScript is indexed bytes, we need to use its hash
+        let redemptionRequestedEvents: Event[] = []
+
+        // Get current block number to ensure we're not missing recent events
+        const currentBlock =
+          await threshold.tbtc.l1BitcoinRedeemerContract?.provider?.getBlockNumber()
+
+        const allEvents = await getContractPastEvents(
           threshold.tbtc.l1BitcoinRedeemerContract!,
           {
             eventName: "RedemptionRequested",
-            // Filter by indexed redemptionOutputScript parameter (4th parameter in event)
-            filterParams: [null, null, null, redeemerOutputScript],
-            fromBlock: 0, // You might want to optimize this with a more recent block
+            filterParams: [],
+            fromBlock: 8667161, // L1BitcoinRedeemer was deployed around block 8558171 on Sepolia
+            toBlock: currentBlock || "latest",
           }
         )
 
+        // Manually filter events by comparing the redemptionOutputScript hash and encodedVm if provided
+        const filteredEventsPromises = allEvents.map(async (event, i) => {
+          const eventScript = event.args?.redemptionOutputScript
+
+          // Check if it's an Indexed object with hash property
+          let scriptMatch = false
+          if (eventScript && eventScript.hash) {
+            scriptMatch =
+              eventScript.hash.toLowerCase() ===
+              redemptionOutputScriptHash.toLowerCase()
+          }
+
+          if (!scriptMatch) return null
+
+          // Check the transaction input data to match encodedVm
+          // encodedVm is NOT part of the event, only a function parameter
+          if (!event.transactionHash) return null
+
+          try {
+            const provider = threshold.tbtc.l1BitcoinRedeemerContract?.provider
+            if (!provider) return null
+
+            const tx = await provider.getTransaction(event.transactionHash)
+            if (!tx || !tx.data) return null
+
+            // Decode the function call to get encodedVm parameter
+            // Function signature: requestRedemption(bytes20,tuple(bytes32,uint32,uint64),bytes)
+            const iface = threshold.tbtc.l1BitcoinRedeemerContract?.interface
+            if (!iface) return null
+
+            try {
+              const decodedData = iface.decodeFunctionData(
+                "requestRedemption",
+                tx.data
+              )
+              const txEncodedVm = decodedData[2] // encodedVm is the 3rd parameter
+              const encodedVmHex = ethers.utils.hexlify(encodedVm)
+
+              if (txEncodedVm.toLowerCase() === encodedVmHex.toLowerCase()) {
+                return event
+              }
+            } catch (decodeError) {
+              console.error(
+                "[useFetchCrossChainRedemptionDetails] Error decoding tx data:",
+                decodeError
+              )
+            }
+
+            return null
+          } catch (txError) {
+            console.error(
+              "[useFetchCrossChainRedemptionDetails] Error fetching tx:",
+              txError
+            )
+            return null
+          }
+        })
+
+        const filteredResults = await Promise.all(filteredEventsPromises)
+
+        redemptionRequestedEvents = filteredResults.filter(
+          (event) => event !== null
+        ) as Event[]
+
         if (redemptionRequestedEvents.length === 0) {
-          throw new Error("Cross-chain redemption not found...")
+          // No matching events found with the provided encodedVm and redeemerOutputScript
+          // Clear any old data and retry after 10 seconds
+          setRedemptionData(undefined)
+
+          if (!intervalId) {
+            intervalId = setInterval(() => {
+              fetch()
+            }, 10000)
+          }
+          return
+        }
+
+        // Clear interval if we found events
+        if (intervalId) {
+          clearInterval(intervalId)
+          intervalId = undefined
         }
 
         // Get the most recent event
         const redemptionRequestedEvent =
           redemptionRequestedEvents[redemptionRequestedEvents.length - 1]
 
-        // Extract data from event
-        const redemptionKey = redemptionRequestedEvent.args?.redemptionKey
-        const walletPublicKeyHash =
-          redemptionRequestedEvent.args?.walletPubKeyHash
-        const amount = redemptionRequestedEvent.args?.amount
-        const mainUtxo = redemptionRequestedEvent.args?.mainUtxo
+        try {
+          // Extract data from event
+          const walletPublicKeyHash =
+            redemptionRequestedEvent.args?.walletPubKeyHash
+          const amount = redemptionRequestedEvent.args?.amount
+          const { timestamp: redemptionRequestedEventTimestamp } =
+            await getBlock(redemptionRequestedEvent.blockNumber)
 
-        const { timestamp: redemptionRequestedEventTimestamp } = await getBlock(
-          redemptionRequestedEvent.blockNumber
-        )
-
-        // Build redemption key to check status
-        const computedRedemptionKey = threshold.tbtc.buildRedemptionKey(
-          walletPublicKeyHash,
-          redeemerOutputScript
-        )
-
-        // Check if the redemption has pending or timedOut status
-        const { isPending, isTimedOut, requestedAt } =
-          await threshold.tbtc.getRedemptionRequest(computedRedemptionKey)
-
-        // Find timeout event if timed out
-        const timedOutTxHash: undefined | string = isTimedOut
-          ? (
-              await threshold.tbtc.getRedemptionTimedOutEvents({
-                walletPublicKeyHash,
-                fromBlock: redemptionRequestedEvent.blockNumber,
-              })
-            ).find(
-              (event) => event.redeemerOutputScript === redeemerOutputScript
-            )?.txHash
-          : undefined
-
-        if (
-          (isTimedOut || isPending) &&
-          requestedAt === redemptionRequestedEventTimestamp
-        ) {
-          setRedemptionData({
-            requestedAmount: fromSatoshiToTokenPrecision(amount).toString(),
-            redemptionRequestedTxHash: redemptionRequestedEvent.transactionHash,
-            redemptionCompletedTxHash: undefined,
-            requestedAt: requestedAt,
-            redemptionTimedOutTxHash: timedOutTxHash,
-            treasuryFee: "0", // Treasury fee is not available in L1BTCRedeemerWormhole event
-            isTimedOut,
-            walletPublicKeyHash: walletPublicKeyHash,
-            redemptionKey: computedRedemptionKey,
-          })
-          return
-        }
-
-        // If redemption was completed, find the completion event
-        const redemptionCompletedEvents =
-          await threshold.tbtc.getRedemptionsCompletedEvents({
+          // Build redemption key to check status
+          const computedRedemptionKey = threshold.tbtc.buildRedemptionKey(
             walletPublicKeyHash,
-            fromBlock: redemptionRequestedEvent.blockNumber,
-          })
-
-        for (const {
-          redemptionBitcoinTxHash,
-          txHash,
-          blockNumber: redemptionCompletedBlockNumber,
-        } of redemptionCompletedEvents) {
-          const redemptionBitcoinTransfer = await findRedemptionInBitcoinTx(
-            redemptionBitcoinTxHash,
-            redemptionCompletedBlockNumber,
             redeemerOutputScript
           )
 
-          if (!redemptionBitcoinTransfer) continue
+          // Check if the redemption has pending or timedOut status
+          const { isPending, isTimedOut, requestedAt } =
+            await threshold.tbtc.getRedemptionRequest(computedRedemptionKey)
 
-          const { receivedAmount, redemptionCompletedTimestamp, btcAddress } =
-            redemptionBitcoinTransfer
+          // Find timeout event if timed out
+          const timedOutTxHash: undefined | string = isTimedOut
+            ? (
+                await threshold.tbtc.getRedemptionTimedOutEvents({
+                  walletPublicKeyHash,
+                  fromBlock: redemptionRequestedEvent.blockNumber,
+                })
+              ).find(
+                (event) => event.redeemerOutputScript === redeemerOutputScript
+              )?.txHash
+            : undefined
 
-          setRedemptionData({
-            requestedAmount: fromSatoshiToTokenPrecision(amount).toString(),
-            receivedAmount,
-            redemptionRequestedTxHash: redemptionRequestedEvent.transactionHash,
-            redemptionCompletedTxHash: {
-              chain: txHash,
-              bitcoin: redemptionBitcoinTxHash,
-            },
-            requestedAt: redemptionRequestedEventTimestamp,
-            completedAt: redemptionCompletedTimestamp,
-            treasuryFee: "0",
-            isTimedOut: false,
-            btcAddress,
-            walletPublicKeyHash: walletPublicKeyHash,
-            redemptionKey: computedRedemptionKey,
-          })
+          // Check if this is the redemption we're looking for
+          // Note: The timestamp might not match exactly due to cross-chain timing differences
+          // or if this is a different redemption with the same output script
+          if (isTimedOut || isPending) {
+            setRedemptionData({
+              requestedAmount: amount.toString(), // Amount is already in token precision from L1BitcoinRedeemer
+              redemptionRequestedTxHash:
+                redemptionRequestedEvent.transactionHash,
+              redemptionCompletedTxHash: undefined,
+              requestedAt: requestedAt,
+              redemptionTimedOutTxHash: timedOutTxHash,
+              treasuryFee: "0",
+              isTimedOut,
+              walletPublicKeyHash: walletPublicKeyHash,
+              redemptionKey: computedRedemptionKey,
+            })
+            return
+          }
 
-          return
+          // If redemption was completed, find the completion event
+          const redemptionCompletedEvents =
+            await threshold.tbtc.getRedemptionsCompletedEvents({
+              walletPublicKeyHash,
+              fromBlock: redemptionRequestedEvent.blockNumber,
+            })
+
+          for (const {
+            redemptionBitcoinTxHash,
+            txHash,
+            blockNumber: redemptionCompletedBlockNumber,
+          } of redemptionCompletedEvents) {
+            const redemptionBitcoinTransfer = await findRedemptionInBitcoinTx(
+              redemptionBitcoinTxHash,
+              redemptionCompletedBlockNumber,
+              redeemerOutputScript
+            )
+
+            if (!redemptionBitcoinTransfer) continue
+
+            const { receivedAmount, redemptionCompletedTimestamp, btcAddress } =
+              redemptionBitcoinTransfer
+
+            setRedemptionData({
+              requestedAmount: amount.toString(),
+              receivedAmount,
+              redemptionRequestedTxHash:
+                redemptionRequestedEvent.transactionHash,
+              redemptionCompletedTxHash: {
+                chain: txHash,
+                bitcoin: redemptionBitcoinTxHash,
+              },
+              requestedAt: redemptionRequestedEventTimestamp,
+              completedAt: redemptionCompletedTimestamp,
+              treasuryFee: "0",
+              isTimedOut: false,
+              btcAddress,
+              walletPublicKeyHash: walletPublicKeyHash,
+              redemptionKey: computedRedemptionKey,
+            })
+
+            return
+          }
+        } catch (eventError) {
+          console.error("Error processing redemption event:", eventError)
+          throw eventError
         }
       } catch (error) {
-        console.error(
-          "Could not fetch the cross-chain redemption request details!",
-          error
-        )
+        console.error("[useFetchCrossChainRedemptionDetails] Error:", error)
         setError((error as Error).toString())
       } finally {
         setIsFetching(false)
@@ -186,9 +293,17 @@ export const useFetchCrossChainRedemptionDetails = (
     }
 
     fetch()
+
+    // Cleanup function to clear interval when component unmounts or dependencies change
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
   }, [
     redeemerOutputScript,
     redeemer,
+    encodedVm,
     threshold,
     getBlock,
     findRedemptionInBitcoinTx,

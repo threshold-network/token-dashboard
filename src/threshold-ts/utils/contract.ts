@@ -41,6 +41,7 @@ import WalletRegistryArtifactSepolia from "@keep-network/tbtc-v2.ts/src/lib/ethe
 import StakingArtifactSepolia from "../staking/sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactSepolia from "../tbtc/sepolia-artifacts/RandomBeacon.json"
 import TacoArtifactSepolia from "@nucypher/nucypher-contracts/deployment/artifacts/tapir.json"
+import L1BitcoinRedeemerArtifactSepolia from "../tbtc/sepolia-artifacts/L1BitcoinRedeemer.json"
 
 import BridgeArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/Bridge.json"
 import NuCypherStakingEscrowDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/NuCypherStakingEscrow.json"
@@ -53,8 +54,6 @@ import WalletRegistryArtifactDappDevelopmentSepolia from "../tbtc/dapp-developme
 import StakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/TokenStaking.json"
 import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development-sepolia-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
-
-import L1BitcoinRedeemerArtifactSepolia from "../tbtc/sepolia-artifacts/L1BitcoinRedeemer.json"
 
 export type ArtifactNameType =
   | "TacoRegistry"

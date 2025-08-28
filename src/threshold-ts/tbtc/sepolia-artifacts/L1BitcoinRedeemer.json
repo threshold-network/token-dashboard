@@ -1,5 +1,5 @@
 {
-  "address": "0xe8312BD306512c5CAD4D650df373D5597B1C697A",
+  "address": "0x809E35f4C9984Ad39CD1433F50F2d8E35Ac15714",
   "abi": [
     {
       "inputs": [],
@@ -208,6 +208,11 @@
           "internalType": "address",
           "name": "_bank",
           "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_tbtcVault",
+          "type": "address"
         }
       ],
       "name": "initialize",
@@ -344,6 +349,19 @@
       "outputs": [
         {
           "internalType": "contract IERC20Upgradeable",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "tbtcVault",
+      "outputs": [
+        {
+          "internalType": "contract ITBTCVault",
           "name": "",
           "type": "address"
         }

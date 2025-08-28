@@ -58,7 +58,7 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
       account!,
       btcAddress,
       threshold.tbtc.bitcoinNetwork,
-      !isCrossChain ? receipt.transactionHash : undefined,
+      receipt.transactionHash,
       walletPublicKey ?? undefined,
       chainName ?? undefined
     )
