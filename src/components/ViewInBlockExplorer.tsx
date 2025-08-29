@@ -64,8 +64,7 @@ const ViewInBlockExplorer: FC<ViewInBlockExplorerProps> = ({
   // contract. For those cases in particular, the connected chainId
   // should be passed as a prop as ethereumNetworkChainId.
   const { chainId } = useIsActive()
-  const explorerChainId =
-    ethereumNetworkChainId ?? getMainnetOrTestnetChainId(chainId)
+  const explorerChainId = ethereumNetworkChainId ?? chainId
 
   const link = createLinkToBlockExplorerForChain[chain](
     id,

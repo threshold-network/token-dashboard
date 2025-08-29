@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
-import {
-  isValidType,
-  fromSatoshiToTokenPrecision,
-  getContractPastEvents,
-} from "../../threshold-ts/utils"
+import { isValidType, getContractPastEvents } from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
 import { isEmptyOrZeroAddress } from "../../web3/utils"
 import { useFindRedemptionInBitcoinTx } from "./useFindRedemptionInBitcoinTx"
 import { ethers, Event } from "ethers"
+import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { isMainnetChainId } from "../../networks/utils"
 
-interface CrossChainRedemptionDetails {
+export interface CrossChainRedemptionDetails {
   requestedAmount: string // in token precision
   receivedAmount?: string // in satoshi
   redemptionRequestedTxHash: string
@@ -18,7 +16,7 @@ interface CrossChainRedemptionDetails {
     chain: string
     bitcoin: string
   }
-  requestedAt: number
+  requestedAt?: number
   completedAt?: number
   treasuryFee: string // in token precision
   isTimedOut: boolean
@@ -32,7 +30,7 @@ type FetchRedemptionDetailsParamType = string | null | undefined
 
 export const useFetchCrossChainRedemptionDetails = (
   redeemerOutputScript: FetchRedemptionDetailsParamType,
-  redeemer: FetchRedemptionDetailsParamType,
+  redeemer: FetchRedemptionDetailsParamType | null,
   encodedVm?: Uint8Array | null
 ) => {
   const threshold = useThreshold()
@@ -43,6 +41,8 @@ export const useFetchCrossChainRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     CrossChainRedemptionDetails | undefined
   >()
+  const defaultChainId = getEthereumDefaultProviderChainId()
+  const isMainnet = isMainnetChainId(defaultChainId)
 
   useEffect(() => {
     setError("")
@@ -96,7 +96,7 @@ export const useFetchCrossChainRedemptionDetails = (
           {
             eventName: "RedemptionRequested",
             filterParams: [],
-            fromBlock: 8667161, // L1BitcoinRedeemer was deployed around block 8558171 on Sepolia
+            fromBlock: isMainnet ? 23244313 : 8667161,
             toBlock: currentBlock || "latest",
           }
         )
@@ -167,13 +167,13 @@ export const useFetchCrossChainRedemptionDetails = (
 
         if (redemptionRequestedEvents.length === 0) {
           // No matching events found with the provided encodedVm and redeemerOutputScript
-          // Clear any old data and retry after 10 seconds
+          // Clear any old data and retry after 30 seconds
           setRedemptionData(undefined)
 
           if (!intervalId) {
             intervalId = setInterval(() => {
               fetch()
-            }, 10000)
+            }, 30000)
           }
           return
         }
@@ -203,7 +203,7 @@ export const useFetchCrossChainRedemptionDetails = (
           )
 
           // Check if the redemption has pending or timedOut status
-          const { isPending, isTimedOut, requestedAt } =
+          const { isPending, isTimedOut } =
             await threshold.tbtc.getRedemptionRequest(computedRedemptionKey)
 
           // Find timeout event if timed out
@@ -227,7 +227,6 @@ export const useFetchCrossChainRedemptionDetails = (
               redemptionRequestedTxHash:
                 redemptionRequestedEvent.transactionHash,
               redemptionCompletedTxHash: undefined,
-              requestedAt: requestedAt,
               redemptionTimedOutTxHash: timedOutTxHash,
               treasuryFee: "0",
               isTimedOut,
@@ -269,7 +268,6 @@ export const useFetchCrossChainRedemptionDetails = (
                 chain: txHash,
                 bitcoin: redemptionBitcoinTxHash,
               },
-              requestedAt: redemptionRequestedEventTimestamp,
               completedAt: redemptionCompletedTimestamp,
               treasuryFee: "0",
               isTimedOut: false,

@@ -1,20 +1,16 @@
 import { useState, useEffect } from "react"
 import { useWeb3React } from "@web3-react/core"
-
-interface L2RedemptionRequestedEvent {
-  sender: string
-  amount: string
-  redeemerOutputScript: string
-  txHash: string
-  blockNumber: number
-}
+import { useThreshold } from "../../contexts/ThresholdContext"
+import { BigNumber } from "ethers"
+import { CrossChainRedemptionDetails } from "./useFetchCrossChainRedemptionDetails"
 
 export const useFetchL2RedemptionRequestedEvent = (
   txHash: string | null | undefined,
   enabled: boolean = true
 ) => {
   const { library: provider } = useWeb3React()
-  const [data, setData] = useState<L2RedemptionRequestedEvent | null>(null)
+  const threshold = useThreshold()
+  const [data, setData] = useState<CrossChainRedemptionDetails | null>(null)
   const [isFetching, setIsFetching] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -25,6 +21,7 @@ export const useFetchL2RedemptionRequestedEvent = (
     }
 
     const fetchEvent = async () => {
+      if (data) return
       try {
         setIsFetching(true)
         setError(null)
@@ -35,26 +32,74 @@ export const useFetchL2RedemptionRequestedEvent = (
           throw new Error("Transaction receipt not found")
         }
 
-        // For cross-chain redemptions, the event is on L2 where the transaction was sent
-        // So we just mark it as successful if we have a receipt
-        if (receipt.status === 1) {
-          console.log(
-            "[useFetchL2RedemptionRequestedEvent] Transaction successful, marking as L2 redemption event found"
+        if (receipt.status !== 1) {
+          throw new Error("Transaction failed")
+        }
+
+        // Get the L2BitcoinRedeemer contract
+        const l2BitcoinRedeemerContract =
+          threshold.tbtc.l2BitcoinRedeemerContract
+
+        if (!l2BitcoinRedeemerContract) {
+          console.warn(
+            "[useFetchL2RedemptionRequestedEvent] L2BitcoinRedeemer contract not available"
           )
-          setData({
-            sender: receipt.from,
-            amount: "0", // We don't have the amount from the receipt
-            redeemerOutputScript: "", // We don't have this from the receipt
-            txHash: receipt.transactionHash,
-            blockNumber: receipt.blockNumber,
-          })
+          // Fallback to basic data from receipt
+          setData(null)
           setIsFetching(false)
           return
         }
 
-        setError("Transaction failed")
-        console.error("[useFetchL2RedemptionRequestedEvent] Transaction failed")
+        // Parse logs to find RedemptionRequestedOnL2 event
+        const eventSignature = "RedemptionRequestedOnL2(uint256,bytes,uint32)"
 
+        const eventTopic =
+          l2BitcoinRedeemerContract._instance.interface.getEventTopic(
+            eventSignature
+          )
+
+        console.log("eventTopic.logs", eventTopic)
+
+        const logs = receipt.logs.filter(
+          (log: any) =>
+            log.topics[0] === eventTopic &&
+            log.address.toLowerCase() ===
+              l2BitcoinRedeemerContract._instance.address.toLowerCase()
+        )
+
+        if (logs.length === 0) {
+          console.warn(
+            "[useFetchL2RedemptionRequestedEvent] RedemptionRequestedOnL2 event not found in transaction"
+          )
+          // Fallback to basic data from receipt
+          setData(null)
+          setIsFetching(false)
+          return
+        }
+
+        // Parse the event
+        const parsedLog =
+          l2BitcoinRedeemerContract._instance.interface.parseLog(logs[0])
+        const sender = parsedLog.args.sender
+        const amount = parsedLog.args.amount as BigNumber
+        const redeemerOutputScript = parsedLog.args.redeemerOutputScript
+
+        // Get block timestamp for requestedAt
+        const block = await provider?.getBlock(receipt.blockNumber)
+        const requestedAt = block?.timestamp || 0
+
+        setData({
+          requestedAmount: amount.toString(),
+          redemptionRequestedTxHash: "",
+          requestedAt,
+          completedAt: 0,
+          treasuryFee: "0",
+          isTimedOut: false,
+          redemptionTimedOutTxHash: undefined,
+          btcAddress: undefined,
+          walletPublicKeyHash: "",
+          redemptionKey: "",
+        })
         setIsFetching(false)
       } catch (err) {
         console.error(
@@ -67,7 +112,7 @@ export const useFetchL2RedemptionRequestedEvent = (
     }
 
     fetchEvent()
-  }, [txHash, enabled, provider])
+  }, [txHash, enabled, provider, threshold.tbtc.l2BitcoinRedeemerContract])
 
   return { data, isFetching, error }
 }

@@ -84,33 +84,23 @@ export const UnmintDetails: PageComponent = () => {
   const threshold = useThreshold()
   const isCrossChainRedemption = !!chainName && chainName !== ChainName.Ethereum
 
-  const {
-    data: l2RedemptionEvent,
-    isFetching: isFetchingL2Event,
-    error: l2EventError,
-  } = useFetchL2RedemptionRequestedEvent(
+  const { data: l2RedemptionEvent, isFetching: isFetchingL2Event } =
+    useFetchL2RedemptionRequestedEvent(
+      isCrossChainRedemption ? txHashFromParams : null,
+      isCrossChainRedemption
+    )
+
+  const { data: vaaData, error: vaaError } = useFetchVaaFromTxHash(
     isCrossChainRedemption ? txHashFromParams : null,
     isCrossChainRedemption
   )
 
-  const {
-    data: vaaData,
-    isFetching: isFetchingVaa,
-    error: vaaError,
-  } = useFetchVaaFromTxHash(
-    isCrossChainRedemption ? txHashFromParams : null,
-    isCrossChainRedemption
-  )
-
-  const {
-    data: crossChainData,
-    isFetching: isFetchingCrossChain,
-    error: crossChainError,
-  } = useFetchCrossChainRedemptionDetails(
-    isCrossChainRedemption ? redeemerOutputScript : null,
-    isCrossChainRedemption ? redeemer : null,
-    vaaData?.encodedVm
-  )
+  const { data: crossChainData, error: crossChainError } =
+    useFetchCrossChainRedemptionDetails(
+      isCrossChainRedemption ? redeemerOutputScript : null,
+      isCrossChainRedemption ? redeemer : null,
+      vaaData?.encodedVm
+    )
 
   // Use regular redemption details for L1 redemptions
   const {
@@ -125,10 +115,10 @@ export const UnmintDetails: PageComponent = () => {
   )
 
   // Combine data from both hooks
-  const data = isCrossChainRedemption ? crossChainData : l1Data
-  const isFetching = isCrossChainRedemption
-    ? isFetchingCrossChain || isFetchingVaa
-    : isFetchingL1
+  const data = isCrossChainRedemption
+    ? crossChainData ?? l2RedemptionEvent
+    : l1Data
+  const isFetching = isCrossChainRedemption ? isFetchingL2Event : isFetchingL1
   const error = isCrossChainRedemption ? vaaError || crossChainError : l1Error
 
   // Update state variables when cross-chain data is fetched
@@ -228,10 +218,10 @@ export const UnmintDetails: PageComponent = () => {
     useState(false)
 
   const _isFetching = isCrossChainRedemption
-    ? isFetchingCrossChain && !crossChainData
+    ? isFetchingL2Event
     : isFetching || !data
   const wasDataFetched = isCrossChainRedemption
-    ? !!crossChainData
+    ? !!crossChainData || !!l2RedemptionEvent
     : !isFetching && !!data
 
   // For cross-chain redemptions, check if we have the expected L1 redemption
@@ -268,10 +258,7 @@ export const UnmintDetails: PageComponent = () => {
     if (!redemptionCompletedAt && redemptionRequestedAt) {
       intervalId = setInterval(() => {
         setRedemptionTime(
-          dateAs(
-            redemptionCompletedAt ??
-              dateToUnixTimestamp() - (data?.requestedAt ?? 0)
-          )
+          dateAs(dateToUnixTimestamp() - (redemptionRequestedAt ?? 0))
         )
       }, ONE_MINUTE_IN_SECONDS)
     } else if (redemptionCompletedAt && redemptionRequestedAt) {
@@ -317,8 +304,9 @@ export const UnmintDetails: PageComponent = () => {
         <Box w="full">{error}</Box>
       ) : (
         <BridgeLayoutMainSection>
-          {_isFetching && <BridgeProcessDetailsPageSkeleton />}
-          {wasDataFetched && (
+          {_isFetching ? (
+            <BridgeProcessDetailsPageSkeleton />
+          ) : (
             <>
               <BridgeProcessCardTitle bridgeProcess="unmint" />
               <BridgeProcessCardSubTitle
@@ -358,7 +346,7 @@ export const UnmintDetails: PageComponent = () => {
                 >
                   usual duration - 3-5 hours
                 </Badge>
-                {isCrossChainRedemption && (
+                {l2RedemptionEvent && (
                   <TimelineItem
                     status={l2RedemptionEvent ? "active" : "semi-active"}
                   >
