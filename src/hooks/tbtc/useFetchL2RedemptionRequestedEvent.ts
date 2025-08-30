@@ -58,8 +58,6 @@ export const useFetchL2RedemptionRequestedEvent = (
             eventSignature
           )
 
-        console.log("eventTopic.logs", eventTopic)
-
         const logs = receipt.logs.filter(
           (log: any) =>
             log.topics[0] === eventTopic &&

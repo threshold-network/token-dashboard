@@ -59,6 +59,7 @@ import {
   isL1Network,
   getEthereumNetworkNameFromChainId,
   getMainnetOrTestnetChainId,
+  isTestnetChainId,
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
@@ -89,6 +90,7 @@ export interface BridgeActivity {
 export interface UnmintBridgeActivityAdditionalData {
   redeemerOutputScript: string
   walletPublicKeyHash: string
+  chainName?: string
 }
 
 export interface RevealedDepositEvent {
@@ -1113,13 +1115,10 @@ export class TBTC implements ITBTC {
   }
 
   getBridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
-    let redemptionActivities: BridgeActivity[] = []
     const depositActivities = await this._findAllDepositActivities(account)
-    const isStarkNetAddress = account.startsWith("0x") && account.length >= 64
-
-    if (!isStarkNetAddress) {
-      redemptionActivities = await this._findRedemptionActivities(account)
-    }
+    const redemptionActivities = await this._findAllRedemptionActivities(
+      account
+    )
 
     return depositActivities
       .concat(redemptionActivities)
@@ -1598,6 +1597,38 @@ export class TBTC implements ITBTC {
     })
   }
 
+  private _findAllRedemptionActivities = async (
+    redeemer: string
+  ): Promise<BridgeActivity[]> => {
+    let l1RedemptionActivities: BridgeActivity[] = []
+    if (this._ethereumConfig.chainId === getEthereumDefaultProviderChainId()) {
+      l1RedemptionActivities = await this._findRedemptionActivities(redeemer)
+    }
+
+    let l2RedemptionActivities: BridgeActivity[] = []
+    // Check if we should fetch cross-chain redemptions
+    // This can be true if:
+    // 1. Cross-chain config is set to true
+    // 2. L2BitcoinRedeemer contract is available (indicates we're on L2)
+    // 3. It's a StarkNet address
+    if (
+      this._crossChainConfig.isCrossChain &&
+      this._l2BitcoinRedeemerContract
+    ) {
+      l2RedemptionActivities = await this._findCrossChainRedemptionActivities(
+        redeemer
+      )
+    }
+
+    const redemptionActivities = [
+      ...l1RedemptionActivities,
+      ...l2RedemptionActivities,
+    ]
+    redemptionActivities.sort((a, b) => a.blockNumber - b.blockNumber)
+
+    return redemptionActivities
+  }
+
   private _findRedemptionActivities = async (
     redeemer: string
   ): Promise<BridgeActivity[]> => {
@@ -1660,6 +1691,267 @@ export class TBTC implements ITBTC {
     }
 
     return redemptions
+  }
+
+  private _findCrossChainRedemptionActivities = async (
+    redeemer: string
+  ): Promise<BridgeActivity[]> => {
+    const crossChainRedemptionActivities: BridgeActivity[] = []
+
+    // Check if we have L2BitcoinRedeemer contract
+    if (!this._l2BitcoinRedeemerContract) {
+      console.warn("L2 Bitcoin Redeemer contract is not initialized.")
+      return []
+    }
+
+    try {
+      // Get the actual contract instance
+      const l2Contract = (this._l2BitcoinRedeemerContract as any)._instance
+      // Get the chain ID from the L2 contract's provider to determine the chain name
+      let l2ChainName: string | undefined
+      try {
+        const network = await l2Contract.provider.getNetwork()
+        l2ChainName = getEthereumNetworkNameFromChainId(network.chainId)
+        // If it's "Ethereum", it means we're on mainnet L1, not cross-chain
+        if (l2ChainName === "Ethereum" || l2ChainName === "Unsupported") {
+          l2ChainName = undefined
+        }
+      } catch (e) {
+        console.warn("Could not determine L2 chain name:", e)
+      }
+
+      // Use event signature to get topic
+      const eventSignature = "RedemptionRequestedOnL2(uint256,bytes,uint32)"
+      const eventTopic = l2Contract.interface.getEventTopic(eventSignature)
+
+      // Get logs directly from provider
+      const fromBlock = 0
+      const logs = await l2Contract.provider.getLogs({
+        address: l2Contract.address.toLowerCase(),
+        topics: [eventTopic],
+        fromBlock,
+        toBlock: "latest",
+      })
+
+      // Parse and filter events by redeemer
+      // Parse logs and filter by transaction sender
+      const filteredL2EventsPromises = logs.map(async (log: any) => {
+        try {
+          const parsedLog = l2Contract.interface.parseLog(log)
+
+          // Get transaction receipt to check who sent the transaction
+          const receipt = await l2Contract.provider.getTransactionReceipt(
+            log.transactionHash
+          )
+
+          // Check if the transaction sender matches the redeemer
+          if (receipt && isSameETHAddress(receipt.from, redeemer)) {
+            return {
+              ...parsedLog,
+              transactionHash: log.transactionHash,
+              blockNumber: log.blockNumber,
+            }
+          }
+
+          return null
+        } catch (e) {
+          return null
+        }
+      })
+
+      const filteredL2Events = (
+        await Promise.all(filteredL2EventsPromises)
+      ).filter((event: any) => event !== null)
+
+      // For each L2 event, we need to:
+      // 1. Fetch the VAA from Wormholescan
+      // 2. Find the corresponding L1 RedemptionRequested event
+      // 3. Check if it's completed
+      for (const l2Event of filteredL2Events) {
+        try {
+          const l2TxHash = l2Event.transactionHash
+          const redeemerOutputScript = l2Event.args?.redeemerOutputScript
+          const amount = l2Event.args?.amount as BigNumber
+
+          // Default to pending status (only L2 event exists)
+          let status = BridgeActivityStatus.PENDING
+          let blockNumber = l2Event.blockNumber
+          let redemptionKey = ""
+          let walletPublicKeyHash = ""
+
+          // Try to fetch VAA and find L1 event
+          try {
+            // Fetch VAA from Wormholescan
+            const vaaResponse = await this._fetchVaaFromTxHash(l2TxHash)
+
+            if (vaaResponse?.encodedVm) {
+              // Find corresponding L1 RedemptionRequested event
+              const l1Event = await this._findL1RedemptionEventByEncodedVm(
+                redeemerOutputScript,
+                vaaResponse.encodedVm
+              )
+
+              if (l1Event) {
+                // We found the L1 event
+                walletPublicKeyHash = l1Event.args?.walletPubKeyHash
+                redemptionKey = this.buildRedemptionKey(
+                  walletPublicKeyHash,
+                  redeemerOutputScript
+                )
+                blockNumber = l1Event.blockNumber
+
+                // Check if redemption is completed
+                const redemptionDetails = await this.getRedemptionRequest(
+                  redemptionKey
+                )
+
+                if (redemptionDetails.requestedAt === 0) {
+                  // Redemption was completed
+                  status = BridgeActivityStatus.UNMINTED
+                } else if (redemptionDetails.isTimedOut) {
+                  status = BridgeActivityStatus.ERROR
+                }
+              }
+            }
+          } catch (vaaError) {
+            // If we can't fetch VAA or find L1 event, keep it as pending
+            console.log(
+              `Could not fetch VAA or find L1 event for tx ${l2TxHash}:`,
+              vaaError
+            )
+          }
+
+          crossChainRedemptionActivities.push({
+            status,
+            txHash: l2TxHash,
+            amount: amount.toString(), // Already in token precision from L2
+            activityKey: redemptionKey || `l2-${l2TxHash}`, // Use L2 tx hash as fallback key
+            bridgeProcess: "unmint",
+            blockNumber,
+            additionalData: {
+              redeemerOutputScript,
+              walletPublicKeyHash,
+              chainName: l2ChainName,
+            } as UnmintBridgeActivityAdditionalData,
+          })
+        } catch (eventError) {
+          console.error(
+            `Error processing L2 redemption event ${l2Event.transactionHash}:`,
+            eventError
+          )
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching cross-chain redemption activities:", error)
+    }
+
+    return crossChainRedemptionActivities
+  }
+
+  private _fetchVaaFromTxHash = async (
+    txHash: string
+  ): Promise<{ encodedVm: Uint8Array } | null> => {
+    const isTestnet = isTestnetChainId(this.ethereumChainId)
+    const WORMHOLESCAN_API_URL = isTestnet
+      ? "https://api.testnet.wormholescan.io"
+      : "https://api.wormholescan.io"
+
+    try {
+      const response = await fetch(
+        `${WORMHOLESCAN_API_URL}/api/v1/vaas?txHash=${txHash}`
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.data && data.data.length > 0) {
+        const vaa = data.data[0]
+        // Decode base64 to Uint8Array
+        const encodedVm = new Uint8Array(Buffer.from(vaa.vaa, "base64"))
+        return { encodedVm }
+      }
+
+      return null
+    } catch (error) {
+      console.error("Error fetching VAA from Wormholescan:", error)
+      return null
+    }
+  }
+
+  private _findL1RedemptionEventByEncodedVm = async (
+    redeemerOutputScript: string,
+    encodedVm: Uint8Array
+  ): Promise<any | null> => {
+    if (!this._l1BitcoinRedeemerContract) {
+      return null
+    }
+
+    try {
+      const mainnetOrTestnetChainId = getMainnetOrTestnetChainId(
+        this.ethereumChainId
+      )
+      const isMainnet = mainnetOrTestnetChainId === SupportedChainIds.Ethereum
+
+      // Get all RedemptionRequested events from L1BitcoinRedeemer
+      const allEvents = await getContractPastEvents(
+        this._l1BitcoinRedeemerContract,
+        {
+          eventName: "RedemptionRequested",
+          filterParams: [],
+          fromBlock: isMainnet ? 23244313 : 8667161, // Use same blocks as in useFetchCrossChainRedemptionDetails
+        }
+      )
+
+      // Hash the redeemerOutputScript for comparison
+      const redemptionOutputScriptHash = utils.keccak256(redeemerOutputScript)
+
+      // Filter events by redemptionOutputScript hash and encodedVm
+      for (const event of allEvents) {
+        const eventScript = event.args?.redemptionOutputScript
+
+        // Check if the script hash matches
+        let scriptMatch = false
+        if (eventScript && eventScript.hash) {
+          scriptMatch =
+            eventScript.hash.toLowerCase() ===
+            redemptionOutputScriptHash.toLowerCase()
+        }
+
+        if (!scriptMatch) continue
+
+        // Check the transaction input data to match encodedVm
+        try {
+          const provider = this._l1BitcoinRedeemerContract.provider
+          if (!provider) continue
+
+          const tx = await provider.getTransaction(event.transactionHash)
+          if (!tx || !tx.data) continue
+
+          // Decode the function call to get encodedVm parameter
+          const iface = this._l1BitcoinRedeemerContract.interface
+          const decodedData = iface.decodeFunctionData(
+            "requestRedemption",
+            tx.data
+          )
+          const txEncodedVm = decodedData[2] // encodedVm is the 3rd parameter
+          const encodedVmHex = utils.hexlify(encodedVm)
+
+          if (txEncodedVm.toLowerCase() === encodedVmHex.toLowerCase()) {
+            return event
+          }
+        } catch (decodeError) {
+          console.error("Error decoding tx data:", decodeError)
+        }
+      }
+
+      return null
+    } catch (error) {
+      console.error("Error finding L1 redemption event:", error)
+      return null
+    }
   }
 
   buildDepositKey = (

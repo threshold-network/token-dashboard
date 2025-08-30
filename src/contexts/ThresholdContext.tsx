@@ -87,7 +87,7 @@ export const ThresholdProvider: FC = ({ children }) => {
           ...threshold.config.ethereum,
           ethereumProviderOrSigner: getThresholdLibProvider(),
           account: undefined,
-          chainId: getEthereumDefaultProviderChainId(),
+          chainId: undefined,
         },
         bitcoin: threshold.config.bitcoin,
         crossChain: {

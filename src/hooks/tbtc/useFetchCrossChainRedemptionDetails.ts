@@ -41,6 +41,9 @@ export const useFetchCrossChainRedemptionDetails = (
   const [redemptionData, setRedemptionData] = useState<
     CrossChainRedemptionDetails | undefined
   >()
+  const [previousEncodedVm, setPreviousEncodedVm] = useState<string | null>(
+    null
+  )
   const defaultChainId = getEthereumDefaultProviderChainId()
   const isMainnet = isMainnetChainId(defaultChainId)
 
@@ -51,6 +54,7 @@ export const useFetchCrossChainRedemptionDetails = (
     if (!encodedVm) {
       // Return empty redemption data immediately
       setRedemptionData(undefined)
+      setPreviousEncodedVm(null)
       return
     }
 
@@ -69,6 +73,22 @@ export const useFetchCrossChainRedemptionDetails = (
       console.error(
         "L1BitcoinRedeemer contract is not available on the current network"
       )
+      return
+    }
+
+    // Check if encodedVm has changed (new transaction)
+    const currentEncodedVmHex = ethers.utils.hexlify(encodedVm)
+    const hasEncodedVmChanged = previousEncodedVm !== currentEncodedVmHex
+
+    // If encodedVm changed, reset the data
+    if (hasEncodedVmChanged) {
+      setRedemptionData(undefined)
+      setPreviousEncodedVm(currentEncodedVmHex)
+    }
+
+    // If we already have redemption data with completedAt and encodedVm hasn't changed, don't refetch
+    // This prevents unnecessary API calls for completed redemptions
+    if (redemptionData?.completedAt && !hasEncodedVmChanged) {
       return
     }
 
@@ -167,13 +187,15 @@ export const useFetchCrossChainRedemptionDetails = (
 
         if (redemptionRequestedEvents.length === 0) {
           // No matching events found with the provided encodedVm and redeemerOutputScript
-          // Clear any old data and retry after 30 seconds
-          setRedemptionData(undefined)
+          // Only clear data and retry if we don't already have completed data
+          if (!redemptionData?.completedAt) {
+            setRedemptionData(undefined)
 
-          if (!intervalId) {
-            intervalId = setInterval(() => {
-              fetch()
-            }, 30000)
+            if (!intervalId) {
+              intervalId = setInterval(() => {
+                fetch()
+              }, 30000)
+            }
           }
           return
         }

@@ -15,7 +15,7 @@ import {
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 
-export const fetchBridgeactivityEffect = async (
+export const fetchBridgeActivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
@@ -276,4 +276,26 @@ export const fetchUtxoConfirmationsEffect = async (
 
   // Stop polling task.
   pollingTask.cancel()
+}
+
+export const crossChainConfigChangedEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.crossChainConfigChanged>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { isCrossChain, depositor } = action.payload
+
+  // If cross-chain is enabled, refetch bridge activity to include cross-chain redemptions
+  if (isCrossChain) {
+    listenerApi.dispatch(tbtcSlice.actions.requestBridgeActivity({ depositor }))
+  }
+}
+
+export const ethereumChainIdChangedEffect = async (
+  action: ReturnType<typeof tbtcSlice.actions.ethereumChainIdChanged>,
+  listenerApi: AppListenerEffectAPI
+) => {
+  const { chainId, depositor } = action.payload
+
+  // Refetch bridge activity when chain ID changes
+  listenerApi.dispatch(tbtcSlice.actions.requestBridgeActivity({ depositor }))
 }

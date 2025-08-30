@@ -95,12 +95,15 @@ export const UnmintDetails: PageComponent = () => {
     isCrossChainRedemption
   )
 
-  const { data: crossChainData, error: crossChainError } =
-    useFetchCrossChainRedemptionDetails(
-      isCrossChainRedemption ? redeemerOutputScript : null,
-      isCrossChainRedemption ? redeemer : null,
-      vaaData?.encodedVm
-    )
+  const {
+    data: crossChainData,
+    isFetching: isFetchingCrossChain,
+    error: crossChainError,
+  } = useFetchCrossChainRedemptionDetails(
+    isCrossChainRedemption ? redeemerOutputScript : null,
+    isCrossChainRedemption ? redeemer : null,
+    vaaData?.encodedVm
+  )
 
   // Use regular redemption details for L1 redemptions
   const {
@@ -218,11 +221,8 @@ export const UnmintDetails: PageComponent = () => {
     useState(false)
 
   const _isFetching = isCrossChainRedemption
-    ? isFetchingL2Event
+    ? isFetchingL2Event || isFetchingCrossChain
     : isFetching || !data
-  const wasDataFetched = isCrossChainRedemption
-    ? !!crossChainData || !!l2RedemptionEvent
-    : !isFetching && !!data
 
   // For cross-chain redemptions, check if we have the expected L1 redemption
   const isRedemptionRequested = isCrossChainRedemption

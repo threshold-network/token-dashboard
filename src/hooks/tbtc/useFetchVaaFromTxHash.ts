@@ -4,12 +4,7 @@ import { isTestnetChainId } from "../../networks/utils"
 
 // Helper function to decode base64 to Uint8Array
 function base64ToUint8Array(base64: string): Uint8Array {
-  const binaryString = atob(base64)
-  const bytes = new Uint8Array(binaryString.length)
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i)
-  }
-  return bytes
+  return new Uint8Array(Buffer.from(base64, "base64"))
 }
 
 interface ApiVaa {
