@@ -12,6 +12,7 @@ import {
   useState,
   useEffect,
   FocusEvent,
+  ChangeEvent,
 } from "react"
 import { Form, FormikInput } from "../../../../components/Forms"
 import withOnlyConnectedWallet from "../../../../components/withOnlyConnectedWallet"
@@ -68,7 +69,6 @@ type ComponentProps = {
 const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
   formId,
   values,
-  setFieldTouched,
 }) => {
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
@@ -80,9 +80,8 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       : BitcoinNetwork.Mainnet
   )
 
-  const handleBtcAddressChange = (event: FocusEvent<HTMLInputElement>) => {
+  const handleBtcAddressChange = (event: ChangeEvent<HTMLInputElement>) => {
     const btcAddress = event.target.value
-    setFieldTouched("btcRecoveryAddress", true)
 
     const isValidFormat =
       validateBTCAddress(btcAddress, threshold.tbtc.bitcoinNetwork) ===
@@ -94,10 +93,6 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
           btcAddress,
           ethChainId: SupportedChainIds.Ethereum,
         })
-      )
-    } else if (btcAddress) {
-      console.log(
-        "BTC Address format validation failed (onBlur) or address is empty."
       )
     }
   }
@@ -156,6 +151,7 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
   },
   displayName: "MintingProcessForm",
   enableReinitialize: true,
+  validateOnChange: false,
 })(MintingProcessFormBase)
 
 export const ProvideDataComponent: FC<{
