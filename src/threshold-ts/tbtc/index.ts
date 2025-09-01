@@ -1,5 +1,5 @@
 import { BlockTag, TransactionReceipt } from "@ethersproject/abstract-provider"
-import { Web3Provider } from "@ethersproject/providers"
+import { Web3Provider, JsonRpcProvider } from "@ethersproject/providers"
 import {
   BitcoinClient,
   BitcoinTx,
@@ -64,6 +64,7 @@ import {
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { getCrossChainRpcUrl } from "../../networks/utils/getCrossChainRpcUrl"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -210,7 +211,7 @@ export interface ITBTC {
    * threshold lib.
    * @returns {string | number}
    */
-  readonly ethereumChainId: string | number
+  readonly ethereumChainId?: string | number
   /**
    * Bitcoin network specified in the bitcoin config that we pass to the
    * threshold lib.
@@ -523,6 +524,7 @@ export class TBTC implements ITBTC {
   private _l2TbtcToken: DestinationChainTBTCToken | null = null
   private _l1BitcoinRedeemerContract: Contract | null = null
   private _l2BitcoinRedeemerContract: Contract | null = null
+  private _l2BitcoinRedeemerQueryContract: Contract | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -760,7 +762,7 @@ export class TBTC implements ITBTC {
     return this._deposit
   }
 
-  get ethereumChainId(): string | number {
+  get ethereumChainId(): string | number | undefined {
     return this._ethereumConfig.chainId
   }
 
@@ -829,8 +831,37 @@ export class TBTC implements ITBTC {
       this._crossChainConfig.chainName as DestinationChainName
     )
     this._l2TbtcToken = crossChainContracts?.destinationChainTbtcToken ?? null
+
+    // SDK's L2BitcoinRedeemer for write operations
     this._l2BitcoinRedeemerContract =
       crossChainContracts?.l2BitcoinRedeemer as unknown as Contract | null
+
+    // Create a separate L2BitcoinRedeemer contract for queries using Alchemy provider
+    const l2BitcoinRedeemerArtifact = getArtifact(
+      `${destinationChainName}L2BitcoinRedeemer` as ArtifactNameType,
+      connectedChainId,
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (l2BitcoinRedeemerArtifact) {
+      try {
+        const alchemyRpcUrl = getCrossChainRpcUrl(connectedChainId)
+        const alchemyProvider = new JsonRpcProvider(alchemyRpcUrl)
+
+        this._l2BitcoinRedeemerQueryContract = getContract(
+          l2BitcoinRedeemerArtifact.address,
+          l2BitcoinRedeemerArtifact.abi,
+          alchemyProvider
+        )
+      } catch (error) {
+        console.warn(
+          "Failed to create L2BitcoinRedeemer query contract:",
+          error
+        )
+        // Fallback to using the same contract for queries
+        this._l2BitcoinRedeemerQueryContract = this._l2BitcoinRedeemerContract
+      }
+    }
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -1698,49 +1729,60 @@ export class TBTC implements ITBTC {
   ): Promise<BridgeActivity[]> => {
     const crossChainRedemptionActivities: BridgeActivity[] = []
 
-    // Check if we have L2BitcoinRedeemer contract
-    if (!this._l2BitcoinRedeemerContract) {
+    const queryContract =
+      this._l2BitcoinRedeemerQueryContract || this._l2BitcoinRedeemerContract
+
+    if (!queryContract) {
       console.warn("L2 Bitcoin Redeemer contract is not initialized.")
       return []
     }
 
+    if (!this.ethereumChainId) {
+      console.warn("Ethereum chain ID is not initialized.")
+      return []
+    }
+
     try {
-      // Get the actual contract instance
-      const l2Contract = (this._l2BitcoinRedeemerContract as any)._instance
-      // Get the chain ID from the L2 contract's provider to determine the chain name
-      let l2ChainName: string | undefined
+      const destinationChainName =
+        this._crossChainConfig.chainName === ChainName.Ethereum
+          ? getEthereumNetworkNameFromChainId(this.ethereumChainId)
+          : this._crossChainConfig.chainName
+
+      const l2BitcoinRedeemerArtifact = getArtifact(
+        `${destinationChainName}L2BitcoinRedeemer` as ArtifactNameType,
+        this.ethereumChainId,
+        this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+      )
+
+      // Use the contract's built-in event querying instead of raw getLogs
+      let logs: any[] = []
+
       try {
-        const network = await l2Contract.provider.getNetwork()
-        l2ChainName = getEthereumNetworkNameFromChainId(network.chainId)
-        // If it's "Ethereum", it means we're on mainnet L1, not cross-chain
-        if (l2ChainName === "Ethereum" || l2ChainName === "Unsupported") {
-          l2ChainName = undefined
-        }
-      } catch (e) {
-        console.warn("Could not determine L2 chain name:", e)
+        const deploymentBlock =
+          l2BitcoinRedeemerArtifact?.receipt.blockNumber || 0
+
+        // Try with deployment block
+        const filter =
+          // eslint-disable-next-line new-cap
+          queryContract.filters["RedemptionRequestedOnL2"]()
+        logs = await queryContract.queryFilter(
+          filter,
+          deploymentBlock,
+          "latest"
+        )
+      } catch (error) {
+        console.error("Error fetching L2 redemption events:", error)
+        return []
       }
-
-      // Use event signature to get topic
-      const eventSignature = "RedemptionRequestedOnL2(uint256,bytes,uint32)"
-      const eventTopic = l2Contract.interface.getEventTopic(eventSignature)
-
-      // Get logs directly from provider
-      const fromBlock = 0
-      const logs = await l2Contract.provider.getLogs({
-        address: l2Contract.address.toLowerCase(),
-        topics: [eventTopic],
-        fromBlock,
-        toBlock: "latest",
-      })
 
       // Parse and filter events by redeemer
       // Parse logs and filter by transaction sender
       const filteredL2EventsPromises = logs.map(async (log: any) => {
         try {
-          const parsedLog = l2Contract.interface.parseLog(log)
+          const parsedLog = queryContract.interface.parseLog(log)
 
           // Get transaction receipt to check who sent the transaction
-          const receipt = await l2Contract.provider.getTransactionReceipt(
+          const receipt = await queryContract.provider.getTransactionReceipt(
             log.transactionHash
           )
 
@@ -1768,6 +1810,7 @@ export class TBTC implements ITBTC {
       // 2. Find the corresponding L1 RedemptionRequested event
       // 3. Check if it's completed
       for (const l2Event of filteredL2Events) {
+        if (!l2Event) continue
         try {
           const l2TxHash = l2Event.transactionHash
           const redeemerOutputScript = l2Event.args?.redeemerOutputScript
@@ -1831,7 +1874,7 @@ export class TBTC implements ITBTC {
             additionalData: {
               redeemerOutputScript,
               walletPublicKeyHash,
-              chainName: l2ChainName,
+              chainName: this._crossChainConfig.chainName,
             } as UnmintBridgeActivityAdditionalData,
           })
         } catch (eventError) {
@@ -1851,6 +1894,11 @@ export class TBTC implements ITBTC {
   private _fetchVaaFromTxHash = async (
     txHash: string
   ): Promise<{ encodedVm: Uint8Array } | null> => {
+    if (!this.ethereumChainId) {
+      console.warn("Ethereum chain ID is not initialized.")
+      return null
+    }
+
     const isTestnet = isTestnetChainId(this.ethereumChainId)
     const WORMHOLESCAN_API_URL = isTestnet
       ? "https://api.testnet.wormholescan.io"
@@ -2336,8 +2384,7 @@ export class TBTC implements ITBTC {
     const l2TbtcTokenAddress =
       this._l2TbtcToken.getChainIdentifier().identifierHex
 
-    const l2BitcoinRedeemerAddress =
-      this._l2BitcoinRedeemerContract.getChainIdentifier().identifierHex
+    const l2BitcoinRedeemerAddress = this._l2BitcoinRedeemerContract.address
 
     // Create a standard ERC20 contract instance
     const erc20Abi = [
@@ -2355,7 +2402,7 @@ export class TBTC implements ITBTC {
 
     const allowance = await l2TbtcTokenContract.allowance(
       owner,
-      `0x${l2BitcoinRedeemerAddress}`
+      l2BitcoinRedeemerAddress
     )
 
     return allowance.toString()
@@ -2376,8 +2423,7 @@ export class TBTC implements ITBTC {
     const l2TbtcTokenAddress =
       this._l2TbtcToken.getChainIdentifier().identifierHex
 
-    const l2BitcoinRedeemerAddress =
-      this._l2BitcoinRedeemerContract.getChainIdentifier().identifierHex
+    const l2BitcoinRedeemerAddress = this._l2BitcoinRedeemerContract.address
 
     // Create a standard ERC20 contract instance
     const erc20Abi = [
@@ -2394,7 +2440,7 @@ export class TBTC implements ITBTC {
     )
 
     const tx = await l2TbtcTokenContract.approve(
-      `0x${l2BitcoinRedeemerAddress}`,
+      l2BitcoinRedeemerAddress,
       amount
     )
 
