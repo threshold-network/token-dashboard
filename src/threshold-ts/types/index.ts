@@ -21,7 +21,7 @@ export enum ChainName {
 
 export interface EthereumConfig {
   ethereumProviderOrSigner: providers.Provider | Signer
-  chainId: string | number
+  chainId: string | number | undefined
   shouldUseTestnetDevelopmentContracts: boolean
   account?: string
 }

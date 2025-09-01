@@ -113,17 +113,23 @@ const ActivityItem: FC<BridgeActivityType> = ({
 
   const link =
     bridgeProcess === "unmint"
-      ? RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
-          .withRedeemer(account!)
-          .withRedeemerOutputScript(
-            (additionalData as UnmintBridgeActivityAdditionalData)
-              .redeemerOutputScript
-          )
-          .withWalletPublicKeyHash(
-            (additionalData as UnmintBridgeActivityAdditionalData)
-              .walletPublicKeyHash
-          )
-          .build()
+      ? (() => {
+          const unmintData =
+            additionalData as UnmintBridgeActivityAdditionalData
+          const builder = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+            .withRedeemer(account!)
+            .withRedeemerOutputScript(unmintData.redeemerOutputScript)
+
+          // For cross-chain redemptions, add chainName
+          // For L1 redemptions, add walletPublicKeyHash
+          if (unmintData.chainName) {
+            builder.withChainName(unmintData.chainName)
+          } else {
+            builder.withWalletPublicKeyHash(unmintData.walletPublicKeyHash)
+          }
+
+          return builder.build()
+        })()
       : `/tBTC/mint/deposit/${activityKey}`
 
   return (
