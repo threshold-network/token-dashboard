@@ -11,9 +11,9 @@ const TestProvideData: React.FC<{ chain: string }> = ({ chain }) => {
         <label htmlFor="recovery">Bitcoin Recovery Address</label>
         <input id="recovery" name="recovery" />
 
-        {chain === "StarkNet" && (
+        {chain === "Starknet" && (
           <>
-            <label htmlFor="starknet">StarkNet Address</label>
+            <label htmlFor="starknet">Starknet Address</label>
             <input id="starknet" name="starknet" />
           </>
         )}
@@ -49,10 +49,10 @@ describe("Chain-specific deposit flows", () => {
     expect(screen.queryByLabelText(/starknet address/i)).not.toBeInTheDocument()
   })
 
-  it("should use special flow ONLY for StarkNet", () => {
-    render(<TestProvideData chain="StarkNet" />)
+  it("should use special flow ONLY for Starknet", () => {
+    render(<TestProvideData chain="Starknet" />)
 
-    expect(screen.getByText("Chain: StarkNet")).toBeInTheDocument()
+    expect(screen.getByText("Chain: Starknet")).toBeInTheDocument()
     expect(screen.getByLabelText(/recovery address/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/starknet address/i)).toBeInTheDocument()
   })

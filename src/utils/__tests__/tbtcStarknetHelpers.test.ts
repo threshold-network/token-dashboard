@@ -32,7 +32,7 @@ describe("StarkNet Configuration", () => {
       const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
-      expect(config.chainName).toBe("StarkNet")
+      expect(config.chainName).toBe("Starknet")
     })
 
     it("should use mainnet when env is true", () => {
@@ -46,7 +46,7 @@ describe("StarkNet Configuration", () => {
       const config = getConfig()
       expect(config.isTestnet).toBe(false)
       expect(config.chainId).toBe("0x534e5f4d41494e")
-      expect(config.chainName).toBe("StarkNet")
+      expect(config.chainName).toBe("Starknet")
     })
 
     it("should use Sepolia when Sepolia chainId is provided", () => {
@@ -59,7 +59,7 @@ describe("StarkNet Configuration", () => {
       const config = getConfig("0x534e5f5345504f4c4941")
       expect(config.isTestnet).toBe(true)
       expect(config.chainId).toBe("0x534e5f5345504f4c4941")
-      expect(config.chainName).toBe("StarkNet Sepolia")
+      expect(config.chainName).toBe("Starknet Sepolia")
     })
 
     it("should have correct relayer URL for mainnet", () => {
@@ -91,7 +91,7 @@ describe("StarkNet Configuration", () => {
     it("should have correct sepolia configuration", () => {
       const sepolia = STARKNET_CONFIGS.sepolia
       expect(sepolia.chainId).toBe("0x534e5f5345504f4c4941")
-      expect(sepolia.chainName).toBe("StarkNet Sepolia")
+      expect(sepolia.chainName).toBe("Starknet Sepolia")
       expect(sepolia.isTestnet).toBe(true)
       expect(sepolia.explorerUrl).toBe("https://sepolia.starkscan.co")
     })
@@ -99,7 +99,7 @@ describe("StarkNet Configuration", () => {
     it("should have correct mainnet configuration", () => {
       const mainnet = STARKNET_CONFIGS.mainnet
       expect(mainnet.chainId).toBe("0x534e5f4d41494e")
-      expect(mainnet.chainName).toBe("StarkNet")
+      expect(mainnet.chainName).toBe("Starknet")
       expect(mainnet.isTestnet).toBe(false)
       expect(mainnet.explorerUrl).toBe("https://starkscan.co")
     })

@@ -74,9 +74,9 @@ export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
           </HStack>
 
           <VStack>
-            <H4>Connect StarkNet Wallet</H4>
+            <H4>Connect Starknet Wallet</H4>
             <BodyMd color="gray.500" textAlign="center">
-              Connect your StarkNet wallet to interact with tBTC on StarkNet
+              Connect your Starknet wallet to interact with tBTC on Starknet
             </BodyMd>
           </VStack>
 
@@ -142,7 +142,7 @@ export const ConnectStarknet: FC<Props> = ({ goBack, closeModal }) => {
             <Alert status="info" borderRadius="md">
               <AlertIcon />
               <AlertDescription fontSize="sm">
-                No StarkNet wallets detected. Please install Argent X or
+                No Starknet wallets detected. Please install Argent X or
                 Braavos.
               </AlertDescription>
             </Alert>

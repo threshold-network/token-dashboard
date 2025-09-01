@@ -21,10 +21,10 @@ const StarkNetDepositInfo: React.FC<{
 
   return (
     <div>
-      <h2>StarkNet Cross-Chain Deposit</h2>
+      <h2>Starknet Cross-Chain Deposit</h2>
       <div>
         <label>Deposit Type</label>
-        <span>StarkNet Cross-Chain</span>
+        <span>Starknet Cross-Chain</span>
       </div>
       <div>
         <label>Recipient Address</label>
@@ -41,9 +41,9 @@ const StarkNetDepositInfo: React.FC<{
   )
 }
 
-describe("DepositDetails StarkNet Display Logic", () => {
+describe("DepositDetails Starknet Display Logic", () => {
   describe("TDD Red Phase - Define expected behavior", () => {
-    it("should display StarkNet deposit info when chainName is StarkNet", () => {
+    it("should display Starknet deposit info when chainName is Starknet", () => {
       const { getByText } = render(
         <StarkNetDepositInfo
           chainName="StarkNet"
@@ -57,7 +57,7 @@ describe("DepositDetails StarkNet Display Logic", () => {
       expect(getByText(/recipient address/i)).toBeInTheDocument()
     })
 
-    it("should not display StarkNet info for non-StarkNet deposits", () => {
+    it("should not display Starknet info for non-Starknet deposits", () => {
       const { container } = render(
         <StarkNetDepositInfo chainName="Ethereum" isStarkNet={false} />
       )
@@ -65,7 +65,7 @@ describe("DepositDetails StarkNet Display Logic", () => {
       expect(container.firstChild).toBeNull()
     })
 
-    it("should show deposit type label for StarkNet", () => {
+    it("should show deposit type label for Starknet", () => {
       const { getByText } = render(
         <StarkNetDepositInfo
           chainName="StarkNet"
@@ -75,10 +75,10 @@ describe("DepositDetails StarkNet Display Logic", () => {
       )
 
       expect(getByText("Deposit Type")).toBeInTheDocument()
-      expect(getByText("StarkNet Cross-Chain")).toBeInTheDocument()
+      expect(getByText("Starknet Cross-Chain")).toBeInTheDocument()
     })
 
-    it("should link to correct StarkNet explorer", () => {
+    it("should link to correct Starknet explorer", () => {
       const { getByRole } = render(
         <StarkNetDepositInfo
           chainName="StarkNet"
