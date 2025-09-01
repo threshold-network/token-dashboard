@@ -19,17 +19,22 @@ const renderNavItem = (
   index: number,
   isDisabled: boolean
 ) => (
-  <FilterTab
-    key={page.route.path}
-    as={Link}
-    to={page.route.path}
-    tabId={index.toString()}
-    textDecoration="none"
-    _groupHover={{ textDecoration: "none" }}
-    disabled={isDisabled}
-  >
-    {page.route.title}
-  </FilterTab>
+  <>
+    {isDisabled ? (
+      <></>
+    ) : (
+      <FilterTab
+        key={page.route.path}
+        as={Link}
+        to={page.route.path}
+        tabId={index.toString()}
+        textDecoration="none"
+        _groupHover={{ textDecoration: "none" }}
+      >
+        {page.route.title}
+      </FilterTab>
+    )}
+  </>
 )
 
 export const MintUnmintNav: FC<
