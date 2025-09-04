@@ -50,6 +50,7 @@ import { RootState } from "../../../../store"
 import { tbtcSlice } from "../../../../store/tbtc/tbtcSlice"
 import { accountSlice } from "../../../../store/account/slice"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { getChainDisplayInfo } from "../../../../utils/chainTextUtils"
 
 export interface FormValues {
   userWalletAddress: string
@@ -72,6 +73,10 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }) => {
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
 
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
@@ -102,8 +107,8 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="userWalletAddress"
         label="User Wallet Address"
-        placeholder="Address where you'll receive your tBTC"
-        tooltip="The address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
+        placeholder={`Address where you'll receive your tBTC on ${chainInfo.chainName}`}
+        tooltip={chainInfo.walletAddressTooltip}
         mb={6}
         isReadOnly={true}
       />

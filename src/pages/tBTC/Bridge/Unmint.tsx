@@ -61,7 +61,7 @@ import { featureFlags } from "../../../constants"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
-import { isSupportedNetwork } from "../../../networks/utils"
+import { isMainnetChainId, isSupportedNetwork } from "../../../networks/utils"
 
 const UnmintFormPage: PageComponent = ({}) => {
   const { balance } = useToken(Token.TBTCV2)
@@ -94,9 +94,11 @@ const UnmintFormPage: PageComponent = ({}) => {
         onSubmitForm={onSubmitForm}
         bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
       />
-      <Box as="p" textAlign="center" mt="4">
-        <BridgeContractLink />
-      </Box>
+      {chainId && isMainnetChainId(chainId) && (
+        <Box as="p" textAlign="center" mt="4">
+          <BridgeContractLink />
+        </Box>
+      )}
     </>
   )
 }

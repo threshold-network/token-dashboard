@@ -76,6 +76,8 @@ import { BridgeProcessDetailsPageSkeleton } from "./components/BridgeProcessDeta
 import { DepositState } from "@keep-network/tbtc-v2.ts"
 import { getParameterNameFromChainId } from "../../../networks/utils"
 import { useIsActive } from "../../../hooks/useIsActive"
+import { getChainDisplayInfo } from "../../../utils/chainTextUtils"
+import { useThreshold } from "../../../contexts/ThresholdContext"
 
 export const DepositDetails: PageComponent = () => {
   const { depositKey } = useParams()
@@ -527,6 +529,15 @@ const StepSwitcher: FC = () => {
     isCrossChainDeposit,
   } = useDepositDetailsPageContext()
   const { chainId } = useIsActive()
+  const threshold = useThreshold()
+
+  // Get the non-EVM chain name for cross-chain deposits
+  const nonEVMChainName =
+    (isCrossChainDeposit && threshold?.tbtc?.crossChainConfig?.chainName) ||
+    null
+
+  // Get chain display info
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
 
   const onComplete = useCallback(() => {
     if (step === "completed") return
@@ -578,8 +589,8 @@ const StepSwitcher: FC = () => {
           {isCrossChainDeposit ? (
             <BodyMd mt="2">
               Your tokens have been minted and bridged to the depositor wallet
-              on the {getParameterNameFromChainId(chainId)} network - This
-              action usually takes a few minutes to complete this process.
+              on the {chainInfo.chainName} network - This action usually takes a
+              few minutes to complete this process.
             </BodyMd>
           ) : (
             <BodyMd mt="2">

@@ -16,6 +16,9 @@ import { Toast } from "../../../../components/Toast"
 import { useModal } from "../../../../hooks/useModal"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { useIsActive } from "../../../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { getChainDisplayInfo } from "../../../../utils/chainTextUtils"
 
 const InitiateMintingComponent: FC<{
   utxo: BitcoinUtxo
@@ -24,6 +27,10 @@ const InitiateMintingComponent: FC<{
   const { tBTCMintAmount, updateState } = useTbtcState()
   const threshold = useThreshold()
   const { closeModal } = useModal()
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
 
   const onSuccessfulDepositReveal = () => {
     updateState("mintingStep", MintingStep.MintingSuccess)
@@ -90,11 +97,7 @@ const InitiateMintingComponent: FC<{
             />
           </Skeleton>
         </H5>
-        <BodyLg>
-          Receiving tBTC requires a single transaction and takes approximately 2
-          hours. The bridging can be initiated before you get all your Bitcoin
-          deposit confirmations.
-        </BodyLg>
+        <BodyLg>{chainInfo.mintingProcessDescription}</BodyLg>
       </InfoBox>
       <MintingTransactionDetails />
       <SubmitTxButton

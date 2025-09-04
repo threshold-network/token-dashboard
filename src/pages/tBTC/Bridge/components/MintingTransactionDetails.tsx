@@ -5,10 +5,18 @@ import {
 } from "../../../../components/TransactionDetails"
 import { useTbtcState } from "../../../../hooks/useTbtcState"
 import shortenAddress from "../../../../utils/shortenAddress"
+import { useIsActive } from "../../../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { getChainDisplayInfo } from "../../../../utils/chainTextUtils"
 
 const MintingTransactionDetails = () => {
   const { tBTCMintAmount, mintingFee, thresholdNetworkFee, userWalletAddress } =
     useTbtcState()
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
+
   return (
     <List spacing="2" mb="6">
       <TransactionDetailsAmountItem
@@ -31,7 +39,7 @@ const MintingTransactionDetails = () => {
         higherPrecision={8}
       />
       <TransactionDetailsItem
-        label="ETH address"
+        label={chainInfo.recipientLabel}
         value={shortenAddress(userWalletAddress)}
       />
     </List>

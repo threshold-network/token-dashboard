@@ -37,6 +37,9 @@ import {
   SendBitcoinsToDepositAddressForm,
   SendBitcoinsToDepositAddressFormValues,
 } from "../../../../components/tBTC"
+import { useIsActive } from "../../../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { getChainDisplayInfo } from "../../../../utils/chainTextUtils"
 
 const AddressRow: FC<
   { address: string; text: string } & Pick<ViewInBlockExplorerProps, "chain">
@@ -66,9 +69,10 @@ const BTCAddressCard: FC<ComponentProps<typeof Card>> = ({
   )
 }
 
-const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
-  btcDepositAddress,
-}) => {
+const BTCAddressSection: FC<{
+  btcDepositAddress: string
+  chainName: string
+}> = ({ btcDepositAddress, chainName }) => {
   const titleColor = useColorModeValue("gray.700", "gray.100")
   const btcAddressColor = useColorModeValue("brand.500", "white")
 
@@ -93,7 +97,7 @@ const BTCAddressSection: FC<{ btcDepositAddress: string }> = ({
         <BodyMd color={titleColor}>BTC Deposit Address</BodyMd>
         <TooltipIcon
           color={titleColor}
-          label="This is a unique BTC address generated based on the ETH address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC."
+          label={`This is a unique BTC address generated based on the ${chainName} address and Recovery address you provided. Send your BTC funds to this address in order to mint tBTC.`}
         />
       </HStack>
       <BTCAddressCard p="2.5" display="flex" justifyContent="center">
@@ -143,6 +147,10 @@ const MakeDepositComponent: FC<{
     btcRecoveryAddress,
     updateState,
   } = useTbtcState()
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
 
   // ↓ Ledger Live App ↓
   const { isEmbed } = useIsEmbed()
@@ -194,7 +202,10 @@ const MakeDepositComponent: FC<{
         This address is single use only. To make a second deposit, please
         generate a new address.
       </BodyMd>
-      <BTCAddressSection btcDepositAddress={btcDepositAddress} />
+      <BTCAddressSection
+        btcDepositAddress={btcDepositAddress}
+        chainName={chainInfo.chainName}
+      />
       <Alert status="info" mt={6}>
         <AlertIcon />
         <BodySm>
