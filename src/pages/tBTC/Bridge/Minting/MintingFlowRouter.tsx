@@ -15,6 +15,7 @@ import { useRemoveDepositData } from "../../../../hooks/tbtc/useRemoveDepositDat
 import { useAppDispatch } from "../../../../hooks/store"
 import { tbtcSlice } from "../../../../store/tbtc"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { isMainnetChainId } from "../../../../networks/utils"
 
 const MintingFlowRouterBase = () => {
   const dispatch = useAppDispatch()
@@ -86,13 +87,16 @@ const MintingFlowRouterBase = () => {
 }
 
 export const MintingFlowRouter: FC = () => {
+  const { chainId } = useIsActive()
   return (
     <Flex flexDirection="column">
       <>
         <MintingFlowRouterBase />
-        <Box as="p" textAlign="center" mt="6">
-          <BridgeContractLink />
-        </Box>
+        {chainId && isMainnetChainId(chainId) && (
+          <Box as="p" textAlign="center" mt="6">
+            <BridgeContractLink />
+          </Box>
+        )}
       </>
     </Flex>
   )
