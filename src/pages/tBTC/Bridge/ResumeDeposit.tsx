@@ -44,6 +44,7 @@ import {
   getEthereumNetworkNameFromChainId,
   isL1Network,
   isL2Network,
+  isMainnetChainId,
   isSameChainNameOrId,
 } from "../../../networks/utils"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
@@ -133,9 +134,11 @@ export const ResumeDepositPage: PageComponent = () => {
           checkDepositExpiration={checkDepositExpiration}
           bitcoinNetwork={threshold.tbtc.bitcoinNetwork}
         />
-        <Box as="p" textAlign="center" mt="10">
-          <BridgeContractLink />
-        </Box>
+        {chainId && isMainnetChainId(chainId) && (
+          <Box as="p" textAlign="center" mt="10">
+            <BridgeContractLink />
+          </Box>
+        )}
       </>
     </Card>
   )
