@@ -521,7 +521,7 @@ export class TBTC implements ITBTC {
   private _tbtcVaultContract: Contract | null
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
-  private _l2TbtcToken: DestinationChainTBTCToken | null = null
+  private _l2TbtcToken: Contract | null = null
   private _l1BitcoinRedeemerContract: Contract | null = null
   private _l2BitcoinRedeemerContract: Contract | null = null
   private _l2BitcoinRedeemerQueryContract: Contract | null = null
@@ -2034,15 +2034,14 @@ export class TBTC implements ITBTC {
     }
 
     if (this._crossChainConfig.isCrossChain) {
-      const { targetChainTxHash } =
-        await sdk.redemptions.requestCrossChainRedemption(
-          btcAddress,
-          BigNumber.from(amount),
-          this._crossChainConfig.chainName as DestinationChainName
-        )
+      const result = await sdk.redemptions.requestCrossChainRedemption(
+        btcAddress,
+        BigNumber.from(amount),
+        this._crossChainConfig.chainName as DestinationChainName
+      )
 
       return {
-        hash: targetChainTxHash.toPrefixedString(),
+        hash: result.targetChainTxHash.toPrefixedString(),
         additionalParams: {
           walletPublicKey: undefined,
           chainName: this._crossChainConfig.chainName,
@@ -2381,10 +2380,10 @@ export class TBTC implements ITBTC {
     }
 
     // Get the L2 tBTC token address
-    const l2TbtcTokenAddress =
-      this._l2TbtcToken.getChainIdentifier().identifierHex
+    const l2TbtcTokenAddress = this._l2TbtcToken._instance.address.toLowerCase()
 
-    const l2BitcoinRedeemerAddress = this._l2BitcoinRedeemerContract.address
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract._instance.address
 
     // Create a standard ERC20 contract instance
     const erc20Abi = [
@@ -2392,7 +2391,7 @@ export class TBTC implements ITBTC {
     ]
 
     const l2TbtcTokenContract = getContract(
-      `0x${l2TbtcTokenAddress}`,
+      l2TbtcTokenAddress,
       erc20Abi,
       this._ethereumConfig.ethereumProviderOrSigner as
         | providers.Provider
@@ -2420,10 +2419,10 @@ export class TBTC implements ITBTC {
     }
 
     // Get the L2 tBTC token address
-    const l2TbtcTokenAddress =
-      this._l2TbtcToken.getChainIdentifier().identifierHex
+    const l2TbtcTokenAddress = this._l2TbtcToken._instance.address.toLowerCase()
 
-    const l2BitcoinRedeemerAddress = this._l2BitcoinRedeemerContract.address
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract._instance.address
 
     // Create a standard ERC20 contract instance
     const erc20Abi = [
@@ -2431,7 +2430,7 @@ export class TBTC implements ITBTC {
     ]
 
     const l2TbtcTokenContract = getContract(
-      `0x${l2TbtcTokenAddress}`,
+      l2TbtcTokenAddress,
       erc20Abi,
       this._ethereumConfig.ethereumProviderOrSigner as
         | providers.Provider
@@ -2439,11 +2438,16 @@ export class TBTC implements ITBTC {
       this._ethereumConfig.account
     )
 
-    const tx = await l2TbtcTokenContract.approve(
-      l2BitcoinRedeemerAddress,
-      amount
-    )
+    try {
+      const tx = await l2TbtcTokenContract.approve(
+        l2BitcoinRedeemerAddress,
+        amount
+      )
 
-    return tx.wait()
+      return tx.wait()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 }
