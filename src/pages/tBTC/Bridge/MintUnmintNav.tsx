@@ -14,29 +14,6 @@ import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { Contract } from "ethers"
 
-const renderNavItem = (
-  page: PageComponent,
-  index: number,
-  isDisabled: boolean
-) => (
-  <>
-    {isDisabled ? (
-      <></>
-    ) : (
-      <FilterTab
-        key={page.route.path}
-        as={Link}
-        to={page.route.path}
-        tabId={index.toString()}
-        textDecoration="none"
-        _groupHover={{ textDecoration: "none" }}
-      >
-        {page.route.title}
-      </FilterTab>
-    )}
-  </>
-)
-
 export const MintUnmintNav: FC<
   ComponentProps<typeof Card> & { pages: PageComponent[] }
 > = ({ pages, ...props }) => {
@@ -71,7 +48,24 @@ export const MintUnmintNav: FC<
           .map((page, index) => {
             const isUnmint =
               !!page.route.title && page.route.title.toLowerCase() !== "mint"
-            return renderNavItem(page, index, shouldDisableUnmint && isUnmint)
+            const isDisabled = shouldDisableUnmint && isUnmint
+
+            if (isDisabled) {
+              return null
+            }
+
+            return (
+              <FilterTab
+                key={page.route.path}
+                as={Link}
+                to={page.route.path}
+                tabId={index.toString()}
+                textDecoration="none"
+                _groupHover={{ textDecoration: "none" }}
+              >
+                {page.route.title}
+              </FilterTab>
+            )
           })}
       </FilterTabs>
     </Box>

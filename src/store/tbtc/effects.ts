@@ -19,29 +19,63 @@ export const fetchBridgeActivityEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.requestBridgeActivity>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { depositor } = action.payload
+  const { depositor, chainId } = action.payload
 
   if (!isAddress(depositor) || isAddressZero(depositor)) return
 
-  listenerApi.unsubscribe()
-  listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
+  // Cancel any in-progress instances of this listener.
+  listenerApi.cancelActiveListeners()
 
-  try {
-    const data = await listenerApi.extra.threshold.tbtc.getBridgeActivity(
-      depositor
-    )
-    listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
-  } catch (error) {
-    console.error("Could not fetch bridge activity: ", error)
-    listenerApi.subscribe()
-    listenerApi.dispatch(
-      tbtcSlice.actions.bridgeActivityFailed({
-        error: "Could not fetch bridge activity.",
-      })
-    )
-  } finally {
-    listenerApi.subscribe()
-  }
+  const pollingTask = listenerApi.fork(async (forkApi) => {
+    try {
+      while (true) {
+        listenerApi.dispatch(tbtcSlice.actions.fetchingBridgeActivity())
+        try {
+          const data = await forkApi.pause(
+            listenerApi.extra.threshold.tbtc.getBridgeActivity(
+              depositor,
+              chainId
+            )
+          )
+          listenerApi.dispatch(tbtcSlice.actions.bridgeActivityFetched(data))
+          if (data && data.length > 0) {
+            break
+          }
+        } catch (error) {
+          if (
+            error instanceof TaskAbortError ||
+            (error as any)?.code === "listener-cancelled" ||
+            (error as any)?.name === "TaskAbortError"
+          ) {
+            // Listener was cancelled; stop silently
+            break
+          }
+          console.error("Could not fetch bridge activity: ", error)
+          listenerApi.dispatch(
+            tbtcSlice.actions.bridgeActivityFailed({
+              error: "Could not fetch bridge activity.",
+            })
+          )
+        }
+        await forkApi.delay(30 * ONE_SEC_IN_MILISECONDS)
+      }
+    } catch (err) {
+      if (!(err instanceof TaskAbortError)) {
+        console.error("Bridge activity polling failed.", err)
+      }
+    }
+  })
+
+  // Stop polling task once non-empty activity is fetched
+  await listenerApi.condition((action) => {
+    if (!tbtcSlice.actions.bridgeActivityFetched.match(action)) return false
+    const { payload } = action as ReturnType<
+      typeof tbtcSlice.actions.bridgeActivityFetched
+    >
+    return Array.isArray(payload) && payload.length > 0
+  })
+
+  pollingTask.cancel()
 }
 
 export const findUtxoEffect = async (
@@ -282,11 +316,13 @@ export const crossChainConfigChangedEffect = async (
   action: ReturnType<typeof tbtcSlice.actions.crossChainConfigChanged>,
   listenerApi: AppListenerEffectAPI
 ) => {
-  const { isCrossChain, depositor } = action.payload
+  const { isCrossChain, depositor, chainId } = action.payload
 
   // If cross-chain is enabled, refetch bridge activity to include cross-chain redemptions
   if (isCrossChain) {
-    listenerApi.dispatch(tbtcSlice.actions.requestBridgeActivity({ depositor }))
+    listenerApi.dispatch(
+      tbtcSlice.actions.requestBridgeActivity({ depositor, chainId })
+    )
   }
 }
 
@@ -297,5 +333,7 @@ export const ethereumChainIdChangedEffect = async (
   const { chainId, depositor } = action.payload
 
   // Refetch bridge activity when chain ID changes
-  listenerApi.dispatch(tbtcSlice.actions.requestBridgeActivity({ depositor }))
+  listenerApi.dispatch(
+    tbtcSlice.actions.requestBridgeActivity({ depositor, chainId })
+  )
 }

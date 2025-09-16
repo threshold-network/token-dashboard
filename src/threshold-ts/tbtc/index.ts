@@ -60,6 +60,7 @@ import {
   getEthereumNetworkNameFromChainId,
   getMainnetOrTestnetChainId,
   isTestnetChainId,
+  isL2Network,
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
@@ -227,7 +228,7 @@ export interface ITBTC {
 
   readonly l1BitcoinDepositorContract: Contract | null
 
-  readonly l2TbtcToken: DestinationChainTBTCToken | null
+  readonly l2TbtcToken: Contract | null
 
   readonly l1BitcoinRedeemerContract: Contract | null
 
@@ -385,7 +386,7 @@ export interface ITBTC {
    * @param account Ethereum address.
    * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
-  getBridgeActivity(account: string): Promise<BridgeActivity[]>
+  getBridgeActivity(account: string, chainId: number): Promise<BridgeActivity[]>
 
   /**
    * Builds the deposit key required to refer a revealed deposit.
@@ -406,7 +407,10 @@ export interface ITBTC {
     txHashByteOrder?: BitcoinTransactionHashByteOrder
   ): string
 
-  findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+  findAllRevealedDeposits(
+    depositor: string,
+    chainId: number
+  ): Promise<RevealedDepositEvent[]>
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
@@ -578,7 +582,7 @@ export class TBTC implements ITBTC {
     // This ensures that, if the user is connected to an L2 network, the TBTC
     // contracts are connected to the corresponding Ethereum mainnet or testnet
     // based on which type of network the user is connected to.
-    const mainnetOrTestnetEthereumChainId = getMainnetOrTestnetChainId(chainId)
+    const mainnetOrTestnetEthereumChainId = getEthereumDefaultProviderChainId()
     const defaultOrConnectedProvider = getThresholdLibProvider(
       mainnetOrTestnetEthereumChainId
     )
@@ -787,7 +791,7 @@ export class TBTC implements ITBTC {
   }
 
   get crossChainConfig(): CrossChainConfig {
-    return this.crossChainConfig
+    return this._crossChainConfig
   }
 
   get l2TbtcToken() {
@@ -830,7 +834,8 @@ export class TBTC implements ITBTC {
     const crossChainContracts = sdk.crossChainContracts(
       this._crossChainConfig.chainName as DestinationChainName
     )
-    this._l2TbtcToken = crossChainContracts?.destinationChainTbtcToken ?? null
+    this._l2TbtcToken =
+      crossChainContracts?.destinationChainTbtcToken as unknown as Contract | null
 
     // SDK's L2BitcoinRedeemer for write operations
     this._l2BitcoinRedeemerContract =
@@ -1145,8 +1150,14 @@ export class TBTC implements ITBTC {
     return 6
   }
 
-  getBridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
-    const depositActivities = await this._findAllDepositActivities(account)
+  getBridgeActivity = async (
+    account: string,
+    chainId: number
+  ): Promise<BridgeActivity[]> => {
+    const depositActivities = await this._findAllDepositActivities(
+      account,
+      chainId
+    )
     const redemptionActivities = await this._findAllRedemptionActivities(
       account
     )
@@ -1157,7 +1168,8 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllDepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
     let l1DepositActivities: BridgeActivity[] = []
     // Check if this is a StarkNet address (0x prefixed, 64-66 chars)
@@ -1165,13 +1177,17 @@ export class TBTC implements ITBTC {
       depositor.startsWith("0x") && depositor.length >= 64
 
     if (!isStarkNetAddress) {
-      l1DepositActivities = await this._findL1DepositActivities(depositor)
+      l1DepositActivities = await this._findL1DepositActivities(
+        depositor,
+        chainId
+      )
     }
 
     let l2DepositActivities: BridgeActivity[] = []
-    if (this._crossChainConfig.isCrossChain || isStarkNetAddress) {
+    if (isL2Network(chainId) || isStarkNetAddress) {
       l2DepositActivities = await this._findCrossChainDepositActivities(
-        depositor
+        depositor,
+        chainId
       )
     }
 
@@ -1182,9 +1198,10 @@ export class TBTC implements ITBTC {
   }
 
   findAllRevealedDeposits = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<RevealedDepositEvent[]> => {
-    const ethereumChainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+    const ethereumChainId = getMainnetOrTestnetChainId(chainId)
 
     const bridgeArtifact = getArtifact(
       "Bridge",
@@ -1227,9 +1244,13 @@ export class TBTC implements ITBTC {
   }
 
   private _findL1DepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
-    const revealedDeposits = await this.findAllRevealedDeposits(depositor)
+    const revealedDeposits = await this.findAllRevealedDeposits(
+      depositor,
+      chainId
+    )
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
 
     if (depositKeys.length === 0) {
@@ -1297,7 +1318,8 @@ export class TBTC implements ITBTC {
   }
 
   private _findCrossChainDepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
     const crossChainDepositActivities: BridgeActivity[] = []
 
@@ -1331,7 +1353,8 @@ export class TBTC implements ITBTC {
     }
 
     const crossChainAllRevealedDeposits = await this.findAllRevealedDeposits(
-      l1BitcoinDepositorContract?.address as string
+      l1BitcoinDepositorContract?.address as string,
+      chainId
     )
 
     const crossChainDepositKeys = crossChainAllRevealedDeposits.map(

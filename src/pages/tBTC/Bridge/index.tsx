@@ -15,6 +15,7 @@ import { UnmintPage } from "./Unmint"
 import { useIsActive } from "../../../hooks/useIsActive"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
+import { getEthereumDefaultProviderChainId } from "../../../utils/getEnvVariable"
 
 const gridTemplateAreas = {
   base: `
@@ -33,9 +34,10 @@ const TBTCBridge: PageComponent = (props) => {
     (state) => state.tbtc.bridgeActivity.isFetching
   )
   const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
-  const { account } = useIsActive()
+  const { account, chainId } = useIsActive()
   const { nonEVMPublicKey } = useNonEVMConnection()
   const threshold = useThreshold()
+  const defaultChainId = getEthereumDefaultProviderChainId()
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
@@ -47,6 +49,7 @@ const TBTCBridge: PageComponent = (props) => {
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account ?? (nonEVMPublicKey as string),
+        chainId: chainId ?? defaultChainId,
       })
     )
   }, [dispatch, account, nonEVMPublicKey, mintingStep])
@@ -65,6 +68,7 @@ const TBTCBridge: PageComponent = (props) => {
         tbtcSlice.actions.crossChainConfigChanged({
           isCrossChain: true,
           depositor,
+          chainId: chainId ?? defaultChainId,
         })
       )
     }

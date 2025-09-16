@@ -25,7 +25,7 @@ import { useThreshold } from "../../../contexts/ThresholdContext"
 const Network: PageComponent = () => {
   const [tvlInUSD, fetchtTvlData, tvlInTokenUnits] = useFetchTvl()
   const [deposits, isFetching, error] = useFetchRecentDeposits()
-  const { account } = useIsActive()
+  const { account, chainId } = useIsActive()
   const dispatch = useAppDispatch()
   const bridgeActivity = useAppSelector(selectBridgeActivity)
   const isBridgeActivityFetching = useAppSelector(
@@ -34,11 +34,12 @@ const Network: PageComponent = () => {
   const threshold = useThreshold()
 
   useEffect(() => {
-    if (!account) return
+    if (!account || !chainId) return
 
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account,
+        chainId,
       })
     )
   }, [dispatch, account, threshold.tbtc.ethereumChainId])

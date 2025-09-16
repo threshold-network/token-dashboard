@@ -3,6 +3,7 @@ import { useThreshold } from "../../contexts/ThresholdContext"
 import { getContractPastEvents, isEmptyOrZeroAddress } from "../../web3/utils"
 import { reverseTxHash } from "../../threshold-ts/utils"
 import { DepositState } from "@keep-network/tbtc-v2.ts"
+import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
 
 export type DepositData = {
   depositRevealedTxHash: string
@@ -59,8 +60,11 @@ export const useFetchDepositDetails = (depositKey: string | undefined) => {
           return
         }
 
+        const defaultChainId = getEthereumDefaultProviderChainId()
+
         const revealedDeposits = await threshold.tbtc.findAllRevealedDeposits(
-          depositor
+          depositor,
+          defaultChainId
         )
 
         const deposit = revealedDeposits.find(

@@ -37,7 +37,7 @@ export const tbtcSlice = createSlice({
     },
     requestBridgeActivity: (
       state,
-      action: PayloadAction<{ depositor: string }>
+      action: PayloadAction<{ depositor: string; chainId: number }>
     ) => {},
     fetchingBridgeActivity: (state) => {
       state.bridgeActivity.isFetching = true
@@ -193,6 +193,7 @@ export const tbtcSlice = createSlice({
       action: PayloadAction<{
         isCrossChain: boolean
         depositor: string
+        chainId: number
       }>
     ) => {
       // This action triggers a refetch of bridge activity when cross-chain config changes
