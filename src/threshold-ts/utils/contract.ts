@@ -26,8 +26,9 @@ import StakingArtifactMainnet from "../staking/mainnet-artifacts/TokenStaking.js
 import RandomBeaconArtifactMainnet from "../tbtc/mainnet-artifacts/RandomBeacon.json"
 import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
 import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
-import BaseL2BitcoinRedeemerArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
-import ArbitrumL2BitcoinRedeemerArtifactMainnet from "../staking/mainnet-artifacts/LegacyKeepStaking.json"
+import L1BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/L1BitcoinRedeemer.json"
+import BaseL2BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/BaseL2BitcoinRedeemer.json"
+import ArbitrumL2BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/ArbitrumL2BitcoinRedeemer.json"
 
 import ArbitrumL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/ArbitrumL1BitcoinDepositor.json"
 import BaseL1BitcoinDepositorArtifactSepolia from "../tbtc/sepolia-artifacts/BaseL1BitcoinDepositor.json"
@@ -94,6 +95,7 @@ const contractArtifacts: ContractArtifacts = {
     ArbitrumL2BitcoinRedeemer: ArbitrumL2BitcoinRedeemerArtifactMainnet,
     BaseL2BitcoinRedeemer: BaseL2BitcoinRedeemerArtifactMainnet,
     ArbitrumL1BitcoinDepositor: ArbitrumL1BitcoinDepositorArtifactMainnet,
+    L1BitcoinRedeemer: L1BitcoinRedeemerArtifactMainnet,
     BaseL1BitcoinDepositor: BaseL1BitcoinDepositorArtifactMainnet,
     StarkNetBitcoinDepositor: StarkNetBitcoinDepositorArtifactMainnet,
     TacoRegistry:
