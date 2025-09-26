@@ -889,6 +889,12 @@ export class TBTC implements ITBTC {
         ? getEthereumNetworkNameFromChainId(ethereumChainId)
         : this._crossChainConfig.chainName
 
+    // Ensure cross-chain contracts are initialized for the destination chain
+    await this._initiateCrossChain(
+      this._ethereumConfig.ethereumProviderOrSigner as Web3Provider,
+      this._ethereumConfig.account as string
+    )
+
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
       destinationNetworkName as Exclude<keyof typeof Chains, "Ethereum">
