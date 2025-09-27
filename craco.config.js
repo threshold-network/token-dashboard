@@ -62,6 +62,10 @@ module.exports = {
         starknet: require.resolve("starknet"),
       }
 
+      // Treat .mjs files in node_modules as javascript/auto so CRA's webpack 4 can
+      // properly handle ESM-only packages. Without this, imports from deps like
+      // starknet.js, multiformats, uint8arrays (and transitively @keep-network/tbtc-v2.ts)
+      // can fail with "Module parse failed" or missing named export errors.
       webpackConfig.module.rules.push({
         test: /\.mjs$/,
         include: /node_modules/,
