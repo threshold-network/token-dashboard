@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { isValidType, getContractPastEvents } from "../../threshold-ts/utils"
 import { useGetBlock } from "../../web3/hooks"
@@ -46,6 +46,7 @@ export const useFetchCrossChainRedemptionDetails = (
   )
   const defaultChainId = getEthereumDefaultProviderChainId()
   const isMainnet = isMainnetChainId(defaultChainId)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setError("")
@@ -91,8 +92,6 @@ export const useFetchCrossChainRedemptionDetails = (
     if (redemptionData?.completedAt && !hasEncodedVmChanged) {
       return
     }
-
-    let intervalId: NodeJS.Timeout | undefined
 
     const fetch = async () => {
       setIsFetching(true)
@@ -191,19 +190,19 @@ export const useFetchCrossChainRedemptionDetails = (
           if (!redemptionData?.completedAt) {
             setRedemptionData(undefined)
 
-            if (!intervalId) {
-              intervalId = setInterval(() => {
+            if (!intervalRef.current) {
+              intervalRef.current = setInterval(() => {
                 fetch()
-              }, 30000)
+              }, 30000) as unknown as NodeJS.Timeout
             }
           }
           return
         }
 
         // Clear interval if we found events
-        if (intervalId) {
-          clearInterval(intervalId)
-          intervalId = undefined
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
         }
 
         // Get the most recent event
@@ -316,8 +315,9 @@ export const useFetchCrossChainRedemptionDetails = (
 
     // Cleanup function to clear interval when component unmounts or dependencies change
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId)
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
       }
     }
   }, [
