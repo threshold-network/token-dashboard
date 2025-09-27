@@ -15,7 +15,7 @@ export const useFetchL2RedemptionRequestedEvent = (
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!txHash || !enabled) {
+    if (!txHash || !enabled || !provider) {
       setData(null)
       return
     }
