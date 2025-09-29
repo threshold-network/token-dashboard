@@ -171,7 +171,8 @@ export const ProvideDataComponent: FC<{
   const { account, chainId } = useIsActive()
   const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
     useNonEVMConnection()
-  const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
+  const { setDepositDataInLocalStorage, removeDepositDataFromLocalStorage } =
+    useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
   const connectedAccount = account || nonEVMPublicKey
   const { openModal, closeModal: closeModalFromHook, modalType } = useModal()
@@ -263,7 +264,13 @@ export const ProvideDataComponent: FC<{
         networkName
       )
 
-      depositTelemetry(receipt, btcDepositAddress)
+      try {
+        await depositTelemetry(receipt, btcDepositAddress)
+      } catch (error) {
+        removeDepositDataFromLocalStorage(networkName)
+        setSubmitButtonLoading(false)
+        return
+      }
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       if (shouldDownloadDepositReceipt) {
