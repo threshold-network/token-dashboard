@@ -62,7 +62,6 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
           { timeout: 10000 }
         )
       } catch (error) {
-        console.error("Failed to submit deposit telemetry:", error)
         throw new Error("Failed to submit deposit telemetry", { cause: error })
       }
     },
