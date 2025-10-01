@@ -101,42 +101,42 @@ export const networks: Network[] = [
       blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.Sepolia)],
     },
   },
-  // {
-  //   chainId: SupportedChainIds.ArbitrumSepolia,
-  //   name: "Arbitrum",
-  //   layer: Layer.L2,
-  //   networkType: NetworkType.Testnet,
-  //   alchemyName: AlchemyName.Arbitrum,
-  //   chainParameters: {
-  //     chainId: toHex(SupportedChainIds.ArbitrumSepolia),
-  //     chainName: "Arbitrum Sepolia",
-  //     nativeCurrency: {
-  //       name: NativeCurrency.SepoliaEther,
-  //       symbol: ETH_SYMBOL,
-  //       decimals: DECIMALS,
-  //     },
-  //     rpcUrls: [PublicRpcUrls.ArbitrumSepolia],
-  //     blockExplorerUrls: [
-  //       createExplorerPrefix(SupportedChainIds.ArbitrumSepolia),
-  //     ],
-  //   },
-  // },
-  // {
-  //   chainId: SupportedChainIds.BaseSepolia,
-  //   name: "Base",
-  //   layer: Layer.L2,
-  //   networkType: NetworkType.Testnet,
-  //   alchemyName: AlchemyName.Base,
-  //   chainParameters: {
-  //     chainId: toHex(SupportedChainIds.BaseSepolia),
-  //     chainName: "Base Sepolia",
-  //     nativeCurrency: {
-  //       name: NativeCurrency.SepoliaEther,
-  //       symbol: ETH_SYMBOL,
-  //       decimals: DECIMALS,
-  //     },
-  //     rpcUrls: [PublicRpcUrls.BaseSepolia],
-  //     blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.BaseSepolia)],
-  //   },
-  // },
+  {
+    chainId: SupportedChainIds.ArbitrumSepolia,
+    name: "Arbitrum",
+    layer: Layer.L2,
+    networkType: NetworkType.Testnet,
+    alchemyName: AlchemyName.Arbitrum,
+    chainParameters: {
+      chainId: toHex(SupportedChainIds.ArbitrumSepolia),
+      chainName: "Arbitrum Sepolia",
+      nativeCurrency: {
+        name: NativeCurrency.SepoliaEther,
+        symbol: ETH_SYMBOL,
+        decimals: DECIMALS,
+      },
+      rpcUrls: [PublicRpcUrls.ArbitrumSepolia],
+      blockExplorerUrls: [
+        createExplorerPrefix(SupportedChainIds.ArbitrumSepolia),
+      ],
+    },
+  },
+  {
+    chainId: SupportedChainIds.BaseSepolia,
+    name: "Base",
+    layer: Layer.L2,
+    networkType: NetworkType.Testnet,
+    alchemyName: AlchemyName.Base,
+    chainParameters: {
+      chainId: toHex(SupportedChainIds.BaseSepolia),
+      chainName: "Base Sepolia",
+      nativeCurrency: {
+        name: NativeCurrency.SepoliaEther,
+        symbol: ETH_SYMBOL,
+        decimals: DECIMALS,
+      },
+      rpcUrls: [PublicRpcUrls.BaseSepolia],
+      blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.BaseSepolia)],
+    },
+  },
 ]

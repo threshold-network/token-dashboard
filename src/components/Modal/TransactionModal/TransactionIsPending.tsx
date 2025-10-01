@@ -12,8 +12,10 @@ import ViewInBlockExplorer from "../../ViewInBlockExplorer"
 import { ExplorerDataType } from "../../../networks/enums/networks"
 import { useWeb3React } from "@web3-react/core"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
+import withBaseModal from "../withBaseModal"
+import { BaseModalProps } from "../../../types"
 
-interface Props {
+interface Props extends BaseModalProps {
   transactionHash: string
 }
 
@@ -55,4 +57,4 @@ const TransactionIsPending: FC<Props> = ({ transactionHash }) => {
   )
 }
 
-export default TransactionIsPending
+export default withBaseModal(TransactionIsPending)

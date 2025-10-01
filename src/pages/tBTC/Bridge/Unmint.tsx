@@ -61,6 +61,9 @@ import { featureFlags } from "../../../constants"
 import { BridgeProcessEmptyState } from "./components/BridgeProcessEmptyState"
 import { useIsActive } from "../../../hooks/useIsActive"
 import SubmitTxButton from "../../../components/SubmitTxButton"
+import { useEffect, useState } from "react"
+import { useApproveL2TBTCToken } from "../../../hooks/tbtc"
+import { BigNumber } from "ethers"
 import { isMainnetChainId, isSupportedNetwork } from "../../../networks/utils"
 
 const UnmintFormPage: PageComponent = ({}) => {
@@ -157,9 +160,80 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
     "unmint",
     bitcoinNetwork
   )
-  const { isSubmitting, getFieldMeta } = useFormikContext()
+  const { isSubmitting, getFieldMeta, values } =
+    useFormikContext<UnmintFormValues>()
   const { error } = getFieldMeta("wallet")
   const errorColor = useColorModeValue("red.500", "red.300")
+  const { account } = useIsActive()
+  const { closeModal } = useModal()
+
+  const [allowance, setAllowance] = useState<BigNumber>(BigNumber.from(0))
+  const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)
+  const [isApproving, setIsApproving] = useState(false)
+
+  const isCrossChain = !!threshold.tbtc.l2BitcoinRedeemerContract
+  const amountToUnmint = values.amount
+    ? BigNumber.from(values.amount)
+    : BigNumber.from(0)
+  const needsApproval =
+    isCrossChain && amountToUnmint.gt(0) && allowance.lt(amountToUnmint)
+
+  const checkAllowance = async () => {
+    if (!isCrossChain || !account || !values.amount) return
+
+    setIsCheckingAllowance(true)
+    try {
+      // Double-check account exists before making the call
+      if (!account) {
+        console.warn("Account not available for allowance check")
+        return
+      }
+
+      const currentAllowance = await threshold.tbtc.getL2TBTCAllowance(account)
+      setAllowance(BigNumber.from(currentAllowance))
+    } catch (error) {
+      console.error("Error checking allowance:", error)
+      // Reset allowance on error to ensure user can still attempt approval
+      setAllowance(BigNumber.from(0))
+    } finally {
+      setIsCheckingAllowance(false)
+    }
+  }
+
+  useEffect(() => {
+    // Only check allowance if we have all required values
+    if (isCrossChain && account && values.amount) {
+      checkAllowance()
+    }
+  }, [account, values.amount, isCrossChain])
+
+  const { sendTransaction: approveToken } = useApproveL2TBTCToken(
+    async () => {
+      setIsApproving(false)
+      // Re-check allowance after approval
+      await checkAllowance()
+      closeModal()
+    },
+    () => {
+      setIsApproving(false)
+      closeModal()
+    }
+  )
+
+  const handleApprove = async () => {
+    setIsApproving(true)
+    await approveToken(amountToUnmint.toString())
+  }
+
+  const isButtonDisabled =
+    !threshold.tbtc.bridgeContract ||
+    isSubmitting ||
+    isCheckingAllowance ||
+    isApproving ||
+    !values.amount ||
+    !values.btcAddress ||
+    !!getFieldMeta("amount").error ||
+    !!getFieldMeta("btcAddress").error
 
   return (
     <Form mt={10}>
@@ -196,16 +270,29 @@ const UnmintFormBase: FC<UnmintFormBaseProps> = ({
           {error}
         </BodyMd>
       )}
-      <SubmitTxButton
-        size="lg"
-        isFullWidth
-        mt={error ? "0" : "10"}
-        isDisabled={!threshold.tbtc.bridgeContract}
-        type="submit"
-        isLoading={isSubmitting}
-      >
-        Unmint
-      </SubmitTxButton>
+      {needsApproval ? (
+        <SubmitTxButton
+          size="lg"
+          isFullWidth
+          mt={error ? "0" : "10"}
+          isDisabled={isButtonDisabled}
+          onClick={handleApprove}
+          isLoading={isApproving || isCheckingAllowance}
+        >
+          {isCheckingAllowance ? "Checking allowance..." : "Approve tBTC"}
+        </SubmitTxButton>
+      ) : (
+        <SubmitTxButton
+          size="lg"
+          isFullWidth
+          mt={error ? "0" : "10"}
+          isDisabled={isButtonDisabled}
+          type="submit"
+          isLoading={isSubmitting || isCheckingAllowance}
+        >
+          {isCheckingAllowance ? "Checking allowance..." : "Unmint"}
+        </SubmitTxButton>
+      )}
     </Form>
   )
 }

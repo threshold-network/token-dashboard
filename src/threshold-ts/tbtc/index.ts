@@ -1,5 +1,5 @@
 import { BlockTag, TransactionReceipt } from "@ethersproject/abstract-provider"
-import { Web3Provider } from "@ethersproject/providers"
+import { Web3Provider, JsonRpcProvider } from "@ethersproject/providers"
 import {
   BitcoinClient,
   BitcoinTx,
@@ -59,10 +59,13 @@ import {
   isL1Network,
   getEthereumNetworkNameFromChainId,
   getMainnetOrTestnetChainId,
+  isTestnetChainId,
+  isL2Network,
 } from "../../networks/utils"
 import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
+import { getCrossChainRpcUrl } from "../../networks/utils/getCrossChainRpcUrl"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -89,6 +92,7 @@ export interface BridgeActivity {
 export interface UnmintBridgeActivityAdditionalData {
   redeemerOutputScript: string
   walletPublicKeyHash: string
+  chainName?: string
 }
 
 export interface RevealedDepositEvent {
@@ -208,7 +212,7 @@ export interface ITBTC {
    * threshold lib.
    * @returns {string | number}
    */
-  readonly ethereumChainId: string | number
+  readonly ethereumChainId?: string | number
   /**
    * Bitcoin network specified in the bitcoin config that we pass to the
    * threshold lib.
@@ -224,11 +228,20 @@ export interface ITBTC {
 
   readonly l1BitcoinDepositorContract: Contract | null
 
-  readonly l2TbtcToken: DestinationChainTBTCToken | null
+  readonly l2TbtcToken: Contract | null
+
+  readonly l1BitcoinRedeemerContract: Contract | null
+
+  readonly l2BitcoinRedeemerContract: Contract | null
 
   readonly deposit: Deposit | undefined
 
   readonly crossChainConfig: CrossChainConfig
+
+  /**
+   * A flag to indicate if the tBTC SDK is ready to be used.
+   */
+  isTbtcReady: boolean
 
   /**
    * Initializes tbtc-v2 SDK
@@ -373,7 +386,7 @@ export interface ITBTC {
    * @param account Ethereum address.
    * @returns Bridge transaction history @see {@link BridgeActivity}.
    */
-  getBridgeActivity(account: string): Promise<BridgeActivity[]>
+  getBridgeActivity(account: string, chainId: number): Promise<BridgeActivity[]>
 
   /**
    * Builds the deposit key required to refer a revealed deposit.
@@ -394,7 +407,10 @@ export interface ITBTC {
     txHashByteOrder?: BitcoinTransactionHashByteOrder
   ): string
 
-  findAllRevealedDeposits(depositor: string): Promise<RevealedDepositEvent[]>
+  findAllRevealedDeposits(
+    depositor: string,
+    chainId: number
+  ): Promise<RevealedDepositEvent[]>
 
   /**
    * Requests a redemption from the on-chain Bridge contract.
@@ -413,7 +429,8 @@ export interface ITBTC {
   ): Promise<{
     hash: string
     additionalParams: {
-      walletPublicKey: string
+      walletPublicKey?: string
+      chainName?: ChainName | null
     }
   }>
 
@@ -487,6 +504,20 @@ export interface ITBTC {
     treasuryFee: string
     estimatedAmountToBeReceived: string
   }>
+
+  /**
+   * Gets the current allowance of the L2 tBTC token for the L2 Bitcoin Redeemer contract.
+   * @param owner The address of the token owner
+   * @returns The current allowance amount in string format
+   */
+  getL2TBTCAllowance(owner: string): Promise<string>
+
+  /**
+   * Approves the L2 Bitcoin Redeemer contract to spend L2 tBTC tokens.
+   * @param amount The amount to approve in tBTC token unit
+   * @returns Transaction receipt or transaction hash
+   */
+  approveL2TBTCToken(amount: BigNumberish): Promise<string | TransactionReceipt>
 }
 
 export class TBTC implements ITBTC {
@@ -494,7 +525,10 @@ export class TBTC implements ITBTC {
   private _tbtcVaultContract: Contract | null
   private _tokenContract: Contract | null
   private _l1BitcoinDepositorContract: Contract | null = null
-  private _l2TbtcToken: DestinationChainTBTCToken | null = null
+  private _l2TbtcToken: Contract | null = null
+  private _l1BitcoinRedeemerContract: Contract | null = null
+  private _l2BitcoinRedeemerContract: Contract | null = null
+  private _l2BitcoinRedeemerQueryContract: Contract | null = null
   private _multicall: IMulticall
   private _bitcoinClient: BitcoinClient
   private _ethereumConfig: EthereumConfig
@@ -523,11 +557,14 @@ export class TBTC implements ITBTC {
   private _sdkPromise: Promise<SDK | undefined>
   private _deposit: Deposit | undefined
   private _crossChainConfig: CrossChainConfig
+  private _onAsyncInitializationDone: () => void
+  isTbtcReady: boolean
 
   constructor(
     ethereumConfig: EthereumConfig,
     bitcoinConfig: BitcoinConfig,
-    crossChainConfig: CrossChainConfig
+    crossChainConfig: CrossChainConfig,
+    onAsyncInitializationDone: () => void = () => {}
   ) {
     if (!bitcoinConfig.client && !bitcoinConfig.credentials) {
       throw new Error(
@@ -545,7 +582,7 @@ export class TBTC implements ITBTC {
     // This ensures that, if the user is connected to an L2 network, the TBTC
     // contracts are connected to the corresponding Ethereum mainnet or testnet
     // based on which type of network the user is connected to.
-    const mainnetOrTestnetEthereumChainId = getMainnetOrTestnetChainId(chainId)
+    const mainnetOrTestnetEthereumChainId = getEthereumDefaultProviderChainId()
     const defaultOrConnectedProvider = getThresholdLibProvider(
       mainnetOrTestnetEthereumChainId
     )
@@ -602,6 +639,12 @@ export class TBTC implements ITBTC {
           ? getEthereumNetworkNameFromChainId(chainId)
           : this._crossChainConfig.chainName
 
+      const l1BitcoinRedeemerArtifact = getArtifact(
+        "L1BitcoinRedeemer" as ArtifactNameType,
+        mainnetOrTestnetEthereumChainId,
+        shouldUseTestnetDevelopmentContracts
+      )
+
       const l1BitcoinDepositorArtifact = getArtifact(
         `${networkName}L1BitcoinDepositor` as ArtifactNameType,
         mainnetOrTestnetEthereumChainId,
@@ -612,6 +655,15 @@ export class TBTC implements ITBTC {
         ? getContract(
             l1BitcoinDepositorArtifact.address,
             l1BitcoinDepositorArtifact.abi,
+            defaultOrConnectedProvider,
+            account
+          )
+        : null
+
+      this._l1BitcoinRedeemerContract = l1BitcoinRedeemerArtifact
+        ? getContract(
+            l1BitcoinRedeemerArtifact.address,
+            l1BitcoinRedeemerArtifact.abi,
             defaultOrConnectedProvider,
             account
           )
@@ -629,6 +681,8 @@ export class TBTC implements ITBTC {
     this._ethereumConfig = ethereumConfig
     this._bitcoinConfig = bitcoinConfig
     this._sdkPromise = new Promise((resolve) => resolve(undefined))
+    this._onAsyncInitializationDone = onAsyncInitializationDone
+    this.isTbtcReady = false
 
     this.initializeSdk(ethereumProviderOrSigner, account)
   }
@@ -701,6 +755,8 @@ export class TBTC implements ITBTC {
           account as string
         )
       }
+      this.isTbtcReady = true
+      this._onAsyncInitializationDone()
     } catch (err) {
       throw new Error(`Something went wrong when initializing tbtc sdk: ${err}`)
     }
@@ -710,7 +766,7 @@ export class TBTC implements ITBTC {
     return this._deposit
   }
 
-  get ethereumChainId(): string | number {
+  get ethereumChainId(): string | number | undefined {
     return this._ethereumConfig.chainId
   }
 
@@ -735,11 +791,19 @@ export class TBTC implements ITBTC {
   }
 
   get crossChainConfig(): CrossChainConfig {
-    return this.crossChainConfig
+    return this._crossChainConfig
   }
 
   get l2TbtcToken() {
     return this._l2TbtcToken
+  }
+
+  get l1BitcoinRedeemerContract() {
+    return this._l1BitcoinRedeemerContract
+  }
+
+  get l2BitcoinRedeemerContract() {
+    return this._l2BitcoinRedeemerContract
   }
 
   private _getSdk = async (): Promise<SDK> => {
@@ -770,7 +834,39 @@ export class TBTC implements ITBTC {
     const crossChainContracts = sdk.crossChainContracts(
       this._crossChainConfig.chainName as DestinationChainName
     )
-    this._l2TbtcToken = crossChainContracts?.destinationChainTbtcToken ?? null
+    this._l2TbtcToken =
+      crossChainContracts?.destinationChainTbtcToken as unknown as Contract | null
+
+    // SDK's L2BitcoinRedeemer for write operations
+    this._l2BitcoinRedeemerContract =
+      crossChainContracts?.l2BitcoinRedeemer as unknown as Contract | null
+
+    // Create a separate L2BitcoinRedeemer contract for queries using Alchemy provider
+    const l2BitcoinRedeemerArtifact = getArtifact(
+      `${destinationChainName}L2BitcoinRedeemer` as ArtifactNameType,
+      connectedChainId,
+      this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+    )
+
+    if (l2BitcoinRedeemerArtifact) {
+      try {
+        const alchemyRpcUrl = getCrossChainRpcUrl(connectedChainId)
+        const alchemyProvider = new JsonRpcProvider(alchemyRpcUrl)
+
+        this._l2BitcoinRedeemerQueryContract = getContract(
+          l2BitcoinRedeemerArtifact.address,
+          l2BitcoinRedeemerArtifact.abi,
+          alchemyProvider
+        )
+      } catch (error) {
+        console.warn(
+          "Failed to create L2BitcoinRedeemer query contract:",
+          error
+        )
+        // Fallback to using the same contract for queries
+        this._l2BitcoinRedeemerQueryContract = this._l2BitcoinRedeemerContract
+      }
+    }
   }
 
   initiateDeposit = async (btcRecoveryAddress: string): Promise<Deposit> => {
@@ -792,6 +888,12 @@ export class TBTC implements ITBTC {
       this._crossChainConfig.chainName === ChainName.Ethereum
         ? getEthereumNetworkNameFromChainId(ethereumChainId)
         : this._crossChainConfig.chainName
+
+    // Ensure cross-chain contracts are initialized for the destination chain
+    await this._initiateCrossChain(
+      this._ethereumConfig.ethereumProviderOrSigner as Web3Provider,
+      this._ethereumConfig.account as string
+    )
 
     this._deposit = await sdk.deposits.initiateCrossChainDeposit(
       btcRecoveryAddress,
@@ -1054,14 +1156,17 @@ export class TBTC implements ITBTC {
     return 6
   }
 
-  getBridgeActivity = async (account: string): Promise<BridgeActivity[]> => {
-    let redemptionActivities: BridgeActivity[] = []
-    const depositActivities = await this._findAllDepositActivities(account)
-    const isStarkNetAddress = account.startsWith("0x") && account.length >= 64
-
-    if (!isStarkNetAddress) {
-      redemptionActivities = await this._findRedemptionActivities(account)
-    }
+  getBridgeActivity = async (
+    account: string,
+    chainId: number
+  ): Promise<BridgeActivity[]> => {
+    const depositActivities = await this._findAllDepositActivities(
+      account,
+      chainId
+    )
+    const redemptionActivities = await this._findAllRedemptionActivities(
+      account
+    )
 
     return depositActivities
       .concat(redemptionActivities)
@@ -1069,7 +1174,8 @@ export class TBTC implements ITBTC {
   }
 
   private _findAllDepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
     let l1DepositActivities: BridgeActivity[] = []
     // Check if this is a StarkNet address (0x prefixed, 64-66 chars)
@@ -1077,13 +1183,17 @@ export class TBTC implements ITBTC {
       depositor.startsWith("0x") && depositor.length >= 64
 
     if (!isStarkNetAddress) {
-      l1DepositActivities = await this._findL1DepositActivities(depositor)
+      l1DepositActivities = await this._findL1DepositActivities(
+        depositor,
+        chainId
+      )
     }
 
     let l2DepositActivities: BridgeActivity[] = []
-    if (this._crossChainConfig.isCrossChain || isStarkNetAddress) {
+    if (isL2Network(chainId) || isStarkNetAddress) {
       l2DepositActivities = await this._findCrossChainDepositActivities(
-        depositor
+        depositor,
+        chainId
       )
     }
 
@@ -1094,9 +1204,10 @@ export class TBTC implements ITBTC {
   }
 
   findAllRevealedDeposits = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<RevealedDepositEvent[]> => {
-    const ethereumChainId = getMainnetOrTestnetChainId(this.ethereumChainId)
+    const ethereumChainId = getMainnetOrTestnetChainId(chainId)
 
     const bridgeArtifact = getArtifact(
       "Bridge",
@@ -1139,9 +1250,13 @@ export class TBTC implements ITBTC {
   }
 
   private _findL1DepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
-    const revealedDeposits = await this.findAllRevealedDeposits(depositor)
+    const revealedDeposits = await this.findAllRevealedDeposits(
+      depositor,
+      chainId
+    )
     const depositKeys = revealedDeposits.map((_) => _.depositKey)
 
     if (depositKeys.length === 0) {
@@ -1209,7 +1324,8 @@ export class TBTC implements ITBTC {
   }
 
   private _findCrossChainDepositActivities = async (
-    depositor: string
+    depositor: string,
+    chainId: number
   ): Promise<BridgeActivity[]> => {
     const crossChainDepositActivities: BridgeActivity[] = []
 
@@ -1243,7 +1359,8 @@ export class TBTC implements ITBTC {
     }
 
     const crossChainAllRevealedDeposits = await this.findAllRevealedDeposits(
-      l1BitcoinDepositorContract?.address as string
+      l1BitcoinDepositorContract?.address as string,
+      chainId
     )
 
     const crossChainDepositKeys = crossChainAllRevealedDeposits.map(
@@ -1540,6 +1657,38 @@ export class TBTC implements ITBTC {
     })
   }
 
+  private _findAllRedemptionActivities = async (
+    redeemer: string
+  ): Promise<BridgeActivity[]> => {
+    let l1RedemptionActivities: BridgeActivity[] = []
+    if (this._ethereumConfig.chainId === getEthereumDefaultProviderChainId()) {
+      l1RedemptionActivities = await this._findRedemptionActivities(redeemer)
+    }
+
+    let l2RedemptionActivities: BridgeActivity[] = []
+    // Check if we should fetch cross-chain redemptions
+    // This can be true if:
+    // 1. Cross-chain config is set to true
+    // 2. L2BitcoinRedeemer contract is available (indicates we're on L2)
+    // 3. It's a StarkNet address
+    if (
+      this._crossChainConfig.isCrossChain &&
+      this._l2BitcoinRedeemerContract
+    ) {
+      l2RedemptionActivities = await this._findCrossChainRedemptionActivities(
+        redeemer
+      )
+    }
+
+    const redemptionActivities = [
+      ...l1RedemptionActivities,
+      ...l2RedemptionActivities,
+    ]
+    redemptionActivities.sort((a, b) => a.blockNumber - b.blockNumber)
+
+    return redemptionActivities
+  }
+
   private _findRedemptionActivities = async (
     redeemer: string
   ): Promise<BridgeActivity[]> => {
@@ -1604,6 +1753,284 @@ export class TBTC implements ITBTC {
     return redemptions
   }
 
+  private _findCrossChainRedemptionActivities = async (
+    redeemer: string
+  ): Promise<BridgeActivity[]> => {
+    const crossChainRedemptionActivities: BridgeActivity[] = []
+
+    const queryContract =
+      this._l2BitcoinRedeemerQueryContract || this._l2BitcoinRedeemerContract
+
+    if (!queryContract) {
+      console.warn("L2 Bitcoin Redeemer contract is not initialized.")
+      return []
+    }
+
+    if (!this.ethereumChainId) {
+      console.warn("Ethereum chain ID is not initialized.")
+      return []
+    }
+
+    try {
+      const destinationChainName =
+        this._crossChainConfig.chainName === ChainName.Ethereum
+          ? getEthereumNetworkNameFromChainId(this.ethereumChainId)
+          : this._crossChainConfig.chainName
+
+      const l2BitcoinRedeemerArtifact = getArtifact(
+        `${destinationChainName}L2BitcoinRedeemer` as ArtifactNameType,
+        this.ethereumChainId,
+        this._ethereumConfig.shouldUseTestnetDevelopmentContracts
+      )
+
+      // Use the contract's built-in event querying instead of raw getLogs
+      let logs: any[] = []
+
+      try {
+        const deploymentBlock =
+          l2BitcoinRedeemerArtifact?.receipt.blockNumber || 0
+
+        // Try with deployment block
+        const filter =
+          // eslint-disable-next-line new-cap
+          queryContract.filters["RedemptionRequestedOnL2"]()
+        logs = await queryContract.queryFilter(
+          filter,
+          deploymentBlock,
+          "latest"
+        )
+      } catch (error) {
+        console.error("Error fetching L2 redemption events:", error)
+        return []
+      }
+
+      // Parse and filter events by redeemer
+      // Parse logs and filter by transaction sender
+      const filteredL2EventsPromises = logs.map(async (log: any) => {
+        try {
+          const parsedLog = queryContract.interface.parseLog(log)
+
+          // Get transaction receipt to check who sent the transaction
+          const receipt = await queryContract.provider.getTransactionReceipt(
+            log.transactionHash
+          )
+
+          // Check if the transaction sender matches the redeemer
+          if (receipt && isSameETHAddress(receipt.from, redeemer)) {
+            return {
+              ...parsedLog,
+              transactionHash: log.transactionHash,
+              blockNumber: log.blockNumber,
+            }
+          }
+
+          return null
+        } catch (e) {
+          return null
+        }
+      })
+
+      const filteredL2Events = (
+        await Promise.all(filteredL2EventsPromises)
+      ).filter((event: any) => event !== null)
+
+      // For each L2 event, we need to:
+      // 1. Fetch the VAA from Wormholescan
+      // 2. Find the corresponding L1 RedemptionRequested event
+      // 3. Check if it's completed
+      for (const l2Event of filteredL2Events) {
+        if (!l2Event) continue
+        try {
+          const l2TxHash = l2Event.transactionHash
+          const redeemerOutputScript = l2Event.args?.redeemerOutputScript
+          const amount = l2Event.args?.amount as BigNumber
+
+          // Default to pending status (only L2 event exists)
+          let status = BridgeActivityStatus.PENDING
+          let blockNumber = l2Event.blockNumber
+          let redemptionKey = ""
+          let walletPublicKeyHash = ""
+
+          // Try to fetch VAA and find L1 event
+          try {
+            // Fetch VAA from Wormholescan
+            const vaaResponse = await this._fetchVaaFromTxHash(l2TxHash)
+
+            if (vaaResponse?.encodedVm) {
+              // Find corresponding L1 RedemptionRequested event
+              const l1Event = await this._findL1RedemptionEventByEncodedVm(
+                redeemerOutputScript,
+                vaaResponse.encodedVm
+              )
+
+              if (l1Event) {
+                // We found the L1 event
+                walletPublicKeyHash = l1Event.args?.walletPubKeyHash
+                redemptionKey = this.buildRedemptionKey(
+                  walletPublicKeyHash,
+                  redeemerOutputScript
+                )
+                blockNumber = l1Event.blockNumber
+
+                // Check if redemption is completed
+                const redemptionDetails = await this.getRedemptionRequest(
+                  redemptionKey
+                )
+
+                if (redemptionDetails.requestedAt === 0) {
+                  // Redemption was completed
+                  status = BridgeActivityStatus.UNMINTED
+                } else if (redemptionDetails.isTimedOut) {
+                  status = BridgeActivityStatus.ERROR
+                }
+              }
+            }
+          } catch (vaaError) {
+            // If we can't fetch VAA or find L1 event, keep it as pending
+            console.log(
+              `Could not fetch VAA or find L1 event for tx ${l2TxHash}:`,
+              vaaError
+            )
+          }
+
+          crossChainRedemptionActivities.push({
+            status,
+            txHash: l2TxHash,
+            amount: amount.toString(), // Already in token precision from L2
+            activityKey: redemptionKey || `l2-${l2TxHash}`, // Use L2 tx hash as fallback key
+            bridgeProcess: "unmint",
+            blockNumber,
+            additionalData: {
+              redeemerOutputScript,
+              walletPublicKeyHash,
+              chainName: this._crossChainConfig.chainName,
+            } as UnmintBridgeActivityAdditionalData,
+          })
+        } catch (eventError) {
+          console.error(
+            `Error processing L2 redemption event ${l2Event.transactionHash}:`,
+            eventError
+          )
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching cross-chain redemption activities:", error)
+    }
+
+    return crossChainRedemptionActivities
+  }
+
+  private _fetchVaaFromTxHash = async (
+    txHash: string
+  ): Promise<{ encodedVm: Uint8Array } | null> => {
+    if (!this.ethereumChainId) {
+      console.warn("Ethereum chain ID is not initialized.")
+      return null
+    }
+
+    const isTestnet = isTestnetChainId(this.ethereumChainId)
+    const WORMHOLESCAN_API_URL = isTestnet
+      ? "https://api.testnet.wormholescan.io"
+      : "https://api.wormholescan.io"
+
+    try {
+      const response = await fetch(
+        `${WORMHOLESCAN_API_URL}/api/v1/vaas?txHash=${txHash}`
+      )
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+
+      if (data.data && data.data.length > 0) {
+        const vaa = data.data[0]
+        // Decode base64 to Uint8Array
+        const encodedVm = new Uint8Array(Buffer.from(vaa.vaa, "base64"))
+        return { encodedVm }
+      }
+
+      return null
+    } catch (error) {
+      console.error("Error fetching VAA from Wormholescan:", error)
+      return null
+    }
+  }
+
+  private _findL1RedemptionEventByEncodedVm = async (
+    redeemerOutputScript: string,
+    encodedVm: Uint8Array
+  ): Promise<any | null> => {
+    if (!this._l1BitcoinRedeemerContract) {
+      return null
+    }
+
+    try {
+      const mainnetOrTestnetChainId = getMainnetOrTestnetChainId(
+        this.ethereumChainId
+      )
+      const isMainnet = mainnetOrTestnetChainId === SupportedChainIds.Ethereum
+
+      // Get all RedemptionRequested events from L1BitcoinRedeemer
+      const allEvents = await getContractPastEvents(
+        this._l1BitcoinRedeemerContract,
+        {
+          eventName: "RedemptionRequested",
+          filterParams: [],
+          fromBlock: isMainnet ? 23244313 : 8667161, // Use same blocks as in useFetchCrossChainRedemptionDetails
+        }
+      )
+
+      // Hash the redeemerOutputScript for comparison
+      const redemptionOutputScriptHash = utils.keccak256(redeemerOutputScript)
+
+      // Filter events by redemptionOutputScript hash and encodedVm
+      for (const event of allEvents) {
+        const eventScript = event.args?.redemptionOutputScript
+
+        // Check if the script hash matches
+        let scriptMatch = false
+        if (eventScript && eventScript.hash) {
+          scriptMatch =
+            eventScript.hash.toLowerCase() ===
+            redemptionOutputScriptHash.toLowerCase()
+        }
+
+        if (!scriptMatch) continue
+
+        // Check the transaction input data to match encodedVm
+        try {
+          const provider = this._l1BitcoinRedeemerContract.provider
+          if (!provider) continue
+
+          const tx = await provider.getTransaction(event.transactionHash)
+          if (!tx || !tx.data) continue
+
+          // Decode the function call to get encodedVm parameter
+          const iface = this._l1BitcoinRedeemerContract.interface
+          const decodedData = iface.decodeFunctionData(
+            "requestRedemption",
+            tx.data
+          )
+          const txEncodedVm = decodedData[2] // encodedVm is the 3rd parameter
+          const encodedVmHex = utils.hexlify(encodedVm)
+
+          if (txEncodedVm.toLowerCase() === encodedVmHex.toLowerCase()) {
+            return event
+          }
+        } catch (decodeError) {
+          console.error("Error decoding tx data:", decodeError)
+        }
+      }
+
+      return null
+    } catch (error) {
+      console.error("Error finding L1 redemption event:", error)
+      return null
+    }
+  }
+
   buildDepositKey = (
     depositTxHash: string,
     depositOutputIndex: number,
@@ -1623,7 +2050,8 @@ export class TBTC implements ITBTC {
   ): Promise<{
     hash: string
     additionalParams: {
-      walletPublicKey: string
+      walletPublicKey?: string
+      chainName?: ChainName | null
     }
   }> => {
     const sdk = await this._getSdk()
@@ -1632,6 +2060,22 @@ export class TBTC implements ITBTC {
       throw new Error(
         "Unsupported BTC address! Supported type addresses are: P2PKH, P2WPKH, P2SH, P2WSH."
       )
+    }
+
+    if (this._crossChainConfig.isCrossChain) {
+      const result = await sdk.redemptions.requestCrossChainRedemption(
+        btcAddress,
+        BigNumber.from(amount),
+        this._crossChainConfig.chainName as DestinationChainName
+      )
+
+      return {
+        hash: result.targetChainTxHash.toPrefixedString(),
+        additionalParams: {
+          walletPublicKey: undefined,
+          chainName: this._crossChainConfig.chainName,
+        },
+      }
     }
 
     const { targetChainTxHash, walletPublicKey } =
@@ -1644,6 +2088,7 @@ export class TBTC implements ITBTC {
       hash: targetChainTxHash.toPrefixedString(),
       additionalParams: {
         walletPublicKey: walletPublicKey.toString(),
+        chainName: ChainName.Ethereum,
       },
     }
   }
@@ -1948,5 +2393,90 @@ export class TBTC implements ITBTC {
     }
 
     return this._redemptionTreasuryFeeDivisor
+  }
+
+  getL2TBTCAllowance = async (owner: string): Promise<string> => {
+    if (!owner) {
+      throw new Error("Owner address is required")
+    }
+
+    if (!this._l2TbtcToken) {
+      throw new Error("L2 tBTC token is not initialized")
+    }
+
+    if (!this._l2BitcoinRedeemerContract) {
+      throw new Error("L2 Bitcoin Redeemer contract is not initialized")
+    }
+
+    // Get the L2 tBTC token address
+    const l2TbtcTokenAddress = this._l2TbtcToken._instance.address.toLowerCase()
+
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract._instance.address
+
+    // Create a standard ERC20 contract instance
+    const erc20Abi = [
+      "function allowance(address owner, address spender) view returns (uint256)",
+    ]
+
+    const l2TbtcTokenContract = getContract(
+      l2TbtcTokenAddress,
+      erc20Abi,
+      this._ethereumConfig.ethereumProviderOrSigner as
+        | providers.Provider
+        | Signer,
+      this._ethereumConfig.account
+    )
+
+    const allowance = await l2TbtcTokenContract.allowance(
+      owner,
+      l2BitcoinRedeemerAddress
+    )
+
+    return allowance.toString()
+  }
+
+  approveL2TBTCToken = async (
+    amount: BigNumberish
+  ): Promise<string | TransactionReceipt> => {
+    if (!this._l2TbtcToken) {
+      throw new Error("L2 tBTC token is not initialized")
+    }
+
+    if (!this._l2BitcoinRedeemerContract) {
+      throw new Error("L2 Bitcoin Redeemer contract is not initialized")
+    }
+
+    // Get the L2 tBTC token address
+    const l2TbtcTokenAddress = this._l2TbtcToken._instance.address.toLowerCase()
+
+    const l2BitcoinRedeemerAddress =
+      this._l2BitcoinRedeemerContract._instance.address
+
+    // Create a standard ERC20 contract instance
+    const erc20Abi = [
+      "function approve(address spender, uint256 amount) returns (bool)",
+    ]
+
+    const l2TbtcTokenContract = getContract(
+      l2TbtcTokenAddress,
+      erc20Abi,
+      this._ethereumConfig.ethereumProviderOrSigner as
+        | providers.Provider
+        | Signer,
+      this._ethereumConfig.account
+    )
+
+    try {
+      const tx = await l2TbtcTokenContract.approve(
+        l2BitcoinRedeemerAddress,
+        amount
+      )
+
+      return tx.wait()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 }

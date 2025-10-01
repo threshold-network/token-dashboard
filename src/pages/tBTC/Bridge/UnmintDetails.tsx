@@ -57,30 +57,132 @@ import { ExternalHref } from "../../../enums"
 import {
   useFindRedemptionInBitcoinTx,
   useSubscribeToRedemptionsCompletedEventBase,
+  useFetchVaaFromTxHash,
+  useFetchL2RedemptionRequestedEvent,
 } from "../../../hooks/tbtc"
+import { useFetchCrossChainRedemptionDetails } from "../../../hooks/tbtc/useFetchCrossChainRedemptionDetails"
+import { useSubscribeToL1BitcoinRedeemerRedemptionRequestedEvent } from "../../../hooks/tbtc/useSubscribeToL1BitcoinRedeemerRedemptionRequestedEvent"
 import { useAppDispatch } from "../../../hooks/store"
 import { tbtcSlice } from "../../../store/tbtc"
 import { useThreshold } from "../../../contexts/ThresholdContext"
+import { ChainName } from "../../../threshold-ts/types"
+import { ethers } from "ethers"
 
 export const UnmintDetails: PageComponent = () => {
   const [searchParams] = useSearchParams()
-  const walletPublicKeyHash = searchParams.get("walletPublicKeyHash")
+  const { redemptionRequestedTxHash: txHashFromParams } = useParams()
+  const [walletPublicKeyHash, setWalletPublicKeyHash] = useState<
+    string | undefined
+  >(searchParams.get("walletPublicKeyHash") || undefined)
+  const [redemptionRequestedTxHash, setRedemptionRequestedTxHash] = useState<
+    string | undefined
+  >(txHashFromParams || undefined)
   const redeemerOutputScript = searchParams.get("redeemerOutputScript")
   const redeemer = searchParams.get("redeemer")
-  const { redemptionRequestedTxHash } = useParams()
+  const chainName = searchParams.get("chainName")
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
+  const isCrossChainRedemption = !!chainName && chainName !== ChainName.Ethereum
 
-  const { data, isFetching, error } = useFetchRedemptionDetails(
-    redemptionRequestedTxHash,
-    walletPublicKeyHash,
-    redeemerOutputScript,
-    redeemer
+  const { data: l2RedemptionEvent, isFetching: isFetchingL2Event } =
+    useFetchL2RedemptionRequestedEvent(
+      isCrossChainRedemption ? txHashFromParams : null,
+      isCrossChainRedemption
+    )
+
+  const { data: vaaData, error: vaaError } = useFetchVaaFromTxHash(
+    isCrossChainRedemption ? txHashFromParams : null,
+    isCrossChainRedemption
   )
+
+  const {
+    data: crossChainData,
+    isFetching: isFetchingCrossChain,
+    error: crossChainError,
+  } = useFetchCrossChainRedemptionDetails(
+    isCrossChainRedemption ? redeemerOutputScript : null,
+    isCrossChainRedemption ? redeemer : null,
+    vaaData?.encodedVm
+  )
+
+  // Use regular redemption details for L1 redemptions
+  const {
+    data: l1Data,
+    isFetching: isFetchingL1,
+    error: l1Error,
+  } = useFetchRedemptionDetails(
+    isCrossChainRedemption ? null : redemptionRequestedTxHash,
+    isCrossChainRedemption ? null : walletPublicKeyHash,
+    isCrossChainRedemption ? null : redeemerOutputScript,
+    isCrossChainRedemption ? null : redeemer
+  )
+
+  // Combine data from both hooks
+  const data = isCrossChainRedemption
+    ? crossChainData ?? l2RedemptionEvent
+    : l1Data
+  const isFetching = isCrossChainRedemption ? isFetchingL2Event : isFetchingL1
+  const error = isCrossChainRedemption ? vaaError || crossChainError : l1Error
+
+  // Update state variables when cross-chain data is fetched
+  useEffect(() => {
+    if (isCrossChainRedemption && crossChainData) {
+      setWalletPublicKeyHash(crossChainData.walletPublicKeyHash)
+      setRedemptionRequestedTxHash(crossChainData.redemptionRequestedTxHash)
+    }
+  }, [isCrossChainRedemption, crossChainData])
+
   const findRedemptionInBitcoinTx = useFindRedemptionInBitcoinTx()
   const [redemptionFromBitcoinTx, setRedemptionFromBitcoinTx] = useState<
     Awaited<ReturnType<typeof findRedemptionInBitcoinTx>> | undefined
   >(undefined)
+
+  // Subscribe to L1BitcoinRedeemer RedemptionRequested events for cross-chain redemptions
+  useSubscribeToL1BitcoinRedeemerRedemptionRequestedEvent(
+    async (
+      redemptionKey,
+      eventWalletPublicKeyHash,
+      mainUtxo,
+      eventRedeemerOutputScript,
+      amount,
+      event
+    ) => {
+      // If we have encodedVm, filter by it
+      if (vaaData?.encodedVm) {
+        const eventEncodedVm = event.args?.encodedVm
+        if (!eventEncodedVm) {
+          return
+        }
+
+        // Convert encodedVm Uint8Array to hex string for comparison
+        const encodedVmHex = ethers.utils.hexlify(vaaData.encodedVm)
+
+        if (eventEncodedVm.toLowerCase() !== encodedVmHex.toLowerCase()) {
+          return
+        }
+      }
+
+      // Update state with the wallet public key hash and tx hash from the event
+      setWalletPublicKeyHash(eventWalletPublicKeyHash)
+      setRedemptionRequestedTxHash(event.transactionHash)
+
+      // Dispatch redemption requested action
+      dispatch(
+        tbtcSlice.actions.redemptionRequested({
+          redemptionKey: redemptionKey.toString(),
+          blockNumber: event.blockNumber,
+          amount: amount.toString(),
+          txHash: event.transactionHash,
+          additionalData: {
+            redeemerOutputScript: eventRedeemerOutputScript,
+            walletPublicKeyHash: eventWalletPublicKeyHash,
+          },
+        })
+      )
+    },
+    [null, null, null, redeemerOutputScript],
+    isCrossChainRedemption
+  )
 
   useSubscribeToRedemptionsCompletedEventBase(
     async (eventWalletPublicKeyHash, redemptionTxHash, event) => {
@@ -95,7 +197,11 @@ export const UnmintDetails: PageComponent = () => {
 
       setRedemptionFromBitcoinTx(redemption)
 
-      if (redemptionRequestedTxHash && redeemerOutputScript) {
+      if (
+        redemptionRequestedTxHash &&
+        redeemerOutputScript &&
+        walletPublicKeyHash
+      ) {
         dispatch(
           tbtcSlice.actions.redemptionCompleted({
             redemptionKey: threshold.tbtc.buildRedemptionKey(
@@ -107,16 +213,21 @@ export const UnmintDetails: PageComponent = () => {
         )
       }
     },
-    [],
+    walletPublicKeyHash ? [walletPublicKeyHash] : [],
     true
   )
 
   const [shouldDisplaySuccessStep, setShouldDisplaySuccessStep] =
     useState(false)
 
-  const _isFetching = isFetching || !data
-  const wasDataFetched = !isFetching && !!data
+  const _isFetching = isCrossChainRedemption
+    ? isFetchingL2Event || isFetchingCrossChain
+    : isFetching || !data
 
+  // For cross-chain redemptions, check if we have the expected L1 redemption
+  const isRedemptionRequested = isCrossChainRedemption
+    ? !!data?.redemptionRequestedTxHash && !!vaaData
+    : !!redemptionRequestedTxHash
   const isProcessCompleted = !!redemptionFromBitcoinTx?.bitcoinTxHash
   const shouldForceIsProcessCompleted =
     !!data?.redemptionCompletedTxHash?.bitcoin
@@ -147,10 +258,7 @@ export const UnmintDetails: PageComponent = () => {
     if (!redemptionCompletedAt && redemptionRequestedAt) {
       intervalId = setInterval(() => {
         setRedemptionTime(
-          dateAs(
-            redemptionCompletedAt ??
-              dateToUnixTimestamp() - (data?.requestedAt ?? 0)
-          )
+          dateAs(dateToUnixTimestamp() - (redemptionRequestedAt ?? 0))
         )
       }, ONE_MINUTE_IN_SECONDS)
     } else if (redemptionCompletedAt && redemptionRequestedAt) {
@@ -196,8 +304,9 @@ export const UnmintDetails: PageComponent = () => {
         <Box w="full">{error}</Box>
       ) : (
         <BridgeLayoutMainSection>
-          {_isFetching && <BridgeProcessDetailsPageSkeleton />}
-          {wasDataFetched && (
+          {_isFetching ? (
+            <BridgeProcessDetailsPageSkeleton />
+          ) : (
             <>
               <BridgeProcessCardTitle bridgeProcess="unmint" />
               <BridgeProcessCardSubTitle
@@ -231,26 +340,57 @@ export const UnmintDetails: PageComponent = () => {
                   size="sm"
                   bg={timelineBadgeBgColor}
                   position="absolute"
-                  bottom="10px"
+                  bottom="-25px"
                   left="50%"
                   transform="translateX(-50%)"
                 >
                   usual duration - 3-5 hours
                 </Badge>
-                <TimelineItem status="active">
+                {l2RedemptionEvent && (
+                  <TimelineItem
+                    status={l2RedemptionEvent ? "active" : "semi-active"}
+                  >
+                    <TimelineBreakpoint>
+                      <TimelineDot position="relative">
+                        {l2RedemptionEvent && (
+                          <Icon
+                            as={IoCheckmarkSharp}
+                            position="absolute"
+                            color="white"
+                            w="22px"
+                            h="22px"
+                            m="auto"
+                            left="0"
+                            right="0"
+                            textAlign="center"
+                          />
+                        )}
+                      </TimelineDot>
+                      <TimelineConnector />
+                    </TimelineBreakpoint>
+                    <TimelineContent>
+                      <BodyXs whiteSpace="pre-line">tBTC sent to L1</BodyXs>
+                    </TimelineContent>
+                  </TimelineItem>
+                )}
+                <TimelineItem
+                  status={isRedemptionRequested ? "active" : "semi-active"}
+                >
                   <TimelineBreakpoint>
                     <TimelineDot position="relative">
-                      <Icon
-                        as={IoCheckmarkSharp}
-                        position="absolute"
-                        color="white"
-                        w="22px"
-                        h="22px"
-                        m="auto"
-                        left="0"
-                        right="0"
-                        textAlign="center"
-                      />
+                      {isRedemptionRequested && (
+                        <Icon
+                          as={IoCheckmarkSharp}
+                          position="absolute"
+                          color="white"
+                          w="22px"
+                          h="22px"
+                          m="auto"
+                          left="0"
+                          right="0"
+                          textAlign="center"
+                        />
+                      )}
                     </TimelineDot>
                     <TimelineConnector />
                   </TimelineBreakpoint>
@@ -262,7 +402,9 @@ export const UnmintDetails: PageComponent = () => {
                   status={
                     isProcessCompleted || shouldForceIsProcessCompleted
                       ? "active"
-                      : "semi-active"
+                      : isRedemptionRequested
+                      ? "semi-active"
+                      : "inactive"
                   }
                 >
                   <TimelineBreakpoint>

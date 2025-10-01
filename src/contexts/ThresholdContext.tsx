@@ -1,4 +1,11 @@
-import { createContext, FC, useContext, useEffect, useRef } from "react"
+import {
+  createContext,
+  FC,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 import { getThresholdLibProvider, threshold } from "../utils/getThresholdLib"
 import { useLedgerLiveApp } from "./LedgerLiveAppContext"
 import { useIsActive } from "../hooks/useIsActive"
@@ -6,7 +13,10 @@ import { useIsEmbed } from "../hooks/useIsEmbed"
 import { getEthereumDefaultProviderChainId } from "../utils/getEnvVariable"
 import { useWeb3React } from "@web3-react/core"
 import { ChainName } from "../threshold-ts/types"
-import { isL2Network } from "../networks/utils"
+import {
+  getEthereumNetworkNameFromChainId,
+  isL2Network,
+} from "../networks/utils"
 import { useNonEVMConnection } from "../hooks/useNonEVMConnection"
 
 const defaultCrossChainConfig = {
@@ -22,6 +32,7 @@ export const useThreshold = () => {
 }
 
 export const ThresholdProvider: FC = ({ children }) => {
+  const [thresholdState, setThresholdState] = useState(threshold)
   const { library } = useWeb3React()
   const hasThresholdLibConfigBeenUpdated = useRef(false)
   const { ledgerLiveAppEthereumSigner } = useLedgerLiveApp()
@@ -29,6 +40,13 @@ export const ThresholdProvider: FC = ({ children }) => {
   const { isNonEVMActive, nonEVMChainName, nonEVMProvider } =
     useNonEVMConnection()
   const { isEmbed } = useIsEmbed()
+
+  useEffect(() => {
+    const unsubscribe = threshold.subscribe(() =>
+      setThresholdState(Object.create(threshold))
+    )
+    return unsubscribe
+  }, [])
 
   useEffect(() => {
     if (isActive && chainId) {
@@ -44,27 +62,11 @@ export const ThresholdProvider: FC = ({ children }) => {
         bitcoin: threshold.config.bitcoin,
         crossChain: {
           ...defaultCrossChainConfig,
-          chainName: isL2Network(chainId) ? ChainName.Ethereum : null,
+          chainName: getEthereumNetworkNameFromChainId(chainId) as ChainName,
           isCrossChain: isL2Network(chainId),
         },
       })
       hasThresholdLibConfigBeenUpdated.current = true
-    }
-
-    if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
-      threshold.updateConfig({
-        ethereum: {
-          ...threshold.config.ethereum,
-          ethereumProviderOrSigner: getThresholdLibProvider(),
-          account: undefined,
-          chainId: getEthereumDefaultProviderChainId(),
-        },
-        bitcoin: threshold.config.bitcoin,
-        crossChain: {
-          ...threshold.config.crossChain,
-        },
-      })
-      hasThresholdLibConfigBeenUpdated.current = false
     }
 
     if (isNonEVMActive) {
@@ -78,6 +80,22 @@ export const ThresholdProvider: FC = ({ children }) => {
         },
       })
     }
+
+    if (!isActive && hasThresholdLibConfigBeenUpdated.current) {
+      threshold.updateConfig({
+        ethereum: {
+          ...threshold.config.ethereum,
+          ethereumProviderOrSigner: getThresholdLibProvider(),
+          account: undefined,
+          chainId: undefined,
+        },
+        bitcoin: threshold.config.bitcoin,
+        crossChain: {
+          ...defaultCrossChainConfig,
+        },
+      })
+      hasThresholdLibConfigBeenUpdated.current = false
+    }
   }, [
     isActive,
     account,
@@ -89,7 +107,7 @@ export const ThresholdProvider: FC = ({ children }) => {
   ])
 
   return (
-    <ThresholdContext.Provider value={threshold}>
+    <ThresholdContext.Provider value={thresholdState}>
       {children}
     </ThresholdContext.Provider>
   )

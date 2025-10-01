@@ -234,7 +234,7 @@ export const ProvideDataComponent: FC<{
           chainId as SupportedChainIds
         )
       }
-      const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
+      const btcDepositAddress = await deposit.getBitcoinAddress()
       const receipt = deposit.getReceipt()
 
       // update state,
