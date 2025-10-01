@@ -58,10 +58,12 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
       try {
         await axios.post(
           `${ApiUrl.TBTC_EXPLORER}${endpointUrl.TBTC_DEPOSIT_DATA}`,
-          requestBody
+          requestBody,
+          { timeout: 10000 }
         )
       } catch (error) {
-        throw new Error("Failed to submit deposit telemetry")
+        console.error("Failed to submit deposit telemetry:", error)
+        throw new Error("Failed to submit deposit telemetry", { cause: error })
       }
     },
     [verifyDepositAddress, network, captureMessage]
