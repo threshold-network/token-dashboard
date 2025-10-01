@@ -41,6 +41,7 @@ import TbtcFees from "../components/TbtcFees"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { Toast } from "../../../../components/Toast"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
@@ -162,8 +163,9 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 export const ProvideDataComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ onPreviousStepClick }) => {
-  const { updateState } = useTbtcState()
+  const { updateState, resetDepositData } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
+  const [telemetryFailed, setTelemetryFailed] = useState(false)
   const [stagedDepositValues, setStagedDepositValues] =
     useState<FormValues | null>(null)
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -218,6 +220,7 @@ export const ProvideDataComponent: FC<{
       const chainName =
         nonEVMChainName || getEthereumNetworkNameFromChainId(chainId)
 
+      setTelemetryFailed(false)
       setSubmitButtonLoading(true)
 
       let deposit: Deposit
@@ -267,8 +270,11 @@ export const ProvideDataComponent: FC<{
       try {
         await depositTelemetry(receipt, btcDepositAddress)
       } catch (error) {
+        threshold.tbtc.removeDepositData()
+        resetDepositData()
         removeDepositDataFromLocalStorage(networkName)
         setSubmitButtonLoading(false)
+        setTelemetryFailed(true)
         return
       }
 
@@ -303,6 +309,15 @@ export const ProvideDataComponent: FC<{
 
   return (
     <>
+      {telemetryFailed && (
+        <Toast
+          title="We couldn't submit deposit telemetry. Please try again."
+          status="error"
+          duration={8000}
+          top={3}
+          zIndex={1}
+        />
+      )}
       <BridgeProcessCardTitle onPreviousStepClick={onPreviousStepClick} />
       <BridgeProcessCardSubTitle
         stepText="Step 1"
