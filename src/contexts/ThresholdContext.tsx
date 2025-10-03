@@ -104,6 +104,7 @@ export const ThresholdProvider: FC = ({ children }) => {
     library,
     nonEVMProvider,
     isNonEVMActive,
+    nonEVMChainName,
   ])
 
   return (
