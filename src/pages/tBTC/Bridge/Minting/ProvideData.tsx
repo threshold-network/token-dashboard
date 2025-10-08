@@ -267,7 +267,16 @@ export const ProvideDataComponent: FC<{
         networkName
       )
 
-      await depositTelemetry(receipt, btcDepositAddress)
+      try {
+        await depositTelemetry(receipt, btcDepositAddress)
+      } catch (error) {
+        threshold.tbtc.removeDepositData()
+        resetDepositData()
+        removeDepositDataFromLocalStorage(networkName)
+        setSubmitButtonLoading(false)
+        setTelemetryFailed(true)
+        return
+      }
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       if (shouldDownloadDepositReceipt) {
