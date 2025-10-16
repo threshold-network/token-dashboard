@@ -1,4 +1,4 @@
-import { ComponentProps, FC } from "react"
+import { ComponentProps, FC, useEffect, useState } from "react"
 import {
   matchPath,
   resolvePath,
@@ -11,27 +11,21 @@ import { PageComponent } from "../../../types"
 import { isL2Network } from "../../../networks/utils"
 import { useIsActive } from "../../../hooks/useIsActive"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
-
-const renderNavItem = (page: PageComponent, index: number) => (
-  <FilterTab
-    key={page.route.path}
-    as={Link}
-    to={page.route.path}
-    tabId={index.toString()}
-    textDecoration="none"
-    _groupHover={{ textDecoration: "none" }}
-  >
-    {page.route.title}
-  </FilterTab>
-)
+import { useThreshold } from "../../../contexts/ThresholdContext"
+import { Contract } from "ethers"
 
 export const MintUnmintNav: FC<
   ComponentProps<typeof Card> & { pages: PageComponent[] }
 > = ({ pages, ...props }) => {
-  const { chainId } = useIsActive()
-  const { nonEVMPublicKey } = useNonEVMConnection()
+  const threshold = useThreshold()
   const resolved = useResolvedPath("")
   const location = useLocation()
+  const [isL2BitcoinRedeemerContract, setIsL2BitcoinRedeemerContract] =
+    useState<Contract | null>(null)
+
+  useEffect(() => {
+    setIsL2BitcoinRedeemerContract(threshold.tbtc.l2BitcoinRedeemerContract)
+  }, [threshold.tbtc.l2BitcoinRedeemerContract])
 
   const activeTabId = pages
     .map((page) =>
@@ -43,20 +37,36 @@ export const MintUnmintNav: FC<
     .findIndex((match) => !!match)
     .toString()
 
+  const shouldDisableUnmint =
+    threshold.config.crossChain.isCrossChain && !isL2BitcoinRedeemerContract
+
   return (
     <Box as="nav" {...props}>
       <FilterTabs selectedTabId={activeTabId}>
-        {isL2Network(chainId) || nonEVMPublicKey
-          ? pages
-              .filter(
-                (page) =>
-                  !!page.route.title &&
-                  page.route.title.toLowerCase() === "mint"
-              )
-              .map((filteredPage, index) => renderNavItem(filteredPage, index))
-          : pages
-              .filter((page) => !!page.route.title)
-              .map((filteredPage, index) => renderNavItem(filteredPage, index))}
+        {pages
+          .filter((page) => !!page.route.title)
+          .map((page, index) => {
+            const isUnmint =
+              !!page.route.title && page.route.title.toLowerCase() !== "mint"
+            const isDisabled = shouldDisableUnmint && isUnmint
+
+            if (isDisabled) {
+              return null
+            }
+
+            return (
+              <FilterTab
+                key={page.route.path}
+                as={Link}
+                to={page.route.path}
+                tabId={index.toString()}
+                textDecoration="none"
+                _groupHover={{ textDecoration: "none" }}
+              >
+                {page.route.title}
+              </FilterTab>
+            )
+          })}
       </FilterTabs>
     </Box>
   )

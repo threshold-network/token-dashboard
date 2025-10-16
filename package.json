@@ -1,6 +1,6 @@
 {
   "name": "token-dashboard",
-  "version": "2.3.6",
+  "version": "2.4.0",
   "private": true,
   "engines": {
     "node": ">=16"
@@ -18,7 +18,7 @@
     "@keep-network/keep-ecdsa": "1.8.0",
     "@keep-network/random-beacon": "2.0.0",
     "@keep-network/tbtc": "1.1.0",
-    "@keep-network/tbtc-v2.ts": "^2.8.0",
+    "@keep-network/tbtc-v2.ts": "3.0.0",
     "@ledgerhq/connect-kit-loader": "1.1.8",
     "@ledgerhq/wallet-api-client": "^1.2.0",
     "@ledgerhq/wallet-api-client-react": "^1.1.1",
@@ -119,6 +119,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-logical-assignment-operators": "^7.20.7",
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-class-properties": "^7.22.5",
     "@chakra-ui/cli": "2",
     "@craco/craco": "6.4.5",

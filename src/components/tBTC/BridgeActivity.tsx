@@ -126,24 +126,25 @@ const ActivityItem: FC<BridgeActivityTypeExtended> = ({
   let link: string
   let isExternal = false
 
-  // Check if this is a bridge activity with explorerUrl
   if (additionalData?.explorerUrl) {
     link = additionalData.explorerUrl
     isExternal = true
   } else if (bridgeProcess === "unmint") {
-    link = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+    const unmintData = additionalData as UnmintBridgeActivityAdditionalData
+    const builder = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
       .withRedeemer(account!)
-      .withRedeemerOutputScript(
-        (additionalData as UnmintBridgeActivityAdditionalData)
-          .redeemerOutputScript
-      )
-      .withWalletPublicKeyHash(
-        (additionalData as UnmintBridgeActivityAdditionalData)
-          .walletPublicKeyHash
-      )
-      .build()
+      .withRedeemerOutputScript(unmintData.redeemerOutputScript)
+
+    // For cross-chain redemptions, add chainName
+    // For L1 redemptions, add walletPublicKeyHash
+    if (unmintData.chainName) {
+      builder.withChainName(unmintData.chainName)
+    } else {
+      builder.withWalletPublicKeyHash(unmintData.walletPublicKeyHash)
+    }
+    link = builder.build()
   } else {
-    link = `/tBTC/deposit/mint/deposit/${activityKey}`
+    link = `/tBTC/mint/deposit/${activityKey}`
   }
 
   return (

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { fromSatoshiToTokenPrecision, ZERO } from "../../threshold-ts/utils"
-import { BigNumber } from "ethers"
 import { ONE_HUNDRED, SATOSHI_MULTIPLIER } from "../../constants/web3"
 
 export type DepositData = {

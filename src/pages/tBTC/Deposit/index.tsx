@@ -15,6 +15,7 @@ import { UnmintPage } from "./Unmint"
 import { useIsActive } from "../../../hooks/useIsActive"
 import { useThreshold } from "../../../contexts/ThresholdContext"
 import { useNonEVMConnection } from "../../../hooks/useNonEVMConnection"
+import { getEthereumDefaultProviderChainId } from "../../../utils/getEnvVariable"
 
 const gridTemplateAreas = {
   base: `
@@ -33,8 +34,10 @@ const TBTCBridge: PageComponent = (props) => {
     (state) => state.tbtc.bridgeActivity.isFetching
   )
   const mintingStep = useAppSelector((state) => state.tbtc.mintingStep)
-  const { account } = useIsActive()
+  const { account, chainId } = useIsActive()
   const { nonEVMPublicKey } = useNonEVMConnection()
+  const threshold = useThreshold()
+  const defaultChainId = getEthereumDefaultProviderChainId()
 
   useEffect(() => {
     if (!hasUserResponded) openModal(ModalType.NewTBTCApp)
@@ -46,9 +49,58 @@ const TBTCBridge: PageComponent = (props) => {
     dispatch(
       tbtcSlice.actions.requestBridgeActivity({
         depositor: account ?? (nonEVMPublicKey as string),
+        chainId: chainId ?? defaultChainId,
       })
     )
   }, [dispatch, account, nonEVMPublicKey, mintingStep])
+
+  // Watch for cross-chain config changes
+  useEffect(() => {
+    const depositor = account ?? (nonEVMPublicKey as string)
+    if (!depositor) return
+
+    // Check if SDK is ready and cross-chain is enabled
+    if (
+      threshold.tbtc.isTbtcReady &&
+      threshold.config.crossChain.isCrossChain
+    ) {
+      dispatch(
+        tbtcSlice.actions.crossChainConfigChanged({
+          isCrossChain: true,
+          depositor,
+          chainId: chainId ?? defaultChainId,
+        })
+      )
+    }
+  }, [
+    threshold.tbtc.isTbtcReady,
+    threshold.config.crossChain.isCrossChain,
+    account,
+    nonEVMPublicKey,
+    dispatch,
+  ])
+
+  // Watch for ethereum chain ID changes
+  useEffect(() => {
+    const depositor = account ?? (nonEVMPublicKey as string)
+    if (!depositor) return
+
+    // Check if SDK is ready and we have a chainId
+    if (threshold.tbtc.isTbtcReady && threshold.config.ethereum.chainId) {
+      dispatch(
+        tbtcSlice.actions.ethereumChainIdChanged({
+          chainId: Number(threshold.config.ethereum.chainId),
+          depositor,
+        })
+      )
+    }
+  }, [
+    threshold.tbtc.isTbtcReady,
+    threshold.config.ethereum.chainId,
+    account,
+    nonEVMPublicKey,
+    dispatch,
+  ])
 
   return (
     <Grid

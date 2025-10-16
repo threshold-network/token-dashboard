@@ -7,6 +7,7 @@ export enum ApiUrl {
 
 export enum endpointUrl {
   TRM_WALLET_SCREENING = "/trm/screen",
+  TBTC_DEPOSIT_DATA = "/deposit-data",
   CURVE_ETHEREUM_POOL = "/getPools/ethereum/factory",
   COINGECKO_SIMPLE_PRICE = "/simple/price",
   COINGECKO_VS_CURRENCY = "vs_currencies",

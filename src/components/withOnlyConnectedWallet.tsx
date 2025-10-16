@@ -9,7 +9,7 @@ function withOnlyConnectedWallet<T>(
 ) {
   return (props: T & {}) => {
     const { account, isActive } = useIsActive()
-    const isNonEVMActive = useNonEVMConnection()
+    const { isNonEVMActive } = useNonEVMConnection()
 
     if ((isActive && account) || isNonEVMActive) {
       return <Component {...props} />

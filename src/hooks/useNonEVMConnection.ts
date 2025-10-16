@@ -1,5 +1,5 @@
 import { useWallet as useSuiWallet } from "@suiet/wallet-kit"
-import { useCallback } from "react"
+import { useCallback, useMemo } from "react"
 import { ChainName } from "../threshold-ts/types"
 import { useStarknetConnection } from "./useStarknetConnection"
 import { getEthereumDefaultProviderChainId } from "../utils/getEnvVariable"
@@ -63,68 +63,7 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
   const isStarknetActive = isStarknetConnected && !!starknetAddress
   const isSuiActive = isSuiConnected && !!suiAccount
 
-  const connectionData: UseNonEVMConnectionResult = {
-    ...defaultNonEVMConnection,
-  }
-
-  if (isStarknetActive) {
-    // Determine which non-EVM chain is active
-    // For now, only Starknet is supported
-    connectionData.nonEVMChainName = "StarkNet" as Exclude<
-      keyof typeof ChainName,
-      "Ethereum"
-    >
-    connectionData.nonEVMPublicKey = starknetAddress ?? null
-    connectionData.nonEVMProvider = starknetProvider ?? null
-    connectionData.nonEVMChainId = starknetChainId ?? null
-    connectionData.isNonEVMActive = isStarknetConnected
-    connectionData.connectedWalletName = starknetWalletName ?? null
-    connectionData.connectedWalletIcon = starknetWalletIcon ?? null
-    connectionData.isNonEVMConnecting = isStarknetConnecting
-    connectionData.isNonEVMDisconnecting = false // Starknet disconnect is synchronous
-  } else if (isSuiActive && suiAccount) {
-    console.log("suiWallet : ", suiWallet)
-    const isMainnet = isMainnetChainId(getEthereumDefaultProviderChainId())
-    const expectedChainId = isMainnet ? "sui:mainnet" : "sui:testnet"
-
-    // Handle unknown chain case
-    let actualChainId = suiChain?.id ?? null
-    if (actualChainId === "unknown:unknown" || !actualChainId) {
-      console.warn(
-        `[useNonEVMConnection] SUI wallet on unknown chain, expected ${expectedChainId}`
-      )
-      console.log("[useNonEVMConnection] SUI chain details:", {
-        chainId: suiChain?.id,
-        chainName: suiChain?.name,
-        chainRpcUrl: suiChain?.rpcUrl,
-        availableChains: suiWallet.chains,
-      })
-      // Use expected chain ID as fallback
-      actualChainId = expectedChainId
-    } else {
-      console.log(
-        `[useNonEVMConnection] SUI wallet connected to chain: ${actualChainId}`
-      )
-    }
-
-    const suiSigner = {
-      ...suiWallet,
-      getAddress: async () => suiAccount.address,
-      address: suiAccount.address,
-      getPublicKey: () => suiAccount.publicKey,
-    }
-    connectionData.nonEVMProvider = suiSigner
-    connectionData.nonEVMChainName = "Sui"
-    connectionData.nonEVMPublicKey = suiAccount.address
-    connectionData.nonEVMChainId = actualChainId
-    connectionData.isNonEVMActive = isSuiActive
-    connectionData.connectedWalletName = suiWalletName ?? null
-    connectionData.connectedWalletIcon = suiAdapter?.icon ?? null
-    connectionData.isNonEVMConnecting = isSuiConnecting
-    connectionData.isNonEVMDisconnecting = false
-  }
-
-  connectionData.disconnectNonEVMWallet = useCallback(async () => {
+  const disconnectNonEVMWallet = useCallback(async () => {
     try {
       if (isStarknetConnected) {
         disconnectStarknet()
@@ -137,5 +76,88 @@ export function useNonEVMConnection(): UseNonEVMConnectionResult {
     }
   }, [disconnectStarknet, isStarknetConnected, suiWallet])
 
-  return connectionData
+  // Memoize SUI signer to keep stable reference across renders
+  const memoizedSuiSigner = useMemo(() => {
+    if (!isSuiActive || !suiAccount) return null
+    return {
+      // Provide wallet adapter signing method expected by the SDK
+      signAndExecuteTransaction: suiWallet.signAndExecuteTransaction,
+      getAddress: async () => suiAccount.address,
+      address: suiAccount.address,
+      getPublicKey: () => suiAccount.publicKey,
+    }
+  }, [
+    isSuiActive,
+    suiAccount?.address,
+    suiAccount?.publicKey,
+    suiWallet.signAndExecuteTransaction,
+  ])
+
+  // Compute SUI chain id with fallback, without noisy logs
+  const memoizedSuiChainId = useMemo(() => {
+    if (!isSuiActive) return null
+    const isMainnet = isMainnetChainId(getEthereumDefaultProviderChainId())
+    const expectedChainId = isMainnet ? "sui:mainnet" : "sui:testnet"
+    const actual = suiChain?.id ?? null
+    if (!actual || actual === "unknown:unknown") return expectedChainId
+    return actual
+  }, [isSuiActive, suiChain?.id])
+
+  const connectionData: UseNonEVMConnectionResult = useMemo(() => {
+    // Default state
+    let result: UseNonEVMConnectionResult = { ...defaultNonEVMConnection }
+
+    if (isStarknetActive) {
+      result = {
+        ...result,
+        nonEVMChainName: "StarkNet" as Exclude<
+          keyof typeof ChainName,
+          "Ethereum"
+        >,
+        nonEVMPublicKey: starknetAddress ?? null,
+        nonEVMProvider: starknetProvider ?? null,
+        nonEVMChainId: starknetChainId ?? null,
+        isNonEVMActive: isStarknetConnected,
+        connectedWalletName: starknetWalletName ?? null,
+        connectedWalletIcon: starknetWalletIcon ?? null,
+        isNonEVMConnecting: isStarknetConnecting,
+        isNonEVMDisconnecting: false,
+      }
+    } else if (isSuiActive && suiAccount) {
+      result = {
+        ...result,
+        nonEVMProvider: memoizedSuiSigner,
+        nonEVMChainName: "Sui",
+        nonEVMPublicKey: suiAccount.address,
+        nonEVMChainId: memoizedSuiChainId,
+        isNonEVMActive: true,
+        connectedWalletName: suiWalletName ?? null,
+        connectedWalletIcon: suiAdapter?.icon ?? null,
+        isNonEVMConnecting: isSuiConnecting,
+        isNonEVMDisconnecting: false,
+      }
+    }
+
+    return result
+  }, [
+    // Starknet deps
+    isStarknetActive,
+    starknetAddress,
+    starknetProvider,
+    starknetChainId,
+    isStarknetConnected,
+    starknetWalletName,
+    starknetWalletIcon,
+    isStarknetConnecting,
+    // Sui deps
+    isSuiActive,
+    suiAccount?.address,
+    memoizedSuiSigner,
+    memoizedSuiChainId,
+    suiWalletName,
+    suiAdapter?.icon,
+    isSuiConnecting,
+  ])
+
+  return { ...connectionData, disconnectNonEVMWallet }
 }

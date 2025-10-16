@@ -41,6 +41,7 @@ import TbtcFees from "../components/TbtcFees"
 import { useIsActive } from "../../../../hooks/useIsActive"
 import { PosthogButtonId } from "../../../../types/posthog"
 import SubmitTxButton from "../../../../components/SubmitTxButton"
+import { Toast } from "../../../../components/Toast"
 import { Deposit } from "@keep-network/tbtc-v2.ts"
 import { useModal } from "../../../../hooks/useModal"
 import { ModalType } from "../../../../enums"
@@ -50,6 +51,7 @@ import { RootState } from "../../../../store"
 import { tbtcSlice } from "../../../../store/tbtc/tbtcSlice"
 import { accountSlice } from "../../../../store/account/slice"
 import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import { getChainDisplayInfo } from "../../../../utils/chainTextUtils"
 
 export interface FormValues {
   userWalletAddress: string
@@ -72,6 +74,10 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
 }) => {
   const dispatch = useAppDispatch()
   const threshold = useThreshold()
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
 
   const resolvedBTCAddressPrefix = getBridgeBTCSupportedAddressPrefixesText(
     "mint",
@@ -102,8 +108,8 @@ const MintingProcessFormBase: FC<ComponentProps & FormikProps<FormValues>> = ({
       <FormikInput
         name="userWalletAddress"
         label="User Wallet Address"
-        placeholder="Address where you'll receive your tBTC"
-        tooltip="The address is prepopulated with your wallet address. This is the address where you'll receive your tBTC."
+        placeholder={`Address where you'll receive your tBTC on ${chainInfo.chainName}`}
+        tooltip={chainInfo.walletAddressTooltip}
         mb={6}
         isReadOnly={true}
       />
@@ -157,8 +163,9 @@ const MintingProcessForm = withFormik<MintingProcessFormProps, FormValues>({
 export const ProvideDataComponent: FC<{
   onPreviousStepClick: (previosuStep: MintingStep) => void
 }> = ({ onPreviousStepClick }) => {
-  const { updateState } = useTbtcState()
+  const { updateState, resetDepositData } = useTbtcState()
   const [isSubmitButtonLoading, setSubmitButtonLoading] = useState(false)
+  const [telemetryFailed, setTelemetryFailed] = useState(false)
   const [stagedDepositValues, setStagedDepositValues] =
     useState<FormValues | null>(null)
   const formRef = useRef<FormikProps<FormValues>>(null)
@@ -166,7 +173,8 @@ export const ProvideDataComponent: FC<{
   const { account, chainId } = useIsActive()
   const { isNonEVMActive, nonEVMPublicKey, nonEVMChainName } =
     useNonEVMConnection()
-  const { setDepositDataInLocalStorage } = useTBTCDepositDataFromLocalStorage()
+  const { setDepositDataInLocalStorage, removeDepositDataFromLocalStorage } =
+    useTBTCDepositDataFromLocalStorage()
   const depositTelemetry = useDepositTelemetry(threshold.tbtc.bitcoinNetwork)
   const connectedAccount = account || nonEVMPublicKey
   const { openModal, closeModal: closeModalFromHook, modalType } = useModal()
@@ -212,6 +220,7 @@ export const ProvideDataComponent: FC<{
       const chainName =
         nonEVMChainName || getEthereumNetworkNameFromChainId(chainId)
 
+      setTelemetryFailed(false)
       setSubmitButtonLoading(true)
 
       let deposit: Deposit
@@ -225,7 +234,7 @@ export const ProvideDataComponent: FC<{
           chainId as SupportedChainIds
         )
       }
-      const btcDepositAddress = await threshold.tbtc.calculateDepositAddress()
+      const btcDepositAddress = await deposit.getBitcoinAddress()
       const receipt = deposit.getReceipt()
 
       // update state,
@@ -258,7 +267,16 @@ export const ProvideDataComponent: FC<{
         networkName
       )
 
-      depositTelemetry(receipt, btcDepositAddress)
+      try {
+        await depositTelemetry(receipt, btcDepositAddress)
+      } catch (error) {
+        threshold.tbtc.removeDepositData()
+        resetDepositData()
+        removeDepositDataFromLocalStorage(networkName)
+        setSubmitButtonLoading(false)
+        setTelemetryFailed(true)
+        return
+      }
 
       // if the user has NOT declined the json file, ask the user if they want to accept the new file
       if (shouldDownloadDepositReceipt) {
@@ -291,6 +309,15 @@ export const ProvideDataComponent: FC<{
 
   return (
     <>
+      {telemetryFailed && (
+        <Toast
+          title="We couldn't submit deposit telemetry. Please try again."
+          status="error"
+          duration={8000}
+          top={3}
+          zIndex={1}
+        />
+      )}
       <BridgeProcessCardTitle onPreviousStepClick={onPreviousStepClick} />
       <BridgeProcessCardSubTitle
         stepText="Step 1"

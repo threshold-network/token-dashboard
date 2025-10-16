@@ -49,9 +49,9 @@ const getSupportedAddressPrefixesText = (
     const isLast = index === prefixesLength - 1
     const isBeforeLast = index === prefixesLength - 2
     const text = reducer.concat(
-      `“`,
+      `"`,
       prefix,
-      `”`,
+      `"`,
       isBeforeLast ? " or " : isLast ? "" : ", "
     )
 
@@ -92,6 +92,7 @@ export class RedemptionDetailsLinkBuilder {
   private txHash?: string
   private redeemer?: string
   private redeemerOutputScript?: string
+  private chainName?: string
 
   static createFromTxHash = (txHash: string) => {
     const builder = new RedemptionDetailsLinkBuilder()
@@ -130,26 +131,23 @@ export class RedemptionDetailsLinkBuilder {
     return this
   }
 
+  withChainName = (chainName: string) => {
+    this.chainName = chainName
+    return this
+  }
+
   withTxHash = (txHash: string) => {
     this.txHash = txHash
     return this
   }
 
   build = () => {
-    const params = [
-      { label: "transaction hash", value: this.txHash },
-      { label: "wallet public key hash", value: this.walletPublicKeyHash },
-      { label: "redeemer output script", value: this.redeemerOutputScript },
-      { label: "redeemer", value: this.redeemer },
-    ]
-
-    if (
-      !this.txHash ||
-      !this.walletPublicKeyHash ||
-      !this.redeemerOutputScript ||
-      !this.redeemer
-    ) {
-      const missingParams = params.filter((_) => !_.value)
+    if (!this.txHash || !this.redeemerOutputScript || !this.redeemer) {
+      const missingParams = [
+        { label: "transaction hash", value: this.txHash },
+        { label: "redeemer output script", value: this.redeemerOutputScript },
+        { label: "redeemer", value: this.redeemer },
+      ].filter((_) => !_.value)
 
       throw new Error(
         `Required parameters not set. Set ${missingParams
@@ -158,9 +156,20 @@ export class RedemptionDetailsLinkBuilder {
       )
     }
 
+    if (!this.walletPublicKeyHash && !this.chainName) {
+      throw new Error(
+        "Required parameters not set. Set wallet public key hash or chain name."
+      )
+    }
+
     const queryParams = new URLSearchParams()
     queryParams.set("redeemer", this.redeemer)
-    queryParams.set("walletPublicKeyHash", this.walletPublicKeyHash)
+    if (this.walletPublicKeyHash) {
+      queryParams.set("walletPublicKeyHash", this.walletPublicKeyHash)
+    }
+    if (this.chainName) {
+      queryParams.set("chainName", this.chainName)
+    }
     queryParams.set("redeemerOutputScript", this.redeemerOutputScript)
 
     return `/tBTC/deposit/unmint/redemption/${
@@ -170,15 +179,26 @@ export class RedemptionDetailsLinkBuilder {
 }
 
 export const buildRedemptionDetailsLink = (
-  txHash: string,
   redeemer: string,
-  walletPublicKey: string,
   btcAddress: string,
-  bitcoinNetwork: BitcoinNetwork
+  bitcoinNetwork: BitcoinNetwork,
+  txHash?: string,
+  walletPublicKey?: string,
+  chainName?: string | null
 ): string => {
-  return RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+  const redemptionDetailsLinkBuilder = new RedemptionDetailsLinkBuilder()
+
+  if (txHash) {
+    redemptionDetailsLinkBuilder.withTxHash(txHash)
+  }
+  if (walletPublicKey) {
+    redemptionDetailsLinkBuilder.withWalletPublicKey(walletPublicKey)
+  }
+  if (chainName) {
+    redemptionDetailsLinkBuilder.withChainName(chainName)
+  }
+  return redemptionDetailsLinkBuilder
     .withRedeemer(redeemer)
-    .withWalletPublicKey(walletPublicKey)
     .withBitcoinAddress(btcAddress, bitcoinNetwork)
     .build()
 }

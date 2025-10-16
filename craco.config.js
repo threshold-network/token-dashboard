@@ -53,22 +53,24 @@ module.exports = {
         }),
       ]
 
-      // Add node polyfills (webpack 4 style)
-      webpackConfig.node = {
-        ...webpackConfig.node,
-        crypto: true,
-        stream: true,
-        buffer: true,
-      }
-
-      // Ensure starknet is properly resolved
+      // Polyfill node modules for webpack 4
       webpackConfig.resolve.alias = {
         ...webpackConfig.resolve.alias,
-        starknet: require.resolve("starknet"),
         crypto: require.resolve("crypto-browserify"),
         stream: require.resolve("stream-browserify"),
-        buffer: require.resolve("buffer/"),
+        buffer: require.resolve("buffer"),
+        starknet: require.resolve("starknet"),
       }
+
+      // Treat .mjs files in node_modules as javascript/auto so CRA's webpack 4 can
+      // properly handle ESM-only packages. Without this, imports from deps like
+      // starknet.js, multiformats, uint8arrays (and transitively @keep-network/tbtc-v2.ts)
+      // can fail with "Module parse failed" or missing named export errors.
+      webpackConfig.module.rules.push({
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: "javascript/auto",
+      })
 
       return webpackConfig
     },

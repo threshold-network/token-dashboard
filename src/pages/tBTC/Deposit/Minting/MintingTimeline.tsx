@@ -11,6 +11,12 @@ import { useTbtcState } from "../../../../hooks/useTbtcState"
 import { MintingStep } from "../../../../types/tbtc"
 import Link from "../../../../components/Link"
 import { ExternalHref } from "../../../../enums"
+import { useIsActive } from "../../../../hooks/useIsActive"
+import { useNonEVMConnection } from "../../../../hooks/useNonEVMConnection"
+import {
+  getGenericWalletLabel,
+  getChainDisplayInfo,
+} from "../../../../utils/chainTextUtils"
 
 type MintingTimelineItemBaseProps = {
   isActive: boolean
@@ -80,6 +86,10 @@ export const MintingTimelineStep1: FC<MintingTimelineItemProps> = ({
   isComplete,
   ...restProps
 }) => {
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+  const walletLabel = getGenericWalletLabel(nonEVMChainName, chainId)
+
   return (
     <MintingTimelineItem
       isActive={isActive}
@@ -88,7 +98,7 @@ export const MintingTimelineStep1: FC<MintingTimelineItemProps> = ({
       label="Provide a Deposit Address"
       description={
         <>
-          Provide an ETH address and a BTC Return address to generate a unique
+          Provide a {walletLabel} and a BTC Return address to generate a unique
           BTC deposit address. <br />
           <Link isExternal href={ExternalHref.btcRecoveryAddress}>
             Read more
@@ -122,6 +132,10 @@ export const MintingTimelineStep3: FC<MintingTimelineItemProps> = ({
   isComplete,
   ...restProps
 }) => {
+  const { chainId } = useIsActive()
+  const { nonEVMChainName } = useNonEVMConnection()
+  const chainInfo = getChainDisplayInfo(nonEVMChainName, chainId)
+
   return (
     <MintingTimelineItem
       isActive={isActive}
@@ -129,7 +143,7 @@ export const MintingTimelineStep3: FC<MintingTimelineItemProps> = ({
       isComplete={isComplete}
       stepNumber={3}
       label="Initiate minting"
-      description="Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign an Ethereum transaction in your wallet and your tBTC will arrive in around 1 to 3 hours."
+      description={`Minting tBTC does not require you to wait for the Bitcoin confirmations. Sign a transaction in your ${chainInfo.chainName} wallet and your tBTC will arrive in around 1 to 3 hours.`}
       {...restProps}
     />
   )
