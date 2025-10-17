@@ -33,57 +33,60 @@ export const useIsActive = (): UseIsActiveResult => {
   const ledgerLiveAppEthChaindId = ethAccountChainId
   const { isEmbed } = useIsEmbed()
 
-  const switchNetwork = useCallback(async (chainId: number): Promise<void> => {
-    if (_connector) {
-      const provider = await _connector.getProvider()
-      const desiredChainIdHex = toHex(chainId)
+  const switchNetwork = useCallback(
+    async (chainId: number): Promise<void> => {
+      if (_connector) {
+        const provider = await _connector.getProvider()
+        const desiredChainIdHex = toHex(chainId)
 
-      await provider
-        .request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: desiredChainIdHex }],
-        })
-        .catch(async (error: any) => {
-          const errorCode =
-            (error?.data as any)?.originalError?.code || error.code
+        await provider
+          .request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: desiredChainIdHex }],
+          })
+          .catch(async (error: any) => {
+            const errorCode =
+              (error?.data as any)?.originalError?.code || error.code
 
-          // If the error code indicates that the chain is unrecognized (4902)
-          // or that the provider is disconnected from the specified chain (4901),
-          // then we try to add the chain to the wallet.
-          if (errorCode === 4902 || errorCode === 4901) {
-            if (!provider) throw new Error("No provider available")
+            // If the error code indicates that the chain is unrecognized (4902)
+            // or that the provider is disconnected from the specified chain (4901),
+            // then we try to add the chain to the wallet.
+            if (errorCode === 4902 || errorCode === 4901) {
+              if (!provider) throw new Error("No provider available")
 
-            const network = networks.find(
-              (network) => network.chainId === chainId
-            )
-            if (!network || !network.chainParameters) {
-              throw new Error("Network parameters not found")
+              const network = networks.find(
+                (network) => network.chainId === chainId
+              )
+              if (!network || !network.chainParameters) {
+                throw new Error("Network parameters not found")
+              }
+
+              // Add the chain to wallet
+              await provider.request({
+                method: "wallet_addEthereumChain",
+                params: [
+                  {
+                    ...network.chainParameters,
+                    chainId: desiredChainIdHex,
+                  },
+                ],
+              })
+
+              // After adding, switch to the new chain
+              await provider.request({
+                method: "wallet_switchEthereumChain",
+                params: [{ chainId: desiredChainIdHex }],
+              })
+
+              // If adding and switching succeed, simply return.
+              return
             }
-
-            // Add the chain to wallet
-            await provider.request({
-              method: "wallet_addEthereumChain",
-              params: [
-                {
-                  ...network.chainParameters,
-                  chainId: desiredChainIdHex,
-                },
-              ],
-            })
-
-            // After adding, switch to the new chain
-            await provider.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: desiredChainIdHex }],
-            })
-
-            // If adding and switching succeed, simply return.
-            return
-          }
-          throw error
-        })
-    }
-  }, [])
+            throw error
+          })
+      }
+    },
+    [_connector]
+  )
 
   const isActive = useMemo(() => {
     if (isEmbed) {

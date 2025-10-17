@@ -49,20 +49,21 @@ const InitiateUnmintingBase: FC<InitiateUnmintingProps> = ({
   const { estimatedBTCAmount, thresholdNetworkFee } =
     useRedemptionEstimatedFees(unmintAmount)
   const threshold = useThreshold()
+  const isCrossChain = threshold.config.crossChain.isCrossChain
 
   const onSuccess: OnSuccessCallback = (receipt, additionalParams) => {
     //@ts-ignore
-    const { walletPublicKey } = additionalParams
-    if (walletPublicKey) {
-      navigate(
-        buildRedemptionDetailsLink(
-          receipt.transactionHash,
-          account!,
-          walletPublicKey,
-          btcAddress,
-          threshold.tbtc.bitcoinNetwork
-        )
-      )
+    const { walletPublicKey, chainName } = additionalParams
+    const link = buildRedemptionDetailsLink(
+      account!,
+      btcAddress,
+      threshold.tbtc.bitcoinNetwork,
+      receipt.transactionHash,
+      walletPublicKey ?? undefined,
+      chainName ?? undefined
+    )
+    if (link) {
+      navigate(link)
     }
     closeModal()
   }

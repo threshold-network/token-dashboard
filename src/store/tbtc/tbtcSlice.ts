@@ -10,9 +10,11 @@ import {
 import { featureFlags } from "../../constants"
 import { startAppListening } from "../listener"
 import {
-  fetchBridgeactivityEffect,
+  fetchBridgeActivityEffect,
   findUtxoEffect,
   fetchUtxoConfirmationsEffect,
+  crossChainConfigChangedEffect,
+  ethereumChainIdChangedEffect,
 } from "./effects"
 
 export const tbtcSlice = createSlice({
@@ -35,7 +37,7 @@ export const tbtcSlice = createSlice({
     },
     requestBridgeActivity: (
       state,
-      action: PayloadAction<{ depositor: string }>
+      action: PayloadAction<{ depositor: string; chainId: number }>
     ) => {},
     fetchingBridgeActivity: (state) => {
       state.bridgeActivity.isFetching = true
@@ -186,6 +188,25 @@ export const tbtcSlice = createSlice({
         status: BridgeActivityStatus.UNMINTED,
       }
     },
+    crossChainConfigChanged: (
+      state,
+      action: PayloadAction<{
+        isCrossChain: boolean
+        depositor: string
+        chainId: number
+      }>
+    ) => {
+      // This action triggers a refetch of bridge activity when cross-chain config changes
+    },
+    ethereumChainIdChanged: (
+      state,
+      action: PayloadAction<{
+        chainId: number
+        depositor: string
+      }>
+    ) => {
+      // This action triggers a refetch of bridge activity when ethereum chainId changes
+    },
   },
 })
 
@@ -238,6 +259,8 @@ export const {
   fetchUtxoConfirmations,
   redemptionRequested,
   redemptionCompleted,
+  crossChainConfigChanged,
+  ethereumChainIdChanged,
 } = tbtcSlice.actions
 
 export const registerTBTCListeners = () => {
@@ -245,7 +268,7 @@ export const registerTBTCListeners = () => {
 
   startAppListening({
     actionCreator: tbtcSlice.actions.requestBridgeActivity,
-    effect: fetchBridgeactivityEffect,
+    effect: fetchBridgeActivityEffect,
   })
 
   startAppListening({
@@ -256,6 +279,16 @@ export const registerTBTCListeners = () => {
   startAppListening({
     actionCreator: tbtcSlice.actions.fetchUtxoConfirmations,
     effect: fetchUtxoConfirmationsEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.crossChainConfigChanged,
+    effect: crossChainConfigChangedEffect,
+  })
+
+  startAppListening({
+    actionCreator: tbtcSlice.actions.ethereumChainIdChanged,
+    effect: ethereumChainIdChangedEffect,
   })
 }
 

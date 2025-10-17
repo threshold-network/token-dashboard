@@ -22,6 +22,7 @@ export const useSubscribeToContractEvent = (
   const firstIndexedParam = indexedFilterParams[0] || null
   const secondIndexedParam = indexedFilterParams[1] || null
   const thirdIndexedParam = indexedFilterParams[2] || null
+  const fourthIndexedParam = indexedFilterParams[3] || null
 
   // TODO: Debug this issue: https://keepnetwork.atlassian.net/browse/DAPP-515
   // When called by the ERC20 transfer hook ,the balance is always 0 in the callback.
@@ -42,20 +43,21 @@ export const useSubscribeToContractEvent = (
       callbackRef.current(...args)
     }
 
-    const fileterParams = [
+    const filterParams = [
       firstIndexedParam,
       secondIndexedParam,
       thirdIndexedParam,
+      fourthIndexedParam,
     ]
 
     // Remove unnecessary params, otherwise encoding topic filter will fail. For
     // example, we can't pass `[<address>, null]` if we want to filter the
     // `Transfer` event only by `from`.
-    fileterParams.length = indexedFilterParamsLength
+    filterParams.length = indexedFilterParamsLength
     const eventNameOrFilter: string | EventFilter =
       indexedFilterParamsLength === 0
         ? eventName
-        : contract.filters[eventName](...fileterParams)
+        : contract.filters[eventName](...filterParams)
 
     // Ethers.js considers the current block as part of "from now on" so we
     // start subscribing to event in the next block. If the user submit a
@@ -79,6 +81,7 @@ export const useSubscribeToContractEvent = (
     firstIndexedParam,
     secondIndexedParam,
     thirdIndexedParam,
+    fourthIndexedParam,
     indexedFilterParamsLength,
   ])
 }

@@ -45,7 +45,7 @@ describe("Bridge", () => {
     } as unknown as providers.Provider
 
     mockEthereumConfig = {
-      chainId: 60808, // BOB mainnet
+      chainId: 60808, // Bob mainnet
       ethereumProviderOrSigner: mockProvider,
       account: "0x1234567890123456789012345678901234567890",
       shouldUseTestnetDevelopmentContracts: false,
@@ -53,7 +53,7 @@ describe("Bridge", () => {
 
     mockCrossChainConfig = {
       isCrossChain: true,
-      chainName: "BOB",
+      chainName: "Bob",
       nonEVMProvider: null,
     }
 
@@ -112,10 +112,10 @@ describe("Bridge", () => {
         mockMulticall
       )
 
-      // Create a non-BOB bridge for testing uninitialized contracts
+      // Create a non-Bob bridge for testing uninitialized contracts
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       bridgeNonBob = new Bridge(
         nonBobConfig,
@@ -355,7 +355,7 @@ describe("Bridge", () => {
   })
 
   describe("contract initialization", () => {
-    it("should initialize contracts for BOB mainnet", () => {
+    it("should initialize contracts for Bob mainnet", () => {
       // Arrange
       const bobMainnetConfig = {
         ...mockEthereumConfig,
@@ -375,7 +375,7 @@ describe("Bridge", () => {
       // We'll test actual contract loading in integration tests
     })
 
-    it("should initialize contracts for BOB testnet", () => {
+    it("should initialize contracts for Bob testnet", () => {
       // Arrange
       const bobTestnetConfig = {
         ...mockEthereumConfig,
@@ -393,7 +393,7 @@ describe("Bridge", () => {
       expect(bridge).toBeInstanceOf(Bridge)
     })
 
-    it("should handle non-BOB networks gracefully", () => {
+    it("should handle non-Bob networks gracefully", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
@@ -409,14 +409,14 @@ describe("Bridge", () => {
 
       // Assert
       expect(bridge).toBeInstanceOf(Bridge)
-      // Contracts should remain null for non-BOB networks
+      // Contracts should remain null for non-Bob networks
     })
 
     it("should ensure contracts are initialized before operations", async () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Non-BOB network
+        chainId: 1, // Non-Bob network
       }
       const bridge = new Bridge(
         nonBobConfig,
@@ -706,7 +706,7 @@ describe("Bridge", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       const bridgeNoContracts = new Bridge(
         nonBobConfig,
@@ -818,7 +818,7 @@ describe("Bridge", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       const bridgeNoContracts = new Bridge(
         nonBobConfig,
@@ -909,7 +909,7 @@ describe("Bridge", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       const bridgeNoContracts = new Bridge(
         nonBobConfig,
@@ -1002,7 +1002,7 @@ describe("Bridge", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       const bridgeNoContracts = new Bridge(
         nonBobConfig,
@@ -1272,7 +1272,7 @@ describe("Bridge", () => {
       // Arrange
       const nonBobConfig = {
         ...mockEthereumConfig,
-        chainId: 1, // Ethereum mainnet, not BOB
+        chainId: 1, // Ethereum mainnet, not Bob
       }
       const bridgeNoContracts = new Bridge(
         nonBobConfig,
@@ -1283,7 +1283,7 @@ describe("Bridge", () => {
 
       // Act & Assert
       await expect(bridgeNoContracts.withdraw(amount)).rejects.toThrow(
-        "Bridge contracts not initialized. Ensure you're on BOB network."
+        "Bridge contracts not initialized. Ensure you're on Bob network."
       )
     })
 
@@ -1623,7 +1623,7 @@ describe("Bridge", () => {
       )
     })
 
-    it("should calculate deposit fees for L1 to BOB", async () => {
+    it("should calculate deposit fees for L1 to Bob", async () => {
       // Arrange
       const amount = BigNumber.from("1000000000000000000") // 1 tBTC
       const l1GasPrice = BigNumber.from("30000000000") // 30 gwei
@@ -1714,7 +1714,7 @@ describe("Bridge", () => {
           return { address: mockLinkTokenContract.address, abi: [] }
         }
         if (name === "OptimismMintableUpgradableTBTC") {
-          return { address: "0xBOBTokenAddress", abi: [] }
+          return { address: "0xBobTokenAddress", abi: [] }
         }
         return null
       })
@@ -1743,7 +1743,7 @@ describe("Bridge", () => {
       bridge = new Bridge(mainnetConfig, mockCrossChainConfig, mockMulticall)
     })
 
-    it("should execute CCIP deposit from L1 to BOB", async () => {
+    it("should execute CCIP deposit from L1 to Bob", async () => {
       // Arrange
       const amount = BigNumber.from("1000000000000000000") // 1 tBTC
 
@@ -1758,7 +1758,7 @@ describe("Bridge", () => {
       )
       expect(mockL1CCIPRouterContract.getFee).toHaveBeenCalled()
       expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
-        "3849287863852499584", // BOB mainnet chain selector
+        "3849287863852499584", // Bob mainnet chain selector
         expect.objectContaining({
           receiver: expect.any(String),
           data: "0x",
@@ -1787,7 +1787,7 @@ describe("Bridge", () => {
 
       // Assert
       expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
-        "3849287863852499584", // BOB mainnet chain selector
+        "3849287863852499584", // Bob mainnet chain selector
         expect.objectContaining({
           receiver: expect.stringContaining(
             customRecipient.slice(2).toLowerCase()
@@ -1810,7 +1810,7 @@ describe("Bridge", () => {
       // Arrange
       const bobConfig = {
         ...mockEthereumConfig,
-        chainId: 60808, // BOB mainnet
+        chainId: 60808, // Bob mainnet
       }
       const bobBridge = new Bridge(
         bobConfig,
@@ -1926,7 +1926,7 @@ describe("Bridge", () => {
       // Assert
       expect(result.hash).toBe("0xccipDepositTx")
       expect(mockL1CCIPRouterContract.ccipSend).toHaveBeenCalledWith(
-        "5535534526963509396", // BOB Sepolia chain selector
+        "5535534526963509396", // Bob Sepolia chain selector
         expect.any(Object),
         expect.any(Object)
       )

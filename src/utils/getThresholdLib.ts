@@ -38,7 +38,7 @@ function getInitialEthereumConfig(
   ethereumProviderOrSigner?: Provider | Signer
 ): EthereumConfig {
   return {
-    chainId: getEthereumDefaultProviderChainId(),
+    chainId: undefined,
     ethereumProviderOrSigner:
       ethereumProviderOrSigner ||
       getThresholdLibProvider(defaultProviderChainId),

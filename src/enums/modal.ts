@@ -38,4 +38,5 @@ export enum ModalType {
   InitiateUnminting = "INITIATE_UNMINTING",
   TACoCommitment = "TACO_COMMITMENT",
   TACoCommitmentSuccess = "TACO_COMMITMENT_SUCCESS",
+  InitiateBridging = "INITIATE_BRIDGING",
 }
