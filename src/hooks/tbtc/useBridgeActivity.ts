@@ -3,6 +3,8 @@ import { useIsActive } from "../useIsActive"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeActivity } from "../../threshold-ts/bridge"
 
+const BLOCKS_TO_FETCH = 187500 // 28 days on Ethereum, 14 days on L2s
+
 // Re-export types from bridge module
 export type {
   BridgeActivityStatus,
@@ -30,10 +32,9 @@ export const useBridgeActivity = () => {
       setIsFetching(true)
       try {
         // Use the bridge interface method to fetch activities
-        // Try to fetch from a smaller block range - last ~5k blocks
         const activities = await threshold.bridge.fetchBridgeActivities(
           account,
-          -5000
+          -BLOCKS_TO_FETCH
         )
 
         if (!mounted) return

@@ -11,12 +11,17 @@ import { parseUnits } from "@ethersproject/units"
 import { useModal } from "../../../../hooks/useModal"
 import BridgeTxAlert from "./BridgeTxAlert"
 import { ModalType } from "../../../../enums"
+import { BridgeActivity } from "../../../../threshold-ts/bridge"
 
 interface BridgePanelProps {
   onBridgeSuccess?: () => void
+  onBridgeSubmitted?: (activity: BridgeActivity) => void
 }
 
-const BridgePanel: FC<BridgePanelProps> = ({ onBridgeSuccess }) => {
+const BridgePanel: FC<BridgePanelProps> = ({
+  onBridgeSuccess,
+  onBridgeSubmitted,
+}) => {
   const {
     fromNetwork,
     toNetwork,
@@ -51,6 +56,43 @@ const BridgePanel: FC<BridgePanelProps> = ({ onBridgeSuccess }) => {
           hash: bridgeTx.hash,
           route: bridgeRoute as "ccip" | "standard",
         })
+        // Optimistically add activity entry immediately after submission
+        if (
+          onBridgeSubmitted &&
+          amount &&
+          bridgeRoute &&
+          fromNetwork &&
+          toNetwork
+        ) {
+          const toNetworkName = (id: number) =>
+            id === 1
+              ? "Ethereum"
+              : id === 11155111
+              ? "Ethereum Sepolia"
+              : id === 60808
+              ? "BOB"
+              : id === 808813
+              ? "BOB Sepolia"
+              : "Unknown"
+
+          const optimistic: BridgeActivity = {
+            amount: parseUnits(amount, 18).toString(),
+            status: "PENDING",
+            activityKey: `optimistic-${bridgeRoute}-${bridgeTx.hash}`,
+            bridgeRoute: bridgeRoute,
+            fromNetwork: toNetworkName(fromNetwork),
+            toNetwork: toNetworkName(toNetwork),
+            txHash: bridgeTx.hash,
+            timestamp: Math.floor(Date.now() / 1000),
+            explorerUrl:
+              bridgeRoute === "ccip"
+                ? `https://ccip.chain.link/tx/${bridgeTx.hash}`
+                : fromNetwork === 60808
+                ? `https://explorer.gobob.xyz/tx/${bridgeTx.hash}`
+                : `https://bob-sepolia.explorer.gobob.xyz/tx/${bridgeTx.hash}`,
+          }
+          onBridgeSubmitted(optimistic)
+        }
         // Wait a bit for the transaction to be indexed
         setTimeout(() => {
           onBridgeSuccess?.()
