@@ -14,6 +14,7 @@
     "@ethersproject/constants": "^5.5.0",
     "@fontsource/ibm-plex-mono": "^4.5.13",
     "@fontsource/inter": "^4.5.10",
+    "@gobob/viem": "^2.31.11",
     "@keep-network/keep-core": "1.8.0",
     "@keep-network/keep-ecdsa": "1.8.0",
     "@keep-network/random-beacon": "2.0.0",

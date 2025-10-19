@@ -36,7 +36,9 @@ const BridgeActivityItem: FC<{
   amount: string
   explorerUrl: string
   bridgeRoute: string
-}> = ({ amount, explorerUrl, bridgeRoute }) => {
+  fromNetwork: string
+  toNetwork: string
+}> = ({ amount, explorerUrl, bridgeRoute, fromNetwork, toNetwork }) => {
   return (
     <ActivityItemWrapper>
       <Box
@@ -52,7 +54,12 @@ const BridgeActivityItem: FC<{
         justifyContent="space-between"
         w="100%"
       >
-        <InlineTokenBalance tokenAmount={amount} />
+        <Box display="flex" alignItems="center" gap="2">
+          <InlineTokenBalance tokenAmount={amount} />
+          <Box fontSize="sm" color="gray.500">
+            {fromNetwork} → {toNetwork}
+          </Box>
+        </Box>
         <BridgeTypeBadge bridgeRoute={bridgeRoute} />
       </Box>
     </ActivityItemWrapper>
@@ -121,6 +128,8 @@ export const BridgeActivityCard: FC<BridgeActivityCardProps> = (props) => {
                 amount={item.amount}
                 explorerUrl={item.explorerUrl}
                 bridgeRoute={item.bridgeRoute}
+                fromNetwork={item.fromNetwork}
+                toNetwork={item.toNetwork}
               />
             ))
           )}

@@ -119,7 +119,7 @@ const BridgePanel: FC<BridgePanelProps> = ({
         const tx = await approveCcip()
         if (tx) {
           await tx.wait()
-          console.log("tx: ", tx)
+          // console.log("tx: ", tx)
           // Update allowance after approval
           await updateCcipAllowance()
           // Don't execute bridge here - let user click again after approval

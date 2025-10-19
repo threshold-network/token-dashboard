@@ -3,7 +3,21 @@ import { BigNumber } from "ethers"
 import numeral from "numeral"
 
 export const formatNumeral = (number: string | number, format = "0,00.00") => {
-  return numeral(number).format(format)
+  // Check for invalid input
+  if (number === null || number === undefined || isNaN(Number(number))) {
+    console.warn("Invalid number passed to formatNumeral:", number)
+    return "0"
+  }
+
+  const result = numeral(number).format(format)
+
+  // If numeral returns NaN, handle it
+  if (result === "NaN") {
+    console.warn("Numeral returned NaN for:", { number, format })
+    return number.toString()
+  }
+
+  return result
 }
 
 export const formatTokenAmount = (
@@ -41,10 +55,32 @@ export const formatTokenAmount = (
   }
 
   const tokenAmountInHumanReadableFormat = formatUnits(rawAmount, decimals)
+
+  if (isNaN(Number(tokenAmountInHumanReadableFormat))) {
+    return "0"
+  }
+
   const formattedAmount = formatNumeral(
     tokenAmountInHumanReadableFormat,
     _format
   )
+
+  // Check if formatNumeral returned NaN
+  if (formattedAmount === "NaN" || isNaN(Number(formattedAmount))) {
+    // For very small numbers, display them directly
+    const num = Number(tokenAmountInHumanReadableFormat)
+    if (num > 0) {
+      // Use a format that preserves all significant digits
+      if (num < 0.000001) {
+        // For very small numbers, use toFixed with enough precision
+        const fixedNum = num.toFixed(Math.max(8, precision))
+        // Remove trailing zeros but keep at least one decimal place
+        return fixedNum.replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "")
+      }
+      return num.toString()
+    }
+    return "0"
+  }
 
   const amountFromFormattedValue = numeral(formattedAmount).value() ?? 0
 

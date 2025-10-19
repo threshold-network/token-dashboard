@@ -24,6 +24,10 @@ export const getCrossChainRpcUrl = (chainId: number | string): string => {
       return "https://sepolia-rollup.arbitrum.io/rpc"
     case SupportedChainIds.BaseSepolia:
       return "https://sepolia.base.org"
+    case SupportedChainIds.Bob:
+      return "https://rpc.gobob.xyz"
+    case SupportedChainIds.BobSepolia:
+      return "https://bob-sepolia.rpc.gobob.xyz/"
     default:
       throw new Error(`No RPC URL configured for chain ID ${chainId}`)
   }

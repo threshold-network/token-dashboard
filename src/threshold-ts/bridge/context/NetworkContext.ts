@@ -26,6 +26,8 @@ export class NetworkContext {
 
   // Bob-specific contracts
   public standardBridge?: Contract
+  // L1 Optimism Portal (Ethereum mainnet/Sepolia)
+  public optimismPortal?: Contract
 
   // Cache for legacy cap (Bob only)
   private _legacyCapCache: { value: BigNumber; timestamp: number } | null = null
@@ -64,17 +66,17 @@ export class NetworkContext {
 
     const tokenPoolArtifact = getArtifact(
       "TokenPool",
-      chainId,
+      chainId as number,
       shouldUseTestnetDevelopmentContracts
     )
     const ccipRouterArtifact = getArtifact(
       "CCIPRouter",
-      chainId,
+      chainId as number,
       shouldUseTestnetDevelopmentContracts
     )
     const tokenArtifact = getArtifact(
       this.networkType === "bob" ? "OptimismMintableUpgradableTBTC" : "TBTC",
-      chainId,
+      chainId as number,
       shouldUseTestnetDevelopmentContracts
     )
 
@@ -107,7 +109,7 @@ export class NetworkContext {
     if (this.networkType === "bob") {
       const standardBridgeArtifact = getArtifact(
         "StandardBridge",
-        chainId,
+        chainId as number,
         shouldUseTestnetDevelopmentContracts
       )
 
@@ -123,6 +125,25 @@ export class NetworkContext {
       )
     }
 
+    // Load OptimismPortal on Ethereum/Sepolia
+    if (this.networkType === "ethereum") {
+      const optimismPortalArtifact = getArtifact(
+        "OptimismPortal",
+        chainId as number,
+        shouldUseTestnetDevelopmentContracts
+      )
+      if (optimismPortalArtifact) {
+        this.optimismPortal = getContract(
+          optimismPortalArtifact.address,
+          optimismPortalArtifact.abi,
+          this.provider,
+          account
+        )
+      } else {
+        console.warn("OptimismPortal artifact not found")
+      }
+    }
+
     console.log(`${this.networkType} network contracts initialized:`, {
       token: !!this.token,
       tokenAddress: this.token?.address,
@@ -132,6 +153,8 @@ export class NetworkContext {
       tokenPoolAddress: this.tokenPool?.address,
       standardBridge: !!this.standardBridge,
       standardBridgeAddress: this.standardBridge?.address,
+      optimismPortal: !!this.optimismPortal,
+      optimismPortalAddress: this.optimismPortal?.address,
     })
   }
 

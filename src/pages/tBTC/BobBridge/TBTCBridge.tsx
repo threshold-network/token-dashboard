@@ -1,7 +1,8 @@
-import { Stack } from "@chakra-ui/react"
+import { Stack, Box } from "@chakra-ui/react"
 import BridgePanel from "./components/BridgePanel"
 import TokenBalanceCard from "../../../components/TokenBalanceCard"
 import { BridgeActivityCard } from "./components/BridgeActivityCard"
+import { ClaimableWithdrawalsCard } from "./components/ClaimableWithdrawalsCard"
 import { Token } from "../../../enums"
 import { PageComponent } from "../../../types"
 import { useBridgeActivity } from "../../../hooks/tbtc/useBridgeActivity"
@@ -11,16 +12,37 @@ const TBTCBridge: PageComponent = () => {
 
   return (
     <Stack
-      direction={{ base: "column-reverse", md: "row" }}
-      spacing={4}
-      w="100%"
-      align="flex-start"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      }}
     >
-      <BridgePanel onBridgeSuccess={refetch} />
-      <Stack spacing={4} w={{ base: "100%", md: "50%" }}>
-        <TokenBalanceCard token={Token.TBTCV2} />
-        <BridgeActivityCard data={data} isFetching={isFetching} />
+      <Stack
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "16px",
+          width: "100%",
+          alignItems: "flex-start",
+        }}
+      >
+        <BridgePanel onBridgeSuccess={refetch} />
+        <Stack
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+            width: "50%",
+          }}
+        >
+          <TokenBalanceCard token={Token.TBTCV2} />
+          <BridgeActivityCard data={data} isFetching={isFetching} />
+        </Stack>
       </Stack>
+      <Box style={{ marginTop: "16px" }}>
+        <ClaimableWithdrawalsCard onClaim={refetch} />
+      </Box>
     </Stack>
   )
 }

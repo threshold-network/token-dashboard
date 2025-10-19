@@ -3,7 +3,7 @@ import { useIsActive } from "../useIsActive"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeActivity } from "../../threshold-ts/bridge"
 
-const BLOCKS_TO_FETCH = 187500 // 28 days on Ethereum, 14 days on L2s
+const BLOCKS_TO_FETCH = 500000 // 90 days on Ethereum, 45 days on L2s
 
 // Re-export types from bridge module
 export type {
@@ -84,7 +84,7 @@ export const useBridgeActivity = () => {
 
     const interval = setInterval(() => {
       setRefreshTrigger((prev) => prev + 1)
-    }, 30000) // 30 seconds
+    }, 60000) // 60 seconds
 
     return () => clearInterval(interval)
   }, [account, chainId, threshold.bridge])

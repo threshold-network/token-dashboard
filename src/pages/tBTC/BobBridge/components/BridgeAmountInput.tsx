@@ -15,7 +15,7 @@ import { useTokenBalance } from "../../../../hooks/useTokenBalance"
 import { Token } from "../../../../enums"
 import { formatTokenAmount } from "../../../../utils/formatAmount"
 import { useToken } from "../../../../hooks/useToken"
-import { parseUnits, formatUnits } from "@ethersproject/units"
+import { formatUnits } from "@ethersproject/units"
 import { tBTCFillBlack } from "../../../../static/icons/tBTCFillBlack"
 
 interface BridgeAmountInputProps {
@@ -35,7 +35,7 @@ const BridgeAmountInput: FC<BridgeAmountInputProps> = ({
   const balance = useTokenBalance(Token.TBTCV2)
   const token = useToken(Token.TBTCV2)
 
-  const formattedBalance = formatTokenAmount(balance, undefined, 18, 6)
+  const formattedBalance = formatTokenAmount(balance, undefined, 18, 8)
 
   // Calculate USD value
   const usdValue = (() => {

@@ -1,5 +1,6 @@
-import { BigNumber, Contract, Event, providers } from "ethers"
+import { Contract, Event, providers } from "ethers"
 import { BridgeActivity, BridgeActivityStatus, BridgeRoute } from "./index"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 interface FetchOptions {
   account: string
@@ -11,6 +12,7 @@ interface FetchOptions {
     ccipRouter?: Contract
     standardBridge?: Contract
     token?: Contract
+    optimismPortal?: Contract
   }
   fromBlock: number
   toBlock: number | "latest"
@@ -28,11 +30,26 @@ export class BridgeActivityFetcher {
       this.fetchTokenPoolEvents(),
       this.fetchCCIPTransactions(),
       this.fetchStandardBridgeEvents(),
+      this.fetchOptimismPortalClaimables(),
     ])
 
     // Sort by timestamp descending
     this.activities.sort((a, b) => b.timestamp - a.timestamp)
     return this.activities
+  }
+
+  // Scan for L2 withdrawals that became claimable on L1 (OptimismPortal delay passed)
+  private async fetchOptimismPortalClaimables() {
+    if (this.options.networkType !== "ethereum") return
+    if (!this.options.contracts.optimismPortal) return
+
+    // For claimables we model them as activities with status PENDING until finalized elsewhere.
+    // We need a signal that user's L2 withdrawal exists and matured. We reuse StandardBridge's
+    // WithdrawalInitiated on L2 that later becomes claimable on L1 after delay. Since we're on L1
+    // here, we approximate by checking TokenPool Released events (funds received on L1) are missing
+    // and recent Locked on L2 not yet mirrored. Minimal viable approach: NOP here without concrete
+    // cross-domain proof parsing; placeholder for UI claim list handled elsewhere.
+    return
   }
 
   private async fetchTokenPoolEvents() {
@@ -41,7 +58,8 @@ export class BridgeActivityFetcher {
     try {
       const tokenPool = this.options.contracts.tokenPool
       const isL1 =
-        this.options.chainId === 1 || this.options.chainId === 11155111
+        this.options.chainId === SupportedChainIds.Ethereum ||
+        this.options.chainId === SupportedChainIds.Sepolia
 
       if (isL1) {
         // Fetch Locked events (deposits to L2)
@@ -236,87 +254,6 @@ export class BridgeActivityFetcher {
     }
   }
 
-  private async parseCCIPTransaction(
-    tx: providers.TransactionResponse
-  ): Promise<BridgeActivity | null> {
-    try {
-      const receipt = await this.options.provider.getTransactionReceipt(tx.hash)
-      if (!receipt) return null
-
-      // Extract amount
-      let amount = "0"
-
-      // Try to find TokenPool events
-      if (this.options.contracts.tokenPool) {
-        const tokenPoolAddress =
-          this.options.contracts.tokenPool.address.toLowerCase()
-        const lockedTopic =
-          this.options.contracts.tokenPool.interface.getEventTopic("Locked")
-        const burnedTopic =
-          this.options.contracts.tokenPool.interface.getEventTopic("Burned")
-
-        for (const log of receipt.logs) {
-          if (log.address.toLowerCase() === tokenPoolAddress) {
-            if (
-              log.topics[0] === lockedTopic ||
-              log.topics[0] === burnedTopic
-            ) {
-              try {
-                const parsed =
-                  this.options.contracts.tokenPool.interface.parseLog(log)
-                amount = parsed.args?.amount?.toString() || "0"
-                break
-              } catch {}
-            }
-          }
-        }
-      }
-
-      // Fallback to Transfer events
-      if (amount === "0" && this.options.contracts.token) {
-        const transferTopic =
-          this.options.contracts.token.interface.getEventTopic("Transfer")
-        const paddedFrom = `0x${this.options.account
-          .slice(2)
-          .toLowerCase()
-          .padStart(64, "0")}`
-
-        for (const log of receipt.logs) {
-          if (
-            log.address.toLowerCase() ===
-              this.options.contracts.token.address.toLowerCase() &&
-            log.topics[0] === transferTopic &&
-            log.topics[1]?.toLowerCase() === paddedFrom
-          ) {
-            try {
-              const parsed =
-                this.options.contracts.token.interface.parseLog(log)
-              amount = parsed.args?.value?.toString() || "0"
-              break
-            } catch {}
-          }
-        }
-      }
-
-      const block = await this.options.provider.getBlock(tx.blockNumber!)
-      const { fromNetwork, toNetwork } = this.getNetworks()
-
-      return {
-        amount,
-        status: "PENDING",
-        activityKey: `ccip-${tx.hash}`,
-        bridgeRoute: "ccip",
-        fromNetwork,
-        toNetwork,
-        txHash: tx.hash,
-        timestamp: block.timestamp,
-        explorerUrl: `https://ccip.chain.link/tx/${tx.hash}`,
-      }
-    } catch {
-      return null
-    }
-  }
-
   private async parseTokenPoolEvent(
     event: Event,
     status: BridgeActivityStatus,
@@ -332,19 +269,29 @@ export class BridgeActivityFetcher {
       if (this.options.networkType === "ethereum") {
         if (direction === "deposit") {
           fromNetwork = this.getNetworkName(this.options.chainId)
-          toNetwork = this.options.chainId === 1 ? "BOB" : "BOB Sepolia"
+          toNetwork =
+            this.options.chainId === SupportedChainIds.Ethereum
+              ? "BOB"
+              : "BOB Sepolia"
         } else {
-          fromNetwork = this.options.chainId === 1 ? "BOB" : "BOB Sepolia"
+          fromNetwork =
+            this.options.chainId === SupportedChainIds.Ethereum
+              ? "BOB"
+              : "BOB Sepolia"
           toNetwork = this.getNetworkName(this.options.chainId)
         }
       } else {
         if (direction === "withdrawal") {
           fromNetwork = this.getNetworkName(this.options.chainId)
           toNetwork =
-            this.options.chainId === 60808 ? "Ethereum" : "Ethereum Sepolia"
+            this.options.chainId === SupportedChainIds.Bob
+              ? "Ethereum"
+              : "Ethereum Sepolia"
         } else {
           fromNetwork =
-            this.options.chainId === 60808 ? "Ethereum" : "Ethereum Sepolia"
+            this.options.chainId === SupportedChainIds.Bob
+              ? "Ethereum"
+              : "Ethereum Sepolia"
           toNetwork = this.getNetworkName(this.options.chainId)
         }
       }
@@ -373,7 +320,9 @@ export class BridgeActivityFetcher {
       const amount = event.args?.amount?.toString() || "0"
       const fromNetwork = this.getNetworkName(this.options.chainId)
       const toNetwork =
-        this.options.chainId === 60808 ? "Ethereum" : "Ethereum Sepolia"
+        this.options.chainId === SupportedChainIds.Bob
+          ? "Ethereum"
+          : "Ethereum Sepolia"
 
       return {
         amount,
@@ -385,7 +334,7 @@ export class BridgeActivityFetcher {
         txHash: event.transactionHash,
         timestamp: block.timestamp,
         explorerUrl:
-          this.options.chainId === 60808
+          this.options.chainId === SupportedChainIds.Bob
             ? `https://explorer.gobob.xyz/tx/${event.transactionHash}`
             : `https://bob-sepolia.explorer.gobob.xyz/tx/${event.transactionHash}`,
       }
@@ -398,26 +347,31 @@ export class BridgeActivityFetcher {
     if (this.options.networkType === "ethereum") {
       return {
         fromNetwork: this.getNetworkName(this.options.chainId),
-        toNetwork: this.options.chainId === 1 ? "BOB" : "BOB Sepolia",
+        toNetwork:
+          this.options.chainId === SupportedChainIds.Ethereum
+            ? "BOB"
+            : "BOB Sepolia",
       }
     } else {
       return {
         fromNetwork: this.getNetworkName(this.options.chainId),
         toNetwork:
-          this.options.chainId === 60808 ? "Ethereum" : "Ethereum Sepolia",
+          this.options.chainId === SupportedChainIds.Bob
+            ? "Ethereum"
+            : "Ethereum Sepolia",
       }
     }
   }
 
   private getNetworkName(chainId: number): string {
     switch (chainId) {
-      case 1:
+      case SupportedChainIds.Ethereum:
         return "Ethereum"
-      case 11155111:
+      case SupportedChainIds.Sepolia:
         return "Ethereum Sepolia"
-      case 60808:
+      case SupportedChainIds.Bob:
         return "BOB"
-      case 808813:
+      case SupportedChainIds.BobSepolia:
         return "BOB Sepolia"
       default:
         return "Unknown"

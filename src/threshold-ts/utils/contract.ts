@@ -28,6 +28,7 @@ import LegacyKeepStakingArtifactMainnet from "../staking/mainnet-artifacts/Legac
 import TacoArtifactMainnet from "@nucypher/nucypher-contracts/deployment/artifacts/mainnet.json"
 import L1CCIPRouterMainnet from "../tbtc/mainnet-artifacts/CCIPRouter.json"
 import LockReleaseTokenPoolUpgradeableArtifactMainnet from "../tbtc/mainnet-artifacts/LockReleaseTokenPoolUpgradeable.json"
+import OptimismPortalMainnet from "../tbtc/mainnet-artifacts/OptimismPortal.json"
 import L1BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/L1BitcoinRedeemer.json"
 import BaseL2BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/BaseL2BitcoinRedeemer.json"
 import ArbitrumL2BitcoinRedeemerArtifactMainnet from "../tbtc/mainnet-artifacts/ArbitrumL2BitcoinRedeemer.json"
@@ -63,6 +64,7 @@ import RandomBeaconArtifactDappDevelopmentSepolia from "../tbtc/dapp-development
 import LegacyKeepStakingArtifactDappDevelopmentSepolia from "../staking/dapp-development-sepolia-artifacts/LegacyKeepStaking.json"
 import L1CCIPRouterSepolia from "../tbtc/sepolia-artifacts/CCIPRouter.json"
 import LockReleaseTokenPoolUpgradeableArtifactSepolia from "../tbtc/sepolia-artifacts/LockReleaseTokenPoolUpgradeable.json"
+import OptimismPortalSepolia from "../tbtc/sepolia-artifacts/OptimismPortal.json"
 
 import CCIPRouterArtifactBob from "../tbtc/bob-artifacts/CCIPRouter.json"
 import StandardBridgeArtifactBob from "../tbtc/bob-artifacts/StandardBridge.json"
@@ -94,6 +96,7 @@ export type ArtifactNameType =
   | "StandardBridge"
   | "OptimismMintableUpgradableTBTC"
   | "TokenPool"
+  | "OptimismPortal"
   | "L1BitcoinRedeemer"
   | "ArbitrumL2BitcoinRedeemer"
   | "BaseL2BitcoinRedeemer"
@@ -131,6 +134,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherMainnet,
     CCIPRouter: L1CCIPRouterMainnet,
     TokenPool: LockReleaseTokenPoolUpgradeableArtifactMainnet,
+    OptimismPortal: OptimismPortalMainnet,
   },
   [SupportedChainIds.Sepolia]: {
     ArbitrumL2BitcoinRedeemer: ArbitrumL2BitcoinRedeemerArtifactSepolia,
@@ -153,6 +157,7 @@ const contractArtifacts: ContractArtifacts = {
     VendingMachineNuCypher: VendingMachineNuCypherSepolia,
     CCIPRouter: L1CCIPRouterSepolia,
     TokenPool: LockReleaseTokenPoolUpgradeableArtifactSepolia,
+    OptimismPortal: OptimismPortalSepolia,
   },
   [SupportedChainIds.Localhost]: {
     L1BitcoinRedeemer: L1BitcoinRedeemerArtifactSepolia,
