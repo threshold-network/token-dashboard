@@ -18,7 +18,7 @@ import {
   getL2Output as getL2OutputKailua,
   proveWithdrawal,
 } from "@gobob/viem/op-stack-kailua"
-import { SupportedChainIds } from "../../networks/enums/networks"
+import { SupportedChainIds, PublicRpcUrls } from "../../networks/enums/networks"
 // Regular viem imports (different from @gobob/viem)
 import {
   createPublicClient as createPublicClientViem,
@@ -597,9 +597,30 @@ export class Bridge implements IBridge {
       }
 
       try {
-        const proofDelay = Number(await portal.proofMaturityDelaySeconds())
+        // Read delays via a read-only L1 provider to avoid wallet RPC limits
+        const l1RpcUrl =
+          this.context.chainId === SupportedChainIds.Ethereum
+            ? PublicRpcUrls.Ethereum
+            : PublicRpcUrls.Sepolia
+        const l1Provider = new JsonRpcProvider(l1RpcUrl)
+
+        const portalArtifactRO = getArtifact(
+          "OptimismPortal" as any,
+          this.context.chainId
+        )
+        const portalRead = portalArtifactRO
+          ? new Contract(
+              portalArtifactRO.address,
+              portalArtifactRO.abi,
+              l1Provider
+            )
+          : portal
+
+        const proofDelay = Number(
+          await (portalRead as any).proofMaturityDelaySeconds()
+        )
         const finalityDelay = Number(
-          await portal.disputeGameFinalityDelaySeconds()
+          await (portalRead as any).disputeGameFinalityDelaySeconds()
         )
         if (Number.isFinite(proofDelay) && Number.isFinite(finalityDelay)) {
           totalDelay = proofDelay + finalityDelay
@@ -611,8 +632,8 @@ export class Bridge implements IBridge {
           "[fetchClaimableWithdrawals] Error fetching portal delays:",
           error
         )
-        // Cannot proceed without knowing the delays
-        return []
+        // Graceful fallback: assume 7 days if portal delay calls fail
+        totalDelay = 7 * 24 * 60 * 60
       }
 
       const results: ClaimableWithdrawal[] = []
@@ -662,10 +683,27 @@ export class Bridge implements IBridge {
                     // We need to check if the current account or the withdrawal sender has proven it
 
                     // First check if the current account proved it
-                    let provenData = await portal.provenWithdrawals(
-                      withdrawalHash,
-                      account
+                    // Use read-only L1 provider for reads to avoid wallet RPC limits
+                    const l1RpcUrl =
+                      this.context.chainId === SupportedChainIds.Ethereum
+                        ? PublicRpcUrls.Ethereum
+                        : PublicRpcUrls.Sepolia
+                    const l1Provider = new JsonRpcProvider(l1RpcUrl)
+                    const portalArtifactRO = getArtifact(
+                      "OptimismPortal" as any,
+                      this.context.chainId
                     )
+                    const portalRead = portalArtifactRO
+                      ? new Contract(
+                          portalArtifactRO.address,
+                          portalArtifactRO.abi,
+                          l1Provider
+                        )
+                      : portal
+
+                    let provenData = await (
+                      portalRead as any
+                    ).provenWithdrawals(withdrawalHash, account)
 
                     // Check if proven by current account
                     if (
@@ -683,10 +721,9 @@ export class Bridge implements IBridge {
                         withdrawalSender &&
                         withdrawalSender.toLowerCase() !== account.toLowerCase()
                       ) {
-                        provenData = await portal.provenWithdrawals(
-                          withdrawalHash,
-                          withdrawalSender
-                        )
+                        provenData = await (
+                          portalRead as any
+                        ).provenWithdrawals(withdrawalHash, withdrawalSender)
 
                         if (
                           provenData &&
