@@ -13,25 +13,20 @@ import {
   custom,
 } from "@gobob/viem"
 import { mainnet, sepolia } from "@gobob/viem/chains"
+import { getWithdrawals, buildProveWithdrawal } from "@gobob/viem/op-stack"
 import {
-  getWithdrawals,
-  getL2Output,
-  buildProveWithdrawal,
-} from "@gobob/viem/op-stack"
-import { proveWithdrawal } from "@gobob/viem/op-stack-kailua"
+  getL2Output as getL2OutputKailua,
+  proveWithdrawal,
+} from "@gobob/viem/op-stack-kailua"
 import { SupportedChainIds } from "../../networks/enums/networks"
 // Regular viem imports (different from @gobob/viem)
 import {
   createPublicClient as createPublicClientViem,
   createWalletClient as createWalletClientViem,
   http as httpViem,
-  custom as customViem,
 } from "viem"
 import { mainnet as mainnetViem, sepolia as sepoliaViem } from "viem/chains"
-import {
-  getWithdrawals as getWithdrawalsViem,
-  getL2Output as getL2OutputViem,
-} from "viem/op-stack"
+import { getWithdrawals as getWithdrawalsViem } from "viem/op-stack"
 
 export interface IBridge {
   // Core bridge methods
@@ -314,14 +309,14 @@ export class Bridge implements IBridge {
             [sourceId]: {
               address:
                 sourceId === SupportedChainIds.Ethereum
-                  ? "0xc4d216B4D85b64e0c53A1A4dBba7A72998941D7D" // mainnet - from BOB docs
-                  : ("0x7a25d06Af869d0A94f6effAfFa0A830EEBF1EcfB" as `0x${string}`), // sepolia - from BOB docs
+                  ? "0x96123dbFC3253185B594c6a7472EE5A21E9B1079"
+                  : ("0x7a25d06Af869d0A94f6effAfFa0A830EEBF1EcfB" as `0x${string}`), // sepolia DisputeGameFactoryProxy - from BOB docs
             },
           },
         },
       }
 
-      const output = await getL2Output(publicL1, {
+      const output = await getL2OutputKailua(publicL1, {
         chain: l1Chain,
         l2BlockNumber: receipt.blockNumber,
         targetChain: bobChain as any,
@@ -640,13 +635,13 @@ export class Bridge implements IBridge {
             try {
               // Import viem utilities
               // Using viem imports from top of file
-              const l1Chain =
+              const l1ChainKailua =
                 this.context.chainId === SupportedChainIds.Ethereum
-                  ? mainnetViem
-                  : sepoliaViem
-              const publicL1 = createPublicClientViem({
-                chain: l1Chain,
-                transport: httpViem(),
+                  ? mainnet
+                  : sepolia
+              const publicL1 = createPublicClient({
+                chain: l1ChainKailua,
+                transport: http(),
               })
 
               // Get the withdrawal transaction receipt from L2
@@ -743,18 +738,18 @@ export class Bridge implements IBridge {
                                 [sourceId]: {
                                   address:
                                     sourceId === SupportedChainIds.Ethereum
-                                      ? "0xc4d216B4D85b64e0c53A1A4dBba7A72998941D7D" // mainnet - from BOB docs
-                                      : ("0x7a25d06Af869d0A94f6effAfFa0A830EEBF1EcfB" as `0x${string}`), // sepolia - from BOB docs
+                                      ? "0x96123dbFC3253185B594c6a7472EE5A21E9B1079"
+                                      : ("0x7a25d06Af869d0A94f6effAfFa0A830EEBF1EcfB" as `0x${string}`), // sepolia DisputeGameFactoryProxy - from BOB docs
                                 },
                               },
                             },
                           }
-                          const l1ChainViem =
+                          const l1ChainKailua =
                             this.context.chainId === SupportedChainIds.Ethereum
-                              ? mainnetViem
-                              : sepoliaViem
-                          const output = await getL2OutputViem(publicL1, {
-                            chain: l1ChainViem,
+                              ? mainnet
+                              : sepolia
+                          const output = await getL2OutputKailua(publicL1, {
+                            chain: l1ChainKailua,
                             l2BlockNumber: BigInt(receipt.blockNumber),
                             targetChain: bobChain as any,
                           })
