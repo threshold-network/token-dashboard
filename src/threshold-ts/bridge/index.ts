@@ -649,6 +649,9 @@ export class Bridge implements IBridge {
           let proven = false
           let proofTimestamp = 0
           let readyAt = 0
+          let provenData: any = null
+          let l1Provider: JsonRpcProvider | null = null
+          let portalRead: Contract | null = null
 
           // Check if L2 output has been posted to L1
           let outputPosted = false
@@ -688,12 +691,12 @@ export class Bridge implements IBridge {
                       this.context.chainId === SupportedChainIds.Ethereum
                         ? PublicRpcUrls.Ethereum
                         : PublicRpcUrls.Sepolia
-                    const l1Provider = new JsonRpcProvider(l1RpcUrl)
+                    l1Provider = new JsonRpcProvider(l1RpcUrl)
                     const portalArtifactRO = getArtifact(
                       "OptimismPortal" as any,
                       this.context.chainId
                     )
-                    const portalRead = portalArtifactRO
+                    portalRead = portalArtifactRO
                       ? new Contract(
                           portalArtifactRO.address,
                           portalArtifactRO.abi,
@@ -701,9 +704,10 @@ export class Bridge implements IBridge {
                         )
                       : portal
 
-                    let provenData = await (
-                      portalRead as any
-                    ).provenWithdrawals(withdrawalHash, account)
+                    provenData = await (portalRead as any).provenWithdrawals(
+                      withdrawalHash,
+                      account
+                    )
 
                     // Check if proven by current account
                     if (
@@ -826,9 +830,81 @@ export class Bridge implements IBridge {
             }
           }
 
-          // Calculate readyAt based on proof status
-          if (proven && proofTimestamp > 0) {
-            // If proven, ready 7 days after proof submission
+          // Calculate readyAt based on proof status and dispute game resolution
+          if (
+            proven &&
+            proofTimestamp > 0 &&
+            portalRead &&
+            provenData &&
+            l1Provider
+          ) {
+            // Get the dispute game finality delay from the portal
+            let disputeGameFinalityDelay = 0
+            let disputeGameResolvedAt = 0
+            let isDisputeGameResolved = false
+
+            try {
+              // Get dispute game finality delay
+              disputeGameFinalityDelay = Number(
+                await (portalRead as any).disputeGameFinalityDelaySeconds()
+              )
+
+              // If we have the dispute game proxy address from provenData, check its status
+              if (provenData && provenData.disputeGameProxy) {
+                const disputeGameAddress = provenData.disputeGameProxy
+
+                // Create a minimal ABI for the dispute game contract
+                const disputeGameAbi = [
+                  "function status() view returns (uint8)",
+                  "function resolvedAt() view returns (uint64)",
+                ]
+
+                const disputeGame = new Contract(
+                  disputeGameAddress,
+                  disputeGameAbi,
+                  l1Provider
+                )
+
+                try {
+                  const gameStatus = await disputeGame.status()
+                  // GameStatus.DEFENDER_WINS = 2 (from the contract)
+                  if (gameStatus === 2) {
+                    isDisputeGameResolved = true
+                    const resolvedAtBN = await disputeGame.resolvedAt()
+                    disputeGameResolvedAt = Number(resolvedAtBN.toString())
+                  }
+                } catch (gameError) {
+                  console.warn(
+                    "[fetchClaimableWithdrawals] Error checking dispute game status:",
+                    gameError
+                  )
+                }
+              }
+            } catch (delayError) {
+              console.warn(
+                "[fetchClaimableWithdrawals] Error getting dispute game finality delay:",
+                delayError
+              )
+            }
+
+            // Calculate readyAt based on both delays
+            const proofMaturityTime = proofTimestamp + totalDelay
+
+            if (isDisputeGameResolved && disputeGameResolvedAt > 0) {
+              // If dispute game is resolved, ready time is the later of:
+              // 1. Proof maturity time
+              // 2. Dispute game resolution + finality delay
+              const disputeGameFinalityTime =
+                disputeGameResolvedAt + disputeGameFinalityDelay
+              readyAt = Math.max(proofMaturityTime, disputeGameFinalityTime)
+            } else {
+              // If dispute game is not resolved, we can't determine the final ready time
+              // Set readyAt to 0 to indicate it's waiting for dispute game resolution
+              readyAt = 0
+            }
+          } else if (proven && proofTimestamp > 0) {
+            // If we can't check dispute game status (missing required objects),
+            // fall back to proof maturity time only
             readyAt = proofTimestamp + totalDelay
           } else {
             // If not proven, we can't determine when it will be ready
@@ -845,7 +921,12 @@ export class Bridge implements IBridge {
             amount,
             timestamp: withdrawalTimestamp,
             readyAt,
-            canClaim: proven && nowSec >= readyAt && !claimed,
+            // Can only claim if:
+            // 1. Withdrawal is proven
+            // 2. readyAt is set (not 0, which means waiting for dispute resolution)
+            // 3. Current time is past readyAt
+            // 4. Not already claimed
+            canClaim: proven && readyAt > 0 && nowSec >= readyAt && !claimed,
             claimed,
             proven,
             outputPosted,

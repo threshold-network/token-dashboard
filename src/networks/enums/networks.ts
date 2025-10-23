@@ -61,7 +61,7 @@ export enum ExplorerDataType {
 }
 
 export enum PublicRpcUrls {
-  Ethereum = "https://eth.drpc.org",
+  Ethereum = "https://eth.llamarpc.com",
   Sepolia = "https://sepolia.drpc.org",
   Localhost = "http://localhost:8545",
   Arbitrum = "https://arbitrum.drpc.org",
