@@ -11,7 +11,7 @@ import {
   Skeleton,
   Box,
 } from "@threshold-network/components"
-import { FC, useState } from "react"
+import { FC, useState, useEffect } from "react"
 import { Alert, AlertIcon, AlertDescription } from "@chakra-ui/react"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
@@ -50,6 +50,32 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
 }) => {
   const [localError, setLocalError] = useState<string | null>(null)
 
+  // Validate amount on mount and when it changes
+  const validateAmount = (): string | null => {
+    if (!amount || amount === "0") {
+      return "Amount must be greater than 0"
+    }
+
+    try {
+      const parsedAmount = parseFloat(amount)
+      if (isNaN(parsedAmount) || parsedAmount <= 0) {
+        return "Invalid amount"
+      }
+
+      // Check decimal places (tBTC has 18 decimals)
+      const decimalPlaces = amount.includes(".")
+        ? amount.split(".")[1].length
+        : 0
+      if (decimalPlaces > 18) {
+        return "Amount has too many decimal places (max 18)"
+      }
+
+      return null
+    } catch (error) {
+      return "Invalid amount format"
+    }
+  }
+
   const formatTime = (seconds: number): string => {
     if (seconds < 3600) {
       return `~${Math.round(seconds / 60)} minutes`
@@ -60,9 +86,25 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
     }
   }
 
+  // Validate amount on mount
+  useEffect(() => {
+    const validationError = validateAmount()
+    if (validationError) {
+      setLocalError(validationError)
+    }
+  }, [amount])
+
   const handleConfirm = async () => {
     try {
       setLocalError(null)
+
+      // Validate amount before proceeding
+      const validationError = validateAmount()
+      if (validationError) {
+        setLocalError(validationError)
+        return
+      }
+
       await onConfirm()
       closeModal()
     } catch (error: any) {
@@ -144,7 +186,9 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
         <Button onClick={closeModal} variant="outline" mr={2}>
           Cancel
         </Button>
-        <SubmitTxButton onSubmit={handleConfirm}>Confirm Bridge</SubmitTxButton>
+        <SubmitTxButton onSubmit={handleConfirm} isDisabled={!!localError}>
+          Confirm Bridge
+        </SubmitTxButton>
       </ModalFooter>
     </>
   )
