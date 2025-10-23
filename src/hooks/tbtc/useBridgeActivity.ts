@@ -40,7 +40,7 @@ export const useBridgeActivity = () => {
         if (!mounted) return
 
         // Double-check filtering based on current chainId
-        const isBobNetwork = chainId === 60808 || chainId === 808813
+        const isBobNetwork = chainId === SupportedChainIds.Bob || chainId === SupportedChainIds.BobSepolia
         const filtered = activities.filter((activity) => {
           if (isBobNetwork) {
             // On BOB: show activities where BOB is either source or destination
