@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react"
 import { useIsActive } from "../useIsActive"
 import { useThreshold } from "../../contexts/ThresholdContext"
 import { BridgeActivity } from "../../threshold-ts/bridge"
+import { SupportedChainIds } from "../../networks/enums/networks"
 
 const BLOCKS_TO_FETCH = 500000 // 90 days on Ethereum, 45 days on L2s
 
@@ -40,7 +41,9 @@ export const useBridgeActivity = () => {
         if (!mounted) return
 
         // Double-check filtering based on current chainId
-        const isBobNetwork = chainId === SupportedChainIds.Bob || chainId === SupportedChainIds.BobSepolia
+        const isBobNetwork =
+          chainId === SupportedChainIds.Bob ||
+          chainId === SupportedChainIds.BobSepolia
         const filtered = activities.filter((activity) => {
           if (isBobNetwork) {
             // On BOB: show activities where BOB is either source or destination

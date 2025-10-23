@@ -11,7 +11,8 @@ import {
   Skeleton,
   Box,
 } from "@threshold-network/components"
-import { FC } from "react"
+import { FC, useState } from "react"
+import { Alert, AlertIcon, AlertDescription } from "@chakra-ui/react"
 import { BaseModalProps } from "../../../types"
 import InfoBox from "../../InfoBox"
 import { InlineTokenBalance } from "../../TokenBalance"
@@ -47,6 +48,8 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
   estimatedTime,
   onConfirm,
 }) => {
+  const [localError, setLocalError] = useState<string | null>(null)
+
   const formatTime = (seconds: number): string => {
     if (seconds < 3600) {
       return `~${Math.round(seconds / 60)} minutes`
@@ -57,13 +60,14 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
     }
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     try {
-      // Close immediately, run in background
+      setLocalError(null)
+      await onConfirm()
       closeModal()
-      void onConfirm()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Bridge transaction failed:", error)
+      setLocalError(error?.message || "Failed to initiate bridge transaction")
     }
   }
 
@@ -128,6 +132,12 @@ const InitiateBridgingBase: FC<InitiateBridgingProps> = ({
             </>
           )}
         </BodySm>
+        {localError && (
+          <Alert status="error" borderRadius="md" mt="4">
+            <AlertIcon />
+            <AlertDescription fontSize="sm">{localError}</AlertDescription>
+          </Alert>
+        )}
         <Divider mt="4" />
       </ModalBody>
       <ModalFooter>
