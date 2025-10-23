@@ -61,6 +61,7 @@ export const useBridgeActivity = () => {
           setBridgeActivities(filtered)
         }
       } catch (error) {
+        console.error("Failed to fetch bridge activities:", error)
         if (mounted) {
           setBridgeActivities([])
         }
