@@ -30,9 +30,21 @@ import { useIsActive } from "../../hooks/useIsActive"
 import { useNonEVMConnection } from "../../hooks/useNonEVMConnection"
 
 export type BridgeActivityProps = {
-  data: BridgeActivityType[]
+  data: (BridgeActivityType | BridgeActivityTypeExtended)[]
   isFetching: boolean
   emptyState?: ReactElement
+}
+
+// Extended type to support bridge activities
+export type BridgeActivityTypeExtended = BridgeActivityType & {
+  additionalData?: {
+    bridgeRoute?: string
+    fromNetwork?: string
+    toNetwork?: string
+    explorerUrl?: string
+    redeemerOutputScript?: string
+    walletPublicKeyHash?: string
+  }
 }
 
 type BridgeActivityContextValue = {
@@ -101,7 +113,7 @@ export const BridgeActivityData: FC<ListProps> = (props) => {
   )
 }
 
-const ActivityItem: FC<BridgeActivityType> = ({
+const ActivityItem: FC<BridgeActivityTypeExtended> = ({
   amount,
   status,
   activityKey,
@@ -111,26 +123,29 @@ const ActivityItem: FC<BridgeActivityType> = ({
 }) => {
   const { account } = useIsActive()
 
-  const link =
-    bridgeProcess === "unmint"
-      ? (() => {
-          const unmintData =
-            additionalData as UnmintBridgeActivityAdditionalData
-          const builder = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
-            .withRedeemer(account!)
-            .withRedeemerOutputScript(unmintData.redeemerOutputScript)
+  let link: string
+  let isExternal = false
 
-          // For cross-chain redemptions, add chainName
-          // For L1 redemptions, add walletPublicKeyHash
-          if (unmintData.chainName) {
-            builder.withChainName(unmintData.chainName)
-          } else {
-            builder.withWalletPublicKeyHash(unmintData.walletPublicKeyHash)
-          }
+  if (additionalData?.explorerUrl) {
+    link = additionalData.explorerUrl
+    isExternal = true
+  } else if (bridgeProcess === "unmint") {
+    const unmintData = additionalData as UnmintBridgeActivityAdditionalData
+    const builder = RedemptionDetailsLinkBuilder.createFromTxHash(txHash)
+      .withRedeemer(account!)
+      .withRedeemerOutputScript(unmintData.redeemerOutputScript)
 
-          return builder.build()
-        })()
-      : `/tBTC/mint/deposit/${activityKey}`
+    // For cross-chain redemptions, add chainName
+    // For L1 redemptions, add walletPublicKeyHash
+    if (unmintData.chainName) {
+      builder.withChainName(unmintData.chainName)
+    } else {
+      builder.withWalletPublicKeyHash(unmintData.walletPublicKeyHash)
+    }
+    link = builder.build()
+  } else {
+    link = `/tBTC/mint/deposit/${activityKey}`
+  }
 
   return (
     <ActivityItemWrapper>
@@ -140,6 +155,7 @@ const ActivityItem: FC<BridgeActivityType> = ({
         _hover={{ textDecoration: "none" }}
         color="inherit"
         to={link}
+        isExternal={isExternal}
       >
         <InlineTokenBalance tokenAmount={amount} />
       </LinkOverlay>
@@ -148,8 +164,13 @@ const ActivityItem: FC<BridgeActivityType> = ({
   )
 }
 
-const renderActivityItem = (item: BridgeActivityType) => (
-  <ActivityItem key={`${item.activityKey}-${item.txHash}`} {...item} />
+const renderActivityItem = (
+  item: BridgeActivityType | BridgeActivityTypeExtended
+) => (
+  <ActivityItem
+    key={`${item.activityKey}-${item.txHash}`}
+    {...(item as BridgeActivityTypeExtended)}
+  />
 )
 
 const bridgeActivityStatusToBadgeProps: Record<

@@ -139,4 +139,40 @@ export const networks: Network[] = [
       blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.BaseSepolia)],
     },
   },
+  {
+    chainId: SupportedChainIds.Bob,
+    name: "Bob",
+    layer: Layer.L2,
+    networkType: NetworkType.Mainnet,
+    alchemyName: undefined,
+    chainParameters: {
+      chainId: toHex(SupportedChainIds.Bob),
+      chainName: "Bob Mainnet",
+      nativeCurrency: {
+        name: NativeCurrency.Ether,
+        symbol: ETH_SYMBOL,
+        decimals: DECIMALS,
+      },
+      rpcUrls: [PublicRpcUrls.Bob],
+      blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.Bob)],
+    },
+  },
+  {
+    chainId: SupportedChainIds.BobSepolia,
+    name: "Bob",
+    layer: Layer.L2,
+    networkType: NetworkType.Testnet,
+    alchemyName: undefined,
+    chainParameters: {
+      chainId: toHex(SupportedChainIds.BobSepolia),
+      chainName: "Bob Sepolia",
+      nativeCurrency: {
+        name: NativeCurrency.SepoliaEther,
+        symbol: ETH_SYMBOL,
+        decimals: DECIMALS,
+      },
+      rpcUrls: [PublicRpcUrls.BobSepolia],
+      blockExplorerUrls: [createExplorerPrefix(SupportedChainIds.BobSepolia)],
+    },
+  },
 ]

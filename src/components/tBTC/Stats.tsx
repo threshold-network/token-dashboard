@@ -19,7 +19,12 @@ export const Tvl: FC<TvlProps> = ({ tvl, tvlInUSD }) => {
         Total supply
       </BodyMd>
       <H1 textAlign="center">
-        <InlineTokenBalance tokenAmount={tvl} /> <H5 as="span">tBTC</H5>
+        <InlineTokenBalance
+          tokenAmount={tvl}
+          tokenFormat="0.00"
+          precision={0}
+        />{" "}
+        <H5 as="span">tBTC</H5>
       </H1>
       <BodyMd textAlign="center">
         {formatFiatCurrencyAmount(tvlInUSD, "0,00.00")} USD

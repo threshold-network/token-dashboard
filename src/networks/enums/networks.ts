@@ -10,8 +10,20 @@ export enum SupportedChainIds {
   Localhost = 1337,
   Arbitrum = 42161,
   Base = 8453,
+  Bob = 60808,
+  BobSepolia = 808813,
   ArbitrumSepolia = 421614,
   BaseSepolia = 84532,
+}
+
+export enum BobChainSelector {
+  Bob = "3849287863852499584",
+  BobSepolia = "5535534526963509396",
+}
+
+export enum EthereumChainSelector {
+  Ethereum = "5009297550715157269",
+  Sepolia = "16015286601757825753",
 }
 
 export enum NonEVMNetworks {
@@ -49,11 +61,13 @@ export enum ExplorerDataType {
 }
 
 export enum PublicRpcUrls {
-  Ethereum = "https://eth.drpc.org",
+  Ethereum = "https://eth.llamarpc.com",
   Sepolia = "https://sepolia.drpc.org",
   Localhost = "http://localhost:8545",
   Arbitrum = "https://arbitrum.drpc.org",
   ArbitrumSepolia = "https://arbitrum-sepolia.drpc.org",
   Base = "https://base.drpc.org",
   BaseSepolia = "https://base-sepolia.drpc.org",
+  Bob = "https://rpc.gobob.xyz/",
+  BobSepolia = "https://bob-sepolia.rpc.gobob.xyz/",
 }
