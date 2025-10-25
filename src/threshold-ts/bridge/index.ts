@@ -643,7 +643,7 @@ export class Bridge implements IBridge {
           const block = await l2Provider.getBlock(ev.blockNumber)
           const amount = ev.args?.amount ? ev.args.amount.toString() : "0"
           const withdrawalTimestamp = block?.timestamp || 0
-          const claimed = false // Full withdrawalHash cross-check omitted in lean version
+          let claimed = false
 
           // Check if the withdrawal is proven and get proof timestamp
           let proven = false
@@ -704,46 +704,59 @@ export class Bridge implements IBridge {
                         )
                       : portal
 
-                    provenData = await (portalRead as any).provenWithdrawals(
-                      withdrawalHash,
-                      account
-                    )
-
-                    // Check if proven by current account
-                    if (
-                      provenData &&
-                      provenData.timestamp &&
-                      provenData.timestamp.gt(0)
-                    ) {
+                    // Check if withdrawal has been finalized/claimed
+                    const isFinalized = await (
+                      portalRead as any
+                    ).finalizedWithdrawals(withdrawalHash)
+                    if (isFinalized) {
+                      claimed = true
+                      // If already claimed, set proven to true and skip further checks
                       proven = true
-                      proofTimestamp = Number(provenData.timestamp.toString())
+                      outputPosted = true
                     } else {
-                      // If not proven by current account, check if proven by the withdrawal sender
-                      // The sender is the 'from' field in the withdrawal
-                      const withdrawalSender = withdrawalInfo.sender
-                      if (
-                        withdrawalSender &&
-                        withdrawalSender.toLowerCase() !== account.toLowerCase()
-                      ) {
-                        provenData = await (
-                          portalRead as any
-                        ).provenWithdrawals(withdrawalHash, withdrawalSender)
+                      // Only check proven status if not already claimed
+                      provenData = await (portalRead as any).provenWithdrawals(
+                        withdrawalHash,
+                        account
+                      )
 
+                      // Check if proven by current account
+                      if (
+                        provenData &&
+                        provenData.timestamp &&
+                        provenData.timestamp.gt(0)
+                      ) {
+                        proven = true
+                        proofTimestamp = Number(provenData.timestamp.toString())
+                      } else {
+                        // If not proven by current account, check if proven by the withdrawal sender
+                        // The sender is the 'from' field in the withdrawal
+                        const withdrawalSender = withdrawalInfo.sender
                         if (
-                          provenData &&
-                          provenData.timestamp &&
-                          provenData.timestamp.gt(0)
+                          withdrawalSender &&
+                          withdrawalSender.toLowerCase() !==
+                            account.toLowerCase()
                         ) {
-                          proven = true
-                          proofTimestamp = Number(
-                            provenData.timestamp.toString()
-                          )
+                          provenData = await (
+                            portalRead as any
+                          ).provenWithdrawals(withdrawalHash, withdrawalSender)
+
+                          if (
+                            provenData &&
+                            provenData.timestamp &&
+                            provenData.timestamp.gt(0)
+                          ) {
+                            proven = true
+                            proofTimestamp = Number(
+                              provenData.timestamp.toString()
+                            )
+                          }
                         }
                       }
                     }
 
                     // Check if L2 output has been posted to L1
-                    if (!proven) {
+                    if (!proven && !claimed) {
                       // For withdrawals older than 4 hours, assume output has been posted
                       // This is a temporary workaround for BOB network where output checking might fail
                       const withdrawalAge = nowSec - withdrawalTimestamp
@@ -836,7 +849,8 @@ export class Bridge implements IBridge {
             proofTimestamp > 0 &&
             portalRead &&
             provenData &&
-            l1Provider
+            l1Provider &&
+            !claimed
           ) {
             // Get the dispute game finality delay from the portal
             let disputeGameFinalityDelay = 0
@@ -902,7 +916,7 @@ export class Bridge implements IBridge {
               // Set readyAt to 0 to indicate it's waiting for dispute game resolution
               readyAt = 0
             }
-          } else if (proven && proofTimestamp > 0) {
+          } else if (proven && proofTimestamp > 0 && !claimed) {
             // If we can't check dispute game status (missing required objects),
             // fall back to proof maturity time only
             readyAt = proofTimestamp + totalDelay
