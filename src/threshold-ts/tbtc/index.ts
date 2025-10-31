@@ -1,5 +1,6 @@
 import { BlockTag, TransactionReceipt } from "@ethersproject/abstract-provider"
 import { Web3Provider, JsonRpcProvider } from "@ethersproject/providers"
+import axios from "axios"
 import {
   BitcoinClient,
   BitcoinTx,
@@ -9,12 +10,16 @@ import {
   CrossChainDepositor,
   Deposit,
   DepositRequest,
+  DepositReceipt,
+  BitcoinRawTxVectors,
   ElectrumClient,
   ethereumAddressFromSigner,
   EthereumBridge,
   chainIdFromSigner,
   Hex,
   loadEthereumCoreContracts,
+  packRevealDepositParameters,
+  extractBitcoinRawTxVectors,
   TBTC as SDK,
   Chains,
   DestinationChainName,
@@ -66,6 +71,7 @@ import { SupportedChainIds } from "../../networks/enums/networks"
 import { getThresholdLibProvider } from "../../utils/getThresholdLib"
 import { getEthereumDefaultProviderChainId } from "../../utils/getEnvVariable"
 import { getCrossChainRpcUrl } from "../../networks/utils/getCrossChainRpcUrl"
+import { getApiEndpoints } from "./constants"
 
 export enum BridgeActivityStatus {
   PENDING = "PENDING",
@@ -351,6 +357,22 @@ export interface ITBTC {
    * @return Prefixed transaction hash of the reveal.
    */
   revealDeposit(utxo: BitcoinUtxo): Promise<string | TransactionReceipt>
+
+  /**
+   * Reveals the given deposit using gasless reveal through a relayer service.
+   * This method calls an external API to trigger the deposit transaction via a relayer.
+   * @param depositTx Bitcoin raw transaction vectors
+   * @param depositOutputIndex Index of the deposit output
+   * @param deposit Deposit receipt containing the deposit parameters
+   * @param vault Optional vault address
+   * @returns Transaction receipt from the gasless reveal
+   */
+  gaslessRevealDeposit(
+    depositTx: BitcoinRawTxVectors,
+    depositOutputIndex: number,
+    deposit: DepositReceipt,
+    vault?: ChainIdentifier
+  ): Promise<TransactionReceipt>
 
   /**
    * Gets a revealed deposit from the bridge.
@@ -1107,6 +1129,46 @@ export class TBTC implements ITBTC {
     const { value, ...transactionOutpoint } = utxo
     if (!this._deposit) throw new EmptyDepositObjectError()
 
+    // Check if we should use gasless reveal for L1 networks
+    const isL1 =
+      !this._crossChainConfig.isCrossChain && this._ethereumConfig.chainId
+    if (isL1) {
+      // Use gasless reveal for L1 networks
+      const depositReceipt = this._deposit.getReceipt()
+
+      // Get the raw bitcoin transaction
+      const rawTx = await this._bitcoinClient.getRawTransaction(
+        utxo.transactionHash
+      )
+
+      // Extract transaction vectors
+      const depositTx = extractBitcoinRawTxVectors(rawTx)
+
+      // Get vault if available
+      const vaultAddress = this._tbtcVaultContract?.address
+      let vault: ChainIdentifier | undefined
+      if (vaultAddress) {
+        // Create a proper ChainIdentifier object
+        vault = {
+          identifierHex: vaultAddress.slice(2).toLowerCase(),
+          equals: function (other: ChainIdentifier): boolean {
+            return this.identifierHex === other.identifierHex
+          },
+        }
+      }
+
+      const receipt = await this.gaslessRevealDeposit(
+        depositTx,
+        utxo.outputIndex,
+        depositReceipt,
+        vault
+      )
+
+      this.removeDepositData()
+      return receipt
+    }
+
+    // Use regular reveal for L2/cross-chain networks
     const result = await this._deposit.initiateMinting(transactionOutpoint)
     this.removeDepositData()
 
@@ -1123,6 +1185,88 @@ export class TBTC implements ITBTC {
     }
 
     throw new Error("Unexpected result type from initiateMinting")
+  }
+
+  /**
+   * Reveals the given deposit using gasless reveal through a relayer service.
+   * This method calls an external API to trigger the deposit transaction via a relayer.
+   * @param {BitcoinRawTxVectors} depositTx Bitcoin raw transaction vectors
+   * @param {number} depositOutputIndex Index of the deposit output
+   * @param {DepositReceipt} deposit Deposit receipt containing the deposit parameters
+   * @param {ChainIdentifier} vault Optional vault address
+   * @return {Promise<TransactionReceipt>} Transaction receipt from the gasless reveal
+   */
+  gaslessRevealDeposit = async (
+    depositTx: BitcoinRawTxVectors,
+    depositOutputIndex: number,
+    deposit: DepositReceipt,
+    vault?: ChainIdentifier
+  ): Promise<TransactionReceipt> => {
+    const { fundingTx, reveal } = packRevealDepositParameters(
+      depositTx,
+      depositOutputIndex,
+      deposit,
+      vault
+    )
+
+    // For gasless reveals, we need the deposit owner address
+    const depositOwner = deposit.depositor
+
+    // Determine the API endpoint based on network
+    const isTestnet = this.bitcoinNetwork === BitcoinNetwork.Testnet
+    const apiEndpoints = getApiEndpoints(isTestnet)
+    const apiUrl = apiEndpoints.GASLESS_REVEAL
+
+    try {
+      const response = await axios.post(apiUrl, {
+        fundingTx,
+        reveal,
+        destinationChainDepositOwner: `0x${depositOwner.identifierHex}`,
+      })
+
+      const { data } = response
+      if (!data || data.status !== "success") {
+        throw new Error(
+          `Unexpected response from /api/gasless-reveal: ${JSON.stringify(
+            data
+          )}`
+        )
+      }
+
+      // Convert the response to match TransactionReceipt format
+      const receipt: TransactionReceipt = {
+        to: data.data.contractAddress || "",
+        from: "",
+        contractAddress: data.data.contractAddress || "",
+        transactionIndex: 0,
+        root: undefined,
+        gasUsed: BigNumber.from(0),
+        logsBloom: "",
+        blockHash: "",
+        transactionHash: data.data.transactionHash,
+        logs: [],
+        blockNumber: data.data.blockNumber,
+        confirmations: 0,
+        cumulativeGasUsed: BigNumber.from(0),
+        effectiveGasPrice: BigNumber.from(0),
+        byzantium: true,
+        type: 0,
+        status: data.data.status,
+      }
+
+      return receipt
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Gasless reveal API error response:", error.response.data)
+        throw new Error(
+          error.response.data?.message ||
+            error.response.data?.error ||
+            "Failed to perform gasless reveal"
+        )
+      }
+      console.error("Error calling /api/gasless-reveal endpoint:", error)
+      throw error
+    }
   }
 
   getRevealedDeposit = async (utxo: BitcoinUtxo): Promise<DepositRequest> => {

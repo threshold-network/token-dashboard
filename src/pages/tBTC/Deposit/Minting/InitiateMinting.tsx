@@ -87,7 +87,7 @@ const InitiateMintingComponent: FC<{
             withSymbol
           />{" "}
           and will receive{" "}
-          <Skeleton isLoaded={!!tBTCMintAmount} maxW="105px" as="span">
+          {tBTCMintAmount ? (
             <InlineTokenBalance
               tokenAmount={tBTCMintAmount}
               tokenSymbol="tBTC"
@@ -95,7 +95,9 @@ const InitiateMintingComponent: FC<{
               higherPrecision={8}
               withSymbol
             />
-          </Skeleton>
+          ) : (
+            <span style={{ display: "inline-block", width: "105px" }}>--</span>
+          )}
         </H5>
         <BodyLg>{chainInfo.mintingProcessDescription}</BodyLg>
       </InfoBox>
