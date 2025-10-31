@@ -108,19 +108,33 @@ const BTCAddressSection: FC<{
           maxW="205px"
           borderRadius="8px"
         >
-          <QRCode
-            size={256}
-            style={{ height: "auto", maxWidth: "100%", width: "100%" }}
-            value={btcDepositAddress}
-            viewBox={`0 0 256 256`}
-          />
+          {btcDepositAddress ? (
+            <QRCode
+              size={256}
+              style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+              value={btcDepositAddress}
+              viewBox={`0 0 256 256`}
+            />
+          ) : (
+            <Box
+              width="100%"
+              height="185px"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="8px"
+              backgroundColor="gray.50"
+            >
+              <BodyMd color="gray.500">Loading address...</BodyMd>
+            </Box>
+          )}
         </Box>
       </BTCAddressCard>
-      <CopyToClipboard textToCopy={btcDepositAddress}>
+      <CopyToClipboard textToCopy={btcDepositAddress || ""}>
         <HStack mt="2.5">
           <BTCAddressCard minW="0" p="2">
             <BodyMd color={btcAddressColor} textStyle="chain-identifier">
-              {btcDepositAddress}
+              {btcDepositAddress || "..."}
             </BodyMd>
           </BTCAddressCard>
           <BTCAddressCard

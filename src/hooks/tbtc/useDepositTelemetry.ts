@@ -5,6 +5,7 @@ import { BitcoinNetwork } from "../../threshold-ts/types"
 import { verifyDepositAddress } from "../../utils/verifyDepositAddress"
 import { useCaptureMessage } from "../sentry"
 import { ApiUrl, endpointUrl } from "../../enums"
+import { isLocalhost } from "../../utils/isLocalhost"
 
 export const useDepositTelemetry = (network: BitcoinNetwork) => {
   const captureMessage = useCaptureMessage()
@@ -43,6 +44,14 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
         }
       )
 
+      // Skip telemetry submission in localhost to avoid CORS issues
+      if (isLocalhost()) {
+        console.info(
+          "Skipping deposit telemetry submission in localhost environment"
+        )
+        return
+      }
+
       const requestBody = {
         depositAddress,
         depositor: depositor.identifierHex,
@@ -61,8 +70,19 @@ export const useDepositTelemetry = (network: BitcoinNetwork) => {
           requestBody,
           { timeout: 10000 }
         )
-      } catch (error) {
-        throw new Error("Failed to submit deposit telemetry", { cause: error })
+      } catch (error: any) {
+        // Log the error but don't throw it to prevent blocking the deposit flow
+        console.warn("Failed to submit deposit telemetry:", error.message)
+
+        // In production, throw only for non-CORS errors
+        if (
+          !isLocalhost() &&
+          (error.response || error.code !== "ERR_NETWORK")
+        ) {
+          throw new Error("Failed to submit deposit telemetry", {
+            cause: error,
+          })
+        }
       }
     },
     [verifyDepositAddress, network, captureMessage]
