@@ -1,3 +1,4 @@
 # https://www.robotstxt.org/robotstxt.html
+# Block all crawlers for legacy Cloudflare deployment
 User-agent: *
-Disallow:
+Disallow: /
