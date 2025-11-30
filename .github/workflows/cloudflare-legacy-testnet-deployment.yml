@@ -1,0 +1,131 @@
+name: Cloudflare Pages Deploy (testnet legacy)
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Git ref/branch to deploy"
+        required: false
+        default: "main"
+      env_prefix:
+        description: "Optional path prefix (e.g., preview/<branch>)"
+        required: false
+        default: ""
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      NODE_VERSION: "20"
+      PUBLIC_URL: /
+      CANONICAL_HOSTNAME: testnet-token-dashboard-legacy.pages.dev
+      CHAIN_ID: 11155111
+      ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+      ELECTRUM_PROTOCOL: ${{ secrets.TESTNET_ELECTRUMX_PROTOCOL }}
+      ELECTRUM_HOST: ${{ secrets.TESTNET_ELECTRUMX_HOST }}
+      ELECTRUM_PORT: ${{ secrets.TESTNET_ELECTRUMX_PORT }}
+      SENTRY_SUPPORT: true
+      SENTRY_DSN: ${{ secrets.TESTNET_SENTRY_DSN }}
+      WALLET_CONNECT_PROJECT_ID: ${{ secrets.WALLET_CONNECT_PROJECT_ID }}
+      TBTC_SUBGRAPH_API_KEY: ${{ secrets.TBTC_SUBGRAPH_API_KEY }}
+      DAPP_DEVELOPMENT_TESTNET_CONTRACTS: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+          cache: yarn
+
+      - name: Force git to use https
+        run: git config --global url."https://".insteadOf git://
+
+      - name: Install dependencies
+        run: yarn install --ignore-scripts --frozen-lockfile
+
+      - name: Postinstall
+        run: yarn run postinstall
+
+      - name: Build
+        run: |
+          PUBLIC_URL=${PUBLIC_URL} \
+          CANONICAL_HOSTNAME=${CANONICAL_HOSTNAME} \
+          CHAIN_ID=${CHAIN_ID} \
+          ALCHEMY_API_KEY=${ALCHEMY_API_KEY} \
+          ELECTRUM_PROTOCOL=${ELECTRUM_PROTOCOL} \
+          ELECTRUM_HOST=${ELECTRUM_HOST} \
+          ELECTRUM_PORT=${ELECTRUM_PORT} \
+          SENTRY_SUPPORT=${SENTRY_SUPPORT} \
+          SENTRY_DSN=${SENTRY_DSN} \
+          WALLET_CONNECT_PROJECT_ID=${WALLET_CONNECT_PROJECT_ID} \
+          TBTC_SUBGRAPH_API_KEY=${TBTC_SUBGRAPH_API_KEY} \
+          DAPP_DEVELOPMENT_TESTNET_CONTRACTS=${DAPP_DEVELOPMENT_TESTNET_CONTRACTS} \
+          yarn build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build
+
+  deploy:
+    name: Deploy to Cloudflare Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: cloudflare-testnet
+      url: https://testnet-token-dashboard-legacy.pages.dev
+    permissions:
+      contents: read
+    env:
+      CF_PAGES_PROJECT: testnet-token-dashboard-legacy
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CF_PAGES_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || 'main' }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+
+      - name: Install wrangler
+        run: npm install -g wrangler@4.50.0
+
+      - name: Deploy
+        env:
+          CF_DEPLOY_BRANCH: ${{ github.event.inputs.branch || 'main' }}
+          CF_DEPLOY_ENV_PREFIX: ${{ github.event.inputs.env_prefix }}
+        run: |
+          set -euo pipefail
+          export CLOUDFLARE_API_TOKEN
+          export CF_API_TOKEN="$CLOUDFLARE_API_TOKEN"
+          export CLOUDFLARE_ACCOUNT_ID
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "CLOUDFLARE_ACCOUNT_ID missing" >&2
+            exit 1
+          fi
+          if [ -z "$CF_DEPLOY_ENV_PREFIX" ]; then
+            BRANCH_NAME="$CF_DEPLOY_BRANCH"
+          else
+            BRANCH_NAME="$CF_DEPLOY_ENV_PREFIX"
+          fi
+          wrangler pages deploy build \
+            --project-name ${CF_PAGES_PROJECT} \
+            --branch ${BRANCH_NAME}
+
+      - name: Smoke check (post-deploy)
+        env:
+          SMOKE_URL: https://testnet-token-dashboard-legacy.pages.dev/
+        run: |
+          set -euo pipefail
+          echo "Smoke checking ${SMOKE_URL}"
+          curl -I --fail "$SMOKE_URL"
