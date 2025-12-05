@@ -35,7 +35,6 @@ export class MetaMask extends InjectedConnector {
     return (
       typeof provider === "object" &&
       provider !== null &&
-      "_metamask" in provider &&
       "isMetaMask" in provider &&
       (provider as MetaMaskProvider).isMetaMask === true
     )
