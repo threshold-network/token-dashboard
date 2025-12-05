@@ -234,31 +234,62 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
       !dp.btcRecoveryAddress
     ) {
       errors.depositParameters = "Invalid .JSON file."
-    } else if (!isSameChainNameOrId(dp.networkInfo.chainName, networkName)) {
-      errors.depositParameters = "Chain name mismatch."
-    } else if (
-      (isL2Network(chainId) || networkName !== "Ethereum") &&
-      !dp.extraData
-    ) {
-      console.log("networkName", networkName)
-      errors.depositParameters = "Extra data is required for L2 networks."
     } else {
-      const btcAddressError = validateBTCAddress(
-        dp.btcRecoveryAddress as string,
-        bitcoinNetwork
+      const chainNameMatches = isSameChainNameOrId(
+        dp.networkInfo.chainName,
+        networkName
       )
-      if (btcAddressError) {
-        errors.depositParameters = btcAddressError
+      if (!chainNameMatches) {
+        const isEthereumMainnetAlias = isSameChainNameOrId(
+          dp.networkInfo.chainName,
+          "Ethereum Mainnet"
+        )
+
+        if (isEthereumMainnetAlias) {
+          const chainIdMatches =
+            dp.networkInfo.chainId !== undefined &&
+            isSameChainNameOrId(dp.networkInfo.chainId, chainId)
+
+          if (!chainIdMatches) {
+            errors.depositParameters = "Chain id mismatch."
+          } else {
+            console.warn(
+              "ResumeDeposit: received legacy chain name 'Ethereum Mainnet'; continuing because chain id matches."
+            )
+          }
+        } else {
+          errors.depositParameters = "Chain name mismatch."
+        }
+      }
+
+      if (errors.depositParameters) {
+        return getErrorsObj(errors)
+      }
+
+      if (
+        (isL2Network(chainId) || networkName !== "Ethereum") &&
+        !dp.extraData
+      ) {
+        console.log("networkName", networkName)
+        errors.depositParameters = "Extra data is required for L2 networks."
       } else {
-        // Check deposit expiration
-        const { isExpired } = await checkDepositExpiration(dp.refundLocktime)
-        if (isExpired) {
-          errors.depositParameters = "Deposit reveal time is expired."
-        } else if (
-          isL1Network(chainId) &&
-          !isSameAddress(dp.depositor.identifierHex, address)
-        ) {
-          errors.depositParameters = "You are not a depositor."
+        const btcAddressError = validateBTCAddress(
+          dp.btcRecoveryAddress as string,
+          bitcoinNetwork
+        )
+        if (btcAddressError) {
+          errors.depositParameters = btcAddressError
+        } else {
+          // Check deposit expiration
+          const { isExpired } = await checkDepositExpiration(dp.refundLocktime)
+          if (isExpired) {
+            errors.depositParameters = "Deposit reveal time is expired."
+          } else if (
+            isL1Network(chainId) &&
+            !isSameAddress(dp.depositor.identifierHex, address)
+          ) {
+            errors.depositParameters = "You are not a depositor."
+          }
         }
       }
     }
