@@ -1,9 +1,10 @@
 import React from "react"
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen, waitFor, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { ResumeDepositPage } from "../ResumeDeposit"
 
 let mockReceipt: any
+let mockAccount = ""
 
 const aliasReceipt = {
   depositor: {
@@ -39,7 +40,6 @@ const mockCheckDepositExpiration = jest.fn(async () => ({
 const mockSetDepositDataInLocalStorage = jest.fn()
 const mockUpdateState = jest.fn()
 const mockNavigate = jest.fn()
-const mockAccount = `0x${aliasReceipt.depositor.identifierHex}`
 let mockChainId = 1
 
 jest.mock("react-router-dom", () => {
@@ -72,7 +72,7 @@ jest.mock("../../../../web3/utils", () => {
   const actual = jest.requireActual("../../../../web3/utils")
   return {
     ...actual,
-    parseJSONFile: () => mockReceipt,
+    parseJSONFile: () => Promise.resolve(mockReceipt),
   }
 })
 
@@ -169,6 +169,7 @@ describe("ResumeDeposit chain-name aliasing", () => {
     consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation()
     mockChainId = 1
     mockReceipt = aliasReceipt
+    mockAccount = `0x${aliasReceipt.depositor.identifierHex}`
     mockCheckDepositExpiration.mockResolvedValue({
       isExpired: false,
       expirationTimestamp: 0,
@@ -184,7 +185,16 @@ describe("ResumeDeposit chain-name aliasing", () => {
     render(<ResumeDepositPage />)
 
     const [uploadBtn] = screen.getAllByRole("button", { name: /upload/i })
-    await userEvent.click(uploadBtn)
+    const submitBtn = screen.getByRole("button", {
+      name: /upload and resume/i,
+    })
+    await act(async () => {
+      await userEvent.click(uploadBtn)
+    })
+    await waitFor(() => expect(submitBtn).not.toBeDisabled())
+    await act(async () => {
+      await userEvent.click(submitBtn)
+    })
     await waitFor(() =>
       expect(mockInitiateDepositFromDepositScriptParameters).toHaveBeenCalled()
     )
@@ -200,9 +210,35 @@ describe("ResumeDeposit chain-name aliasing", () => {
     render(<ResumeDepositPage />)
 
     const [uploadBtn] = screen.getAllByRole("button", { name: /upload/i })
-    await userEvent.click(uploadBtn)
+    await act(async () => {
+      await userEvent.click(uploadBtn)
+    })
 
     expect(await screen.findByText("Chain id mismatch.")).toBeInTheDocument()
+    expect(
+      mockInitiateDepositFromDepositScriptParameters
+    ).not.toHaveBeenCalled()
+  })
+
+  it("shows depositor mismatch details when connected account differs", async () => {
+    mockReceipt = aliasReceipt
+    mockAccount = "0x2222222222222222222222222222222222222222"
+    render(<ResumeDepositPage />)
+
+    const [uploadBtn] = screen.getAllByRole("button", { name: /upload/i })
+    await act(async () => {
+      await userEvent.click(uploadBtn)
+    })
+
+    expect(
+      await screen.findByText(/You are not a depositor/i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/Expected: deadbeefdeadbeefdeadbeefdeadbeefdeadbeef/i)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/connected: 0x2222222222222222222222222222222222222222/i)
+    ).toBeInTheDocument()
     expect(
       mockInitiateDepositFromDepositScriptParameters
     ).not.toHaveBeenCalled()

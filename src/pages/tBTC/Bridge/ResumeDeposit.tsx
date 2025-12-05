@@ -288,7 +288,17 @@ const ResumeDepositFormik = withFormik<ResumeDepositFormikProps, FormValues>({
             isL1Network(chainId) &&
             !isSameAddress(dp.depositor.identifierHex, address)
           ) {
-            errors.depositParameters = "You are not a depositor."
+            const formatAddress = (value: string) => {
+              try {
+                return getAddress(value)
+              } catch {
+                return value
+              }
+            }
+
+            errors.depositParameters = `You are not a depositor. Expected: ${formatAddress(
+              dp.depositor.identifierHex
+            )}, connected: ${formatAddress(address)}.`
           }
         }
       }
