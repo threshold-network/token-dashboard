@@ -146,6 +146,7 @@ docker-compose up --build
 ```
 
 ## Triage Reproduction Tests (sensitive fixtures)
+
 - Purpose: reproduce user-reported issues with local, sensitive fixtures (do not commit real user data).
 - Fixtures: place user-provided JSONs under `src/triage/**/__fixtures__/` (they are gitignored); redact/replace sensitive values before any commit.
 - Running triage suites: `yarn test:triage --runInBand` (runs only triage tests; expect console warnings from mocked UI components).
