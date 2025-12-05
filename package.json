@@ -79,6 +79,7 @@
     "start:dev": ". ./scripts/start_dashboard.sh",
     "build": "craco --openssl-legacy-provider build",
     "test": "craco test",
+    "test:triage": "craco test --runInBand --watchAll=false triage",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js --ext .ts --ext .tsx .",
     "lint:fix": "eslint --ext .js --ext .ts --ext .tsx . --quiet --fix",

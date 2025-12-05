@@ -31,3 +31,6 @@ coverage/
 .do/app.yaml
 .env.testnet
 .env.mainnet
+
+# Triage fixtures (sensitive, keep local only)
+src/triage/**/__fixtures__/*.json

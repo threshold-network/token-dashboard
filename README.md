@@ -144,3 +144,10 @@ Then build the docker container and run the dashboard:
 ```bash
 docker-compose up --build
 ```
+
+## Triage Reproduction Tests (sensitive fixtures)
+- Purpose: reproduce user-reported issues with local, sensitive fixtures (do not commit real user data).
+- Fixtures: place user-provided JSONs under `src/triage/**/__fixtures__/` (they are gitignored); redact/replace sensitive values before any commit.
+- Running triage suites: `yarn test:triage --runInBand` (runs only triage tests; expect console warnings from mocked UI components).
+- Adding a case: add a `*.triage.test.tsx` under `src/triage/<area>/`, point it at your fixture, and keep the mock connected account aligned with the receipt’s depositor (`identifierHex` with `0x` prefix) if required by the flow.
+- Debug tip: for user-facing wallet issues, you can impersonate wallets in the browser with the Impersonator extension (Chrome Web Store: https://chromewebstore.google.com/detail/impersonator/hgihfkmoibhccfdohjdbklmmcknjjmgl); after impersonating, pick MetaMask in the app’s wallet picker to reproduce connected-account scenarios.
